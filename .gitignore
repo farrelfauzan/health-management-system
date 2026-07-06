@@ -18,6 +18,15 @@ build/
 coverage/
 .next/
 out/
+*.tsbuildinfo
+
+# accidental compiled outputs in source trees
+apps/**/src/**/*.js
+apps/**/src/**/*.js.map
+apps/**/src/**/*.d.ts
+packages/**/src/**/*.js
+packages/**/src/**/*.js.map
+packages/**/src/**/*.d.ts
 
 # tooling caches
 .turbo/
