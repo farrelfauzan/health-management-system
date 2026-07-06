@@ -14,6 +14,15 @@
     "lint": "pnpm -r --if-present lint",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
-    "format": "pnpm -r --if-present format"
+    "integration:test": "pnpm -r --if-present integration:test",
+    "format": "pnpm -r --if-present format",
+    "db:generate": "pnpm --filter @hms/api prisma:generate",
+    "db:migrate:dev": "pnpm --filter @hms/api prisma:migrate:dev",
+    "db:migrate:deploy": "pnpm --filter @hms/api prisma:migrate:deploy",
+    "db:validate": "pnpm --filter @hms/api prisma:validate",
+    "docker:dev:up": "docker compose -f infra/docker/docker-compose.dev.yml up -d postgres",
+    "docker:dev:migrate": "docker compose -f infra/docker/docker-compose.dev.yml --profile tools run --rm migrate",
+    "docker:dev:start": "docker compose -f infra/docker/docker-compose.dev.yml up -d api web",
+    "docker:dev:down": "docker compose -f infra/docker/docker-compose.dev.yml down"
   }
 }

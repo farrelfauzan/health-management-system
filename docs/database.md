@@ -78,25 +78,27 @@ enum ChatActor {
 }
 
 model User {
-  id                    String          @id @default(uuid()) @db.Uuid
-  email                 String          @unique
-  passwordHash          String
-  isActive              Boolean         @default(true)
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
-  deletedAt             DateTime?
+  id                   String           @id @default(uuid()) @db.Uuid
+  email                String           @unique
+  passwordHash         String           @map("password_hash")
+  isActive             Boolean          @default(true) @map("is_active")
+  createdAt            DateTime         @default(now()) @map("created_at")
+  updatedAt            DateTime         @updatedAt @map("updated_at")
+  deletedAt            DateTime?        @map("deleted_at")
 
-  roles                 UserRole[]
-  assignedRoles         UserRole[]      @relation("RoleAssignedBy")
-  unassignedRoles       UserRole[]      @relation("RoleUnassignedBy")
-  createdAppointments   Appointment[]   @relation("AppointmentCreatedBy")
-  createdRegistrations  Registration[]  @relation("RegistrationCreatedBy")
-  dispensedByRecords    DispenseRecord[] @relation("DispensePharmacist")
+  roles                UserRole[]
+  assignedRoles        UserRole[]       @relation("RoleAssignedBy")
+  unassignedRoles      UserRole[]       @relation("RoleUnassignedBy")
+  createdAppointments  Appointment[]    @relation("AppointmentCreatedBy")
+  createdRegistrations Registration[]   @relation("RegistrationCreatedBy")
+  dispensedByRecords   DispenseRecord[] @relation("DispensePharmacist")
 
-  patientProfile        PatientProfile?
-  doctorProfile         DoctorProfile?
-  chatSessions          ChatSession[]   @relation("ChatSessionOwner")
-  chatMessages          ChatMessage[]   @relation("ChatMessageAuthor")
+  patientProfile       PatientProfile?
+  doctorProfile        DoctorProfile?
+  chatSessions         ChatSession[]    @relation("ChatSessionOwner")
+  chatMessages         ChatMessage[]    @relation("ChatMessageAuthor")
+
+  @@map("users")
 }
 
 model Role {
@@ -104,158 +106,169 @@ model Role {
   code        String           @unique
   name        String
   description String?
-  isSystem    Boolean          @default(false)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  deletedAt   DateTime?
+  isSystem    Boolean          @default(false) @map("is_system")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+  deletedAt   DateTime?        @map("deleted_at")
 
   users       UserRole[]
   permissions RolePermission[]
+
+  @@map("roles")
 }
 
 model Permission {
   id          String           @id @default(uuid()) @db.Uuid
-  key         String           @unique
+  key         String           @unique @map("permission_key")
   resource    String
   action      String
   scope       PermissionScope
   description String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
 
   roles       RolePermission[]
 
   @@index([resource, action, scope])
+  @@map("permissions")
 }
 
 model RolePermission {
-  id            String      @id @default(uuid()) @db.Uuid
-  roleId        String      @db.Uuid
-  permissionId  String      @db.Uuid
-  createdAt     DateTime    @default(now())
+  id           String      @id @default(uuid()) @db.Uuid
+  roleId       String      @db.Uuid @map("role_id")
+  permissionId String      @db.Uuid @map("permission_id")
+  createdAt    DateTime    @default(now()) @map("created_at")
 
-  role          Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission    Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@unique([roleId, permissionId])
   @@index([roleId])
   @@index([permissionId])
+  @@map("role_permissions")
 }
 
 model UserRole {
-  id              String     @id @default(uuid()) @db.Uuid
-  userId          String     @db.Uuid
-  roleId          String     @db.Uuid
-  assignedById    String?    @db.Uuid
-  assignedAt      DateTime   @default(now())
-  unassignedById  String?    @db.Uuid
-  unassignedAt    DateTime?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  deletedAt       DateTime?
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @db.Uuid @map("user_id")
+  roleId         String    @db.Uuid @map("role_id")
+  assignedById   String?   @db.Uuid @map("assigned_by_id")
+  assignedAt     DateTime  @default(now()) @map("assigned_at")
+  unassignedById String?   @db.Uuid @map("unassigned_by_id")
+  unassignedAt   DateTime? @map("unassigned_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
 
-  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role            Role       @relation(fields: [roleId], references: [id], onDelete: Restrict)
-  assignedBy      User?      @relation("RoleAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
-  unassignedBy    User?      @relation("RoleUnassignedBy", fields: [unassignedById], references: [id], onDelete: SetNull)
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           Role      @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  assignedBy     User?     @relation("RoleAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+  unassignedBy   User?     @relation("RoleUnassignedBy", fields: [unassignedById], references: [id], onDelete: SetNull)
 
   @@unique([userId, roleId])
   @@index([userId])
   @@index([roleId])
   @@index([deletedAt])
+  @@map("user_roles")
 }
 
 model PatientProfile {
-  id                   String         @id @default(uuid()) @db.Uuid
-  userId               String         @unique @db.Uuid
-  medicalRecordNumber  String         @unique
-  fullName             String
-  identificationNumber  String       @unique
-  email                String        @unique
-  dateOfBirth          DateTime
-  gender               Gender
-  phone                String        @unique
-  address              Json?
-  emergencyContact     Json?
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
-  deletedAt            DateTime?
+  id                  String         @id @default(uuid()) @db.Uuid
+  userId              String         @unique @db.Uuid @map("user_id")
+  medicalRecordNumber String         @unique @map("medical_record_number")
+  fullName            String         @map("full_name")
+  identificationNumber String        @unique @map("identification_number")
+  email               String         @unique
+  dateOfBirth         DateTime       @map("date_of_birth")
+  gender              Gender
+  phone               String         @unique
+  address             Json?
+  emergencyContact    Json?          @map("emergency_contact")
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+  deletedAt           DateTime?      @map("deleted_at")
 
-  user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  appointments         Appointment[]
-  registrations        Registration[]
-  prescriptions        Prescription[]
+  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments        Appointment[]
+  registrations       Registration[]
+  prescriptions       Prescription[]
+
+  @@map("patient_profiles")
 }
 
 model DoctorProfile {
-  id                  String          @id @default(uuid()) @db.Uuid
-  userId              String          @unique @db.Uuid
-  licenseNumber       String          @unique
-  identificationNumber String          @unique
-  email               String          @unique
-  fullName            String
-  specialty           String
-  phone               String          @unique
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  deletedAt           DateTime?
+  id                   String           @id @default(uuid()) @db.Uuid
+  userId               String           @unique @db.Uuid @map("user_id")
+  licenseNumber        String           @unique @map("license_number")
+  identificationNumber String           @unique @map("identification_number")
+  email                String           @unique
+  fullName             String           @map("full_name")
+  specialty            String
+  phone                String           @unique
+  createdAt            DateTime         @default(now()) @map("created_at")
+  updatedAt            DateTime         @updatedAt @map("updated_at")
+  deletedAt            DateTime?        @map("deleted_at")
 
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  schedules      DoctorSchedule[]
-  appointments   Appointment[]
-  prescriptions  Prescription[]
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schedules            DoctorSchedule[]
+  appointments         Appointment[]
+  prescriptions        Prescription[]
+
+  @@map("doctor_profiles")
 }
 
 model DoctorSchedule {
-  id          String       @id @default(uuid()) @db.Uuid
-  doctorId    String       @db.Uuid
-  dayOfWeek   Int
-  startTime   String
-  endTime     String
-  isAvailable Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id          String        @id @default(uuid()) @db.Uuid
+  doctorId    String        @db.Uuid @map("doctor_id")
+  dayOfWeek   Int           @map("day_of_week")
+  startTime   String        @map("start_time")
+  endTime     String        @map("end_time")
+  isAvailable Boolean       @default(true) @map("is_available")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
 
   doctor      DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
   @@index([doctorId, dayOfWeek])
+  @@map("doctor_schedules")
 }
 
 model Appointment {
-  id            String            @id @default(uuid()) @db.Uuid
-  patientId     String            @db.Uuid
-  doctorId      String            @db.Uuid
-  scheduledAt   DateTime
-  status        AppointmentStatus @default(SCHEDULED)
-  reason        String?
-  notes         String?
-  createdById   String?           @db.Uuid
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  deletedAt     DateTime?
+  id           String            @id @default(uuid()) @db.Uuid
+  patientId    String            @db.Uuid @map("patient_id")
+  doctorId     String            @db.Uuid @map("doctor_id")
+  scheduledAt  DateTime          @map("scheduled_at")
+  status       AppointmentStatus @default(SCHEDULED)
+  reason       String?
+  notes        String?
+  createdById  String?           @db.Uuid @map("created_by_id")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  deletedAt    DateTime?         @map("deleted_at")
 
-  patient       PatientProfile    @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  doctor        DoctorProfile     @relation(fields: [doctorId], references: [id], onDelete: Restrict)
-  createdBy     User?             @relation("AppointmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  registration  Registration?
+  patient      PatientProfile    @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor       DoctorProfile     @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  createdBy    User?             @relation("AppointmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  registration Registration?
 
   @@index([doctorId, scheduledAt])
   @@index([patientId, scheduledAt])
   @@index([status, scheduledAt])
+  @@map("appointments")
 }
 
 model Registration {
   id            String             @id @default(uuid()) @db.Uuid
-  patientId     String             @db.Uuid
-  appointmentId String?            @unique @db.Uuid
+  patientId     String             @db.Uuid @map("patient_id")
+  appointmentId String?            @unique @db.Uuid @map("appointment_id")
   status        RegistrationStatus @default(PENDING)
-  registeredAt  DateTime           @default(now())
-  checkedInAt   DateTime?
-  completedAt   DateTime?
-  createdById   String?            @db.Uuid
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
-  deletedAt     DateTime?
+  registeredAt  DateTime           @default(now()) @map("registered_at")
+  checkedInAt   DateTime?          @map("checked_in_at")
+  completedAt   DateTime?          @map("completed_at")
+  createdById   String?            @db.Uuid @map("created_by_id")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  deletedAt     DateTime?          @map("deleted_at")
 
   patient       PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Restrict)
   appointment   Appointment?       @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
@@ -263,141 +276,156 @@ model Registration {
 
   @@index([patientId, status])
   @@index([status, registeredAt])
+  @@map("registrations")
 }
 
 model Medication {
-  id              String                @id @default(uuid()) @db.Uuid
-  code            String                @unique
-  name            String
-  form            String?
-  strength        String?
-  unit            String?
-  stockQty        Int                   @default(0)
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-  deletedAt       DateTime?
+  id                String                   @id @default(uuid()) @db.Uuid
+  code              String                   @unique
+  name              String
+  form              String?
+  strength          String?
+  unit              String?
+  stockQty          Int                      @default(0) @map("stock_qty")
+  createdAt         DateTime                 @default(now()) @map("created_at")
+  updatedAt         DateTime                 @updatedAt @map("updated_at")
+  deletedAt         DateTime?                @map("deleted_at")
 
   prescriptionItems PrescriptionMedication[]
   dispenseItems     DispenseItem[]
+
+  @@map("medications")
 }
 
 model Prescription {
-  id              String               @id @default(uuid()) @db.Uuid
-  patientId       String               @db.Uuid
-  doctorId        String               @db.Uuid
-  status          PrescriptionStatus   @default(DRAFT)
-  issuedAt        DateTime?
+  id              String                   @id @default(uuid()) @db.Uuid
+  patientId       String                   @db.Uuid @map("patient_id")
+  doctorId        String                   @db.Uuid @map("doctor_id")
+  status          PrescriptionStatus       @default(DRAFT)
+  issuedAt        DateTime?                @map("issued_at")
   notes           String?
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  deletedAt       DateTime?
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  updatedAt       DateTime                 @updatedAt @map("updated_at")
+  deletedAt       DateTime?                @map("deleted_at")
 
-  patient         PatientProfile       @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  doctor          DoctorProfile        @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  patient         PatientProfile           @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor          DoctorProfile            @relation(fields: [doctorId], references: [id], onDelete: Restrict)
   items           PrescriptionMedication[]
   dispenseRecords DispenseRecord[]
 
   @@index([patientId, status])
   @@index([doctorId, status])
+  @@map("prescriptions")
 }
 
 model PrescriptionMedication {
-  id              String         @id @default(uuid()) @db.Uuid
-  prescriptionId  String         @db.Uuid
-  medicationId    String         @db.Uuid
-  dosage          String
-  frequency       String
-  durationDays    Int?
-  quantity        Int
-  instructions    String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id             String         @id @default(uuid()) @db.Uuid
+  prescriptionId String         @db.Uuid @map("prescription_id")
+  medicationId   String         @db.Uuid @map("medication_id")
+  dosage         String
+  frequency      String
+  durationDays   Int?           @map("duration_days")
+  quantity       Int
+  instructions   String?
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
 
-  prescription    Prescription   @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
-  medication      Medication     @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  prescription   Prescription   @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medication     Medication     @relation(fields: [medicationId], references: [id], onDelete: Restrict)
 
   @@index([prescriptionId])
   @@index([medicationId])
+  @@map("prescription_medications")
 }
 
 model DispenseRecord {
-  id              String          @id @default(uuid()) @db.Uuid
-  prescriptionId  String          @db.Uuid
-  pharmacistId    String          @db.Uuid
-  dispensedAt     DateTime        @default(now())
-  status          DispenseStatus  @default(DISPENSED)
-  notes           String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  id             String         @id @default(uuid()) @db.Uuid
+  prescriptionId String         @db.Uuid @map("prescription_id")
+  pharmacistId   String         @db.Uuid @map("pharmacist_id")
+  dispensedAt    DateTime       @default(now()) @map("dispensed_at")
+  status         DispenseStatus @default(DISPENSED)
+  notes          String?
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
 
-  prescription    Prescription    @relation(fields: [prescriptionId], references: [id], onDelete: Restrict)
-  pharmacist      User            @relation("DispensePharmacist", fields: [pharmacistId], references: [id], onDelete: Restrict)
-  items           DispenseItem[]
+  prescription   Prescription   @relation(fields: [prescriptionId], references: [id], onDelete: Restrict)
+  pharmacist     User           @relation("DispensePharmacist", fields: [pharmacistId], references: [id], onDelete: Restrict)
+  items          DispenseItem[]
 
   @@index([prescriptionId])
   @@index([pharmacistId])
   @@index([status, dispensedAt])
+  @@map("dispense_records")
 }
 
 model DispenseItem {
-  id              String          @id @default(uuid()) @db.Uuid
-  dispenseRecordId String         @db.Uuid
-  medicationId    String          @db.Uuid
+  id              String         @id @default(uuid()) @db.Uuid
+  dispenseRecordId String        @db.Uuid @map("dispense_record_id")
+  medicationId    String         @db.Uuid @map("medication_id")
   quantity        Int
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
 
-  dispenseRecord  DispenseRecord  @relation(fields: [dispenseRecordId], references: [id], onDelete: Cascade)
-  medication      Medication      @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  dispenseRecord  DispenseRecord @relation(fields: [dispenseRecordId], references: [id], onDelete: Cascade)
+  medication      Medication     @relation(fields: [medicationId], references: [id], onDelete: Restrict)
 
   @@unique([dispenseRecordId, medicationId])
   @@index([medicationId])
+  @@map("dispense_items")
 }
 
 model ChatSession {
-  id            String         @id @default(uuid()) @db.Uuid
-  ownerUserId   String         @db.Uuid
-  channel       ChatChannel    @default(PATIENT)
-  providerKey   String
-  providerSessionId String?
-  providerMetadata Json?
-  title         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  deletedAt     DateTime?
+  id                String        @id @default(uuid()) @db.Uuid
+  ownerUserId       String        @db.Uuid @map("owner_user_id")
+  channel           ChatChannel   @default(PATIENT)
+  providerKey       String        @map("provider_key")
+  providerSessionId String?       @map("provider_session_id")
+  providerMetadata  Json?         @map("provider_metadata")
+  title             String?
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  deletedAt         DateTime?     @map("deleted_at")
 
-  ownerUser     User           @relation("ChatSessionOwner", fields: [ownerUserId], references: [id], onDelete: Restrict)
-  messages      ChatMessage[]
+  ownerUser         User          @relation("ChatSessionOwner", fields: [ownerUserId], references: [id], onDelete: Restrict)
+  messages          ChatMessage[]
 
   @@index([ownerUserId])
   @@index([providerKey])
+  @@map("chat_sessions")
 }
 
 model ChatMessage {
-  id              String       @id @default(uuid()) @db.Uuid
-  sessionId       String       @db.Uuid
-  authorUserId    String?      @db.Uuid
-  actor           ChatActor
-  content         String       @db.Text
-  providerRequestId String?
-  providerMessageId String?
-  providerModel   String?
-  providerStatusCode Int?
-  providerLatencyMs Int?
-  providerMetadata Json?
-  disclaimerShown Boolean      @default(false)
-  safetyTags      Json?
-  createdAt       DateTime     @default(now())
+  id                 String      @id @default(uuid()) @db.Uuid
+  sessionId          String      @db.Uuid @map("session_id")
+  authorUserId       String?     @db.Uuid @map("author_user_id")
+  actor              ChatActor
+  content            String      @db.Text
+  providerRequestId  String?     @map("provider_request_id")
+  providerMessageId  String?     @map("provider_message_id")
+  providerModel      String?     @map("provider_model")
+  providerStatusCode Int?        @map("provider_status_code")
+  providerLatencyMs  Int?        @map("provider_latency_ms")
+  providerMetadata   Json?       @map("provider_metadata")
+  disclaimerShown    Boolean     @default(false) @map("disclaimer_shown")
+  safetyTags         Json?       @map("safety_tags")
+  createdAt          DateTime    @default(now()) @map("created_at")
 
-  session         ChatSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  authorUser      User?        @relation("ChatMessageAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
+  session            ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  authorUser         User?       @relation("ChatMessageAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
 
   @@index([sessionId, createdAt])
   @@index([authorUserId])
   @@index([providerRequestId])
   @@index([providerMessageId])
+  @@map("chat_messages")
 }
 ```
+
+Snake case rule for database naming:
+
+- All PostgreSQL table names use `snake_case` via `@@map("...")`.
+- All PostgreSQL column names use `snake_case` via `@map("...")`.
+- Prisma model and field names can remain `PascalCase`/`camelCase` for TypeScript ergonomics.
 
 External AI audit requirement:
 
@@ -413,7 +441,7 @@ Prisma v7 config note:
 
 Soft-delete policy:
 
-- Use `deletedAt` (`DateTime?`) as the canonical soft-delete flag.
+- Use Prisma field `deletedAt` (`DateTime?`) mapped to DB column `deleted_at` as the canonical soft-delete flag.
 - Soft delete means `deletedAt = now()`; restore means `deletedAt = null`.
 - Default all read queries to active records only (`where: { deletedAt: null }`).
 - Hard delete is restricted to retention/purge jobs and never used in normal business flows.
