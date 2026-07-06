@@ -1,0 +1,14 @@
+{
+  "extends": "./base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2025", "DOM"],
+    "types": ["node"],
+    "jsx": "preserve",
+    "allowJs": false,
+    "isolatedModules": true,
+    "noEmit": true,
+    "plugins": [{ "name": "next" }]
+  }
+}
