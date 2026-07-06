@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+
+# package managers
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env files
+.env
+.env.*
+!.env.example
+
+# build outputs
+dist/
+build/
+coverage/
+.next/
+out/
+*.tsbuildinfo
+
+# accidental compiled outputs in source trees
+apps/**/src/**/*.js
+apps/**/src/**/*.js.map
+apps/**/src/**/*.d.ts
+packages/**/src/**/*.js
+packages/**/src/**/*.js.map
+packages/**/src/**/*.d.ts
+
+# tooling caches
+.turbo/
+.pnpm-store/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,28 @@
+{
+  "name": "@hms/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "format": "prettier --check ."
+  },
+  "dependencies": {
+    "next": "^16.2.10",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@hms/config": "workspace:*",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.1.11",
+    "@types/react-dom": "^19.1.7",
+    "eslint": "^9.34.0",
+    "prettier": "^3.6.2",
+    "typescript": "^6.0.3"
+  }
+}
