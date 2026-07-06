@@ -11,6 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: hms_dev
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d hms_dev"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
 
     steps:
       - name: Checkout
@@ -44,6 +58,17 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Wait for postgres
+        run: |
+          for i in {1..30}; do
+            if nc -z localhost 5432; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Postgres did not become ready in time"
+          exit 1
 
       - name: Prisma validate
         run: pnpm db:validate
