@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hms-postgres
+    environment:
+      POSTGRES_DB: hms_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - hms-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d hms_dev']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/api/Dockerfile.dev
+    container_name: hms-api
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/hms_dev?schema=public
+      PORT: 3001
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3001/api/v1/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    command: ['pnpm', '--filter', '@hms/api', 'dev']
+
+  migrate:
+    build:
+      context: ../..
+      dockerfile: infra/docker/api/Dockerfile.dev
+    container_name: hms-migrate
+    profiles: ['tools']
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/hms_dev?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ['pnpm', '--filter', '@hms/api', 'prisma:migrate:deploy']
+
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/docker/web/Dockerfile.dev
+    container_name: hms-web
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3001/api/v1
+    ports:
+      - '3000:3000'
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000 || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    command: ['pnpm', '--filter', '@hms/web', 'dev', '--', '--hostname', '0.0.0.0', '--port', '3000']
+
+volumes:
+  hms-postgres-data:
