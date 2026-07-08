@@ -35,11 +35,18 @@ Goal: secure platform baseline before domain modules.
 1. `P2-T01` Create auth and access schema migration (`User`, `Role`, `Permission`, `RolePermission`, `UserRole`).
 2. `P2-T02` Implement auth repository/service/controller for login, refresh, logout.
 3. `P2-T03` Implement JWT guard and token validation strategy.
-4. `P2-T04` Implement permission guard (`resource.action:scope`) and route decorators.
+4. `P2-T04` Implement CASL ability factory (`@casl/ability`) and `PermissionsGuard` for `resource.action:scope` checks.
 5. `P2-T05` Implement IAM-style role assignment/unassignment flow for admins.
-6. `P2-T06` Implement ownership policy checks for `:own` resources.
-7. `P2-T07` Add auth and RBAC seeders for MVP roles and baseline permissions.
-8. `P2-T08` Add unit/integration tests for auth + RBAC critical paths.
+6. `P2-T06` Implement ownership policy checks for `:own` resources using CASL conditions + repository-level query filters.
+7. `P2-T07` Wire decorator pattern from `docs/decorator-references` (`Auth`, `CheckPermissions`, `PublicRoute`, `AuthUser`) in protected controllers.
+8. `P2-T08` Add unit/integration tests for auth + RBAC critical paths (CASL ability, guard behavior, decorator metadata, and 403/200 cases).
+
+Phase 2 implementation note:
+
+- Backend RBAC package baseline: `@casl/ability`.
+- Frontend CASL package wiring (`@casl/ability`, `@casl/react`) starts in Phase 3 UI work, but backend policy remains source of truth.
+- Authorization wiring uses a shared/global module with `APP_GUARD` registration for JWT + permission guards.
+- Include RBAC management endpoints in Phase 2 baseline: role catalog (`GET /rbac/roles`), assign-role, and unassign-role.
 
 ## 5. Phase 3 - Core Clinical Modules (12 Tasks)
 
@@ -83,7 +90,8 @@ Goal: integrate existing production AI chatbot service through HMS backend gatew
 ## 8. Task Definition of Done (DoD)
 
 - Backend tasks: repository + service + controller implemented when applicable.
-- Frontend tasks: TanStack Query + TanStack Form + Zod integration used where applicable.
+- Backend validation: shared request schemas live in `packages/shared-types` and are wrapped with `createZodDto(...)` in API DTO classes.
+- Frontend tasks: TanStack Query + TanStack Form + Zod integration used where applicable, reusing schemas from `packages/shared-types` when contracts overlap.
 - Tests added at correct level (unit and/or integration).
 - Documentation/API contract updated when behavior changes.
 - CI passes fully before merge.

@@ -48,7 +48,10 @@ Role mapping rule:
 
 ## 3. Validation and DTOs
 
-- Validate all request DTOs with class-validator/class-transformer.
+- Validate all request DTOs with Zod (`nestjs-zod`).
+- Define reusable request schemas in `packages/shared-types`.
+- In backend modules, wrap shared schemas with DTO classes via `createZodDto(...)` for Nest route bindings.
+- In frontend forms, reuse the same shared schemas to keep validation parity with backend contracts.
 - Reject unknown/invalid payload fields.
 - Keep request/response DTOs explicit and versionable.
 
@@ -67,6 +70,19 @@ Role mapping rule:
 | `POST /api/v1/auth/login` | Public | Public |
 | `POST /api/v1/auth/refresh` | Public (valid refresh token required) | Public |
 | `POST /api/v1/auth/logout` | `auth.logout:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PHARMACIST`, `PATIENT` |
+
+### RBAC
+
+| Endpoint | Permission | Default Roles |
+| --- | --- | --- |
+| `GET /api/v1/rbac/roles` | `role.read:any` | `SUPER_ADMIN`, `ADMIN` |
+| `POST /api/v1/rbac/assign-role` | `role.assign:any` | `SUPER_ADMIN`, `ADMIN` |
+| `POST /api/v1/rbac/unassign-role` | `role.unassign:any` | `SUPER_ADMIN`, `ADMIN` |
+
+RBAC role list response note:
+
+- `GET /api/v1/rbac/roles` returns active roles only for UI role selectors.
+- Recommended role item shape: `{ id, code, name }` (plus optional `description` if needed by UI).
 
 ### Admin/Users
 

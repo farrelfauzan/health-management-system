@@ -69,3 +69,24 @@
 - **Decision:** Frontend uses Tailwind CSS latest stable (currently v4.3.2) and shadcn/ui latest CLI (currently v4.13.0) with monorepo mode.
 - **Why:** Fast, consistent UI delivery with reusable components and workspace-aware component distribution.
 - **Consequence:** Maintain `components.json` in `apps/web` and `packages/ui`, enforce consistent aliases/style tokens, and add components through shadcn CLI monorepo commands.
+
+## D-011: Shared Validation Contract Package
+
+- **Status:** Accepted
+- **Decision:** Keep reusable request validation schemas in `packages/shared-types` as Zod schemas and consume them in backend DTO wrappers via `createZodDto(...)`.
+- **Why:** Prevent API/frontend validation drift and keep contract types shared from one source.
+- **Consequence:** Backend DTO classes import shared schemas, frontend forms reuse the same schemas when contracts overlap, and schema changes are treated as contract changes requiring docs/tests review.
+
+## D-012: Global Authorization Guard Wiring
+
+- **Status:** Accepted
+- **Decision:** Register `JwtAuthGuard` and `PermissionsGuard` globally via `APP_GUARD` in a shared authorization module; keep `Auth(...)` decorator metadata-only.
+- **Why:** Avoid repetitive per-module guard provider wiring and reduce Nest DI scoping issues when using shared auth decorators.
+- **Consequence:** Feature modules use `@Auth(...)` without local guard registration; authorization behavior is consistent across modules.
+
+## D-013: Runtime Configuration Access via ConfigService
+
+- **Status:** Accepted
+- **Decision:** Use Nest `ConfigService` for runtime env access in providers/services (e.g., Prisma and auth flows) instead of direct `process.env` reads.
+- **Why:** Centralizes configuration handling and aligns with backend convention for validated configuration.
+- **Consequence:** `ConfigModule` remains global, runtime-dependent classes inject `ConfigService`, and env access patterns stay consistent.

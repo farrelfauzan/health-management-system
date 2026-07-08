@@ -16,6 +16,12 @@
 - `UserRole` is the role binding table; role assignment/unassignment is admin-managed.
 - `UserRole.assignedById` and `UserRole.unassignedById` keep accountability for changes.
 
+Permission scope meaning:
+
+- `ANY`: permission applies to all records in a resource (example: `appointment.read:any`).
+- `OWN`: permission applies only to records owned by the current user (example: `appointment.read:own`).
+- `OWN` must be enforced in backend query filters/policies, not only via frontend visibility rules.
+
 ## 3. Prisma Schema (Baseline)
 
 ```prisma
@@ -178,7 +184,6 @@ model PatientProfile {
   medicalRecordNumber String         @unique @map("medical_record_number")
   fullName            String         @map("full_name")
   identificationNumber String        @unique @map("identification_number")
-  email               String         @unique
   dateOfBirth         DateTime       @map("date_of_birth")
   gender              Gender
   phone               String         @unique
@@ -201,7 +206,6 @@ model DoctorProfile {
   userId               String           @unique @db.Uuid @map("user_id")
   licenseNumber        String           @unique @map("license_number")
   identificationNumber String           @unique @map("identification_number")
-  email                String           @unique
   fullName             String           @map("full_name")
   specialty            String
   phone                String           @unique
@@ -452,60 +456,62 @@ PrismaService strategy (required):
 - Add reusable methods in PrismaService so repositories do not duplicate logic.
 - Repositories call PrismaService helpers instead of writing ad-hoc `deletedAt` filters.
 - PrismaService must instantiate Prisma Client using Prisma v7 adapter-based constructor.
+- Keep Prisma helper delegate/arg utility types in `apps/api/src/common/prisma/prisma.types.ts` to keep service implementation focused.
+- Read DB connection env from Nest `ConfigService` in PrismaService (avoid direct `process.env` in service logic).
 
 Recommended PrismaService contract:
 
 - `softDelete(model, where, actorId?)`
 - `restore(model, where, actorId?)`
-- `withNotDeleted(where?, includeDeleted = false)`
+- `findManyActive(model, args?)`
+- `findFirstActive(model, args?)`
+- `findUniqueActive(model, args)`
+- `hardDelete(model, where)`
+- `executeTransaction(fn)`
 
 Example strategy in `prisma.service.ts`:
 
 ```ts
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../generated/prisma/client";
-
-type SoftDeleteModel =
-  | "user"
-  | "role"
-  | "userRole"
-  | "patientProfile"
-  | "doctorProfile"
-  | "appointment"
-  | "registration"
-  | "medication"
-  | "prescription"
-  | "chatSession";
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Prisma, PrismaClient } from '../generated/prisma/client';
+import { FindManyDelegate, UpdateDelegate, UpdateWhere } from './prisma.types';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
-  constructor() {
-    const adapter = new PrismaPg({
-      connectionString: process.env.DATABASE_URL,
-    });
+  constructor(configService: ConfigService) {
+    const connectionString =
+      configService.get<string>('DATABASE_URL') ??
+      'postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public';
+    const adapter = new PrismaPg({ connectionString });
     super({ adapter });
   }
 
-  withNotDeleted<T extends Record<string, unknown>>(
-    where?: T,
-    includeDeleted = false,
-  ): T | Record<string, unknown> {
-    if (includeDeleted) return where ?? {};
-    return { ...(where ?? {}), deletedAt: null };
-  }
-
-  async softDelete(model: SoftDeleteModel, where: Record<string, unknown>) {
-    return (this[model] as any).update({
+  async softDelete<TDelegate extends UpdateDelegate>(
+    model: TDelegate,
+    where: UpdateWhere<TDelegate>,
+  ) {
+    return model.update({
       where,
       data: { deletedAt: new Date() },
     });
   }
 
-  async restore(model: SoftDeleteModel, where: Record<string, unknown>) {
-    return (this[model] as any).update({
-      where,
-      data: { deletedAt: null },
-    });
+  async findManyActive<TDelegate extends FindManyDelegate>(
+    model: TDelegate,
+    args?: Prisma.Args<TDelegate, 'findMany'>,
+  ) {
+    const typedArgs = (args ?? {}) as Record<string, unknown>;
+    const where = (typedArgs.where as Record<string, unknown> | undefined) ?? {};
+
+    return model.findMany({
+      ...typedArgs,
+      where: {
+        ...where,
+        deletedAt: null,
+      },
+    } as Prisma.Args<TDelegate, 'findMany'>);
   }
 }
 ```
@@ -513,11 +519,11 @@ export class PrismaService extends PrismaClient {
 Repository usage pattern:
 
 ```ts
-return this.prisma.patientProfile.findMany({
-  where: this.prisma.withNotDeleted(filters, includeDeleted),
+return this.prisma.findManyActive(this.prisma.patientProfile, {
+  where: filters,
 });
 
-await this.prisma.softDelete("patientProfile", { id });
+await this.prisma.softDelete(this.prisma.patientProfile, { id });
 ```
 
 Unique constraint note:

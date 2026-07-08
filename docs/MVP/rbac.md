@@ -67,6 +67,11 @@ Use and adapt the provided references from `docs/decorator-references/`:
 - `public-route.decorator.ts` -> `PublicRoute()`
 - `auth-user.decorator.ts` -> `AuthUser()`
 
+Current backend pattern:
+
+- `Auth(...)` is metadata-only (permissions + optional `public` flag via `PublicRoute`).
+- Guards are wired globally with `APP_GUARD`, so feature modules do not repeatedly register `JwtAuthGuard`/`PermissionsGuard`.
+
 Recommended metadata shape:
 
 ```ts
@@ -84,6 +89,12 @@ type PermissionRule = {
 - Build ability with CASL.
 - Call `ForbiddenError.from(ability).throwUnlessCan(action, subject)` for each required rule.
 - Return 403 with safe message on forbidden actions.
+
+Global guard order (required):
+
+- `JwtAuthGuard` executes first to resolve authenticated actor and attach `request.user`.
+- `PermissionsGuard` executes second to evaluate permission metadata.
+- Both guards are registered with `APP_GUARD` in a shared/global authorization module.
 
 ### 4.5 Ability Factory
 
@@ -276,6 +287,13 @@ Backend should expose enough data for FE ability construction:
 - `GET /api/v1/auth/me` includes user identity + roles + flattened permissions.
 - Permission payload should include `action`, `subject`, optional `conditions`.
 - Do not expose sensitive internals (secret scopes, provider secrets, raw policy engine configs).
+- `GET /api/v1/rbac/roles` should return active roles for UI role-selection forms.
+
+DTO/schema contract rule:
+
+- Keep reusable RBAC request schemas in `packages/shared-types`.
+- Backend DTOs should import those schemas and bind them with `createZodDto(...)`.
+- Frontend RBAC forms/actions should reuse the same shared schemas to avoid contract drift.
 
 ## 7. Seed Policy Baseline
 
@@ -283,6 +301,7 @@ Backend should expose enough data for FE ability construction:
 - Seed minimum permission set per module.
 - `SUPER_ADMIN` gets full management permissions.
 - Other roles get least privilege by default.
+- Include RBAC management permissions such as `role.read:any`, `role.assign:any`, and `role.unassign:any` for admin-level workflows.
 
 ## 8. Implementation Checklist
 

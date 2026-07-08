@@ -11,3 +11,6 @@ export type ApiError = {
     details?: unknown;
   };
 };
+
+export * from '#auth/schemas';
+export * from '#rbac/schemas';
