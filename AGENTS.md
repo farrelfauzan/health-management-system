@@ -24,6 +24,7 @@ Do not expand scope (billing, insurance, EMR interoperability, telemedicine, adv
 - Infra: Docker + Docker Compose
 - CI/CD: GitHub Actions
 - AuthN/AuthZ: JWT-based auth + RBAC
+- Request validation (Backend): Zod + `nestjs-zod`
 
 If proposing alternatives, keep compatibility with this stack and justify in PR notes.
 
@@ -33,7 +34,7 @@ Use a modular monolith for MVP (clear domain boundaries, single deployable backe
 
 - `apps/api`: NestJS API
 - `apps/web`: Next.js frontend
-- `packages/shared-types`: shared DTO/types (no framework runtime deps)
+- `packages/shared-types`: shared Zod schemas + inferred DTO/types for API and frontend forms
 - `packages/config`: shared lint/tsconfig/prettier presets
 - `infra/docker`: Dockerfiles + compose files
 - `infra/github`: reusable CI workflow templates (optional if using `.github/workflows` only)
@@ -101,6 +102,7 @@ Guidelines:
 
 - Enforce auth in Nest guards; enforce authorization via permission checks, not role-name checks in controllers.
 - Standardize authorization implementation with CASL (`@casl/ability`) in backend guard/service layers.
+- Register authn/authz guards globally via `APP_GUARD` in a shared authorization module; avoid repeated per-feature guard provider wiring.
 - Permissions should be action-based (example: `appointment.read:any`, `appointment.read:own`, `prescription.write:any`).
 - Support resource ownership checks (`:own`) for patient/doctor data.
 - Deny by default.
@@ -114,7 +116,8 @@ Frontend requirement:
 
 - Prefix all routes with `/api/v1`.
 - REST-first design; keep endpoints resource-oriented.
-- Validate all inputs with class-validator/class-transformer DTOs.
+- Validate all request payloads with Zod DTOs using `nestjs-zod`.
+- Source all reusable request schemas from `packages/shared-types` and consume them in backend DTO wrappers (`createZodDto(...)`).
 - Return consistent response envelope:
   - success: `{ data, meta?, message? }`
   - error: `{ error: { code, message, details? } }`
@@ -129,6 +132,7 @@ Frontend requirement:
 - Repositories are interfaces in `domain`/`application`, implementations in `infrastructure`.
 - Use transaction boundaries for multi-write operations (appointments, registration, pharmacy dispensing).
 - Centralize config via Nest config module and `.env` schema validation.
+- Use `ConfigService` for runtime env access in providers/services; avoid direct `process.env` in service logic.
 - Add structured logging with request IDs.
 
 ## 9) Frontend Conventions (Next.js)

@@ -18,7 +18,7 @@ Planned structure:
 |  |- api/                     # NestJS API
 |  |- web/                     # Next.js App Router frontend
 |- packages/
-|  |- shared-types/            # Shared DTO/types only
+|  |- shared-types/            # Shared Zod schemas + inferred types
 |  |- config/                  # Shared tsconfig/eslint/prettier presets
 |  |- ui/                      # Optional shared UI primitives
 |- infra/
@@ -80,6 +80,11 @@ Boundary rules:
 - Repositories never contain business rules.
 - Services are the only layer that can orchestrate repositories.
 - Cross-module calls go through service interfaces, not direct repository access.
+- Validate API input DTOs with Zod + `nestjs-zod` (not class-validator).
+- Keep reusable request schemas in `packages/shared-types`; backend DTO classes wrap them with `createZodDto(...)`.
+- Register authorization guards globally with `APP_GUARD` (JWT first, permissions second) in a shared authorization module.
+- Keep `Auth(...)` decorator metadata-focused (permissions/public route), not guard-instantiation focused.
+- Read runtime env values through Nest `ConfigService`; avoid direct `process.env` reads in providers/services.
 
 ## 4. Frontend (Next.js) Architecture
 
@@ -102,7 +107,7 @@ Integration rules:
 
 - Query keys are feature-scoped and deterministic.
 - Server-side auth/role checks guard routes; UI checks are secondary.
-- Form schemas live near feature code, and map to backend DTO contracts.
+- Prefer importing form/request schemas from `packages/shared-types`; compose feature-local UI-only refinements only when needed.
 - Use shadcn monorepo aliases so app imports UI via workspace package exports.
 - For Tailwind v4, use `@tailwindcss/postcss` plugin and `@import "tailwindcss"` in global CSS.
 

@@ -20,6 +20,8 @@
     "db:migrate:dev": "pnpm --filter @hms/api prisma:migrate:dev",
     "db:migrate:deploy": "pnpm --filter @hms/api prisma:migrate:deploy",
     "db:validate": "pnpm --filter @hms/api prisma:validate",
+    "db:seed": "pnpm --filter @hms/api prisma:seed",
+    "db:reset": "pnpm --filter @hms/api prisma:migrate:reset",
     "docker:dev:up": "docker compose -f infra/docker/docker-compose.dev.yml up -d postgres",
     "docker:dev:migrate": "docker compose -f infra/docker/docker-compose.dev.yml --profile tools run --rm migrate",
     "docker:dev:start": "docker compose -f infra/docker/docker-compose.dev.yml up -d api web",
