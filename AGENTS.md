@@ -111,6 +111,10 @@ Frontend requirement:
 
 - Implement frontend capability checks using CASL (`@casl/ability` + `@casl/react`) for route and component visibility.
 - Frontend CASL is UX guidance only; backend guard/policy remains source of truth.
+- Frontend capability integration for clinical modules starts only after backend readiness gate is met (see delivery order).
+- Place CASL ability provider at route/layout or feature-boundary parent components, not inside leaf UI components.
+- Build initial ability/rules on server (from validated token claims/profile payload), perform server-side capability gate before render, and pass serializable rules to client provider.
+- Leaf components should consume reusable `Can`/ability hooks from shared packages and must not define ad-hoc local guard/provider implementations.
 
 ## 7) API Conventions
 
@@ -138,8 +142,13 @@ Frontend requirement:
 ## 9) Frontend Conventions (Next.js)
 
 - Use App Router with feature-based folders.
-- Keep server/client boundaries explicit (`use client` only when necessary).
+- SSR-first policy: App Router `layout.tsx` and `page.tsx` are server components by default.
+- Keep `use client` out of route files when possible; place interactive/client logic in `components/client/*`.
+- Keep presentational/server composition components in `components/server/*`.
 - Use typed API client shared with backend contracts.
+- Generate API client/hooks from backend OpenAPI spec using Orval (`react-query` output).
+- Treat backend OpenAPI YAML as integration contract (`/api/openapi.yaml`) for frontend codegen sync.
+- Use centralized axios client/interceptor setup for auth headers and 401 handling; do not duplicate per-feature HTTP setup.
 - Guard private routes by role and auth state.
 - Build reusable form components with schema validation.
 - Do not encode business rules only in UI; backend remains source of truth.
@@ -219,13 +228,13 @@ Rules:
 - Add tests with each feature: unit tests for use cases, integration tests for critical flows.
 - When uncertain, choose simpler architecture that preserves clean boundaries.
 
-## 15) Suggested MVP Delivery Order
+## 15) Suggested MVP Delivery Order (Backend-First)
 
 1. Foundation: repo scaffolding, auth, RBAC, shared configs, CI, Docker
-2. Patient + Doctor + Admin management modules
-3. Appointment management
-4. Registration flow
-5. Pharmacy flow
-6. AI chatbot integration (external service gateway) with strict safety boundaries
+2. Backend-only clinical modules: admin, patient, doctor, appointment, registration, pharmacy
+3. AI chatbot backend integration (external service gateway) with strict safety boundaries
+4. Backend readiness gate: stable OpenAPI contracts, RBAC coverage, and passing backend validation pipeline
+5. Frontend integration by module after backend readiness gate is complete
 
 Do not start AI chatbot before auth/RBAC/audit logging are in place.
+Do not start new clinical-module frontend integration until backend modules and readiness gate are complete.

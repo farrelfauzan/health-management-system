@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  PatientProfile: 'PatientProfile',
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "role" | "permission" | "rolePermission" | "userRole"
+    modelProps: "user" | "patientProfile" | "role" | "permission" | "rolePermission" | "userRole"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -479,6 +480,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    PatientProfile: {
+      payload: Prisma.$PatientProfilePayload<ExtArgs>
+      fields: Prisma.PatientProfileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PatientProfileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PatientProfileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload>
+        }
+        findFirst: {
+          args: Prisma.PatientProfileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PatientProfileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload>
+        }
+        findMany: {
+          args: Prisma.PatientProfileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload>[]
+        }
+        create: {
+          args: Prisma.PatientProfileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload>
+        }
+        createMany: {
+          args: Prisma.PatientProfileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PatientProfileCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload>[]
+        }
+        delete: {
+          args: Prisma.PatientProfileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload>
+        }
+        update: {
+          args: Prisma.PatientProfileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload>
+        }
+        deleteMany: {
+          args: Prisma.PatientProfileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PatientProfileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PatientProfileUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload>[]
+        }
+        upsert: {
+          args: Prisma.PatientProfileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientProfilePayload>
+        }
+        aggregate: {
+          args: Prisma.PatientProfileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePatientProfile>
+        }
+        groupBy: {
+          args: Prisma.PatientProfileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatientProfileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PatientProfileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatientProfileCountAggregateOutputType> | number
         }
       }
     }
@@ -830,6 +905,23 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const PatientProfileScalarFieldEnum = {
+  id: 'id',
+  mrn: 'mrn',
+  fullName: 'fullName',
+  dateOfBirth: 'dateOfBirth',
+  phoneNumber: 'phoneNumber',
+  address: 'address',
+  ownerUserId: 'ownerUserId',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]
+
+
 export const RoleScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -1087,6 +1179,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  patientProfile?: Prisma.PatientProfileOmit
   role?: Prisma.RoleOmit
   permission?: Prisma.PermissionOmit
   rolePermission?: Prisma.RolePermissionOmit

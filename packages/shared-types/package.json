@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "imports": {
+    "#admin-management/schemas": "./src/admin-management/schemas.ts",
+    "#admin-management/contracts": "./src/admin-management/contracts.ts",
+    "#patient-management/schemas": "./src/patient-management/schemas.ts",
+    "#patient-management/contracts": "./src/patient-management/contracts.ts",
     "#auth/schemas": "./src/auth/schemas.ts",
     "#rbac/schemas": "./src/rbac/schemas.ts"
   },
@@ -15,11 +19,13 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "format": "prettier --check ."
   },
+  "dependencies": {
+    "zod": "^3.25.76"
+  },
   "devDependencies": {
     "@hms/config": "workspace:*",
     "eslint": "^9.34.0",
     "prettier": "^3.6.2",
-    "typescript": "^6.0.3",
-    "zod": "^3.25.76"
+    "typescript": "^6.0.3"
   }
 }

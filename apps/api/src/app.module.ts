@@ -4,8 +4,10 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { PrismaModule } from './common/prisma/prisma.module';
 import { AuthorizationModule } from './common/authorization/authorization.module';
+import { AdminManagementModule } from './modules/admin-management/admin-management.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
+import { PatientManagementModule } from './modules/patient-management/patient-management.module';
 import { RbacModule } from './modules/rbac/rbac.module';
 
 @Module({
@@ -21,6 +23,8 @@ import { RbacModule } from './modules/rbac/rbac.module';
       }),
     }),
     AuthorizationModule,
+    AdminManagementModule,
+    PatientManagementModule,
     AuthModule,
     RbacModule,
     HealthModule,

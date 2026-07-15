@@ -201,6 +201,7 @@ export type UserWhereInput = {
   roles?: Prisma.UserRoleListRelationFilter
   assignedRoles?: Prisma.UserRoleListRelationFilter
   unassignedRoles?: Prisma.UserRoleListRelationFilter
+  patientProfiles?: Prisma.PatientProfileListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -214,6 +215,7 @@ export type UserOrderByWithRelationInput = {
   roles?: Prisma.UserRoleOrderByRelationAggregateInput
   assignedRoles?: Prisma.UserRoleOrderByRelationAggregateInput
   unassignedRoles?: Prisma.UserRoleOrderByRelationAggregateInput
+  patientProfiles?: Prisma.PatientProfileOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -230,6 +232,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   roles?: Prisma.UserRoleListRelationFilter
   assignedRoles?: Prisma.UserRoleListRelationFilter
   unassignedRoles?: Prisma.UserRoleListRelationFilter
+  patientProfiles?: Prisma.PatientProfileListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -269,6 +272,7 @@ export type UserCreateInput = {
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -282,6 +286,7 @@ export type UserUncheckedCreateInput = {
   roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
 }
 
 export type UserUpdateInput = {
@@ -295,6 +300,7 @@ export type UserUpdateInput = {
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -308,6 +314,7 @@ export type UserUncheckedUpdateInput = {
   roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -370,14 +377,14 @@ export type UserMinOrderByAggregateInput = {
   deletedAt?: Prisma.SortOrder
 }
 
-export type UserScalarRelationFilter = {
-  is?: Prisma.UserWhereInput
-  isNot?: Prisma.UserWhereInput
-}
-
 export type UserNullableScalarRelationFilter = {
   is?: Prisma.UserWhereInput | null
   isNot?: Prisma.UserWhereInput | null
+}
+
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -394,6 +401,22 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type UserCreateNestedOneWithoutPatientProfilesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPatientProfilesInput, Prisma.UserUncheckedCreateWithoutPatientProfilesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPatientProfilesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutPatientProfilesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPatientProfilesInput, Prisma.UserUncheckedCreateWithoutPatientProfilesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPatientProfilesInput
+  upsert?: Prisma.UserUpsertWithoutPatientProfilesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPatientProfilesInput, Prisma.UserUpdateWithoutPatientProfilesInput>, Prisma.UserUncheckedUpdateWithoutPatientProfilesInput>
 }
 
 export type UserCreateNestedOneWithoutRolesInput = {
@@ -442,6 +465,74 @@ export type UserUpdateOneWithoutUnassignedRolesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUnassignedRolesInput, Prisma.UserUpdateWithoutUnassignedRolesInput>, Prisma.UserUncheckedUpdateWithoutUnassignedRolesInput>
 }
 
+export type UserCreateWithoutPatientProfilesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+}
+
+export type UserUncheckedCreateWithoutPatientProfilesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+}
+
+export type UserCreateOrConnectWithoutPatientProfilesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPatientProfilesInput, Prisma.UserUncheckedCreateWithoutPatientProfilesInput>
+}
+
+export type UserUpsertWithoutPatientProfilesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPatientProfilesInput, Prisma.UserUncheckedUpdateWithoutPatientProfilesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPatientProfilesInput, Prisma.UserUncheckedCreateWithoutPatientProfilesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPatientProfilesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPatientProfilesInput, Prisma.UserUncheckedUpdateWithoutPatientProfilesInput>
+}
+
+export type UserUpdateWithoutPatientProfilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPatientProfilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+}
+
 export type UserCreateWithoutRolesInput = {
   id?: string
   email: string
@@ -452,6 +543,7 @@ export type UserCreateWithoutRolesInput = {
   deletedAt?: Date | string | null
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
 }
 
 export type UserUncheckedCreateWithoutRolesInput = {
@@ -464,6 +556,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   deletedAt?: Date | string | null
   assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
 }
 
 export type UserCreateOrConnectWithoutRolesInput = {
@@ -481,6 +574,7 @@ export type UserCreateWithoutAssignedRolesInput = {
   deletedAt?: Date | string | null
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
 }
 
 export type UserUncheckedCreateWithoutAssignedRolesInput = {
@@ -493,6 +587,7 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   deletedAt?: Date | string | null
   roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
   unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
 }
 
 export type UserCreateOrConnectWithoutAssignedRolesInput = {
@@ -510,6 +605,7 @@ export type UserCreateWithoutUnassignedRolesInput = {
   deletedAt?: Date | string | null
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
 }
 
 export type UserUncheckedCreateWithoutUnassignedRolesInput = {
@@ -522,6 +618,7 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   deletedAt?: Date | string | null
   roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
 }
 
 export type UserCreateOrConnectWithoutUnassignedRolesInput = {
@@ -550,6 +647,7 @@ export type UserUpdateWithoutRolesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRolesInput = {
@@ -562,6 +660,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
 }
 
 export type UserUpsertWithoutAssignedRolesInput = {
@@ -585,6 +684,7 @@ export type UserUpdateWithoutAssignedRolesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedRolesInput = {
@@ -597,6 +697,7 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
   unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
 }
 
 export type UserUpsertWithoutUnassignedRolesInput = {
@@ -620,6 +721,7 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
@@ -632,6 +734,7 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
 }
 
 
@@ -643,12 +746,14 @@ export type UserCountOutputType = {
   roles: number
   assignedRoles: number
   unassignedRoles: number
+  patientProfiles: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roles?: boolean | UserCountOutputTypeCountRolesArgs
   assignedRoles?: boolean | UserCountOutputTypeCountAssignedRolesArgs
   unassignedRoles?: boolean | UserCountOutputTypeCountUnassignedRolesArgs
+  patientProfiles?: boolean | UserCountOutputTypeCountPatientProfilesArgs
 }
 
 /**
@@ -682,6 +787,13 @@ export type UserCountOutputTypeCountUnassignedRolesArgs<ExtArgs extends runtime.
   where?: Prisma.UserRoleWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPatientProfilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PatientProfileWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -694,6 +806,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   roles?: boolean | Prisma.User$rolesArgs<ExtArgs>
   assignedRoles?: boolean | Prisma.User$assignedRolesArgs<ExtArgs>
   unassignedRoles?: boolean | Prisma.User$unassignedRolesArgs<ExtArgs>
+  patientProfiles?: boolean | Prisma.User$patientProfilesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -732,6 +845,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   roles?: boolean | Prisma.User$rolesArgs<ExtArgs>
   assignedRoles?: boolean | Prisma.User$assignedRolesArgs<ExtArgs>
   unassignedRoles?: boolean | Prisma.User$unassignedRolesArgs<ExtArgs>
+  patientProfiles?: boolean | Prisma.User$patientProfilesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -743,6 +857,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     roles: Prisma.$UserRolePayload<ExtArgs>[]
     assignedRoles: Prisma.$UserRolePayload<ExtArgs>[]
     unassignedRoles: Prisma.$UserRolePayload<ExtArgs>[]
+    patientProfiles: Prisma.$PatientProfilePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1149,6 +1264,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   roles<T extends Prisma.User$rolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedRoles<T extends Prisma.User$assignedRolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedRolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   unassignedRoles<T extends Prisma.User$unassignedRolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$unassignedRolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  patientProfiles<T extends Prisma.User$patientProfilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$patientProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1647,6 +1763,30 @@ export type User$unassignedRolesArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.UserRoleScalarFieldEnum | Prisma.UserRoleScalarFieldEnum[]
+}
+
+/**
+ * User.patientProfiles
+ */
+export type User$patientProfilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PatientProfile
+   */
+  select?: Prisma.PatientProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PatientProfile
+   */
+  omit?: Prisma.PatientProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PatientProfileInclude<ExtArgs> | null
+  where?: Prisma.PatientProfileWhereInput
+  orderBy?: Prisma.PatientProfileOrderByWithRelationInput | Prisma.PatientProfileOrderByWithRelationInput[]
+  cursor?: Prisma.PatientProfileWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PatientProfileScalarFieldEnum | Prisma.PatientProfileScalarFieldEnum[]
 }
 
 /**

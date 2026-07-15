@@ -3,6 +3,8 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { stringify } from 'yaml';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
@@ -23,6 +25,23 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ZodValidationPipe());
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('HMS API')
+    .setDescription('Health Management System API')
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .build();
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, swaggerDocument);
+
+  const httpAdapter = app.getHttpAdapter();
+  const openApiYaml = stringify(swaggerDocument);
+
+  httpAdapter.get('/api/openapi.yaml', (_request: unknown, response: { type: (v: string) => unknown; send: (v: string) => unknown }) => {
+    response.type('application/yaml');
+    response.send(openApiYaml);
+  });
 
   const configService = app.get(ConfigService);
 
