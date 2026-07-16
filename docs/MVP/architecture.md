@@ -5,6 +5,7 @@
 - Deliver MVP quickly without sacrificing production quality.
 - Keep strong module boundaries so the backend can split into services later.
 - Standardize developer workflow with a single monorepo toolchain.
+- Enforce backend-first delivery for clinical modules before frontend integration.
 
 ## 2. Monorepo and Workspace (Mandatory)
 
@@ -90,6 +91,11 @@ Boundary rules:
 
 `apps/web` uses App Router with feature-based folders.
 
+Phase gating (mandatory):
+
+- Clinical module frontend integration starts only after backend readiness gate completion.
+- Backend readiness gate includes stable OpenAPI contracts, RBAC coverage, and passing backend validation pipeline.
+
 Required client data/form stack:
 
 - **TanStack Query** for API data fetching, caching, retries, and mutations.
@@ -106,8 +112,15 @@ Required styling/component stack:
 Integration rules:
 
 - Query keys are feature-scoped and deterministic.
+- `app/layout.tsx` and `app/**/page.tsx` should remain server components by default.
+- Keep interactive logic in `components/client/*`; keep server composition/presentation in `components/server/*`.
 - Server-side auth/role checks guard routes; UI checks are secondary.
+- Use `proxy.ts` (Next.js proxy convention) for protected route boundary checks before route render.
+- Build CASL ability/rules on the server boundary (layout/page) from validated claims/profile payload, run a server-side capability gate, then pass serializable rules into a single client provider at that boundary.
+- Leaf feature components must consume shared `Can`/ability hooks and must not define local CASL providers.
 - Prefer importing form/request schemas from `packages/shared-types`; compose feature-local UI-only refinements only when needed.
+- Generate frontend API clients/hooks from backend OpenAPI contract (`/api/openapi.yaml`) using Orval with `react-query` output.
+- Use axios-based centralized HTTP client/interceptor for auth header injection and 401 handling in frontend API calls.
 - Use shadcn monorepo aliases so app imports UI via workspace package exports.
 - For Tailwind v4, use `@tailwindcss/postcss` plugin and `@import "tailwindcss"` in global CSS.
 

@@ -65,18 +65,18 @@ Role mapping rule:
 
 ### Auth
 
-| Endpoint | Permission | Default Roles |
-| --- | --- | --- |
-| `POST /api/v1/auth/login` | Public | Public |
-| `POST /api/v1/auth/refresh` | Public (valid refresh token required) | Public |
-| `POST /api/v1/auth/logout` | `auth.logout:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PHARMACIST`, `PATIENT` |
+| Endpoint                    | Permission                            | Default Roles                                             |
+| --------------------------- | ------------------------------------- | --------------------------------------------------------- |
+| `POST /api/v1/auth/login`   | Public                                | Public                                                    |
+| `POST /api/v1/auth/refresh` | Public (valid refresh token required) | Public                                                    |
+| `POST /api/v1/auth/logout`  | `auth.logout:own`                     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PHARMACIST`, `PATIENT` |
 
 ### RBAC
 
-| Endpoint | Permission | Default Roles |
-| --- | --- | --- |
-| `GET /api/v1/rbac/roles` | `role.read:any` | `SUPER_ADMIN`, `ADMIN` |
-| `POST /api/v1/rbac/assign-role` | `role.assign:any` | `SUPER_ADMIN`, `ADMIN` |
+| Endpoint                          | Permission          | Default Roles          |
+| --------------------------------- | ------------------- | ---------------------- |
+| `GET /api/v1/rbac/roles`          | `role.read:any`     | `SUPER_ADMIN`, `ADMIN` |
+| `POST /api/v1/rbac/assign-role`   | `role.assign:any`   | `SUPER_ADMIN`, `ADMIN` |
 | `POST /api/v1/rbac/unassign-role` | `role.unassign:any` | `SUPER_ADMIN`, `ADMIN` |
 
 RBAC role list response note:
@@ -86,76 +86,57 @@ RBAC role list response note:
 
 ### Admin/Users
 
-| Endpoint | Permission | Default Roles |
-| --- | --- | --- |
-| `GET /api/v1/users` | `user.read:any` | `SUPER_ADMIN`, `ADMIN` |
-| `POST /api/v1/users` | `user.create:any` | `SUPER_ADMIN`, `ADMIN` |
+| Endpoint                  | Permission        | Default Roles          |
+| ------------------------- | ----------------- | ---------------------- |
+| `GET /api/v1/users`       | `user.read:any`   | `SUPER_ADMIN`, `ADMIN` |
+| `POST /api/v1/users`      | `user.create:any` | `SUPER_ADMIN`, `ADMIN` |
 | `PATCH /api/v1/users/:id` | `user.update:any` | `SUPER_ADMIN`, `ADMIN` |
 
 ### Patient Management
 
-| Endpoint | Permission | Default Roles |
-| --- | --- | --- |
-| `GET /api/v1/patients` | `patient.read:any` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` |
-| `POST /api/v1/patients` | `patient.create:any` | `SUPER_ADMIN`, `ADMIN` |
+| Endpoint                   | Permission                               | Default Roles                                     |
+| -------------------------- | ---------------------------------------- | ------------------------------------------------- |
+| `GET /api/v1/patients`     | `patient.read:any`                       | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`                  |
+| `POST /api/v1/patients`    | `patient.create:any`                     | `SUPER_ADMIN`, `ADMIN`                            |
 | `GET /api/v1/patients/:id` | `patient.read:any` or `patient.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own) |
 
 ### Doctor Management
 
-| Endpoint | Permission | Default Roles |
-| --- | --- | --- |
-| `GET /api/v1/doctors` | `doctor.read:any` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` |
-| `POST /api/v1/doctors` | `doctor.create:any` | `SUPER_ADMIN`, `ADMIN` |
-| `PATCH /api/v1/doctors/:id/schedule` | `doctor.schedule.write:any` or `doctor.schedule.write:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own) |
+| Endpoint                             | Permission                                                 | Default Roles                               |
+| ------------------------------------ | ---------------------------------------------------------- | ------------------------------------------- |
+| `GET /api/v1/doctors`                | `doctor.read:any`                                          | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` |
+| `POST /api/v1/doctors`               | `doctor.create:any`                                        | `SUPER_ADMIN`, `ADMIN`                      |
+| `PATCH /api/v1/doctors/:id/schedule` | `doctor.schedule.write:any` or `doctor.schedule.write:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own)      |
 
 ### Appointment Management
 
-| Endpoint | Permission | Default Roles |
-| --- | --- | --- |
-| `GET /api/v1/appointments` | `appointment.read:any` or `appointment.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own) |
-| `POST /api/v1/appointments` | `appointment.create:any` or `appointment.create:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own) |
-| `PATCH /api/v1/appointments/:id` | `appointment.update:any` or `appointment.update:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own, limited fields) |
-| `POST /api/v1/appointments/:id/cancel` | `appointment.cancel:any` or `appointment.cancel:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own) |
+| Endpoint                               | Permission                                           | Default Roles                                                           |
+| -------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
+| `GET /api/v1/appointments`             | `appointment.read:any` or `appointment.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
+| `POST /api/v1/appointments`            | `appointment.create:any` or `appointment.create:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
+| `PATCH /api/v1/appointments/:id`       | `appointment.update:any` or `appointment.update:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own, limited fields) |
+| `POST /api/v1/appointments/:id/cancel` | `appointment.cancel:any` or `appointment.cancel:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own)                 |
 
 ### Registration Flow
 
-| Endpoint | Permission | Default Roles |
-| --- | --- | --- |
-| `GET /api/v1/registrations` | `registration.read:any` or `registration.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own) |
-| `POST /api/v1/registrations` | `registration.create:any` or `registration.create:own` | `SUPER_ADMIN`, `ADMIN`, `PATIENT` (own) |
+| Endpoint                          | Permission                                             | Default Roles                                           |
+| --------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
+| `GET /api/v1/registrations`       | `registration.read:any` or `registration.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)       |
+| `POST /api/v1/registrations`      | `registration.create:any` or `registration.create:own` | `SUPER_ADMIN`, `ADMIN`, `PATIENT` (own)                 |
 | `PATCH /api/v1/registrations/:id` | `registration.update:any` or `registration.update:own` | `SUPER_ADMIN`, `ADMIN`, `PATIENT` (own, limited fields) |
 
 ### Pharmacy Flow
 
-| Endpoint | Permission | Default Roles |
-| --- | --- | --- |
-| `GET /api/v1/medications` | `medication.read:any` | `SUPER_ADMIN`, `ADMIN`, `PHARMACIST`, `DOCTOR` |
-| `POST /api/v1/prescriptions` | `prescription.write:any` or `prescription.write:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` |
-| `POST /api/v1/dispenses` | `dispense.write:any` | `SUPER_ADMIN`, `ADMIN`, `PHARMACIST` |
+| Endpoint                     | Permission                                           | Default Roles                                  |
+| ---------------------------- | ---------------------------------------------------- | ---------------------------------------------- |
+| `GET /api/v1/medications`    | `medication.read:any`                                | `SUPER_ADMIN`, `ADMIN`, `PHARMACIST`, `DOCTOR` |
+| `POST /api/v1/prescriptions` | `prescription.write:any` or `prescription.write:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`               |
+| `POST /api/v1/dispenses`     | `dispense.write:any`                                 | `SUPER_ADMIN`, `ADMIN`, `PHARMACIST`           |
 
 ### AI Chatbot
 
-| Endpoint | Permission | Default Roles |
-| --- | --- | --- |
-| `POST /api/v1/chat/sessions` | `chat.session.create:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` |
-| `POST /api/v1/chat/sessions/:id/messages` | `chat.message.create:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` |
-| `GET /api/v1/chat/sessions/:id/messages` | `chat.message.read:any` or `chat.message.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own) |
-
-## 6. AI Integration Contract
-
-- HMS API acts as gateway to an existing external production AI chatbot service.
-- External provider credentials and base URL are server-side only (never exposed to client).
-- Gateway maps provider responses into HMS response envelope and normalized safety disclaimers.
-
-## 7. AI Safety Contract
-
-- Include disclaimer text in AI responses.
-- Do not return diagnosis or treatment prescriptions as autonomous advice.
-- Persist prompt/response audit records with actor + timestamp metadata.
-- Store provider metadata (provider request ID, upstream status, latency, model/version when available).
-
-## 8. OpenAPI and Versioning
-
-- Generate OpenAPI from code annotations.
-- Keep `/api/v1` stable; additive changes preferred.
-- Breaking changes require version bump strategy.
+| Endpoint                                  | Permission                                         | Default Roles                                           |
+| ----------------------------------------- | -------------------------------------------------- | ------------------------------------------------------- |
+| `POST /api/v1/chat/sessions`              | `chat.session.create:own`                          | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT`             |
+| `POST /api/v1/chat/sessions/:id/messages` | `chat.message.create:own`                          | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT`             |
+| `GET /api/v1/chat/sessions/:id/messages`  | `chat.message.read:any` or `chat.message.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own) |

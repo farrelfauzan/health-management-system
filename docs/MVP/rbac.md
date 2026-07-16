@@ -7,6 +7,7 @@ This document defines the RBAC model for HMS MVP using IAM-style role assignment
 - Backend: NestJS + CASL in guards/decorators.
 - Frontend: Next.js + CASL for UI and route capability checks.
 - Policy source of truth: backend permissions and ownership rules.
+- Delivery gate: frontend RBAC wiring for clinical modules starts after backend readiness gate is complete.
 
 ## 2. IAM-Style Access Model
 
@@ -136,9 +137,10 @@ findOne(@UUIDParam('id') id: string, @AuthUser() user: CurrentUser) {
 
 ### 5.2 FE Authorization Source
 
-- On login/app bootstrap, fetch current user profile + permissions from backend.
-- Build client ability from backend-provided permission rules.
-- Store ability in context provider; rebuild on auth/role changes.
+- On request render (server boundary), validate token/profile payload and derive permission rules.
+- Build and evaluate CASL ability on server for route-level capability gate before rendering private UI.
+- Pass serializable rules to a client-side ability provider at layout/page or feature-boundary parent.
+- Rebuild boundary ability when auth/role payload changes.
 
 ### 5.3 Ability Builder Example
 
@@ -216,6 +218,7 @@ Notes:
 - This gives better autocomplete and type safety than raw `Can` props.
 - Keep `AppAction` and `AppSubject` in shared FE auth/rbac module (or `packages/shared-types` if reused).
 - Optional: create `AppCan` variants like `AppCanOwn` when ownership data is consistently required.
+- Place provider once per boundary (layout/page/feature-root), never inside leaf form/table/button components.
 
 ### 5.5 Route and Action Guards
 

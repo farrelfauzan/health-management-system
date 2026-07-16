@@ -48,24 +48,82 @@ Phase 2 implementation note:
 - Authorization wiring uses a shared/global module with `APP_GUARD` registration for JWT + permission guards.
 - Include RBAC management endpoints in Phase 2 baseline: role catalog (`GET /rbac/roles`), assign-role, and unassign-role.
 
-## 5. Phase 3 - Core Clinical Modules (12 Tasks)
+## 5. Phase 3 - Core Clinical Backend Modules (Backend-Only, 7 Tasks + Module Subtasks)
 
-Goal: deliver MVP business modules in priority order.
+Goal: deliver all core clinical backend modules and stable APIs before any frontend feature integration.
+
+Phase 3 execution gate (mandatory):
+
+- No new frontend integration tasks are started in this phase.
+- Each module must finish backend layering (`repository` -> `service` -> `controller`), RBAC checks, response envelope, and tests.
+- Frontend planning is allowed, but frontend implementation starts only after `P3-T07` is complete.
 
 1. `P3-T01` Admin management backend module + APIs.
-2. `P3-T02` Admin management frontend screens/forms.
-3. `P3-T03` Patient management backend module + APIs.
-4. `P3-T04` Patient management frontend screens/forms.
-5. `P3-T05` Doctor management backend module + APIs.
-6. `P3-T06` Doctor management frontend screens/forms.
-7. `P3-T07` Appointment management backend module + APIs.
-8. `P3-T08` Appointment management frontend screens/forms.
-9. `P3-T09` Registration flow backend module + APIs.
-10. `P3-T10` Registration flow frontend screens/forms.
-11. `P3-T11` Pharmacy flow backend module + APIs.
-12. `P3-T12` Pharmacy flow frontend screens/forms.
+2. `P3-T02` Patient management backend module + APIs.
+3. `P3-T03` Doctor management backend module + APIs.
+4. `P3-T04` Appointment management backend module + APIs.
+5. `P3-T05` Registration flow backend module + APIs.
+6. `P3-T06` Pharmacy flow backend module + APIs.
+7. `P3-T07` Backend readiness gate for frontend handoff (contracts, tests, API stability checklist).
 
-## 6. Phase 4 - AI Chatbot External Integration (8 Tasks)
+Execution strategy by module:
+
+### 5.1 Admin Management (`P3-T01`)
+
+- `P3-T01.1` Define shared Zod DTO contracts in `packages/shared-types` (list/create/update admin user payloads).
+- `P3-T01.2` Add repository methods for admin/user listing, create, update, role-binding reads.
+- `P3-T01.3` Implement service-layer business rules (status toggles, conflict checks, role constraints).
+- `P3-T01.4` Implement controller endpoints + permission metadata + response envelope.
+- `P3-T01.5` Add backend unit/integration tests for 200/403/404/conflict cases.
+
+### 5.2 Patient Management (`P3-T02`)
+
+- `P3-T02.1` Define shared patient DTO schemas (create/update/search/detail).
+- `P3-T02.2` Implement repository queries with `deletedAt` filtering and pagination.
+- `P3-T02.3` Implement service validation (MRN uniqueness, identity constraints, ownership scope behavior).
+- `P3-T02.4` Implement REST endpoints with permission checks (`patient.read:any|own`, `patient.create:any`, update rules).
+- `P3-T02.5` Add tests for ownership/access combinations and validation errors.
+
+### 5.3 Doctor Management (`P3-T03`)
+
+- `P3-T03.1` Define doctor profile/schedule DTO schemas in shared-types.
+- `P3-T03.2` Implement doctor repository methods (profile CRUD + schedule read/write).
+- `P3-T03.3` Add service rules for schedule overlaps and ownership writes.
+- `P3-T03.4` Implement endpoints and CASL permission checks for schedule operations.
+- `P3-T03.5` Add tests for schedule conflict detection and own-vs-any authorization.
+
+### 5.4 Appointment Management (`P3-T04`)
+
+- `P3-T04.1` Define appointment DTO schemas (create/list/update/cancel).
+- `P3-T04.2` Implement repository queries with status/date filters and ownership constraints.
+- `P3-T04.3` Implement service transaction boundaries for create/update/cancel.
+- `P3-T04.4` Enforce business rules (availability, allowed status transitions, patient-update limits).
+- `P3-T04.5` Add integration tests for transaction integrity and permission matrix.
+
+### 5.5 Registration Flow (`P3-T05`)
+
+- `P3-T05.1` Define registration DTO schemas (create/list/update/status transitions).
+- `P3-T05.2` Implement repository methods with patient/status/time-based filters.
+- `P3-T05.3` Implement service transition rules (pending -> checked_in -> completed/cancelled).
+- `P3-T05.4` Add controller endpoints with ownership checks and limited patient update fields.
+- `P3-T05.5` Add tests for invalid transitions and own-vs-any authorization.
+
+### 5.6 Pharmacy Flow (`P3-T06`)
+
+- `P3-T06.1` Define medication/prescription/dispense DTO schemas in shared-types.
+- `P3-T06.2` Implement repositories for medication reads, prescription writes, and dispense records.
+- `P3-T06.3` Implement transactional dispensing logic and stock mutation safeguards.
+- `P3-T06.4` Enforce permission boundaries (`prescription.write:any|own`, `dispense.write:any`).
+- `P3-T06.5` Add integration tests for stock consistency and authorization matrix.
+
+### 5.7 Backend Readiness Gate (`P3-T07`)
+
+- `P3-T07.1` Verify all Phase 3 module endpoints are documented in OpenAPI with request/response examples.
+- `P3-T07.2` Verify RBAC permission coverage for all Phase 3 endpoints.
+- `P3-T07.3` Run full backend validation pipeline (lint -> typecheck -> unit -> integration -> build).
+- `P3-T07.4` Publish frontend handoff notes (endpoint catalog, payload contracts, pagination/filter conventions).
+
+## 6. Phase 4 - AI Chatbot External Integration (8 Tasks, Backend)
 
 Goal: integrate existing production AI chatbot service through HMS backend gateway.
 
@@ -78,26 +136,97 @@ Goal: integrate existing production AI chatbot service through HMS backend gatew
 7. `P4-T07` Add abuse controls (rate limit, input guards, payload limits).
 8. `P4-T08` Add integration tests with provider mock contract.
 
-## 7. Phase 5 - Hardening and Release Readiness (6 Tasks)
+## 7. Phase 5 - Frontend Integration (Backend-Ready First, 6 Tasks + Module Subtasks)
 
-1. `P5-T01` Finalize OpenAPI coverage and DTO validation consistency.
-2. `P5-T02` Add observability baseline (request IDs, structured logs, audit events).
-3. `P5-T03` Add DB migration review checklist and rollback notes template.
-4. `P5-T04` Add CI checks for Prisma migrate status and Docker image builds.
-5. `P5-T05` Run end-to-end regression pass for MVP flows.
-6. `P5-T06` Publish release readiness checklist and deployment runbook.
+Goal: implement frontend features only after backend APIs for MVP modules are stable.
 
-## 8. Task Definition of Done (DoD)
+Frontend start criteria:
+
+- `P3-T07` completed.
+- Contracts for target backend module are stable (OpenAPI exported and shared schema aligned).
+
+1. `P5-T01` Admin management frontend screens/forms.
+2. `P5-T02` Patient management frontend screens/forms.
+3. `P5-T03` Doctor management frontend screens/forms.
+4. `P5-T04` Appointment management frontend screens/forms.
+5. `P5-T05` Registration flow frontend screens/forms.
+6. `P5-T06` Pharmacy flow frontend screens/forms.
+
+Execution strategy by module:
+
+### 7.1 Admin Management (`P5-T01`)
+
+- `P5-T01.1` Build admin list/detail pages with server-side route capability checks and boundary-level CASL provider wiring.
+- `P5-T01.2` Build create/update admin forms using shared Zod schemas.
+- `P5-T01.3` Implement TanStack Query hooks (list/detail/create/update/invalidate).
+- `P5-T01.4` Wire role-select UI from `GET /api/v1/rbac/roles`.
+- `P5-T01.5` Add UI tests for access-guarded actions and mutation error states.
+
+### 7.2 Patient Management (`P5-T02`)
+
+- `P5-T02.1` Build patient table/search/filter UI.
+- `P5-T02.2` Build patient create/edit forms with shared schema validation.
+- `P5-T02.3` Add patient detail page with role-aware sections/actions.
+- `P5-T02.4` Add optimistic/invalidated query flows for create/update.
+- `P5-T02.5` Add UI tests for role-based visibility and form validation.
+
+### 7.3 Doctor Management (`P5-T03`)
+
+- `P5-T03.1` Build doctor directory/listing screens.
+- `P5-T03.2` Build doctor profile and schedule management forms.
+- `P5-T03.3` Implement doctor schedule calendar/time-slot interaction UX.
+- `P5-T03.4` Add guarded actions for doctor-own schedule edits.
+- `P5-T03.5` Add UI tests for conflict feedback and permission-aware controls.
+
+### 7.4 Appointment Management (`P5-T04`)
+
+- `P5-T04.1` Build appointment list/calendar views with filter controls.
+- `P5-T04.2` Build appointment booking and update forms.
+- `P5-T04.3` Implement cancel and reschedule flows with optimistic invalidation.
+- `P5-T04.4` Apply capability checks for patient/doctor/admin action variants.
+- `P5-T04.5` Add UI tests for lifecycle transitions and guarded actions.
+
+### 7.5 Registration Flow (`P5-T05`)
+
+- `P5-T05.1` Build registration queue/list views.
+- `P5-T05.2` Build registration create and status update interactions.
+- `P5-T05.3` Add patient self-service registration pages.
+- `P5-T05.4` Add role-based action gating for admin/doctor/patient flows.
+- `P5-T05.5` Add UI tests for status transitions and constraints.
+
+### 7.6 Pharmacy Flow (`P5-T06`)
+
+- `P5-T06.1` Build medication catalog and prescription creation screens.
+- `P5-T06.2` Build dispense workflow UI for pharmacists.
+- `P5-T06.3` Show prescription lifecycle timeline/status updates.
+- `P5-T06.4` Add role-based controls for doctor vs pharmacist actions.
+- `P5-T06.5` Add UI tests for dispense flow and failure recovery.
+
+## 8. Phase 6 - Hardening and Release Readiness (6 Tasks)
+
+1. `P6-T01` Finalize OpenAPI coverage and DTO validation consistency.
+2. `P6-T02` Add observability baseline (request IDs, structured logs, audit events).
+3. `P6-T03` Add DB migration review checklist and rollback notes template.
+4. `P6-T04` Add CI checks for Prisma migrate status and Docker image builds.
+5. `P6-T05` Run end-to-end regression pass for MVP flows.
+6. `P6-T06` Publish release readiness checklist and deployment runbook.
+
+## 9. Task Definition of Done (DoD)
 
 - Backend tasks: repository + service + controller implemented when applicable.
 - Backend validation: shared request schemas live in `packages/shared-types` and are wrapped with `createZodDto(...)` in API DTO classes.
-- Frontend tasks: TanStack Query + TanStack Form + Zod integration used where applicable, reusing schemas from `packages/shared-types` when contracts overlap.
+- Backend-first gate: Phase 3 frontend implementation is out of scope until `P3-T07` is complete.
+- Frontend tasks (Phase 5): TanStack Query + TanStack Form + Zod integration used where applicable, reusing schemas from `packages/shared-types` when contracts overlap.
+- Frontend route/layout files stay server-rendered by default; interactive logic is isolated to `components/client/*`.
+- Frontend CASL provider is wired at route/layout or feature-boundary parent; leaf components use shared `Can` wrappers only.
+- Frontend API integration is generated/synced from backend OpenAPI YAML via Orval (`react-query` output).
 - Tests added at correct level (unit and/or integration).
 - Documentation/API contract updated when behavior changes.
 - CI passes fully before merge.
 
-## 9. Tooling Compatibility Notes (Latest Stack)
+## 10. Tooling Compatibility Notes (Latest Stack)
 
 - Prisma v7 (`prisma@7.8.0`, `@prisma/client@7.8.0`) requires adapter-based client and explicit `prisma generate`.
 - Tailwind v4 (`tailwindcss@4.3.2`) requires `@tailwindcss/postcss` and `@import "tailwindcss"`.
 - shadcn CLI (`shadcn@4.13.0`) monorepo mode requires `components.json` in both `apps/web` and `packages/ui`.
+- Orval codegen uses backend OpenAPI YAML contract (`/api/openapi.yaml`) and should regenerate typed hooks before frontend integration PRs.

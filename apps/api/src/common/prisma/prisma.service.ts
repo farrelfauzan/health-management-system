@@ -16,11 +16,13 @@ import {
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
+  private readonly disableConnectOnBoot: boolean;
 
-  constructor(configService: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     const connectionString =
       configService.get<string>('DATABASE_URL') ??
       'postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public';
+    const disableConnectOnBoot = configService.get<string>('DISABLE_PRISMA_CONNECT') === 'true';
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
 
@@ -28,6 +30,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       adapter,
       log: [{ emit: 'event', level: 'query' }],
     });
+
+    this.disableConnectOnBoot = disableConnectOnBoot;
 
     this.$on('query' as never, (event: Prisma.QueryEvent) => {
       this.logger.debug(
@@ -37,6 +41,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 
   async onModuleInit(): Promise<void> {
+    if (this.disableConnectOnBoot) {
+      return;
+    }
+
     await this.$connect();
   }
 

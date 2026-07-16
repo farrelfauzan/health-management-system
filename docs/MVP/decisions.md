@@ -90,3 +90,24 @@
 - **Decision:** Use Nest `ConfigService` for runtime env access in providers/services (e.g., Prisma and auth flows) instead of direct `process.env` reads.
 - **Why:** Centralizes configuration handling and aligns with backend convention for validated configuration.
 - **Consequence:** `ConfigModule` remains global, runtime-dependent classes inject `ConfigService`, and env access patterns stay consistent.
+
+## D-014: SSR-First App Router and OpenAPI Codegen Integration
+
+- **Status:** Accepted
+- **Decision:** Keep Next.js App Router route files (`layout.tsx`, `page.tsx`) server-rendered by default, isolate interactive logic in `components/client/*`, and generate frontend API hooks from backend OpenAPI YAML using Orval (`react-query`).
+- **Why:** Improves rendering consistency, keeps server/client boundaries explicit, and prevents frontend/backend contract drift.
+- **Consequence:** Backend must expose stable OpenAPI YAML (`/api/openapi.yaml`), frontend regeneration via Orval becomes part of integration workflow, and UI capability checks stay in client components only.
+
+## D-015: Frontend Authorization Boundary and HTTP Interceptor Strategy
+
+- **Status:** Accepted
+- **Decision:** Evaluate access at server boundary (Next page/layout + `proxy.ts`) and keep a single CASL provider at route/layout or feature-root parent. Use centralized axios client/interceptor for frontend HTTP auth header injection and 401 handling.
+- **Why:** Prevent scattered authorization logic, keep server/client auth boundaries explicit, and avoid duplicated per-feature HTTP auth setup.
+- **Consequence:** Leaf components must consume shared `Can`/ability hooks only; no local provider definitions in leaf UI. Server boundary must derive and check abilities before render and pass serializable rules to the client provider.
+
+## D-016: Backend-First Clinical Delivery Gate
+
+- **Status:** Accepted
+- **Decision:** Deliver all MVP clinical modules backend-first and defer clinical frontend integration until backend readiness gate completion.
+- **Why:** Prevents frontend/backend contract churn, keeps RBAC/policy enforcement complete before UI exposure, and stabilizes API handoff quality.
+- **Consequence:** Phase sequencing requires backend completion for admin/patient/doctor/appointment/registration/pharmacy modules, verified OpenAPI contracts, and passing backend validation pipeline before starting corresponding frontend implementation.
