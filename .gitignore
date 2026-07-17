@@ -36,3 +36,8 @@ packages/**/src/**/*.d.ts
 .DS_Store
 .idea/
 .vscode/
+
+# AI Assistant
+.cursor/
+AGENTS.md
+.claude/
