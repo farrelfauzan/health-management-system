@@ -41,3 +41,4 @@ packages/**/src/**/*.d.ts
 .cursor/
 AGENTS.md
 .claude/
+CLAUDE.md
