@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-
-import { CurrentUser } from '../../../common/auth/current-user.type';
-import { PrismaService } from '../../../common/prisma/prisma.service';
 import {
   CreatePatientRecordPayload,
   ListPatientsParams,
   UpdatePatientRecordPayload,
-} from '../types/patient-management.types';
+} from '@hms/shared-types';
+import { Injectable } from '@nestjs/common';
+
+import { CurrentUser } from '../../../common/auth/current-user.type';
+import { PrismaService } from '../../../common/prisma/prisma.service';
 
 const RELATED_DOCTORS_DETAIL_LIMIT = 20;
 

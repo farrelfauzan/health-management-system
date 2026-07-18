@@ -7,14 +7,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
+import { Actor, PatientRecord } from '@hms/shared-types';
+
 import { CurrentUser } from '../../../common/auth/current-user.type';
-import { Actor } from '../../../common/authorization/actor.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
-import { PatientRecord } from '../types/patient-management.types';
 
 function parseDateOnly(value: string): Date {
   const parts = value.split('-');

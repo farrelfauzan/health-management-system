@@ -1,7 +1,7 @@
+import { ListUsersParams } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
-import { ListUsersParams } from '../types/admin-management.types';
 
 @Injectable()
 export class AdminManagementRepository {

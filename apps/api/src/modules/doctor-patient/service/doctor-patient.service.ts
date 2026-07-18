@@ -1,4 +1,7 @@
 import {
+  Actor,
+  ActivityRecord,
+  AssignmentRecord,
   DoctorPatientActivityEvent,
   DoctorPatientAssignment,
 } from '@hms/shared-types';
@@ -12,12 +15,10 @@ import {
 } from '@nestjs/common';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
-import { Actor } from '../../../common/authorization/actor.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateDoctorPatientAssignmentDto } from '../dto/create-doctor-patient-assignment.dto';
 import { ListDoctorPatientActivityQueryDto } from '../dto/list-doctor-patient-activity-query.dto';
 import { DoctorPatientRepository } from '../repository/doctor-patient.repository';
-import { ActivityRecord, AssignmentRecord } from '../types/doctor-patient.types';
 
 function isUniqueConstraintError(err: unknown): boolean {
   return (

@@ -6,12 +6,17 @@
   "imports": {
     "#admin-management/schemas": "./src/admin-management/schemas.ts",
     "#admin-management/contracts": "./src/admin-management/contracts.ts",
+    "#admin-management/types": "./src/admin-management/types.ts",
     "#patient-management/schemas": "./src/patient-management/schemas.ts",
     "#patient-management/contracts": "./src/patient-management/contracts.ts",
+    "#patient-management/types": "./src/patient-management/types.ts",
     "#doctor-patient/schemas": "./src/doctor-patient/schemas.ts",
     "#doctor-patient/contracts": "./src/doctor-patient/contracts.ts",
+    "#doctor-patient/types": "./src/doctor-patient/types.ts",
     "#auth/schemas": "./src/auth/schemas.ts",
-    "#rbac/schemas": "./src/rbac/schemas.ts"
+    "#auth/types": "./src/auth/types.ts",
+    "#rbac/schemas": "./src/rbac/schemas.ts",
+    "#rbac/types": "./src/rbac/types.ts"
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
