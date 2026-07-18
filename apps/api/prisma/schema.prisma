@@ -17,6 +17,14 @@ enum DoctorPatientActivityAction {
   UNASSIGNED
 }
 
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
 model User {
   id           String    @id @default(uuid()) @db.Uuid
   email        String    @unique
@@ -34,6 +42,7 @@ model User {
   assignedDoctorPatients   DoctorPatient[]         @relation("DoctorPatientAssignedBy")
   unassignedDoctorPatients DoctorPatient[]         @relation("DoctorPatientUnassignedBy")
   doctorPatientActivities  DoctorPatientActivity[] @relation("DoctorPatientActivityActor")
+  createdAppointments      Appointment[]           @relation("AppointmentCreatedBy")
 
   @@map("users")
 }
@@ -51,8 +60,9 @@ model PatientProfile {
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
 
-  ownerUser User?           @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
-  doctors   DoctorPatient[]
+  ownerUser    User?           @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  doctors      DoctorPatient[]
+  appointments Appointment[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -73,9 +83,10 @@ model DoctorProfile {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
 
-  ownerUser User?            @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
-  patients  DoctorPatient[]
-  schedules DoctorSchedule[]
+  ownerUser    User?            @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  patients     DoctorPatient[]
+  schedules    DoctorSchedule[]
+  appointments Appointment[]
 
   @@index([deletedAt])
   @@index([isActive])
@@ -140,6 +151,30 @@ model DoctorPatientActivity {
   @@index([action, occurredAt])
   @@index([occurredAt])
   @@map("doctor_patient_activities")
+}
+
+model Appointment {
+  id          String            @id @default(uuid()) @db.Uuid
+  patientId   String            @map("patient_id") @db.Uuid
+  doctorId    String            @map("doctor_id") @db.Uuid
+  scheduledAt DateTime          @map("scheduled_at")
+  status      AppointmentStatus @default(SCHEDULED)
+  reason      String?
+  notes       String?
+  createdById String?           @map("created_by_id") @db.Uuid
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+  deletedAt   DateTime?         @map("deleted_at")
+
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor    DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  createdBy User?          @relation("AppointmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([doctorId, scheduledAt])
+  @@index([patientId, scheduledAt])
+  @@index([status, scheduledAt])
+  @@index([deletedAt])
+  @@map("appointments")
 }
 
 model Role {
