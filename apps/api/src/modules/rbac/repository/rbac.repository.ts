@@ -20,7 +20,7 @@ export class RbacRepository {
   }
 
   async assignRole(userId: string, roleCode: string, assignedById: string) {
-    const role = await this.prisma.role.findUnique({
+    const role = await this.prisma.findUniqueActive(this.prisma.role, {
       where: { code: roleCode },
       select: { id: true },
     });
@@ -58,7 +58,7 @@ export class RbacRepository {
   }
 
   async unassignRole(userId: string, roleCode: string, unassignedById: string) {
-    const role = await this.prisma.role.findUnique({
+    const role = await this.prisma.findUniqueActive(this.prisma.role, {
       where: { code: roleCode },
       select: { id: true },
     });
@@ -67,7 +67,7 @@ export class RbacRepository {
       throw new NotFoundException('Role not found');
     }
 
-    const userRole = await this.prisma.userRole.findUnique({
+    const userRole = await this.prisma.findUniqueActive(this.prisma.userRole, {
       where: {
         userId_roleId: {
           userId,
@@ -78,11 +78,10 @@ export class RbacRepository {
         id: true,
         userId: true,
         roleId: true,
-        deletedAt: true,
       },
     });
 
-    if (!userRole || userRole.deletedAt) {
+    if (!userRole) {
       throw new NotFoundException('Role assignment not found');
     }
 

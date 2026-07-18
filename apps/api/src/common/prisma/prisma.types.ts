@@ -12,6 +12,10 @@ export type FindUniqueDelegate = {
   findUnique(args?: unknown): Promise<unknown>;
 };
 
+export type CountDelegate = {
+  count(args?: unknown): Promise<number>;
+};
+
 export type UpdateDelegate = {
   update(args: unknown): Promise<unknown>;
 };

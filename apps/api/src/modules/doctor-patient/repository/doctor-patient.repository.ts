@@ -12,10 +12,9 @@ export class DoctorPatientRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findActiveDoctorById(id: string) {
-    return this.prisma.doctorProfile.findFirst({
+    return this.prisma.findFirstActive(this.prisma.doctorProfile, {
       where: {
         id,
-        deletedAt: null,
         isActive: true,
       },
       select: {
@@ -25,10 +24,9 @@ export class DoctorPatientRepository {
   }
 
   async findActivePatientById(id: string) {
-    return this.prisma.patientProfile.findFirst({
+    return this.prisma.findFirstActive(this.prisma.patientProfile, {
       where: {
         id,
-        deletedAt: null,
         isActive: true,
       },
       select: {

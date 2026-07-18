@@ -6,8 +6,13 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { Prisma } from '../../../generated/prisma/client';
 
 const RELATED_PATIENTS_DETAIL_LIMIT = 20;
+const SCHEDULE_ORDER_BY: Prisma.DoctorScheduleOrderByWithRelationInput[] = [
+  { dayOfWeek: 'asc' },
+  { startTime: 'asc' },
+];
 
 @Injectable()
 export class DoctorManagementRepository {
@@ -18,7 +23,6 @@ export class DoctorManagementRepository {
     const skip = (page - 1) * limit;
 
     const where = {
-      deletedAt: null,
       ...(patientId
         ? {
             patients: {
@@ -56,7 +60,7 @@ export class DoctorManagementRepository {
     };
 
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {
-      const doctors = await tx.doctorProfile.findMany({
+      const doctors = await this.prisma.findManyActive(tx.doctorProfile, {
         where,
         skip,
         take: limit,
@@ -76,7 +80,7 @@ export class DoctorManagementRepository {
         },
       });
 
-      const count = await tx.doctorProfile.count({ where });
+      const count = await this.prisma.countActive(tx.doctorProfile, { where });
 
       return [doctors, count] as const;
     });
@@ -90,19 +94,17 @@ export class DoctorManagementRepository {
   }
 
   async findDoctorById(id: string) {
-    return this.prisma.doctorProfile.findFirst({
+    return this.prisma.findUniqueActive(this.prisma.doctorProfile, {
       where: {
         id,
-        deletedAt: null,
       },
     });
   }
 
   async findDoctorDetailById(id: string) {
-    return this.prisma.doctorProfile.findFirst({
+    return this.prisma.findUniqueActive(this.prisma.doctorProfile, {
       where: {
         id,
-        deletedAt: null,
       },
       include: {
         _count: {
@@ -136,17 +138,16 @@ export class DoctorManagementRepository {
           },
         },
         schedules: {
-          orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
+          orderBy: SCHEDULE_ORDER_BY,
         },
       },
     });
   }
 
   async findDoctorByLicenseNumber(licenseNumber: string) {
-    return this.prisma.doctorProfile.findFirst({
+    return this.prisma.findUniqueActive(this.prisma.doctorProfile, {
       where: {
         licenseNumber,
-        deletedAt: null,
       },
       select: {
         id: true,
@@ -155,10 +156,9 @@ export class DoctorManagementRepository {
   }
 
   async findDoctorByOwnerUserId(ownerUserId: string) {
-    return this.prisma.doctorProfile.findFirst({
+    return this.prisma.findUniqueActive(this.prisma.doctorProfile, {
       where: {
         ownerUserId,
-        deletedAt: null,
       },
       select: {
         id: true,
@@ -167,10 +167,9 @@ export class DoctorManagementRepository {
   }
 
   async findActiveUserById(id: string) {
-    return this.prisma.user.findFirst({
+    return this.prisma.findFirstActive(this.prisma.user, {
       where: {
         id,
-        deletedAt: null,
         isActive: true,
       },
       select: {
@@ -180,12 +179,11 @@ export class DoctorManagementRepository {
   }
 
   async findActivePatientsByIds(ids: string[]) {
-    return this.prisma.patientProfile.findMany({
+    return this.prisma.findManyActive(this.prisma.patientProfile, {
       where: {
         id: {
           in: ids,
         },
-        deletedAt: null,
         isActive: true,
       },
       select: {

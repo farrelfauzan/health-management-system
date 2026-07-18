@@ -7,10 +7,9 @@ export class AuthRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findUserByEmail(email: string) {
-    return this.prisma.user.findFirst({
+    return this.prisma.findFirstActive(this.prisma.user, {
       where: {
         email,
-        deletedAt: null,
         isActive: true,
       },
       include: {
@@ -35,10 +34,9 @@ export class AuthRepository {
   }
 
   async findUserById(id: string) {
-    return this.prisma.user.findFirst({
+    return this.prisma.findFirstActive(this.prisma.user, {
       where: {
         id,
-        deletedAt: null,
         isActive: true,
       },
       include: {
