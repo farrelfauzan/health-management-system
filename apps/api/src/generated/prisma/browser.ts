@@ -33,6 +33,11 @@ export type PatientProfile = Prisma.PatientProfileModel
  */
 export type DoctorProfile = Prisma.DoctorProfileModel
 /**
+ * Model DoctorSchedule
+ * 
+ */
+export type DoctorSchedule = Prisma.DoctorScheduleModel
+/**
  * Model DoctorPatient
  * 
  */

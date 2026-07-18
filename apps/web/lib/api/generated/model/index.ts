@@ -9,8 +9,10 @@
 export * from './adminManagementControllerListUsersV1Params';
 export * from './assignRoleDto';
 export * from './createAdminUserDto';
+export * from './createDoctorDto';
 export * from './createDoctorPatientAssignmentDto';
 export * from './createPatientDto';
+export * from './doctorManagementControllerListDoctorsV1Params';
 export * from './doctorPatientControllerListActivityV1Action';
 export * from './doctorPatientControllerListActivityV1Params';
 export * from './loginDto';
@@ -19,4 +21,6 @@ export * from './patientManagementControllerListPatientsV1Params';
 export * from './refreshTokenDto';
 export * from './unassignRoleDto';
 export * from './updateAdminUserDto';
+export * from './updateDoctorScheduleDto';
+export * from './updateDoctorScheduleDtoSchedulesItem';
 export * from './updatePatientDto';
