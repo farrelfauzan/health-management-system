@@ -41,6 +41,8 @@ Examples:
 - `appointment.read:own`
 - `prescription.write:any`
 - `chat.message.create:own`
+- `doctor-patient.assign:any`
+- `doctor-patient.activity.read:any`
 
 Scope rules:
 
@@ -116,6 +118,10 @@ export class AbilityFactory {
 
 - CASL can express ownership conditions.
 - Backend must still enforce ownership at data access level (query filters by `patientId`, `doctorId`, `ownerUserId`, etc.).
+- For doctors, `patient.read:own` means an active `DoctorPatient` assignment exists between the authenticated doctor's profile and the requested patient; it does not mean every patient with a historical appointment.
+- For patients, related-doctor reads must use the same active assignment and expose only fields allowed by the doctor response projection.
+- Assignment/unassignment requires `doctor-patient.assign:any` or `doctor-patient.unassign:any`; being one side of the relationship does not grant mutation permission by default.
+- Assignment activity-log reads require `doctor-patient.activity.read:any`; assignment visibility does not implicitly grant access to the administrative audit log.
 - Never rely on frontend checks for access control.
 
 ### 4.7 Controller Usage Example
@@ -176,6 +182,8 @@ export const APP_SUBJECTS = [
   'Role',
   'Patient',
   'Doctor',
+  'DoctorPatient',
+  'DoctorPatientActivity',
   'Appointment',
   'Registration',
   'Medication',
@@ -305,6 +313,7 @@ DTO/schema contract rule:
 - `SUPER_ADMIN` gets full management permissions.
 - Other roles get least privilege by default.
 - Include RBAC management permissions such as `role.read:any`, `role.assign:any`, and `role.unassign:any` for admin-level workflows.
+- Seed doctor-patient assignment, unassignment, and activity-read permissions for `SUPER_ADMIN` and `ADMIN`; grant doctors `patient.read:own` only for actively assigned patients.
 
 ## 8. Implementation Checklist
 
@@ -317,3 +326,5 @@ DTO/schema contract rule:
 7. Implement frontend ability provider and typed `AppCan` usage.
 8. Implement centralized FE route registry (`APP_ROUTES`) for sidebar RBAC filtering.
 9. Add unit tests for guard/factory and integration tests for 403/200 access scenarios.
+10. Add active doctor-patient assignment conditions to patient read abilities and repository filters.
+11. Add doctor-patient assignment, unassignment, and activity-read permissions to seed data and authorization tests.

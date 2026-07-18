@@ -4,8 +4,9 @@
 
 - Base path: `/api/v1`
 - Style: REST-first, resource-oriented endpoints
-- Content type: `application/json`
+- Content type: `application/json` by default; feature-owned file upload endpoints may use `multipart/form-data`
 - Auth: JWT Bearer token for protected routes
+- S3-backed files: endpoints return only short-lived signed URLs with expiry metadata; permanent object URLs and object keys are never exposed
 
 Response envelope:
 
@@ -92,13 +93,28 @@ RBAC role list response note:
 | `POST /api/v1/users`      | `user.create:any` | `SUPER_ADMIN`, `ADMIN` |
 | `PATCH /api/v1/users/:id` | `user.update:any` | `SUPER_ADMIN`, `ADMIN` |
 
+File-storage contract notes:
+
+- Object storage is infrastructure, not a standalone API resource. There are no generic S3 or profile-picture endpoints.
+- A domain module that owns a file adds the upload/delete workflow to its own endpoint and injects the common object-storage provider into its service.
+- Feature services persist private object keys internally. API responses must never expose those keys or permanent S3 URLs.
+- Every S3-backed URL returned by any endpoint must be a short-lived signed URL accompanied by `expiresAt`; clients must not persist it.
+- Upload validation, authorization, replacement, and cleanup rules belong to the owning domain service.
+
 ### Patient Management
 
 | Endpoint                   | Permission                               | Default Roles                                     |
 | -------------------------- | ---------------------------------------- | ------------------------------------------------- |
-| `GET /api/v1/patients`     | `patient.read:any`                       | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`                  |
+| `GET /api/v1/patients`     | `patient.read:any` or `patient.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (assigned)       |
 | `POST /api/v1/patients`    | `patient.create:any`                     | `SUPER_ADMIN`, `ADMIN`                            |
-| `GET /api/v1/patients/:id` | `patient.read:any` or `patient.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own) |
+| `GET /api/v1/patients/:id` | `patient.read:any` or `patient.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (assigned), `PATIENT` (own) |
+
+Patient relation behavior:
+
+- Create payloads may include optional `doctorIds`; creation and initial assignments are atomic.
+- List queries may filter by `doctorId` and return bounded doctor summaries or `doctorCount`, not unbounded nested profiles.
+- Detail responses include active related doctors using an explicit compact response type.
+- Compact doctor items contain only `{ id, fullName, specialty }`; relation collections use their own pagination metadata when they can exceed the configured detail limit.
 
 ### Doctor Management
 
@@ -107,6 +123,31 @@ RBAC role list response note:
 | `GET /api/v1/doctors`                | `doctor.read:any`                                          | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` |
 | `POST /api/v1/doctors`               | `doctor.create:any`                                        | `SUPER_ADMIN`, `ADMIN`                      |
 | `PATCH /api/v1/doctors/:id/schedule` | `doctor.schedule.write:any` or `doctor.schedule.write:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own)      |
+
+Doctor relation behavior:
+
+- Create payloads may include optional `patientIds`; creation and initial assignments are atomic.
+- List queries may filter by `patientId` and return bounded patient summaries or `patientCount`.
+- Detail responses include active related patients only when the caller has permission to view those patient fields.
+- Compact patient items contain only `{ id, medicalRecordNumber, fullName }`; sensitive identity/contact fields require the normal patient-detail permission check.
+
+### Doctor-Patient Assignments
+
+| Endpoint                                         | Permission                                  | Default Roles                     |
+| ------------------------------------------------ | ------------------------------------------- | --------------------------------- |
+| `POST /api/v1/doctor-patient-assignments`        | `doctor-patient.assign:any`                 | `SUPER_ADMIN`, `ADMIN`            |
+| `DELETE /api/v1/doctor-patient-assignments/:id`  | `doctor-patient.unassign:any`               | `SUPER_ADMIN`, `ADMIN`            |
+| `GET /api/v1/doctor-patient-assignments/activity` | `doctor-patient.activity.read:any`         | `SUPER_ADMIN`, `ADMIN`            |
+
+Assignment contract notes:
+
+- Create accepts `{ doctorId, patientId }`, is idempotent for an already-active pair, and returns the active assignment.
+- Delete performs an audited unassignment (`unassignedAt`, `unassignedById`) rather than deleting history.
+- Assign and unassign transactions append immutable `ASSIGNED` or `UNASSIGNED` activity events.
+- The activity endpoint is paginated, supports `doctorId`, `patientId`, `action`, `actorUserId`, `occurredFrom`, and `occurredTo` filters, and returns each event with its assignment, actor, action, and occurrence timestamp.
+- Each assignment lifecycle is retained as a history record. Reassignment creates a new record and never reactivates or overwrites a previously unassigned record.
+- Appointments, registrations, and prescriptions never create or remove the assignment implicitly.
+- Doctor `patient.read:own` is satisfied only by an active assignment to the authenticated doctor's profile.
 
 ### Appointment Management
 

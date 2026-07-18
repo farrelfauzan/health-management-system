@@ -13,7 +13,7 @@
 - One task = one PR when possible.
 - If a task is too large, split into `...-a` and `...-b` subtasks.
 
-## 3. Phase 1 - Foundation and Tooling (10 Tasks)
+## 3. Phase 1 - Foundation and Tooling (11 Tasks)
 
 Goal: monorepo baseline and working local/dev pipeline.
 
@@ -27,6 +27,7 @@ Goal: monorepo baseline and working local/dev pipeline.
 8. `P1-T08` Configure Prisma v7.8.0 in `apps/api` with `prisma.config.ts`, adapter-based client, and initial generate flow.
 9. `P1-T09` Add Docker dev stack (`postgres`, `api`, `web`) with healthchecks and explicit migration command.
 10. `P1-T10` Add GitHub Actions baseline CI (install, lint, typecheck, unit, integration, build).
+11. `P1-T11` Add the common object-storage foundation: typed configuration validation, storage interface, S3 adapter, and isolated adapter tests.
 
 ## 4. Phase 2 - Auth, IAM-Style RBAC, and Security Baseline (8 Tasks)
 
@@ -47,6 +48,23 @@ Phase 2 implementation note:
 - Frontend CASL package wiring (`@casl/ability`, `@casl/react`) starts in Phase 3 UI work, but backend policy remains source of truth.
 - Authorization wiring uses a shared/global module with `APP_GUARD` registration for JWT + permission guards.
 - Include RBAC management endpoints in Phase 2 baseline: role catalog (`GET /rbac/roles`), assign-role, and unassign-role.
+
+### 4.1 S3 Object Storage Provider (`P1-T11`)
+
+- Place the reusable storage contract under `apps/api/src/common/storage/`; keep the AWS SDK implementation in an infrastructure adapter so domain services do not depend directly on S3.
+- Register and export the provider-neutral contract from `StorageModule` so feature services can inject it without importing AWS SDK clients.
+- Define a typed `ObjectStorageService` contract with `upload`, `get`, `getSignedUrl`, and `delete` methods. Use request/response objects instead of long primitive parameter lists.
+- Implement `S3StorageService` with injected `ConfigService`; validate bucket, region, endpoint, credentials/provider chain, signed-URL expiry, maximum upload size, and allowed MIME types at startup.
+- Keep the bucket private. `getSignedUrl` returns a short-lived URL and expiry metadata; signed URLs are never stored in PostgreSQL.
+- Do not add a generic storage controller or standalone S3 endpoints. File APIs and lifecycle rules belong to the domain module that owns the file.
+- Generate opaque object keys on the server; reject caller-supplied keys and never include PII in keys or logs.
+- Feature upload flow: validate domain authorization and file metadata, upload through the injected provider, persist the object key in the feature-owned record, and compensate for partial failures.
+- Feature delete/replacement flow: update feature-owned metadata and delete objects idempotently. A missing S3 object is treated as an already-completed delete.
+- `get` is reserved for trusted backend streaming/use cases; normal web display uses `getSignedUrl` to avoid proxying object bytes through the API.
+- API response mappers resolve stored object keys to signed URLs and include expiry metadata. No endpoint may return an object key, permanent S3 URL, or unsigned bucket URL.
+- Keep controllers transport-only, feature services responsible for workflow orchestration, feature repositories responsible for object-key persistence, and the storage adapter responsible only for object operations.
+- Use explicit TypeScript input/output types, no `any`, one export per file, kebab-case files, verb-prefixed methods, and JSDoc on public classes and methods.
+- Add isolated adapter tests with a mocked S3 client. Each consuming feature adds service and integration tests for authorization, validation, compensation, signed-URL responses, and idempotent cleanup.
 
 ## 5. Phase 3 - Core Clinical Backend Modules (Backend-Only, 7 Tasks + Module Subtasks)
 
@@ -78,19 +96,33 @@ Execution strategy by module:
 
 ### 5.2 Patient Management (`P3-T02`)
 
-- `P3-T02.1` Define shared patient DTO schemas (create/update/search/detail).
-- `P3-T02.2` Implement repository queries with `deletedAt` filtering and pagination.
-- `P3-T02.3` Implement service validation (MRN uniqueness, identity constraints, ownership scope behavior).
-- `P3-T02.4` Implement REST endpoints with permission checks (`patient.read:any|own`, `patient.create:any`, update rules).
-- `P3-T02.5` Add tests for ownership/access combinations and validation errors.
+- `P3-T02.1` Add the focused `DoctorPatient` and append-only `DoctorPatientActivity` schema migration, audit indexes, and partial unique index for active doctor-patient pairs.
+- `P3-T02.2` Define shared patient DTO schemas (create/update/search/detail), including optional initial `doctorIds` and compact related-doctor response types.
+- `P3-T02.3` Implement repository queries with `deletedAt` filtering, pagination, active doctor-assignment filters, relation counts for lists, and explicit related-doctor projections for detail reads.
+- `P3-T02.4` Implement service validation (MRN uniqueness, identity constraints, active doctor IDs, duplicate IDs, and ownership scope behavior). Create the patient and initial `DoctorPatient` rows atomically.
+- `P3-T02.5` Implement REST endpoints with permission checks (`patient.read:any|own`, `patient.create:any`, update rules), plus explicit doctor assignment/unassignment and activity-log operations.
+- `P3-T02.6` Add tests for multi-doctor creation, assigned-doctor access, unassigned-doctor denial, relation filtering, duplicate assignment conflict, retained reassignment history, activity-log authorization/filtering, rollback, and validation errors.
 
 ### 5.3 Doctor Management (`P3-T03`)
 
-- `P3-T03.1` Define doctor profile/schedule DTO schemas in shared-types.
-- `P3-T03.2` Implement doctor repository methods (profile CRUD + schedule read/write).
-- `P3-T03.3` Add service rules for schedule overlaps and ownership writes.
-- `P3-T03.4` Implement endpoints and CASL permission checks for schedule operations.
-- `P3-T03.5` Add tests for schedule conflict detection and own-vs-any authorization.
+- `P3-T03.1` Define doctor profile/schedule DTO schemas in shared-types, including optional initial `patientIds` and compact related-patient response types.
+- `P3-T03.2` Implement doctor repository methods (profile CRUD, schedule read/write, active patient-assignment filters, relation counts for lists, and explicit related-patient projections for detail reads).
+- `P3-T03.3` Add service rules for schedule overlaps, ownership writes, active patient validation, duplicate IDs, and atomic doctor + initial `DoctorPatient` creation.
+- `P3-T03.4` Implement endpoints and CASL permission checks for schedule, patient assignment/unassignment, and assignment activity-log operations.
+- `P3-T03.5` Add tests for schedule conflicts, multi-patient creation, relation filtering, retained assignment history, activity-log reads, rollback, and own-vs-any authorization.
+
+Doctor-patient repository/service behavior:
+
+- Use the explicit `DoctorPatient` junction as the source of truth. Do not infer durable care relationships from appointments, registrations, or prescriptions.
+- Repositories expose query-focused methods for active relation existence, filtered lists, compact relation summaries, detail projections, assignment creation, and audited unassignment.
+- Services validate that both profiles exist and are active, deduplicate relation IDs, enforce authorization, and own transaction boundaries.
+- Create operations accept optional related profile IDs and fail atomically if any ID is missing, inactive, unauthorized, or duplicated.
+- List endpoints avoid loading unbounded nested records; return counts/compact summaries and paginate the primary resource. Detail endpoints may return paginated or bounded active relations.
+- Doctor `patient.read:own` queries must join through an active assignment (`unassignedAt: null`). Admin-level `:any` reads are not relation-limited.
+- Assignment and unassignment are explicit, idempotent service operations with actor/timestamp lifecycle fields. An unassigned row is immutable history, and reassignment creates a new row.
+- The same transaction that creates or unassigns a relationship appends an immutable `DoctorPatientActivity` event; normal application flows never update or delete activity records.
+- The paginated activity log reads these events, supports doctor, patient, action, actor, and date-range filters, and requires `doctor-patient.activity.read:any`.
+- Direct repository access across patient and doctor modules is prohibited.
 
 ### 5.4 Appointment Management (`P3-T04`)
 
@@ -167,16 +199,16 @@ Execution strategy by module:
 - `P5-T02.1` Build patient table/search/filter UI.
 - `P5-T02.2` Build patient create/edit forms with shared schema validation.
 - `P5-T02.3` Add patient detail page with role-aware sections/actions.
-- `P5-T02.4` Add optimistic/invalidated query flows for create/update.
-- `P5-T02.5` Add UI tests for role-based visibility and form validation.
+- `P5-T02.4` Add doctor assignment controls and active related-doctor summaries using generated API hooks.
+- `P5-T02.5` Add optimistic/invalidated query flows for create/update/assignment mutations and UI tests for role-based visibility and validation.
 
 ### 7.3 Doctor Management (`P5-T03`)
 
 - `P5-T03.1` Build doctor directory/listing screens.
 - `P5-T03.2` Build doctor profile and schedule management forms.
 - `P5-T03.3` Implement doctor schedule calendar/time-slot interaction UX.
-- `P5-T03.4` Add guarded actions for doctor-own schedule edits.
-- `P5-T03.5` Add UI tests for conflict feedback and permission-aware controls.
+- `P5-T03.4` Add guarded patient assignment controls and bounded related-patient summaries.
+- `P5-T03.5` Add UI tests for conflict feedback, relation mutations, and permission-aware controls.
 
 ### 7.4 Appointment Management (`P5-T04`)
 
@@ -220,6 +252,9 @@ Execution strategy by module:
 - Frontend route/layout files stay server-rendered by default; interactive logic is isolated to `components/client/*`.
 - Frontend CASL provider is wired at route/layout or feature-boundary parent; leaf components use shared `Can` wrappers only.
 - Frontend API integration is generated/synced from backend OpenAPI YAML via Orval (`react-query` output).
+- Doctor/patient list contracts use bounded relation summaries; detail contracts and assignment mutations are explicit and documented.
+- Storage services remain behind a typed common interface; feature services never import AWS SDK clients directly.
+- S3-backed API URLs are always short-lived signed URLs with expiry metadata; only object keys are persisted.
 - Tests added at correct level (unit and/or integration).
 - Documentation/API contract updated when behavior changes.
 - CI passes fully before merge.
