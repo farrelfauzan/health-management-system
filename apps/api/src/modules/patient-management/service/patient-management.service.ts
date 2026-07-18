@@ -7,30 +7,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
+import { Actor, PatientRecord } from '@hms/shared-types';
+
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
-
-type PermissionScope = 'ANY' | 'OWN';
-
-type PermissionEntry = {
-  action: string;
-  resource: string;
-  scope: PermissionScope;
-};
-
-type Actor = {
-  roles: Array<{
-    role: {
-      permissions: Array<{
-        permission: PermissionEntry;
-      }>;
-    };
-  }>;
-};
 
 function parseDateOnly(value: string): Date {
   const parts = value.split('-');
@@ -83,7 +67,10 @@ export class PatientManagementService {
     const result = await this.patientManagementRepository.listPatients(query, currentUser, readScope.hasAny);
 
     return {
-      items: result.items.map((patient) => this.toPatientResponse(patient)),
+      items: result.items.map((patient) => ({
+        ...this.toPatientResponse(patient),
+        doctorCount: patient._count.doctors,
+      })),
       meta: {
         page: result.page,
         limit: result.limit,
@@ -100,17 +87,24 @@ export class PatientManagementService {
       throw new ForbiddenException('You are not allowed to read this patient');
     }
 
-    const patient = await this.patientManagementRepository.findPatientById(id);
+    const patient = await this.patientManagementRepository.findPatientDetailById(id);
 
     if (!patient) {
       throw new NotFoundException('Patient not found');
     }
 
-    if (!readScope.hasAny && patient.ownerUserId !== currentUser.sub) {
+    if (!readScope.hasAny && !(await this.canReadOwnPatient(patient, currentUser))) {
       throw new ForbiddenException('You are not allowed to read this patient');
     }
 
-    return this.toPatientResponse(patient);
+    return {
+      ...this.toPatientResponse(patient),
+      doctors: patient.doctors.map((assignment) => ({
+        id: assignment.doctor.id,
+        fullName: assignment.doctor.fullName,
+        specialty: assignment.doctor.specialty,
+      })),
+    };
   }
 
   async createPatient(payload: CreatePatientDto, currentUser: CurrentUser) {
@@ -135,6 +129,8 @@ export class PatientManagementService {
       }
     }
 
+    await this.assertAssignableDoctorIds(payload.doctorIds);
+
     const created = await this.patientManagementRepository.createPatient({
       mrn: payload.mrn,
       fullName: payload.fullName,
@@ -143,6 +139,8 @@ export class PatientManagementService {
       address: payload.address,
       ownerUserId: payload.ownerUserId,
       isActive: payload.isActive,
+      doctorIds: payload.doctorIds,
+      actorUserId: currentUser.sub,
     });
 
     return this.toPatientResponse(created);
@@ -192,6 +190,43 @@ export class PatientManagementService {
     return this.toPatientResponse(updated);
   }
 
+  private async canReadOwnPatient(
+    patient: Pick<PatientRecord, 'id' | 'ownerUserId'>,
+    currentUser: CurrentUser,
+  ): Promise<boolean> {
+    if (patient.ownerUserId === currentUser.sub) {
+      return true;
+    }
+
+    return this.patientManagementRepository.hasActiveAssignmentWithDoctorUser(
+      patient.id,
+      currentUser.sub,
+    );
+  }
+
+  private async assertAssignableDoctorIds(doctorIds?: string[]): Promise<void> {
+    if (!doctorIds || doctorIds.length === 0) {
+      return;
+    }
+
+    const uniqueDoctorIds = new Set(doctorIds);
+
+    if (uniqueDoctorIds.size !== doctorIds.length) {
+      throw new BadRequestException('Doctor IDs must be unique');
+    }
+
+    const activeDoctors = await this.patientManagementRepository.findActiveDoctorsByIds(doctorIds);
+
+    if (activeDoctors.length !== doctorIds.length) {
+      const foundDoctorIds = new Set(activeDoctors.map((doctor) => doctor.id));
+      const missingDoctorIds = doctorIds.filter((doctorId) => !foundDoctorIds.has(doctorId));
+
+      throw new BadRequestException(
+        `Doctors not found or inactive: ${missingDoctorIds.join(', ')}`,
+      );
+    }
+  }
+
   private async getActorOrThrow(currentUser: CurrentUser): Promise<Actor> {
     const actor = await this.authRepository.findUserById(currentUser.sub);
 
@@ -222,18 +257,7 @@ export class PatientManagementService {
     };
   }
 
-  private toPatientResponse(patient: {
-    id: string;
-    mrn: string;
-    fullName: string;
-    dateOfBirth: Date;
-    phoneNumber: string;
-    address: string;
-    ownerUserId: string | null;
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-  }) {
+  private toPatientResponse(patient: PatientRecord) {
     return {
       id: patient.id,
       mrn: patient.mrn,

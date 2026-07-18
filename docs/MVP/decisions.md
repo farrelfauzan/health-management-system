@@ -111,3 +111,17 @@
 - **Decision:** Deliver all MVP clinical modules backend-first and defer clinical frontend integration until backend readiness gate completion.
 - **Why:** Prevents frontend/backend contract churn, keeps RBAC/policy enforcement complete before UI exposure, and stabilizes API handoff quality.
 - **Consequence:** Phase sequencing requires backend completion for admin/patient/doctor/appointment/registration/pharmacy modules, verified OpenAPI contracts, and passing backend validation pipeline before starting corresponding frontend implementation.
+
+## D-017: Explicit Doctor-Patient Assignment
+
+- **Status:** Accepted
+- **Decision:** Model the many-to-many care relationship with an explicit `DoctorPatient` junction and append-only `DoctorPatientActivity` events. Retain every assignment lifecycle and do not infer durable assignments from appointments, registrations, or prescriptions.
+- **Why:** A patient can have multiple doctors and a doctor can have multiple patients independently of individual encounters; explicit assignment also supports reliable ownership authorization.
+- **Consequence:** Patient and doctor create services may atomically create initial assignments and activity events, relation mutations are explicit and audited, reassignment creates a new lifecycle record, authorized admins can query a filterable activity log, list responses use bounded summaries/counts, detail queries use explicit projections, and doctor `patient.read:own` checks require an active assignment.
+
+## D-018: Provider-Neutral Object Storage with S3 Adapter
+
+- **Status:** Accepted
+- **Decision:** Define and export a typed object-storage provider in the NestJS common layer, with S3 as its infrastructure adapter. Domain modules inject this provider when their workflows need file storage.
+- **Why:** Keeps AWS SDK concerns out of feature services, supports test doubles and S3-compatible environments, and avoids creating a generic storage API that bypasses domain authorization and lifecycle rules.
+- **Consequence:** The provider offers upload, get, signed-URL, and idempotent delete operations; `ConfigService` supplies validated runtime configuration; each owning module defines its own file endpoints and persists object keys only; every S3-backed URL returned by an API is short-lived and signed, and signed URLs are never persisted.

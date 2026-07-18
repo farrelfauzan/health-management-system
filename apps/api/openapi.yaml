@@ -108,6 +108,181 @@ paths:
         "200":
           description: ""
       tags: *a2
+  /api/v1/patients:
+    get:
+      operationId: PatientManagementController_listPatients_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: &a3
+        - PatientManagement
+    post:
+      operationId: PatientManagementController_createPatient_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePatientDto"
+      responses:
+        "201":
+          description: ""
+      tags: *a3
+  /api/v1/patients/{id}:
+    get:
+      operationId: PatientManagementController_getPatientById_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a3
+    patch:
+      operationId: PatientManagementController_updatePatient_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePatientDto"
+      responses:
+        "200":
+          description: ""
+      tags: *a3
+  /api/v1/doctor-patient-assignments:
+    post:
+      operationId: DoctorPatientController_assignDoctorToPatient_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDoctorPatientAssignmentDto"
+      responses:
+        "201":
+          description: ""
+      tags: &a4
+        - DoctorPatient
+  /api/v1/doctor-patient-assignments/activity:
+    get:
+      operationId: DoctorPatientController_listActivity_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: patientId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: action
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ASSIGNED
+              - UNASSIGNED
+        - name: actorUserId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: occurredFrom
+          required: false
+          in: query
+          schema:
+            format: date-time
+            type: string
+        - name: occurredTo
+          required: false
+          in: query
+          schema:
+            format: date-time
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a4
+  /api/v1/doctor-patient-assignments/{id}:
+    delete:
+      operationId: DoctorPatientController_unassignDoctorFromPatient_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags: *a4
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -115,7 +290,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: &a3
+      tags: &a5
         - Rbac
   /api/v1/rbac/assign-role:
     post:
@@ -130,7 +305,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a3
+      tags: *a5
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -144,7 +319,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a3
+      tags: *a5
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -233,6 +408,83 @@ components:
           items:
             type: string
             minLength: 1
+    CreatePatientDto:
+      type: object
+      properties:
+        mrn:
+          type: string
+          minLength: 3
+          maxLength: 64
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        dateOfBirth:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        phoneNumber:
+          type: string
+          minLength: 6
+          maxLength: 32
+        address:
+          type: string
+          minLength: 3
+          maxLength: 300
+        ownerUserId:
+          type: string
+          format: uuid
+        isActive:
+          type: boolean
+          default: true
+        doctorIds:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            type: string
+            format: uuid
+      required:
+        - mrn
+        - fullName
+        - dateOfBirth
+        - phoneNumber
+        - address
+    UpdatePatientDto:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        dateOfBirth:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        phoneNumber:
+          type: string
+          minLength: 6
+          maxLength: 32
+        address:
+          type: string
+          minLength: 3
+          maxLength: 300
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+        isActive:
+          type: boolean
+    CreateDoctorPatientAssignmentDto:
+      type: object
+      properties:
+        doctorId:
+          type: string
+          format: uuid
+        patientId:
+          type: string
+          format: uuid
+      required:
+        - doctorId
+        - patientId
     AssignRoleDto:
       type: object
       properties:

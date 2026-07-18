@@ -1,62 +1,78 @@
+import {
+  CreatePatientRecordPayload,
+  ListPatientsParams,
+  UpdatePatientRecordPayload,
+} from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 
-type ListPatientsParams = {
-  page: number;
-  limit: number;
-  search?: string;
-};
-
-type CreatePatientRecordPayload = {
-  mrn: string;
-  fullName: string;
-  dateOfBirth: Date;
-  phoneNumber: string;
-  address: string;
-  ownerUserId?: string;
-  isActive: boolean;
-};
-
-type UpdatePatientRecordPayload = {
-  fullName?: string;
-  dateOfBirth?: Date;
-  phoneNumber?: string;
-  address?: string;
-  ownerUserId?: string | null;
-  isActive?: boolean;
-};
+const RELATED_DOCTORS_DETAIL_LIMIT = 20;
 
 @Injectable()
 export class PatientManagementRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listPatients(params: ListPatientsParams, currentUser: CurrentUser, hasAnyScope: boolean) {
-    const { page, limit, search } = params;
+    const { page, limit, search, doctorId } = params;
     const skip = (page - 1) * limit;
 
     const where = {
       deletedAt: null,
-      ...(hasAnyScope ? {} : { ownerUserId: currentUser.sub }),
-      ...(search
+      ...(doctorId
         ? {
-            OR: [
-              {
-                fullName: {
-                  contains: search,
-                  mode: 'insensitive' as const,
-                },
+            doctors: {
+              some: {
+                doctorId,
+                unassignedAt: null,
               },
-              {
-                mrn: {
-                  contains: search,
-                  mode: 'insensitive' as const,
-                },
-              },
-            ],
+            },
           }
         : {}),
+      AND: [
+        ...(hasAnyScope
+          ? []
+          : [
+              {
+                OR: [
+                  { ownerUserId: currentUser.sub },
+                  {
+                    doctors: {
+                      some: {
+                        unassignedAt: null,
+                        doctor: {
+                          ownerUserId: currentUser.sub,
+                          deletedAt: null,
+                          isActive: true,
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            ]),
+        ...(search
+          ? [
+              {
+                OR: [
+                  {
+                    fullName: {
+                      contains: search,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                  {
+                    mrn: {
+                      contains: search,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                ],
+              },
+            ]
+          : []),
+      ],
     };
 
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {
@@ -66,6 +82,17 @@ export class PatientManagementRepository {
         take: limit,
         orderBy: {
           createdAt: 'desc',
+        },
+        include: {
+          _count: {
+            select: {
+              doctors: {
+                where: {
+                  unassignedAt: null,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -87,6 +114,38 @@ export class PatientManagementRepository {
       where: {
         id,
         deletedAt: null,
+      },
+    });
+  }
+
+  async findPatientDetailById(id: string) {
+    return this.prisma.patientProfile.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+      include: {
+        doctors: {
+          where: {
+            unassignedAt: null,
+            doctor: {
+              deletedAt: null,
+            },
+          },
+          orderBy: {
+            assignedAt: 'desc',
+          },
+          take: RELATED_DOCTORS_DETAIL_LIMIT,
+          select: {
+            doctor: {
+              select: {
+                id: true,
+                fullName: true,
+                specialty: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -116,17 +175,70 @@ export class PatientManagementRepository {
     });
   }
 
-  async createPatient(payload: CreatePatientRecordPayload) {
-    return this.prisma.patientProfile.create({
-      data: {
-        mrn: payload.mrn,
-        fullName: payload.fullName,
-        dateOfBirth: payload.dateOfBirth,
-        phoneNumber: payload.phoneNumber,
-        address: payload.address,
-        ownerUserId: payload.ownerUserId ?? null,
-        isActive: payload.isActive,
+  async findActiveDoctorsByIds(ids: string[]) {
+    return this.prisma.doctorProfile.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        deletedAt: null,
+        isActive: true,
       },
+      select: {
+        id: true,
+      },
+    });
+  }
+
+  async hasActiveAssignmentWithDoctorUser(patientId: string, doctorUserId: string) {
+    const assignmentCount = await this.prisma.doctorPatient.count({
+      where: {
+        patientId,
+        unassignedAt: null,
+        doctor: {
+          ownerUserId: doctorUserId,
+          deletedAt: null,
+          isActive: true,
+        },
+      },
+    });
+
+    return assignmentCount > 0;
+  }
+
+  async createPatient(payload: CreatePatientRecordPayload) {
+    return this.prisma.executeTransaction(async (tx) => {
+      const patient = await tx.patientProfile.create({
+        data: {
+          mrn: payload.mrn,
+          fullName: payload.fullName,
+          dateOfBirth: payload.dateOfBirth,
+          phoneNumber: payload.phoneNumber,
+          address: payload.address,
+          ownerUserId: payload.ownerUserId ?? null,
+          isActive: payload.isActive,
+        },
+      });
+
+      for (const doctorId of payload.doctorIds ?? []) {
+        const assignment = await tx.doctorPatient.create({
+          data: {
+            doctorId,
+            patientId: patient.id,
+            assignedById: payload.actorUserId,
+          },
+        });
+
+        await tx.doctorPatientActivity.create({
+          data: {
+            assignmentId: assignment.id,
+            action: 'ASSIGNED',
+            actorUserId: payload.actorUserId,
+          },
+        });
+      }
+
+      return patient;
     });
   }
 

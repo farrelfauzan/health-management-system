@@ -52,6 +52,9 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('patient.update:own', 'Patient', 'update', 'OWN', 'Update own patient profile'),
     ('doctor.read:any', 'Doctor', 'read', 'ANY', 'Read doctor profiles'),
     ('doctor.create:any', 'Doctor', 'create', 'ANY', 'Create doctor profiles'),
+    ('doctor-patient.assign:any', 'DoctorPatient', 'assign', 'ANY', 'Assign doctors to patients'),
+    ('doctor-patient.unassign:any', 'DoctorPatient', 'unassign', 'ANY', 'Unassign doctor-patient assignments'),
+    ('doctor-patient.activity.read:any', 'DoctorPatientActivity', 'read', 'ANY', 'Read doctor-patient assignment activity log'),
     ('doctor.schedule.write:any', 'DoctorSchedule', 'write', 'ANY', 'Manage all doctor schedules'),
     ('doctor.schedule.write:own', 'DoctorSchedule', 'write', 'OWN', 'Manage own doctor schedule'),
     ('appointment.read:any', 'Appointment', 'read', 'ANY', 'Read all appointments'),
@@ -119,6 +122,9 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'patient.update:any'),
     ('ADMIN', 'doctor.read:any'),
     ('ADMIN', 'doctor.create:any'),
+    ('ADMIN', 'doctor-patient.assign:any'),
+    ('ADMIN', 'doctor-patient.unassign:any'),
+    ('ADMIN', 'doctor-patient.activity.read:any'),
     ('ADMIN', 'doctor.schedule.write:any'),
     ('ADMIN', 'appointment.read:any'),
     ('ADMIN', 'appointment.create:any'),
@@ -134,7 +140,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'chat.message.create:own'),
     ('ADMIN', 'chat.message.read:any'),
     ('DOCTOR', 'auth.logout:own'),
-    ('DOCTOR', 'patient.read:any'),
+    ('DOCTOR', 'patient.read:own'),
     ('DOCTOR', 'doctor.read:any'),
     ('DOCTOR', 'doctor.schedule.write:own'),
     ('DOCTOR', 'appointment.read:own'),
@@ -187,5 +193,12 @@ FROM combined_role_permissions crp
 JOIN "roles" r ON r."code" = crp.role_code
 JOIN "permissions" p ON p."permission_key" = crp.permission_key
 ON CONFLICT ("role_id", "permission_id") DO NOTHING;
+
+DELETE FROM "role_permissions" rp
+USING "roles" r, "permissions" p
+WHERE rp."role_id" = r."id"
+  AND rp."permission_id" = p."id"
+  AND r."code" = 'DOCTOR'
+  AND p."permission_key" = 'patient.read:any';
 
 COMMIT;

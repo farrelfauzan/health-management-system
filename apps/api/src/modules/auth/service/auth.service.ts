@@ -3,14 +3,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
+import { JwtPayload } from '@hms/shared-types';
+
 import { resolveJwtExpiresIn } from '../../../common/auth/jwt-expires.util';
 import { LoginDto } from '../dto/login.dto';
 import { AuthRepository } from '../repository/auth.repository';
-
-type JwtPayload = {
-  sub: string;
-  email: string;
-};
 
 @Injectable()
 export class AuthService {

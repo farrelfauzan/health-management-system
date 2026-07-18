@@ -83,6 +83,11 @@ enum ChatActor {
   SYSTEM
 }
 
+enum DoctorPatientActivityAction {
+  ASSIGNED
+  UNASSIGNED
+}
+
 model User {
   id                   String           @id @default(uuid()) @db.Uuid
   email                String           @unique
@@ -98,6 +103,9 @@ model User {
   createdAppointments  Appointment[]    @relation("AppointmentCreatedBy")
   createdRegistrations Registration[]   @relation("RegistrationCreatedBy")
   dispensedByRecords   DispenseRecord[] @relation("DispensePharmacist")
+  assignedDoctorPatients DoctorPatient[] @relation("DoctorPatientAssignedBy")
+  unassignedDoctorPatients DoctorPatient[] @relation("DoctorPatientUnassignedBy")
+  doctorPatientActivities DoctorPatientActivity[] @relation("DoctorPatientActivityActor")
 
   patientProfile       PatientProfile?
   doctorProfile        DoctorProfile?
@@ -197,6 +205,7 @@ model PatientProfile {
   appointments        Appointment[]
   registrations       Registration[]
   prescriptions       Prescription[]
+  doctors             DoctorPatient[]
 
   @@map("patient_profiles")
 }
@@ -217,8 +226,52 @@ model DoctorProfile {
   schedules            DoctorSchedule[]
   appointments         Appointment[]
   prescriptions        Prescription[]
+  patients             DoctorPatient[]
 
   @@map("doctor_profiles")
+}
+
+model DoctorPatient {
+  id             String         @id @default(uuid()) @db.Uuid
+  doctorId       String         @db.Uuid @map("doctor_id")
+  patientId      String         @db.Uuid @map("patient_id")
+  assignedById   String?        @db.Uuid @map("assigned_by_id")
+  assignedAt     DateTime       @default(now()) @map("assigned_at")
+  unassignedById String?        @db.Uuid @map("unassigned_by_id")
+  unassignedAt   DateTime?      @map("unassigned_at")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  doctor         DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  patient        PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  assignedBy     User?          @relation("DoctorPatientAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+  unassignedBy   User?          @relation("DoctorPatientUnassignedBy", fields: [unassignedById], references: [id], onDelete: SetNull)
+  activities     DoctorPatientActivity[]
+
+  @@index([doctorId, unassignedAt])
+  @@index([patientId, unassignedAt])
+  @@index([assignedById])
+  @@index([unassignedById])
+  @@index([assignedAt])
+  @@index([unassignedAt])
+  @@map("doctor_patients")
+}
+
+model DoctorPatientActivity {
+  id           String                      @id @default(uuid()) @db.Uuid
+  assignmentId String                      @db.Uuid @map("assignment_id")
+  action       DoctorPatientActivityAction
+  actorUserId  String                      @db.Uuid @map("actor_user_id")
+  occurredAt   DateTime                    @default(now()) @map("occurred_at")
+
+  assignment   DoctorPatient               @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
+  actor        User                        @relation("DoctorPatientActivityActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([assignmentId, occurredAt])
+  @@index([actorUserId, occurredAt])
+  @@index([action, occurredAt])
+  @@index([occurredAt])
+  @@map("doctor_patient_activities")
 }
 
 model DoctorSchedule {
@@ -436,6 +489,29 @@ External AI audit requirement:
 - Store provider request/message identifiers and latency/status metadata for traceability.
 - Keep provider credential values out of the database (store only non-secret metadata).
 
+Doctor-patient assignment requirements:
+
+- `DoctorPatient` is the explicit many-to-many assignment between `DoctorProfile` and `PatientProfile`; appointments and prescriptions do not implicitly create this relationship.
+- An assignment is active when `unassignedAt` is `null`. Unassignment records the actor and timestamp instead of deleting audit history.
+- Each `DoctorPatient` row represents one assignment lifecycle. Once unassigned, the row remains immutable history; reassignment creates a new row with a new identifier.
+- `DoctorPatientActivity` is an append-only event log. Assignment and unassignment transactions append `ASSIGNED` and `UNASSIGNED` records respectively; activity rows are never updated or deleted through normal application flows.
+- Actor and assignment foreign keys use `onDelete: Restrict` so retention or purge workflows cannot silently erase audit attribution.
+- Add a partial unique index in migration SQL on `(doctor_id, patient_id) WHERE unassigned_at IS NULL` to prevent duplicate active assignments while allowing reassignment history.
+- Creating a patient may include optional `doctorIds`; creating a doctor may include optional `patientIds`. The service validates all referenced active profiles before writing any record.
+- Profile creation and initial assignments run in one transaction. If any relation is invalid or duplicated, the entire create operation fails.
+- List queries return relation counts or compact summaries and support `doctorId`/`patientId` filters. Detail queries return active related profiles through explicit Prisma `select` projections.
+- Doctor `patient.read:own` access means the requested patient has an active `DoctorPatient` assignment to that doctor's profile. Patient access to related doctors uses the same active-assignment constraint.
+- The assignment activity API reads `DoctorPatientActivity` and exposes paginated events with doctor, patient, actor, action, and date-range filters. Timestamp, action, actor, and assignment indexes support these audit queries.
+
+S3-backed file storage requirements:
+
+- Add object-key fields only to domain records that own files; the common S3 provider does not require a generic storage table.
+- The private object key is the authoritative identifier used for retrieval and deletion. Never persist permanent, unsigned, or signed S3 URLs.
+- Feature services own upload, replacement, and deletion workflows by injecting the common object-storage provider.
+- Every S3-backed URL in an API response is generated as a short-lived signed URL and includes expiry metadata.
+- Replacing a file uploads the new object first, updates the owning record, then deletes the previous object. Failed cleanup is retried asynchronously and must not roll back an already successful domain update.
+- Object keys must be generated by the backend and must not contain email addresses, medical record numbers, names, or other PII.
+
 Prisma v7 config note:
 
 - Keep datasource URL and migration settings in `prisma.config.ts` (project root or API workspace root).
@@ -530,6 +606,7 @@ Unique constraint note:
 
 - For fields that must be reusable after soft delete (example: email/license/MRN), implement **partial unique indexes** in SQL migrations (`WHERE deleted_at IS NULL`).
 - Prisma schema remains the source for model shape, while partial index DDL can be added directly in migration SQL files.
+- Apply the same migration-SQL approach to the active `DoctorPatient` assignment uniqueness constraint (`WHERE unassigned_at IS NULL`).
 
 ## 5. Migration Rules
 
@@ -546,3 +623,6 @@ Use explicit transactions for multi-write flows:
 - Registration intake workflows
 - Prescription + dispense workflows
 - Role assignment/unassignment and permission changes
+- Patient/doctor creation with initial `DoctorPatient` assignments
+- Doctor-patient assignment/unassignment lifecycle updates plus append-only activity records
+- Feature-owned file metadata replacement; S3 operations remain outside database transactions and use compensating cleanup

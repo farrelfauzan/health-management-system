@@ -1,12 +1,7 @@
+import { ListUsersParams } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
-
-type ListUsersParams = {
-  page: number;
-  limit: number;
-  search?: string;
-};
 
 @Injectable()
 export class AdminManagementRepository {

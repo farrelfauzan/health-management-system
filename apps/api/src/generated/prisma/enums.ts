@@ -15,3 +15,11 @@ export const PermissionScope = {
 } as const
 
 export type PermissionScope = (typeof PermissionScope)[keyof typeof PermissionScope]
+
+
+export const DoctorPatientActivityAction = {
+  ASSIGNED: 'ASSIGNED',
+  UNASSIGNED: 'UNASSIGNED'
+} as const
+
+export type DoctorPatientActivityAction = (typeof DoctorPatientActivityAction)[keyof typeof DoctorPatientActivityAction]

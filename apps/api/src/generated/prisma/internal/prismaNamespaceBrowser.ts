@@ -53,6 +53,9 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   PatientProfile: 'PatientProfile',
+  DoctorProfile: 'DoctorProfile',
+  DoctorPatient: 'DoctorPatient',
+  DoctorPatientActivity: 'DoctorPatientActivity',
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
@@ -103,6 +106,47 @@ export const PatientProfileScalarFieldEnum = {
 } as const
 
 export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]
+
+
+export const DoctorProfileScalarFieldEnum = {
+  id: 'id',
+  licenseNumber: 'licenseNumber',
+  fullName: 'fullName',
+  specialty: 'specialty',
+  ownerUserId: 'ownerUserId',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorProfileScalarFieldEnum = (typeof DoctorProfileScalarFieldEnum)[keyof typeof DoctorProfileScalarFieldEnum]
+
+
+export const DoctorPatientScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  patientId: 'patientId',
+  assignedById: 'assignedById',
+  assignedAt: 'assignedAt',
+  unassignedById: 'unassignedById',
+  unassignedAt: 'unassignedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DoctorPatientScalarFieldEnum = (typeof DoctorPatientScalarFieldEnum)[keyof typeof DoctorPatientScalarFieldEnum]
+
+
+export const DoctorPatientActivityScalarFieldEnum = {
+  id: 'id',
+  assignmentId: 'assignmentId',
+  action: 'action',
+  actorUserId: 'actorUserId',
+  occurredAt: 'occurredAt'
+} as const
+
+export type DoctorPatientActivityScalarFieldEnum = (typeof DoctorPatientActivityScalarFieldEnum)[keyof typeof DoctorPatientActivityScalarFieldEnum]
 
 
 export const RoleScalarFieldEnum = {

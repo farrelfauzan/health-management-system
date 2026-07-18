@@ -20,8 +20,11 @@ describe('PatientManagement integration', () => {
   const patientRepositoryMock = {
     listPatients: jest.fn(),
     findPatientById: jest.fn(),
+    findPatientDetailById: jest.fn(),
     findPatientByMrn: jest.fn(),
     findActiveUserById: jest.fn(),
+    findActiveDoctorsByIds: jest.fn(),
+    hasActiveAssignmentWithDoctorUser: jest.fn(),
     createPatient: jest.fn(),
     updatePatient: jest.fn(),
   };
@@ -94,6 +97,21 @@ describe('PatientManagement integration', () => {
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
       updatedAt: new Date('2026-01-01T00:00:00.000Z'),
     });
+    patientRepositoryMock.findPatientDetailById.mockResolvedValue({
+      id: 'f746de50-6b45-4351-9bb6-45aeb3f671f9',
+      mrn: 'MRN-OWN-01',
+      fullName: 'Owned Patient',
+      dateOfBirth: new Date('1992-02-02T00:00:00.000Z'),
+      phoneNumber: '999999',
+      address: 'Owner Street',
+      ownerUserId: 'own-user',
+      isActive: true,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      doctors: [],
+    });
+    patientRepositoryMock.hasActiveAssignmentWithDoctorUser.mockResolvedValue(false);
+    patientRepositoryMock.findActiveDoctorsByIds.mockResolvedValue([]);
   });
 
   it('returns 401 when bearer token is missing', async () => {
@@ -214,7 +232,7 @@ describe('PatientManagement integration', () => {
       ],
     });
 
-    patientRepositoryMock.findPatientById.mockResolvedValue({
+    patientRepositoryMock.findPatientDetailById.mockResolvedValue({
       id: 'f746de50-6b45-4351-9bb6-45aeb3f671f9',
       mrn: 'MRN-OTHER-01',
       fullName: 'Other Patient',
@@ -225,6 +243,7 @@ describe('PatientManagement integration', () => {
       isActive: true,
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
       updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      doctors: [],
     });
 
     const response = await request(app.getHttpServer())

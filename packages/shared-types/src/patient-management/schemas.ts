@@ -41,10 +41,13 @@ function isDateNotFuture(value: string): boolean {
   return parsed.getTime() <= todayUtc;
 }
 
+export const MAX_INITIAL_DOCTOR_ASSIGNMENTS = 20;
+
 export const listPatientsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
   search: z.string().trim().min(1).optional(),
+  doctorId: z.string().uuid().optional(),
 });
 
 export const createPatientSchema = z.object({
@@ -57,6 +60,12 @@ export const createPatientSchema = z.object({
   address: z.string().trim().min(3).max(300),
   ownerUserId: z.string().uuid().optional(),
   isActive: z.boolean().optional().default(true),
+  doctorIds: z
+    .array(z.string().uuid())
+    .min(1)
+    .max(MAX_INITIAL_DOCTOR_ASSIGNMENTS)
+    .refine((ids) => new Set(ids).size === ids.length, 'Doctor IDs must be unique')
+    .optional(),
 });
 
 export const updatePatientSchema = z

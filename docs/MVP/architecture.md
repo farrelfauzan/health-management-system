@@ -65,6 +65,16 @@ apps/api/src/modules/<module>/
 |- controller/
 ```
 
+Common storage layout:
+
+```text
+apps/api/src/common/storage/
+|- object-storage.service.ts  # Injectable provider-neutral typed contract
+|- storage.types.ts           # Upload/get/signed-URL/delete input and output types
+|- s3-storage.service.ts      # AWS S3-compatible infrastructure adapter
+|- storage.module.ts          # Provider-token registration and export
+```
+
 Domain modules:
 
 - `auth`, `users`, `admin-management`, `patient-management`, `doctor-management`, `appointment-management`, `registration-flow`, `pharmacy-flow`, `ai-chatbot`.
@@ -86,6 +96,15 @@ Boundary rules:
 - Register authorization guards globally with `APP_GUARD` (JWT first, permissions second) in a shared authorization module.
 - Keep `Auth(...)` decorator metadata-focused (permissions/public route), not guard-instantiation focused.
 - Read runtime env values through Nest `ConfigService`; avoid direct `process.env` reads in providers/services.
+- Keep AWS SDK clients inside the common storage adapter. `StorageModule` exports the object-storage provider so any feature service that owns files can inject the provider-neutral contract.
+- Object storage has no generic controller or standalone upload API. Each feature module owns its file endpoints and orchestrates storage through the injected provider.
+- Keep the object bucket private, persist object keys and durable metadata only, and generate temporary signed URLs on demand.
+- Every API field that represents an S3-backed URL must contain a short-lived signed URL with expiry metadata. Never return object keys, permanent S3 URLs, or unsigned bucket URLs.
+- Validate storage region, bucket, optional S3-compatible endpoint, credential provider, request timeout, signed-URL expiry, object-size limit, and MIME allowlist through typed configuration.
+- Do not log credentials, signed URLs, object bytes, or user PII; log only safe operation identifiers and provider request IDs.
+- Patient and doctor services own many-to-many assignment orchestration; repositories query the explicit `DoctorPatient` junction and never infer assignments from appointments.
+- Doctor `:own` patient access is constrained by an active doctor-patient assignment at repository query level.
+- Doctor-patient assignment history retains every relationship lifecycle, while an append-only activity model records assign/unassign actors and timestamps for permission-protected, filterable audit queries.
 
 ## 4. Frontend (Next.js) Architecture
 
@@ -138,6 +157,8 @@ Versioning rule:
 - Observability: structured logs + request IDs.
 - Data layer: PostgreSQL + Prisma with explicit migrations.
 - AI integration: outbound HTTP client with timeout/retry/circuit-breaker and provider metadata auditing.
+- Object storage: private S3-compatible bucket behind an injectable NestJS common provider with upload, get, signed-URL, and idempotent delete operations; domain modules own all public file workflows.
+- Clinical relationships: explicit `DoctorPatient` junction with retained assignment lifecycles, append-only assignment activities, service-owned transaction boundaries, activity-log reads, and bounded relation projections.
 
 ## 6. Deployment Topology (MVP)
 
@@ -146,3 +167,5 @@ Versioning rule:
 - `web` container
 
 Compose must use healthchecks and explicit migration execution.
+
+S3 is an external managed dependency for production. Local development may use an S3-compatible emulator through configuration, but application code must use the same provider-neutral storage contract in every environment.

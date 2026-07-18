@@ -38,8 +38,11 @@ describe('PatientManagementService', () => {
   const patientManagementRepositoryMock = {
     listPatients: jest.fn(),
     findPatientById: jest.fn(),
+    findPatientDetailById: jest.fn(),
     findPatientByMrn: jest.fn(),
     findActiveUserById: jest.fn(),
+    findActiveDoctorsByIds: jest.fn(),
+    hasActiveAssignmentWithDoctorUser: jest.fn(),
     createPatient: jest.fn(),
     updatePatient: jest.fn(),
   } as unknown as PatientManagementRepository;
@@ -77,6 +80,9 @@ describe('PatientManagementService', () => {
           isActive: true,
           createdAt: new Date('2026-01-01T00:00:00.000Z'),
           updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+          _count: {
+            doctors: 2,
+          },
         },
       ],
       total: 1,
@@ -93,14 +99,15 @@ describe('PatientManagementService', () => {
     );
     expect(result.meta.total).toBe(1);
     expect(result.items[0]?.dateOfBirth).toBe('1990-01-01');
+    expect(result.items[0]?.doctorCount).toBe(2);
   });
 
-  it('denies reading patient detail when only own scope and patient is not owned', async () => {
+  it('denies reading patient detail when only own scope and no ownership or active assignment', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
       buildActor([{ action: 'read', resource: 'Patient', scope: 'OWN' }]),
     );
 
-    (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue({
+    (patientManagementRepositoryMock.findPatientDetailById as jest.Mock).mockResolvedValue({
       id: '3a6d785d-f729-4af2-b415-30f96439dad0',
       mrn: 'MRN-0001',
       fullName: 'John Patient',
@@ -111,11 +118,62 @@ describe('PatientManagementService', () => {
       isActive: true,
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
       updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+      doctors: [],
     });
+    (
+      patientManagementRepositoryMock.hasActiveAssignmentWithDoctorUser as jest.Mock
+    ).mockResolvedValue(false);
 
     await expect(
       service.getPatientById('3a6d785d-f729-4af2-b415-30f96439dad0', currentUser),
     ).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
+  it('allows own-scope doctor to read patient detail through an active assignment', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'read', resource: 'Patient', scope: 'OWN' }]),
+    );
+
+    (patientManagementRepositoryMock.findPatientDetailById as jest.Mock).mockResolvedValue({
+      id: '3a6d785d-f729-4af2-b415-30f96439dad0',
+      mrn: 'MRN-0001',
+      fullName: 'John Patient',
+      dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+      phoneNumber: '12345',
+      address: 'Main Street',
+      ownerUserId: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
+      isActive: true,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+      doctors: [
+        {
+          doctor: {
+            id: '58e9a316-40b2-4f4c-9207-2a58028babc4',
+            fullName: 'Dr. Assigned',
+            specialty: 'Cardiology',
+          },
+        },
+      ],
+    });
+    (
+      patientManagementRepositoryMock.hasActiveAssignmentWithDoctorUser as jest.Mock
+    ).mockResolvedValue(true);
+
+    const result = await service.getPatientById(
+      '3a6d785d-f729-4af2-b415-30f96439dad0',
+      currentUser,
+    );
+
+    expect(
+      patientManagementRepositoryMock.hasActiveAssignmentWithDoctorUser,
+    ).toHaveBeenCalledWith('3a6d785d-f729-4af2-b415-30f96439dad0', currentUser.sub);
+    expect(result.doctors).toEqual([
+      {
+        id: '58e9a316-40b2-4f4c-9207-2a58028babc4',
+        fullName: 'Dr. Assigned',
+        specialty: 'Cardiology',
+      },
+    ]);
   });
 
   it('throws conflict when MRN already exists', async () => {
@@ -169,6 +227,84 @@ describe('PatientManagementService', () => {
         currentUser,
       ),
     ).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
+  it('throws bad request when an initial doctor is missing or inactive', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'create', resource: 'Patient', scope: 'ANY' }]),
+    );
+
+    (patientManagementRepositoryMock.findPatientByMrn as jest.Mock).mockResolvedValue(null);
+    (patientManagementRepositoryMock.findActiveDoctorsByIds as jest.Mock).mockResolvedValue([
+      { id: '58e9a316-40b2-4f4c-9207-2a58028babc4' },
+    ]);
+
+    await expect(
+      service.createPatient(
+        {
+          mrn: 'MRN-0003',
+          fullName: 'Jane Patient',
+          dateOfBirth: '1990-01-01',
+          phoneNumber: '12345',
+          address: 'Main Street',
+          isActive: true,
+          doctorIds: [
+            '58e9a316-40b2-4f4c-9207-2a58028babc4',
+            '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8',
+          ],
+        },
+        currentUser,
+      ),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(patientManagementRepositoryMock.createPatient).not.toHaveBeenCalled();
+  });
+
+  it('creates a patient with initial doctor assignments atomically', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'create', resource: 'Patient', scope: 'ANY' }]),
+    );
+
+    (patientManagementRepositoryMock.findPatientByMrn as jest.Mock).mockResolvedValue(null);
+    (patientManagementRepositoryMock.findActiveDoctorsByIds as jest.Mock).mockResolvedValue([
+      { id: '58e9a316-40b2-4f4c-9207-2a58028babc4' },
+      { id: '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8' },
+    ]);
+    (patientManagementRepositoryMock.createPatient as jest.Mock).mockResolvedValue({
+      id: '3a6d785d-f729-4af2-b415-30f96439dad0',
+      mrn: 'MRN-0003',
+      fullName: 'Jane Patient',
+      dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+      phoneNumber: '12345',
+      address: 'Main Street',
+      ownerUserId: null,
+      isActive: true,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+    });
+
+    const result = await service.createPatient(
+      {
+        mrn: 'MRN-0003',
+        fullName: 'Jane Patient',
+        dateOfBirth: '1990-01-01',
+        phoneNumber: '12345',
+        address: 'Main Street',
+        isActive: true,
+        doctorIds: ['58e9a316-40b2-4f4c-9207-2a58028babc4', '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8'],
+      },
+      currentUser,
+    );
+
+    expect(patientManagementRepositoryMock.createPatient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        doctorIds: [
+          '58e9a316-40b2-4f4c-9207-2a58028babc4',
+          '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8',
+        ],
+        actorUserId: currentUser.sub,
+      }),
+    );
+    expect(result.mrn).toBe('MRN-0003');
   });
 
   it('throws bad request when date value is invalid', async () => {

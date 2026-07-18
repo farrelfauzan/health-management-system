@@ -5,7 +5,9 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
-import { useQuery } from '@tanstack/react-query';
+import {
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -15,16 +17,19 @@ import type {
   QueryKey,
   UndefinedInitialDataOptions,
   UseQueryOptions,
-  UseQueryResult,
+  UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
   AdminManagementControllerListUsersV1Params,
   CreateAdminUserDto,
-  UpdateAdminUserDto,
+  UpdateAdminUserDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
+
+
+
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
@@ -42,451 +47,272 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 export const adminManagementControllerListUsersV1 = (
-  params?: AdminManagementControllerListUsersV1Params,
-  signal?: AbortSignal,
+    params?: AdminManagementControllerListUsersV1Params,
+ signal?: AbortSignal
 ) => {
-  return orvalAxiosMutator<void>({ url: `/api/v1/users`, method: 'GET', params, signal });
-};
 
-export const getAdminManagementControllerListUsersV1QueryKey = (
-  params?: AdminManagementControllerListUsersV1Params,
+
+      return orvalAxiosMutator<void>(
+      {url: `/api/v1/users`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAdminManagementControllerListUsersV1QueryKey = (params?: AdminManagementControllerListUsersV1Params,) => {
+    return [
+    `/api/v1/users`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAdminManagementControllerListUsersV1QueryOptions = <TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError = unknown>(params?: AdminManagementControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError, TData>>, }
 ) => {
-  return [`/api/v1/users`, ...(params ? [params] : [])] as const;
-};
 
-export const getAdminManagementControllerListUsersV1QueryOptions = <
-  TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-  TError = unknown,
->(
-  params?: AdminManagementControllerListUsersV1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getAdminManagementControllerListUsersV1QueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getAdminManagementControllerListUsersV1QueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>
-  > = ({ signal }) => adminManagementControllerListUsersV1(params, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type AdminManagementControllerListUsersV1QueryResult = NonNullable<
-  Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>
->;
-export type AdminManagementControllerListUsersV1QueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>> = ({ signal }) => adminManagementControllerListUsersV1(params, signal);
 
-export function useAdminManagementControllerListUsersV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-  TError = unknown,
->(
-  params: undefined | AdminManagementControllerListUsersV1Params,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminManagementControllerListUsersV1QueryResult = NonNullable<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>>
+export type AdminManagementControllerListUsersV1QueryError = unknown
+
+
+export function useAdminManagementControllerListUsersV1<TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError = unknown>(
+ params: undefined |  AdminManagementControllerListUsersV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
           TError,
           Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useAdminManagementControllerListUsersV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-  TError = unknown,
->(
-  params?: AdminManagementControllerListUsersV1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminManagementControllerListUsersV1<TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError = unknown>(
+ params?: AdminManagementControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
           TError,
           Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useAdminManagementControllerListUsersV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-  TError = unknown,
->(
-  params?: AdminManagementControllerListUsersV1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminManagementControllerListUsersV1<TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError = unknown>(
+ params?: AdminManagementControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useAdminManagementControllerListUsersV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-  TError = unknown,
->(
-  params?: AdminManagementControllerListUsersV1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminManagementControllerListUsersV1QueryOptions(params, options);
+export function useAdminManagementControllerListUsersV1<TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError = unknown>(
+ params?: AdminManagementControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getAdminManagementControllerListUsersV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
 
 export const adminManagementControllerCreateAdminUserV1 = (
-  createAdminUserDto: CreateAdminUserDto,
-  signal?: AbortSignal,
+    createAdminUserDto: CreateAdminUserDto,
+ signal?: AbortSignal
 ) => {
-  return orvalAxiosMutator<void>({
-    url: `/api/v1/users`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: createAdminUserDto,
-    signal,
-  });
-};
 
-export const getAdminManagementControllerCreateAdminUserV1QueryKey = (
-  createAdminUserDto?: CreateAdminUserDto,
+
+      return orvalAxiosMutator<void>(
+      {url: `/api/v1/users`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createAdminUserDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAdminManagementControllerCreateAdminUserV1QueryKey = (createAdminUserDto?: CreateAdminUserDto,) => {
+    return [
+    'POST', `/api/v1/users`, createAdminUserDto
+    ] as const;
+    }
+
+
+export const getAdminManagementControllerCreateAdminUserV1QueryOptions = <TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError = unknown>(createAdminUserDto: CreateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError, TData>>, }
 ) => {
-  return ['POST', `/api/v1/users`, createAdminUserDto] as const;
-};
 
-export const getAdminManagementControllerCreateAdminUserV1QueryOptions = <
-  TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-  TError = unknown,
->(
-  createAdminUserDto: CreateAdminUserDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getAdminManagementControllerCreateAdminUserV1QueryKey(createAdminUserDto);
+  const queryKey =  queryOptions?.queryKey ?? getAdminManagementControllerCreateAdminUserV1QueryKey(createAdminUserDto);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>
-  > = ({ signal }) => adminManagementControllerCreateAdminUserV1(createAdminUserDto, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type AdminManagementControllerCreateAdminUserV1QueryResult = NonNullable<
-  Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>
->;
-export type AdminManagementControllerCreateAdminUserV1QueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>> = ({ signal }) => adminManagementControllerCreateAdminUserV1(createAdminUserDto, signal);
 
-export function useAdminManagementControllerCreateAdminUserV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-  TError = unknown,
->(
-  createAdminUserDto: CreateAdminUserDto,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminManagementControllerCreateAdminUserV1QueryResult = NonNullable<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>>
+export type AdminManagementControllerCreateAdminUserV1QueryError = unknown
+
+
+export function useAdminManagementControllerCreateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError = unknown>(
+ createAdminUserDto: CreateAdminUserDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
           TError,
           Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useAdminManagementControllerCreateAdminUserV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-  TError = unknown,
->(
-  createAdminUserDto: CreateAdminUserDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminManagementControllerCreateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError = unknown>(
+ createAdminUserDto: CreateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
           TError,
           Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useAdminManagementControllerCreateAdminUserV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-  TError = unknown,
->(
-  createAdminUserDto: CreateAdminUserDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminManagementControllerCreateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError = unknown>(
+ createAdminUserDto: CreateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useAdminManagementControllerCreateAdminUserV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-  TError = unknown,
->(
-  createAdminUserDto: CreateAdminUserDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminManagementControllerCreateAdminUserV1QueryOptions(
-    createAdminUserDto,
-    options,
-  );
+export function useAdminManagementControllerCreateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError = unknown>(
+ createAdminUserDto: CreateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getAdminManagementControllerCreateAdminUserV1QueryOptions(createAdminUserDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
 
 export const adminManagementControllerUpdateAdminUserV1 = (
-  id: string,
-  updateAdminUserDto: UpdateAdminUserDto,
-  signal?: AbortSignal,
+    id: string,
+    updateAdminUserDto: UpdateAdminUserDto,
+ signal?: AbortSignal
 ) => {
-  return orvalAxiosMutator<void>({
-    url: `/api/v1/users/${id}`,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    data: updateAdminUserDto,
-    signal,
-  });
-};
 
-export const getAdminManagementControllerUpdateAdminUserV1QueryKey = (
-  id: string,
-  updateAdminUserDto?: UpdateAdminUserDto,
+
+      return orvalAxiosMutator<void>(
+      {url: `/api/v1/users/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateAdminUserDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAdminManagementControllerUpdateAdminUserV1QueryKey = (id: string,
+    updateAdminUserDto?: UpdateAdminUserDto,) => {
+    return [
+    'PATCH', `/api/v1/users/${id}`, updateAdminUserDto
+    ] as const;
+    }
+
+
+export const getAdminManagementControllerUpdateAdminUserV1QueryOptions = <TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError = unknown>(id: string,
+    updateAdminUserDto: UpdateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError, TData>>, }
 ) => {
-  return ['PATCH', `/api/v1/users/${id}`, updateAdminUserDto] as const;
-};
 
-export const getAdminManagementControllerUpdateAdminUserV1QueryOptions = <
-  TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-  TError = unknown,
->(
-  id: string,
-  updateAdminUserDto: UpdateAdminUserDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
+const {query: queryOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getAdminManagementControllerUpdateAdminUserV1QueryKey(id, updateAdminUserDto);
+  const queryKey =  queryOptions?.queryKey ?? getAdminManagementControllerUpdateAdminUserV1QueryKey(id,updateAdminUserDto);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>
-  > = ({ signal }) => adminManagementControllerUpdateAdminUserV1(id, updateAdminUserDto, signal);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type AdminManagementControllerUpdateAdminUserV1QueryResult = NonNullable<
-  Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>
->;
-export type AdminManagementControllerUpdateAdminUserV1QueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>> = ({ signal }) => adminManagementControllerUpdateAdminUserV1(id,updateAdminUserDto, signal);
 
-export function useAdminManagementControllerUpdateAdminUserV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-  TError = unknown,
->(
-  id: string,
-  updateAdminUserDto: UpdateAdminUserDto,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminManagementControllerUpdateAdminUserV1QueryResult = NonNullable<Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>>
+export type AdminManagementControllerUpdateAdminUserV1QueryError = unknown
+
+
+export function useAdminManagementControllerUpdateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError = unknown>(
+ id: string,
+    updateAdminUserDto: UpdateAdminUserDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
           TError,
           Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useAdminManagementControllerUpdateAdminUserV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-  TError = unknown,
->(
-  id: string,
-  updateAdminUserDto: UpdateAdminUserDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminManagementControllerUpdateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError = unknown>(
+ id: string,
+    updateAdminUserDto: UpdateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
           TError,
           Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useAdminManagementControllerUpdateAdminUserV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-  TError = unknown,
->(
-  id: string,
-  updateAdminUserDto: UpdateAdminUserDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminManagementControllerUpdateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError = unknown>(
+ id: string,
+    updateAdminUserDto: UpdateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useAdminManagementControllerUpdateAdminUserV1<
-  TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-  TError = unknown,
->(
-  id: string,
-  updateAdminUserDto: UpdateAdminUserDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminManagementControllerUpdateAdminUserV1QueryOptions(
-    id,
-    updateAdminUserDto,
-    options,
-  );
+export function useAdminManagementControllerUpdateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError = unknown>(
+ id: string,
+    updateAdminUserDto: UpdateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getAdminManagementControllerUpdateAdminUserV1QueryOptions(id,updateAdminUserDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
+
