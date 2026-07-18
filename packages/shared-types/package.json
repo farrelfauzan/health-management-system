@@ -8,6 +8,8 @@
     "#admin-management/contracts": "./src/admin-management/contracts.ts",
     "#patient-management/schemas": "./src/patient-management/schemas.ts",
     "#patient-management/contracts": "./src/patient-management/contracts.ts",
+    "#doctor-patient/schemas": "./src/doctor-patient/schemas.ts",
+    "#doctor-patient/contracts": "./src/doctor-patient/contracts.ts",
     "#auth/schemas": "./src/auth/schemas.ts",
     "#rbac/schemas": "./src/rbac/schemas.ts"
   },

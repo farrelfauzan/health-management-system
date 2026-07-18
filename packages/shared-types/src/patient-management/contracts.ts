@@ -11,6 +11,20 @@ export type PatientProfile = {
   updatedAt: string;
 };
 
+export type PatientRelatedDoctor = {
+  id: string;
+  fullName: string;
+  specialty: string;
+};
+
+export type PatientListItem = PatientProfile & {
+  doctorCount: number;
+};
+
+export type PatientDetail = PatientProfile & {
+  doctors: PatientRelatedDoctor[];
+};
+
 export type PatientsListMeta = {
   page: number;
   limit: number;

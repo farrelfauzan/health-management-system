@@ -169,6 +169,23 @@ export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedStringNullableFilter<$PrismaModel>
 }
 
+export type EnumDoctorPatientActivityActionFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorPatientActivityAction | Prisma.EnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorPatientActivityAction[] | Prisma.ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorPatientActivityAction[] | Prisma.ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorPatientActivityActionFilter<$PrismaModel> | $Enums.DoctorPatientActivityAction
+}
+
+export type EnumDoctorPatientActivityActionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorPatientActivityAction | Prisma.EnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorPatientActivityAction[] | Prisma.ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorPatientActivityAction[] | Prisma.ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorPatientActivityActionWithAggregatesFilter<$PrismaModel> | $Enums.DoctorPatientActivityAction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorPatientActivityActionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorPatientActivityActionFilter<$PrismaModel>
+}
+
 export type StringNullableFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
@@ -397,6 +414,23 @@ export type NestedStringNullableFilter<$PrismaModel = never> = {
   startsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>
   endsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>
   not?: Prisma.NestedStringNullableFilter<$PrismaModel> | string | null
+}
+
+export type NestedEnumDoctorPatientActivityActionFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorPatientActivityAction | Prisma.EnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorPatientActivityAction[] | Prisma.ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorPatientActivityAction[] | Prisma.ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorPatientActivityActionFilter<$PrismaModel> | $Enums.DoctorPatientActivityAction
+}
+
+export type NestedEnumDoctorPatientActivityActionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorPatientActivityAction | Prisma.EnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorPatientActivityAction[] | Prisma.ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorPatientActivityAction[] | Prisma.ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorPatientActivityActionWithAggregatesFilter<$PrismaModel> | $Enums.DoctorPatientActivityAction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorPatientActivityActionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorPatientActivityActionFilter<$PrismaModel>
 }
 
 export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
