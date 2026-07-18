@@ -6,6 +6,7 @@ import { PrismaModule } from './common/prisma/prisma.module';
 import { AuthorizationModule } from './common/authorization/authorization.module';
 import { StorageModule } from './common/storage/storage.module';
 import { AdminManagementModule } from './modules/admin-management/admin-management.module';
+import { AppointmentManagementModule } from './modules/appointment-management/appointment-management.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DoctorManagementModule } from './modules/doctor-management/doctor-management.module';
 import { DoctorPatientModule } from './modules/doctor-patient/doctor-patient.module';
@@ -31,6 +32,7 @@ import { RbacModule } from './modules/rbac/rbac.module';
     PatientManagementModule,
     DoctorManagementModule,
     DoctorPatientModule,
+    AppointmentManagementModule,
     AuthModule,
     RbacModule,
     HealthModule,

@@ -23,3 +23,14 @@ export const DoctorPatientActivityAction = {
 } as const
 
 export type DoctorPatientActivityAction = (typeof DoctorPatientActivityAction)[keyof typeof DoctorPatientActivityAction]
+
+
+export const AppointmentStatus = {
+  SCHEDULED: 'SCHEDULED',
+  CONFIRMED: 'CONFIRMED',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW'
+} as const
+
+export type AppointmentStatus = (typeof AppointmentStatus)[keyof typeof AppointmentStatus]

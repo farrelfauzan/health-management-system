@@ -70,6 +70,11 @@ export type DoctorPatient = Prisma.DoctorPatientModel
  */
 export type DoctorPatientActivity = Prisma.DoctorPatientActivityModel
 /**
+ * Model Appointment
+ * 
+ */
+export type Appointment = Prisma.AppointmentModel
+/**
  * Model Role
  * 
  */
