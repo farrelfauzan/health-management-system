@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import { Prisma, PrismaClient } from '../../generated/prisma/client';
 import {
+  CountDelegate,
   DeleteDelegate,
   DeleteWhere,
   FindFirstDelegate,
@@ -68,10 +69,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     >;
   }
 
-  async findManyActive<TDelegate extends FindManyDelegate>(
-    model: TDelegate,
-    args?: Prisma.Args<TDelegate, 'findMany'>,
-  ): Promise<Prisma.Result<TDelegate, Prisma.Args<TDelegate, 'findMany'>, 'findMany'>> {
+  async findManyActive<
+    TDelegate extends FindManyDelegate,
+    const TArgs extends Prisma.Args<TDelegate, 'findMany'>,
+  >(model: TDelegate, args?: TArgs): Promise<Prisma.Result<TDelegate, TArgs, 'findMany'>> {
     const typedArgs = (args ?? {}) as Record<string, unknown>;
     const where = (typedArgs.where as Record<string, unknown> | undefined) ?? {};
 
@@ -83,15 +84,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       },
     } as Prisma.Args<TDelegate, 'findMany'>;
 
-    return model.findMany(findManyArgs) as Promise<
-      Prisma.Result<TDelegate, Prisma.Args<TDelegate, 'findMany'>, 'findMany'>
-    >;
+    return model.findMany(findManyArgs) as Promise<Prisma.Result<TDelegate, TArgs, 'findMany'>>;
   }
 
-  async findFirstActive<TDelegate extends FindFirstDelegate>(
-    model: TDelegate,
-    args?: Prisma.Args<TDelegate, 'findFirst'>,
-  ): Promise<Prisma.Result<TDelegate, Prisma.Args<TDelegate, 'findFirst'>, 'findFirst'>> {
+  async findFirstActive<
+    TDelegate extends FindFirstDelegate,
+    const TArgs extends Prisma.Args<TDelegate, 'findFirst'>,
+  >(model: TDelegate, args?: TArgs): Promise<Prisma.Result<TDelegate, TArgs, 'findFirst'>> {
     const typedArgs = (args ?? {}) as Record<string, unknown>;
     const where = (typedArgs.where as Record<string, unknown> | undefined) ?? {};
 
@@ -103,15 +102,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       },
     } as Prisma.Args<TDelegate, 'findFirst'>;
 
-    return model.findFirst(findFirstArgs) as Promise<
-      Prisma.Result<TDelegate, Prisma.Args<TDelegate, 'findFirst'>, 'findFirst'>
-    >;
+    return model.findFirst(findFirstArgs) as Promise<Prisma.Result<TDelegate, TArgs, 'findFirst'>>;
   }
 
-  async findUniqueActive<TDelegate extends FindFirstDelegate & FindUniqueDelegate>(
-    model: TDelegate,
-    args: Prisma.Args<TDelegate, 'findUnique'>,
-  ): Promise<Prisma.Result<TDelegate, Prisma.Args<TDelegate, 'findUnique'>, 'findUnique'>> {
+  async findUniqueActive<
+    TDelegate extends FindFirstDelegate & FindUniqueDelegate,
+    const TArgs extends Prisma.Args<TDelegate, 'findUnique'>,
+  >(model: TDelegate, args: TArgs): Promise<Prisma.Result<TDelegate, TArgs, 'findUnique'>> {
     const typedArgs = args as Record<string, unknown>;
     const where = (typedArgs.where as Record<string, unknown> | undefined) ?? {};
 
@@ -124,8 +121,26 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     } as Prisma.Args<TDelegate, 'findFirst'>;
 
     return model.findFirst(findFirstArgs) as Promise<
-      Prisma.Result<TDelegate, Prisma.Args<TDelegate, 'findUnique'>, 'findUnique'>
+      Prisma.Result<TDelegate, TArgs, 'findUnique'>
     >;
+  }
+
+  async countActive<TDelegate extends CountDelegate>(
+    model: TDelegate,
+    args?: Prisma.Args<TDelegate, 'count'>,
+  ): Promise<number> {
+    const typedArgs = (args ?? {}) as Record<string, unknown>;
+    const where = (typedArgs.where as Record<string, unknown> | undefined) ?? {};
+
+    const countArgs = {
+      ...typedArgs,
+      where: {
+        ...where,
+        deletedAt: null,
+      },
+    } as Prisma.Args<TDelegate, 'count'>;
+
+    return model.count(countArgs);
   }
 
   async restore<TDelegate extends UpdateDelegate>(

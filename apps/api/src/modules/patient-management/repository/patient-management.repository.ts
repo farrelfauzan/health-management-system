@@ -19,7 +19,6 @@ export class PatientManagementRepository {
     const skip = (page - 1) * limit;
 
     const where = {
-      deletedAt: null,
       ...(doctorId
         ? {
             doctors: {
@@ -76,7 +75,7 @@ export class PatientManagementRepository {
     };
 
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {
-      const patients = await tx.patientProfile.findMany({
+      const patients = await this.prisma.findManyActive(tx.patientProfile, {
         where,
         skip,
         take: limit,
@@ -96,7 +95,7 @@ export class PatientManagementRepository {
         },
       });
 
-      const count = await tx.patientProfile.count({ where });
+      const count = await this.prisma.countActive(tx.patientProfile, { where });
 
       return [patients, count] as const;
     });
@@ -110,19 +109,17 @@ export class PatientManagementRepository {
   }
 
   async findPatientById(id: string) {
-    return this.prisma.patientProfile.findFirst({
+    return this.prisma.findUniqueActive(this.prisma.patientProfile, {
       where: {
         id,
-        deletedAt: null,
       },
     });
   }
 
   async findPatientDetailById(id: string) {
-    return this.prisma.patientProfile.findFirst({
+    return this.prisma.findUniqueActive(this.prisma.patientProfile, {
       where: {
         id,
-        deletedAt: null,
       },
       include: {
         doctors: {
@@ -151,10 +148,9 @@ export class PatientManagementRepository {
   }
 
   async findPatientByMrn(mrn: string) {
-    return this.prisma.patientProfile.findFirst({
+    return this.prisma.findUniqueActive(this.prisma.patientProfile, {
       where: {
         mrn,
-        deletedAt: null,
       },
       select: {
         id: true,
@@ -163,10 +159,9 @@ export class PatientManagementRepository {
   }
 
   async findActiveUserById(id: string) {
-    return this.prisma.user.findFirst({
+    return this.prisma.findFirstActive(this.prisma.user, {
       where: {
         id,
-        deletedAt: null,
         isActive: true,
       },
       select: {
@@ -176,12 +171,11 @@ export class PatientManagementRepository {
   }
 
   async findActiveDoctorsByIds(ids: string[]) {
-    return this.prisma.doctorProfile.findMany({
+    return this.prisma.findManyActive(this.prisma.doctorProfile, {
       where: {
         id: {
           in: ids,
         },
-        deletedAt: null,
         isActive: true,
       },
       select: {

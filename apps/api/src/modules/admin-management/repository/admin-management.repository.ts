@@ -12,7 +12,6 @@ export class AdminManagementRepository {
     const skip = (page - 1) * limit;
 
     const where = {
-      deletedAt: null,
       ...(search
         ? {
             email: {
@@ -24,7 +23,7 @@ export class AdminManagementRepository {
     };
 
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {
-      const users = await tx.user.findMany({
+      const users = await this.prisma.findManyActive(tx.user, {
         where,
         skip,
         take: limit,
@@ -43,7 +42,7 @@ export class AdminManagementRepository {
         },
       });
 
-      const count = await tx.user.count({ where });
+      const count = await this.prisma.countActive(tx.user, { where });
 
       return [users, count] as const;
     });
@@ -57,10 +56,9 @@ export class AdminManagementRepository {
   }
 
   async findActiveUserById(id: string) {
-    return this.prisma.user.findFirst({
+    return this.prisma.findUniqueActive(this.prisma.user, {
       where: {
         id,
-        deletedAt: null,
       },
       include: {
         roles: {
@@ -76,10 +74,9 @@ export class AdminManagementRepository {
   }
 
   async findActiveUserByEmail(email: string) {
-    return this.prisma.user.findFirst({
+    return this.prisma.findUniqueActive(this.prisma.user, {
       where: {
         email,
-        deletedAt: null,
       },
       select: {
         id: true,
@@ -92,12 +89,11 @@ export class AdminManagementRepository {
       return [];
     }
 
-    return this.prisma.role.findMany({
+    return this.prisma.findManyActive(this.prisma.role, {
       where: {
         code: {
           in: roleCodes,
         },
-        deletedAt: null,
       },
       select: {
         id: true,

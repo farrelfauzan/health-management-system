@@ -11,6 +11,7 @@
 export type * from './models/User'
 export type * from './models/PatientProfile'
 export type * from './models/DoctorProfile'
+export type * from './models/DoctorSchedule'
 export type * from './models/DoctorPatient'
 export type * from './models/DoctorPatientActivity'
 export type * from './models/Role'
