@@ -1,29 +1,11 @@
-import { DoctorPatientActivityAction } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
-
-type ListActivitiesParams = {
-  page: number;
-  limit: number;
-  doctorId?: string;
-  patientId?: string;
-  action?: DoctorPatientActivityAction;
-  actorUserId?: string;
-  occurredFrom?: Date;
-  occurredTo?: Date;
-};
-
-type CreateAssignmentPayload = {
-  doctorId: string;
-  patientId: string;
-  actorUserId: string;
-};
-
-type UnassignAssignmentPayload = {
-  assignmentId: string;
-  actorUserId: string;
-};
+import {
+  CreateAssignmentPayload,
+  ListActivitiesParams,
+  UnassignAssignmentPayload,
+} from '../types/doctor-patient.types';
 
 @Injectable()
 export class DoctorPatientRepository {

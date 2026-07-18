@@ -6,11 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { resolveJwtExpiresIn } from '../../../common/auth/jwt-expires.util';
 import { LoginDto } from '../dto/login.dto';
 import { AuthRepository } from '../repository/auth.repository';
-
-type JwtPayload = {
-  sub: string;
-  email: string;
-};
+import { JwtPayload } from '../types/auth.types';
 
 @Injectable()
 export class AuthService {

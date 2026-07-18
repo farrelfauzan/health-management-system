@@ -2,36 +2,13 @@ import { Injectable } from '@nestjs/common';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import {
+  CreatePatientRecordPayload,
+  ListPatientsParams,
+  UpdatePatientRecordPayload,
+} from '../types/patient-management.types';
 
 const RELATED_DOCTORS_DETAIL_LIMIT = 20;
-
-type ListPatientsParams = {
-  page: number;
-  limit: number;
-  search?: string;
-  doctorId?: string;
-};
-
-type CreatePatientRecordPayload = {
-  mrn: string;
-  fullName: string;
-  dateOfBirth: Date;
-  phoneNumber: string;
-  address: string;
-  ownerUserId?: string;
-  isActive: boolean;
-  doctorIds?: string[];
-  actorUserId: string;
-};
-
-type UpdatePatientRecordPayload = {
-  fullName?: string;
-  dateOfBirth?: Date;
-  phoneNumber?: string;
-  address?: string;
-  ownerUserId?: string | null;
-  isActive?: boolean;
-};
 
 @Injectable()
 export class PatientManagementRepository {

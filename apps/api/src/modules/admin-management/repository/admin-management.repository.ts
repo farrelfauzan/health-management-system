@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
-
-type ListUsersParams = {
-  page: number;
-  limit: number;
-  search?: string;
-};
+import { ListUsersParams } from '../types/admin-management.types';
 
 @Injectable()
 export class AdminManagementRepository {

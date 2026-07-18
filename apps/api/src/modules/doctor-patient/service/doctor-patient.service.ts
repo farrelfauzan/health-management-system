@@ -12,52 +12,12 @@ import {
 } from '@nestjs/common';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { Actor } from '../../../common/authorization/actor.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateDoctorPatientAssignmentDto } from '../dto/create-doctor-patient-assignment.dto';
 import { ListDoctorPatientActivityQueryDto } from '../dto/list-doctor-patient-activity-query.dto';
 import { DoctorPatientRepository } from '../repository/doctor-patient.repository';
-
-type PermissionScope = 'ANY' | 'OWN';
-
-type PermissionEntry = {
-  action: string;
-  resource: string;
-  scope: PermissionScope;
-};
-
-type Actor = {
-  roles: Array<{
-    role: {
-      permissions: Array<{
-        permission: PermissionEntry;
-      }>;
-    };
-  }>;
-};
-
-type AssignmentRecord = {
-  id: string;
-  doctorId: string;
-  patientId: string;
-  assignedById: string | null;
-  assignedAt: Date;
-  unassignedById: string | null;
-  unassignedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-type ActivityRecord = {
-  id: string;
-  assignmentId: string;
-  action: 'ASSIGNED' | 'UNASSIGNED';
-  actorUserId: string;
-  occurredAt: Date;
-  assignment: {
-    doctorId: string;
-    patientId: string;
-  };
-};
+import { ActivityRecord, AssignmentRecord } from '../types/doctor-patient.types';
 
 function isUniqueConstraintError(err: unknown): boolean {
   return (

@@ -1,4 +1,5 @@
 export * from './ability.factory';
+export * from './actor.types';
 export * from './authorization.module';
 export * from './auth.decorator';
 export * from './check-permissions.decorator';

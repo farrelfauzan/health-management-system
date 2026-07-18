@@ -8,29 +8,13 @@ import {
 } from '@nestjs/common';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { Actor } from '../../../common/authorization/actor.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
-
-type PermissionScope = 'ANY' | 'OWN';
-
-type PermissionEntry = {
-  action: string;
-  resource: string;
-  scope: PermissionScope;
-};
-
-type Actor = {
-  roles: Array<{
-    role: {
-      permissions: Array<{
-        permission: PermissionEntry;
-      }>;
-    };
-  }>;
-};
+import { PatientRecord } from '../types/patient-management.types';
 
 function parseDateOnly(value: string): Date {
   const parts = value.split('-');
@@ -207,7 +191,7 @@ export class PatientManagementService {
   }
 
   private async canReadOwnPatient(
-    patient: { id: string; ownerUserId: string | null },
+    patient: Pick<PatientRecord, 'id' | 'ownerUserId'>,
     currentUser: CurrentUser,
   ): Promise<boolean> {
     if (patient.ownerUserId === currentUser.sub) {
@@ -273,18 +257,7 @@ export class PatientManagementService {
     };
   }
 
-  private toPatientResponse(patient: {
-    id: string;
-    mrn: string;
-    fullName: string;
-    dateOfBirth: Date;
-    phoneNumber: string;
-    address: string;
-    ownerUserId: string | null;
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-  }) {
+  private toPatientResponse(patient: PatientRecord) {
     return {
       id: patient.id,
       mrn: patient.mrn,
