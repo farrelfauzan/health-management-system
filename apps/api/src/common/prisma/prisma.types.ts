@@ -1,4 +1,9 @@
-import { Prisma } from '../../generated/prisma/client';
+import { Prisma, PrismaClient } from '../../generated/prisma/client';
+
+export type PrismaTransactionClient = Omit<
+  PrismaClient,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$extends'
+>;
 
 export type FindManyDelegate = {
   findMany(args?: unknown): Promise<unknown>;

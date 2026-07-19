@@ -59,6 +59,11 @@ export const ModelName = {
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
   Registration: 'Registration',
+  Medication: 'Medication',
+  Prescription: 'Prescription',
+  PrescriptionMedication: 'PrescriptionMedication',
+  DispenseRecord: 'DispenseRecord',
+  DispenseItem: 'DispenseItem',
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
@@ -199,6 +204,79 @@ export const RegistrationScalarFieldEnum = {
 } as const
 
 export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[keyof typeof RegistrationScalarFieldEnum]
+
+
+export const MedicationScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  form: 'form',
+  strength: 'strength',
+  unit: 'unit',
+  stockQty: 'stockQty',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type MedicationScalarFieldEnum = (typeof MedicationScalarFieldEnum)[keyof typeof MedicationScalarFieldEnum]
+
+
+export const PrescriptionScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  status: 'status',
+  issuedAt: 'issuedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type PrescriptionScalarFieldEnum = (typeof PrescriptionScalarFieldEnum)[keyof typeof PrescriptionScalarFieldEnum]
+
+
+export const PrescriptionMedicationScalarFieldEnum = {
+  id: 'id',
+  prescriptionId: 'prescriptionId',
+  medicationId: 'medicationId',
+  dosage: 'dosage',
+  frequency: 'frequency',
+  durationDays: 'durationDays',
+  quantity: 'quantity',
+  instructions: 'instructions',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrescriptionMedicationScalarFieldEnum = (typeof PrescriptionMedicationScalarFieldEnum)[keyof typeof PrescriptionMedicationScalarFieldEnum]
+
+
+export const DispenseRecordScalarFieldEnum = {
+  id: 'id',
+  prescriptionId: 'prescriptionId',
+  pharmacistId: 'pharmacistId',
+  dispensedAt: 'dispensedAt',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DispenseRecordScalarFieldEnum = (typeof DispenseRecordScalarFieldEnum)[keyof typeof DispenseRecordScalarFieldEnum]
+
+
+export const DispenseItemScalarFieldEnum = {
+  id: 'id',
+  dispenseRecordId: 'dispenseRecordId',
+  medicationId: 'medicationId',
+  quantity: 'quantity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DispenseItemScalarFieldEnum = (typeof DispenseItemScalarFieldEnum)[keyof typeof DispenseItemScalarFieldEnum]
 
 
 export const RoleScalarFieldEnum = {

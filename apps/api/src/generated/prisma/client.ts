@@ -80,6 +80,31 @@ export type Appointment = Prisma.AppointmentModel
  */
 export type Registration = Prisma.RegistrationModel
 /**
+ * Model Medication
+ * 
+ */
+export type Medication = Prisma.MedicationModel
+/**
+ * Model Prescription
+ * 
+ */
+export type Prescription = Prisma.PrescriptionModel
+/**
+ * Model PrescriptionMedication
+ * 
+ */
+export type PrescriptionMedication = Prisma.PrescriptionMedicationModel
+/**
+ * Model DispenseRecord
+ * 
+ */
+export type DispenseRecord = Prisma.DispenseRecordModel
+/**
+ * Model DispenseItem
+ * 
+ */
+export type DispenseItem = Prisma.DispenseItemModel
+/**
  * Model Role
  * 
  */
