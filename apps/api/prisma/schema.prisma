@@ -32,6 +32,19 @@ enum RegistrationStatus {
   CANCELLED
 }
 
+enum PrescriptionStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_DISPENSED
+  DISPENSED
+  CANCELLED
+}
+
+enum DispenseStatus {
+  DISPENSED
+  CANCELLED
+}
+
 model User {
   id           String    @id @default(uuid()) @db.Uuid
   email        String    @unique
@@ -51,6 +64,7 @@ model User {
   doctorPatientActivities  DoctorPatientActivity[] @relation("DoctorPatientActivityActor")
   createdAppointments      Appointment[]           @relation("AppointmentCreatedBy")
   createdRegistrations     Registration[]          @relation("RegistrationCreatedBy")
+  dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
 
   @@map("users")
 }
@@ -72,6 +86,7 @@ model PatientProfile {
   doctors       DoctorPatient[]
   appointments  Appointment[]
   registrations Registration[]
+  prescriptions Prescription[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -92,10 +107,11 @@ model DoctorProfile {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
 
-  ownerUser    User?            @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
-  patients     DoctorPatient[]
-  schedules    DoctorSchedule[]
-  appointments Appointment[]
+  ownerUser     User?            @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  patients      DoctorPatient[]
+  schedules     DoctorSchedule[]
+  appointments  Appointment[]
+  prescriptions Prescription[]
 
   @@index([deletedAt])
   @@index([isActive])
@@ -208,6 +224,105 @@ model Registration {
   @@index([status, registeredAt])
   @@index([deletedAt])
   @@map("registrations")
+}
+
+model Medication {
+  id        String    @id @default(uuid()) @db.Uuid
+  code      String    @unique
+  name      String
+  form      String?
+  strength  String?
+  unit      String?
+  stockQty  Int       @default(0) @map("stock_qty")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  prescriptionItems PrescriptionMedication[]
+  dispenseItems     DispenseItem[]
+
+  @@index([name])
+  @@index([deletedAt])
+  @@map("medications")
+}
+
+model Prescription {
+  id        String             @id @default(uuid()) @db.Uuid
+  patientId String             @map("patient_id") @db.Uuid
+  doctorId  String             @map("doctor_id") @db.Uuid
+  status    PrescriptionStatus @default(DRAFT)
+  issuedAt  DateTime?          @map("issued_at")
+  notes     String?
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+  deletedAt DateTime?          @map("deleted_at")
+
+  patient         PatientProfile           @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor          DoctorProfile            @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  items           PrescriptionMedication[]
+  dispenseRecords DispenseRecord[]
+
+  @@index([patientId, status])
+  @@index([doctorId, status])
+  @@index([deletedAt])
+  @@map("prescriptions")
+}
+
+model PrescriptionMedication {
+  id             String   @id @default(uuid()) @db.Uuid
+  prescriptionId String   @map("prescription_id") @db.Uuid
+  medicationId   String   @map("medication_id") @db.Uuid
+  dosage         String
+  frequency      String
+  durationDays   Int?     @map("duration_days")
+  quantity       Int
+  instructions   String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medication   Medication   @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+
+  @@unique([prescriptionId, medicationId])
+  @@index([prescriptionId])
+  @@index([medicationId])
+  @@map("prescription_medications")
+}
+
+model DispenseRecord {
+  id             String         @id @default(uuid()) @db.Uuid
+  prescriptionId String         @map("prescription_id") @db.Uuid
+  pharmacistId   String         @map("pharmacist_id") @db.Uuid
+  dispensedAt    DateTime       @default(now()) @map("dispensed_at")
+  status         DispenseStatus @default(DISPENSED)
+  notes          String?
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  prescription Prescription   @relation(fields: [prescriptionId], references: [id], onDelete: Restrict)
+  pharmacist   User           @relation("DispensePharmacist", fields: [pharmacistId], references: [id], onDelete: Restrict)
+  items        DispenseItem[]
+
+  @@index([prescriptionId])
+  @@index([pharmacistId])
+  @@index([status, dispensedAt])
+  @@map("dispense_records")
+}
+
+model DispenseItem {
+  id               String   @id @default(uuid()) @db.Uuid
+  dispenseRecordId String   @map("dispense_record_id") @db.Uuid
+  medicationId     String   @map("medication_id") @db.Uuid
+  quantity         Int
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  dispenseRecord DispenseRecord @relation(fields: [dispenseRecordId], references: [id], onDelete: Cascade)
+  medication     Medication     @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+
+  @@unique([dispenseRecordId, medicationId])
+  @@index([medicationId])
+  @@map("dispense_items")
 }
 
 model Role {

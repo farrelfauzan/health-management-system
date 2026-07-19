@@ -44,3 +44,22 @@ export const RegistrationStatus = {
 } as const
 
 export type RegistrationStatus = (typeof RegistrationStatus)[keyof typeof RegistrationStatus]
+
+
+export const PrescriptionStatus = {
+  DRAFT: 'DRAFT',
+  ISSUED: 'ISSUED',
+  PARTIALLY_DISPENSED: 'PARTIALLY_DISPENSED',
+  DISPENSED: 'DISPENSED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PrescriptionStatus = (typeof PrescriptionStatus)[keyof typeof PrescriptionStatus]
+
+
+export const DispenseStatus = {
+  DISPENSED: 'DISPENSED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type DispenseStatus = (typeof DispenseStatus)[keyof typeof DispenseStatus]

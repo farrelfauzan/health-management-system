@@ -12,6 +12,7 @@ import { DoctorManagementModule } from './modules/doctor-management/doctor-manag
 import { DoctorPatientModule } from './modules/doctor-patient/doctor-patient.module';
 import { HealthModule } from './modules/health/health.module';
 import { PatientManagementModule } from './modules/patient-management/patient-management.module';
+import { PharmacyFlowModule } from './modules/pharmacy-flow/pharmacy-flow.module';
 import { RbacModule } from './modules/rbac/rbac.module';
 import { RegistrationFlowModule } from './modules/registration-flow/registration-flow.module';
 
@@ -35,6 +36,7 @@ import { RegistrationFlowModule } from './modules/registration-flow/registration
     DoctorPatientModule,
     AppointmentManagementModule,
     RegistrationFlowModule,
+    PharmacyFlowModule,
     AuthModule,
     RbacModule,
     HealthModule,
