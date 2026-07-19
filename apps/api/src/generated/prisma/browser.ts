@@ -53,6 +53,11 @@ export type DoctorPatientActivity = Prisma.DoctorPatientActivityModel
  */
 export type Appointment = Prisma.AppointmentModel
 /**
+ * Model Registration
+ * 
+ */
+export type Registration = Prisma.RegistrationModel
+/**
  * Model Role
  * 
  */

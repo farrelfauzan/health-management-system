@@ -13,6 +13,7 @@ import { DoctorPatientModule } from './modules/doctor-patient/doctor-patient.mod
 import { HealthModule } from './modules/health/health.module';
 import { PatientManagementModule } from './modules/patient-management/patient-management.module';
 import { RbacModule } from './modules/rbac/rbac.module';
+import { RegistrationFlowModule } from './modules/registration-flow/registration-flow.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { RbacModule } from './modules/rbac/rbac.module';
     DoctorManagementModule,
     DoctorPatientModule,
     AppointmentManagementModule,
+    RegistrationFlowModule,
     AuthModule,
     RbacModule,
     HealthModule,
