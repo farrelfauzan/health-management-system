@@ -21,7 +21,10 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AdminManagementControllerCreateAdminUserV1201,
+  AdminManagementControllerListUsersV1200,
   AdminManagementControllerListUsersV1Params,
+  AdminManagementControllerUpdateAdminUserV1200,
   CreateAdminUserDto,
   UpdateAdminUserDto
 } from '../model';
@@ -46,13 +49,16 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary List admin users
+ */
 export const adminManagementControllerListUsersV1 = (
     params?: AdminManagementControllerListUsersV1Params,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<AdminManagementControllerListUsersV1200>(
       {url: `/api/v1/users`, method: 'GET',
         params, signal
     },
@@ -115,6 +121,9 @@ export function useAdminManagementControllerListUsersV1<TData = Awaited<ReturnTy
  params?: AdminManagementControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List admin users
+ */
 
 export function useAdminManagementControllerListUsersV1<TData = Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError = unknown>(
  params?: AdminManagementControllerListUsersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerListUsersV1>>, TError, TData>>, }
@@ -133,13 +142,16 @@ export function useAdminManagementControllerListUsersV1<TData = Awaited<ReturnTy
 
 
 
+/**
+ * @summary Create an admin user
+ */
 export const adminManagementControllerCreateAdminUserV1 = (
     createAdminUserDto: CreateAdminUserDto,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<AdminManagementControllerCreateAdminUserV1201>(
       {url: `/api/v1/users`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createAdminUserDto, signal
@@ -203,6 +215,9 @@ export function useAdminManagementControllerCreateAdminUserV1<TData = Awaited<Re
  createAdminUserDto: CreateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Create an admin user
+ */
 
 export function useAdminManagementControllerCreateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError = unknown>(
  createAdminUserDto: CreateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerCreateAdminUserV1>>, TError, TData>>, }
@@ -221,6 +236,9 @@ export function useAdminManagementControllerCreateAdminUserV1<TData = Awaited<Re
 
 
 
+/**
+ * @summary Update an admin user
+ */
 export const adminManagementControllerUpdateAdminUserV1 = (
     id: string,
     updateAdminUserDto: UpdateAdminUserDto,
@@ -228,7 +246,7 @@ export const adminManagementControllerUpdateAdminUserV1 = (
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<AdminManagementControllerUpdateAdminUserV1200>(
       {url: `/api/v1/users/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateAdminUserDto, signal
@@ -297,6 +315,9 @@ export function useAdminManagementControllerUpdateAdminUserV1<TData = Awaited<Re
     updateAdminUserDto: UpdateAdminUserDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Update an admin user
+ */
 
 export function useAdminManagementControllerUpdateAdminUserV1<TData = Awaited<ReturnType<typeof adminManagementControllerUpdateAdminUserV1>>, TError = unknown>(
  id: string,

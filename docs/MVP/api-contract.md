@@ -105,9 +105,10 @@ File-storage contract notes:
 
 | Endpoint                   | Permission                               | Default Roles                                     |
 | -------------------------- | ---------------------------------------- | ------------------------------------------------- |
-| `GET /api/v1/patients`     | `patient.read:any` or `patient.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (assigned)       |
+| `GET /api/v1/patients`     | `patient.read:any` or `patient.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (assigned), `PATIENT` (own) |
 | `POST /api/v1/patients`    | `patient.create:any`                     | `SUPER_ADMIN`, `ADMIN`                            |
 | `GET /api/v1/patients/:id` | `patient.read:any` or `patient.read:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (assigned), `PATIENT` (own) |
+| `PATCH /api/v1/patients/:id` | `patient.update:any` or `patient.update:own` | `SUPER_ADMIN`, `ADMIN`, `PATIENT` (own) |
 
 Patient relation behavior:
 
@@ -121,6 +122,7 @@ Patient relation behavior:
 | Endpoint                             | Permission                                                 | Default Roles                               |
 | ------------------------------------ | ---------------------------------------------------------- | ------------------------------------------- |
 | `GET /api/v1/doctors`                | `doctor.read:any`                                          | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` |
+| `GET /api/v1/doctors/:id`            | `doctor.read:any`                                          | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` |
 | `POST /api/v1/doctors`               | `doctor.create:any`                                        | `SUPER_ADMIN`, `ADMIN`                      |
 | `PATCH /api/v1/doctors/:id/schedule` | `doctor.schedule.write:any` or `doctor.schedule.write:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own)      |
 
@@ -154,6 +156,7 @@ Assignment contract notes:
 | Endpoint                               | Permission                                           | Default Roles                                                           |
 | -------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
 | `GET /api/v1/appointments`             | `appointment.read:any` or `appointment.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
+| `GET /api/v1/appointments/:id`         | `appointment.read:any` or `appointment.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
 | `POST /api/v1/appointments`            | `appointment.create:any` or `appointment.create:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
 | `PATCH /api/v1/appointments/:id`       | `appointment.update:any` or `appointment.update:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own, limited fields) |
 | `POST /api/v1/appointments/:id/cancel` | `appointment.cancel:any` or `appointment.cancel:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own)                 |
@@ -163,6 +166,7 @@ Assignment contract notes:
 | Endpoint                          | Permission                                             | Default Roles                                           |
 | --------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
 | `GET /api/v1/registrations`       | `registration.read:any` or `registration.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)       |
+| `GET /api/v1/registrations/:id`   | `registration.read:any` or `registration.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)       |
 | `POST /api/v1/registrations`      | `registration.create:any` or `registration.create:own` | `SUPER_ADMIN`, `ADMIN`, `PATIENT` (own)                 |
 | `PATCH /api/v1/registrations/:id` | `registration.update:any` or `registration.update:own` | `SUPER_ADMIN`, `ADMIN`, `PATIENT` (own, limited fields) |
 

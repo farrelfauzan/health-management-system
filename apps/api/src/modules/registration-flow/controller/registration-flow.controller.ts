@@ -10,15 +10,19 @@ import {
   Query,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
+import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
 import { CreateRegistrationDto } from '../dto/create-registration.dto';
 import { ListRegistrationsQueryDto } from '../dto/list-registrations-query.dto';
 import { UpdateRegistrationDto } from '../dto/update-registration.dto';
 import { RegistrationFlowService } from '../service/registration-flow.service';
 
+@ApiTags('Registration Flow')
 @Controller({
   version: '1',
   path: 'registrations',
@@ -28,6 +32,14 @@ export class RegistrationFlowController {
 
   @Get()
   @Auth([{ action: 'read', subject: 'Registration' }])
+  @ApiEndpoint({
+    summary: 'List registrations',
+    responseDescription: 'A permission-scoped, filtered, paginated registration list.',
+    responseExample: {
+      data: [PHASE_THREE_EXAMPLES.registration.listItem],
+      meta: PHASE_THREE_EXAMPLES.paginationMeta,
+    },
+  })
   async listRegistrations(
     @Query() query: ListRegistrationsQueryDto,
     @AuthUser() currentUser?: CurrentUser,
@@ -46,6 +58,11 @@ export class RegistrationFlowController {
 
   @Get(':id')
   @Auth([{ action: 'read', subject: 'Registration' }])
+  @ApiEndpoint({
+    summary: 'Get a registration',
+    responseDescription: 'The registration visible to the authenticated actor.',
+    responseExample: { data: PHASE_THREE_EXAMPLES.registration.item },
+  })
   async getRegistrationById(
     @Param('id', new ParseUUIDPipe()) id: string,
     @AuthUser() currentUser?: CurrentUser,
@@ -64,6 +81,17 @@ export class RegistrationFlowController {
   @Post()
   @HttpCode(201)
   @Auth([{ action: 'create', subject: 'Registration' }])
+  @ApiEndpoint({
+    summary: 'Create a registration',
+    responseDescription: 'The registration was created.',
+    responseExample: {
+      data: PHASE_THREE_EXAMPLES.registration.item,
+      message: 'Registration created',
+    },
+    requestType: CreateRegistrationDto,
+    requestExample: PHASE_THREE_EXAMPLES.registration.createRequest,
+    successStatus: 201,
+  })
   async createRegistration(
     @Body() payload: CreateRegistrationDto,
     @AuthUser() currentUser?: CurrentUser,
@@ -85,6 +113,20 @@ export class RegistrationFlowController {
 
   @Patch(':id')
   @Auth([{ action: 'update', subject: 'Registration' }])
+  @ApiEndpoint({
+    summary: 'Update a registration',
+    responseDescription: 'The registration was updated after transition validation.',
+    responseExample: {
+      data: {
+        ...PHASE_THREE_EXAMPLES.registration.item,
+        status: 'CHECKED_IN',
+        checkedInAt: '2026-07-20T08:00:00.000Z',
+      },
+      message: 'Registration updated',
+    },
+    requestType: UpdateRegistrationDto,
+    requestExample: PHASE_THREE_EXAMPLES.registration.updateRequest,
+  })
   async updateRegistration(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() payload: UpdateRegistrationDto,
