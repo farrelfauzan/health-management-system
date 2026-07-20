@@ -22,7 +22,10 @@ import type {
 
 import type {
   CreateDoctorPatientAssignmentDto,
-  DoctorPatientControllerListActivityV1Params
+  DoctorPatientControllerAssignDoctorToPatientV1201,
+  DoctorPatientControllerListActivityV1200,
+  DoctorPatientControllerListActivityV1Params,
+  DoctorPatientControllerUnassignDoctorFromPatientV1200
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -45,13 +48,16 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary Assign a doctor to a patient
+ */
 export const doctorPatientControllerAssignDoctorToPatientV1 = (
     createDoctorPatientAssignmentDto: CreateDoctorPatientAssignmentDto,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<DoctorPatientControllerAssignDoctorToPatientV1201>(
       {url: `/api/v1/doctor-patient-assignments`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createDoctorPatientAssignmentDto, signal
@@ -115,6 +121,9 @@ export function useDoctorPatientControllerAssignDoctorToPatientV1<TData = Awaite
  createDoctorPatientAssignmentDto: CreateDoctorPatientAssignmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorPatientControllerAssignDoctorToPatientV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Assign a doctor to a patient
+ */
 
 export function useDoctorPatientControllerAssignDoctorToPatientV1<TData = Awaited<ReturnType<typeof doctorPatientControllerAssignDoctorToPatientV1>>, TError = unknown>(
  createDoctorPatientAssignmentDto: CreateDoctorPatientAssignmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorPatientControllerAssignDoctorToPatientV1>>, TError, TData>>, }
@@ -133,13 +142,16 @@ export function useDoctorPatientControllerAssignDoctorToPatientV1<TData = Awaite
 
 
 
+/**
+ * @summary List doctor-patient assignment activity
+ */
 export const doctorPatientControllerListActivityV1 = (
     params?: DoctorPatientControllerListActivityV1Params,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<DoctorPatientControllerListActivityV1200>(
       {url: `/api/v1/doctor-patient-assignments/activity`, method: 'GET',
         params, signal
     },
@@ -202,6 +214,9 @@ export function useDoctorPatientControllerListActivityV1<TData = Awaited<ReturnT
  params?: DoctorPatientControllerListActivityV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorPatientControllerListActivityV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List doctor-patient assignment activity
+ */
 
 export function useDoctorPatientControllerListActivityV1<TData = Awaited<ReturnType<typeof doctorPatientControllerListActivityV1>>, TError = unknown>(
  params?: DoctorPatientControllerListActivityV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorPatientControllerListActivityV1>>, TError, TData>>, }
@@ -220,13 +235,16 @@ export function useDoctorPatientControllerListActivityV1<TData = Awaited<ReturnT
 
 
 
+/**
+ * @summary Unassign a doctor from a patient
+ */
 export const doctorPatientControllerUnassignDoctorFromPatientV1 = (
     id: string,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<DoctorPatientControllerUnassignDoctorFromPatientV1200>(
       {url: `/api/v1/doctor-patient-assignments/${id}`, method: 'DELETE', signal
     },
       );
@@ -288,6 +306,9 @@ export function useDoctorPatientControllerUnassignDoctorFromPatientV1<TData = Aw
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorPatientControllerUnassignDoctorFromPatientV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Unassign a doctor from a patient
+ */
 
 export function useDoctorPatientControllerUnassignDoctorFromPatientV1<TData = Awaited<ReturnType<typeof doctorPatientControllerUnassignDoctorFromPatientV1>>, TError = unknown>(
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorPatientControllerUnassignDoctorFromPatientV1>>, TError, TData>>, }

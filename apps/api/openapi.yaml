@@ -73,9 +73,99 @@ paths:
             type: string
       responses:
         "200":
-          description: ""
+          description: A paginated list of users.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        email:
+                          type: string
+                        isActive:
+                          type: boolean
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                        roles:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              code:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                              - code
+                              - name
+                      required:
+                        - id
+                        - email
+                        - isActive
+                        - createdAt
+                        - updatedAt
+                        - roles
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 33333333-3333-4333-8333-333333333333
+                      email: admin@example.com
+                      isActive: true
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+                      roles:
+                        - code: ADMIN
+                          name: Administrator
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List admin users
       tags: &a2
-        - AdminManagement
+        - Admin Management
     post:
       operationId: AdminManagementController_createAdminUser_v1
       parameters: []
@@ -85,9 +175,92 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateAdminUserDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  email: admin@example.com
+                  password: SecurePassword123!
+                  roleCodes:
+                    - ADMIN
+                  isActive: true
       responses:
         "201":
-          description: ""
+          description: The user was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      roles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - code
+                            - name
+                    required:
+                      - id
+                      - email
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                      - roles
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 33333333-3333-4333-8333-333333333333
+                    email: admin@example.com
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    roles:
+                      - code: ADMIN
+                        name: Administrator
+                  message: User created
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create an admin user
       tags: *a2
   /api/v1/users/{id}:
     patch:
@@ -104,9 +277,90 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UpdateAdminUserDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  isActive: false
+                  roleCodes:
+                    - ADMIN
       responses:
         "200":
-          description: ""
+          description: The user was updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      roles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - code
+                            - name
+                    required:
+                      - id
+                      - email
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                      - roles
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 33333333-3333-4333-8333-333333333333
+                    email: admin@example.com
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    roles:
+                      - code: ADMIN
+                        name: Administrator
+                  message: User updated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Update an admin user
       tags: *a2
   /api/v1/patients:
     get:
@@ -144,9 +398,107 @@ paths:
             type: string
       responses:
         "200":
-          description: ""
+          description: A permission-scoped, paginated list of patients.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        mrn:
+                          type: string
+                        fullName:
+                          type: string
+                        dateOfBirth:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        address:
+                          type: string
+                        ownerUserId:
+                          type: string
+                        isActive:
+                          type: boolean
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                        doctorCount:
+                          type: integer
+                      required:
+                        - id
+                        - mrn
+                        - fullName
+                        - dateOfBirth
+                        - phoneNumber
+                        - address
+                        - ownerUserId
+                        - isActive
+                        - createdAt
+                        - updatedAt
+                        - doctorCount
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 11111111-1111-4111-8111-111111111111
+                      mrn: MRN-2026-0001
+                      fullName: Aisha Rahman
+                      dateOfBirth: 1990-05-12
+                      phoneNumber: "+628123456789"
+                      address: Jakarta
+                      ownerUserId: 33333333-3333-4333-8333-333333333333
+                      isActive: true
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+                      doctorCount: 1
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List patients
       tags: &a3
-        - PatientManagement
+        - Patient Management
     post:
       operationId: PatientManagementController_createPatient_v1
       parameters: []
@@ -156,9 +508,99 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreatePatientDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  mrn: MRN-2026-0001
+                  fullName: Aisha Rahman
+                  dateOfBirth: 1990-05-12
+                  phoneNumber: "+628123456789"
+                  address: Jakarta
+                  ownerUserId: 33333333-3333-4333-8333-333333333333
+                  doctorIds:
+                    - 22222222-2222-4222-8222-222222222222
       responses:
         "201":
-          description: ""
+          description: The patient and optional initial doctor assignments were created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      mrn:
+                        type: string
+                      fullName:
+                        type: string
+                      dateOfBirth:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      address:
+                        type: string
+                      ownerUserId:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - mrn
+                      - fullName
+                      - dateOfBirth
+                      - phoneNumber
+                      - address
+                      - ownerUserId
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 11111111-1111-4111-8111-111111111111
+                    mrn: MRN-2026-0001
+                    fullName: Aisha Rahman
+                    dateOfBirth: 1990-05-12
+                    phoneNumber: "+628123456789"
+                    address: Jakarta
+                    ownerUserId: 33333333-3333-4333-8333-333333333333
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Patient created
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a patient
       tags: *a3
   /api/v1/patients/{id}:
     get:
@@ -171,7 +613,101 @@ paths:
             type: string
       responses:
         "200":
-          description: ""
+          description: The patient and active doctor relationships.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      mrn:
+                        type: string
+                      fullName:
+                        type: string
+                      dateOfBirth:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      address:
+                        type: string
+                      ownerUserId:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      doctors:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            fullName:
+                              type: string
+                            specialty:
+                              type: string
+                          required:
+                            - id
+                            - fullName
+                            - specialty
+                    required:
+                      - id
+                      - mrn
+                      - fullName
+                      - dateOfBirth
+                      - phoneNumber
+                      - address
+                      - ownerUserId
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                      - doctors
+                required:
+                  - data
+                example:
+                  data:
+                    id: 11111111-1111-4111-8111-111111111111
+                    mrn: MRN-2026-0001
+                    fullName: Aisha Rahman
+                    dateOfBirth: 1990-05-12
+                    phoneNumber: "+628123456789"
+                    address: Jakarta
+                    ownerUserId: 33333333-3333-4333-8333-333333333333
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    doctors:
+                      - id: 22222222-2222-4222-8222-222222222222
+                        fullName: Dr. Budi Santoso
+                        specialty: Internal Medicine
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get a patient
       tags: *a3
     patch:
       operationId: PatientManagementController_updatePatient_v1
@@ -187,9 +723,93 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UpdatePatientDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  phoneNumber: "+628123456780"
+                  address: Bandung
       responses:
         "200":
-          description: ""
+          description: The patient was updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      mrn:
+                        type: string
+                      fullName:
+                        type: string
+                      dateOfBirth:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      address:
+                        type: string
+                      ownerUserId:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - mrn
+                      - fullName
+                      - dateOfBirth
+                      - phoneNumber
+                      - address
+                      - ownerUserId
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 11111111-1111-4111-8111-111111111111
+                    mrn: MRN-2026-0001
+                    fullName: Aisha Rahman
+                    dateOfBirth: 1990-05-12
+                    phoneNumber: "+628123456789"
+                    address: Jakarta
+                    ownerUserId: 33333333-3333-4333-8333-333333333333
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Patient updated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Update a patient
       tags: *a3
   /api/v1/doctors:
     get:
@@ -227,9 +847,103 @@ paths:
             type: string
       responses:
         "200":
-          description: ""
+          description: A paginated list of doctors.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        licenseNumber:
+                          type: string
+                        fullName:
+                          type: string
+                        specialty:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        ownerUserId:
+                          type: string
+                        isActive:
+                          type: boolean
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                        patientCount:
+                          type: integer
+                      required:
+                        - id
+                        - licenseNumber
+                        - fullName
+                        - specialty
+                        - phoneNumber
+                        - ownerUserId
+                        - isActive
+                        - createdAt
+                        - updatedAt
+                        - patientCount
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 22222222-2222-4222-8222-222222222222
+                      licenseNumber: SIP-2026-0001
+                      fullName: Dr. Budi Santoso
+                      specialty: Internal Medicine
+                      phoneNumber: "+628129876543"
+                      ownerUserId: 33333333-3333-4333-8333-333333333333
+                      isActive: true
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+                      patientCount: 1
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List doctors
       tags: &a4
-        - DoctorManagement
+        - Doctor Management
     post:
       operationId: DoctorManagementController_createDoctor_v1
       parameters: []
@@ -239,9 +953,94 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateDoctorDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  licenseNumber: SIP-2026-0001
+                  fullName: Dr. Budi Santoso
+                  specialty: Internal Medicine
+                  phoneNumber: "+628129876543"
+                  ownerUserId: 33333333-3333-4333-8333-333333333333
+                  patientIds:
+                    - 11111111-1111-4111-8111-111111111111
       responses:
         "201":
-          description: ""
+          description: The doctor and optional initial patient assignments were created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      licenseNumber:
+                        type: string
+                      fullName:
+                        type: string
+                      specialty:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      ownerUserId:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - licenseNumber
+                      - fullName
+                      - specialty
+                      - phoneNumber
+                      - ownerUserId
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 22222222-2222-4222-8222-222222222222
+                    licenseNumber: SIP-2026-0001
+                    fullName: Dr. Budi Santoso
+                    specialty: Internal Medicine
+                    phoneNumber: "+628129876543"
+                    ownerUserId: 33333333-3333-4333-8333-333333333333
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Doctor created
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a doctor
       tags: *a4
   /api/v1/doctors/{id}:
     get:
@@ -254,7 +1053,129 @@ paths:
             type: string
       responses:
         "200":
-          description: ""
+          description: The doctor, schedule, and permitted patient relationships.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      licenseNumber:
+                        type: string
+                      fullName:
+                        type: string
+                      specialty:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      ownerUserId:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      patientCount:
+                        type: integer
+                      schedules:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            dayOfWeek:
+                              type: integer
+                            startTime:
+                              type: string
+                            endTime:
+                              type: string
+                            isAvailable:
+                              type: boolean
+                          required:
+                            - id
+                            - dayOfWeek
+                            - startTime
+                            - endTime
+                            - isAvailable
+                      patients:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            mrn:
+                              type: string
+                            fullName:
+                              type: string
+                          required:
+                            - id
+                            - mrn
+                            - fullName
+                    required:
+                      - id
+                      - licenseNumber
+                      - fullName
+                      - specialty
+                      - phoneNumber
+                      - ownerUserId
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                      - patientCount
+                      - schedules
+                      - patients
+                required:
+                  - data
+                example:
+                  data:
+                    id: 22222222-2222-4222-8222-222222222222
+                    licenseNumber: SIP-2026-0001
+                    fullName: Dr. Budi Santoso
+                    specialty: Internal Medicine
+                    phoneNumber: "+628129876543"
+                    ownerUserId: 33333333-3333-4333-8333-333333333333
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    patientCount: 1
+                    schedules:
+                      - id: 99999999-9999-4999-8999-999999999999
+                        dayOfWeek: 1
+                        startTime: 08:00
+                        endTime: 16:00
+                        isAvailable: true
+                    patients:
+                      - id: 11111111-1111-4111-8111-111111111111
+                        mrn: MRN-2026-0001
+                        fullName: Aisha Rahman
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get a doctor
       tags: *a4
   /api/v1/doctors/{id}/schedule:
     patch:
@@ -271,9 +1192,78 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UpdateDoctorScheduleDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  schedules:
+                    - dayOfWeek: 1
+                      startTime: 08:00
+                      endTime: 16:00
+                      isAvailable: true
       responses:
         "200":
-          description: ""
+          description: The validated non-overlapping schedule was saved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        dayOfWeek:
+                          type: integer
+                        startTime:
+                          type: string
+                        endTime:
+                          type: string
+                        isAvailable:
+                          type: boolean
+                      required:
+                        - id
+                        - dayOfWeek
+                        - startTime
+                        - endTime
+                        - isAvailable
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    - id: 99999999-9999-4999-8999-999999999999
+                      dayOfWeek: 1
+                      startTime: 08:00
+                      endTime: 16:00
+                      isAvailable: true
+                  message: Doctor schedule updated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Replace a doctor schedule
       tags: *a4
   /api/v1/doctor-patient-assignments:
     post:
@@ -285,11 +1275,83 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateDoctorPatientAssignmentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  doctorId: 22222222-2222-4222-8222-222222222222
+                  patientId: 11111111-1111-4111-8111-111111111111
       responses:
         "201":
-          description: ""
+          description: The active assignment. Repeated requests are idempotent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      doctorId:
+                        type: string
+                      patientId:
+                        type: string
+                      assignedById:
+                        type: string
+                      assignedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - doctorId
+                      - patientId
+                      - assignedById
+                      - assignedAt
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 88888888-8888-4888-8888-888888888888
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    assignedById: 33333333-3333-4333-8333-333333333333
+                    assignedAt: 2026-07-20T08:00:00.000Z
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Doctor assigned to patient
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Assign a doctor to a patient
       tags: &a5
-        - DoctorPatient
+        - Doctor Patient
   /api/v1/doctor-patient-assignments/activity:
     get:
       operationId: DoctorPatientController_listActivity_v1
@@ -352,7 +1414,89 @@ paths:
             type: string
       responses:
         "200":
-          description: ""
+          description: A filtered, paginated, append-only activity log.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        assignmentId:
+                          type: string
+                        doctorId:
+                          type: string
+                        patientId:
+                          type: string
+                        action:
+                          type: string
+                        actorUserId:
+                          type: string
+                        occurredAt:
+                          type: string
+                      required:
+                        - id
+                        - assignmentId
+                        - doctorId
+                        - patientId
+                        - action
+                        - actorUserId
+                        - occurredAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                      assignmentId: 88888888-8888-4888-8888-888888888888
+                      doctorId: 22222222-2222-4222-8222-222222222222
+                      patientId: 11111111-1111-4111-8111-111111111111
+                      action: ASSIGNED
+                      actorUserId: 33333333-3333-4333-8333-333333333333
+                      occurredAt: 2026-07-20T08:00:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List doctor-patient assignment activity
       tags: *a5
   /api/v1/doctor-patient-assignments/{id}:
     delete:
@@ -365,8 +1509,1537 @@ paths:
             type: string
       responses:
         "200":
-          description: ""
+          description: The audited assignment state. Repeated requests are idempotent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      doctorId:
+                        type: string
+                      patientId:
+                        type: string
+                      assignedById:
+                        type: string
+                      assignedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      unassignedById:
+                        type: string
+                      unassignedAt:
+                        type: string
+                    required:
+                      - id
+                      - doctorId
+                      - patientId
+                      - assignedById
+                      - assignedAt
+                      - createdAt
+                      - updatedAt
+                      - unassignedById
+                      - unassignedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 88888888-8888-4888-8888-888888888888
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    assignedById: 33333333-3333-4333-8333-333333333333
+                    assignedAt: 2026-07-20T08:00:00.000Z
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    unassignedById: 33333333-3333-4333-8333-333333333333
+                    unassignedAt: 2026-07-20T08:00:00.000Z
+                  message: Doctor unassigned from patient
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Unassign a doctor from a patient
       tags: *a5
+  /api/v1/appointments:
+    get:
+      operationId: AppointmentManagementController_listAppointments_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - SCHEDULED
+              - CONFIRMED
+              - COMPLETED
+              - CANCELLED
+              - NO_SHOW
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: patientId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: scheduledFrom
+          required: false
+          in: query
+          schema:
+            format: date-time
+            type: string
+        - name: scheduledTo
+          required: false
+          in: query
+          schema:
+            format: date-time
+            type: string
+      responses:
+        "200":
+          description: A permission-scoped, filtered, paginated appointment list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        patientId:
+                          type: string
+                        doctorId:
+                          type: string
+                        scheduledAt:
+                          type: string
+                        status:
+                          type: string
+                        reason:
+                          type: string
+                        notes:
+                          type: string
+                        createdById:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                        patient:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            mrn:
+                              type: string
+                            fullName:
+                              type: string
+                          required:
+                            - id
+                            - mrn
+                            - fullName
+                        doctor:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            fullName:
+                              type: string
+                            specialty:
+                              type: string
+                          required:
+                            - id
+                            - fullName
+                            - specialty
+                      required:
+                        - id
+                        - patientId
+                        - doctorId
+                        - scheduledAt
+                        - status
+                        - reason
+                        - notes
+                        - createdById
+                        - createdAt
+                        - updatedAt
+                        - patient
+                        - doctor
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 44444444-4444-4444-8444-444444444444
+                      patientId: 11111111-1111-4111-8111-111111111111
+                      doctorId: 22222222-2222-4222-8222-222222222222
+                      scheduledAt: 2026-07-21T09:00:00.000Z
+                      status: SCHEDULED
+                      reason: Routine consultation
+                      notes: First visit
+                      createdById: 33333333-3333-4333-8333-333333333333
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+                      patient:
+                        id: 11111111-1111-4111-8111-111111111111
+                        mrn: MRN-2026-0001
+                        fullName: Aisha Rahman
+                      doctor:
+                        id: 22222222-2222-4222-8222-222222222222
+                        fullName: Dr. Budi Santoso
+                        specialty: Internal Medicine
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List appointments
+      tags: &a6
+        - Appointment Management
+    post:
+      operationId: AppointmentManagementController_createAppointment_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAppointmentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  patientId: 11111111-1111-4111-8111-111111111111
+                  doctorId: 22222222-2222-4222-8222-222222222222
+                  scheduledAt: 2026-07-21T09:00:00+07:00
+                  reason: Routine consultation
+                  notes: First visit
+      responses:
+        "201":
+          description: The appointment was created after schedule validation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      scheduledAt:
+                        type: string
+                      status:
+                        type: string
+                      reason:
+                        type: string
+                      notes:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - doctorId
+                      - scheduledAt
+                      - status
+                      - reason
+                      - notes
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 44444444-4444-4444-8444-444444444444
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    scheduledAt: 2026-07-21T09:00:00.000Z
+                    status: SCHEDULED
+                    reason: Routine consultation
+                    notes: First visit
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Appointment created
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create an appointment
+      tags: *a6
+  /api/v1/appointments/{id}:
+    get:
+      operationId: AppointmentManagementController_getAppointmentById_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The appointment visible to the authenticated actor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      scheduledAt:
+                        type: string
+                      status:
+                        type: string
+                      reason:
+                        type: string
+                      notes:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - doctorId
+                      - scheduledAt
+                      - status
+                      - reason
+                      - notes
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 44444444-4444-4444-8444-444444444444
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    scheduledAt: 2026-07-21T09:00:00.000Z
+                    status: SCHEDULED
+                    reason: Routine consultation
+                    notes: First visit
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get an appointment
+      tags: *a6
+    patch:
+      operationId: AppointmentManagementController_updateAppointment_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAppointmentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  scheduledAt: 2026-07-21T10:00:00+07:00
+                  status: CONFIRMED
+      responses:
+        "200":
+          description: The appointment was updated after transition and schedule validation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      scheduledAt:
+                        type: string
+                      status:
+                        type: string
+                      reason:
+                        type: string
+                      notes:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - doctorId
+                      - scheduledAt
+                      - status
+                      - reason
+                      - notes
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 44444444-4444-4444-8444-444444444444
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    scheduledAt: 2026-07-21T09:00:00.000Z
+                    status: SCHEDULED
+                    reason: Routine consultation
+                    notes: First visit
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Appointment updated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Update an appointment
+      tags: *a6
+  /api/v1/appointments/{id}/cancel:
+    post:
+      operationId: AppointmentManagementController_cancelAppointment_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelAppointmentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  reason: Patient requested cancellation
+      responses:
+        "200":
+          description: The appointment was transitioned to cancelled.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      scheduledAt:
+                        type: string
+                      status:
+                        type: string
+                      reason:
+                        type: string
+                      notes:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - doctorId
+                      - scheduledAt
+                      - status
+                      - reason
+                      - notes
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 44444444-4444-4444-8444-444444444444
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    scheduledAt: 2026-07-21T09:00:00.000Z
+                    status: CANCELLED
+                    reason: Patient requested cancellation
+                    notes: First visit
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Appointment cancelled
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Cancel an appointment
+      tags: *a6
+  /api/v1/registrations:
+    get:
+      operationId: RegistrationFlowController_listRegistrations_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - CHECKED_IN
+              - COMPLETED
+              - CANCELLED
+        - name: patientId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: registeredFrom
+          required: false
+          in: query
+          schema:
+            format: date-time
+            type: string
+        - name: registeredTo
+          required: false
+          in: query
+          schema:
+            format: date-time
+            type: string
+      responses:
+        "200":
+          description: A permission-scoped, filtered, paginated registration list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        patientId:
+                          type: string
+                        appointmentId:
+                          type: string
+                        status:
+                          type: string
+                        registeredAt:
+                          type: string
+                        createdById:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                        patient:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            mrn:
+                              type: string
+                            fullName:
+                              type: string
+                          required:
+                            - id
+                            - mrn
+                            - fullName
+                        appointment:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            scheduledAt:
+                              type: string
+                            status:
+                              type: string
+                          required:
+                            - id
+                            - scheduledAt
+                            - status
+                      required:
+                        - id
+                        - patientId
+                        - appointmentId
+                        - status
+                        - registeredAt
+                        - createdById
+                        - createdAt
+                        - updatedAt
+                        - patient
+                        - appointment
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 55555555-5555-4555-8555-555555555555
+                      patientId: 11111111-1111-4111-8111-111111111111
+                      appointmentId: 44444444-4444-4444-8444-444444444444
+                      status: REGISTERED
+                      registeredAt: 2026-07-20T08:00:00.000Z
+                      createdById: 33333333-3333-4333-8333-333333333333
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+                      patient:
+                        id: 11111111-1111-4111-8111-111111111111
+                        mrn: MRN-2026-0001
+                        fullName: Aisha Rahman
+                      appointment:
+                        id: 44444444-4444-4444-8444-444444444444
+                        scheduledAt: 2026-07-21T09:00:00.000Z
+                        status: SCHEDULED
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List registrations
+      tags: &a7
+        - Registration Flow
+    post:
+      operationId: RegistrationFlowController_createRegistration_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRegistrationDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  patientId: 11111111-1111-4111-8111-111111111111
+                  appointmentId: 44444444-4444-4444-8444-444444444444
+      responses:
+        "201":
+          description: The registration was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      appointmentId:
+                        type: string
+                      status:
+                        type: string
+                      registeredAt:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - appointmentId
+                      - status
+                      - registeredAt
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 55555555-5555-4555-8555-555555555555
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    appointmentId: 44444444-4444-4444-8444-444444444444
+                    status: REGISTERED
+                    registeredAt: 2026-07-20T08:00:00.000Z
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Registration created
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a registration
+      tags: *a7
+  /api/v1/registrations/{id}:
+    get:
+      operationId: RegistrationFlowController_getRegistrationById_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The registration visible to the authenticated actor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      appointmentId:
+                        type: string
+                      status:
+                        type: string
+                      registeredAt:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - appointmentId
+                      - status
+                      - registeredAt
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 55555555-5555-4555-8555-555555555555
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    appointmentId: 44444444-4444-4444-8444-444444444444
+                    status: REGISTERED
+                    registeredAt: 2026-07-20T08:00:00.000Z
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get a registration
+      tags: *a7
+    patch:
+      operationId: RegistrationFlowController_updateRegistration_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRegistrationDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  status: CHECKED_IN
+      responses:
+        "200":
+          description: The registration was updated after transition validation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      appointmentId:
+                        type: string
+                      status:
+                        type: string
+                      registeredAt:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      checkedInAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - appointmentId
+                      - status
+                      - registeredAt
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                      - checkedInAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 55555555-5555-4555-8555-555555555555
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    appointmentId: 44444444-4444-4444-8444-444444444444
+                    status: CHECKED_IN
+                    registeredAt: 2026-07-20T08:00:00.000Z
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    checkedInAt: 2026-07-20T08:00:00.000Z
+                  message: Registration updated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Update a registration
+      tags: *a7
+  /api/v1/medications:
+    get:
+      operationId: MedicationController_listMedications_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+      responses:
+        "200":
+          description: A searchable, paginated medication inventory list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        form:
+                          type: string
+                        strength:
+                          type: string
+                        unit:
+                          type: string
+                        stockQty:
+                          type: integer
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - code
+                        - name
+                        - form
+                        - strength
+                        - unit
+                        - stockQty
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 66666666-6666-4666-8666-666666666666
+                      code: MED-PARA-500
+                      name: Paracetamol
+                      form: Tablet
+                      strength: 500 mg
+                      unit: tablet
+                      stockQty: 250
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List medications
+      tags:
+        - Pharmacy Flow
+  /api/v1/prescriptions:
+    post:
+      operationId: PrescriptionController_createPrescription_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePrescriptionDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  patientId: 11111111-1111-4111-8111-111111111111
+                  doctorId: 22222222-2222-4222-8222-222222222222
+                  notes: Take after meals
+                  items:
+                    - medicationId: 66666666-6666-4666-8666-666666666666
+                      dosage: 500 mg
+                      frequency: Three times daily
+                      durationDays: 3
+                      quantity: 9
+                      instructions: Take after meals
+      responses:
+        "201":
+          description: The prescription and its medication items were created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      status:
+                        type: string
+                      issuedAt:
+                        type: string
+                      notes:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      doctor:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          licenseNumber:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - licenseNumber
+                          - fullName
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            medicationId:
+                              type: string
+                            medicationCode:
+                              type: string
+                            medicationName:
+                              type: string
+                            dosage:
+                              type: string
+                            frequency:
+                              type: string
+                            durationDays:
+                              type: integer
+                            quantity:
+                              type: integer
+                            instructions:
+                              type: string
+                          required:
+                            - id
+                            - medicationId
+                            - medicationCode
+                            - medicationName
+                            - dosage
+                            - frequency
+                            - durationDays
+                            - quantity
+                            - instructions
+                    required:
+                      - id
+                      - patientId
+                      - doctorId
+                      - status
+                      - issuedAt
+                      - notes
+                      - createdAt
+                      - updatedAt
+                      - patient
+                      - doctor
+                      - items
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 77777777-7777-4777-8777-777777777777
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    status: ISSUED
+                    issuedAt: 2026-07-20T08:00:00.000Z
+                    notes: Take after meals
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    patient:
+                      id: 11111111-1111-4111-8111-111111111111
+                      mrn: MRN-2026-0001
+                      fullName: Aisha Rahman
+                    doctor:
+                      id: 22222222-2222-4222-8222-222222222222
+                      licenseNumber: SIP-2026-0001
+                      fullName: Dr. Budi Santoso
+                    items:
+                      - id: bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb
+                        medicationId: 66666666-6666-4666-8666-666666666666
+                        medicationCode: MED-PARA-500
+                        medicationName: Paracetamol
+                        dosage: 500 mg
+                        frequency: Three times daily
+                        durationDays: 3
+                        quantity: 9
+                        instructions: Take after meals
+                  message: Prescription created
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a prescription
+      tags:
+        - Pharmacy Flow
+  /api/v1/dispenses:
+    post:
+      operationId: DispenseController_createDispense_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDispenseDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  prescriptionId: 77777777-7777-4777-8777-777777777777
+                  notes: Dispensed in full
+                  items:
+                    - medicationId: 66666666-6666-4666-8666-666666666666
+                      quantity: 9
+      responses:
+        "201":
+          description: The dispense record was committed and inventory was reduced
+            atomically.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      prescriptionId:
+                        type: string
+                      prescriptionStatus:
+                        type: string
+                      pharmacistId:
+                        type: string
+                      status:
+                        type: string
+                      dispensedAt:
+                        type: string
+                      notes:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            medicationId:
+                              type: string
+                            medicationCode:
+                              type: string
+                            medicationName:
+                              type: string
+                            quantity:
+                              type: integer
+                          required:
+                            - id
+                            - medicationId
+                            - medicationCode
+                            - medicationName
+                            - quantity
+                    required:
+                      - id
+                      - prescriptionId
+                      - prescriptionStatus
+                      - pharmacistId
+                      - status
+                      - dispensedAt
+                      - notes
+                      - createdAt
+                      - updatedAt
+                      - items
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: cccccccc-cccc-4ccc-8ccc-cccccccccccc
+                    prescriptionId: 77777777-7777-4777-8777-777777777777
+                    prescriptionStatus: DISPENSED
+                    pharmacistId: 33333333-3333-4333-8333-333333333333
+                    status: COMPLETED
+                    dispensedAt: 2026-07-20T08:00:00.000Z
+                    notes: Dispensed in full
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    items:
+                      - id: dddddddd-dddd-4ddd-8ddd-dddddddddddd
+                        medicationId: 66666666-6666-4666-8666-666666666666
+                        medicationCode: MED-PARA-500
+                        medicationName: Paracetamol
+                        quantity: 9
+                  message: Dispense recorded
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Dispense a prescription
+      tags:
+        - Pharmacy Flow
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -374,7 +3047,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: &a6
+      tags: &a8
         - Rbac
   /api/v1/rbac/assign-role:
     post:
@@ -389,7 +3062,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a6
+      tags: *a8
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -403,7 +3076,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a6
+      tags: *a8
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -636,6 +3309,168 @@ components:
       required:
         - doctorId
         - patientId
+    CreateAppointmentDto:
+      type: object
+      properties:
+        patientId:
+          type: string
+          format: uuid
+        doctorId:
+          type: string
+          format: uuid
+        scheduledAt:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          minLength: 2
+          maxLength: 500
+        notes:
+          type: string
+          minLength: 2
+          maxLength: 2000
+      required:
+        - patientId
+        - doctorId
+        - scheduledAt
+    UpdateAppointmentDto:
+      type: object
+      properties:
+        scheduledAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - CONFIRMED
+            - COMPLETED
+            - NO_SHOW
+        reason:
+          type: string
+          minLength: 2
+          maxLength: 500
+        notes:
+          type: string
+          minLength: 2
+          maxLength: 2000
+    CancelAppointmentDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 2
+          maxLength: 500
+    CreateRegistrationDto:
+      type: object
+      properties:
+        patientId:
+          type: string
+          format: uuid
+        appointmentId:
+          type: string
+          format: uuid
+      required:
+        - patientId
+    UpdateRegistrationDto:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - CHECKED_IN
+            - COMPLETED
+            - CANCELLED
+        appointmentId:
+          type: string
+          format: uuid
+          nullable: true
+    CreatePrescriptionDto:
+      type: object
+      properties:
+        patientId:
+          type: string
+          format: uuid
+        doctorId:
+          type: string
+          format: uuid
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        items:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: object
+            properties:
+              medicationId:
+                type: string
+                format: uuid
+              dosage:
+                type: string
+                minLength: 1
+                maxLength: 100
+              frequency:
+                type: string
+                minLength: 1
+                maxLength: 100
+              durationDays:
+                type: integer
+                minimum: 1
+                exclusiveMinimum: false
+                maximum: 365
+                exclusiveMaximum: false
+              quantity:
+                type: integer
+                minimum: 1
+                exclusiveMinimum: false
+                maximum: 10000
+                exclusiveMaximum: false
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 500
+            required:
+              - medicationId
+              - dosage
+              - frequency
+              - quantity
+      required:
+        - patientId
+        - items
+    CreateDispenseDto:
+      type: object
+      properties:
+        prescriptionId:
+          type: string
+          format: uuid
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        items:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: object
+            properties:
+              medicationId:
+                type: string
+                format: uuid
+              quantity:
+                type: integer
+                minimum: 1
+                exclusiveMinimum: false
+                maximum: 10000
+                exclusiveMaximum: false
+            required:
+              - medicationId
+              - quantity
+      required:
+        - prescriptionId
+        - items
     AssignRoleDto:
       type: object
       properties:

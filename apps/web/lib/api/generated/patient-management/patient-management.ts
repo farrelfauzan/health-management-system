@@ -22,7 +22,11 @@ import type {
 
 import type {
   CreatePatientDto,
+  PatientManagementControllerCreatePatientV1201,
+  PatientManagementControllerGetPatientByIdV1200,
+  PatientManagementControllerListPatientsV1200,
   PatientManagementControllerListPatientsV1Params,
+  PatientManagementControllerUpdatePatientV1200,
   UpdatePatientDto
 } from '../model';
 
@@ -46,13 +50,16 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary List patients
+ */
 export const patientManagementControllerListPatientsV1 = (
     params?: PatientManagementControllerListPatientsV1Params,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<PatientManagementControllerListPatientsV1200>(
       {url: `/api/v1/patients`, method: 'GET',
         params, signal
     },
@@ -115,6 +122,9 @@ export function usePatientManagementControllerListPatientsV1<TData = Awaited<Ret
  params?: PatientManagementControllerListPatientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerListPatientsV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List patients
+ */
 
 export function usePatientManagementControllerListPatientsV1<TData = Awaited<ReturnType<typeof patientManagementControllerListPatientsV1>>, TError = unknown>(
  params?: PatientManagementControllerListPatientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerListPatientsV1>>, TError, TData>>, }
@@ -133,13 +143,16 @@ export function usePatientManagementControllerListPatientsV1<TData = Awaited<Ret
 
 
 
+/**
+ * @summary Create a patient
+ */
 export const patientManagementControllerCreatePatientV1 = (
     createPatientDto: CreatePatientDto,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<PatientManagementControllerCreatePatientV1201>(
       {url: `/api/v1/patients`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createPatientDto, signal
@@ -203,6 +216,9 @@ export function usePatientManagementControllerCreatePatientV1<TData = Awaited<Re
  createPatientDto: CreatePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerCreatePatientV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Create a patient
+ */
 
 export function usePatientManagementControllerCreatePatientV1<TData = Awaited<ReturnType<typeof patientManagementControllerCreatePatientV1>>, TError = unknown>(
  createPatientDto: CreatePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerCreatePatientV1>>, TError, TData>>, }
@@ -221,13 +237,16 @@ export function usePatientManagementControllerCreatePatientV1<TData = Awaited<Re
 
 
 
+/**
+ * @summary Get a patient
+ */
 export const patientManagementControllerGetPatientByIdV1 = (
     id: string,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<PatientManagementControllerGetPatientByIdV1200>(
       {url: `/api/v1/patients/${id}`, method: 'GET', signal
     },
       );
@@ -289,6 +308,9 @@ export function usePatientManagementControllerGetPatientByIdV1<TData = Awaited<R
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientByIdV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a patient
+ */
 
 export function usePatientManagementControllerGetPatientByIdV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientByIdV1>>, TError = unknown>(
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientByIdV1>>, TError, TData>>, }
@@ -307,6 +329,9 @@ export function usePatientManagementControllerGetPatientByIdV1<TData = Awaited<R
 
 
 
+/**
+ * @summary Update a patient
+ */
 export const patientManagementControllerUpdatePatientV1 = (
     id: string,
     updatePatientDto: UpdatePatientDto,
@@ -314,7 +339,7 @@ export const patientManagementControllerUpdatePatientV1 = (
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<PatientManagementControllerUpdatePatientV1200>(
       {url: `/api/v1/patients/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updatePatientDto, signal
@@ -383,6 +408,9 @@ export function usePatientManagementControllerUpdatePatientV1<TData = Awaited<Re
     updatePatientDto: UpdatePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerUpdatePatientV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Update a patient
+ */
 
 export function usePatientManagementControllerUpdatePatientV1<TData = Awaited<ReturnType<typeof patientManagementControllerUpdatePatientV1>>, TError = unknown>(
  id: string,
