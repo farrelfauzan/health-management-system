@@ -23,6 +23,7 @@ import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateDispenseDto } from '../dto/create-dispense.dto';
 import { CreatePrescriptionDto } from '../dto/create-prescription.dto';
 import { ListMedicationsQueryDto } from '../dto/list-medications-query.dto';
+import { ListPrescriptionsQueryDto } from '../dto/list-prescriptions-query.dto';
 import { PharmacyFlowRepository } from '../repository/pharmacy-flow.repository';
 
 @Injectable()
@@ -48,6 +49,33 @@ export class PharmacyFlowService {
 
     return {
       items: result.items.map((medication) => this.toMedicationResponse(medication)),
+      meta: {
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+      },
+    };
+  }
+
+  async listPrescriptions(query: ListPrescriptionsQueryDto, currentUser: CurrentUser) {
+    const actor = await this.getActorOrThrow(currentUser);
+    const readScope = this.resolveScope(actor, 'Prescription', 'read');
+
+    if (!readScope.hasAny && !readScope.hasOwn) {
+      throw new ForbiddenException('You are not allowed to read prescriptions');
+    }
+
+    const result = await this.pharmacyFlowRepository.listPrescriptions({
+      page: query.page,
+      limit: query.limit,
+      status: query.status,
+      patientId: query.patientId,
+      doctorId: query.doctorId,
+      ownerUserId: readScope.hasAny ? undefined : currentUser.sub,
+    });
+
+    return {
+      items: result.items.map((prescription) => this.toPrescriptionResponse(prescription)),
       meta: {
         page: result.page,
         limit: result.limit,

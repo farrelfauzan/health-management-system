@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
@@ -7,6 +7,7 @@ import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
 import { CreatePrescriptionDto } from '../dto/create-prescription.dto';
+import { ListPrescriptionsQueryDto } from '../dto/list-prescriptions-query.dto';
 import { PharmacyFlowService } from '../service/pharmacy-flow.service';
 
 @ApiTags('Pharmacy Flow')
@@ -16,6 +17,32 @@ import { PharmacyFlowService } from '../service/pharmacy-flow.service';
 })
 export class PrescriptionController {
   constructor(private readonly pharmacyFlowService: PharmacyFlowService) {}
+
+  @Get()
+  @Auth([{ action: 'read', subject: 'Prescription' }])
+  @ApiEndpoint({
+    summary: 'List prescriptions',
+    responseDescription: 'A permission-scoped, filtered, paginated prescription list.',
+    responseExample: {
+      data: [PHASE_THREE_EXAMPLES.pharmacy.prescription],
+      meta: PHASE_THREE_EXAMPLES.paginationMeta,
+    },
+  })
+  async listPrescriptions(
+    @Query() query: ListPrescriptionsQueryDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const result = await this.pharmacyFlowService.listPrescriptions(query, currentUser);
+
+    return {
+      data: result.items,
+      meta: result.meta,
+    };
+  }
 
   @Post()
   @HttpCode(201)

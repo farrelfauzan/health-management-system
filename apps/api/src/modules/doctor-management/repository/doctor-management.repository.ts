@@ -19,10 +19,11 @@ export class DoctorManagementRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listDoctors(params: ListDoctorsParams) {
-    const { page, limit, search, patientId } = params;
+    const { page, limit, search, patientId, isActive } = params;
     const skip = (page - 1) * limit;
 
     const where = {
+      ...(isActive === undefined ? {} : { isActive }),
       ...(patientId
         ? {
             patients: {

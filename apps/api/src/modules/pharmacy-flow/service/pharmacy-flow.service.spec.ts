@@ -42,6 +42,7 @@ function buildActor(
 describe('PharmacyFlowService', () => {
   const pharmacyFlowRepositoryMock = {
     listMedications: jest.fn(),
+    listPrescriptions: jest.fn(),
     findActiveMedicationsByIds: jest.fn(),
     findActivePatientById: jest.fn(),
     findActiveDoctorById: jest.fn(),
@@ -149,6 +150,7 @@ describe('PharmacyFlowService', () => {
 
   const repositoryMock = pharmacyFlowRepositoryMock as unknown as {
     listMedications: jest.Mock;
+    listPrescriptions: jest.Mock;
     findActiveMedicationsByIds: jest.Mock;
     findActivePatientById: jest.Mock;
     findActiveDoctorById: jest.Mock;
@@ -171,6 +173,12 @@ describe('PharmacyFlowService', () => {
     jest.clearAllMocks();
     repositoryMock.listMedications.mockResolvedValue({
       items: [medicationRecord],
+      total: 1,
+      page: 1,
+      limit: 10,
+    });
+    repositoryMock.listPrescriptions.mockResolvedValue({
+      items: [prescriptionRecord],
       total: 1,
       page: 1,
       limit: 10,
@@ -226,6 +234,51 @@ describe('PharmacyFlowService', () => {
         page: 1,
         limit: 10,
         search: 'amox',
+      });
+    });
+  });
+
+  describe('listPrescriptions', () => {
+    it('throws forbidden when actor lacks prescription.read permission', async () => {
+      mockPermissions([]);
+
+      await expect(
+        service.listPrescriptions({ page: 1, limit: 10 }, currentUser),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('returns unscoped paginated prescriptions with prescription.read:any permission', async () => {
+      mockPermissions([{ action: 'read', resource: 'Prescription', scope: 'ANY' }]);
+
+      const actualResult = await service.listPrescriptions(
+        { page: 1, limit: 10, status: 'ISSUED' },
+        currentUser,
+      );
+
+      expect(actualResult.items).toHaveLength(1);
+      expect(actualResult.meta.total).toBe(1);
+      expect(repositoryMock.listPrescriptions).toHaveBeenCalledWith({
+        page: 1,
+        limit: 10,
+        status: 'ISSUED',
+        patientId: undefined,
+        doctorId: undefined,
+        ownerUserId: undefined,
+      });
+    });
+
+    it('scopes the list to the current user with prescription.read:own permission', async () => {
+      mockPermissions([{ action: 'read', resource: 'Prescription', scope: 'OWN' }]);
+
+      await service.listPrescriptions({ page: 1, limit: 10 }, currentUser);
+
+      expect(repositoryMock.listPrescriptions).toHaveBeenCalledWith({
+        page: 1,
+        limit: 10,
+        status: undefined,
+        patientId: undefined,
+        doctorId: undefined,
+        ownerUserId: currentUser.sub,
       });
     });
   });

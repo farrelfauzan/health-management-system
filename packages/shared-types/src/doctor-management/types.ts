@@ -3,6 +3,7 @@ export type ListDoctorsParams = {
   limit: number;
   search?: string;
   patientId?: string;
+  isActive?: boolean;
 };
 
 export type CreateDoctorRecordPayload = {

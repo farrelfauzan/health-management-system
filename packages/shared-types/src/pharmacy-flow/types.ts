@@ -6,6 +6,15 @@ export type ListMedicationsParams = {
   search?: string;
 };
 
+export type ListPrescriptionsParams = {
+  page: number;
+  limit: number;
+  status?: PrescriptionStatusValue;
+  patientId?: string;
+  doctorId?: string;
+  ownerUserId?: string;
+};
+
 export type MedicationRecord = {
   id: string;
   code: string;
