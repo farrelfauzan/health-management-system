@@ -201,4 +201,66 @@ WHERE rp."role_id" = r."id"
   AND r."code" = 'DOCTOR'
   AND p."permission_key" = 'patient.read:any';
 
+-- Development admin account. Credentials: admin@salingjaga.com / Admin123!
+-- The hash is bcryptjs (cost 10). Replace or remove this block for production seeds.
+WITH seed_users(email, password_hash) AS (
+  VALUES
+    ('admin@salingjaga.com', '$2b$10$8Xw5CHvVbJa465ypeir1ZeRyastav5gmh/cU3ztImenBGuftYUQ1O')
+)
+INSERT INTO "users" (
+  "id",
+  "email",
+  "password_hash",
+  "is_active",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('user:' || email)::uuid,
+  email,
+  password_hash,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_users
+ON CONFLICT ("email") DO UPDATE
+SET
+  "password_hash" = EXCLUDED."password_hash",
+  "is_active" = true,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
+WITH seed_user_roles(email, role_code) AS (
+  VALUES
+    ('admin@salingjaga.com', 'SUPER_ADMIN')
+)
+INSERT INTO "user_roles" (
+  "id",
+  "user_id",
+  "role_id",
+  "assigned_at",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('user_role:' || sur.email || ':' || sur.role_code)::uuid,
+  u."id",
+  r."id",
+  NOW(),
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_user_roles sur
+JOIN "users" u ON u."email" = sur.email
+JOIN "roles" r ON r."code" = sur.role_code
+ON CONFLICT ("user_id", "role_id") DO UPDATE
+SET
+  "unassigned_at" = NULL,
+  "unassigned_by_id" = NULL,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
 COMMIT;

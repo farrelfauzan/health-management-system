@@ -33,6 +33,7 @@ export class AuthService {
     const claims: JwtPayload = {
       sub: user.id,
       email: user.email,
+      roles: this.resolveActiveRoleCodes(user.roles),
     };
 
     const accessToken = await this.jwtService.signAsync(claims, {
@@ -66,6 +67,7 @@ export class AuthService {
     const claims: JwtPayload = {
       sub: user.id,
       email: user.email,
+      roles: this.resolveActiveRoleCodes(user.roles),
     };
 
     const accessToken = await this.jwtService.signAsync(claims, {
@@ -87,6 +89,14 @@ export class AuthService {
       success: true,
       message: 'Logged out',
     };
+  }
+
+  private resolveActiveRoleCodes(
+    userRoles: Array<{ unassignedAt: Date | null; role: { code: string } }>,
+  ): string[] {
+    return userRoles
+      .filter((userRole) => userRole.unassignedAt === null)
+      .map((userRole) => userRole.role.code);
   }
 
   private async verifyRefreshToken(refreshToken: string): Promise<JwtPayload> {
