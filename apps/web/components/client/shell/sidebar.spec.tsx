@@ -1,0 +1,75 @@
+import { AbilityProvider, ADMIN_PORTAL_ADMIN_RULES, buildAppAbility, type AppRule } from '@hms/ui';
+import { render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import { Sidebar } from './sidebar';
+
+const { usePathnameMock } = vi.hoisted(() => ({
+  usePathnameMock: vi.fn<() => string>(() => '/admin/dashboard'),
+}));
+
+vi.mock('next/navigation', () => ({
+  usePathname: usePathnameMock,
+}));
+
+function renderSidebar(rules: AppRule[]): void {
+  render(
+    <AbilityProvider ability={buildAppAbility(rules)}>
+      <Sidebar />
+    </AbilityProvider>,
+  );
+}
+
+describe('Sidebar', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('highlights the nav item matching the current route', () => {
+    usePathnameMock.mockReturnValue('/admin/patients');
+    renderSidebar(ADMIN_PORTAL_ADMIN_RULES);
+
+    const activeLink = screen.getByRole('link', { name: 'Patients' });
+    expect(activeLink).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Dashboard' })).not.toHaveAttribute('aria-current');
+  });
+
+  it('marks the parent nav item active on nested routes', () => {
+    usePathnameMock.mockReturnValue('/admin/patients/some-patient-id');
+    renderSidebar(ADMIN_PORTAL_ADMIN_RULES);
+
+    expect(screen.getByRole('link', { name: 'Patients' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('renders every nav item for the full admin rule set', () => {
+    usePathnameMock.mockReturnValue('/admin/dashboard');
+    renderSidebar(ADMIN_PORTAL_ADMIN_RULES);
+
+    const expectedLabels = [
+      'Dashboard',
+      'Patients',
+      'Doctors',
+      'Appointments',
+      'Registration',
+      'Pharmacy',
+      'AI Assistant',
+      'Administration',
+    ];
+    expectedLabels.forEach((label) => {
+      expect(screen.getByRole('link', { name: label })).toBeInTheDocument();
+    });
+  });
+
+  it('hides nav items the ability does not grant', () => {
+    usePathnameMock.mockReturnValue('/admin/dashboard');
+    const inputRules: AppRule[] = [{ action: 'read', subject: 'Patient' }];
+    renderSidebar(inputRules);
+
+    expect(screen.getByRole('link', { name: 'Patients' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'AI Assistant' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Doctors' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Pharmacy' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Administration' })).not.toBeInTheDocument();
+  });
+});

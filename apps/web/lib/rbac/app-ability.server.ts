@@ -1,5 +1,5 @@
 import {
-  ADMIN_MANAGEMENT_ADMIN_RULES,
+  ADMIN_PORTAL_ADMIN_RULES,
   type AppAction,
   type AppRule,
   type AppSubject,
@@ -12,6 +12,12 @@ const SUPPORTED_ACTIONS: AppAction[] = ['create', 'read', 'update', 'delete', 'a
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',
   role: 'Role',
+  patient: 'Patient',
+  doctor: 'Doctor',
+  appointment: 'Appointment',
+  registration: 'Registration',
+  medication: 'Medication',
+  prescription: 'Prescription',
 };
 
 function isSupportedAction(action: string): action is AppAction {
@@ -51,7 +57,7 @@ export function resolveAppAbilityRules(claims: AccessTokenClaims | null): AppRul
   }
 
   if (hasAnyRole(claims, ADMIN_ROLES)) {
-    return ADMIN_MANAGEMENT_ADMIN_RULES;
+    return ADMIN_PORTAL_ADMIN_RULES;
   }
 
   return [];

@@ -89,4 +89,8 @@ export { cn } from '#lib/utils';
 export { buildAppAbility, type AppAbility, type AppAction, type AppRule, type AppSubject } from './rbac/ability';
 export { AbilityProvider, useAbility } from './rbac/ability-provider';
 export { Can } from './rbac/can';
-export { ADMIN_MANAGEMENT_ADMIN_RULES, ADMIN_MANAGEMENT_READ_ONLY_RULES } from './rbac/presets';
+export {
+  ADMIN_MANAGEMENT_ADMIN_RULES,
+  ADMIN_MANAGEMENT_READ_ONLY_RULES,
+  ADMIN_PORTAL_ADMIN_RULES,
+} from './rbac/presets';
