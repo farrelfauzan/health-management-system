@@ -18,7 +18,7 @@ import {
   registrationFlowControllerListRegistrationsV1,
 } from '#lib/api/generated/registration-flow/registration-flow';
 import { useApiQuery } from '#lib/api/use-api-query';
-import { getTodayRange } from '#lib/dashboard/today-range';
+import { formatDateParam } from '#lib/appointments/week-range';
 import { countUpcomingWithinHour } from '#lib/dashboard/upcoming-within-hour';
 import { useTodayAppointments } from '#lib/dashboard/use-today-appointments';
 
@@ -26,11 +26,11 @@ const COUNT_ONLY_PARAMS = { page: 1, limit: 1 } as const;
 const PENDING_PRESCRIPTION_STATUS = 'ISSUED' as const;
 
 export function useDashboardStats() {
-  const todayRange = useMemo(() => getTodayRange(new Date()), []);
+  const todayDate = useMemo(() => formatDateParam(new Date()), []);
   const registrationParams = {
     ...COUNT_ONLY_PARAMS,
-    registeredFrom: todayRange.from,
-    registeredTo: todayRange.to,
+    registeredFrom: todayDate,
+    registeredTo: todayDate,
   };
   const todayRegistrationsQuery = useApiQuery({
     queryKey: getRegistrationFlowControllerListRegistrationsV1QueryKey(registrationParams),

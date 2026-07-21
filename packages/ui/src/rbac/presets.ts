@@ -26,6 +26,8 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'update', subject: 'Appointment' },
   { action: 'cancel', subject: 'Appointment' },
   { action: 'read', subject: 'Registration' },
+  { action: 'create', subject: 'Registration' },
+  { action: 'update', subject: 'Registration' },
   { action: 'read', subject: 'Medication' },
   { action: 'read', subject: 'Prescription' },
 ];

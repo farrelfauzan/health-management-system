@@ -1,5 +1,29 @@
 import { z } from 'zod';
 
+export const registrationDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD format');
+
+function parseRegistrationDateValue(value: string): Date | null {
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  const [year, month, day] = value.split('-').map((part) => Number(part));
+  if (
+    parsed.getUTCFullYear() !== year ||
+    parsed.getUTCMonth() + 1 !== month ||
+    parsed.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  return parsed;
+}
+
+function isValidRegistrationDateValue(value: string): boolean {
+  return parseRegistrationDateValue(value) !== null;
+}
+
 export const REGISTRATION_STATUSES = ['PENDING', 'CHECKED_IN', 'COMPLETED', 'CANCELLED'] as const;
 
 export const registrationStatusSchema = z.enum(REGISTRATION_STATUSES);
@@ -32,16 +56,19 @@ export const listRegistrationsQuerySchema = z
   .object({
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(100).default(10),
+    search: z.string().trim().min(1).optional(),
     status: registrationStatusSchema.optional(),
     patientId: z.string().uuid().optional(),
-    registeredFrom: z.string().datetime({ offset: true }).optional(),
-    registeredTo: z.string().datetime({ offset: true }).optional(),
+    registeredFrom: registrationDateSchema
+      .refine(isValidRegistrationDateValue, 'Registered-from must be a valid calendar date')
+      .optional(),
+    registeredTo: registrationDateSchema
+      .refine(isValidRegistrationDateValue, 'Registered-to must be a valid calendar date')
+      .optional(),
   })
   .refine(
     (query) =>
-      !query.registeredFrom ||
-      !query.registeredTo ||
-      new Date(query.registeredFrom) <= new Date(query.registeredTo),
+      !query.registeredFrom || !query.registeredTo || query.registeredFrom <= query.registeredTo,
     { message: 'registeredFrom must be earlier than or equal to registeredTo' },
   );
 

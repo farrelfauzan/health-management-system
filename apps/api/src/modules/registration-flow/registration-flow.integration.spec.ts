@@ -185,6 +185,38 @@ describe('RegistrationFlow integration', () => {
     );
   });
 
+  it('passes search and calendar-date filters through the registration list query', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/registrations')
+      .query({ search: 'MRN-0001', registeredFrom: '2026-07-01', registeredTo: '2026-07-18' })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(registrationRepositoryMock.listRegistrations).toHaveBeenCalledWith(
+      expect.objectContaining({
+        search: 'MRN-0001',
+        registeredFrom: new Date('2026-07-01T00:00:00.000Z'),
+        registeredTo: new Date('2026-07-18T00:00:00.000Z'),
+      }),
+    );
+  });
+
+  it('returns 400 for a registration list query with an invalid calendar date', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/registrations')
+      .query({ registeredFrom: '2026-02-30' })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(registrationRepositoryMock.listRegistrations).not.toHaveBeenCalled();
+  });
+
   it('returns 201 for registration creation with create:any permission', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
     mockActorWithPermissions([{ action: 'create', resource: 'Registration', scope: 'ANY' }]);

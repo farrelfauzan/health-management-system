@@ -30,7 +30,7 @@ export function AppSidebar({ sections }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         {sections.map((section) => (
-          <SidebarGroup key={section.label ?? 'main'} className={section.label ? 'mt-6' : undefined}>
+          <SidebarGroup key={section.label ?? 'main'} className={section.label ? 'mt-2' : undefined}>
             {section.label ? (
               <SidebarGroupLabel className="px-4 text-[10px] font-bold uppercase tracking-wider text-outline">
                 {section.label}

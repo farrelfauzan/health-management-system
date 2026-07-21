@@ -2419,6 +2419,12 @@ paths:
             exclusiveMinimum: false
             default: 10
             type: integer
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            type: string
         - name: status
           required: false
           in: query
@@ -2439,13 +2445,13 @@ paths:
           required: false
           in: query
           schema:
-            format: date-time
+            pattern: ^\d{4}-\d{2}-\d{2}$
             type: string
         - name: registeredTo
           required: false
           in: query
           schema:
-            format: date-time
+            pattern: ^\d{4}-\d{2}-\d{2}$
             type: string
       responses:
         "200":

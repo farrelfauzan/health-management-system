@@ -28,7 +28,7 @@ export function TopBar({ profile }: TopBarProps) {
           </Link>
         </Button>
         <NotificationsMenu />
-        <Separator orientation="vertical" className="mx-2 !h-6" />
+        <Separator orientation="vertical" className="mx-2 h-6!" />
         <ProfileMenu profile={profile} />
       </div>
     </header>

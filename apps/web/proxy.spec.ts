@@ -74,4 +74,44 @@ describe('proxy', () => {
 
     expect(response.headers.get('x-middleware-next')).toBe('1');
   });
+
+  it('redirects an authenticated patient visiting /login to the portal', () => {
+    const patientToken = buildToken({ exp: futureUnix(), roles: ['PATIENT'] });
+    const response = proxy(buildRequest('/login', patientToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/portal/registrations`);
+  });
+
+  it('redirects a patient session hitting /admin to the portal', () => {
+    const patientToken = buildToken({ exp: futureUnix(), roles: ['PATIENT'] });
+    const response = proxy(buildRequest('/admin/dashboard', patientToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/portal/registrations`);
+  });
+
+  it('allows /portal requests with a valid patient session', () => {
+    const patientToken = buildToken({ exp: futureUnix(), roles: ['PATIENT'] });
+    const response = proxy(buildRequest('/portal/registrations', patientToken));
+
+    expect(response.headers.get('x-middleware-next')).toBe('1');
+  });
+
+  it('redirects an admin session hitting /portal to the admin dashboard', () => {
+    const adminToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'] });
+    const response = proxy(buildRequest('/portal/registrations', adminToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/dashboard`);
+  });
+
+  it('redirects a non-patient, non-admin session hitting /portal to /login and clears the cookie', () => {
+    const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
+    const response = proxy(buildRequest('/portal/registrations', doctorToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
+    expect(response.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value).toBe('');
+  });
 });

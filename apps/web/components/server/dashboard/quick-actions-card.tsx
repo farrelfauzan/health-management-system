@@ -18,7 +18,7 @@ export function QuickActionsCard() {
           icon="person_add"
           title="Register Patient"
           description="Add new patient to the system"
-          href="/admin/registrations"
+          href="/admin/registrations?new=1"
         />
         <QuickActionItem
           icon="edit_calendar"
