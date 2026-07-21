@@ -1,4 +1,6 @@
 export type AccessTokenClaims = {
+  sub?: string;
+  email?: string;
   exp?: number;
   role?: string;
   roles?: string[];
