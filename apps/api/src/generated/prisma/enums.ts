@@ -25,6 +25,23 @@ export const DoctorPatientActivityAction = {
 export type DoctorPatientActivityAction = (typeof DoctorPatientActivityAction)[keyof typeof DoctorPatientActivityAction]
 
 
+export const PatientStatus = {
+  IN_PATIENT: 'IN_PATIENT',
+  OUT_PATIENT: 'OUT_PATIENT',
+  DISCHARGED: 'DISCHARGED'
+} as const
+
+export type PatientStatus = (typeof PatientStatus)[keyof typeof PatientStatus]
+
+
+export const PatientSex = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE'
+} as const
+
+export type PatientSex = (typeof PatientSex)[keyof typeof PatientSex]
+
+
 export const AppointmentStatus = {
   SCHEDULED: 'SCHEDULED',
   CONFIRMED: 'CONFIRMED',

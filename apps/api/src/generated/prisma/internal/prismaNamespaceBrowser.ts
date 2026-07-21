@@ -104,6 +104,8 @@ export const PatientProfileScalarFieldEnum = {
   mrn: 'mrn',
   fullName: 'fullName',
   dateOfBirth: 'dateOfBirth',
+  sex: 'sex',
+  status: 'status',
   phoneNumber: 'phoneNumber',
   address: 'address',
   ownerUserId: 'ownerUserId',

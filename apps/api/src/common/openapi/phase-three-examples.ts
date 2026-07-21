@@ -13,12 +13,20 @@ const patient = {
   mrn: 'MRN-2026-0001',
   fullName: 'Aisha Rahman',
   dateOfBirth: '1990-05-12',
+  sex: 'FEMALE',
+  status: 'OUT_PATIENT',
   phoneNumber: '+628123456789',
   address: 'Jakarta',
   ownerUserId: userId,
   isActive: true,
   createdAt: timestamp,
   updatedAt: timestamp,
+};
+const patientRelatedDoctor = {
+  id: doctorId,
+  assignmentId,
+  fullName: 'Dr. Budi Santoso',
+  specialty: 'Internal Medicine',
 };
 const doctor = {
   id: doctorId,
@@ -91,6 +99,8 @@ export const PHASE_THREE_EXAMPLES = {
       mrn: 'MRN-2026-0001',
       fullName: 'Aisha Rahman',
       dateOfBirth: '1990-05-12',
+      sex: 'FEMALE',
+      status: 'OUT_PATIENT',
       phoneNumber: '+628123456789',
       address: 'Jakarta',
       ownerUserId: userId,
@@ -99,18 +109,13 @@ export const PHASE_THREE_EXAMPLES = {
     updateRequest: {
       phoneNumber: '+628123456780',
       address: 'Bandung',
+      status: 'IN_PATIENT',
     },
     item: patient,
-    listItem: { ...patient, doctorCount: 1 },
+    listItem: { ...patient, doctorCount: 1, doctors: [patientRelatedDoctor] },
     detail: {
       ...patient,
-      doctors: [
-        {
-          id: doctorId,
-          fullName: doctor.fullName,
-          specialty: doctor.specialty,
-        },
-      ],
+      doctors: [patientRelatedDoctor],
     },
   },
   doctor: {

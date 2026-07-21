@@ -5,12 +5,15 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { PatientManagementControllerListPatientsV1200DataItemDoctorsItem } from './patientManagementControllerListPatientsV1200DataItemDoctorsItem';
 
 export type PatientManagementControllerListPatientsV1200DataItem = {
   id: string;
   mrn: string;
   fullName: string;
   dateOfBirth: string;
+  sex: string;
+  status: string;
   phoneNumber: string;
   address: string;
   ownerUserId: string;
@@ -18,4 +21,5 @@ export type PatientManagementControllerListPatientsV1200DataItem = {
   createdAt: string;
   updatedAt: string;
   doctorCount: number;
+  doctors: PatientManagementControllerListPatientsV1200DataItemDoctorsItem[];
 };

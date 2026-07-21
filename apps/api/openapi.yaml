@@ -396,6 +396,27 @@ paths:
           schema:
             format: uuid
             type: string
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - IN_PATIENT
+              - OUT_PATIENT
+              - DISCHARGED
+        - name: createdFrom
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+        - name: createdTo
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
       responses:
         "200":
           description: A permission-scoped, paginated list of patients.
@@ -417,6 +438,10 @@ paths:
                           type: string
                         dateOfBirth:
                           type: string
+                        sex:
+                          type: string
+                        status:
+                          type: string
                         phoneNumber:
                           type: string
                         address:
@@ -431,11 +456,31 @@ paths:
                           type: string
                         doctorCount:
                           type: integer
+                        doctors:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              assignmentId:
+                                type: string
+                              fullName:
+                                type: string
+                              specialty:
+                                type: string
+                            required:
+                              - id
+                              - assignmentId
+                              - fullName
+                              - specialty
                       required:
                         - id
                         - mrn
                         - fullName
                         - dateOfBirth
+                        - sex
+                        - status
                         - phoneNumber
                         - address
                         - ownerUserId
@@ -443,6 +488,7 @@ paths:
                         - createdAt
                         - updatedAt
                         - doctorCount
+                        - doctors
                   meta:
                     type: object
                     properties:
@@ -465,6 +511,8 @@ paths:
                       mrn: MRN-2026-0001
                       fullName: Aisha Rahman
                       dateOfBirth: 1990-05-12
+                      sex: FEMALE
+                      status: OUT_PATIENT
                       phoneNumber: "+628123456789"
                       address: Jakarta
                       ownerUserId: 33333333-3333-4333-8333-333333333333
@@ -472,6 +520,11 @@ paths:
                       createdAt: 2026-07-20T08:00:00.000Z
                       updatedAt: 2026-07-20T08:00:00.000Z
                       doctorCount: 1
+                      doctors:
+                        - id: 22222222-2222-4222-8222-222222222222
+                          assignmentId: 88888888-8888-4888-8888-888888888888
+                          fullName: Dr. Budi Santoso
+                          specialty: Internal Medicine
                   meta:
                     page: 1
                     limit: 10
@@ -515,6 +568,8 @@ paths:
                   mrn: MRN-2026-0001
                   fullName: Aisha Rahman
                   dateOfBirth: 1990-05-12
+                  sex: FEMALE
+                  status: OUT_PATIENT
                   phoneNumber: "+628123456789"
                   address: Jakarta
                   ownerUserId: 33333333-3333-4333-8333-333333333333
@@ -539,6 +594,10 @@ paths:
                         type: string
                       dateOfBirth:
                         type: string
+                      sex:
+                        type: string
+                      status:
+                        type: string
                       phoneNumber:
                         type: string
                       address:
@@ -556,6 +615,8 @@ paths:
                       - mrn
                       - fullName
                       - dateOfBirth
+                      - sex
+                      - status
                       - phoneNumber
                       - address
                       - ownerUserId
@@ -573,6 +634,8 @@ paths:
                     mrn: MRN-2026-0001
                     fullName: Aisha Rahman
                     dateOfBirth: 1990-05-12
+                    sex: FEMALE
+                    status: OUT_PATIENT
                     phoneNumber: "+628123456789"
                     address: Jakarta
                     ownerUserId: 33333333-3333-4333-8333-333333333333
@@ -630,6 +693,10 @@ paths:
                         type: string
                       dateOfBirth:
                         type: string
+                      sex:
+                        type: string
+                      status:
+                        type: string
                       phoneNumber:
                         type: string
                       address:
@@ -649,12 +716,15 @@ paths:
                           properties:
                             id:
                               type: string
+                            assignmentId:
+                              type: string
                             fullName:
                               type: string
                             specialty:
                               type: string
                           required:
                             - id
+                            - assignmentId
                             - fullName
                             - specialty
                     required:
@@ -662,6 +732,8 @@ paths:
                       - mrn
                       - fullName
                       - dateOfBirth
+                      - sex
+                      - status
                       - phoneNumber
                       - address
                       - ownerUserId
@@ -677,6 +749,8 @@ paths:
                     mrn: MRN-2026-0001
                     fullName: Aisha Rahman
                     dateOfBirth: 1990-05-12
+                    sex: FEMALE
+                    status: OUT_PATIENT
                     phoneNumber: "+628123456789"
                     address: Jakarta
                     ownerUserId: 33333333-3333-4333-8333-333333333333
@@ -685,6 +759,7 @@ paths:
                     updatedAt: 2026-07-20T08:00:00.000Z
                     doctors:
                       - id: 22222222-2222-4222-8222-222222222222
+                        assignmentId: 88888888-8888-4888-8888-888888888888
                         fullName: Dr. Budi Santoso
                         specialty: Internal Medicine
         "401":
@@ -729,6 +804,7 @@ paths:
                 value:
                   phoneNumber: "+628123456780"
                   address: Bandung
+                  status: IN_PATIENT
       responses:
         "200":
           description: The patient was updated.
@@ -748,6 +824,10 @@ paths:
                         type: string
                       dateOfBirth:
                         type: string
+                      sex:
+                        type: string
+                      status:
+                        type: string
                       phoneNumber:
                         type: string
                       address:
@@ -765,6 +845,8 @@ paths:
                       - mrn
                       - fullName
                       - dateOfBirth
+                      - sex
+                      - status
                       - phoneNumber
                       - address
                       - ownerUserId
@@ -782,6 +864,8 @@ paths:
                     mrn: MRN-2026-0001
                     fullName: Aisha Rahman
                     dateOfBirth: 1990-05-12
+                    sex: FEMALE
+                    status: OUT_PATIENT
                     phoneNumber: "+628123456789"
                     address: Jakarta
                     ownerUserId: 33333333-3333-4333-8333-333333333333
@@ -3401,6 +3485,18 @@ components:
         dateOfBirth:
           type: string
           pattern: ^\d{4}-\d{2}-\d{2}$
+        sex:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+        status:
+          type: string
+          enum:
+            - IN_PATIENT
+            - OUT_PATIENT
+            - DISCHARGED
+          default: OUT_PATIENT
         phoneNumber:
           type: string
           minLength: 6
@@ -3426,6 +3522,7 @@ components:
         - mrn
         - fullName
         - dateOfBirth
+        - sex
         - phoneNumber
         - address
     UpdatePatientDto:
@@ -3438,6 +3535,17 @@ components:
         dateOfBirth:
           type: string
           pattern: ^\d{4}-\d{2}-\d{2}$
+        sex:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+        status:
+          type: string
+          enum:
+            - IN_PATIENT
+            - OUT_PATIENT
+            - DISCHARGED
         phoneNumber:
           type: string
           minLength: 6

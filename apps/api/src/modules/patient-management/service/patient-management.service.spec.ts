@@ -74,6 +74,8 @@ describe('PatientManagementService', () => {
           mrn: 'MRN-0001',
           fullName: 'John Patient',
           dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+          sex: 'MALE',
+          status: 'IN_PATIENT',
           phoneNumber: '12345',
           address: 'Main Street',
           ownerUserId: currentUser.sub,
@@ -83,6 +85,16 @@ describe('PatientManagementService', () => {
           _count: {
             doctors: 2,
           },
+          doctors: [
+            {
+              id: '9d2f9c7a-58a4-4a0f-9a52-b6dfae13b105',
+              doctor: {
+                id: '58e9a316-40b2-4f4c-9207-2a58028babc4',
+                fullName: 'Dr. Assigned',
+                specialty: 'Cardiology',
+              },
+            },
+          ],
         },
       ],
       total: 1,
@@ -90,16 +102,34 @@ describe('PatientManagementService', () => {
       limit: 10,
     });
 
-    const result = await service.listPatients({ page: 1, limit: 10 }, currentUser);
+    const result = await service.listPatients(
+      { page: 1, limit: 10, status: 'IN_PATIENT', createdFrom: '2026-01-01' },
+      currentUser,
+    );
 
     expect(patientManagementRepositoryMock.listPatients).toHaveBeenCalledWith(
-      { page: 1, limit: 10 },
+      {
+        page: 1,
+        limit: 10,
+        status: 'IN_PATIENT',
+        createdFrom: new Date('2026-01-01T00:00:00.000Z'),
+      },
       currentUser,
       true,
     );
     expect(result.meta.total).toBe(1);
     expect(result.items[0]?.dateOfBirth).toBe('1990-01-01');
+    expect(result.items[0]?.sex).toBe('MALE');
+    expect(result.items[0]?.status).toBe('IN_PATIENT');
     expect(result.items[0]?.doctorCount).toBe(2);
+    expect(result.items[0]?.doctors).toEqual([
+      {
+        id: '58e9a316-40b2-4f4c-9207-2a58028babc4',
+        assignmentId: '9d2f9c7a-58a4-4a0f-9a52-b6dfae13b105',
+        fullName: 'Dr. Assigned',
+        specialty: 'Cardiology',
+      },
+    ]);
   });
 
   it('denies reading patient detail when only own scope and no ownership or active assignment', async () => {
@@ -112,6 +142,8 @@ describe('PatientManagementService', () => {
       mrn: 'MRN-0001',
       fullName: 'John Patient',
       dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+      sex: 'MALE',
+      status: 'OUT_PATIENT',
       phoneNumber: '12345',
       address: 'Main Street',
       ownerUserId: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
@@ -139,6 +171,8 @@ describe('PatientManagementService', () => {
       mrn: 'MRN-0001',
       fullName: 'John Patient',
       dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+      sex: 'MALE',
+      status: 'OUT_PATIENT',
       phoneNumber: '12345',
       address: 'Main Street',
       ownerUserId: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
@@ -147,6 +181,7 @@ describe('PatientManagementService', () => {
       updatedAt: new Date('2026-01-02T00:00:00.000Z'),
       doctors: [
         {
+          id: '9d2f9c7a-58a4-4a0f-9a52-b6dfae13b105',
           doctor: {
             id: '58e9a316-40b2-4f4c-9207-2a58028babc4',
             fullName: 'Dr. Assigned',
@@ -170,6 +205,7 @@ describe('PatientManagementService', () => {
     expect(result.doctors).toEqual([
       {
         id: '58e9a316-40b2-4f4c-9207-2a58028babc4',
+        assignmentId: '9d2f9c7a-58a4-4a0f-9a52-b6dfae13b105',
         fullName: 'Dr. Assigned',
         specialty: 'Cardiology',
       },
@@ -191,6 +227,8 @@ describe('PatientManagementService', () => {
           mrn: 'MRN-0001',
           fullName: 'John Patient',
           dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          status: 'OUT_PATIENT',
           phoneNumber: '12345',
           address: 'Main Street',
           isActive: true,
@@ -210,6 +248,8 @@ describe('PatientManagementService', () => {
       mrn: 'MRN-0001',
       fullName: 'John Patient',
       dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+      sex: 'MALE',
+      status: 'OUT_PATIENT',
       phoneNumber: '12345',
       address: 'Main Street',
       ownerUserId: currentUser.sub,
@@ -245,6 +285,8 @@ describe('PatientManagementService', () => {
           mrn: 'MRN-0003',
           fullName: 'Jane Patient',
           dateOfBirth: '1990-01-01',
+          sex: 'FEMALE',
+          status: 'OUT_PATIENT',
           phoneNumber: '12345',
           address: 'Main Street',
           isActive: true,
@@ -274,6 +316,8 @@ describe('PatientManagementService', () => {
       mrn: 'MRN-0003',
       fullName: 'Jane Patient',
       dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+      sex: 'FEMALE',
+      status: 'OUT_PATIENT',
       phoneNumber: '12345',
       address: 'Main Street',
       ownerUserId: null,
@@ -287,6 +331,8 @@ describe('PatientManagementService', () => {
         mrn: 'MRN-0003',
         fullName: 'Jane Patient',
         dateOfBirth: '1990-01-01',
+        sex: 'FEMALE',
+        status: 'OUT_PATIENT',
         phoneNumber: '12345',
         address: 'Main Street',
         isActive: true,
@@ -320,6 +366,8 @@ describe('PatientManagementService', () => {
           mrn: 'MRN-0002',
           fullName: 'Jane Patient',
           dateOfBirth: '1990-13-01',
+          sex: 'FEMALE',
+          status: 'OUT_PATIENT',
           phoneNumber: '12345',
           address: 'Main Street',
           isActive: true,

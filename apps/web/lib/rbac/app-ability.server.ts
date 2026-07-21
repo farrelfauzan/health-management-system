@@ -14,6 +14,8 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   role: 'Role',
   patient: 'Patient',
   doctor: 'Doctor',
+  'doctor-patient': 'DoctorPatient',
+  'doctor-patient.activity': 'DoctorPatientActivity',
   appointment: 'Appointment',
   registration: 'Registration',
   medication: 'Medication',
@@ -25,8 +27,10 @@ function isSupportedAction(action: string): action is AppAction {
 }
 
 function permissionToRule(permission: string): AppRule | null {
-  const [resource, actionScope] = permission.split('.');
-  const [action] = (actionScope ?? '').split(':');
+  const segments = permission.split('.');
+  const actionScope = segments.pop() ?? '';
+  const resource = segments.join('.');
+  const [action] = actionScope.split(':');
 
   if (!resource || !action || !isSupportedAction(action)) {
     return null;

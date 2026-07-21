@@ -9,16 +9,31 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 
 const RELATED_DOCTORS_DETAIL_LIMIT = 20;
+const RELATED_DOCTORS_LIST_LIMIT = 3;
+const ONE_DAY_IN_MILLISECONDS = 86_400_000;
+
+function buildInclusiveEndOfDay(date: Date): Date {
+  return new Date(date.getTime() + ONE_DAY_IN_MILLISECONDS);
+}
 
 @Injectable()
 export class PatientManagementRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listPatients(params: ListPatientsParams, currentUser: CurrentUser, hasAnyScope: boolean) {
-    const { page, limit, search, doctorId } = params;
+    const { page, limit, search, doctorId, status, createdFrom, createdTo } = params;
     const skip = (page - 1) * limit;
 
     const where = {
+      ...(status ? { status } : {}),
+      ...(createdFrom || createdTo
+        ? {
+            createdAt: {
+              ...(createdFrom ? { gte: createdFrom } : {}),
+              ...(createdTo ? { lt: buildInclusiveEndOfDay(createdTo) } : {}),
+            },
+          }
+        : {}),
       ...(doctorId
         ? {
             doctors: {
@@ -92,6 +107,29 @@ export class PatientManagementRepository {
               },
             },
           },
+          doctors: {
+            where: {
+              unassignedAt: null,
+              doctor: {
+                deletedAt: null,
+                isActive: true,
+              },
+            },
+            orderBy: {
+              assignedAt: 'desc' as const,
+            },
+            take: RELATED_DOCTORS_LIST_LIMIT,
+            select: {
+              id: true,
+              doctor: {
+                select: {
+                  id: true,
+                  fullName: true,
+                  specialty: true,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -134,6 +172,7 @@ export class PatientManagementRepository {
           },
           take: RELATED_DOCTORS_DETAIL_LIMIT,
           select: {
+            id: true,
             doctor: {
               select: {
                 id: true,
@@ -207,6 +246,8 @@ export class PatientManagementRepository {
           mrn: payload.mrn,
           fullName: payload.fullName,
           dateOfBirth: payload.dateOfBirth,
+          sex: payload.sex,
+          status: payload.status,
           phoneNumber: payload.phoneNumber,
           address: payload.address,
           ownerUserId: payload.ownerUserId ?? null,
@@ -244,6 +285,8 @@ export class PatientManagementRepository {
       data: {
         ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
         ...(payload.dateOfBirth !== undefined ? { dateOfBirth: payload.dateOfBirth } : {}),
+        ...(payload.sex !== undefined ? { sex: payload.sex } : {}),
+        ...(payload.status !== undefined ? { status: payload.status } : {}),
         ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
         ...(payload.address !== undefined ? { address: payload.address } : {}),
         ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),

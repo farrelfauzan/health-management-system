@@ -43,12 +43,36 @@ function isDateNotFuture(value: string): boolean {
 
 export const MAX_INITIAL_DOCTOR_ASSIGNMENTS = 20;
 
-export const listPatientsQuerySchema = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(10),
-  search: z.string().trim().min(1).optional(),
-  doctorId: z.string().uuid().optional(),
-});
+export const PATIENT_STATUSES = ['IN_PATIENT', 'OUT_PATIENT', 'DISCHARGED'] as const;
+
+export const patientStatusSchema = z.enum(PATIENT_STATUSES);
+
+export type PatientStatusValue = z.infer<typeof patientStatusSchema>;
+
+export const PATIENT_SEXES = ['MALE', 'FEMALE'] as const;
+
+export const patientSexSchema = z.enum(PATIENT_SEXES);
+
+export type PatientSexValue = z.infer<typeof patientSexSchema>;
+
+export const listPatientsQuerySchema = z
+  .object({
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(10),
+    search: z.string().trim().min(1).optional(),
+    doctorId: z.string().uuid().optional(),
+    status: patientStatusSchema.optional(),
+    createdFrom: patientDateSchema
+      .refine(isValidDateValue, 'Created-from must be a valid calendar date')
+      .optional(),
+    createdTo: patientDateSchema
+      .refine(isValidDateValue, 'Created-to must be a valid calendar date')
+      .optional(),
+  })
+  .refine(
+    (query) => !query.createdFrom || !query.createdTo || query.createdFrom <= query.createdTo,
+    { message: 'Created-from must be before or equal to created-to', path: ['createdFrom'] },
+  );
 
 export const createPatientSchema = z.object({
   mrn: z.string().trim().min(3).max(64),
@@ -56,6 +80,8 @@ export const createPatientSchema = z.object({
   dateOfBirth: patientDateSchema
     .refine(isValidDateValue, 'Date of birth must be a valid calendar date')
     .refine(isDateNotFuture, 'Date of birth cannot be in the future'),
+  sex: patientSexSchema,
+  status: patientStatusSchema.optional().default('OUT_PATIENT'),
   phoneNumber: z.string().trim().min(6).max(32),
   address: z.string().trim().min(3).max(300),
   ownerUserId: z.string().uuid().optional(),
@@ -75,6 +101,8 @@ export const updatePatientSchema = z
       .refine(isValidDateValue, 'Date of birth must be a valid calendar date')
       .refine(isDateNotFuture, 'Date of birth cannot be in the future')
       .optional(),
+    sex: patientSexSchema.optional(),
+    status: patientStatusSchema.optional(),
     phoneNumber: z.string().trim().min(6).max(32).optional(),
     address: z.string().trim().min(3).max(300).optional(),
     ownerUserId: z.string().uuid().nullable().optional(),

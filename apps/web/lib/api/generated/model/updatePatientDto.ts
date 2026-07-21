@@ -5,6 +5,8 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdatePatientDtoSex } from './updatePatientDtoSex';
+import type { UpdatePatientDtoStatus } from './updatePatientDtoStatus';
 
 export interface UpdatePatientDto {
   /**
@@ -14,6 +16,8 @@ export interface UpdatePatientDto {
   fullName?: string;
   /** @pattern ^\d{4}-\d{2}-\d{2}$ */
   dateOfBirth?: string;
+  sex?: UpdatePatientDtoSex;
+  status?: UpdatePatientDtoStatus;
   /**
      * @minLength 6
      * @maxLength 32

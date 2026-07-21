@@ -12,6 +12,11 @@ export const ADMIN_MANAGEMENT_READ_ONLY_RULES: AppRule[] = [{ action: 'read', su
 export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   ...ADMIN_MANAGEMENT_ADMIN_RULES,
   { action: 'read', subject: 'Patient' },
+  { action: 'create', subject: 'Patient' },
+  { action: 'update', subject: 'Patient' },
+  { action: 'assign', subject: 'DoctorPatient' },
+  { action: 'unassign', subject: 'DoctorPatient' },
+  { action: 'read', subject: 'DoctorPatientActivity' },
   { action: 'read', subject: 'Doctor' },
   { action: 'read', subject: 'Appointment' },
   { action: 'read', subject: 'Registration' },
