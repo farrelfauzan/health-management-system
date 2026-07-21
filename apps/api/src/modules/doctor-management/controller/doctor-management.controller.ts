@@ -19,6 +19,7 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
 import { CreateDoctorDto } from '../dto/create-doctor.dto';
 import { ListDoctorsQueryDto } from '../dto/list-doctors-query.dto';
+import { UpdateDoctorDto } from '../dto/update-doctor.dto';
 import { UpdateDoctorScheduleDto } from '../dto/update-doctor-schedule.dto';
 import { DoctorManagementService } from '../service/doctor-management.service';
 
@@ -99,6 +100,35 @@ export class DoctorManagementController {
     return {
       data: doctor,
       message: 'Doctor created',
+    };
+  }
+
+  @Patch(':id')
+  @Auth([{ action: 'update', subject: 'Doctor' }])
+  @ApiEndpoint({
+    summary: 'Update a doctor',
+    responseDescription: 'The doctor profile was updated.',
+    responseExample: {
+      data: PHASE_THREE_EXAMPLES.doctor.item,
+      message: 'Doctor updated',
+    },
+    requestType: UpdateDoctorDto,
+    requestExample: PHASE_THREE_EXAMPLES.doctor.updateRequest,
+  })
+  async updateDoctor(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() payload: UpdateDoctorDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const doctor = await this.doctorManagementService.updateDoctor(id, payload, currentUser);
+
+    return {
+      data: doctor,
+      message: 'Doctor updated',
     };
   }
 

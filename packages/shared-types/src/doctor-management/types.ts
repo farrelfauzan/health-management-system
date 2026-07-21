@@ -2,6 +2,7 @@ export type ListDoctorsParams = {
   page: number;
   limit: number;
   search?: string;
+  specialty?: string;
   patientId?: string;
   isActive?: boolean;
 };
@@ -15,6 +16,14 @@ export type CreateDoctorRecordPayload = {
   isActive: boolean;
   patientIds?: string[];
   actorUserId: string;
+};
+
+export type UpdateDoctorRecordPayload = {
+  fullName?: string;
+  specialty?: string;
+  phoneNumber?: string;
+  ownerUserId?: string | null;
+  isActive?: boolean;
 };
 
 export type DoctorRecord = {

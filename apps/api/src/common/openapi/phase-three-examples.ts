@@ -28,6 +28,13 @@ const patientRelatedDoctor = {
   fullName: 'Dr. Budi Santoso',
   specialty: 'Internal Medicine',
 };
+const doctorScheduleEntry = {
+  id: '99999999-9999-4999-8999-999999999999',
+  dayOfWeek: 1,
+  startTime: '08:00',
+  endTime: '16:00',
+  isAvailable: true,
+};
 const doctor = {
   id: doctorId,
   licenseNumber: 'SIP-2026-0001',
@@ -127,6 +134,11 @@ export const PHASE_THREE_EXAMPLES = {
       ownerUserId: userId,
       patientIds: [patientId],
     },
+    updateRequest: {
+      specialty: 'Cardiology',
+      phoneNumber: '+628129876500',
+      isActive: true,
+    },
     scheduleRequest: {
       schedules: [
         {
@@ -138,20 +150,14 @@ export const PHASE_THREE_EXAMPLES = {
       ],
     },
     item: doctor,
-    listItem: { ...doctor, patientCount: 1 },
+    listItem: { ...doctor, patientCount: 1, schedules: [doctorScheduleEntry] },
     detail: {
       ...doctor,
       patientCount: 1,
-      schedules: [
-        {
-          id: '99999999-9999-4999-8999-999999999999',
-          dayOfWeek: 1,
-          startTime: '08:00',
-          endTime: '16:00',
-          isAvailable: true,
-        },
+      schedules: [doctorScheduleEntry],
+      patients: [
+        { id: patientId, assignmentId, mrn: patient.mrn, fullName: patient.fullName },
       ],
-      patients: [{ id: patientId, mrn: patient.mrn, fullName: patient.fullName }],
     },
   },
   assignment: {

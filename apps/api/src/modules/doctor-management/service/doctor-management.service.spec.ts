@@ -48,6 +48,7 @@ describe('DoctorManagementService', () => {
     findActiveUserById: jest.fn(),
     findActivePatientsByIds: jest.fn(),
     createDoctor: jest.fn(),
+    updateDoctor: jest.fn(),
     replaceDoctorSchedules: jest.fn(),
   } as unknown as DoctorManagementRepository;
 
@@ -92,6 +93,15 @@ describe('DoctorManagementService', () => {
           _count: {
             patients: 3,
           },
+          schedules: [
+            {
+              id: '99999999-9999-4999-8999-999999999999',
+              dayOfWeek: 1,
+              startTime: '08:00',
+              endTime: '16:00',
+              isAvailable: true,
+            },
+          ],
         },
       ],
       total: 1,
@@ -102,6 +112,15 @@ describe('DoctorManagementService', () => {
     const result = await service.listDoctors({ page: 1, limit: 10 }, currentUser);
 
     expect(result.items[0]?.patientCount).toBe(3);
+    expect(result.items[0]?.schedules).toEqual([
+      {
+        id: '99999999-9999-4999-8999-999999999999',
+        dayOfWeek: 1,
+        startTime: '08:00',
+        endTime: '16:00',
+        isAvailable: true,
+      },
+    ]);
     expect(result.items[0]?.createdAt).toBe('2026-07-01T00:00:00.000Z');
     expect(result.meta.total).toBe(1);
   });
@@ -343,6 +362,7 @@ describe('DoctorManagementService', () => {
       },
       patients: [
         {
+          id: '9d2f9c7a-58a4-4a0f-9a52-b6dfae13b105',
           patient: {
             id: '3a6d785d-f729-4af2-b415-30f96439dad0',
             mrn: 'MRN-0001',
@@ -366,7 +386,12 @@ describe('DoctorManagementService', () => {
     const ownResult = await service.getDoctorById(doctorId, currentUser);
 
     expect(ownResult.patients).toEqual([
-      { id: '3a6d785d-f729-4af2-b415-30f96439dad0', mrn: 'MRN-0001', fullName: 'John Patient' },
+      {
+        id: '3a6d785d-f729-4af2-b415-30f96439dad0',
+        assignmentId: '9d2f9c7a-58a4-4a0f-9a52-b6dfae13b105',
+        mrn: 'MRN-0001',
+        fullName: 'John Patient',
+      },
     ]);
     expect(ownResult.patientCount).toBe(1);
 
@@ -378,5 +403,64 @@ describe('DoctorManagementService', () => {
 
     expect(restrictedResult.patients).toBeUndefined();
     expect(restrictedResult.patientCount).toBe(1);
+  });
+
+  it('updates a doctor profile with update:any permission', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+    );
+    (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+    (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
+      ...doctorRecord,
+      specialty: 'Neurology',
+    });
+
+    const result = await service.updateDoctor(doctorId, { specialty: 'Neurology' }, currentUser);
+
+    expect(doctorManagementRepositoryMock.updateDoctor).toHaveBeenCalledWith(
+      doctorId,
+      expect.objectContaining({ specialty: 'Neurology' }),
+    );
+    expect(result.specialty).toBe('Neurology');
+  });
+
+  it('denies own-scope doctor update when attempting owner reassignment', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'update', resource: 'Doctor', scope: 'OWN' }]),
+    );
+    (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue({
+      ...doctorRecord,
+      ownerUserId: currentUser.sub,
+    });
+
+    await expect(
+      service.updateDoctor(
+        doctorId,
+        { ownerUserId: 'ec7602c6-e489-4d0f-a8a7-b0f91a5bfbe2' },
+        currentUser,
+      ),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
+  it('throws conflict when reassigning owner already linked to another doctor', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+    );
+    (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+    (doctorManagementRepositoryMock.findActiveUserById as jest.Mock).mockResolvedValue({
+      id: 'ec7602c6-e489-4d0f-a8a7-b0f91a5bfbe2',
+    });
+    (doctorManagementRepositoryMock.findDoctorByOwnerUserId as jest.Mock).mockResolvedValue({
+      id: 'another-doctor-id',
+    });
+
+    await expect(
+      service.updateDoctor(
+        doctorId,
+        { ownerUserId: 'ec7602c6-e489-4d0f-a8a7-b0f91a5bfbe2' },
+        currentUser,
+      ),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(doctorManagementRepositoryMock.updateDoctor).not.toHaveBeenCalled();
   });
 });

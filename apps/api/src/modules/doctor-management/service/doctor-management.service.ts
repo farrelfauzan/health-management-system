@@ -17,6 +17,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateDoctorDto } from '../dto/create-doctor.dto';
 import { ListDoctorsQueryDto } from '../dto/list-doctors-query.dto';
+import { UpdateDoctorDto } from '../dto/update-doctor.dto';
 import { UpdateDoctorScheduleDto } from '../dto/update-doctor-schedule.dto';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
 
@@ -41,6 +42,7 @@ export class DoctorManagementService {
       items: result.items.map((doctor) => ({
         ...this.toDoctorResponse(doctor),
         patientCount: doctor._count.patients,
+        schedules: doctor.schedules.map((schedule) => this.toScheduleResponse(schedule)),
       })),
       meta: {
         page: result.page,
@@ -74,6 +76,7 @@ export class DoctorManagementService {
         ? {
             patients: doctor.patients.map((assignment) => ({
               id: assignment.patient.id,
+              assignmentId: assignment.id,
               mrn: assignment.patient.mrn,
               fullName: assignment.patient.fullName,
             })),
@@ -130,6 +133,59 @@ export class DoctorManagementService {
     });
 
     return this.toDoctorResponse(created);
+  }
+
+  async updateDoctor(id: string, payload: UpdateDoctorDto, currentUser: CurrentUser) {
+    const actor = await this.getActorOrThrow(currentUser);
+    const updateScope = this.resolveScope(actor, 'Doctor', 'update');
+
+    if (!updateScope.hasAny && !updateScope.hasOwn) {
+      throw new ForbiddenException('You are not allowed to update doctors');
+    }
+
+    const doctor = await this.doctorManagementRepository.findDoctorById(id);
+
+    if (!doctor) {
+      throw new NotFoundException('Doctor not found');
+    }
+
+    const isOwner = doctor.ownerUserId === currentUser.sub;
+
+    if (!updateScope.hasAny && !isOwner) {
+      throw new ForbiddenException('You are not allowed to update this doctor');
+    }
+
+    if (!updateScope.hasAny && payload.ownerUserId !== undefined) {
+      throw new ForbiddenException('You are not allowed to change doctor owner');
+    }
+
+    if (payload.ownerUserId) {
+      const ownerUser = await this.doctorManagementRepository.findActiveUserById(
+        payload.ownerUserId,
+      );
+
+      if (!ownerUser) {
+        throw new BadRequestException('Owner user not found');
+      }
+
+      const doctorWithSameOwner = await this.doctorManagementRepository.findDoctorByOwnerUserId(
+        payload.ownerUserId,
+      );
+
+      if (doctorWithSameOwner && doctorWithSameOwner.id !== id) {
+        throw new ConflictException('Owner user already has a doctor profile');
+      }
+    }
+
+    const updated = await this.doctorManagementRepository.updateDoctor(id, {
+      fullName: payload.fullName,
+      specialty: payload.specialty,
+      phoneNumber: payload.phoneNumber,
+      ownerUserId: payload.ownerUserId,
+      isActive: payload.isActive,
+    });
+
+    return this.toDoctorResponse(updated);
   }
 
   async updateDoctorSchedule(
