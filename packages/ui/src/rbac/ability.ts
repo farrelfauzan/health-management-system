@@ -1,6 +1,14 @@
 import { createMongoAbility, MongoAbility, RawRuleOf } from '@casl/ability';
 
-export type AppAction = 'create' | 'read' | 'update' | 'delete' | 'assign' | 'unassign' | 'write';
+export type AppAction =
+  | 'create'
+  | 'read'
+  | 'update'
+  | 'delete'
+  | 'assign'
+  | 'unassign'
+  | 'write'
+  | 'cancel';
 export type AppSubject =
   | 'User'
   | 'Role'
