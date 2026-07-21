@@ -17,8 +17,18 @@ page?: number;
  * @maximum 100
  */
 limit?: number;
+/**
+ * @minLength 1
+ */
+search?: string;
 status?: RegistrationFlowControllerListRegistrationsV1Status;
 patientId?: string;
+/**
+ * @pattern ^\d{4}-\d{2}-\d{2}$
+ */
 registeredFrom?: string;
+/**
+ * @pattern ^\d{4}-\d{2}-\d{2}$
+ */
 registeredTo?: string;
 };

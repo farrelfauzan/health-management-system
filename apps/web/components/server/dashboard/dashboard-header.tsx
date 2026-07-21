@@ -31,7 +31,7 @@ export async function DashboardHeader() {
         <>
           <CurrentDateChip date={new Date()} />
           <Button asChild>
-            <Link href="/admin/registrations">
+            <Link href="/admin/registrations?new=1">
               <Icon name="add" size={18} />
               New Case
             </Link>

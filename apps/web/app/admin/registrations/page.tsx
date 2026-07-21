@@ -1,5 +1,21 @@
-import { AdminPlaceholderPage } from '#components/server/shell/admin-placeholder-page';
+import { RegistrationsQueuePanel } from '#components/client/registrations/registrations-queue-panel';
+import { parseRegistrationsSearchParams } from '#lib/registrations/search-params';
 
-export default function AdminRegistrationsPage() {
-  return <AdminPlaceholderPage routeKey="registrations" />;
+type AdminRegistrationsPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminRegistrationsPage({
+  searchParams,
+}: AdminRegistrationsPageProps) {
+  const raw = await searchParams;
+  const query = parseRegistrationsSearchParams(raw);
+  const shouldOpenCreate = (Array.isArray(raw.new) ? raw.new[0] : raw.new) === '1';
+  return (
+    <RegistrationsQueuePanel
+      initialQuery={query}
+      variant="admin"
+      openCreateOnMount={shouldOpenCreate}
+    />
+  );
 }

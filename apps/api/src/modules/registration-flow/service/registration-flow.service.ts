@@ -24,6 +24,11 @@ import { RegistrationFlowRepository } from '../repository/registration-flow.repo
 
 const REGISTRABLE_APPOINTMENT_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
 
+function parseRegistrationDateOnly(value: string): Date {
+  const [yearPart = '', monthPart = '', dayPart = ''] = value.split('-');
+  return new Date(Date.UTC(Number(yearPart), Number(monthPart) - 1, Number(dayPart)));
+}
+
 @Injectable()
 export class RegistrationFlowService {
   constructor(
@@ -42,10 +47,13 @@ export class RegistrationFlowService {
     const result = await this.registrationFlowRepository.listRegistrations({
       page: query.page,
       limit: query.limit,
+      search: query.search,
       status: query.status,
       patientId: query.patientId,
-      registeredFrom: query.registeredFrom ? new Date(query.registeredFrom) : undefined,
-      registeredTo: query.registeredTo ? new Date(query.registeredTo) : undefined,
+      registeredFrom: query.registeredFrom
+        ? parseRegistrationDateOnly(query.registeredFrom)
+        : undefined,
+      registeredTo: query.registeredTo ? parseRegistrationDateOnly(query.registeredTo) : undefined,
       ownerUserId: readScope.hasAny ? undefined : currentUser.sub,
     });
 

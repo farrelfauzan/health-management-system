@@ -160,6 +160,32 @@ describe('RegistrationFlowService', () => {
         expect.objectContaining({ ownerUserId: currentUser.sub }),
       );
     });
+
+    it('passes the search term through to the repository', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+      await service.listRegistrations({ page: 1, limit: 10, search: 'MRN-0001' }, currentUser);
+
+      expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(
+        expect.objectContaining({ search: 'MRN-0001' }),
+      );
+    });
+
+    it('converts calendar-date filters into UTC day boundaries', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+      await service.listRegistrations(
+        { page: 1, limit: 10, registeredFrom: '2026-07-01', registeredTo: '2026-07-18' },
+        currentUser,
+      );
+
+      expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(
+        expect.objectContaining({
+          registeredFrom: new Date('2026-07-01T00:00:00.000Z'),
+          registeredTo: new Date('2026-07-18T00:00:00.000Z'),
+        }),
+      );
+    });
   });
 
   describe('getRegistrationById', () => {

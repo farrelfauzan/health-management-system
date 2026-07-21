@@ -4,6 +4,7 @@ import type { RegistrationStatusValue } from '#registration-flow/schemas';
 export type ListRegistrationsParams = {
   page: number;
   limit: number;
+  search?: string;
   status?: RegistrationStatusValue;
   patientId?: string;
   registeredFrom?: Date;

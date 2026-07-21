@@ -10,6 +10,11 @@ import { PrismaService } from '../../../common/prisma/prisma.service';
 import { Prisma, RegistrationStatus } from '../../../generated/prisma/client';
 
 const OPEN_REGISTRATION_STATUSES: RegistrationStatus[] = ['PENDING', 'CHECKED_IN'];
+const ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+
+function buildInclusiveEndOfDay(date: Date): Date {
+  return new Date(date.getTime() + ONE_DAY_IN_MILLISECONDS);
+}
 const REGISTRATION_RELATIONS_INCLUDE = {
   patient: {
     select: {
@@ -33,8 +38,31 @@ export class RegistrationFlowRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listRegistrations(params: ListRegistrationsParams) {
-    const { page, limit, status, patientId, registeredFrom, registeredTo, ownerUserId } = params;
+    const { page, limit, search, status, patientId, registeredFrom, registeredTo, ownerUserId } =
+      params;
     const skip = (page - 1) * limit;
+
+    const patientFilter = {
+      ...(ownerUserId ? { ownerUserId } : {}),
+      ...(search
+        ? {
+            OR: [
+              {
+                fullName: {
+                  contains: search,
+                  mode: 'insensitive' as const,
+                },
+              },
+              {
+                mrn: {
+                  contains: search,
+                  mode: 'insensitive' as const,
+                },
+              },
+            ],
+          }
+        : {}),
+    };
 
     const where = {
       ...(status ? { status } : {}),
@@ -43,15 +71,13 @@ export class RegistrationFlowRepository {
         ? {
             registeredAt: {
               ...(registeredFrom ? { gte: registeredFrom } : {}),
-              ...(registeredTo ? { lte: registeredTo } : {}),
+              ...(registeredTo ? { lt: buildInclusiveEndOfDay(registeredTo) } : {}),
             },
           }
         : {}),
-      ...(ownerUserId
+      ...(Object.keys(patientFilter).length > 0
         ? {
-            patient: {
-              ownerUserId,
-            },
+            patient: patientFilter,
           }
         : {}),
     };
