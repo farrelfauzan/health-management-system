@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk } from 'next/font/google';
+import { Inter } from 'next/font/google';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import type { ReactNode } from 'react';
 import { cookies } from 'next/headers';
 
@@ -11,15 +13,15 @@ import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 
 import './globals.css';
 
-const spaceGrotesk = Space_Grotesk({
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-space-grotesk',
+  variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
-  title: 'Health Management System',
-  description: 'HMS web application',
+  title: 'Saling Jaga',
+  description: 'Saling Jaga health management system',
 };
 
 type RootLayoutProps = {
@@ -33,8 +35,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   const abilityRules = !accessToken || isAccessTokenExpired(claims) ? [] : resolveAppAbilityRules(claims);
 
   return (
-    <html lang="en">
-      <body className={spaceGrotesk.variable}>
+    <html lang="en" className={`${inter.variable} ${GeistSans.variable} ${GeistMono.variable}`}>
+      <body>
         <ReactQueryProvider>
           <AppAbilityProvider rules={abilityRules}>{children}</AppAbilityProvider>
         </ReactQueryProvider>

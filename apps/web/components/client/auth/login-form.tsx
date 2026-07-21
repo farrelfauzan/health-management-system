@@ -78,7 +78,7 @@ export function LoginForm() {
               onChange={(event) => field.handleChange(event.target.value)}
               onBlur={field.handleBlur}
               aria-invalid={field.state.meta.errors.length > 0}
-              className="h-11 px-4 py-2.5 focus-visible:border-[#0066ff] focus-visible:ring-[#0066ff]/20"
+              className="h-11 px-4 py-2.5 focus-visible:border-primary-container focus-visible:ring-primary-container/20"
             />
             {field.state.meta.errors.length > 0 ? (
               <p className="text-xs text-rose-600">
@@ -105,7 +105,7 @@ export function LoginForm() {
               onChange={(event) => field.handleChange(event.target.value)}
               onBlur={field.handleBlur}
               aria-invalid={field.state.meta.errors.length > 0}
-              className="h-11 px-4 py-2.5 focus-visible:border-[#0066ff] focus-visible:ring-[#0066ff]/20"
+              className="h-11 px-4 py-2.5 focus-visible:border-primary-container focus-visible:ring-primary-container/20"
             />
             {field.state.meta.errors.length > 0 ? (
               <p className="text-xs text-rose-600">
@@ -121,7 +121,7 @@ export function LoginForm() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#0066ff] text-white hover:bg-[#0050cb]"
+            className="w-full bg-primary-container text-white hover:bg-primary"
           >
             {isSubmitting ? 'Signing in…' : 'Sign in'}
           </Button>
