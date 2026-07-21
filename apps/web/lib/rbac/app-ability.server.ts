@@ -16,6 +16,7 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'assign',
   'unassign',
   'write',
+  'cancel',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',
