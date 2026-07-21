@@ -178,7 +178,9 @@ Assignment contract notes:
 | `POST /api/v1/prescriptions` | `prescription.write:any` or `prescription.write:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`               |
 | `POST /api/v1/dispenses`     | `dispense.write:any`                                 | `SUPER_ADMIN`, `ADMIN`, `PHARMACIST`           |
 
-### AI Chatbot
+### AI Chatbot (Post-MVP — deferred)
+
+See [docs/post-mvp/ai-chatbot.md](../post-mvp/ai-chatbot.md). Endpoints below are planned for Phase 13, not MVP release.
 
 | Endpoint                                  | Permission                                         | Default Roles                                           |
 | ----------------------------------------- | -------------------------------------------------- | ------------------------------------------------------- |

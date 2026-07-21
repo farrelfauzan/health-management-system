@@ -12,9 +12,8 @@ Build a scalable Health Management System (HMS) for hospitals/clinics, but deliv
 - Appointment Management
 - Registration Flow
 - Pharmacy Flow
-- AI Chatbot Integration
 
-Do not expand scope (billing, insurance, EMR interoperability, telemedicine, advanced analytics) until MVP modules are stable.
+Do not expand scope (billing, insurance, EMR interoperability, telemedicine, advanced analytics, AI chatbot) until MVP modules are stable. AI Chatbot is planned for post-MVP Phase 13 after SATUSEHAT integration — see [docs/post-mvp/ai-chatbot.md](docs/post-mvp/ai-chatbot.md).
 
 ## 2) Mandatory Tech Stack
 
@@ -60,11 +59,11 @@ Create backend modules with strict boundaries:
 - `appointment-management`
 - `registration-flow`
 - `pharmacy-flow`
-- `ai-chatbot`
+- `ai-chatbot` (post-MVP Phase 13 — after SATUSEHAT integration)
 
 Cross-module access must go through application services/interfaces, not direct repository access across modules.
 
-`ai-chatbot` is an integration module: it must call an existing external production AI service and must not run local model inference.
+The `ai-chatbot` integration module must call an existing external production AI service and must not run local model inference.
 
 ## 5) Database Design Guidelines (PostgreSQL + Prisma)
 
@@ -76,7 +75,7 @@ Core MVP entities (minimum):
 - `Appointment`
 - `Registration`
 - `Medication`, `Prescription`, `DispenseRecord`
-- `ChatSession`, `ChatMessage` (AI auditability)
+- `ChatSession`, `ChatMessage` (post-MVP Phase 13 — AI auditability)
 
 Rules:
 
@@ -153,12 +152,12 @@ Frontend requirement:
 - Build reusable form components with schema validation.
 - Do not encode business rules only in UI; backend remains source of truth.
 
-## 10) AI Chatbot Boundaries (MVP)
+## 10) AI Chatbot Boundaries (Post-MVP)
 
 Integration mode (required):
 
-- Use the backend as an API gateway/orchestrator to an external production-ready AI chatbot service.
-- Persist local chat audit records (`ChatSession`, `ChatMessage`) for traceability.
+- Use the backend as a **multi-provider AI gateway**: clinic admins configure provider kind (OpenAI/GPT, Anthropic/Claude, DeepSeek, Ollama, OpenAI-compatible custom endpoint), API key, and model; HMS routes through the matching adapter.
+- Persist local chat audit records (`ChatSession`, `ChatMessage`, `AiProviderConfig`) for traceability.
 - Do not build or host a new model-serving stack in this repository.
 
 Allowed:
@@ -232,9 +231,10 @@ Rules:
 
 1. Foundation: repo scaffolding, auth, RBAC, shared configs, CI, Docker
 2. Backend-only clinical modules: admin, patient, doctor, appointment, registration, pharmacy
-3. AI chatbot backend integration (external service gateway) with strict safety boundaries
-4. Backend readiness gate: stable OpenAPI contracts, RBAC coverage, and passing backend validation pipeline
-5. Frontend integration by module after backend readiness gate is complete
+3. Backend readiness gate: stable OpenAPI contracts, RBAC coverage, and passing backend validation pipeline
+4. Frontend integration by module after backend readiness gate is complete
+5. MVP hardening and release readiness
 
-Do not start AI chatbot before auth/RBAC/audit logging are in place.
+AI chatbot integration is post-MVP (Phase 13, after SATUSEHAT). See [docs/post-mvp/ai-chatbot.md](docs/post-mvp/ai-chatbot.md).
+
 Do not start new clinical-module frontend integration until backend modules and readiness gate are complete.

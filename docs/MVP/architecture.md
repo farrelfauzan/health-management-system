@@ -77,9 +77,10 @@ apps/api/src/common/storage/
 
 Domain modules:
 
-- `auth`, `users`, `admin-management`, `patient-management`, `doctor-management`, `appointment-management`, `registration-flow`, `pharmacy-flow`, `ai-chatbot`.
+- `auth`, `users`, `admin-management`, `patient-management`, `doctor-management`, `appointment-management`, `registration-flow`, `pharmacy-flow`.
+- `ai-chatbot` (post-MVP Phase 13 — see [docs/post-mvp/ai-chatbot.md](../post-mvp/ai-chatbot.md)).
 
-AI chatbot module strategy:
+AI chatbot module strategy (post-MVP):
 
 - `ai-chatbot` acts as an integration gateway to your existing production AI chatbot service.
 - No local model hosting or inference is implemented in this repository.
