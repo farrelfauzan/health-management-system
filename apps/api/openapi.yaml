@@ -923,6 +923,12 @@ paths:
           schema:
             minLength: 1
             type: string
+        - name: specialty
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            type: string
         - name: patientId
           required: false
           in: query
@@ -970,6 +976,27 @@ paths:
                           type: string
                         patientCount:
                           type: integer
+                        schedules:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              dayOfWeek:
+                                type: integer
+                              startTime:
+                                type: string
+                              endTime:
+                                type: string
+                              isAvailable:
+                                type: boolean
+                            required:
+                              - id
+                              - dayOfWeek
+                              - startTime
+                              - endTime
+                              - isAvailable
                       required:
                         - id
                         - licenseNumber
@@ -981,6 +1008,7 @@ paths:
                         - createdAt
                         - updatedAt
                         - patientCount
+                        - schedules
                   meta:
                     type: object
                     properties:
@@ -1009,6 +1037,12 @@ paths:
                       createdAt: 2026-07-20T08:00:00.000Z
                       updatedAt: 2026-07-20T08:00:00.000Z
                       patientCount: 1
+                      schedules:
+                        - id: 99999999-9999-4999-8999-999999999999
+                          dayOfWeek: 1
+                          startTime: 08:00
+                          endTime: 16:00
+                          isAvailable: true
                   meta:
                     page: 1
                     limit: 10
@@ -1202,12 +1236,15 @@ paths:
                           properties:
                             id:
                               type: string
+                            assignmentId:
+                              type: string
                             mrn:
                               type: string
                             fullName:
                               type: string
                           required:
                             - id
+                            - assignmentId
                             - mrn
                             - fullName
                     required:
@@ -1245,6 +1282,7 @@ paths:
                         isAvailable: true
                     patients:
                       - id: 11111111-1111-4111-8111-111111111111
+                        assignmentId: 88888888-8888-4888-8888-888888888888
                         mrn: MRN-2026-0001
                         fullName: Aisha Rahman
         "401":
@@ -1268,6 +1306,105 @@ paths:
       security:
         - bearer: []
       summary: Get a doctor
+      tags: *a4
+    patch:
+      operationId: DoctorManagementController_updateDoctor_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDoctorDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  specialty: Cardiology
+                  phoneNumber: "+628129876500"
+                  isActive: true
+      responses:
+        "200":
+          description: The doctor profile was updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      licenseNumber:
+                        type: string
+                      fullName:
+                        type: string
+                      specialty:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      ownerUserId:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - licenseNumber
+                      - fullName
+                      - specialty
+                      - phoneNumber
+                      - ownerUserId
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 22222222-2222-4222-8222-222222222222
+                    licenseNumber: SIP-2026-0001
+                    fullName: Dr. Budi Santoso
+                    specialty: Internal Medicine
+                    phoneNumber: "+628129876543"
+                    ownerUserId: 33333333-3333-4333-8333-333333333333
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Doctor updated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Update a doctor
       tags: *a4
   /api/v1/doctors/{id}/schedule:
     patch:
@@ -3597,6 +3734,27 @@ components:
         - fullName
         - specialty
         - phoneNumber
+    UpdateDoctorDto:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        specialty:
+          type: string
+          minLength: 2
+          maxLength: 120
+        phoneNumber:
+          type: string
+          minLength: 6
+          maxLength: 32
+        ownerUserId:
+          type: string
+          format: uuid
+          nullable: true
+        isActive:
+          type: boolean
     UpdateDoctorScheduleDto:
       type: object
       properties:

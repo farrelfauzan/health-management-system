@@ -27,6 +27,8 @@ import type {
   DoctorManagementControllerListDoctorsV1200,
   DoctorManagementControllerListDoctorsV1Params,
   DoctorManagementControllerUpdateDoctorScheduleV1200,
+  DoctorManagementControllerUpdateDoctorV1200,
+  UpdateDoctorDto,
   UpdateDoctorScheduleDto
 } from '../model';
 
@@ -318,6 +320,107 @@ export function useDoctorManagementControllerGetDoctorByIdV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDoctorManagementControllerGetDoctorByIdV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Update a doctor
+ */
+export const doctorManagementControllerUpdateDoctorV1 = (
+    id: string,
+    updateDoctorDto: UpdateDoctorDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DoctorManagementControllerUpdateDoctorV1200>(
+      {url: `/api/v1/doctors/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateDoctorDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDoctorManagementControllerUpdateDoctorV1QueryKey = (id: string,
+    updateDoctorDto?: UpdateDoctorDto,) => {
+    return [
+    'PATCH', `/api/v1/doctors/${id}`, updateDoctorDto
+    ] as const;
+    }
+
+
+export const getDoctorManagementControllerUpdateDoctorV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError = unknown>(id: string,
+    updateDoctorDto: UpdateDoctorDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDoctorManagementControllerUpdateDoctorV1QueryKey(id,updateDoctorDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>> = ({ signal }) => doctorManagementControllerUpdateDoctorV1(id,updateDoctorDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DoctorManagementControllerUpdateDoctorV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>>
+export type DoctorManagementControllerUpdateDoctorV1QueryError = unknown
+
+
+export function useDoctorManagementControllerUpdateDoctorV1<TData = Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError = unknown>(
+ id: string,
+    updateDoctorDto: UpdateDoctorDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorManagementControllerUpdateDoctorV1<TData = Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError = unknown>(
+ id: string,
+    updateDoctorDto: UpdateDoctorDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorManagementControllerUpdateDoctorV1<TData = Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError = unknown>(
+ id: string,
+    updateDoctorDto: UpdateDoctorDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Update a doctor
+ */
+
+export function useDoctorManagementControllerUpdateDoctorV1<TData = Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError = unknown>(
+ id: string,
+    updateDoctorDto: UpdateDoctorDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerUpdateDoctorV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDoctorManagementControllerUpdateDoctorV1QueryOptions(id,updateDoctorDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

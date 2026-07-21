@@ -8,12 +8,21 @@ import {
 import { hasAnyRole, type AccessTokenClaims } from '#lib/auth/access-token-claims';
 
 const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN'];
-const SUPPORTED_ACTIONS: AppAction[] = ['create', 'read', 'update', 'delete', 'assign', 'unassign'];
+const SUPPORTED_ACTIONS: AppAction[] = [
+  'create',
+  'read',
+  'update',
+  'delete',
+  'assign',
+  'unassign',
+  'write',
+];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',
   role: 'Role',
   patient: 'Patient',
   doctor: 'Doctor',
+  'doctor.schedule': 'DoctorSchedule',
   'doctor-patient': 'DoctorPatient',
   'doctor-patient.activity': 'DoctorPatientActivity',
   appointment: 'Appointment',

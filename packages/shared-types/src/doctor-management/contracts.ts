@@ -12,6 +12,7 @@ export type DoctorProfile = {
 
 export type DoctorRelatedPatient = {
   id: string;
+  assignmentId: string;
   mrn: string;
   fullName: string;
 };
@@ -26,6 +27,7 @@ export type DoctorScheduleEntry = {
 
 export type DoctorListItem = DoctorProfile & {
   patientCount: number;
+  schedules: DoctorScheduleEntry[];
 };
 
 export type DoctorDetail = DoctorProfile & {

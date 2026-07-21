@@ -5,9 +5,8 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
-import type { DoctorManagementControllerListDoctorsV1200DataItemSchedulesItem } from './doctorManagementControllerListDoctorsV1200DataItemSchedulesItem';
 
-export type DoctorManagementControllerListDoctorsV1200DataItem = {
+export type DoctorManagementControllerUpdateDoctorV1200Data = {
   id: string;
   licenseNumber: string;
   fullName: string;
@@ -17,6 +16,4 @@ export type DoctorManagementControllerListDoctorsV1200DataItem = {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  patientCount: number;
-  schedules: DoctorManagementControllerListDoctorsV1200DataItemSchedulesItem[];
 };

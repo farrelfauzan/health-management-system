@@ -21,6 +21,10 @@ limit?: number;
  * @minLength 1
  */
 search?: string;
+/**
+ * @minLength 1
+ */
+specialty?: string;
 patientId?: string;
 isActive?: DoctorManagementControllerListDoctorsV1IsActive;
 };

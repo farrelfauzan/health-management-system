@@ -58,6 +58,7 @@ export const listDoctorsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
   search: z.string().trim().min(1).optional(),
+  specialty: z.string().trim().min(1).optional(),
   patientId: z.string().uuid().optional(),
   isActive: z
     .enum(['true', 'false'])
@@ -80,7 +81,20 @@ export const createDoctorSchema = z.object({
     .optional(),
 });
 
+export const updateDoctorSchema = z
+  .object({
+    fullName: z.string().trim().min(2).max(120).optional(),
+    specialty: z.string().trim().min(2).max(120).optional(),
+    phoneNumber: z.string().trim().min(6).max(32).optional(),
+    ownerUserId: z.string().uuid().nullable().optional(),
+    isActive: z.boolean().optional(),
+  })
+  .refine((payload) => Object.values(payload).some((value) => value !== undefined), {
+    message: 'At least one field is required',
+  });
+
 export type DoctorScheduleEntryInput = z.infer<typeof doctorScheduleEntrySchema>;
 export type UpdateDoctorScheduleInput = z.infer<typeof updateDoctorScheduleSchema>;
 export type ListDoctorsQueryInput = z.infer<typeof listDoctorsQuerySchema>;
 export type CreateDoctorInput = z.infer<typeof createDoctorSchema>;
+export type UpdateDoctorInput = z.infer<typeof updateDoctorSchema>;

@@ -2,6 +2,7 @@ import {
   CreateDoctorRecordPayload,
   ListDoctorsParams,
   ReplaceDoctorSchedulesPayload,
+  UpdateDoctorRecordPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
@@ -19,11 +20,19 @@ export class DoctorManagementRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listDoctors(params: ListDoctorsParams) {
-    const { page, limit, search, patientId, isActive } = params;
+    const { page, limit, search, specialty, patientId, isActive } = params;
     const skip = (page - 1) * limit;
 
     const where = {
       ...(isActive === undefined ? {} : { isActive }),
+      ...(specialty
+        ? {
+            specialty: {
+              contains: specialty,
+              mode: 'insensitive' as const,
+            },
+          }
+        : {}),
       ...(patientId
         ? {
             patients: {
@@ -78,6 +87,9 @@ export class DoctorManagementRepository {
               },
             },
           },
+          schedules: {
+            orderBy: SCHEDULE_ORDER_BY,
+          },
         },
       });
 
@@ -129,6 +141,7 @@ export class DoctorManagementRepository {
           },
           take: RELATED_PATIENTS_DETAIL_LIMIT,
           select: {
+            id: true,
             patient: {
               select: {
                 id: true,
@@ -225,6 +238,21 @@ export class DoctorManagementRepository {
       }
 
       return doctor;
+    });
+  }
+
+  async updateDoctor(id: string, payload: UpdateDoctorRecordPayload) {
+    return this.prisma.doctorProfile.update({
+      where: {
+        id,
+      },
+      data: {
+        ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
+        ...(payload.specialty !== undefined ? { specialty: payload.specialty } : {}),
+        ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
+        ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
+        ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
+      },
     });
   }
 
