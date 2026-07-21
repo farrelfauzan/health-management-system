@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Assistant | HMS Portal</title>
+<!-- Fonts and Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#d3e4fe",
+                    "surface-bright": "#f8f9ff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#390c00",
+                    "background": "#f8f9ff",
+                    "on-secondary-fixed": "#00201d",
+                    "surface-dim": "#cbdbf5",
+                    "secondary-container": "#86f2e4",
+                    "primary-fixed": "#dae1ff",
+                    "on-primary-fixed": "#001849",
+                    "outline-variant": "#c2c6d8",
+                    "inverse-primary": "#b3c5ff",
+                    "tertiary-container": "#cc4204",
+                    "surface-container-high": "#dce9ff",
+                    "on-primary-fixed-variant": "#003fa4",
+                    "surface-tint": "#0054d6",
+                    "on-secondary-fixed-variant": "#005049",
+                    "on-secondary-container": "#006f66",
+                    "inverse-surface": "#213145",
+                    "on-primary-container": "#f8f7ff",
+                    "on-tertiary-container": "#fff6f4",
+                    "on-surface-variant": "#424656",
+                    "on-surface": "#0b1c30",
+                    "secondary": "#006a61",
+                    "primary-container": "#0066ff",
+                    "outline": "#727687",
+                    "tertiary-fixed": "#ffdbd0",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "tertiary-fixed-dim": "#ffb59d",
+                    "surface-container-low": "#eff4ff",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-background": "#0b1c30",
+                    "surface": "#f8f9ff",
+                    "tertiary": "#a33200",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#6bd8cb",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#832600",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#e5eeff",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "#0050cb",
+                    "surface-container-highest": "#d3e4fe",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#89f5e7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "lg": "24px",
+                    "gutter": "20px",
+                    "container-max": "1440px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "h3": ["Geist"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "h1": ["Geist"],
+                    "display": ["Geist"],
+                    "mono": ["Geist Mono"],
+                    "h1-mobile": ["Geist"],
+                    "h2": ["Geist"],
+                    "caption": ["Inter"],
+                    "label-md": ["Geist"]
+            },
+            "fontSize": {
+                    "h3": ["18px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "mono": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "h1-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "h2": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .chat-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-surface-container-lowest border-b border-outline-variant shadow-sm h-16 flex justify-between items-center px-lg">
+<div class="flex items-center gap-md">
+<span class="font-h2 text-h2 font-bold text-primary">HMS Portal</span>
+<div class="hidden md:flex items-center ml-xl bg-surface-container-low px-md py-xs rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-outline text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-64 placeholder:text-outline-variant" placeholder="Search records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-xs rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">smart_toy</span>
+</button>
+<button class="p-xs rounded-full hover:bg-surface-container-low transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="flex items-center gap-sm pl-md border-l border-outline-variant">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A professional headshot of a female doctor in her 40s wearing a white lab coat and a stethoscope, smiling warmly in a bright modern clinic setting. The lighting is soft and clinical, emphasizing a trustworthy and expert medical environment with clean slate-50 backgrounds." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrEwXonWB0D1aNKhogTb3poJKI6CkXx-OLbbwpFB71N9f1ywMaWq1AxzIaKaJ-koh4jjC21BFoCyJ1KfqGJpJuhPCPpqknHOJSZWoCBJE4XdRZ2LjPiSwYY3AiqA59IL8kqjJNegUAVUirwxuRFTu55hL094tFR3qPaMrM0m1UUuEht3Zok_taVa7lkSOwJagmC24sX_niHAlgdz6bLFupvXbOv-0_cz4tM8oc1zpxWRjHkx1RWAVubxTAdLWwkRjaLOZaJTwWANE"/>
+<span class="font-label-md hidden lg:block">Dr. Sarah Jenkins</span>
+</div>
+</div>
+</header>
+<div class="flex h-[calc(100vh-64px)] overflow-hidden">
+<!-- SideNavBar (Authority: JSON & Strategy) -->
+<aside class="hidden md:flex flex-col gap-sm p-md w-[240px] bg-surface border-r border-outline-variant">
+<div class="flex items-center gap-sm px-sm py-md mb-md">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">medical_services</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 leading-none">St. Luke's</h3>
+<p class="text-caption text-outline">Medical Center</p>
+</div>
+</div>
+<nav class="flex flex-col gap-xs flex-1">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md">Patients</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="font-label-md">Doctors</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-label-md">Appointments</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">person_add</span>
+<span class="font-label-md">Registration</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">local_pharmacy</span>
+<span class="font-label-md">Pharmacy</span>
+</a>
+<!-- Active State: AI Assistant -->
+<a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container font-bold rounded-lg shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-label-md">AI Assistant</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all hover:translate-x-1 rounded-lg mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md">Administration</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area: AI Interface -->
+<main class="flex-1 flex overflow-hidden">
+<!-- Left Panel: Chat History & Suggestions -->
+<section class="w-80 border-r border-outline-variant bg-surface-container-lowest flex flex-col hidden lg:flex">
+<div class="p-md border-b border-outline-variant">
+<button class="w-full py-sm px-md bg-primary text-on-primary rounded-lg font-label-md flex items-center justify-center gap-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        New Consultation
+                    </button>
+</div>
+<div class="flex-1 overflow-y-auto chat-scrollbar p-md space-y-xl">
+<!-- Suggested Prompts -->
+<div>
+<h4 class="font-label-md text-outline uppercase tracking-wider text-[11px] mb-md">Suggested Analysis</h4>
+<div class="space-y-sm">
+<button class="w-full text-left p-sm text-body-md rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors group">
+<span class="block font-medium group-hover:text-primary">Summarize today's patient load</span>
+<span class="text-caption text-outline-variant">Get a breakdown of acuity and wait times.</span>
+</button>
+<button class="w-full text-left p-sm text-body-md rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors group">
+<span class="block font-medium group-hover:text-primary">Find next slot: Cardiology</span>
+<span class="text-caption text-outline-variant">Check Dr. Aris's availability.</span>
+</button>
+<button class="w-full text-left p-sm text-body-md rounded-lg border border-outline-variant hover:bg-surface-container-low transition-colors group">
+<span class="block font-medium group-hover:text-primary">Draft discharge for Room 402</span>
+<span class="text-caption text-outline-variant">Based on recent lab results.</span>
+</button>
+</div>
+</div>
+<!-- Chat History -->
+<div>
+<h4 class="font-label-md text-outline uppercase tracking-wider text-[11px] mb-md">Recent History</h4>
+<div class="space-y-xs">
+<button class="w-full text-left px-sm py-md rounded-lg hover:bg-surface-container-low text-body-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px] text-outline">history</span>
+<span class="truncate">Medication conflict check - Patient #492</span>
+</button>
+<button class="w-full text-left px-sm py-md rounded-lg hover:bg-surface-container-low text-body-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px] text-outline">history</span>
+<span class="truncate">ICD-10 Code lookup: Type 2 Diabetes</span>
+</button>
+<button class="w-full text-left px-sm py-md rounded-lg hover:bg-surface-container-low text-body-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px] text-outline">history</span>
+<span class="truncate">Shift handover notes (April 12)</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Center: Chat Window -->
+<section class="flex-1 flex flex-col bg-surface-bright relative">
+<!-- Chat Messages -->
+<div class="flex-1 overflow-y-auto p-lg chat-scrollbar space-y-xl max-w-4xl mx-auto w-full">
+<!-- AI Message -->
+<div class="flex gap-md group">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+</div>
+<div class="space-y-md flex-1">
+<div class="flex items-center gap-sm">
+<span class="font-label-md text-on-surface">AI Clinical Assistant</span>
+<span class="text-caption text-outline-variant">Just now</span>
+</div>
+<div class="text-body-lg text-on-surface leading-relaxed max-w-prose">
+                                Hello Dr. Jenkins. I've analyzed today's dashboard. You have 14 patients scheduled, with 3 marked as high-acuity. 
+                                <br/><br/>
+                                Based on the latest lab results for <strong>Patient #821 (Maria Garcia)</strong>, I recommend reviewing the potassium levels before her 10:00 AM consultation. Her current levels are at 3.2 mEq/L, which is slightly below the normal range.
+                            </div>
+<!-- Citations/References -->
+<div class="bg-surface-container-low rounded-lg p-md border border-outline-variant">
+<p class="text-caption font-bold text-outline uppercase tracking-tight mb-sm">Clinical References</p>
+<div class="flex flex-wrap gap-sm">
+<a class="flex items-center gap-xs text-caption px-sm py-xs bg-surface-container-lowest border border-outline-variant rounded hover:border-primary hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[14px]">article</span>
+                                        Lab Report: 2024-04-14_Garcia.pdf
+                                    </a>
+<a class="flex items-center gap-xs text-caption px-sm py-xs bg-surface-container-lowest border border-outline-variant rounded hover:border-primary hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[14px]">book</span>
+                                        Journal of Clinical Chemistry (Vol 42)
+                                    </a>
+</div>
+</div>
+</div>
+</div>
+<!-- User Query -->
+<div class="flex gap-md flex-row-reverse group">
+<div class="w-8 h-8 rounded-lg bg-outline text-surface flex items-center justify-center flex-shrink-0 mt-1 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A small square avatar of a female doctor with dark hair and blue eyes, set against a soft professional office background. The style is clean, modern, and trustworthy, following the medical enterprise aesthetic of the application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCY-2KbanNC4xRCVP1FclIlLeac-Q7AygPUb6g7Clb4L1H_tqkUpAsanlCSmGoPhcmsbno0J67fE-N7gSYa9beX5JB35iNmdyR6Vbj2kzomehHAPwD3upAmxuNUzkvJhHrraYYe02w3DSvJBHNLZGYpFypWMdk8vaquCOvfMTRosr4rE5lfowpm77swB8t92cHwbLA8bao6D5LZvmO5fqAzyDvutIZOZKh8g7WizF9ODHsrkPFt5ow3iGgwPxBHTAY1zH2RzVZQnF8"/>
+</div>
+<div class="space-y-md flex-1 text-right">
+<div class="flex items-center gap-sm justify-end">
+<span class="text-caption text-outline-variant">2 mins ago</span>
+<span class="font-label-md text-on-surface">Dr. Sarah Jenkins</span>
+</div>
+<div class="inline-block bg-primary text-on-primary rounded-2xl rounded-tr-none px-md py-sm text-body-lg text-left shadow-sm">
+                                Suggest a treatment adjustment for Ms. Garcia.
+                            </div>
+</div>
+</div>
+<!-- AI Message (Response) -->
+<div class="flex gap-md group">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+</div>
+<div class="space-y-md flex-1">
+<div class="flex items-center gap-sm">
+<span class="font-label-md text-on-surface">AI Clinical Assistant</span>
+<span class="text-caption text-outline-variant">1 min ago</span>
+</div>
+<div class="text-body-lg text-on-surface leading-relaxed max-w-prose">
+                                For mild hypokalemia (3.2 mEq/L), oral potassium supplementation is typically first-line. I would suggest:
+                                <ul class="list-disc ml-md mt-sm space-y-sm">
+<li>Potassium Chloride 40 mEq PO once.</li>
+<li>Re-check electrolyte panel in 4 hours.</li>
+<li>Monitor ECG for any U-wave development or QT prolongation.</li>
+</ul>
+<p class="mt-md text-caption text-outline italic">Note: This is an AI suggestion. Please verify against hospital protocol and current patient vitals before ordering.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom: Message Input -->
+<div class="bg-surface-bright/80 backdrop-blur-md p-lg pt-0 w-full max-w-4xl mx-auto">
+<div class="relative group">
+<div class="absolute inset-0 bg-primary/5 rounded-xl blur-xl group-focus-within:bg-primary/10 transition-all opacity-0 group-focus-within:opacity-100"></div>
+<div class="relative bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all overflow-hidden">
+<textarea class="w-full bg-transparent border-none focus:ring-0 p-md pb-xl text-body-lg resize-none min-h-[100px] placeholder:text-outline-variant" placeholder="Ask about patients, lab results, or hospital protocol..."></textarea>
+<div class="absolute bottom-md right-md flex items-center gap-md">
+<button class="p-sm text-outline-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<button class="p-sm text-outline-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="bg-primary text-on-primary w-10 h-10 rounded-lg flex items-center justify-center hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Safety Disclaimer -->
+<p class="text-center text-[11px] text-outline mt-md leading-tight max-w-2xl mx-auto">
+<span class="font-bold text-error">CONFIDENTIAL PATIENT DATA:</span> This AI assistant is HIPAA-compliant. However, all clinical decisions must be reviewed and signed off by a licensed practitioner. AI can hallucinate; always verify against original lab sources.
+                    </p>
+</div>
+</section>
+</main>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        // Simple textarea auto-resize
+        const textarea = document.querySelector('textarea');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Hover effect for citations
+        document.querySelectorAll('a[href="#"]').forEach(anchor => {
+            anchor.addEventListener('click', (e) => e.preventDefault());
+        });
+    </script>
+</body></html>

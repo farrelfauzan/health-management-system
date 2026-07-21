@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; background: #eef5fb; }
+a { color: #0369a1; text-decoration: none; }
+a:hover { color: #075985; text-decoration: underline; }
+</style>
+</helmet>
+<div style="display: flex; height: 100vh; font-family: 'Space Grotesk', 'Segoe UI', sans-serif; color: #0f2a43; background: #eef5fb; overflow: hidden;">
+  <aside style="width: {{ sidebarWidth }}px; flex-shrink: 0; background: linear-gradient(180deg, #0c4a6e 0%, #0a3d5c 100%); color: #ffffff; display: flex; flex-direction: column; padding: 24px 0 16px; transition: width 0.18s ease;">
+    <div style="padding: 0 16px 22px; border-bottom: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: {{ brandJustify }}; flex-direction: {{ brandDirection }}; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 10px; min-width: 0; overflow: hidden;">
+        <div style="width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px; background: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #0c4a6e;">SJ</div>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+        <div style="white-space: nowrap;">
+          <div style="font-size: 16px; font-weight: 700; letter-spacing: 0.01em;">Saling Jaga</div>
+          <div style="font-size: 10.5px; color: #9cc6e0; letter-spacing: 0.08em; text-transform: uppercase;">Health Management</div>
+        </div>
+        </sc-if>
+      </div>
+<div onClick="{{ toggleSidebar }}" title="Toggle sidebar" style="cursor: pointer; width: 28px; height: 28px; flex-shrink: 0; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #9cc6e0;" style-hover="background: rgba(255,255,255,0.12)">
+        <sc-if value="{{ collapsed }}" hint-placeholder-val="{{ false }}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path><path d="m14 9 3 3-3 3"></path></svg></sc-if>
+        <sc-if value="{{ notCollapsed }}" hint-placeholder-val="{{ true }}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path><path d="m16 15-3-3 3-3"></path></svg></sc-if>
+      </div>
+    </div>
+    <nav style="display: flex; flex-direction: column; gap: 2px; padding: 16px 12px; flex: 1;">
+      <div onClick="{{ nav.dashboard }}" title="Dashboard" style="cursor: pointer; padding: 9px 12px; border-radius: 8px; background: {{ navBg.dashboard }}; color: {{ navFg.dashboard }}; display: flex; align-items: center; gap: 10px; justify-content: {{ navJustify }};" style-hover="background: rgba(255,255,255,0.1)">
+        <span style="display: flex; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg></span>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+        <div style="min-width: 0;">
+          <div style="font-size: 14px; font-weight: 600; white-space: nowrap;">Dashboard</div>
+          <sc-if value="{{ showId }}" hint-placeholder-val="{{ true }}"><div style="font-size: 11px; color: #86b6d4; white-space: nowrap;">Dasbor</div></sc-if>
+        </div>
+        </sc-if>
+      </div>
+      <div onClick="{{ nav.users }}" title="Admin Users" style="cursor: pointer; padding: 9px 12px; border-radius: 8px; background: {{ navBg.users }}; color: {{ navFg.users }}; display: flex; align-items: center; gap: 10px; justify-content: {{ navJustify }};" style-hover="background: rgba(255,255,255,0.1)">
+        <span style="display: flex; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+        <div style="min-width: 0;">
+          <div style="font-size: 14px; font-weight: 600; white-space: nowrap;">Admin Users</div>
+          <sc-if value="{{ showId }}" hint-placeholder-val="{{ true }}"><div style="font-size: 11px; color: #86b6d4; white-space: nowrap;">Pengguna Admin</div></sc-if>
+        </div>
+        </sc-if>
+      </div>
+      <div onClick="{{ nav.patients }}" title="Patients" style="cursor: pointer; padding: 9px 12px; border-radius: 8px; background: {{ navBg.patients }}; color: {{ navFg.patients }}; display: flex; align-items: center; gap: 10px; justify-content: {{ navJustify }};" style-hover="background: rgba(255,255,255,0.1)">
+        <span style="display: flex; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg></span>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+        <div style="min-width: 0;">
+          <div style="font-size: 14px; font-weight: 600; white-space: nowrap;">Patients</div>
+          <sc-if value="{{ showId }}" hint-placeholder-val="{{ true }}"><div style="font-size: 11px; color: #86b6d4; white-space: nowrap;">Pasien</div></sc-if>
+        </div>
+        </sc-if>
+      </div>
+      <div onClick="{{ nav.doctors }}" title="Doctors" style="cursor: pointer; padding: 9px 12px; border-radius: 8px; background: {{ navBg.doctors }}; color: {{ navFg.doctors }}; display: flex; align-items: center; gap: 10px; justify-content: {{ navJustify }};" style-hover="background: rgba(255,255,255,0.1)">
+        <span style="display: flex; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2v2"></path><path d="M5 2v2"></path><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"></path><path d="M8 15a6 6 0 0 0 12 0v-3"></path><circle cx="20" cy="10" r="2"></circle></svg></span>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+        <div style="min-width: 0;">
+          <div style="font-size: 14px; font-weight: 600; white-space: nowrap;">Doctors</div>
+          <sc-if value="{{ showId }}" hint-placeholder-val="{{ true }}"><div style="font-size: 11px; color: #86b6d4; white-space: nowrap;">Dokter</div></sc-if>
+        </div>
+        </sc-if>
+      </div>
+      <div onClick="{{ nav.appointments }}" title="Appointments" style="cursor: pointer; padding: 9px 12px; border-radius: 8px; background: {{ navBg.appointments }}; color: {{ navFg.appointments }}; display: flex; align-items: center; gap: 10px; justify-content: {{ navJustify }};" style-hover="background: rgba(255,255,255,0.1)">
+        <span style="display: flex; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6"></path><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path><circle cx="18" cy="18" r="4"></circle><path d="M18 16.5v1.5l1 1"></path></svg></span>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+        <div style="min-width: 0;">
+          <div style="font-size: 14px; font-weight: 600; white-space: nowrap;">Appointments</div>
+          <sc-if value="{{ showId }}" hint-placeholder-val="{{ true }}"><div style="font-size: 11px; color: #86b6d4; white-space: nowrap;">Janji Temu</div></sc-if>
+        </div>
+        </sc-if>
+      </div>
+      <div onClick="{{ nav.registrations }}" title="Registration" style="cursor: pointer; padding: 9px 12px; border-radius: 8px; background: {{ navBg.registrations }}; color: {{ navFg.registrations }}; display: flex; align-items: center; gap: 10px; justify-content: {{ navJustify }};" style-hover="background: rgba(255,255,255,0.1)">
+        <span style="display: flex; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path></svg></span>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+        <div style="min-width: 0;">
+          <div style="font-size: 14px; font-weight: 600; white-space: nowrap;">Registration</div>
+          <sc-if value="{{ showId }}" hint-placeholder-val="{{ true }}"><div style="font-size: 11px; color: #86b6d4; white-space: nowrap;">Pendaftaran</div></sc-if>
+        </div>
+        </sc-if>
+      </div>
+      <div onClick="{{ nav.pharmacy }}" title="Pharmacy" style="cursor: pointer; padding: 9px 12px; border-radius: 8px; background: {{ navBg.pharmacy }}; color: {{ navFg.pharmacy }}; display: flex; align-items: center; gap: 10px; justify-content: {{ navJustify }};" style-hover="background: rgba(255,255,255,0.1)">
+        <span style="display: flex; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg></span>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+        <div style="min-width: 0;">
+          <div style="font-size: 14px; font-weight: 600; white-space: nowrap;">Pharmacy</div>
+          <sc-if value="{{ showId }}" hint-placeholder-val="{{ true }}"><div style="font-size: 11px; color: #86b6d4; white-space: nowrap;">Farmasi</div></sc-if>
+        </div>
+        </sc-if>
+      </div>
+      <div onClick="{{ nav.settings }}" title="Settings" style="cursor: pointer; padding: 9px 12px; border-radius: 8px; background: {{ navBg.settings }}; color: {{ navFg.settings }}; display: flex; align-items: center; gap: 10px; justify-content: {{ navJustify }};" style-hover="background: rgba(255,255,255,0.1)">
+        <span style="display: flex; flex-shrink: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.08a2 2 0 0 1 1 1.74v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+        <div style="min-width: 0;">
+          <div style="font-size: 14px; font-weight: 600; white-space: nowrap;">Settings</div>
+          <sc-if value="{{ showId }}" hint-placeholder-val="{{ true }}"><div style="font-size: 11px; color: #86b6d4; white-space: nowrap;">Pengaturan</div></sc-if>
+        </div>
+        </sc-if>
+      </div>
+    </nav>
+    <div style="margin: 0 12px; padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; justify-content: {{ profileJustify }};">
+      <div style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: #7dd3fc; color: #0c4a6e; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">AN</div>
+      <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+      <div style="min-width: 0;">
+        <div style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Aditya Nugraha</div>
+        <div style="font-size: 11px; color: #9cc6e0;">Super Admin</div>
+      </div>
+      </sc-if>
+    </div>
+  </aside>
+
+  <main style="flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-y: auto;">
+    <header style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 32px; background: rgba(255,255,255,0.85); border-bottom: 1px solid #d7e7f5; position: sticky; top: 0; backdrop-filter: blur(8px); z-index: 5;">
+      <div>
+        <h1 style="margin: 0; font-size: 20px; font-weight: 700;">{{ pageTitle }}</h1>
+        <sc-if value="{{ showId }}" hint-placeholder-val="{{ true }}"><div style="font-size: 12px; color: #5b7690;">{{ pageTitleId }}</div></sc-if>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; color: #5b7690; cursor: pointer;" style-hover="background: #eef5fb"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></div>
+        <div style="font-size: 13px; color: #5b7690;">Tue, 21 Jul 2026</div>
+        <div style="padding: 5px 12px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-size: 12px; font-weight: 600;">Klinik Sehat Sentosa</div>
+      </div>
+    </header>
+
+    <sc-if value="{{ show.dashboard }}" hint-placeholder-val="{{ true }}">
+    <div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 18px 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">Active Patients</div>
+            <div style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: #e0f2fe; display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #0284c7;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+          </div>
+          <div style="font-size: 30px; font-weight: 700; margin-top: 10px;">1,284</div>
+          <div style="font-size: 12px; color: #0369a1; margin-top: 4px;">+18 this week</div>
+        </div>
+        <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 18px 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">Appointments Today</div>
+            <div style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: #e0f2fe; display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #0284c7;"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6"></path><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path><circle cx="18" cy="18" r="4"></circle><path d="M18 16.5v1.5l1 1"></path></svg></div>
+          </div>
+          <div style="font-size: 30px; font-weight: 700; margin-top: 10px;">32</div>
+          <div style="font-size: 12px; color: #0369a1; margin-top: 4px;">6 awaiting confirmation</div>
+        </div>
+        <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 18px 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">Pending Registrations</div>
+            <div style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: #e0f2fe; display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #0284c7;"><rect width="8" height="4" x="8" y="2" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path></svg></div>
+          </div>
+          <div style="font-size: 30px; font-weight: 700; margin-top: 10px;">9</div>
+          <div style="font-size: 12px; color: #b45309; margin-top: 4px;">3 older than 24h</div>
+        </div>
+        <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 18px 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">Low-stock Medications</div>
+            <div style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: #e0f2fe; display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #0284c7;"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg></div>
+          </div>
+          <div style="font-size: 30px; font-weight: 700; margin-top: 10px;">6</div>
+          <div style="font-size: 12px; color: #b91c1c; margin-top: 4px;">2 below reorder point</div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; align-items: start;">
+        <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; overflow-x: auto;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #e4eff8;">
+            <div style="font-size: 15px; font-weight: 700;">Today's Appointments</div>
+<div onClick="{{ nav.appointments }}" style="font-size: 13px; color: #0369a1; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">View all<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+          </div>
+          <sc-for list="{{ todayAppts }}" as="a" hint-placeholder-count="5">
+            <div style="display: grid; grid-template-columns: 64px 1.4fr 1.4fr 100px; gap: 12px; align-items: center; padding: 12px 20px; border-bottom: 1px solid #eef5fb; font-size: 13.5px;">
+              <div style="font-weight: 700; color: #0c4a6e;">{{ a.time }}</div>
+              <div>{{ a.patient }}</div>
+              <div style="color: #5b7690;">{{ a.doctor }}</div>
+              <div style="justify-self: end; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ a.pillBg }}; color: {{ a.pillFg }};">{{ a.status }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 16px 20px;">
+            <div style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">Recent Registrations</div>
+            <sc-for list="{{ recentRegs }}" as="r" hint-placeholder-count="4">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid #eef5fb; font-size: 13px;">
+                <div>
+                  <div style="font-weight: 600;">{{ r.patient }}</div>
+                  <div style="color: #5b7690; font-size: 12px;">{{ r.when }}</div>
+                </div>
+                <div style="padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; background: {{ r.pillBg }}; color: {{ r.pillFg }};">{{ r.status }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ show.users }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 16px 20px;">
+<div style="flex: 1; min-width: 220px; max-width: 340px;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">Search by email</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <span style="position: absolute; left: 10px; display: flex; color: #7a94ac; pointer-events: none;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+            <input placeholder="doctor@hospital.com" style="width: 100%; box-sizing: border-box; padding: 9px 12px 9px 32px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 14px; font-family: inherit; background: #f8fbfe; color: #0f2a43; outline: none;" style-focus="border: 1px solid #0284c7" />
+          </div>
+        </div>
+        <div style="min-width: 150px;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">Role</label>
+          <select style="width: 100%; padding: 9px 12px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 14px; font-family: inherit; background: #f8fbfe; color: #0f2a43;">
+            <option>All roles</option><option>Super Admin</option><option>Admin</option><option>Doctor</option><option>Pharmacist</option>
+          </select>
+        </div>
+        <div style="min-width: 130px;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">Status</label>
+          <select style="width: 100%; padding: 9px 12px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 14px; font-family: inherit; background: #f8fbfe; color: #0f2a43;">
+            <option>All</option><option>Active</option><option>Inactive</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button style="padding: 9px 16px; border-radius: 8px; border: none; background: #0284c7; color: #ffffff; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;" style-hover="background: #0369a1">Apply</button>
+          <button style="padding: 9px 16px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #0f2a43; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;" style-hover="background: #f0f7fd">Reset</button>
+        </div>
+<button style="margin-left: auto; padding: 9px 16px; border-radius: 8px; border: none; background: #0c4a6e; color: #ffffff; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;" style-hover="background: #0a3d5c"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Create User</button>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; overflow-x: auto;">
+        <div style="display: grid; grid-template-columns: minmax(150px,2fr) minmax(90px,1.2fr) minmax(74px,90px) minmax(100px,1.2fr) minmax(50px,70px); gap: 12px; padding: 12px 20px; background: #f3f9fe; border-bottom: 1px solid #d7e7f5; font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">
+          <div>Email</div><div>Roles</div><div>Status</div><div>Updated At</div><div></div>
+        </div>
+        <sc-for list="{{ users }}" as="u" hint-placeholder-count="6">
+          <div style="display: grid; grid-template-columns: minmax(150px,2fr) minmax(90px,1.2fr) minmax(74px,90px) minmax(100px,1.2fr) minmax(50px,70px); gap: 12px; align-items: center; padding: 13px 20px; border-bottom: 1px solid #eef5fb; font-size: 13.5px;" style-hover="background: #f8fbfe">
+            <div style="font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ u.email }}</div>
+            <div style="color: #5b7690; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ u.roles }}</div>
+            <div><span style="padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ u.pillBg }}; color: {{ u.pillFg }};">{{ u.status }}</span></div>
+            <div style="color: #5b7690;">{{ u.updated }}</div>
+<div style="color: #0369a1; font-weight: 600; font-size: 13px; cursor: pointer; justify-self: end; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7 21l-4 1 1-4Z"></path></svg>Edit</div>
+          </div>
+        </sc-for>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
+          <div style="font-size: 13px; color: #5b7690;">Page 1 of 4 · 38 users total</div>
+          <div style="display: flex; gap: 8px;">
+<button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #9db4c6; font-size: 13px; font-family: inherit; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Previous</button>
+            <button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #0f2a43; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 4px;" style-hover="background: #f0f7fd">Next<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ show.patients }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 16px 20px;">
+<div style="flex: 1; min-width: 220px; max-width: 340px;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">Search patient</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <span style="position: absolute; left: 10px; display: flex; color: #7a94ac; pointer-events: none;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+            <input placeholder="Name or medical record no." style="width: 100%; box-sizing: border-box; padding: 9px 12px 9px 32px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 14px; font-family: inherit; background: #f8fbfe; color: #0f2a43; outline: none;" style-focus="border: 1px solid #0284c7" />
+          </div>
+        </div>
+        <div style="min-width: 180px;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">Assigned doctor</label>
+          <select style="width: 100%; padding: 9px 12px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 14px; font-family: inherit; background: #f8fbfe; color: #0f2a43;">
+            <option>All doctors</option><option>dr. Andi Prasetyo</option><option>dr. Maya Sari</option><option>dr. Hendra Gunawan</option>
+          </select>
+        </div>
+        <div style="min-width: 130px;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">Status</label>
+          <select style="width: 100%; padding: 9px 12px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 14px; font-family: inherit; background: #f8fbfe; color: #0f2a43;">
+            <option>All</option><option>Active</option><option>Inactive</option>
+          </select>
+        </div>
+<button style="margin-left: auto; padding: 9px 16px; border-radius: 8px; border: none; background: #0284c7; color: #ffffff; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;" style-hover="background: #0369a1"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>New Patient</button>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; overflow-x: auto;">
+        <div style="display: grid; grid-template-columns: minmax(110px,1.6fr) minmax(80px,100px) minmax(88px,110px) minmax(110px,1.6fr) minmax(74px,90px) minmax(50px,64px); gap: 12px; padding: 12px 20px; background: #f3f9fe; border-bottom: 1px solid #d7e7f5; font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">
+          <div>Patient</div><div>MRN</div><div>Date of Birth</div><div>Assigned Doctors</div><div>Status</div><div></div>
+        </div>
+        <sc-for list="{{ patients }}" as="p" hint-placeholder-count="6">
+          <div style="display: grid; grid-template-columns: minmax(110px,1.6fr) minmax(80px,100px) minmax(88px,110px) minmax(110px,1.6fr) minmax(74px,90px) minmax(50px,64px); gap: 12px; align-items: center; padding: 13px 20px; border-bottom: 1px solid #eef5fb; font-size: 13.5px;" style-hover="background: #f8fbfe">
+            <div style="font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ p.name }}</div>
+            <div style="color: #5b7690;">{{ p.mrn }}</div>
+            <div style="color: #5b7690;">{{ p.dob }}</div>
+            <div style="color: #5b7690; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ p.doctors }}</div>
+            <div><span style="padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ p.pillBg }}; color: {{ p.pillFg }};">{{ p.status }}</span></div>
+<div style="color: #0369a1; font-weight: 600; font-size: 13px; cursor: pointer; justify-self: end; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>View</div>
+          </div>
+        </sc-for>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
+          <div style="font-size: 13px; color: #5b7690;">Page 1 of 129 · 1,284 patients total</div>
+          <div style="display: flex; gap: 8px;">
+<button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #9db4c6; font-size: 13px; font-family: inherit; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Previous</button>
+            <button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #0f2a43; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 4px;" style-hover="background: #f0f7fd">Next<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ show.doctors }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 16px 20px;">
+<div style="flex: 1; min-width: 220px; max-width: 340px;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">Search doctor</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <span style="position: absolute; left: 10px; display: flex; color: #7a94ac; pointer-events: none;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+            <input placeholder="Name" style="width: 100%; box-sizing: border-box; padding: 9px 12px 9px 32px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 14px; font-family: inherit; background: #f8fbfe; color: #0f2a43; outline: none;" style-focus="border: 1px solid #0284c7" />
+          </div>
+        </div>
+        <div style="min-width: 180px;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">Specialty</label>
+          <select style="width: 100%; padding: 9px 12px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 14px; font-family: inherit; background: #f8fbfe; color: #0f2a43;">
+            <option>All specialties</option><option>General Medicine</option><option>Cardiology</option><option>Pediatrics</option><option>Internal Medicine</option><option>Orthopedics</option>
+          </select>
+        </div>
+<button style="margin-left: auto; padding: 9px 16px; border-radius: 8px; border: none; background: #0284c7; color: #ffffff; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;" style-hover="background: #0369a1"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>New Doctor</button>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; overflow-x: auto;">
+        <div style="display: grid; grid-template-columns: minmax(100px,1.6fr) minmax(86px,1.1fr) minmax(110px,1.6fr) minmax(56px,90px) minmax(70px,90px) minmax(56px,90px); gap: 12px; padding: 12px 20px; background: #f3f9fe; border-bottom: 1px solid #d7e7f5; font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">
+          <div>Doctor</div><div>Specialty</div><div>Weekly Schedule</div><div>Patients</div><div>Status</div><div></div>
+        </div>
+        <sc-for list="{{ doctors }}" as="d" hint-placeholder-count="5">
+          <div style="display: grid; grid-template-columns: minmax(100px,1.6fr) minmax(86px,1.1fr) minmax(110px,1.6fr) minmax(56px,90px) minmax(70px,90px) minmax(56px,90px); gap: 12px; align-items: center; padding: 13px 20px; border-bottom: 1px solid #eef5fb; font-size: 13.5px;" style-hover="background: #f8fbfe">
+            <div style="font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d.name }}</div>
+            <div style="color: #5b7690; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d.specialty }}</div>
+            <div style="color: #5b7690; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d.schedule }}</div>
+            <div style="color: #5b7690;">{{ d.patients }}</div>
+            <div><span style="padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ d.pillBg }}; color: {{ d.pillFg }};">{{ d.status }}</span></div>
+<div style="color: #0369a1; font-weight: 600; font-size: 13px; cursor: pointer; justify-self: end; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6"></path><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path><circle cx="18" cy="18" r="4"></circle><path d="M18 16.5v1.5l1 1"></path></svg>Schedule</div>
+          </div>
+        </sc-for>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
+          <div style="font-size: 13px; color: #5b7690;">Page 1 of 3 · 24 doctors total</div>
+          <div style="display: flex; gap: 8px;">
+<button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #9db4c6; font-size: 13px; font-family: inherit; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Previous</button>
+            <button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #0f2a43; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 4px;" style-hover="background: #f0f7fd">Next<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ show.appointments }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 16px 20px;">
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <span style="padding: 7px 14px; border-radius: 999px; background: #0284c7; color: #ffffff; font-size: 12.5px; font-weight: 600; cursor: pointer;">All</span>
+          <span style="padding: 7px 14px; border-radius: 999px; background: #eef5fb; color: #0f2a43; font-size: 12.5px; font-weight: 600; cursor: pointer;" style-hover="background: #dcecf9">Scheduled</span>
+          <span style="padding: 7px 14px; border-radius: 999px; background: #eef5fb; color: #0f2a43; font-size: 12.5px; font-weight: 600; cursor: pointer;" style-hover="background: #dcecf9">Completed</span>
+          <span style="padding: 7px 14px; border-radius: 999px; background: #eef5fb; color: #0f2a43; font-size: 12.5px; font-weight: 600; cursor: pointer;" style-hover="background: #dcecf9">Cancelled</span>
+        </div>
+        <div style="min-width: 150px; margin-left: auto;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">From</label>
+          <input type="date" value="2026-07-21" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 13px; font-family: inherit; background: #f8fbfe; color: #0f2a43;" />
+        </div>
+        <div style="min-width: 150px;">
+          <label style="display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #5b7690; margin-bottom: 6px;">To</label>
+          <input type="date" value="2026-07-28" style="width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 13px; font-family: inherit; background: #f8fbfe; color: #0f2a43;" />
+        </div>
+<button style="padding: 9px 16px; border-radius: 8px; border: none; background: #0284c7; color: #ffffff; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;" style-hover="background: #0369a1"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Book Appointment</button>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; overflow-x: auto;">
+        <div style="display: grid; grid-template-columns: 84px minmax(100px,1.4fr) minmax(96px,1.3fr) minmax(70px,1fr) minmax(70px,90px) minmax(50px,70px); gap: 12px; padding: 12px 20px; background: #f3f9fe; border-bottom: 1px solid #d7e7f5; font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">
+          <div>Scheduled</div><div>Patient</div><div>Doctor</div><div>Reason</div><div>Status</div><div></div>
+        </div>
+        <sc-for list="{{ appointments }}" as="a" hint-placeholder-count="7">
+          <div style="display: grid; grid-template-columns: 84px minmax(100px,1.4fr) minmax(96px,1.3fr) minmax(70px,1fr) minmax(70px,90px) minmax(50px,70px); gap: 12px; align-items: center; padding: 13px 20px; border-bottom: 1px solid #eef5fb; font-size: 13.5px;" style-hover="background: #f8fbfe">
+            <div><div style="font-weight: 700; color: #0c4a6e;">{{ a.time }}</div><div style="font-size: 12px; color: #5b7690;">{{ a.date }}</div></div>
+            <div style="font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ a.patient }}</div>
+            <div style="color: #5b7690; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ a.doctor }}</div>
+            <div style="color: #5b7690; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ a.reason }}</div>
+            <div><span style="padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ a.pillBg }}; color: {{ a.pillFg }};">{{ a.status }}</span></div>
+<div style="color: {{ a.actionColor }}; font-weight: 600; font-size: 13px; cursor: pointer; justify-self: end; display: flex; align-items: center; gap: 4px;"><sc-if value="{{ a.isCancel }}" hint-placeholder-val="{{ false }}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></sc-if><sc-if value="{{ a.isView }}" hint-placeholder-val="{{ true }}"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg></sc-if>{{ a.action }}</div>
+          </div>
+        </sc-for>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
+          <div style="font-size: 13px; color: #5b7690;">Page 1 of 12 · 118 appointments in range</div>
+          <div style="display: flex; gap: 8px;">
+<button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #9db4c6; font-size: 13px; font-family: inherit; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Previous</button>
+            <button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #0f2a43; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 4px;" style-hover="background: #f0f7fd">Next<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ show.registrations }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 16px 20px;">
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <span style="padding: 7px 14px; border-radius: 999px; background: #0284c7; color: #ffffff; font-size: 12.5px; font-weight: 600; cursor: pointer;">All</span>
+          <span style="padding: 7px 14px; border-radius: 999px; background: #eef5fb; color: #0f2a43; font-size: 12.5px; font-weight: 600; cursor: pointer;" style-hover="background: #dcecf9">Pending</span>
+          <span style="padding: 7px 14px; border-radius: 999px; background: #eef5fb; color: #0f2a43; font-size: 12.5px; font-weight: 600; cursor: pointer;" style-hover="background: #dcecf9">Confirmed</span>
+          <span style="padding: 7px 14px; border-radius: 999px; background: #eef5fb; color: #0f2a43; font-size: 12.5px; font-weight: 600; cursor: pointer;" style-hover="background: #dcecf9">Completed</span>
+          <span style="padding: 7px 14px; border-radius: 999px; background: #eef5fb; color: #0f2a43; font-size: 12.5px; font-weight: 600; cursor: pointer;" style-hover="background: #dcecf9">Cancelled</span>
+        </div>
+<button style="margin-left: auto; padding: 9px 16px; border-radius: 8px; border: none; background: #0284c7; color: #ffffff; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px;" style-hover="background: #0369a1"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>New Registration</button>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; overflow-x: auto;">
+        <div style="display: grid; grid-template-columns: minmax(76px,100px) minmax(104px,1.4fr) minmax(86px,1.1fr) minmax(96px,1.2fr) minmax(70px,90px) minmax(50px,70px); gap: 12px; padding: 12px 20px; background: #f3f9fe; border-bottom: 1px solid #d7e7f5; font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">
+          <div>Reg. No.</div><div>Patient</div><div>Registered At</div><div>Linked Appointment</div><div>Status</div><div></div>
+        </div>
+        <sc-for list="{{ registrations }}" as="r" hint-placeholder-count="6">
+          <div style="display: grid; grid-template-columns: minmax(76px,100px) minmax(104px,1.4fr) minmax(86px,1.1fr) minmax(96px,1.2fr) minmax(70px,90px) minmax(50px,70px); gap: 12px; align-items: center; padding: 13px 20px; border-bottom: 1px solid #eef5fb; font-size: 13.5px;" style-hover="background: #f8fbfe">
+            <div style="font-weight: 700; color: #0c4a6e;">{{ r.no }}</div>
+            <div style="font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ r.patient }}</div>
+            <div style="color: #5b7690; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ r.at }}</div>
+            <div style="color: #5b7690; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ r.appt }}</div>
+            <div><span style="padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ r.pillBg }}; color: {{ r.pillFg }};">{{ r.status }}</span></div>
+<div style="color: #0369a1; font-weight: 600; font-size: 13px; cursor: pointer; justify-self: end; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>Open</div>
+          </div>
+        </sc-for>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
+          <div style="font-size: 13px; color: #5b7690;">Page 1 of 5 · 47 registrations total</div>
+          <div style="display: flex; gap: 8px;">
+<button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #9db4c6; font-size: 13px; font-family: inherit; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Previous</button>
+            <button style="padding: 7px 14px; border-radius: 8px; border: 1px solid #c3dbee; background: #ffffff; color: #0f2a43; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 4px;" style-hover="background: #f0f7fd">Next<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ show.pharmacy }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; align-items: start;">
+        <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; overflow-x: auto;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 20px; border-bottom: 1px solid #e4eff8;">
+            <div style="font-size: 15px; font-weight: 700;">Medication Stock</div>
+<div style="position: relative; display: flex; align-items: center;">
+              <span style="position: absolute; left: 10px; display: flex; color: #7a94ac; pointer-events: none;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+              <input placeholder="Search medication…" style="box-sizing: border-box; padding: 8px 12px 8px 32px; border: 1px solid #c3dbee; border-radius: 8px; font-size: 13px; font-family: inherit; background: #f8fbfe; color: #0f2a43; outline: none; width: 220px;" style-focus="border: 1px solid #0284c7" />
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: minmax(130px,1.7fr) minmax(74px,90px) minmax(54px,70px) minmax(54px,70px) minmax(74px,90px); gap: 12px; padding: 12px 20px; background: #f3f9fe; border-bottom: 1px solid #d7e7f5; font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5b7690;">
+            <div>Medication</div><div>Code</div><div>Stock</div><div>Unit</div><div>Status</div>
+          </div>
+          <sc-for list="{{ medications }}" as="m" hint-placeholder-count="6">
+            <div style="display: grid; grid-template-columns: minmax(130px,1.7fr) minmax(74px,90px) minmax(54px,70px) minmax(54px,70px) minmax(74px,90px); gap: 12px; align-items: center; padding: 13px 20px; border-bottom: 1px solid #eef5fb; font-size: 13.5px;" style-hover="background: #f8fbfe">
+              <div style="font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ m.name }}</div>
+              <div style="color: #5b7690;">{{ m.code }}</div>
+              <div style="font-weight: 700; color: {{ m.stockColor }};">{{ m.stock }}</div>
+              <div style="color: #5b7690;">{{ m.unit }}</div>
+              <div><span style="padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ m.pillBg }}; color: {{ m.pillFg }};">{{ m.status }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 16px 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div style="font-size: 15px; font-weight: 700;">Pending Prescriptions</div>
+<button style="padding: 7px 12px; border-radius: 8px; border: none; background: #0284c7; color: #ffffff; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; display: flex; align-items: center; gap: 4px;" style-hover="background: #0369a1"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>New</button>
+            </div>
+            <sc-for list="{{ prescriptions }}" as="rx" hint-placeholder-count="4">
+              <div style="padding: 10px 0; border-bottom: 1px solid #eef5fb;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                  <div style="font-weight: 600; font-size: 13.5px;">{{ rx.patient }}</div>
+                  <div style="font-size: 12px; color: #5b7690;">{{ rx.no }}</div>
+                </div>
+                <div style="font-size: 12.5px; color: #5b7690; margin-top: 2px;">{{ rx.items }}</div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px;">
+                  <span style="padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #fef3c7; color: #a16207;">Awaiting dispense</span>
+<span style="color: #0369a1; font-weight: 600; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path><path d="m21.854 2.147-10.94 10.939"></path></svg>Dispense</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 16px 20px;">
+            <div style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">Recent Dispenses</div>
+            <sc-for list="{{ dispenses }}" as="ds" hint-placeholder-count="3">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid #eef5fb; font-size: 13px;">
+                <div>
+                  <div style="font-weight: 600;">{{ ds.patient }}</div>
+                  <div style="color: #5b7690; font-size: 12px;">{{ ds.detail }}</div>
+                </div>
+                <div style="color: #5b7690; font-size: 12px; white-space: nowrap;">{{ ds.when }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ show.settings }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 18px; max-width: 560px;">
+      <div style="background: #ffffff; border: 1px solid #d7e7f5; border-radius: 14px; padding: 20px 24px;">
+        <div style="font-size: 15px; font-weight: 700;">Language</div>
+        <div style="font-size: 13px; color: #5b7690; margin-top: 4px; margin-bottom: 16px;">Choose how menu labels and page titles are displayed.</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div onClick="{{ setLanguage.english }}" style="cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 10px; border: 1.5px solid {{ langBorder.english }}; background: {{ langBg.english }};">
+            <div style="width: 18px; height: 18px; flex-shrink: 0; border-radius: 50%; border: 2px solid {{ langDot.english }}; display: flex; align-items: center; justify-content: center;"><sc-if value="{{ langSelected.english }}" hint-placeholder-val="{{ false }}"><div style="width: 9px; height: 9px; border-radius: 50%; background: #0284c7;"></div></sc-if></div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600;">English</div>
+              <div style="font-size: 12px; color: #5b7690;">Show all labels in English only</div>
+            </div>
+          </div>
+          <div onClick="{{ setLanguage.bilingual }}" style="cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 10px; border: 1.5px solid {{ langBorder.bilingual }}; background: {{ langBg.bilingual }};">
+            <div style="width: 18px; height: 18px; flex-shrink: 0; border-radius: 50%; border: 2px solid {{ langDot.bilingual }}; display: flex; align-items: center; justify-content: center;"><sc-if value="{{ langSelected.bilingual }}" hint-placeholder-val="{{ true }}"><div style="width: 9px; height: 9px; border-radius: 50%; background: #0284c7;"></div></sc-if></div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600;">English &amp; Bahasa Indonesia</div>
+              <div style="font-size: 12px; color: #5b7690;">Show Indonesian translation below each label</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;initialScreen&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;dashboard&quot;, &quot;options&quot;: [&quot;dashboard&quot;, &quot;users&quot;, &quot;patients&quot;, &quot;doctors&quot;, &quot;appointments&quot;, &quot;registrations&quot;, &quot;pharmacy&quot;, &quot;settings&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;View&quot;},
+  &quot;defaultLanguage&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;bilingual&quot;, &quot;options&quot;: [&quot;english&quot;, &quot;bilingual&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;View&quot;}
+}">
+class Component extends DCLogic {
+  state = { screen: undefined, collapsed: false, language: undefined };
+  renderVals() {
+    const screen = this.state.screen ?? this.props.initialScreen ?? 'dashboard';
+    const keys = ['dashboard', 'users', 'patients', 'doctors', 'appointments', 'registrations', 'pharmacy', 'settings'];
+    const nav = {}, navBg = {}, navFg = {}, show = {};
+    keys.forEach((k) => {
+      nav[k] = () => this.setState({ screen: k });
+      navBg[k] = k === screen ? 'rgba(255,255,255,0.16)' : 'transparent';
+      navFg[k] = k === screen ? '#ffffff' : '#c8e0f0';
+      show[k] = k === screen;
+    });
+    const titles = {
+      dashboard: ['Dashboard', 'Dasbor'],
+      users: ['Admin Users', 'Pengguna Admin'],
+      patients: ['Patients', 'Pasien'],
+      doctors: ['Doctors', 'Dokter'],
+      appointments: ['Appointments', 'Janji Temu'],
+      registrations: ['Registration', 'Pendaftaran'],
+      pharmacy: ['Pharmacy', 'Farmasi'],
+      settings: ['Settings', 'Pengaturan'],
+    };
+    const language = this.state.language ?? this.props.defaultLanguage ?? 'bilingual';
+    const langBorder = { english: language === 'english' ? '#0284c7' : '#d7e7f5', bilingual: language === 'bilingual' ? '#0284c7' : '#d7e7f5' };
+    const langBg = { english: language === 'english' ? '#f0f9ff' : '#ffffff', bilingual: language === 'bilingual' ? '#f0f9ff' : '#ffffff' };
+    const langDot = { english: language === 'english' ? '#0284c7' : '#c3dbee', bilingual: language === 'bilingual' ? '#0284c7' : '#c3dbee' };
+    const langSelected = { english: language === 'english', bilingual: language === 'bilingual' };
+    const setLanguage = { english: () => this.setState({ language: 'english' }), bilingual: () => this.setState({ language: 'bilingual' }) };
+    const pill = {
+      active: ['#dbeafe', '#1d4ed8'], inactive: ['#e2e8f0', '#475569'],
+      scheduled: ['#e0f2fe', '#0369a1'], completed: ['#dcfce7', '#15803d'],
+      cancelled: ['#fee2e2', '#b91c1c'], pending: ['#fef3c7', '#a16207'],
+      confirmed: ['#dbeafe', '#1d4ed8'], instock: ['#dcfce7', '#15803d'],
+      low: ['#fef3c7', '#a16207'], out: ['#fee2e2', '#b91c1c'],
+    };
+    const p = (k, label) => ({ pillBg: pill[k][0], pillFg: pill[k][1], status: label });
+    const collapsed = this.state.collapsed;
+    return {
+      showId: language === 'bilingual',
+      collapsed, notCollapsed: !collapsed, showLabels: !collapsed, sidebarWidth: collapsed ? 76 : 236,
+      brandDirection: collapsed ? 'column' : 'row', brandJustify: collapsed ? 'center' : 'space-between',
+      profileJustify: collapsed ? 'center' : 'flex-start',
+      navJustify: collapsed ? 'center' : 'flex-start',
+      toggleSidebar: () => this.setState((s) => ({ collapsed: !s.collapsed })),
+      nav, navBg, navFg, show,
+      setLanguage, langBorder, langBg, langDot, langSelected,
+      pageTitle: titles[screen][0], pageTitleId: titles[screen][1],
+      todayAppts: [
+        { time: '08:30', patient: 'Siti Rahmawati', doctor: 'dr. Andi Prasetyo', ...p('completed', 'Completed') },
+        { time: '09:15', patient: 'Budi Santoso', doctor: 'dr. Maya Sari', ...p('completed', 'Completed') },
+        { time: '10:00', patient: 'Dewi Lestari', doctor: 'dr. Hendra Gunawan', ...p('scheduled', 'In progress') },
+        { time: '10:45', patient: 'Agus Wijaya', doctor: 'dr. Andi Prasetyo', ...p('scheduled', 'Scheduled') },
+        { time: '11:30', patient: 'Rina Kusuma', doctor: 'dr. Lia Anggraini', ...p('cancelled', 'Cancelled') },
+      ],
+      recentRegs: [
+        { patient: 'Fajar Hidayat', when: '10 min ago', ...p('pending', 'Pending') },
+        { patient: 'Nur Aini', when: '42 min ago', ...p('pending', 'Pending') },
+        { patient: 'Teguh Prabowo', when: '1 h ago', ...p('confirmed', 'Confirmed') },
+        { patient: 'Melati Putri', when: '3 h ago', ...p('confirmed', 'Confirmed') },
+      ],
+      users: [
+        { email: 'aditya.nugraha@salingjaga.id', roles: 'Super Admin', updated: '21 Jul 2026, 08:02', ...p('active', 'Active') },
+        { email: 'admin.klinik@salingjaga.id', roles: 'Admin', updated: '20 Jul 2026, 17:44', ...p('active', 'Active') },
+        { email: 'andi.prasetyo@salingjaga.id', roles: 'Doctor', updated: '20 Jul 2026, 14:10', ...p('active', 'Active') },
+        { email: 'maya.sari@salingjaga.id', roles: 'Doctor', updated: '19 Jul 2026, 09:31', ...p('active', 'Active') },
+        { email: 'apotek.pusat@salingjaga.id', roles: 'Pharmacist', updated: '18 Jul 2026, 11:07', ...p('active', 'Active') },
+        { email: 'staf.lama@salingjaga.id', roles: 'Admin', updated: '02 Mar 2026, 10:20', ...p('inactive', 'Inactive') },
+      ],
+      patients: [
+        { name: 'Siti Rahmawati', mrn: 'MR-004821', dob: '12 Mar 1985', doctors: 'dr. Andi Prasetyo', ...p('active', 'Active') },
+        { name: 'Budi Santoso', mrn: 'MR-004822', dob: '03 Nov 1972', doctors: 'dr. Maya Sari, dr. Hendra Gunawan', ...p('active', 'Active') },
+        { name: 'Dewi Lestari', mrn: 'MR-004819', dob: '27 Jun 1990', doctors: 'dr. Hendra Gunawan', ...p('active', 'Active') },
+        { name: 'Agus Wijaya', mrn: 'MR-004790', dob: '15 Jan 1968', doctors: 'dr. Andi Prasetyo', ...p('active', 'Active') },
+        { name: 'Rina Kusuma', mrn: 'MR-004765', dob: '08 Sep 1995', doctors: 'dr. Lia Anggraini', ...p('active', 'Active') },
+        { name: 'Joko Susilo', mrn: 'MR-004512', dob: '30 Apr 1958', doctors: '—', ...p('inactive', 'Inactive') },
+      ],
+      doctors: [
+        { name: 'dr. Andi Prasetyo', specialty: 'Cardiology', schedule: 'Mon–Fri · 08:00–14:00', patients: '86', ...p('active', 'Active') },
+        { name: 'dr. Maya Sari', specialty: 'Pediatrics', schedule: 'Mon, Wed, Fri · 09:00–15:00', patients: '112', ...p('active', 'Active') },
+        { name: 'dr. Hendra Gunawan', specialty: 'Internal Medicine', schedule: 'Tue–Sat · 08:00–13:00', patients: '94', ...p('active', 'Active') },
+        { name: 'dr. Lia Anggraini', specialty: 'General Medicine', schedule: 'Mon–Fri · 13:00–19:00', patients: '138', ...p('active', 'Active') },
+        { name: 'dr. Rudi Hartono', specialty: 'Orthopedics', schedule: 'Thu, Sat · 10:00–16:00', patients: '41', ...p('inactive', 'On leave') },
+      ],
+      appointments: [
+        { time: '08:30', date: '21 Jul 2026', patient: 'Siti Rahmawati', doctor: 'dr. Andi Prasetyo', reason: 'Follow-up', action: 'View', actionColor: '#0369a1', ...p('completed', 'Completed') },
+        { time: '09:15', date: '21 Jul 2026', patient: 'Budi Santoso', doctor: 'dr. Maya Sari', reason: 'Consultation', action: 'View', actionColor: '#0369a1', ...p('completed', 'Completed') },
+        { time: '10:45', date: '21 Jul 2026', patient: 'Agus Wijaya', doctor: 'dr. Andi Prasetyo', reason: 'Check-up', action: 'Cancel', actionColor: '#b91c1c', ...p('scheduled', 'Scheduled') },
+        { time: '11:30', date: '21 Jul 2026', patient: 'Rina Kusuma', doctor: 'dr. Lia Anggraini', reason: 'Consultation', action: 'View', actionColor: '#0369a1', ...p('cancelled', 'Cancelled') },
+        { time: '13:00', date: '22 Jul 2026', patient: 'Dewi Lestari', doctor: 'dr. Hendra Gunawan', reason: 'Lab review', action: 'Cancel', actionColor: '#b91c1c', ...p('scheduled', 'Scheduled') },
+        { time: '14:30', date: '22 Jul 2026', patient: 'Fajar Hidayat', doctor: 'dr. Maya Sari', reason: 'Vaccination', action: 'Cancel', actionColor: '#b91c1c', ...p('scheduled', 'Scheduled') },
+        { time: '09:00', date: '23 Jul 2026', patient: 'Nur Aini', doctor: 'dr. Lia Anggraini', reason: 'Check-up', action: 'Cancel', actionColor: '#b91c1c', ...p('scheduled', 'Scheduled') },
+      ].map((a) => ({ ...a, isCancel: a.action === 'Cancel', isView: a.action !== 'Cancel' })),
+      registrations: [
+        { no: 'REG-1093', patient: 'Fajar Hidayat', at: '21 Jul 2026, 09:52', appt: '22 Jul · dr. Maya Sari', ...p('pending', 'Pending') },
+        { no: 'REG-1092', patient: 'Nur Aini', at: '21 Jul 2026, 09:20', appt: '23 Jul · dr. Lia Anggraini', ...p('pending', 'Pending') },
+        { no: 'REG-1091', patient: 'Teguh Prabowo', at: '21 Jul 2026, 08:47', appt: '21 Jul · dr. Hendra Gunawan', ...p('confirmed', 'Confirmed') },
+        { no: 'REG-1090', patient: 'Melati Putri', at: '21 Jul 2026, 08:05', appt: '21 Jul · dr. Andi Prasetyo', ...p('confirmed', 'Confirmed') },
+        { no: 'REG-1089', patient: 'Siti Rahmawati', at: '20 Jul 2026, 16:12', appt: '21 Jul · dr. Andi Prasetyo', ...p('completed', 'Completed') },
+        { no: 'REG-1088', patient: 'Hasan Basri', at: '20 Jul 2026, 14:40', appt: '—', ...p('cancelled', 'Cancelled') },
+      ],
+      medications: [
+        { name: 'Amoxicillin 500 mg', code: 'MED-0114', stock: '1,240', unit: 'capsule', stockColor: '#0f2a43', ...p('instock', 'In stock') },
+        { name: 'Paracetamol 500 mg', code: 'MED-0021', stock: '3,860', unit: 'tablet', stockColor: '#0f2a43', ...p('instock', 'In stock') },
+        { name: 'Metformin 850 mg', code: 'MED-0342', stock: '96', unit: 'tablet', stockColor: '#a16207', ...p('low', 'Low stock') },
+        { name: 'Amlodipine 10 mg', code: 'MED-0287', stock: '54', unit: 'tablet', stockColor: '#a16207', ...p('low', 'Low stock') },
+        { name: 'Omeprazole 20 mg', code: 'MED-0198', stock: '0', unit: 'capsule', stockColor: '#b91c1c', ...p('out', 'Out of stock') },
+        { name: 'Cetirizine 10 mg', code: 'MED-0076', stock: '820', unit: 'tablet', stockColor: '#0f2a43', ...p('instock', 'In stock') },
+      ],
+      prescriptions: [
+        { patient: 'Siti Rahmawati', no: 'RX-2041', items: 'Amoxicillin 500 mg ×15 · Paracetamol ×10' },
+        { patient: 'Budi Santoso', no: 'RX-2040', items: 'Metformin 850 mg ×30' },
+        { patient: 'Teguh Prabowo', no: 'RX-2039', items: 'Cetirizine 10 mg ×10' },
+        { patient: 'Melati Putri', no: 'RX-2038', items: 'Amlodipine 10 mg ×30' },
+      ],
+      dispenses: [
+        { patient: 'Dewi Lestari', detail: 'RX-2036 · 2 items', when: '10:14' },
+        { patient: 'Agus Wijaya', detail: 'RX-2035 · 1 item', when: '09:48' },
+        { patient: 'Rina Kusuma', detail: 'RX-2033 · 3 items', when: '08:55' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

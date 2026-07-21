@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HMS Portal - Hospital Management System</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700;800&amp;family=Geist+Mono&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#d3e4fe",
+                        "surface-bright": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#390c00",
+                        "background": "#f8f9ff",
+                        "on-secondary-fixed": "#00201d",
+                        "surface-dim": "#cbdbf5",
+                        "secondary-container": "#86f2e4",
+                        "primary-fixed": "#dae1ff",
+                        "on-primary-fixed": "#001849",
+                        "outline-variant": "#c2c6d8",
+                        "inverse-primary": "#b3c5ff",
+                        "tertiary-container": "#cc4204",
+                        "surface-container-high": "#dce9ff",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "surface-tint": "#0054d6",
+                        "on-secondary-fixed-variant": "#005049",
+                        "on-secondary-container": "#006f66",
+                        "inverse-surface": "#213145",
+                        "on-primary-container": "#f8f7ff",
+                        "on-tertiary-container": "#fff6f4",
+                        "on-surface-variant": "#424656",
+                        "on-surface": "#0b1c30",
+                        "secondary": "#006a61",
+                        "primary-container": "#0066ff",
+                        "outline": "#727687",
+                        "tertiary-fixed": "#ffdbd0",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "tertiary-fixed-dim": "#ffb59d",
+                        "surface-container-low": "#eff4ff",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-background": "#0b1c30",
+                        "surface": "#f8f9ff",
+                        "tertiary": "#a33200",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#6bd8cb",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#832600",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#e5eeff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#0050cb",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#89f5e7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "lg": "24px",
+                        "gutter": "20px",
+                        "container-max": "1440px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "h3": ["Geist"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "h1": ["Geist"],
+                        "display": ["Geist"],
+                        "mono": ["Geist Mono"],
+                        "h1-mobile": ["Geist"],
+                        "h2": ["Geist"],
+                        "caption": ["Inter"],
+                        "label-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "h3": ["18px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "mono": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "h1-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "h2": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8f9ff;
+            color: #0b1c30;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-active {
+            background-color: #0066ff; /* primary-container fallback */
+            color: #f8f7ff;
+        }
+        .bento-card {
+            background: #ffffff;
+            border: 1px solid #c2c6d8;
+            transition: all 0.2s ease-in-out;
+        }
+        .bento-card:hover {
+            border-color: #0050cb;
+            box-shadow: 0 4px 12px rgba(0, 80, 203, 0.08);
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md bg-background">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-[240px] bg-surface dark:bg-on-surface border-r border-outline-variant dark:border-outline flex flex-col gap-sm p-md z-50">
+<div class="mb-lg flex items-center gap-md px-sm">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[24px]">medical_services</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface dark:text-inverse-on-surface leading-none">St. Luke's</h3>
+<p class="font-caption text-caption text-on-surface-variant opacity-70">Medical Center</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-md px-md py-sm bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface hover:translate-x-1 rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Patients</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface hover:translate-x-1 rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+<span class="font-label-md text-label-md">Doctors</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface hover:translate-x-1 rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span class="font-label-md text-label-md">Appointments</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface hover:translate-x-1 rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+<span class="font-label-md text-label-md">Registration</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface hover:translate-x-1 rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="local_pharmacy">local_pharmacy</span>
+<span class="font-label-md text-label-md">Pharmacy</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface hover:translate-x-1 rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-md text-label-md">AI Assistant</span>
+</a>
+<div class="pt-lg mt-lg border-t border-outline-variant">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-inverse-surface hover:translate-x-1 rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Administration</span>
+</a>
+</div>
+</nav>
+<div class="mt-auto p-md bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-sm mb-xs">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-md text-primary font-bold">Pro Account</span>
+</div>
+<p class="text-[12px] text-on-surface-variant leading-tight mb-md">Unlock full hospital analytics and AI reporting.</p>
+<button class="w-full py-xs bg-primary text-on-primary rounded font-label-md hover:bg-surface-tint transition-colors">Upgrade</button>
+</div>
+</aside>
+<!-- Main Wrapper -->
+<div class="ml-[240px] flex flex-col min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="w-full sticky top-0 z-40 bg-surface-container-lowest dark:bg-inverse-surface shadow-sm border-b border-outline-variant dark:border-outline">
+<div class="flex justify-between items-center h-16 px-lg w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-lg flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-sm pl-11 pr-md font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search patients, records, or departments..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full relative">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-xs"></div>
+<div class="flex items-center gap-sm pl-xs">
+<div class="text-right hidden sm:block">
+<p class="font-label-md text-on-surface leading-none">Dr. Julian Vance</p>
+<p class="text-[11px] text-on-surface-variant">Chief Surgeon</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional portrait of a male doctor in his 40s wearing a white lab coat and a stethoscope. He has a friendly, confident expression. The background is a brightly lit, sterile clinical environment with soft bokeh effects. The lighting is clean and balanced, reflecting a professional healthcare setting with clinical blue and slate tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVkiodQqZurB4OQAOhAQghoDGZ9YNpqi-jG_TGtJAIR0bzHyvMnNpazXdhGvvb_N4UJ-ZpLlQ5mVBM6XXpapXjGHSUA2mqxzKYX6pQgG5WI7m6u-q8i1tFZwEuqZeUx0H3qWWLp8Hp77sxx0WoE60asAkGx72-wMmvd5ynX-Lk1ixfiisZVT6UTrWPvsTpUOBqltjE3cYPB4QNKe0ZKrispEwzjZf8gtXIYZemmPsBO5-j8opvK0bngGmavU9H5NaoGU1l3Eu4xSw"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 p-lg max-w-container-max mx-auto w-full space-y-lg">
+<!-- Hero Header -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface">Hospital Overview</h1>
+<p class="text-on-surface-variant font-body-md">Good morning, Dr. Vance. Here's what's happening today at St. Luke's.</p>
+</div>
+<div class="flex gap-sm">
+<button class="flex items-center gap-sm px-md py-sm bg-surface-container-high text-on-surface-variant rounded-lg font-label-md hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+                        June 14, 2024
+                    </button>
+<button class="flex items-center gap-sm px-md py-sm bg-primary text-on-primary rounded-lg font-label-md hover:opacity-90 transition-opacity shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        New Case
+                    </button>
+</div>
+</section>
+<!-- Metric Cards Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+<!-- Today's Patients -->
+<div class="bento-card p-md rounded-xl flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">personal_injury</span>
+</div>
+<span class="text-secondary font-mono text-[12px] flex items-center gap-xs">+12% <span class="material-symbols-outlined text-[14px]">trending_up</span></span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-md">Today's Patients</p>
+<h2 class="text-display font-display leading-tight">24</h2>
+</div>
+<div class="mt-xs h-1 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[65%]"></div>
+</div>
+</div>
+<!-- Appointments -->
+<div class="bento-card p-md rounded-xl flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-lg bg-secondary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">calendar_month</span>
+</div>
+<span class="text-on-surface-variant font-mono text-[12px]">Daily Avg: 15</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-md">Appointments</p>
+<h2 class="text-display font-display leading-tight">12</h2>
+</div>
+<p class="text-caption text-on-surface-variant/70 italic">4 upcoming in the next hour</p>
+</div>
+<!-- Doctors on Duty -->
+<div class="bento-card p-md rounded-xl flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">medical_services</span>
+</div>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-outline-variant border-2 border-surface"></div>
+<div class="w-6 h-6 rounded-full bg-outline-variant border-2 border-surface"></div>
+</div>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-md">Doctors on Duty</p>
+<h2 class="text-display font-display leading-tight">8</h2>
+</div>
+<p class="text-caption text-on-surface-variant/70">3 Surgeons, 5 General Phys.</p>
+</div>
+<!-- Pending Prescriptions -->
+<div class="bento-card p-md rounded-xl flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-lg bg-error-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-error">prescriptions</span>
+</div>
+<div class="px-xs py-[2px] bg-error-container text-on-error-container text-[10px] rounded font-bold uppercase tracking-wider">Urgent</div>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-md">Pending RX</p>
+<h2 class="text-display font-display leading-tight text-error">5</h2>
+</div>
+<p class="text-caption text-error/70">Awaiting pharmacist verification</p>
+</div>
+</section>
+<!-- Main Dashboard Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Upcoming Appointments List (Left 2/3) -->
+<section class="lg:col-span-2 flex flex-col gap-md">
+<div class="bento-card rounded-xl overflow-hidden flex flex-col h-full">
+<div class="p-md border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<h3 class="font-h3 text-h3">Upcoming Appointments</h3>
+<span class="bg-surface-container-high px-sm py-xs rounded-full text-[12px] font-mono">12 Total</span>
+</div>
+<button class="text-primary font-label-md hover:underline flex items-center gap-xs">
+                                View Full Schedule
+                                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-md uppercase text-[11px] tracking-widest">
+<tr>
+<th class="px-md py-sm">Patient</th>
+<th class="px-md py-sm">Reason / Dept.</th>
+<th class="px-md py-sm">Time</th>
+<th class="px-md py-sm">Status</th>
+<th class="px-md py-sm text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-md py-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[12px]">JS</div>
+<div>
+<p class="font-label-md leading-none">James Smith</p>
+<p class="text-[11px] text-on-surface-variant">ID: #PT-9021</p>
+</div>
+</div>
+</td>
+<td class="px-md py-md">
+<p class="font-body-md text-on-surface">Cardiology Follow-up</p>
+<p class="text-[11px] text-on-surface-variant">Dr. Sarah Miller</p>
+</td>
+<td class="px-md py-md font-mono text-[13px]">10:30 AM</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center gap-xs px-sm py-1 rounded-full bg-secondary-container/20 text-on-secondary-container text-[12px] font-medium">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>
+                                                Confirmed
+                                            </span>
+</td>
+<td class="px-md py-md text-right">
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-md py-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-tertiary-container/10 text-tertiary flex items-center justify-center font-bold text-[12px]">RW</div>
+<div>
+<p class="font-label-md leading-none">Robert Wilson</p>
+<p class="text-[11px] text-on-surface-variant">ID: #PT-8842</p>
+</div>
+</div>
+</td>
+<td class="px-md py-md">
+<p class="font-body-md text-on-surface">Post-Op Checkup</p>
+<p class="text-[11px] text-on-surface-variant">Dr. Julian Vance</p>
+</td>
+<td class="px-md py-md font-mono text-[13px]">11:15 AM</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center gap-xs px-sm py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[12px] font-medium">
+<span class="w-1.5 h-1.5 bg-outline rounded-full"></span>
+                                                Arrived
+                                            </span>
+</td>
+<td class="px-md py-md text-right">
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-md py-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[12px]">ED</div>
+<div>
+<p class="font-label-md leading-none">Emily Davis</p>
+<p class="text-[11px] text-on-surface-variant">ID: #PT-1033</p>
+</div>
+</div>
+</td>
+<td class="px-md py-md">
+<p class="font-body-md text-on-surface">Annual Physical</p>
+<p class="text-[11px] text-on-surface-variant">Dr. Alan Grant</p>
+</td>
+<td class="px-md py-md font-mono text-[13px]">11:45 AM</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center gap-xs px-sm py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-[12px] font-medium">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                                                In Progress
+                                            </span>
+</td>
+<td class="px-md py-md text-right">
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-auto p-md bg-surface-container-low/30 border-t border-outline-variant/30 flex items-center justify-center">
+<p class="text-[12px] text-on-surface-variant">Next automatic refresh in <span class="font-mono">04:52</span></p>
+</div>
+</div>
+</section>
+<!-- Sidebar Content (Right 1/3) -->
+<aside class="flex flex-col gap-lg">
+<!-- Quick Actions -->
+<div class="bento-card p-md rounded-xl space-y-md">
+<h3 class="font-h3 text-h3 flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">bolt</span>
+                            Quick Actions
+                        </h3>
+<div class="grid grid-cols-1 gap-sm">
+<button class="flex items-center gap-md p-sm rounded-lg hover:bg-primary/5 border border-transparent hover:border-primary/20 transition-all text-left group">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">person_add</span>
+</div>
+<div>
+<p class="font-label-md text-on-surface">Register Patient</p>
+<p class="text-[11px] text-on-surface-variant">Add new patient to the system</p>
+</div>
+</button>
+<button class="flex items-center gap-md p-sm rounded-lg hover:bg-secondary/5 border border-transparent hover:border-secondary/20 transition-all text-left group">
+<div class="w-10 h-10 rounded-full bg-secondary-container/10 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">calendar_add_on</span>
+</div>
+<div>
+<p class="font-label-md text-on-surface">Schedule Appointment</p>
+<p class="text-[11px] text-on-surface-variant">Find an open slot for a doctor</p>
+</div>
+</button>
+<button class="flex items-center gap-md p-sm rounded-lg hover:bg-surface-container-high border border-transparent hover:border-outline-variant transition-all text-left group">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div>
+<p class="font-label-md text-on-surface">Generate Report</p>
+<p class="text-[11px] text-on-surface-variant">Daily clinical performance data</p>
+</div>
+</button>
+</div>
+</div>
+<!-- Recent Activity Timeline -->
+<div class="bento-card p-md rounded-xl flex flex-col gap-md flex-1">
+<h3 class="font-h3 text-h3 flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">history</span>
+                            Recent Activity
+                        </h3>
+<div class="relative pl-6 space-y-lg before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-outline-variant">
+<div class="relative">
+<span class="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-primary border-2 border-surface"></span>
+<p class="text-caption font-mono text-on-surface-variant mb-xs">09:12 AM</p>
+<p class="font-label-md text-on-surface leading-tight">Emergency admission</p>
+<p class="text-caption text-on-surface-variant">Patient Sarah Connor (Cardiac Unit)</p>
+</div>
+<div class="relative">
+<span class="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-secondary border-2 border-surface"></span>
+<p class="text-caption font-mono text-on-surface-variant mb-xs">08:45 AM</p>
+<p class="font-label-md text-on-surface leading-tight">Prescription verified</p>
+<p class="text-caption text-on-surface-variant">Pharmacy released order #RX-772</p>
+</div>
+<div class="relative">
+<span class="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-tertiary border-2 border-surface"></span>
+<p class="text-caption font-mono text-on-surface-variant mb-xs">08:00 AM</p>
+<p class="font-label-md text-on-surface leading-tight">Shift handover complete</p>
+<p class="text-caption text-on-surface-variant">Morning shift took over operations</p>
+</div>
+</div>
+<button class="mt-auto py-sm text-center text-caption text-on-surface-variant hover:text-primary transition-colors border-t border-outline-variant/30">View all logs</button>
+</div>
+</aside>
+</div>
+<!-- AI Assistant Summary Widget (Full Width) -->
+<section class="bento-card p-lg rounded-2xl relative overflow-hidden bg-gradient-to-br from-primary-container/10 to-transparent">
+<!-- Atmospheric light effect -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 blur-[80px] rounded-full"></div>
+<div class="absolute -bottom-24 -left-24 w-64 h-64 bg-secondary/5 blur-[80px] rounded-full"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-lg">
+<div class="flex items-center gap-md">
+<div class="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+<span class="material-symbols-outlined text-on-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div>
+<div class="flex items-center gap-sm">
+<h3 class="font-h2 text-h2">AI Assistant Insights</h3>
+<span class="bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest px-sm py-xs rounded">Live Snapshot</span>
+</div>
+<p class="text-on-surface-variant font-body-md mt-xs max-w-xl">Efficiency is up 4.2% today. Average patient wait time is down to 12 minutes. Critical beds are at 82% capacity.</p>
+</div>
+</div>
+<div class="flex gap-md w-full md:w-auto">
+<div class="flex-1 md:flex-none p-md bg-white/50 backdrop-blur-sm rounded-xl border border-white flex flex-col items-center">
+<p class="text-caption text-on-surface-variant font-medium">Wait Time</p>
+<p class="text-h2 text-secondary">12m</p>
+</div>
+<div class="flex-1 md:flex-none p-md bg-white/50 backdrop-blur-sm rounded-xl border border-white flex flex-col items-center">
+<p class="text-caption text-on-surface-variant font-medium">Bed Cap.</p>
+<p class="text-h2 text-primary">82%</p>
+</div>
+<div class="flex-1 md:flex-none p-md bg-white/50 backdrop-blur-sm rounded-xl border border-white flex flex-col items-center">
+<p class="text-caption text-on-surface-variant font-medium">Efficiency</p>
+<p class="text-h2 text-tertiary">+4.2</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Info -->
+<footer class="p-lg mt-auto flex flex-col sm:flex-row justify-between items-center text-on-surface-variant opacity-60">
+<p class="text-caption">© 2024 HMS Portal - St. Luke's Medical Center. All systems operational.</p>
+<div class="flex gap-lg">
+<a class="text-caption hover:underline" href="#">Privacy Policy</a>
+<a class="text-caption hover:underline" href="#">System Status</a>
+<a class="text-caption hover:underline" href="#">Support</a>
+</div>
+</footer>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        // Simple search focus visual
+        const searchInput = document.querySelector('input[type="text"]');
+        const searchIcon = searchInput.previousElementSibling;
+        
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('shadow-md');
+        });
+        
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('shadow-md');
+        });
+
+        // Simple mock countdown for the refresh timer
+        let seconds = 292; // 04:52
+        const timerSpan = document.querySelector('.font-mono');
+        
+        setInterval(() => {
+            if (seconds > 0) {
+                seconds--;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                timerSpan.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                seconds = 300;
+            }
+        }, 1000);
+    </script>
+</body></html>

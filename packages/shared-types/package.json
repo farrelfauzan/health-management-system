@@ -26,6 +26,7 @@
     "#doctor-patient/contracts": "./src/doctor-patient/contracts.ts",
     "#doctor-patient/types": "./src/doctor-patient/types.ts",
     "#auth/schemas": "./src/auth/schemas.ts",
+    "#auth/contracts": "./src/auth/contracts.ts",
     "#auth/types": "./src/auth/types.ts",
     "#rbac/schemas": "./src/rbac/schemas.ts",
     "#rbac/types": "./src/rbac/types.ts"

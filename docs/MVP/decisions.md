@@ -42,12 +42,12 @@
 - **Why:** Relational consistency, mature tooling, and clear migration history.
 - **Consequence:** Every schema change ships with reviewed migration and CI validation; backend adopts Prisma v7 adapter-based client setup and explicit client generation path.
 
-## D-007: AI Chatbot Scope Limitation
+## D-007: AI Chatbot Scope Limitation (Post-MVP)
 
 - **Status:** Accepted
-- **Decision:** Keep AI chatbot MVP limited to FAQ/guidance/research support, exclude diagnosis, and integrate only through an existing external production AI service.
-- **Why:** Reduce clinical risk and delivery complexity in MVP.
-- **Consequence:** Mandatory disclaimers, audit logs, abuse protections, provider adapter resilience (timeout/retry/circuit-breaker), and no local model-serving implementation.
+- **Decision:** Defer AI chatbot to post-MVP Phase 13 (after SATUSEHAT integration). When delivered, limit to FAQ/guidance/research support, exclude diagnosis, and integrate only through an existing external production AI service.
+- **Why:** Indonesian clinic buyers prioritize compliance (RME, SATUSEHAT, BPJS) over conversational AI; SATUSEHAT linkage also enables safer read-only context enrichment.
+- **Consequence:** Mandatory disclaimers, audit logs, abuse protections, provider adapter resilience (timeout/retry/circuit-breaker), and no local model-serving implementation. Full spec: [docs/post-mvp/ai-chatbot.md](../post-mvp/ai-chatbot.md).
 
 ## D-008: CI Quality Gate Order
 

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HMS Portal - Pharmacy Management</title>
+<!-- Google Fonts: Inter & Geist -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#d3e4fe",
+                    "surface-bright": "#f8f9ff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#390c00",
+                    "background": "#f8f9ff",
+                    "on-secondary-fixed": "#00201d",
+                    "surface-dim": "#cbdbf5",
+                    "secondary-container": "#86f2e4",
+                    "primary-fixed": "#dae1ff",
+                    "on-primary-fixed": "#001849",
+                    "outline-variant": "#c2c6d8",
+                    "inverse-primary": "#b3c5ff",
+                    "tertiary-container": "#cc4204",
+                    "surface-container-high": "#dce9ff",
+                    "on-primary-fixed-variant": "#003fa4",
+                    "surface-tint": "#0054d6",
+                    "on-secondary-fixed-variant": "#005049",
+                    "on-secondary-container": "#006f66",
+                    "inverse-surface": "#213145",
+                    "on-primary-container": "#f8f7ff",
+                    "on-tertiary-container": "#fff6f4",
+                    "on-surface-variant": "#424656",
+                    "on-surface": "#0b1c30",
+                    "secondary": "#006a61",
+                    "primary-container": "#0066ff",
+                    "outline": "#727687",
+                    "tertiary-fixed": "#ffdbd0",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "tertiary-fixed-dim": "#ffb59d",
+                    "surface-container-low": "#eff4ff",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-background": "#0b1c30",
+                    "surface": "#f8f9ff",
+                    "tertiary": "#a33200",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#6bd8cb",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#832600",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#e5eeff",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "#0050cb",
+                    "surface-container-highest": "#d3e4fe",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#89f5e7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "lg": "24px",
+                    "gutter": "20px",
+                    "container-max": "1440px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "h3": ["Geist"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "h1": ["Geist"],
+                    "display": ["Geist"],
+                    "mono": ["Geist Mono"],
+                    "h1-mobile": ["Geist"],
+                    "h2": ["Geist"],
+                    "caption": ["Inter"],
+                    "label-md": ["Geist"]
+            },
+            "fontSize": {
+                    "h3": ["18px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "mono": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "h1-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "h2": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-h1, .font-h2, .font-h3, .font-label-md { font-family: 'Geist', sans-serif; }
+        .font-mono { font-family: 'Geist Mono', monospace; }
+        
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* Interactive Search Dropdown Simulation */
+        #search-results:empty { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Shell Container -->
+<div class="flex min-h-screen">
+<!-- SideNavBar (Predicted Component) -->
+<aside class="fixed left-0 top-0 h-screen w-[240px] bg-surface border-r border-outline-variant flex flex-col gap-sm p-md z-50">
+<div class="flex items-center gap-md px-sm py-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container">local_hospital</span>
+</div>
+<div>
+<h1 class="font-h3 text-h3 text-on-surface leading-none">St. Luke's</h1>
+<p class="font-caption text-caption text-on-surface-variant">Medical Center</p>
+</div>
+</div>
+<nav class="mt-md space-y-1">
+<!-- Navigation Items mapped from JSON -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:translate-x-1 transition-all duration-150 font-label-md text-label-md rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:translate-x-1 transition-all duration-150 font-label-md text-label-md rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span> Patients
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:translate-x-1 transition-all duration-150 font-label-md text-label-md rounded-lg" href="#">
+<span class="material-symbols-outlined">medical_services</span> Doctors
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:translate-x-1 transition-all duration-150 font-label-md text-label-md rounded-lg" href="#">
+<span class="material-symbols-outlined">event</span> Appointments
+                </a>
+<a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container font-bold rounded-lg transition-all duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">local_pharmacy</span> Pharmacy
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:translate-x-1 transition-all duration-150 font-label-md text-label-md rounded-lg" href="#">
+<span class="material-symbols-outlined">psychology</span> AI Assistant
+                </a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:translate-x-1 transition-all duration-150 font-label-md text-label-md rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span> Administration
+                </a>
+</nav>
+<div class="mt-auto p-md bg-surface-container-low rounded-xl border border-outline-variant">
+<p class="font-label-md text-label-md font-bold text-on-surface">System Health</p>
+<div class="mt-sm flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-caption text-caption">All nodes active</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[240px] flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar (Predicted Component) -->
+<header class="w-full sticky top-0 z-40 bg-surface-container-lowest border-b border-outline-variant shadow-sm flex justify-between items-center h-16 px-lg max-w-container-max mx-auto">
+<div class="flex items-center gap-xl w-full max-w-2xl">
+<h2 class="font-h2 text-h2 font-bold text-primary whitespace-nowrap">Pharmacy Portal</h2>
+<!-- Search with Autocomplete Simulation -->
+<div class="relative flex-1 group">
+<div class="flex items-center bg-surface-container-low rounded-lg px-md py-sm border border-transparent focus-within:border-primary focus-within:bg-white transition-all">
+<span class="material-symbols-outlined text-outline">search</span>
+<input autocomplete="off" class="bg-transparent border-none focus:ring-0 w-full text-body-md font-body-md" id="med-search" placeholder="Search medications, patient ID, or RX number..." type="text"/>
+<span class="font-mono text-[10px] text-outline px-sm py-0.5 border border-outline-variant rounded bg-white">CTRL + K</span>
+</div>
+<!-- Autocomplete dropdown (Hidden by default) -->
+<div class="absolute top-full left-0 right-0 mt-xs bg-white border border-outline-variant rounded-xl shadow-lg z-50 overflow-hidden hidden" id="search-results">
+<div class="p-sm hover:bg-surface-container-low cursor-pointer flex justify-between items-center border-b border-outline-variant">
+<div>
+<p class="font-label-md text-label-md">Amoxicillin 500mg</p>
+<p class="font-caption text-caption text-outline">Stock: 1,420 units | Bin: A-12</p>
+</div>
+<span class="material-symbols-outlined text-outline">north_west</span>
+</div>
+<div class="p-sm hover:bg-surface-container-low cursor-pointer flex justify-between items-center">
+<div>
+<p class="font-label-md text-label-md">Atorvastatin 20mg</p>
+<p class="font-caption text-caption text-outline">Stock: 890 units | Bin: B-04</p>
+</div>
+<span class="material-symbols-outlined text-outline">north_west</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">smart_toy</span>
+</button>
+<div class="relative">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</div>
+<div class="h-8 w-px bg-outline-variant mx-sm"></div>
+<div class="flex items-center gap-sm">
+<div class="text-right hidden sm:block">
+<p class="font-label-md text-label-md text-on-surface">Dr. Sarah Chen</p>
+<p class="font-caption text-caption text-outline">Chief Pharmacist</p>
+</div>
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A professional headshot of a female doctor in a white lab coat with a stethoscope around her neck, smiling warmly against a clean clinical background. High-key lighting, modern medical aesthetic, soft color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYAXFBfcNnIZs7g3HBj0yMQKKAIiUj9AOd7ksGP1UT5tkNzZ2HfcOiXpfKT5s07x89uLcIL2nSvf09r9D2z4_r34rLop5oIO4ZxXZ18U4WWoQiQosZXgrvGjO9__ngFROtOCyF0pNFb_Y_qrecTuSHzbSHMFGNtXA34OY0lchyQRUUaMkhAvv58xvcayjRgoiRJRn1GxX2w6PwKSaSSnnfC2BDCG51j7LdjsLTkHv6OqLDf3er6wS58nVipHR_tEB2LsNnYI07TaQ"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-lg flex-1 space-y-lg overflow-y-auto">
+<!-- Inventory Overview (Bento) -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-md">
+<div class="p-md bg-white border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">inventory_2</span>
+</div>
+<span class="bg-secondary/10 text-secondary text-caption font-medium px-sm py-xs rounded-full">+12% vs LW</span>
+</div>
+<p class="mt-md font-label-md text-label-md text-outline">Total Inventory Value</p>
+<p class="font-h2 text-h2 text-on-surface">$142,500.00</p>
+</div>
+<div class="p-md bg-white border border-outline-variant rounded-xl shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-error-container flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-error">priority_high</span>
+</div>
+<p class="font-label-md text-label-md text-outline">Low Stock Alerts</p>
+<p class="font-h2 text-h2 text-error">08 Medications</p>
+<div class="mt-sm h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-error w-[15%]"></div>
+</div>
+</div>
+<div class="p-md bg-white border border-outline-variant rounded-xl shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-tertiary">history</span>
+</div>
+<p class="font-label-md text-label-md text-outline">Expiring Soon (&lt;30d)</p>
+<p class="font-h2 text-h2 text-on-surface">24 Items</p>
+<p class="mt-sm font-caption text-caption text-on-tertiary-fixed-variant">Last audit: 2h ago</p>
+</div>
+<div class="p-md bg-primary text-on-primary-container rounded-xl shadow-sm relative overflow-hidden">
+<!-- Tiny Atmospheric Effect -->
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined !text-[120px]">local_pharmacy</span>
+</div>
+<div class="relative z-10">
+<p class="font-label-md text-label-md text-on-primary-container/80">Pending Orders</p>
+<p class="font-h1 text-h1">42</p>
+<button class="mt-md px-md py-sm bg-white/20 hover:bg-white/30 rounded-lg font-label-md text-label-md transition-colors backdrop-blur-sm">
+                                View Full Queue
+                            </button>
+</div>
+</div>
+</section>
+<div class="flex flex-col lg:flex-row gap-lg">
+<!-- Prescription Queue -->
+<section class="flex-1 space-y-md">
+<div class="flex items-center justify-between">
+<h3 class="font-h3 text-h3 flex items-center gap-sm">
+<span class="material-symbols-outlined">pending_actions</span>
+                                Incoming Prescription Queue
+                            </h3>
+<div class="flex gap-sm">
+<button class="px-sm py-xs bg-white border border-outline-variant rounded font-caption text-caption hover:bg-surface-container-low">All</button>
+<button class="px-sm py-xs bg-error-container text-on-error-container border border-error/20 rounded font-caption text-caption">STAT Only</button>
+</div>
+</div>
+<div class="space-y-sm">
+<!-- STAT Row -->
+<div class="bg-white border-l-4 border-l-error border border-outline-variant rounded-xl p-md flex items-center gap-md group hover:bg-surface-bright cursor-pointer transition-colors shadow-sm" onclick="selectPrescription('RX-99201')">
+<div class="flex-1">
+<div class="flex items-center gap-sm">
+<span class="font-label-md text-label-md font-bold">RX-99201</span>
+<span class="bg-error text-white font-mono text-[10px] px-sm py-0.5 rounded">STAT</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mt-1">Jonathan Miller <span class="text-outline">#44512</span></p>
+<div class="flex gap-md mt-sm">
+<span class="font-caption text-caption flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[14px]">medication</span> Insulin Aspart (Novolog)
+                                        </span>
+<span class="font-caption text-caption flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[14px]">timer</span> 12 min ago
+                                        </span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- Regular Row -->
+<div class="bg-white border-l-4 border-l-outline-variant border border-outline-variant rounded-xl p-md flex items-center gap-md group hover:bg-surface-bright cursor-pointer transition-colors" onclick="selectPrescription('RX-99205')">
+<div class="flex-1">
+<div class="flex items-center gap-sm">
+<span class="font-label-md text-label-md font-bold">RX-99205</span>
+<span class="bg-surface-container-highest text-on-surface-variant font-mono text-[10px] px-sm py-0.5 rounded uppercase">Regular</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mt-1">Elena Rodriguez <span class="text-outline">#88291</span></p>
+<div class="flex gap-md mt-sm">
+<span class="font-caption text-caption flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[14px]">medication</span> Amoxicillin 500mg
+                                        </span>
+<span class="font-caption text-caption flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[14px]">timer</span> 45 min ago
+                                        </span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- Regular Row -->
+<div class="bg-white border-l-4 border-l-outline-variant border border-outline-variant rounded-xl p-md flex items-center gap-md group hover:bg-surface-bright cursor-pointer transition-colors" onclick="selectPrescription('RX-99212')">
+<div class="flex-1">
+<div class="flex items-center gap-sm">
+<span class="font-label-md text-label-md font-bold">RX-99212</span>
+<span class="bg-surface-container-highest text-on-surface-variant font-mono text-[10px] px-sm py-0.5 rounded uppercase">Regular</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mt-1">Marcus Thorne <span class="text-outline">#12102</span></p>
+<div class="flex gap-md mt-sm">
+<span class="font-caption text-caption flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[14px]">medication</span> Lisinopril 10mg
+                                        </span>
+<span class="font-caption text-caption flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[14px]">timer</span> 1h 12m ago
+                                        </span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Detail View (Workflow Focus) -->
+<aside class="w-full lg:w-[420px]">
+<div class="bg-white border border-outline-variant rounded-xl shadow-lg sticky top-24 overflow-hidden">
+<div class="p-md bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-h3 text-h3">Prescription Details</h4>
+<span class="text-error font-bold font-mono text-label-md">RX-99201</span>
+</div>
+<div class="p-lg space-y-lg">
+<!-- Patient Info -->
+<div class="flex gap-md items-start">
+<img class="w-16 h-16 rounded-xl object-cover border border-outline-variant" data-alt="A portrait of an elderly man with silver hair and kind eyes, wearing a simple navy blue hospital gown. The lighting is soft and empathetic, captured in a clean clinical environment with a shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbwWZl1I0Td7TDcN7JIaz6qJRWWPwHmiR1SMNjcWHBlOtDgORKqbm_nEhiY5HupUpZIbSKQVOOcO6I8oZSDKUpqxyngH_QdZhUL9wzjBh_eOGT3PqYIK_v1BB-abLKPGNnPKCieJwzQSaha2gXzanPshQOaIMl91vWPKoPcXaxXoIrHDkcelY95BuDYc5rssU70y-NIbf8klzbC77SOXTOOmNNALDcNfnI0FQfAfjTk0SugQfBAyuKUgqpBys0ALCij43IG5Xmhxo"/>
+<div>
+<p class="font-h3 text-h3 text-on-surface">Jonathan Miller</p>
+<p class="font-body-md text-body-md text-outline">DOB: 12/04/1958 (65y)</p>
+<p class="font-body-md text-body-md text-outline">Allergies: <span class="text-error font-bold">Penicillin, Latex</span></p>
+</div>
+</div>
+<div class="p-md bg-error-container/20 border border-error/10 rounded-lg">
+<div class="flex items-center gap-sm text-error">
+<span class="material-symbols-outlined">warning</span>
+<p class="font-label-md text-label-md font-bold">Clinical Interaction Alert</p>
+</div>
+<p class="mt-sm font-caption text-caption text-on-error-container">Patient is currently on Warfarin. Monitor INR levels closely with insulin administration.</p>
+</div>
+<!-- Medication Details -->
+<div class="space-y-md">
+<div class="p-md bg-surface-container-lowest border border-outline-variant rounded-lg">
+<div class="flex justify-between">
+<p class="font-label-md text-label-md font-bold">Insulin Aspart (Novolog)</p>
+<p class="font-mono text-label-md text-primary">10 Units</p>
+</div>
+<p class="mt-xs font-body-md text-body-md text-on-surface-variant italic">Subcutaneous injection, prior to meals.</p>
+<div class="mt-md flex gap-sm">
+<span class="bg-surface-container-high px-sm py-xs rounded font-mono text-[11px] text-on-surface-variant">Qty: 1 Vial (10ml)</span>
+<span class="bg-surface-container-high px-sm py-xs rounded font-mono text-[11px] text-on-surface-variant">NDC: 0169-3687-12</span>
+</div>
+</div>
+</div>
+<!-- Checklist for Safety -->
+<div class="space-y-sm">
+<p class="font-label-md text-label-md font-bold text-outline uppercase tracking-wider">Verification Steps</p>
+<label class="flex items-center gap-md p-sm border border-outline-variant rounded hover:bg-surface-container-low cursor-pointer transition-colors">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-5 w-5" type="checkbox"/>
+<span class="font-body-md text-body-md">Verify Patient Identity (ID Check)</span>
+</label>
+<label class="flex items-center gap-md p-sm border border-outline-variant rounded hover:bg-surface-container-low cursor-pointer transition-colors">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-5 w-5" type="checkbox"/>
+<span class="font-body-md text-body-md">Cross-check dosage calculation</span>
+</label>
+<label class="flex items-center gap-md p-sm border border-outline-variant rounded hover:bg-surface-container-low cursor-pointer transition-colors">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-5 w-5" type="checkbox"/>
+<span class="font-body-md text-body-md">Label printed &amp; attached correctly</span>
+</label>
+</div>
+<!-- Actions -->
+<div class="pt-md grid grid-cols-2 gap-md">
+<button class="px-md py-lg border border-outline-variant text-on-surface-variant rounded-xl font-label-md text-label-md hover:bg-surface-container-low transition-colors flex flex-col items-center gap-sm">
+<span class="material-symbols-outlined">print</span>
+                                        Print Label
+                                    </button>
+<button class="px-md py-lg bg-primary text-white rounded-xl font-label-md text-label-md hover:shadow-lg transition-all flex flex-col items-center gap-sm">
+<span class="material-symbols-outlined">check_circle</span>
+                                        Dispense Now
+                                    </button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simulate Search Autocomplete
+        const searchInput = document.getElementById('med-search');
+        const searchResults = document.getElementById('search-results');
+
+        searchInput.addEventListener('input', (e) => {
+            if (e.target.value.length > 2) {
+                searchResults.classList.remove('hidden');
+            } else {
+                searchResults.classList.add('hidden');
+            }
+        });
+
+        // Hide search on click outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.add('hidden');
+            }
+        });
+
+        // Simple selection simulation
+        function selectPrescription(id) {
+            console.log("Loading details for " + id);
+            // In a real app, this would fetch data and update the UI.
+            // For now, it just gives a subtle feedback
+            const rows = document.querySelectorAll('.group');
+            rows.forEach(row => {
+                row.classList.remove('bg-primary-container/10', 'border-primary/30');
+            });
+            event.currentTarget.classList.add('bg-primary-container/10', 'border-primary/30');
+        }
+
+        // Global Key Listener for Search focus
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+    </script>
+</body></html>

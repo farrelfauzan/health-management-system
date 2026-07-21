@@ -4,11 +4,26 @@ import {
   clearAccessTokenCookie,
   readAccessTokenFromBrowserCookie,
 } from '#lib/auth/access-token-cookie';
+import { clearRefreshTokenCookie } from '#lib/auth/refresh-token-cookie';
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 
+const LOGIN_PATH = '/login';
+
+function isAuthRequestUrl(url: string | undefined): boolean {
+  return url?.includes('/auth/') ?? false;
+}
+
+function redirectToLogin(): void {
+  if (typeof window === 'undefined' || window.location.pathname === LOGIN_PATH) {
+    return;
+  }
+
+  window.location.assign(LOGIN_PATH);
+}
+
 export const apiClient = axios.create({
-  baseURL: `${API_BASE_URL}/api/v1`,
+  baseURL: `${API_BASE_URL}`,
   withCredentials: true,
 });
 
@@ -26,8 +41,10 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !isAuthRequestUrl(error.config?.url)) {
       clearAccessTokenCookie();
+      clearRefreshTokenCookie();
+      redirectToLogin();
     }
 
     return Promise.reject(error);
