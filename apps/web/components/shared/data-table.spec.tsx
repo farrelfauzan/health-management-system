@@ -7,7 +7,7 @@ import { DataTableHeaderCell } from './data-table-header-cell';
 import { DataTableMonoCell } from './data-table-mono-cell';
 
 describe('DataTable', () => {
-  it('renders header cells in the uppercase Geist label slot', () => {
+  it('renders header cells in the uppercase heading slot', () => {
     render(
       <DataTable>
         <TableHeader>
