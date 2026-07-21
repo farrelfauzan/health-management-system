@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#f8f9ff] px-4 py-12">
+    <main className="flex min-h-screen items-center justify-center bg-surface px-4 py-12">
       <div className="w-full max-w-sm space-y-8">
         <LoginBrand />
         <LoginCard />
