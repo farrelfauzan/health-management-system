@@ -9,31 +9,27 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  useAbility,
 } from '@hms/ui';
 
-import { ADMIN_NAV_SECTIONS, type AdminNavSection } from '#lib/shell/nav-items';
+import type { AdminNavSection } from '#lib/shell/nav-items';
 import { isRouteActive } from '#lib/shell/active-route';
 
 import { SidebarBrand } from './sidebar-brand';
 import { SidebarNavItem } from './sidebar-nav-item';
 
-export function AppSidebar() {
+type AppSidebarProps = {
+  sections: AdminNavSection[];
+};
+
+export function AppSidebar({ sections }: AppSidebarProps) {
   const pathname = usePathname();
-  const ability = useAbility();
-  const visibleSections: AdminNavSection[] = ADMIN_NAV_SECTIONS.map((section) => ({
-    ...section,
-    items: section.items.filter(
-      (item) => item.ability === null || ability.can(item.ability.action, item.ability.subject),
-    ),
-  })).filter((section) => section.items.length > 0);
   return (
     <Sidebar>
       <SidebarHeader>
         <SidebarBrand />
       </SidebarHeader>
       <SidebarContent>
-        {visibleSections.map((section) => (
+        {sections.map((section) => (
           <SidebarGroup key={section.label ?? 'main'} className={section.label ? 'mt-6' : undefined}>
             {section.label ? (
               <SidebarGroupLabel className="px-4 text-[10px] font-bold uppercase tracking-wider text-outline">

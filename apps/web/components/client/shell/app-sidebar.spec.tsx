@@ -1,5 +1,4 @@
 import {
-  AbilityProvider,
   ADMIN_PORTAL_ADMIN_RULES,
   buildAppAbility,
   SidebarProvider,
@@ -9,6 +8,7 @@ import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AppSidebar } from './app-sidebar';
+import { filterNavSections } from '#lib/shell/filter-nav-sections';
 
 const { usePathnameMock } = vi.hoisted(() => ({
   usePathnameMock: vi.fn<() => string>(() => '/admin/dashboard'),
@@ -20,11 +20,9 @@ vi.mock('next/navigation', () => ({
 
 function renderAppSidebar(rules: AppRule[]): void {
   render(
-    <AbilityProvider ability={buildAppAbility(rules)}>
-      <SidebarProvider>
-        <AppSidebar />
-      </SidebarProvider>
-    </AbilityProvider>,
+    <SidebarProvider>
+      <AppSidebar sections={filterNavSections(buildAppAbility(rules))} />
+    </SidebarProvider>,
   );
 }
 
