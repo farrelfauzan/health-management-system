@@ -1,8 +1,14 @@
-import { AbilityProvider, ADMIN_PORTAL_ADMIN_RULES, buildAppAbility, type AppRule } from '@hms/ui';
+import {
+  AbilityProvider,
+  ADMIN_PORTAL_ADMIN_RULES,
+  buildAppAbility,
+  SidebarProvider,
+  type AppRule,
+} from '@hms/ui';
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { Sidebar } from './sidebar';
+import { AppSidebar } from './app-sidebar';
 
 const { usePathnameMock } = vi.hoisted(() => ({
   usePathnameMock: vi.fn<() => string>(() => '/admin/dashboard'),
@@ -12,22 +18,24 @@ vi.mock('next/navigation', () => ({
   usePathname: usePathnameMock,
 }));
 
-function renderSidebar(rules: AppRule[]): void {
+function renderAppSidebar(rules: AppRule[]): void {
   render(
     <AbilityProvider ability={buildAppAbility(rules)}>
-      <Sidebar />
+      <SidebarProvider>
+        <AppSidebar />
+      </SidebarProvider>
     </AbilityProvider>,
   );
 }
 
-describe('Sidebar', () => {
+describe('AppSidebar', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   it('highlights the nav item matching the current route', () => {
     usePathnameMock.mockReturnValue('/admin/patients');
-    renderSidebar(ADMIN_PORTAL_ADMIN_RULES);
+    renderAppSidebar(ADMIN_PORTAL_ADMIN_RULES);
 
     const activeLink = screen.getByRole('link', { name: 'Patients' });
     expect(activeLink).toHaveAttribute('aria-current', 'page');
@@ -36,14 +44,14 @@ describe('Sidebar', () => {
 
   it('marks the parent nav item active on nested routes', () => {
     usePathnameMock.mockReturnValue('/admin/patients/some-patient-id');
-    renderSidebar(ADMIN_PORTAL_ADMIN_RULES);
+    renderAppSidebar(ADMIN_PORTAL_ADMIN_RULES);
 
     expect(screen.getByRole('link', { name: 'Patients' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('renders every nav item for the full admin rule set', () => {
     usePathnameMock.mockReturnValue('/admin/dashboard');
-    renderSidebar(ADMIN_PORTAL_ADMIN_RULES);
+    renderAppSidebar(ADMIN_PORTAL_ADMIN_RULES);
 
     const expectedLabels = [
       'Dashboard',
@@ -63,7 +71,7 @@ describe('Sidebar', () => {
   it('hides nav items the ability does not grant', () => {
     usePathnameMock.mockReturnValue('/admin/dashboard');
     const inputRules: AppRule[] = [{ action: 'read', subject: 'Patient' }];
-    renderSidebar(inputRules);
+    renderAppSidebar(inputRules);
 
     expect(screen.getByRole('link', { name: 'Patients' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();

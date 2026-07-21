@@ -24,11 +24,11 @@ export function NotificationsMenu() {
           variant="ghost"
           size="icon"
           aria-label="Open notifications"
-          className="relative rounded-full text-on-surface-variant hover:bg-surface-container-low"
+          className="relative rounded-full text-muted-foreground"
         >
           <Icon name="notifications" size={22} />
           {hasUnread ? (
-            <span className="absolute right-2 top-2 size-2 rounded-full border-2 border-surface-container-lowest bg-error" />
+            <span className="absolute right-2 top-2 size-2 rounded-full border-2 border-card bg-destructive" />
           ) : null}
         </Button>
       </DropdownMenuTrigger>
@@ -40,19 +40,17 @@ export function NotificationsMenu() {
             <span
               className={cn(
                 'mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full',
-                notification.isUnread
-                  ? 'bg-info-tint text-info'
-                  : 'bg-surface-container-low text-on-surface-variant',
+                notification.isUnread ? 'bg-info-tint text-info' : 'bg-muted text-muted-foreground',
               )}
             >
               <Icon name={notification.icon} size={18} />
             </span>
             <span className="flex min-w-0 flex-col gap-0.5">
-              <span className="font-heading text-sm font-medium text-on-surface">
+              <span className="font-heading text-sm font-medium text-foreground">
                 {notification.title}
               </span>
-              <span className="text-xs text-on-surface-variant">{notification.description}</span>
-              <span className="text-[11px] text-outline">{notification.timeLabel}</span>
+              <span className="text-xs text-muted-foreground">{notification.description}</span>
+              <span className="text-[11px] text-muted-foreground/70">{notification.timeLabel}</span>
             </span>
           </DropdownMenuItem>
         ))}

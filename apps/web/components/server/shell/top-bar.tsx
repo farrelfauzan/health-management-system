@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Icon, Separator } from '@hms/ui';
+import { Button, Icon, Separator, SidebarTrigger } from '@hms/ui';
 
 import { GlobalSearch } from '#components/client/shell/global-search';
 import { NotificationsMenu } from '#components/client/shell/notifications-menu';
@@ -12,18 +12,22 @@ type TopBarProps = {
 
 export function TopBar({ profile }: TopBarProps) {
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-6 border-b border-outline-variant bg-surface-container-lowest px-8 shadow-sm">
+    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b bg-card px-6 shadow-sm">
+      <SidebarTrigger className="md:hidden" />
       <GlobalSearch />
-      <div className="flex items-center gap-2">
-        <Link
-          href="/admin/ai-assistant"
-          aria-label="Open AI assistant"
-          className="flex size-9 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-low"
+      <div className="ml-auto flex items-center gap-1.5">
+        <Button
+          asChild
+          variant="ghost"
+          size="icon"
+          className="rounded-full text-muted-foreground"
         >
-          <Icon name="smart_toy" size={22} />
-        </Link>
+          <Link href="/admin/ai-assistant" aria-label="Open AI assistant">
+            <Icon name="smart_toy" size={22} />
+          </Link>
+        </Button>
         <NotificationsMenu />
-        <Separator orientation="vertical" className="mx-2 !h-6 bg-outline-variant" />
+        <Separator orientation="vertical" className="mx-1 !h-6" />
         <ProfileMenu profile={profile} />
       </div>
     </header>

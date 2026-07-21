@@ -17,7 +17,7 @@ describe('ProfileMenu', () => {
   });
 
   it('shows the profile name and role from the session claims', () => {
-    render(<ProfileMenu profile={{ displayName: 'Admin', roleLabel: 'Super Admin' }} />);
+    render(<ProfileMenu profile={{ displayName: 'Admin', roleLabel: 'Super Admin', email: 'admin@salingjaga.com' }} />);
 
     expect(screen.getByText('Admin')).toBeInTheDocument();
     expect(screen.getByText('Super Admin')).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe('ProfileMenu', () => {
 
   it('executes the logout flow from the dropdown', async () => {
     const user = userEvent.setup();
-    render(<ProfileMenu profile={{ displayName: 'Admin', roleLabel: 'Super Admin' }} />);
+    render(<ProfileMenu profile={{ displayName: 'Admin', roleLabel: 'Super Admin', email: 'admin@salingjaga.com' }} />);
 
     await user.click(screen.getByRole('button', { name: 'Open profile menu' }));
     await user.click(await screen.findByRole('menuitem', { name: /log out/i }));

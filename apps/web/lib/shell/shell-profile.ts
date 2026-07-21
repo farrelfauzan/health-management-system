@@ -3,11 +3,13 @@ import type { AccessTokenClaims } from '#lib/auth/access-token-claims';
 export type ShellProfile = {
   displayName: string;
   roleLabel: string;
+  email: string;
 };
 
 const FALLBACK_PROFILE: ShellProfile = {
   displayName: 'Saling Jaga User',
   roleLabel: 'Staff',
+  email: '',
 };
 
 function formatTitleCase(value: string): string {
@@ -27,5 +29,5 @@ export function resolveShellProfile(claims: AccessTokenClaims | null): ShellProf
   const displayName = emailLocalPart ? formatTitleCase(emailLocalPart) : FALLBACK_PROFILE.displayName;
   const primaryRole = claims.roles?.[0] ?? claims.role ?? '';
   const roleLabel = primaryRole ? formatTitleCase(primaryRole) : FALLBACK_PROFILE.roleLabel;
-  return { displayName, roleLabel };
+  return { displayName, roleLabel, email: claims.email ?? '' };
 }

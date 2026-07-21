@@ -1,20 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { Icon } from '@hms/ui';
+import { Icon, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@hms/ui';
 
 export function SidebarBrand() {
   return (
-    <Link href="/admin/dashboard" className="mb-8 flex items-center gap-2 px-1">
-      <span className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-        <Icon name="medical_services" size={20} />
-      </span>
-      <span className="flex flex-col">
-        <span className="font-heading text-lg font-semibold leading-tight text-on-surface">
-          Saling Jaga
-        </span>
-        <span className="-mt-0.5 text-xs text-on-surface-variant">Medical Center</span>
-      </span>
-    </Link>
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild size="lg" className="hover:bg-transparent active:bg-transparent">
+          <Link href="/admin/dashboard">
+            <span className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <Icon name="medical_services" size={20} />
+            </span>
+            <span className="grid flex-1 text-left leading-tight">
+              <span className="truncate font-heading text-base font-semibold">Saling Jaga</span>
+              <span className="truncate text-xs text-muted-foreground">Medical Center</span>
+            </span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
   );
 }

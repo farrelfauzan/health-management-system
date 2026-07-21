@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Icon, cn } from '@hms/ui';
+import { Icon, SidebarMenuButton, SidebarMenuItem } from '@hms/ui';
 
 import type { AdminNavItem } from '#lib/shell/nav-items';
 
@@ -12,18 +12,18 @@ type SidebarNavItemProps = {
 
 export function SidebarNavItem({ item, isActive }: SidebarNavItemProps) {
   return (
-    <Link
-      href={item.href}
-      aria-current={isActive ? 'page' : undefined}
-      className={cn(
-        'flex items-center gap-4 rounded-lg px-4 py-2 font-heading text-sm font-medium transition-all duration-150',
-        isActive
-          ? 'bg-primary-container font-bold text-on-primary-container shadow-sm'
-          : 'text-on-surface-variant hover:translate-x-1 hover:bg-surface-container-low',
-      )}
-    >
-      <Icon name={item.icon} size={20} />
-      <span>{item.label}</span>
-    </Link>
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        isActive={isActive}
+        tooltip={item.label}
+        className="h-9 gap-3 px-3 font-heading font-medium data-[active=true]:bg-sidebar-primary data-[active=true]:font-semibold data-[active=true]:text-sidebar-primary-foreground data-[active=true]:shadow-sm"
+      >
+        <Link href={item.href} aria-current={isActive ? 'page' : undefined}>
+          <Icon name={item.icon} size={20} />
+          <span>{item.label}</span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   );
 }
