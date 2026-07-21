@@ -29,6 +29,8 @@ Goal: monorepo baseline and working local/dev pipeline.
 10. `P1-T10` Add GitHub Actions baseline CI (install, lint, typecheck, unit, integration, build).
 11. `P1-T11` Add the common object-storage foundation: typed configuration validation, storage interface, S3 adapter, and isolated adapter tests.
 
+
+
 ## 4. Phase 2 - Auth, IAM-Style RBAC, and Security Baseline (8 Tasks)
 
 Goal: secure platform baseline before domain modules.
@@ -49,6 +51,8 @@ Phase 2 implementation note:
 - Authorization wiring uses a shared/global module with `APP_GUARD` registration for JWT + permission guards.
 - Include RBAC management endpoints in Phase 2 baseline: role catalog (`GET /rbac/roles`), assign-role, and unassign-role.
 
+
+
 ### 4.1 S3 Object Storage Provider (`P1-T11`)
 
 - Place the reusable storage contract under `apps/api/src/common/storage/`; keep the AWS SDK implementation in an infrastructure adapter so domain services do not depend directly on S3.
@@ -65,6 +69,8 @@ Phase 2 implementation note:
 - Keep controllers transport-only, feature services responsible for workflow orchestration, feature repositories responsible for object-key persistence, and the storage adapter responsible only for object operations.
 - Use explicit TypeScript input/output types, no `any`, one export per file, kebab-case files, verb-prefixed methods, and JSDoc on public classes and methods.
 - Add isolated adapter tests with a mocked S3 client. Each consuming feature adds service and integration tests for authorization, validation, compensation, signed-URL responses, and idempotent cleanup.
+
+
 
 ## 5. Phase 3 - Core Clinical Backend Modules (Backend-Only, 7 Tasks + Module Subtasks)
 
@@ -94,6 +100,8 @@ Execution strategy by module:
 - `P3-T01.4` Implement controller endpoints + permission metadata + response envelope.
 - `P3-T01.5` Add backend unit/integration tests for 200/403/404/conflict cases.
 
+
+
 ### 5.2 Patient Management (`P3-T02`)
 
 - `P3-T02.1` Add the focused `DoctorPatient` and append-only `DoctorPatientActivity` schema migration, audit indexes, and partial unique index for active doctor-patient pairs.
@@ -102,6 +110,8 @@ Execution strategy by module:
 - `P3-T02.4` Implement service validation (MRN uniqueness, identity constraints, active doctor IDs, duplicate IDs, and ownership scope behavior). Create the patient and initial `DoctorPatient` rows atomically.
 - `P3-T02.5` Implement REST endpoints with permission checks (`patient.read:any|own`, `patient.create:any`, update rules), plus explicit doctor assignment/unassignment and activity-log operations.
 - `P3-T02.6` Add tests for multi-doctor creation, assigned-doctor access, unassigned-doctor denial, relation filtering, duplicate assignment conflict, retained reassignment history, activity-log authorization/filtering, rollback, and validation errors.
+
+
 
 ### 5.3 Doctor Management (`P3-T03`)
 
@@ -124,6 +134,8 @@ Doctor-patient repository/service behavior:
 - The paginated activity log reads these events, supports doctor, patient, action, actor, and date-range filters, and requires `doctor-patient.activity.read:any`.
 - Direct repository access across patient and doctor modules is prohibited.
 
+
+
 ### 5.4 Appointment Management (`P3-T04`)
 
 - `P3-T04.1` Define appointment DTO schemas (create/list/update/cancel).
@@ -131,6 +143,8 @@ Doctor-patient repository/service behavior:
 - `P3-T04.3` Implement service transaction boundaries for create/update/cancel.
 - `P3-T04.4` Enforce business rules (availability, allowed status transitions, patient-update limits).
 - `P3-T04.5` Add integration tests for transaction integrity and permission matrix.
+
+
 
 ### 5.5 Registration Flow (`P3-T05`)
 
@@ -140,6 +154,8 @@ Doctor-patient repository/service behavior:
 - `P3-T05.4` Add controller endpoints with ownership checks and limited patient update fields.
 - `P3-T05.5` Add tests for invalid transitions and own-vs-any authorization.
 
+
+
 ### 5.6 Pharmacy Flow (`P3-T06`)
 
 - `P3-T06.1` Define medication/prescription/dispense DTO schemas in shared-types.
@@ -148,12 +164,16 @@ Doctor-patient repository/service behavior:
 - `P3-T06.4` Enforce permission boundaries (`prescription.write:any|own`, `dispense.write:any`).
 - `P3-T06.5` Add integration tests for stock consistency and authorization matrix.
 
+
+
 ### 5.7 Backend Readiness Gate (`P3-T07`)
 
 - `P3-T07.1` Verify all Phase 3 module endpoints are documented in OpenAPI with request/response examples.
 - `P3-T07.2` Verify RBAC permission coverage for all Phase 3 endpoints.
 - `P3-T07.3` Run full backend validation pipeline (lint -> typecheck -> unit -> integration -> build).
 - `P3-T07.4` Publish frontend handoff notes (endpoint catalog, payload contracts, pagination/filter conventions).
+
+
 
 ## 6. Phase 4 - Frontend Integration (Design-Driven, 11 Tasks + Subtasks)
 
@@ -205,6 +225,8 @@ Backend endpoints and web plumbing already exist (`useAuthControllerLoginV1/Refr
 - `P4-T01.5` Repurpose `app/page.tsx`: replace the placeholder landing with a redirect — authenticated → `/admin/dashboard`, otherwise → `/login`.
 - `P4-T01.6` UI tests: schema validation errors, failed-login error rendering, redirect-on-success, proxy redirect matrix (no token / expired / wrong role / valid).
 
+
+
 ### 6.2 Design Foundation (`P4-T02`)
 
 Encode `DESIGN.md` once, so screen tasks only assemble.
@@ -212,9 +234,11 @@ Encode `DESIGN.md` once, so screen tasks only assemble.
 - `P4-T02.1` Theme tokens in `@hms/ui` `globals.css` (Tailwind 4 `@theme`): the full color frontmatter from `DESIGN.md` (`surface*`, `on-surface*`, `primary` `#0050cb` / `primary-container` `#0066ff`, `secondary` teal, `tertiary`, `error`, `outline*` roles) plus the semantic status palette (success emerald, warning amber, danger rose as 10%-tint badge pairs); radius scale (sm 4px / base 8px / md 12px / lg 16px / full); spacing baseline (4px grid, 1440px container, 240px sidebar width).
 - `P4-T02.2` Fonts: Geist + Geist Mono via the `geist` package, Inter via `next/font/google`, exposed as `--font-geist`, `--font-geist-mono`, `--font-inter` and mapped in the theme (Geist for headings/labels/technical data, Inter for body, Geist Mono for IDs/numeric table cells per `DESIGN.md`).
 - `P4-T02.3` Icon system: add `material-symbols` (self-hosted variable font) to `@hms/ui` behind a single `icon` component (name + size + fill props); no per-screen icon imports from CDNs.
-- `P4-T02.4` Generate missing shadcn primitives **into `packages/ui`** via the shadcn CLI (`badge`, `label`, `avatar`, `skeleton`, `dialog`, `dropdown-menu`, `tabs`, `popover`, `textarea`, `separator`) and export them from `@hms/ui`. Never `shadcn add` inside `apps/web`.
+- `P4-T02.4` Generate missing shadcn primitives **into** `packages/ui` via the shadcn CLI (`badge`, `label`, `avatar`, `skeleton`, `dialog`, `dropdown-menu`, `tabs`, `popover`, `textarea`, `separator`) and export them from `@hms/ui`. Never `shadcn add` inside `apps/web`.
 - `P4-T02.5` Shared compositions in `apps/web/components` (one component per file): `page-header` (breadcrumb + Geist title + subtitle + right-aligned actions), `stat-card` (icon tile, uppercase label, big value, helper/trend line, optional progress bar — per dashboard/pharmacy screens), `status-badge` (pill, 10%-tint background mapping: confirmed/arrived/in-progress/completed/cancelled/pending, in-patient/out-patient/discharged, stat/regular, low-stock/urgent), `data-table` shell (sticky `slate-50` header with uppercase 12px Geist labels, Inter cells, Geist Mono ID/number cells, row bottom-border only, hover shift, kebab `row-actions-menu` via dropdown), `filter-card` (labeled controls + export/action slots), `numbered-pagination` ("Showing X–Y of N" + page number buttons), `avatar-initials`, `timeline-list` (dot + time + title + description, per Recent Activity), `empty-state`, `table-skeleton`.
 - `P4-T02.6` Unit tests: `status-badge` variant mapping, `numbered-pagination` windowing, `data-table` cell typography slots.
+
+
 
 ### 6.3 App Shell (`P4-T03`)
 
@@ -225,6 +249,8 @@ Encode `DESIGN.md` once, so screen tasks only assemble.
 - `P4-T03.5` RBAC nav visibility: filter nav items via CASL ability (`lib/rbac`) mirroring backend permissions — visibility only, backend guard stays the source of truth.
 - `P4-T03.6` UI tests: active-route highlighting, role-filtered nav, logout flow, search submit navigation.
 
+
+
 ### 6.4 Dashboard — Hospital Overview (`P4-T04`)
 
 - `P4-T04.1` Header row: "Hospital Overview" + greeting composed from access-token claims ("Good morning, Dr. X. Here's what's happening today at Saling Jaga."), current-date chip, "New Case" primary button → registration create flow.
@@ -232,6 +258,8 @@ Encode `DESIGN.md` once, so screen tasks only assemble.
 - `P4-T04.3` Upcoming Appointments table card: generated appointments hook (today, soonest-first), columns avatar+name+mono ID / reason / time / status badge / kebab actions, "N Total" chip, "View Full Schedule" link → `/admin/appointments`. Auto-refresh via TanStack `refetchInterval` (5 min) with the "Next automatic refresh in mm:ss" footer countdown tied to it.
 - `P4-T04.4` Right rail: Quick Actions card (Register Patient → registration create, Schedule Appointment → `/admin/appointments`, Generate Report → dummy disabled action with tooltip); Recent Activity timeline from `lib/dashboard/mock-activity.ts` (`// DUMMY-DATA:` — backend audit feed does not exist yet).
 - `P4-T04.5` Skeleton/empty states; UI tests for stat cards from mocked query states and the refresh countdown.
+
+
 
 ### 6.5 Patients — Patient Directory (`P4-T05`)
 
@@ -243,6 +271,8 @@ Encode `DESIGN.md` once, so screen tasks only assemble.
 - `P4-T05.6` Below-table cards from the design: Admission Trends chart card (inline-SVG dummy chart from `lib/patients/mock-admission-trends.ts`) and Active Alert card (dummy) — both clearly mock-backed.
 - `P4-T05.7` UI tests: role-based visibility (`patient.read:any` vs `:own`), status mapping, filter → query-param round trip, duplicate-assignment conflict feedback.
 
+
+
 ### 6.6 Doctors (`P4-T06`, extrapolated design)
 
 No dedicated screen — assemble strictly from `P4-T02` compositions and `DESIGN.md` tokens, mirroring the Patient Directory layout.
@@ -251,6 +281,8 @@ No dedicated screen — assemble strictly from `P4-T02` compositions and `DESIGN
 - `P4-T06.2` Doctor profile create/edit forms and schedule management forms (shared schemas), schedule-overlap conflict feedback surfaced from API errors.
 - `P4-T06.3` Guarded patient assignment controls and bounded related-patient summaries (mirror of `P4-T05.5`).
 - `P4-T06.4` UI tests: conflict feedback, relation mutations, permission-aware controls.
+
+
 
 ### 6.7 Appointments — Calendar & Scheduling (`P4-T07`)
 
@@ -263,6 +295,8 @@ The largest screen task; split into `-a` (calendar read views) and `-b` (schedul
 - `P4-T07.5` Capability checks for admin/doctor/patient action variants.
 - `P4-T07.6` UI tests: event placement math, staff filtering, lifecycle transitions, rejected-transition error rendering.
 
+
+
 ### 6.8 Registration (`P4-T08`, extrapolated design)
 
 - `P4-T08.1` Registration queue: filter card (search, status, date) + data-table with status badges for `pending → checked_in → completed/cancelled`, numbered pagination.
@@ -270,6 +304,8 @@ The largest screen task; split into `-a` (calendar read views) and `-b` (schedul
 - `P4-T08.3` Patient self-service registration pages (own-scope), reusing the same compositions.
 - `P4-T08.4` Role-based action gating for admin/doctor/patient flows.
 - `P4-T08.5` UI tests: status transitions, invalid-transition feedback, own-vs-any visibility.
+
+
 
 ### 6.9 Pharmacy — Queue & Dispense (`P4-T09`)
 
@@ -279,12 +315,16 @@ The largest screen task; split into `-a` (calendar read views) and `-b` (schedul
 - `P4-T09.4` Verification Steps checklist (client-side state) gates the Dispense Now button; Dispense Now calls the transactional dispense endpoint, surfaces stock-mutation failures from the error envelope, and invalidates stock + prescription queries together; Print Label = `window.print` dummy.
 - `P4-T09.5` UI tests: dispense flow + failure recovery, checklist gating, stock-threshold rendering, authorization matrix (doctor vs pharmacist).
 
+
+
 ### 6.10 Administration (`P4-T10`, extrapolated design)
 
 - `P4-T10.1` Migrate the existing `/admin/users` page (`admin-users-shell` / `admin-users-panel`) to `/admin/administration` inside the new shell and compositions; delete superseded bespoke UI.
 - `P4-T10.2` Filter card (search, role select fed from `GET /api/v1/rbac/roles`, status) + data-table with role/status badges, kebab actions, numbered pagination wired to `lib/admin-users/search-params.ts`.
 - `P4-T10.3` Create/update user dialogs using shared Zod schemas + TanStack Form; mutations invalidate the list.
 - `P4-T10.4` UI tests: guarded actions (CASL), mutation error envelope rendering, filter round trip.
+
+
 
 ### 6.11 AI Clinical Assistant (`P4-T11`, dummy UI — backend is post-MVP Phase 13)
 
@@ -298,6 +338,8 @@ Build the full screen from the design now, entirely mock-backed, structured so P
 
 > **Deferred:** AI Chatbot integration moved to post-MVP Phase 13 (after SATUSEHAT). See [docs/post-mvp/ai-chatbot.md](../post-mvp/ai-chatbot.md).
 
+
+
 ## 7. Phase 5 - Hardening and Release Readiness (6 Tasks)
 
 1. `P5-T01` Finalize OpenAPI coverage and DTO validation consistency.
@@ -306,6 +348,8 @@ Build the full screen from the design now, entirely mock-backed, structured so P
 4. `P5-T04` Add CI checks for Prisma migrate status and Docker image builds.
 5. `P5-T05` Run end-to-end regression pass for MVP flows.
 6. `P5-T06` Publish release readiness checklist and deployment runbook.
+
+
 
 ## 8. Task Definition of Done (DoD)
 
@@ -326,9 +370,12 @@ Build the full screen from the design now, entirely mock-backed, structured so P
 - Documentation/API contract updated when behavior changes.
 - CI passes fully before merge.
 
+
+
 ## 9. Tooling Compatibility Notes (Latest Stack)
 
 - Prisma v7 (`prisma@7.8.0`, `@prisma/client@7.8.0`) requires adapter-based client and explicit `prisma generate`.
 - Tailwind v4 (`tailwindcss@4.3.2`) requires `@tailwindcss/postcss` and `@import "tailwindcss"`.
 - shadcn CLI (`shadcn@4.13.0`) monorepo mode requires `components.json` in both `apps/web` and `packages/ui`.
 - Orval codegen uses backend OpenAPI YAML contract (`/api/openapi.yaml`) and should regenerate typed hooks before frontend integration PRs.
+
