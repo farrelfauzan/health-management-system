@@ -12,6 +12,8 @@ export type PatientManagementControllerGetPatientByIdV1200Data = {
   mrn: string;
   fullName: string;
   dateOfBirth: string;
+  sex: string;
+  status: string;
   phoneNumber: string;
   address: string;
   ownerUserId: string;

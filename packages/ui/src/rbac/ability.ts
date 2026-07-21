@@ -6,6 +6,8 @@ export type AppSubject =
   | 'Role'
   | 'Patient'
   | 'Doctor'
+  | 'DoctorPatient'
+  | 'DoctorPatientActivity'
   | 'Appointment'
   | 'Registration'
   | 'Medication'

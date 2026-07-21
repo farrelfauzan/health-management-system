@@ -8,6 +8,7 @@
 
 export type PatientManagementControllerGetPatientByIdV1200DataDoctorsItem = {
   id: string;
+  assignmentId: string;
   fullName: string;
   specialty: string;
 };

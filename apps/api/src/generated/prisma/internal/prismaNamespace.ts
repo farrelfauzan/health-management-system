@@ -1735,6 +1735,8 @@ export const PatientProfileScalarFieldEnum = {
   mrn: 'mrn',
   fullName: 'fullName',
   dateOfBirth: 'dateOfBirth',
+  sex: 'sex',
+  status: 'status',
   phoneNumber: 'phoneNumber',
   address: 'address',
   ownerUserId: 'ownerUserId',
@@ -2026,6 +2028,34 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PatientSex'
+ */
+export type EnumPatientSexFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PatientSex'>
+    
+
+
+/**
+ * Reference to a field of type 'PatientSex[]'
+ */
+export type ListEnumPatientSexFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PatientSex[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PatientStatus'
+ */
+export type EnumPatientStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PatientStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PatientStatus[]'
+ */
+export type ListEnumPatientStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PatientStatus[]'>
     
 
 

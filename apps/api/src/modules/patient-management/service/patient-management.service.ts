@@ -64,12 +64,30 @@ export class PatientManagementService {
       throw new ForbiddenException('You are not allowed to read patients');
     }
 
-    const result = await this.patientManagementRepository.listPatients(query, currentUser, readScope.hasAny);
+    const result = await this.patientManagementRepository.listPatients(
+      {
+        page: query.page,
+        limit: query.limit,
+        search: query.search,
+        doctorId: query.doctorId,
+        status: query.status,
+        createdFrom: query.createdFrom ? parseDateOnly(query.createdFrom) : undefined,
+        createdTo: query.createdTo ? parseDateOnly(query.createdTo) : undefined,
+      },
+      currentUser,
+      readScope.hasAny,
+    );
 
     return {
       items: result.items.map((patient) => ({
         ...this.toPatientResponse(patient),
         doctorCount: patient._count.doctors,
+        doctors: patient.doctors.map((assignment) => ({
+          id: assignment.doctor.id,
+          assignmentId: assignment.id,
+          fullName: assignment.doctor.fullName,
+          specialty: assignment.doctor.specialty,
+        })),
       })),
       meta: {
         page: result.page,
@@ -101,6 +119,7 @@ export class PatientManagementService {
       ...this.toPatientResponse(patient),
       doctors: patient.doctors.map((assignment) => ({
         id: assignment.doctor.id,
+        assignmentId: assignment.id,
         fullName: assignment.doctor.fullName,
         specialty: assignment.doctor.specialty,
       })),
@@ -135,6 +154,8 @@ export class PatientManagementService {
       mrn: payload.mrn,
       fullName: payload.fullName,
       dateOfBirth: parseDateOnly(payload.dateOfBirth),
+      sex: payload.sex,
+      status: payload.status,
       phoneNumber: payload.phoneNumber,
       address: payload.address,
       ownerUserId: payload.ownerUserId,
@@ -181,6 +202,8 @@ export class PatientManagementService {
     const updated = await this.patientManagementRepository.updatePatient(id, {
       fullName: payload.fullName,
       dateOfBirth: payload.dateOfBirth ? parseDateOnly(payload.dateOfBirth) : undefined,
+      sex: payload.sex,
+      status: payload.status,
       phoneNumber: payload.phoneNumber,
       address: payload.address,
       ownerUserId: payload.ownerUserId,
@@ -263,6 +286,8 @@ export class PatientManagementService {
       mrn: patient.mrn,
       fullName: patient.fullName,
       dateOfBirth: toDateOnly(patient.dateOfBirth),
+      sex: patient.sex ?? undefined,
+      status: patient.status,
       phoneNumber: patient.phoneNumber,
       address: patient.address,
       ownerUserId: patient.ownerUserId ?? undefined,

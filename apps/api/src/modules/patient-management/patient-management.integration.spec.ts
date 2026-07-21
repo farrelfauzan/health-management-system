@@ -78,6 +78,8 @@ describe('PatientManagement integration', () => {
       mrn: 'MRN-1001',
       fullName: 'Patient One',
       dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+      sex: 'MALE',
+      status: 'OUT_PATIENT',
       phoneNumber: '123456',
       address: 'Main Street',
       ownerUserId: null,
@@ -295,6 +297,7 @@ describe('PatientManagement integration', () => {
         mrn: 'MRN-1001',
         fullName: 'Patient One',
         dateOfBirth: '1990-01-01',
+        sex: 'MALE',
         phoneNumber: '123456',
         address: 'Main Street',
       });

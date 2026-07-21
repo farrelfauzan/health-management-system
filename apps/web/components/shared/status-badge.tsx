@@ -5,6 +5,7 @@ import { formatStatusLabel } from '#lib/shared/status-label';
 
 type StatusBadgeProps = {
   status: string;
+  label?: string;
   className?: string;
 };
 
@@ -16,7 +17,7 @@ const TONE_CLASSES: Record<StatusTone, string> = {
   neutral: 'bg-neutral-tint text-neutral',
 };
 
-export function StatusBadge({ status, className }: StatusBadgeProps) {
+export function StatusBadge({ status, label, className }: StatusBadgeProps) {
   const tone = resolveStatusTone(status);
 
   return (
@@ -28,7 +29,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
         className,
       )}
     >
-      {formatStatusLabel(status)}
+      {label ?? formatStatusLabel(status)}
     </Badge>
   );
 }

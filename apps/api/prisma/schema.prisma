@@ -17,6 +17,17 @@ enum DoctorPatientActivityAction {
   UNASSIGNED
 }
 
+enum PatientStatus {
+  IN_PATIENT
+  OUT_PATIENT
+  DISCHARGED
+}
+
+enum PatientSex {
+  MALE
+  FEMALE
+}
+
 enum AppointmentStatus {
   SCHEDULED
   CONFIRMED
@@ -70,17 +81,19 @@ model User {
 }
 
 model PatientProfile {
-  id          String    @id @default(uuid()) @db.Uuid
-  mrn         String    @unique
-  fullName    String    @map("full_name")
-  dateOfBirth DateTime  @map("date_of_birth") @db.Date
-  phoneNumber String    @map("phone_number")
+  id          String        @id @default(uuid()) @db.Uuid
+  mrn         String        @unique
+  fullName    String        @map("full_name")
+  dateOfBirth DateTime      @map("date_of_birth") @db.Date
+  sex         PatientSex?
+  status      PatientStatus @default(OUT_PATIENT)
+  phoneNumber String        @map("phone_number")
   address     String
-  ownerUserId String?   @map("owner_user_id") @db.Uuid
-  isActive    Boolean   @default(true) @map("is_active")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  ownerUserId String?       @map("owner_user_id") @db.Uuid
+  isActive    Boolean       @default(true) @map("is_active")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  deletedAt   DateTime?     @map("deleted_at")
 
   ownerUser     User?           @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
   doctors       DoctorPatient[]
@@ -92,6 +105,7 @@ model PatientProfile {
   @@index([ownerUserId])
   @@index([isActive])
   @@index([fullName])
+  @@index([status])
   @@map("patient_profiles")
 }
 
