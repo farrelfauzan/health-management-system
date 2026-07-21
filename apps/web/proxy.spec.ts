@@ -1,0 +1,77 @@
+// @vitest-environment node
+import { NextRequest } from 'next/server';
+import { describe, expect, it } from 'vitest';
+
+import { proxy } from './proxy';
+import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
+
+const BASE_URL = 'http://localhost:3000';
+
+function encodeBase64Url(value: object): string {
+  return Buffer.from(JSON.stringify(value)).toString('base64url');
+}
+
+function buildToken(claims: object): string {
+  return `${encodeBase64Url({ alg: 'HS256', typ: 'JWT' })}.${encodeBase64Url(claims)}.signature`;
+}
+
+function buildRequest(path: string, token?: string): NextRequest {
+  const headers = token ? { cookie: `${ACCESS_TOKEN_COOKIE_NAME}=${token}` } : undefined;
+  return new NextRequest(`${BASE_URL}${path}`, { headers });
+}
+
+function futureUnix(): number {
+  return Math.floor(Date.now() / 1000) + 60 * 10;
+}
+
+function pastUnix(): number {
+  return Math.floor(Date.now() / 1000) - 60 * 10;
+}
+
+describe('proxy', () => {
+  it('redirects /admin requests without a token to /login', () => {
+    const response = proxy(buildRequest('/admin/users'));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
+  });
+
+  it('redirects expired sessions to /login and clears the cookie', () => {
+    const expiredToken = buildToken({ exp: pastUnix(), roles: ['ADMIN'] });
+    const response = proxy(buildRequest('/admin/users', expiredToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
+    expect(response.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value).toBe('');
+  });
+
+  it('redirects valid sessions without an admin role to /login and clears the cookie', () => {
+    const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
+    const response = proxy(buildRequest('/admin/users', doctorToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
+    expect(response.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value).toBe('');
+  });
+
+  it('allows /admin requests with a valid admin session', () => {
+    const adminToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'] });
+    const response = proxy(buildRequest('/admin/users', adminToken));
+
+    expect(response.headers.get('x-middleware-next')).toBe('1');
+  });
+
+  it('redirects an authenticated admin visiting /login to /admin/dashboard', () => {
+    const adminToken = buildToken({ exp: futureUnix(), roles: ['SUPER_ADMIN'] });
+    const response = proxy(buildRequest('/login', adminToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/dashboard`);
+  });
+
+  it('renders /login for unauthenticated visitors', () => {
+    const response = proxy(buildRequest('/login'));
+
+    expect(response.headers.get('x-middleware-next')).toBe('1');
+  });
+});

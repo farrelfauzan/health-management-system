@@ -34,6 +34,7 @@ export * from '#doctor-patient/schemas';
 export * from '#doctor-patient/contracts';
 export * from '#doctor-patient/types';
 export * from '#auth/schemas';
+export * from '#auth/contracts';
 export * from '#auth/types';
 export * from '#rbac/schemas';
 export * from '#rbac/types';
