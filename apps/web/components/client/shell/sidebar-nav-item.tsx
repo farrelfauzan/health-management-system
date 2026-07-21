@@ -17,7 +17,7 @@ export function SidebarNavItem({ item, isActive }: SidebarNavItemProps) {
         asChild
         isActive={isActive}
         tooltip={item.label}
-        className="h-9 gap-3 px-3 font-heading font-medium data-[active=true]:bg-sidebar-primary data-[active=true]:font-semibold data-[active=true]:text-sidebar-primary-foreground data-[active=true]:shadow-sm"
+        className="h-10 gap-4 px-4 font-heading font-medium transition-all duration-150 hover:translate-x-1 data-[active=true]:bg-sidebar-primary data-[active=true]:font-semibold data-[active=true]:text-sidebar-primary-foreground data-[active=true]:shadow-sm data-[active=true]:hover:translate-x-0"
       >
         <Link href={item.href} aria-current={isActive ? 'page' : undefined}>
           <Icon name={item.icon} size={20} />

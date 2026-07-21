@@ -19,7 +19,7 @@ export function GlobalSearch() {
     router.push(`${PATIENT_SEARCH_PATH}?q=${encodeURIComponent(trimmedQuery)}`);
   }
   return (
-    <form role="search" onSubmit={handleSubmit} className="relative w-full max-w-md">
+    <form role="search" onSubmit={handleSubmit} className="relative w-full max-w-xl">
       <Icon
         name="search"
         size={20}
@@ -31,7 +31,7 @@ export function GlobalSearch() {
         onChange={(event) => setQuery(event.target.value)}
         aria-label="Search patients"
         placeholder="Search patients by name or ID..."
-        className="border-none bg-surface-container-low pl-10 shadow-none"
+        className="h-10 rounded-lg border-none bg-surface-container-low pl-10 shadow-none"
       />
     </form>
   );

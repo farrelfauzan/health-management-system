@@ -2,6 +2,10 @@
 @import "shadcn/tailwind.css";
 @import "material-symbols/outlined.css";
 
+/* Scan the @hms/ui sources: consuming apps import this file through
+   node_modules, which Tailwind's automatic source detection skips. */
+@source "../";
+
 @custom-variant dark (&:is(.dark *));
 
 /*

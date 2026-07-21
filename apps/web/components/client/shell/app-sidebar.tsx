@@ -34,9 +34,9 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         {visibleSections.map((section) => (
-          <SidebarGroup key={section.label ?? 'main'}>
+          <SidebarGroup key={section.label ?? 'main'} className={section.label ? 'mt-6' : undefined}>
             {section.label ? (
-              <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <SidebarGroupLabel className="px-4 text-[10px] font-bold uppercase tracking-wider text-outline">
                 {section.label}
               </SidebarGroupLabel>
             ) : null}
