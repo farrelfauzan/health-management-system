@@ -26,7 +26,9 @@ import type {
   DispenseControllerCreateDispenseV1201,
   MedicationControllerListMedicationsV1200,
   MedicationControllerListMedicationsV1Params,
-  PrescriptionControllerCreatePrescriptionV1201
+  PrescriptionControllerCreatePrescriptionV1201,
+  PrescriptionControllerListPrescriptionsV1200,
+  PrescriptionControllerListPrescriptionsV1Params
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -131,6 +133,99 @@ export function useMedicationControllerListMedicationsV1<TData = Awaited<ReturnT
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getMedicationControllerListMedicationsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List prescriptions
+ */
+export const prescriptionControllerListPrescriptionsV1 = (
+    params?: PrescriptionControllerListPrescriptionsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PrescriptionControllerListPrescriptionsV1200>(
+      {url: `/api/v1/prescriptions`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getPrescriptionControllerListPrescriptionsV1QueryKey = (params?: PrescriptionControllerListPrescriptionsV1Params,) => {
+    return [
+    `/api/v1/prescriptions`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getPrescriptionControllerListPrescriptionsV1QueryOptions = <TData = Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError = unknown>(params?: PrescriptionControllerListPrescriptionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPrescriptionControllerListPrescriptionsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>> = ({ signal }) => prescriptionControllerListPrescriptionsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PrescriptionControllerListPrescriptionsV1QueryResult = NonNullable<Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>>
+export type PrescriptionControllerListPrescriptionsV1QueryError = unknown
+
+
+export function usePrescriptionControllerListPrescriptionsV1<TData = Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError = unknown>(
+ params: undefined |  PrescriptionControllerListPrescriptionsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePrescriptionControllerListPrescriptionsV1<TData = Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError = unknown>(
+ params?: PrescriptionControllerListPrescriptionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePrescriptionControllerListPrescriptionsV1<TData = Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError = unknown>(
+ params?: PrescriptionControllerListPrescriptionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List prescriptions
+ */
+
+export function usePrescriptionControllerListPrescriptionsV1<TData = Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError = unknown>(
+ params?: PrescriptionControllerListPrescriptionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerListPrescriptionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPrescriptionControllerListPrescriptionsV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

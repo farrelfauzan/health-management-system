@@ -2,6 +2,7 @@ import {
   CreateDispenseRecordPayload,
   CreatePrescriptionRecordPayload,
   ListMedicationsParams,
+  ListPrescriptionsParams,
   resolvePrescriptionStatusAfterDispense,
 } from '@hms/shared-types';
 import { ConflictException, Injectable } from '@nestjs/common';
@@ -104,6 +105,45 @@ export class PharmacyFlowRepository {
       const count = await this.prisma.countActive(tx.medication, { where });
 
       return [medications, count] as const;
+    });
+
+    return {
+      items,
+      total,
+      page,
+      limit,
+    };
+  }
+
+  async listPrescriptions(params: ListPrescriptionsParams) {
+    const { page, limit, status, patientId, doctorId, ownerUserId } = params;
+    const skip = (page - 1) * limit;
+
+    const where = {
+      ...(status ? { status } : {}),
+      ...(patientId ? { patientId } : {}),
+      ...(doctorId ? { doctorId } : {}),
+      ...(ownerUserId
+        ? {
+            OR: [{ patient: { ownerUserId } }, { doctor: { ownerUserId } }],
+          }
+        : {}),
+    };
+
+    const [items, total] = await this.prisma.executeTransaction(async (tx) => {
+      const prescriptions = await this.prisma.findManyActive(tx.prescription, {
+        where,
+        skip,
+        take: limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: PRESCRIPTION_DETAIL_INCLUDE,
+      });
+
+      const count = await this.prisma.countActive(tx.prescription, { where });
+
+      return [prescriptions, count] as const;
     });
 
     return {

@@ -44,6 +44,14 @@ export const listMedicationsQuerySchema = z.object({
   search: z.string().trim().min(1).max(100).optional(),
 });
 
+export const listPrescriptionsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+  status: prescriptionStatusSchema.optional(),
+  patientId: z.string().uuid().optional(),
+  doctorId: z.string().uuid().optional(),
+});
+
 export const prescriptionItemSchema = z.object({
   medicationId: z.string().uuid(),
   dosage: z.string().trim().min(1).max(100),
@@ -82,6 +90,7 @@ export const createDispenseSchema = z
   });
 
 export type ListMedicationsQueryInput = z.infer<typeof listMedicationsQuerySchema>;
+export type ListPrescriptionsQueryInput = z.infer<typeof listPrescriptionsQuerySchema>;
 export type PrescriptionItemInput = z.infer<typeof prescriptionItemSchema>;
 export type CreatePrescriptionInput = z.infer<typeof createPrescriptionSchema>;
 export type DispenseItemInput = z.infer<typeof dispenseItemInputSchema>;

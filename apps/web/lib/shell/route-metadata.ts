@@ -1,3 +1,5 @@
+import { FACILITY_CONFIG, FACILITY_KIND_LABELS } from '#lib/facility/facility-config';
+
 export type AdminRouteKey =
   | 'dashboard'
   | 'patients'
@@ -17,8 +19,8 @@ export type AdminRouteMetadata = {
 export const ADMIN_ROUTE_METADATA: Record<AdminRouteKey, AdminRouteMetadata> = {
   dashboard: {
     breadcrumbs: ['Main Dashboard', 'Overview'],
-    title: 'Hospital Overview',
-    subtitle: 'Key metrics and activity across Saling Jaga today.',
+    title: `${FACILITY_KIND_LABELS[FACILITY_CONFIG.kind]} Overview`,
+    subtitle: `Key metrics and activity across ${FACILITY_CONFIG.name} today.`,
   },
   patients: {
     breadcrumbs: ['Main Dashboard', 'Patients'],

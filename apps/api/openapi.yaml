@@ -845,6 +845,14 @@ paths:
           schema:
             format: uuid
             type: string
+        - name: isActive
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
       responses:
         "200":
           description: A paginated list of doctors.
@@ -2735,6 +2743,221 @@ paths:
       tags:
         - Pharmacy Flow
   /api/v1/prescriptions:
+    get:
+      operationId: PrescriptionController_listPrescriptions_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - DRAFT
+              - ISSUED
+              - PARTIALLY_DISPENSED
+              - DISPENSED
+              - CANCELLED
+        - name: patientId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: A permission-scoped, filtered, paginated prescription list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        patientId:
+                          type: string
+                        doctorId:
+                          type: string
+                        status:
+                          type: string
+                        issuedAt:
+                          type: string
+                        notes:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                        patient:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            mrn:
+                              type: string
+                            fullName:
+                              type: string
+                          required:
+                            - id
+                            - mrn
+                            - fullName
+                        doctor:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            licenseNumber:
+                              type: string
+                            fullName:
+                              type: string
+                          required:
+                            - id
+                            - licenseNumber
+                            - fullName
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              medicationId:
+                                type: string
+                              medicationCode:
+                                type: string
+                              medicationName:
+                                type: string
+                              dosage:
+                                type: string
+                              frequency:
+                                type: string
+                              durationDays:
+                                type: integer
+                              quantity:
+                                type: integer
+                              instructions:
+                                type: string
+                            required:
+                              - id
+                              - medicationId
+                              - medicationCode
+                              - medicationName
+                              - dosage
+                              - frequency
+                              - durationDays
+                              - quantity
+                              - instructions
+                      required:
+                        - id
+                        - patientId
+                        - doctorId
+                        - status
+                        - issuedAt
+                        - notes
+                        - createdAt
+                        - updatedAt
+                        - patient
+                        - doctor
+                        - items
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 77777777-7777-4777-8777-777777777777
+                      patientId: 11111111-1111-4111-8111-111111111111
+                      doctorId: 22222222-2222-4222-8222-222222222222
+                      status: ISSUED
+                      issuedAt: 2026-07-20T08:00:00.000Z
+                      notes: Take after meals
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+                      patient:
+                        id: 11111111-1111-4111-8111-111111111111
+                        mrn: MRN-2026-0001
+                        fullName: Aisha Rahman
+                      doctor:
+                        id: 22222222-2222-4222-8222-222222222222
+                        licenseNumber: SIP-2026-0001
+                        fullName: Dr. Budi Santoso
+                      items:
+                        - id: bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb
+                          medicationId: 66666666-6666-4666-8666-666666666666
+                          medicationCode: MED-PARA-500
+                          medicationName: Paracetamol
+                          dosage: 500 mg
+                          frequency: Three times daily
+                          durationDays: 3
+                          quantity: 9
+                          instructions: Take after meals
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List prescriptions
+      tags: &a8
+        - Pharmacy Flow
     post:
       operationId: PrescriptionController_createPrescription_v1
       parameters: []
@@ -2911,8 +3134,7 @@ paths:
       security:
         - bearer: []
       summary: Create a prescription
-      tags:
-        - Pharmacy Flow
+      tags: *a8
   /api/v1/dispenses:
     post:
       operationId: DispenseController_createDispense_v1
@@ -3047,7 +3269,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: &a8
+      tags: &a9
         - Rbac
   /api/v1/rbac/assign-role:
     post:
@@ -3062,7 +3284,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a8
+      tags: *a9
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -3076,7 +3298,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a8
+      tags: *a9
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1

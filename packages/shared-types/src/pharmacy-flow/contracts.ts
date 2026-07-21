@@ -18,6 +18,12 @@ export type MedicationsListMeta = {
   total: number;
 };
 
+export type PrescriptionsListMeta = {
+  page: number;
+  limit: number;
+  total: number;
+};
+
 export type PrescriptionRelatedPatient = {
   id: string;
   mrn: string;

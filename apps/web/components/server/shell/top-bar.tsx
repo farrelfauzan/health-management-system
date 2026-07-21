@@ -14,9 +14,6 @@ export function TopBar({ profile }: TopBarProps) {
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-6 border-b bg-card px-8 shadow-sm">
       <SidebarTrigger className="md:hidden" />
-      <h2 className="hidden shrink-0 font-heading text-2xl font-bold text-primary lg:block">
-        Saling Jaga Portal
-      </h2>
       <GlobalSearch />
       <div className="ml-auto flex items-center gap-2">
         <Button

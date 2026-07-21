@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { DoctorManagementControllerListDoctorsV1IsActive } from './doctorManagementControllerListDoctorsV1IsActive';
 
 export type DoctorManagementControllerListDoctorsV1Params = {
 /**
@@ -21,4 +22,5 @@ limit?: number;
  */
 search?: string;
 patientId?: string;
+isActive?: DoctorManagementControllerListDoctorsV1IsActive;
 };

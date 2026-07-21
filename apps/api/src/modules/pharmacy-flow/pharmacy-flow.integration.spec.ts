@@ -25,6 +25,7 @@ describe('PharmacyFlow integration', () => {
 
   const pharmacyRepositoryMock = {
     listMedications: jest.fn(),
+    listPrescriptions: jest.fn(),
     findActiveMedicationsByIds: jest.fn(),
     findActivePatientById: jest.fn(),
     findActiveDoctorById: jest.fn(),
@@ -184,6 +185,12 @@ describe('PharmacyFlow integration', () => {
       page: 1,
       limit: 10,
     });
+    pharmacyRepositoryMock.listPrescriptions.mockResolvedValue({
+      items: [prescriptionRecord],
+      total: 1,
+      page: 1,
+      limit: 10,
+    });
     pharmacyRepositoryMock.findActiveMedicationsByIds.mockResolvedValue([
       {
         id: medicationId,
@@ -241,6 +248,66 @@ describe('PharmacyFlow integration', () => {
       expect(response.status).toBe(200);
       expect(response.body.data).toHaveLength(1);
       expect(response.body.data[0].stockQty).toBe(100);
+    });
+  });
+
+  describe('GET /prescriptions', () => {
+    it('returns 401 when bearer token is missing', async () => {
+      const response = await request(app.getHttpServer()).get('/api/v1/v1/prescriptions');
+
+      expect(response.status).toBe(401);
+    });
+
+    it('returns 403 when user lacks prescription.read permission', async () => {
+      const token = await buildToken('no-read-user', 'no-read@hms.local');
+      mockActorWithPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/prescriptions')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(403);
+    });
+
+    it('returns 200 for an unscoped list with prescription.read:any permission', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'read', resource: 'Prescription', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/prescriptions?status=ISSUED')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.meta.total).toBe(1);
+      expect(pharmacyRepositoryMock.listPrescriptions).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'ISSUED', ownerUserId: undefined }),
+      );
+    });
+
+    it('returns 200 scoped to the current user with prescription.read:own permission', async () => {
+      const token = await buildToken('doctor-user', 'doctor@hms.local');
+      mockActorWithPermissions([{ action: 'read', resource: 'Prescription', scope: 'OWN' }]);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/prescriptions')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(pharmacyRepositoryMock.listPrescriptions).toHaveBeenCalledWith(
+        expect.objectContaining({ ownerUserId: 'doctor-user' }),
+      );
+    });
+
+    it('returns 400 for an invalid status filter', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'read', resource: 'Prescription', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/prescriptions?status=UNKNOWN')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(400);
     });
   });
 
