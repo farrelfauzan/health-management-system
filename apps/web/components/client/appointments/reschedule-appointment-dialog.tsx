@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AppointmentListItem, AppointmentResponse } from '@hms/shared-types';
 import {
   Button,
+  DatePicker,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -74,8 +75,7 @@ export function RescheduleAppointmentDialog({
         <DialogHeader>
           <DialogTitle className="font-heading">Reschedule Appointment</DialogTitle>
           <DialogDescription>
-            Pick a new slot for {appointment.patient.fullName} with{' '}
-            {appointment.doctor.fullName}.
+            Pick a new slot for {appointment.patient.fullName} with {appointment.doctor.fullName}.
           </DialogDescription>
         </DialogHeader>
         <form
@@ -106,11 +106,11 @@ export function RescheduleAppointmentDialog({
                   >
                     Date
                   </label>
-                  <Input
+                  <DatePicker
                     id={`reschedule-${field.name}`}
-                    type="date"
                     value={field.state.value}
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    placeholder="Select date"
+                    onValueChange={field.handleChange}
                     onBlur={field.handleBlur}
                   />
                 </div>

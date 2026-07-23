@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { REGISTRATION_STATUSES, type RegistrationStatusValue } from '@hms/shared-types';
 import {
   Button,
+  DatePicker,
   Input,
   Select,
   SelectContent,
@@ -61,6 +62,13 @@ export function RegistrationsFilterCard({
     onReset();
   }
 
+  function handleRegisteredFromChange(value: string): void {
+    setRegisteredFrom(value);
+    if (registeredTo.length > 0 && (value.length === 0 || registeredTo < value)) {
+      setRegisteredTo('');
+    }
+  }
+
   return (
     <form noValidate onSubmit={handleSubmit}>
       <FilterCard
@@ -115,20 +123,22 @@ export function RegistrationsFilterCard({
             Registered Between
           </span>
           <div className="flex items-center gap-2">
-            <Input
-              type="date"
+            <DatePicker
               aria-label="Registered from"
-              className="w-36"
+              className="w-40"
+              placeholder="From"
               value={registeredFrom}
-              onChange={(event) => setRegisteredFrom(event.target.value)}
+              onValueChange={handleRegisteredFromChange}
             />
             <span className="text-sm text-slate-400">–</span>
-            <Input
-              type="date"
+            <DatePicker
               aria-label="Registered to"
-              className="w-36"
+              className="w-40"
+              placeholder="To"
               value={registeredTo}
-              onChange={(event) => setRegisteredTo(event.target.value)}
+              disabled={registeredFrom.length === 0}
+              minValue={registeredFrom}
+              onValueChange={setRegisteredTo}
             />
           </div>
         </div>
