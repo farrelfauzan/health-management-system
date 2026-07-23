@@ -32,6 +32,8 @@ Response envelope:
 }
 ```
 
+Error-shape status note: the API does not yet install a global exception filter, so thrown `HttpException`s currently surface Nest's default shape (`{ "message", "error", "statusCode" }`). The web client's `resolveApiErrorMessage` accepts both shapes (including `string[]` validation messages) and surfaces the backend message inline and as a top-right toast. New error-producing code should still target the envelope above; adding the global filter is the outstanding conformance task.
+
 ## 2. Authentication and Authorization
 
 - Use guards for authentication.
@@ -153,13 +155,28 @@ Assignment contract notes:
 
 ### Appointment Management
 
-| Endpoint                               | Permission                                           | Default Roles                                                           |
-| -------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
-| `GET /api/v1/appointments`             | `appointment.read:any` or `appointment.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
-| `GET /api/v1/appointments/:id`         | `appointment.read:any` or `appointment.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
-| `POST /api/v1/appointments`            | `appointment.create:any` or `appointment.create:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
-| `PATCH /api/v1/appointments/:id`       | `appointment.update:any` or `appointment.update:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own, limited fields) |
-| `POST /api/v1/appointments/:id/cancel` | `appointment.cancel:any` or `appointment.cancel:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own)                 |
+| Endpoint                                | Permission                                           | Default Roles                                                           |
+| --------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
+| `GET /api/v1/appointments`              | `appointment.read:any` or `appointment.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
+| `GET /api/v1/appointments/:id`          | `appointment.read:any` or `appointment.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
+| `POST /api/v1/appointments`             | `appointment.create:any` or `appointment.create:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
+| `PATCH /api/v1/appointments/:id`        | `appointment.update:any` or `appointment.update:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own, limited fields) |
+| `POST /api/v1/appointments/:id/cancel`  | `appointment.cancel:any` or `appointment.cancel:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own)                 |
+| `POST /api/v1/appointments/:id/approve` | `appointment.approve:any`                            | `SUPER_ADMIN`, `ADMIN`                                                  |
+| `POST /api/v1/appointments/:id/reject`  | `appointment.approve:any`                            | `SUPER_ADMIN`, `ADMIN`                                                  |
+| `GET /api/v1/doctors/:id/sessions`      | `appointment.session.read:any`                       | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT`                             |
+| `GET /api/v1/appointment-sessions`      | `appointment.session.read:any`                       | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT`                             |
+| `GET /api/v1/appointment-sessions/:id/queue` | `appointment.session.read:any`                  | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT`                             |
+| `PATCH /api/v1/appointment-sessions/:id` | `appointment.session.update:any`                    | `SUPER_ADMIN`, `ADMIN`                                                  |
+
+Appointment scheduling model (session-based — see [docs/revamp/appointment-scheduling.md](../revamp/appointment-scheduling.md)):
+
+- `POST /appointments` takes a discriminated body by `type`. `SESSION` joins a doctor's practice session (`{ doctorId, patientId, scheduleId, sessionDate }`) — no exact time can be chosen. `SPECIAL_REQUEST` asks for an exact instant (`{ doctorId, patientId, requestedAt, reason }`, reason mandatory) and is created as `REQUESTED` until clinic staff approve or reject it; creators holding `appointment.approve:any` are scheduled immediately.
+- Sessions are lazily materialized occurrences of weekly schedule windows with limited (`maxPatients`) or unlimited capacity. Booking rejects full (`409`), non-open, duplicate-patient, and inside-cutoff attempts (booking closes 60 minutes before session start).
+- Patient-initiated special requests must be at least 3 days in advance; approvers may book closer in.
+- Queue numbers are assigned at check-in (registration flow `CHECKED_IN`), first come first served — a booking is only a participation record. Session bookings cannot be rescheduled to an exact timestamp; cancel and rebook instead.
+- All schedule windows and session times are wall-clock values in the clinic timezone (`CLINIC_TIMEZONE` env, default `Asia/Jakarta`); the API converts instants before validating.
+- `GET /appointment-sessions?from&to` projects sessions for every active doctor (for calendar display); `GET /doctors/:id/sessions` scopes to one doctor; both return `bookedCount`/`remaining`. Date ranges are capped at 92 days.
 
 ### Registration Flow
 

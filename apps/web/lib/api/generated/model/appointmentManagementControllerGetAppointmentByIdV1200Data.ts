@@ -10,6 +10,9 @@ export type AppointmentManagementControllerGetAppointmentByIdV1200Data = {
   id: string;
   patientId: string;
   doctorId: string;
+  type: string;
+  sessionId: string;
+  queueNumber: number;
   scheduledAt: string;
   status: string;
   reason: string;

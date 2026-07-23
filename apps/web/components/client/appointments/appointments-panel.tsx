@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import type { AppointmentListItem } from '@hms/shared-types';
+import type { AppointmentListItem, DoctorSessionCalendarItem } from '@hms/shared-types';
 import { Card, CardContent } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { AppointmentDetailsDialog } from '#components/client/appointments/appointment-details-dialog';
+import { AppointmentRequestsPanel } from '#components/client/appointments/appointment-requests-panel';
 import { AppointmentsSidePanel } from '#components/client/appointments/appointments-side-panel';
 import { AppointmentsTable } from '#components/client/appointments/appointments-table';
 import { CalendarToolbar } from '#components/client/appointments/calendar-toolbar';
@@ -14,9 +15,14 @@ import { DayView } from '#components/client/appointments/day-view';
 import { MonthView } from '#components/client/appointments/month-view';
 import { RescheduleAppointmentDialog } from '#components/client/appointments/reschedule-appointment-dialog';
 import { ScheduleAppointmentDialog } from '#components/client/appointments/schedule-appointment-dialog';
+import { SessionDetailsDialog } from '#components/client/appointments/session-details-dialog';
+import { SessionQueueDialog } from '#components/client/appointments/session-queue-dialog';
 import { WeekView } from '#components/client/appointments/week-view';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
+import { appointmentManagementControllerGetAppointmentByIdV1 } from '#lib/api/generated/appointment-management/appointment-management';
+import { notifyApiError } from '#lib/api/notify-api-error';
+import { parseApiSuccess } from '#lib/api/response';
 import { filterAppointmentsByDoctors } from '#lib/appointments/filter-appointments-by-doctors';
 import {
   buildAppointmentsSearchParams,
@@ -24,6 +30,7 @@ import {
   type AppointmentsView,
 } from '#lib/appointments/search-params';
 import { useAppointmentsList } from '#lib/appointments/use-appointments-list';
+import { useSessionsCalendar } from '#lib/appointments/use-sessions-calendar';
 import {
   addDays,
   addMonths,
@@ -76,6 +83,10 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
     scheduledFrom: rangeStart.toISOString(),
     scheduledTo: new Date(addDays(rangeStart, rangeLengthDays).getTime() - 1).toISOString(),
   });
+  const sessionsQuery = useSessionsCalendar({
+    from: formatDateParam(rangeStart),
+    to: formatDateParam(addDays(rangeStart, rangeLengthDays - 1)),
+  });
   const doctorsQuery = useDoctorsList(MEDICAL_STAFF_QUERY);
   const [selectedDoctorIds, setSelectedDoctorIds] = useState<string[] | null>(null);
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState<boolean>(false);
@@ -85,9 +96,17 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
   const [cancellingAppointment, setCancellingAppointment] = useState<AppointmentListItem | null>(
     null,
   );
+  const [viewingQueueSessionId, setViewingQueueSessionId] = useState<string | null>(null);
+  const [viewingSession, setViewingSession] = useState<DoctorSessionCalendarItem | null>(null);
   const visibleAppointments = filterAppointmentsByDoctors(
     appointmentsQuery.appointments,
     selectedDoctorIds,
+  );
+  const calendarAppointments = visibleAppointments.filter(
+    (appointment) => appointment.type !== 'SESSION',
+  );
+  const visibleSessions = sessionsQuery.sessions.filter(
+    (session) => selectedDoctorIds === null || selectedDoctorIds.includes(session.doctorId),
   );
 
   function navigateWithParams(next: AppointmentsSearchParams): void {
@@ -142,6 +161,27 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
     setCancellingAppointment(appointment);
   }
 
+  async function handleSelectQueueEntry(appointmentId: string): Promise<void> {
+    setViewingSession(null);
+    const loadedAppointment = appointmentsQuery.appointments.find(
+      (appointment) => appointment.id === appointmentId,
+    );
+    if (loadedAppointment) {
+      setViewingAppointment(loadedAppointment);
+      return;
+    }
+    try {
+      const response = await appointmentManagementControllerGetAppointmentByIdV1(appointmentId);
+      const envelope = parseApiSuccess<AppointmentListItem>(
+        response,
+        'Unable to load the appointment.',
+      );
+      setViewingAppointment(envelope.data);
+    } catch (error) {
+      notifyApiError(error, 'Unable to load the appointment.');
+    }
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -155,6 +195,8 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
           {appointmentsQuery.error.message}
         </p>
       ) : null}
+
+      <AppointmentRequestsPanel />
 
       <div className="flex flex-col gap-6 xl:flex-row">
         <AppointmentsSidePanel
@@ -188,25 +230,31 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
             {initialQuery.view === 'day' ? (
               <DayView
                 day={anchorDate}
-                appointments={visibleAppointments}
+                appointments={calendarAppointments}
+                sessions={visibleSessions}
                 isPending={appointmentsQuery.isPending}
                 onSelectAppointment={setViewingAppointment}
+                onSelectSession={setViewingSession}
               />
             ) : initialQuery.view === 'month' ? (
               <MonthView
                 monthDate={anchorDate}
                 days={monthGridDays}
-                appointments={visibleAppointments}
+                appointments={calendarAppointments}
+                sessions={visibleSessions}
                 isPending={appointmentsQuery.isPending}
                 onSelectAppointment={setViewingAppointment}
+                onSelectSession={setViewingSession}
                 onSelectDay={handleSelectDay}
               />
             ) : initialQuery.view === 'week' ? (
               <WeekView
                 weekDays={weekDays}
-                appointments={visibleAppointments}
+                appointments={calendarAppointments}
+                sessions={visibleSessions}
                 isPending={appointmentsQuery.isPending}
                 onSelectAppointment={setViewingAppointment}
+                onSelectSession={setViewingSession}
               />
             ) : (
               <>
@@ -255,6 +303,37 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
           appointment={viewingAppointment}
           onReschedule={handleRescheduleAppointment}
           onCancel={handleCancelAppointment}
+          onViewQueue={(sessionId) => {
+            setViewingAppointment(null);
+            setViewingQueueSessionId(sessionId);
+          }}
+        />
+      ) : null}
+
+      {viewingSession ? (
+        <SessionDetailsDialog
+          key={`${viewingSession.doctorId}|${viewingSession.sessionDate}|${viewingSession.startTime}`}
+          open={Boolean(viewingSession)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setViewingSession(null);
+            }
+          }}
+          session={viewingSession}
+          onSelectAppointment={(appointmentId) => void handleSelectQueueEntry(appointmentId)}
+        />
+      ) : null}
+
+      {viewingQueueSessionId ? (
+        <SessionQueueDialog
+          key={viewingQueueSessionId}
+          open={Boolean(viewingQueueSessionId)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setViewingQueueSessionId(null);
+            }
+          }}
+          sessionId={viewingQueueSessionId}
         />
       ) : null}
 

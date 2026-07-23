@@ -5,11 +5,16 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateAppointmentDtoType } from './createAppointmentDtoType';
 
 export interface CreateAppointmentDto {
+  type: CreateAppointmentDtoType;
   patientId: string;
   doctorId: string;
-  scheduledAt: string;
+  scheduleId?: string;
+  /** @pattern ^\d{4}-\d{2}-\d{2}$ */
+  sessionDate?: string;
+  requestedAt?: string;
   /**
      * @minLength 2
      * @maxLength 500

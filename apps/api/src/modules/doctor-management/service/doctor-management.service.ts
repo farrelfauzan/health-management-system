@@ -219,6 +219,7 @@ export class DoctorManagementService {
         startTime: entry.startTime,
         endTime: entry.endTime,
         isAvailable: entry.isAvailable,
+        maxPatients: entry.maxPatients ?? null,
       })),
     });
 
@@ -328,6 +329,7 @@ export class DoctorManagementService {
       startTime: schedule.startTime,
       endTime: schedule.endTime,
       isAvailable: schedule.isAvailable,
+      maxPatients: schedule.maxPatients,
     };
   }
 }

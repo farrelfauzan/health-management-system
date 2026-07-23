@@ -41,6 +41,7 @@ export const doctorScheduleEntrySchema = z
     startTime: scheduleTimeSchema,
     endTime: scheduleTimeSchema,
     isAvailable: z.boolean().optional().default(true),
+    maxPatients: z.number().int().min(1).nullable().optional(),
   })
   .refine((entry) => entry.startTime < entry.endTime, {
     message: 'startTime must be earlier than endTime',

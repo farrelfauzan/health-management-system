@@ -55,6 +55,7 @@ export function DoctorScheduleDialog({
       startTime: schedule.startTime,
       endTime: schedule.endTime,
       isAvailable: schedule.isAvailable,
+      maxPatients: schedule.maxPatients,
     })),
   );
   const [scheduleError, setScheduleError] = useState<string | null>(null);
@@ -94,7 +95,7 @@ export function DoctorScheduleDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-heading">Manage Schedule</DialogTitle>
           <DialogDescription>

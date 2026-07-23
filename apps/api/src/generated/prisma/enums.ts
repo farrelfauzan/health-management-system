@@ -43,14 +43,33 @@ export type PatientSex = (typeof PatientSex)[keyof typeof PatientSex]
 
 
 export const AppointmentStatus = {
+  REQUESTED: 'REQUESTED',
   SCHEDULED: 'SCHEDULED',
   CONFIRMED: 'CONFIRMED',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
+  REJECTED: 'REJECTED',
   NO_SHOW: 'NO_SHOW'
 } as const
 
 export type AppointmentStatus = (typeof AppointmentStatus)[keyof typeof AppointmentStatus]
+
+
+export const AppointmentType = {
+  SESSION: 'SESSION',
+  SPECIAL_REQUEST: 'SPECIAL_REQUEST'
+} as const
+
+export type AppointmentType = (typeof AppointmentType)[keyof typeof AppointmentType]
+
+
+export const AppointmentSessionStatus = {
+  OPEN: 'OPEN',
+  CLOSED: 'CLOSED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type AppointmentSessionStatus = (typeof AppointmentSessionStatus)[keyof typeof AppointmentSessionStatus]
 
 
 export const RegistrationStatus = {

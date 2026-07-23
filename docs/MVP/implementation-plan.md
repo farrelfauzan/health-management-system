@@ -144,6 +144,13 @@ Doctor-patient repository/service behavior:
 - `P3-T04.4` Enforce business rules (availability, allowed status transitions, patient-update limits).
 - `P3-T04.5` Add integration tests for transaction integrity and permission matrix.
 
+Session-based scheduling revamp (delivered — see [docs/revamp/appointment-scheduling.md](../revamp/appointment-scheduling.md) and D-019/D-020):
+
+- `P3-T04.6` Clinic-timezone availability validation (`CLINIC_TIMEZONE`, shared tz helpers).
+- `P3-T04.7` Schema: `AppointmentSession` model, `AppointmentType`, `REQUESTED`/`REJECTED` statuses, queue numbers, schedule `maxPatients`; backfill of legacy exact-time rows.
+- `P3-T04.8` Discriminated create (`SESSION` queue join with row-locked capacity/cutoff checks; `SPECIAL_REQUEST` with approval flow and 3-day patient lead), approve/reject endpoints, session listing/queue/update endpoints, queue assignment at registration check-in.
+- `P3-T04.9` Web: two-tab booking dialog, approvals inbox, session-centric calendar (sessions with patient totals, side-by-side overlap columns, details modal → queue → patient appointment), schedule capacity UI.
+
 
 
 ### 5.5 Registration Flow (`P3-T05`)

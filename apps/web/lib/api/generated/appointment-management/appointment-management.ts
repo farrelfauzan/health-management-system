@@ -21,15 +21,26 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AppointmentManagementControllerApproveAppointmentV1200,
   AppointmentManagementControllerCancelAppointmentV1200,
   AppointmentManagementControllerCreateAppointmentV1201,
   AppointmentManagementControllerGetAppointmentByIdV1200,
   AppointmentManagementControllerListAppointmentsV1200,
   AppointmentManagementControllerListAppointmentsV1Params,
+  AppointmentManagementControllerRejectAppointmentV1200,
   AppointmentManagementControllerUpdateAppointmentV1200,
+  AppointmentSessionControllerGetSessionQueueV1200,
+  AppointmentSessionControllerListDoctorSessionsV1200,
+  AppointmentSessionControllerListDoctorSessionsV1Params,
+  AppointmentSessionControllerListSessionsCalendarV1200,
+  AppointmentSessionControllerListSessionsCalendarV1Params,
+  AppointmentSessionControllerUpdateSessionV1200,
+  ApproveAppointmentDto,
   CancelAppointmentDto,
   CreateAppointmentDto,
-  UpdateAppointmentDto
+  RejectAppointmentDto,
+  UpdateAppointmentDto,
+  UpdateAppointmentSessionDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -433,6 +444,208 @@ export function useAppointmentManagementControllerUpdateAppointmentV1<TData = Aw
 
 
 /**
+ * @summary Approve a special appointment request
+ */
+export const appointmentManagementControllerApproveAppointmentV1 = (
+    id: string,
+    approveAppointmentDto: ApproveAppointmentDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AppointmentManagementControllerApproveAppointmentV1200>(
+      {url: `/api/v1/appointments/${id}/approve`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: approveAppointmentDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAppointmentManagementControllerApproveAppointmentV1QueryKey = (id: string,
+    approveAppointmentDto?: ApproveAppointmentDto,) => {
+    return [
+    'POST', `/api/v1/appointments/${id}/approve`, approveAppointmentDto
+    ] as const;
+    }
+
+
+export const getAppointmentManagementControllerApproveAppointmentV1QueryOptions = <TData = Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError = unknown>(id: string,
+    approveAppointmentDto: ApproveAppointmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAppointmentManagementControllerApproveAppointmentV1QueryKey(id,approveAppointmentDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>> = ({ signal }) => appointmentManagementControllerApproveAppointmentV1(id,approveAppointmentDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AppointmentManagementControllerApproveAppointmentV1QueryResult = NonNullable<Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>>
+export type AppointmentManagementControllerApproveAppointmentV1QueryError = unknown
+
+
+export function useAppointmentManagementControllerApproveAppointmentV1<TData = Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError = unknown>(
+ id: string,
+    approveAppointmentDto: ApproveAppointmentDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentManagementControllerApproveAppointmentV1<TData = Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError = unknown>(
+ id: string,
+    approveAppointmentDto: ApproveAppointmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentManagementControllerApproveAppointmentV1<TData = Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError = unknown>(
+ id: string,
+    approveAppointmentDto: ApproveAppointmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Approve a special appointment request
+ */
+
+export function useAppointmentManagementControllerApproveAppointmentV1<TData = Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError = unknown>(
+ id: string,
+    approveAppointmentDto: ApproveAppointmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerApproveAppointmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAppointmentManagementControllerApproveAppointmentV1QueryOptions(id,approveAppointmentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Reject a special appointment request
+ */
+export const appointmentManagementControllerRejectAppointmentV1 = (
+    id: string,
+    rejectAppointmentDto: RejectAppointmentDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AppointmentManagementControllerRejectAppointmentV1200>(
+      {url: `/api/v1/appointments/${id}/reject`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: rejectAppointmentDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAppointmentManagementControllerRejectAppointmentV1QueryKey = (id: string,
+    rejectAppointmentDto?: RejectAppointmentDto,) => {
+    return [
+    'POST', `/api/v1/appointments/${id}/reject`, rejectAppointmentDto
+    ] as const;
+    }
+
+
+export const getAppointmentManagementControllerRejectAppointmentV1QueryOptions = <TData = Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError = unknown>(id: string,
+    rejectAppointmentDto: RejectAppointmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAppointmentManagementControllerRejectAppointmentV1QueryKey(id,rejectAppointmentDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>> = ({ signal }) => appointmentManagementControllerRejectAppointmentV1(id,rejectAppointmentDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AppointmentManagementControllerRejectAppointmentV1QueryResult = NonNullable<Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>>
+export type AppointmentManagementControllerRejectAppointmentV1QueryError = unknown
+
+
+export function useAppointmentManagementControllerRejectAppointmentV1<TData = Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError = unknown>(
+ id: string,
+    rejectAppointmentDto: RejectAppointmentDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentManagementControllerRejectAppointmentV1<TData = Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError = unknown>(
+ id: string,
+    rejectAppointmentDto: RejectAppointmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentManagementControllerRejectAppointmentV1<TData = Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError = unknown>(
+ id: string,
+    rejectAppointmentDto: RejectAppointmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Reject a special appointment request
+ */
+
+export function useAppointmentManagementControllerRejectAppointmentV1<TData = Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError = unknown>(
+ id: string,
+    rejectAppointmentDto: RejectAppointmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentManagementControllerRejectAppointmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAppointmentManagementControllerRejectAppointmentV1QueryOptions(id,rejectAppointmentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
  * @summary Cancel an appointment
  */
 export const appointmentManagementControllerCancelAppointmentV1 = (
@@ -522,6 +735,392 @@ export function useAppointmentManagementControllerCancelAppointmentV1<TData = Aw
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAppointmentManagementControllerCancelAppointmentV1QueryOptions(id,cancelAppointmentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List bookable sessions for a doctor
+ */
+export const appointmentSessionControllerListDoctorSessionsV1 = (
+    doctorId: string,
+    params: AppointmentSessionControllerListDoctorSessionsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AppointmentSessionControllerListDoctorSessionsV1200>(
+      {url: `/api/v1/doctors/${doctorId}/sessions`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAppointmentSessionControllerListDoctorSessionsV1QueryKey = (doctorId: string,
+    params?: AppointmentSessionControllerListDoctorSessionsV1Params,) => {
+    return [
+    `/api/v1/doctors/${doctorId}/sessions`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAppointmentSessionControllerListDoctorSessionsV1QueryOptions = <TData = Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError = unknown>(doctorId: string,
+    params: AppointmentSessionControllerListDoctorSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAppointmentSessionControllerListDoctorSessionsV1QueryKey(doctorId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>> = ({ signal }) => appointmentSessionControllerListDoctorSessionsV1(doctorId,params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: doctorId !== null && doctorId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AppointmentSessionControllerListDoctorSessionsV1QueryResult = NonNullable<Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>>
+export type AppointmentSessionControllerListDoctorSessionsV1QueryError = unknown
+
+
+export function useAppointmentSessionControllerListDoctorSessionsV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError = unknown>(
+ doctorId: string,
+    params: AppointmentSessionControllerListDoctorSessionsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionControllerListDoctorSessionsV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError = unknown>(
+ doctorId: string,
+    params: AppointmentSessionControllerListDoctorSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionControllerListDoctorSessionsV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError = unknown>(
+ doctorId: string,
+    params: AppointmentSessionControllerListDoctorSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List bookable sessions for a doctor
+ */
+
+export function useAppointmentSessionControllerListDoctorSessionsV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError = unknown>(
+ doctorId: string,
+    params: AppointmentSessionControllerListDoctorSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListDoctorSessionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAppointmentSessionControllerListDoctorSessionsV1QueryOptions(doctorId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List sessions across all doctors
+ */
+export const appointmentSessionControllerListSessionsCalendarV1 = (
+    params: AppointmentSessionControllerListSessionsCalendarV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AppointmentSessionControllerListSessionsCalendarV1200>(
+      {url: `/api/v1/appointment-sessions`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAppointmentSessionControllerListSessionsCalendarV1QueryKey = (params?: AppointmentSessionControllerListSessionsCalendarV1Params,) => {
+    return [
+    `/api/v1/appointment-sessions`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAppointmentSessionControllerListSessionsCalendarV1QueryOptions = <TData = Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError = unknown>(params: AppointmentSessionControllerListSessionsCalendarV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAppointmentSessionControllerListSessionsCalendarV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>> = ({ signal }) => appointmentSessionControllerListSessionsCalendarV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AppointmentSessionControllerListSessionsCalendarV1QueryResult = NonNullable<Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>>
+export type AppointmentSessionControllerListSessionsCalendarV1QueryError = unknown
+
+
+export function useAppointmentSessionControllerListSessionsCalendarV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError = unknown>(
+ params: AppointmentSessionControllerListSessionsCalendarV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionControllerListSessionsCalendarV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError = unknown>(
+ params: AppointmentSessionControllerListSessionsCalendarV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionControllerListSessionsCalendarV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError = unknown>(
+ params: AppointmentSessionControllerListSessionsCalendarV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List sessions across all doctors
+ */
+
+export function useAppointmentSessionControllerListSessionsCalendarV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError = unknown>(
+ params: AppointmentSessionControllerListSessionsCalendarV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerListSessionsCalendarV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAppointmentSessionControllerListSessionsCalendarV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Get the patient queue for a session
+ */
+export const appointmentSessionControllerGetSessionQueueV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AppointmentSessionControllerGetSessionQueueV1200>(
+      {url: `/api/v1/appointment-sessions/${id}/queue`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getAppointmentSessionControllerGetSessionQueueV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/appointment-sessions/${id}/queue`
+    ] as const;
+    }
+
+
+export const getAppointmentSessionControllerGetSessionQueueV1QueryOptions = <TData = Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAppointmentSessionControllerGetSessionQueueV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>> = ({ signal }) => appointmentSessionControllerGetSessionQueueV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AppointmentSessionControllerGetSessionQueueV1QueryResult = NonNullable<Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>>
+export type AppointmentSessionControllerGetSessionQueueV1QueryError = unknown
+
+
+export function useAppointmentSessionControllerGetSessionQueueV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionControllerGetSessionQueueV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionControllerGetSessionQueueV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get the patient queue for a session
+ */
+
+export function useAppointmentSessionControllerGetSessionQueueV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerGetSessionQueueV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAppointmentSessionControllerGetSessionQueueV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Update a session
+ */
+export const appointmentSessionControllerUpdateSessionV1 = (
+    id: string,
+    updateAppointmentSessionDto: UpdateAppointmentSessionDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AppointmentSessionControllerUpdateSessionV1200>(
+      {url: `/api/v1/appointment-sessions/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateAppointmentSessionDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAppointmentSessionControllerUpdateSessionV1QueryKey = (id: string,
+    updateAppointmentSessionDto?: UpdateAppointmentSessionDto,) => {
+    return [
+    'PATCH', `/api/v1/appointment-sessions/${id}`, updateAppointmentSessionDto
+    ] as const;
+    }
+
+
+export const getAppointmentSessionControllerUpdateSessionV1QueryOptions = <TData = Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError = unknown>(id: string,
+    updateAppointmentSessionDto: UpdateAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAppointmentSessionControllerUpdateSessionV1QueryKey(id,updateAppointmentSessionDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>> = ({ signal }) => appointmentSessionControllerUpdateSessionV1(id,updateAppointmentSessionDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AppointmentSessionControllerUpdateSessionV1QueryResult = NonNullable<Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>>
+export type AppointmentSessionControllerUpdateSessionV1QueryError = unknown
+
+
+export function useAppointmentSessionControllerUpdateSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError = unknown>(
+ id: string,
+    updateAppointmentSessionDto: UpdateAppointmentSessionDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionControllerUpdateSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError = unknown>(
+ id: string,
+    updateAppointmentSessionDto: UpdateAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionControllerUpdateSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError = unknown>(
+ id: string,
+    updateAppointmentSessionDto: UpdateAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Update a session
+ */
+
+export function useAppointmentSessionControllerUpdateSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError = unknown>(
+ id: string,
+    updateAppointmentSessionDto: UpdateAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionControllerUpdateSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAppointmentSessionControllerUpdateSessionV1QueryOptions(id,updateAppointmentSessionDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -8,6 +8,7 @@ function buildAppointment(id: string, doctorId: string): AppointmentListItem {
     id,
     patientId: 'patient-1',
     doctorId,
+    type: 'SPECIAL_REQUEST',
     scheduledAt: '2026-07-21T03:30:00.000Z',
     status: 'SCHEDULED',
     createdAt: '2026-07-01T00:00:00.000Z',

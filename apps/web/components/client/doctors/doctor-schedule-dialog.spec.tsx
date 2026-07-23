@@ -14,12 +14,12 @@ vi.mock('#lib/api/generated/doctor-management/doctor-management', () => ({
 const scheduleRequestMock = vi.mocked(doctorManagementControllerUpdateDoctorScheduleV1);
 
 const OVERLAPPING_SCHEDULES = [
-  { id: 's1', dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true },
-  { id: 's2', dayOfWeek: 1, startTime: '11:00', endTime: '15:00', isAvailable: true },
+  { id: 's1', dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true, maxPatients: null },
+  { id: 's2', dayOfWeek: 1, startTime: '11:00', endTime: '15:00', isAvailable: true, maxPatients: null },
 ];
 
 const VALID_SCHEDULES = [
-  { id: 's1', dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true },
+  { id: 's1', dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true, maxPatients: null },
 ];
 
 function buildApiOverlapError(): AxiosError {
@@ -81,7 +81,9 @@ describe('DoctorScheduleDialog', () => {
       'Schedule entries must not overlap on the same day',
     );
     expect(scheduleRequestMock).toHaveBeenCalledWith('doctor-1', {
-      schedules: [{ dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true }],
+      schedules: [
+        { dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true, maxPatients: null },
+      ],
     });
   });
 });

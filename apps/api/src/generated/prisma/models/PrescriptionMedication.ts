@@ -569,14 +569,6 @@ export type PrescriptionMedicationUncheckedUpdateManyWithoutPrescriptionNestedIn
   deleteMany?: Prisma.PrescriptionMedicationScalarWhereInput | Prisma.PrescriptionMedicationScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type PrescriptionMedicationCreateWithoutMedicationInput = {
   id?: string
   dosage: string

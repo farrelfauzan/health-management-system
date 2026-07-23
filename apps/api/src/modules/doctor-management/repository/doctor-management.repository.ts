@@ -272,6 +272,7 @@ export class DoctorManagementRepository {
             startTime: entry.startTime,
             endTime: entry.endTime,
             isAvailable: entry.isAvailable,
+            maxPatients: entry.maxPatients ?? null,
           },
         });
       }

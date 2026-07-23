@@ -15,7 +15,12 @@ describe('AppointmentManagement integration', () => {
   const appointmentId = '0d9b34a1-7c2f-4bd0-8a8e-6a3c1de1a001';
   const patientId = '38a3f0f1-51d3-4f68-9d54-1f6a1de1a002';
   const doctorId = '58e9a316-40b2-4f4c-9207-2a58028babc4';
+  const scheduleId = '73f1c6d8-1f34-4e02-9a41-3a58028bab99';
   const futureScheduledAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  const futureSessionDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+  const futureSessionDayOfWeek = new Date(`${futureSessionDate}T00:00:00.000Z`).getUTCDay();
 
   const authRepositoryMock = {
     findUserById: jest.fn(),
@@ -27,8 +32,14 @@ describe('AppointmentManagement integration', () => {
     findAppointmentDetailById: jest.fn(),
     findActivePatientById: jest.fn(),
     findActiveDoctorById: jest.fn(),
+    findScheduleWindowById: jest.fn(),
     findConflictingAppointment: jest.fn(),
     createAppointment: jest.fn(),
+    bookSessionSlot: jest.fn(),
+    listSessionsWithCounts: jest.fn(),
+    findSessionWithCountById: jest.fn(),
+    getSessionQueue: jest.fn(),
+    updateSession: jest.fn(),
     updateAppointment: jest.fn(),
     cancelAppointment: jest.fn(),
   };
@@ -42,6 +53,9 @@ describe('AppointmentManagement integration', () => {
     id: appointmentId,
     patientId,
     doctorId,
+    type: 'SPECIAL_REQUEST',
+    sessionId: null,
+    queueNumber: null,
     scheduledAt: new Date(futureScheduledAt),
     status: 'SCHEDULED',
     reason: 'Routine check',
@@ -138,8 +152,24 @@ describe('AppointmentManagement integration', () => {
       ownerUserId: null,
       schedules: [],
     });
+    appointmentRepositoryMock.findScheduleWindowById.mockResolvedValue({
+      id: scheduleId,
+      doctorId,
+      dayOfWeek: futureSessionDayOfWeek,
+      startTime: '08:00',
+      endTime: '12:00',
+      isAvailable: true,
+      maxPatients: 10,
+    });
     appointmentRepositoryMock.findConflictingAppointment.mockResolvedValue(null);
     appointmentRepositoryMock.createAppointment.mockResolvedValue(appointmentRecord);
+    appointmentRepositoryMock.bookSessionSlot.mockResolvedValue({
+      outcome: 'BOOKED',
+      appointmentId,
+    });
+    appointmentRepositoryMock.listSessionsWithCounts.mockResolvedValue([]);
+    appointmentRepositoryMock.findSessionWithCountById.mockResolvedValue(null);
+    appointmentRepositoryMock.getSessionQueue.mockResolvedValue([]);
     appointmentRepositoryMock.updateAppointment.mockResolvedValue(appointmentRecord);
     appointmentRepositoryMock.cancelAppointment.mockResolvedValue({
       ...appointmentRecord,
@@ -193,7 +223,7 @@ describe('AppointmentManagement integration', () => {
     );
   });
 
-  it('returns 201 for appointment creation with create:any permission', async () => {
+  it('returns 201 for special request creation with create:any permission', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
     mockActorWithPermissions([{ action: 'create', resource: 'Appointment', scope: 'ANY' }]);
 
@@ -201,16 +231,61 @@ describe('AppointmentManagement integration', () => {
       .post('/api/v1/v1/appointments')
       .set('Authorization', `Bearer ${token}`)
       .send({
+        type: 'SPECIAL_REQUEST',
         patientId,
         doctorId,
-        scheduledAt: futureScheduledAt,
+        requestedAt: futureScheduledAt,
         reason: 'Routine check',
       });
 
     expect(response.status).toBe(201);
     expect(appointmentRepositoryMock.createAppointment).toHaveBeenCalledWith(
-      expect.objectContaining({ createdById: 'admin-user' }),
+      expect.objectContaining({
+        createdById: 'admin-user',
+        type: 'SPECIAL_REQUEST',
+        status: 'REQUESTED',
+      }),
     );
+  });
+
+  it('returns 201 for session booking with create:any permission', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'create', resource: 'Appointment', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/appointments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        type: 'SESSION',
+        patientId,
+        doctorId,
+        scheduleId,
+        sessionDate: futureSessionDate,
+      });
+
+    expect(response.status).toBe(201);
+    expect(appointmentRepositoryMock.bookSessionSlot).toHaveBeenCalledWith(
+      expect.objectContaining({ scheduleId, sessionDate: futureSessionDate }),
+    );
+  });
+
+  it('returns 409 when the session is full', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'create', resource: 'Appointment', scope: 'ANY' }]);
+    appointmentRepositoryMock.bookSessionSlot.mockResolvedValue({ outcome: 'SESSION_FULL' });
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/appointments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        type: 'SESSION',
+        patientId,
+        doctorId,
+        scheduleId,
+        sessionDate: futureSessionDate,
+      });
+
+    expect(response.status).toBe(409);
   });
 
   it('returns 403 for appointment creation without create permission', async () => {
@@ -221,9 +296,11 @@ describe('AppointmentManagement integration', () => {
       .post('/api/v1/v1/appointments')
       .set('Authorization', `Bearer ${token}`)
       .send({
+        type: 'SPECIAL_REQUEST',
         patientId,
         doctorId,
-        scheduledAt: futureScheduledAt,
+        requestedAt: futureScheduledAt,
+        reason: 'Routine check',
       });
 
     expect(response.status).toBe(403);
@@ -244,6 +321,55 @@ describe('AppointmentManagement integration', () => {
 
     expect(response.status).toBe(400);
     expect(appointmentRepositoryMock.createAppointment).not.toHaveBeenCalled();
+  });
+
+  it('returns 200 for approving a pending special request with approve:any permission', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'approve', resource: 'Appointment', scope: 'ANY' }]);
+    appointmentRepositoryMock.findAppointmentDetailById.mockResolvedValue({
+      ...appointmentRecord,
+      status: 'REQUESTED',
+    });
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/appointments/${appointmentId}/approve`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+
+    expect(response.status).toBe(200);
+    expect(appointmentRepositoryMock.updateAppointment).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'SCHEDULED' }),
+    );
+  });
+
+  it('returns 403 for approving without approve permission', async () => {
+    const token = await buildToken('reader-user', 'reader@hms.local');
+    mockActorWithPermissions([{ action: 'update', resource: 'Appointment', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/appointments/${appointmentId}/approve`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+
+    expect(response.status).toBe(403);
+    expect(appointmentRepositoryMock.updateAppointment).not.toHaveBeenCalled();
+  });
+
+  it('returns 200 for doctor sessions listing with session read permission', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/v1/doctors/${doctorId}/sessions`)
+      .query({ from: futureSessionDate, to: futureSessionDate })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(appointmentRepositoryMock.listSessionsWithCounts).toHaveBeenCalledWith({
+      doctorId,
+      fromDate: futureSessionDate,
+      toDate: futureSessionDate,
+    });
   });
 
   it('returns 200 for appointment update with update:any permission', async () => {
