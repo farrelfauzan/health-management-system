@@ -98,11 +98,24 @@ Assign and unassign operations are idempotent. Unassignment preserves the assign
 | --- | --- | --- | --- | --- |
 | GET | `/appointments` | `appointment.read:any\|own` | `listAppointmentsQuerySchema` | `AppointmentListItem[]`, `AppointmentsListMeta` |
 | GET | `/appointments/:id` | `appointment.read:any\|own` | UUID path | `AppointmentResponse` |
-| POST | `/appointments` | `appointment.create:any\|own` | `createAppointmentSchema` | `AppointmentResponse` |
+| POST | `/appointments` | `appointment.create:any\|own` | `createAppointmentSchema` (discriminated union on `type`) | `AppointmentResponse` |
 | PATCH | `/appointments/:id` | `appointment.update:any\|own` | `updateAppointmentSchema` | `AppointmentResponse` |
 | POST | `/appointments/:id/cancel` | `appointment.cancel:any\|own` | `cancelAppointmentSchema` | `AppointmentResponse` |
+| POST | `/appointments/:id/approve` | `appointment.approve:any` | `approveAppointmentSchema` | `AppointmentResponse` |
+| POST | `/appointments/:id/reject` | `appointment.approve:any` | `rejectAppointmentSchema` | `AppointmentResponse` |
+| GET | `/doctors/:id/sessions` | `appointment.session.read:any` | `listDoctorSessionsQuerySchema` | `DoctorSessionListItem[]` |
+| GET | `/appointment-sessions` | `appointment.session.read:any` | `listDoctorSessionsQuerySchema` | `DoctorSessionCalendarItem[]` |
+| GET | `/appointment-sessions/:id/queue` | `appointment.session.read:any` | UUID path | `AppointmentSessionResponse` + `SessionQueueEntry[]` |
+| PATCH | `/appointment-sessions/:id` | `appointment.session.update:any` | `updateAppointmentSessionSchema` | `AppointmentSessionResponse` |
 
-The API validates doctor availability, participant ownership, conflicts, and status transitions. The frontend must not infer a successful transition before the mutation response.
+The API validates session capacity/cutoff, special-request lead time, participant ownership, conflicts, and status transitions. The frontend must not infer a successful transition before the mutation response.
+
+Appointment UX conventions (session-based scheduling):
+
+- The booking dialog is two-tab: "Join a Session" (doctor → date → session card with capacity; no time input) and "Special Request" (exact time + required reason; created as `REQUESTED` unless the actor can approve).
+- The calendar (day/week/month) renders doctor sessions as the primary entries with patient totals; overlapping sessions are laid out side by side per day. Clicking a session opens a details modal with the check-in-ordered queue, and clicking a queue row opens that patient's appointment details. Only `SPECIAL_REQUEST` appointments render as individual calendar events; the table view lists everything.
+- A pending-requests inbox (approve/reject) renders on the appointments page for actors with `appointment.approve`.
+- Backend error messages are surfaced via `notifyApiError` (shared resolver + top-right sonner toast from `@hms/ui`); mutation catch blocks must not hand-write error text.
 
 ### Registration flow
 
