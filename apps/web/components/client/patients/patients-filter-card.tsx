@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { PATIENT_STATUSES, type PatientStatusValue } from '@hms/shared-types';
 import {
   Button,
+  DatePicker,
   Icon,
   Input,
   Select,
@@ -64,6 +65,13 @@ export function PatientsFilterCard({
     setCreatedFrom('');
     setCreatedTo('');
     onReset();
+  }
+
+  function handleCreatedFromChange(value: string): void {
+    setCreatedFrom(value);
+    if (createdTo.length > 0 && (value.length === 0 || createdTo < value)) {
+      setCreatedTo('');
+    }
   }
 
   return (
@@ -127,7 +135,7 @@ export function PatientsFilterCard({
         </div>
         {/* DUMMY-DATA: no department concept exists in the MVP backend; this
             control ships disabled until a department contract lands. */}
-        <div className="w-44">
+        {/* <div className="w-44">
           <label
             htmlFor="patients-department-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
@@ -140,26 +148,28 @@ export function PatientsFilterCard({
             </SelectTrigger>
             <SelectContent />
           </Select>
-        </div>
+        </div> */}
         <div>
           <span className="mb-1.5 block font-heading text-xs font-medium text-slate-600">
             Date Range
           </span>
           <div className="flex items-center gap-2">
-            <Input
-              type="date"
+            <DatePicker
               aria-label="Registered from"
-              className="w-36"
+              className="w-40"
+              placeholder="From"
               value={createdFrom}
-              onChange={(event) => setCreatedFrom(event.target.value)}
+              onValueChange={handleCreatedFromChange}
             />
             <span className="text-sm text-slate-400">–</span>
-            <Input
-              type="date"
+            <DatePicker
               aria-label="Registered to"
-              className="w-36"
+              className="w-40"
+              placeholder="To"
               value={createdTo}
-              onChange={(event) => setCreatedTo(event.target.value)}
+              disabled={createdFrom.length === 0}
+              minValue={createdFrom}
+              onValueChange={setCreatedTo}
             />
           </div>
         </div>

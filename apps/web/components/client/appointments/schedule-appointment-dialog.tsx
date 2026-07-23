@@ -7,6 +7,7 @@ import type { AppointmentResponse, CreateAppointmentInput } from '@hms/shared-ty
 import { createAppointmentSchema } from '@hms/shared-types';
 import {
   Button,
+  DatePicker,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -188,11 +189,11 @@ export function ScheduleAppointmentDialog({
                   >
                     Date
                   </label>
-                  <Input
+                  <DatePicker
                     id={field.name}
-                    type="date"
                     value={field.state.value}
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    placeholder="Select date"
+                    onValueChange={field.handleChange}
                     onBlur={field.handleBlur}
                   />
                 </div>

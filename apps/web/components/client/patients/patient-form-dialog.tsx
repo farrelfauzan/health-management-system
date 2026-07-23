@@ -13,6 +13,7 @@ import {
 } from '@hms/shared-types';
 import {
   Button,
+  DatePicker,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -199,11 +200,11 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                   >
                     Date of Birth
                   </label>
-                  <Input
+                  <DatePicker
                     id={field.name}
-                    type="date"
                     value={field.state.value}
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    placeholder="Select date of birth"
+                    onValueChange={field.handleChange}
                     onBlur={field.handleBlur}
                     aria-invalid={field.state.meta.errors.length > 0}
                   />
