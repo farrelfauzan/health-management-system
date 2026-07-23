@@ -23,7 +23,7 @@ The clinic reality is **session-based**: a doctor opens a practice window (e.g. 
 
 1. Doctor scheduling stays exactly as implemented today (weekly windows, clinic-timezone wall-clock, `isAvailable` toggle). The revamp builds on top of it; it does not change it structurally.
 2. Patients can never self-select an exact time. The only self-service path is joining a session. Exact-time needs go through the special-request approval flow.
-3. Queue number reflects **booking order** and is an arrival guide, not a guaranteed consult time. Actual consult order on the day is driven by check-in (registration flow), as it already is.
+3. Queue numbers are **first come, first served at the clinic**: a booking is only a record that the patient participates in the session; the queue number is assigned when the patient checks in (registration flow transitions to `CHECKED_IN`).
 4. All session date/time math is done in the clinic timezone — same rule the availability fix established (`isWithinDoctorAvailability` + `CLINIC_TIMEZONE`).
 
 ## 3. Data Model Changes (Prisma)
@@ -123,17 +123,18 @@ SPECIAL_REQUEST bookings:  REQUESTED → SCHEDULED (approved) | REJECTED | CANCE
 ### 4.1 Join a session (default)
 
 1. Patient/staff picks a doctor and a date; the API projects upcoming sessions from the weekly schedule (existing session rows merged with not-yet-materialized windows) with remaining capacity, e.g. `booked 7 / max 10` or `booked 12 / unlimited`.
-2. Booking a window get-or-creates the `AppointmentSession` and inserts the appointment inside one transaction:
-   - reject if session `status != OPEN` or session date/window is in the past (clinic timezone);
+2. **Booking closes 60 minutes before the session starts** (`SESSION_BOOKING_CUTOFF_MINUTES`, clinic timezone) — later attempts are rejected.
+3. Booking a window get-or-creates the `AppointmentSession` and inserts the appointment inside one transaction:
+   - reject if session `status != OPEN`;
    - reject if `maxPatients` is set and active bookings ≥ `maxPatients` → `"Session is full"`;
    - reject if the patient already has an active booking in this session;
-   - `queueNumber = count(active bookings) + 1`, `scheduledAt = session start`, `status = SCHEDULED`.
-3. Capacity and queue assignment run under the session row lock (`SELECT … FOR UPDATE`) to prevent duplicate queue numbers under concurrency.
-4. On the day, the existing registration flow (`PENDING → CHECKED_IN → COMPLETED`) is unchanged and remains the source of truth for actual consult order.
+   - the booking is a participation record only: `scheduledAt = session start`, `status = SCHEDULED`, **no queue number yet**.
+4. Capacity checks run under the session row lock (`SELECT … FOR UPDATE`) to stay correct under concurrency.
+5. On the day, check-in (registration flow → `CHECKED_IN`) assigns `queueNumber = max + 1` within the session, under the same session row lock — first come, first served at the clinic. The session queue endpoint lists checked-in patients first (by queue number), then not-yet-arrived bookings.
 
 ### 4.2 Special request (exception, approval required)
 
-1. Patient submits doctor + exact requested datetime + reason (reason required for this type). No schedule-window validation — the point is to request something outside the normal rules.
+1. Patient submits doctor + exact requested datetime + reason (reason required for this type). No schedule-window validation — the point is to request something outside the normal rules. **Patient-initiated requests must be at least 3 days in advance** (`SPECIAL_REQUEST_MIN_LEAD_DAYS`); staff holding `appointment.approve` can create closer-in appointments directly.
 2. Appointment is created as `type = SPECIAL_REQUEST`, `status = REQUESTED`. It holds no capacity and blocks nothing.
 3. Clinic staff review from an approvals list:
    - **Approve** → status `SCHEDULED` (optionally adjusting the time); conflict check against other approved special requests applies at this moment.
@@ -180,10 +181,10 @@ Zod schemas live in `packages/shared-types/src/appointment-management/schemas.ts
 4. **Phase C (cleanup):** remove the old exact-time create path from the UI; `PATCH /appointments/:id` reschedule for SESSION type moves a booking to another session (re-queue) instead of editing a timestamp.
 5. **Post-MVP:** WhatsApp chatbot subscribes to approval events (Phase 13, per D-007).
 
-## 8. Open Questions (need product decisions)
+## 8. Resolved Decisions (product answers, 2026-07-23)
 
-1. **Queue number vs check-in order** — proposal keeps booking-order queue numbers as an arrival guide and check-in order as the real consult order. Confirm the front desk agrees, or queue numbers should be assigned at check-in instead.
-2. **Default capacity** — should `maxPatients` have a sensible default (e.g. 20) or default to unlimited (`null`, as proposed)?
-3. **Same-day cutoff** — can patients join a session after it has started (e.g. book at 10:30 for the 08:00–12:00 session)? Proposal: yes, while `status = OPEN` and the window hasn't ended.
-4. **Cancellation refill** — when a booking in a full session is cancelled, freed capacity is simply reusable (no waitlist). Waitlists are out of scope for this revamp.
-5. **Special-request bounds** — may patients request times outside any schedule window (proposal: yes, that is the point) and how far in advance must requests be made?
+1. **Queue number = check-in order.** First come, first served at the clinic; the system booking is only a record of the patient participating in the session. Queue numbers are assigned at check-in (implemented in the registration flow).
+2. **No default capacity.** `maxPatients` defaults to unlimited (`null`); the UI offers a limited/unlimited toggle and, when limited, an input for the patient count.
+3. **Booking cutoff: 60 minutes before session start.** Patients cannot join once the cutoff passes (`SESSION_BOOKING_CUTOFF_MINUTES`, implemented).
+4. **Waitlist: approved for a future phase.** When a limited session is full, patients will be able to join a waitlist and be promoted when capacity frees up. Not part of Phase A/B.
+5. **Special requests: minimum 3 days in advance** for patient-initiated requests (`SPECIAL_REQUEST_MIN_LEAD_DAYS`, implemented); requests may target times outside any schedule window.

@@ -58,7 +58,7 @@ export type DoctorSessionListItem = {
 
 export type SessionQueueEntry = {
   appointmentId: string;
-  queueNumber: number;
+  queueNumber: number | null;
   status: AppointmentStatusValue;
   reason?: string;
   patient: AppointmentRelatedPatient;

@@ -7,6 +7,8 @@ import {
   CreateSessionAppointmentInput,
   CreateSpecialRequestAppointmentInput,
   DoctorSessionListItem,
+  SESSION_BOOKING_CUTOFF_MINUTES,
+  SPECIAL_REQUEST_MIN_LEAD_DAYS,
   SessionQueueEntry,
   buildZonedDateTime,
   canTransitionAppointmentStatus,
@@ -282,7 +284,7 @@ export class AppointmentManagementService {
     const queue = await this.appointmentManagementRepository.getSessionQueue(sessionId);
     const entries: SessionQueueEntry[] = queue.map((appointment) => ({
       appointmentId: appointment.id,
-      queueNumber: appointment.queueNumber ?? 0,
+      queueNumber: appointment.queueNumber,
       status: appointment.status,
       reason: appointment.reason ?? undefined,
       patient: appointment.patient,
@@ -451,14 +453,17 @@ export class AppointmentManagementService {
       throw new BadRequestException('sessionDate does not fall on the schedule day');
     }
 
-    const sessionEnd = buildZonedDateTime({
+    const sessionStart = buildZonedDateTime({
       date: payload.sessionDate,
-      time: window.endTime,
+      time: window.startTime,
       timeZone: this.clinicTimeZone,
     });
+    const bookingClosesAtMs = sessionStart.getTime() - SESSION_BOOKING_CUTOFF_MINUTES * 60_000;
 
-    if (sessionEnd.getTime() <= Date.now()) {
-      throw new BadRequestException('Session is already over');
+    if (Date.now() >= bookingClosesAtMs) {
+      throw new BadRequestException(
+        `Booking closes ${SESSION_BOOKING_CUTOFF_MINUTES} minutes before the session starts`,
+      );
     }
 
     const result = await this.appointmentManagementRepository.bookSessionSlot({
@@ -469,11 +474,7 @@ export class AppointmentManagementService {
       startTime: window.startTime,
       endTime: window.endTime,
       maxPatients: window.maxPatients,
-      scheduledAt: buildZonedDateTime({
-        date: payload.sessionDate,
-        time: window.startTime,
-        timeZone: this.clinicTimeZone,
-      }),
+      scheduledAt: sessionStart,
       reason: payload.reason,
       notes: payload.notes,
       createdById: currentUser.sub,
@@ -498,6 +499,12 @@ export class AppointmentManagementService {
     }
 
     const canApprove = this.resolveScope(actor, 'Appointment', 'approve').hasAny;
+
+    if (!canApprove && requestedAt.getTime() - Date.now() < SPECIAL_REQUEST_MIN_LEAD_DAYS * DAY_IN_MS) {
+      throw new BadRequestException(
+        `Special requests must be made at least ${SPECIAL_REQUEST_MIN_LEAD_DAYS} days in advance`,
+      );
+    }
 
     if (canApprove) {
       const conflictingAppointment =

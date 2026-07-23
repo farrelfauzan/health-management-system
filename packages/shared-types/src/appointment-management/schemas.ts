@@ -20,6 +20,10 @@ export const appointmentTypeSchema = z.enum(APPOINTMENT_TYPES);
 
 export type AppointmentTypeValue = z.infer<typeof appointmentTypeSchema>;
 
+export const SESSION_BOOKING_CUTOFF_MINUTES = 60;
+
+export const SPECIAL_REQUEST_MIN_LEAD_DAYS = 3;
+
 export const APPOINTMENT_SESSION_STATUSES = ['OPEN', 'CLOSED', 'CANCELLED'] as const;
 
 export const appointmentSessionStatusSchema = z.enum(APPOINTMENT_SESSION_STATUSES);

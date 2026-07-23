@@ -298,6 +298,39 @@ describe('AppointmentManagementService', () => {
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
+    it('throws bad request when a non-approver requests less than 3 days ahead', async () => {
+      mockPermissions([{ action: 'create', resource: 'Appointment', scope: 'OWN' }]);
+      repositoryMock.findActivePatientById.mockResolvedValue({
+        id: patientId,
+        ownerUserId: currentUser.sub,
+      });
+      const inputRequestedAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+      await expect(
+        service.createAppointment(
+          { ...specialRequestPayload, requestedAt: inputRequestedAt },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('allows an approver to schedule closer than the patient lead time', async () => {
+      mockPermissions([
+        { action: 'create', resource: 'Appointment', scope: 'ANY' },
+        { action: 'approve', resource: 'Appointment', scope: 'ANY' },
+      ]);
+      const inputRequestedAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+      await service.createAppointment(
+        { ...specialRequestPayload, requestedAt: inputRequestedAt },
+        currentUser,
+      );
+
+      expect(repositoryMock.createAppointment).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'SCHEDULED' }),
+      );
+    });
+
     it('creates a pending request when actor can not approve', async () => {
       mockPermissions([{ action: 'create', resource: 'Appointment', scope: 'OWN' }]);
       repositoryMock.findActivePatientById.mockResolvedValue({
@@ -397,6 +430,30 @@ describe('AppointmentManagementService', () => {
       await expect(
         service.createAppointment({ ...sessionPayload, sessionDate: '2020-01-06' }, currentUser),
       ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('throws bad request within the booking cutoff before the session starts', async () => {
+      mockPermissions([{ action: 'create', resource: 'Appointment', scope: 'ANY' }]);
+      const nowSpy = jest
+        .spyOn(Date, 'now')
+        .mockReturnValue(new Date('2027-01-04T00:30:00.000Z').getTime());
+
+      await expect(service.createAppointment(sessionPayload, currentUser)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
+      nowSpy.mockRestore();
+    });
+
+    it('accepts a booking just before the cutoff', async () => {
+      mockPermissions([{ action: 'create', resource: 'Appointment', scope: 'ANY' }]);
+      const nowSpy = jest
+        .spyOn(Date, 'now')
+        .mockReturnValue(new Date('2027-01-03T23:59:00.000Z').getTime());
+
+      const actualAppointment = await service.createAppointment(sessionPayload, currentUser);
+
+      expect(actualAppointment.id).toBe(appointmentId);
+      nowSpy.mockRestore();
     });
 
     it('throws conflict when the session is full', async () => {
@@ -553,7 +610,7 @@ describe('AppointmentManagementService', () => {
       );
     });
 
-    it('returns queue entries in booking order', async () => {
+    it('returns queue entries in check-in order', async () => {
       mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'ANY' }]);
       repositoryMock.findSessionWithCountById.mockResolvedValue({
         id: sessionId,

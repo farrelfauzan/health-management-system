@@ -269,22 +269,12 @@ export class AppointmentManagementRepository {
         }
       }
 
-      const highestQueue = await tx.appointment.aggregate({
-        where: {
-          sessionId: session.id,
-        },
-        _max: {
-          queueNumber: true,
-        },
-      });
-
       const created = await tx.appointment.create({
         data: {
           patientId: payload.patientId,
           doctorId: payload.doctorId,
           type: 'SESSION',
           sessionId: session.id,
-          queueNumber: (highestQueue._max.queueNumber ?? 0) + 1,
           scheduledAt: payload.scheduledAt,
           status: 'SCHEDULED',
           reason: payload.reason,
@@ -366,12 +356,13 @@ export class AppointmentManagementRepository {
   }
 
   async getSessionQueue(sessionId: string) {
-    return this.prisma.findManyActive(this.prisma.appointment, {
+    return this.prisma.appointment.findMany({
       where: {
         sessionId,
         status: {
           in: CAPACITY_APPOINTMENT_STATUSES,
         },
+        deletedAt: null,
       },
       select: {
         id: true,
@@ -386,9 +377,17 @@ export class AppointmentManagementRepository {
           },
         },
       },
-      orderBy: {
-        queueNumber: 'asc',
-      },
+      orderBy: [
+        {
+          queueNumber: {
+            sort: 'asc',
+            nulls: 'last',
+          },
+        },
+        {
+          createdAt: 'asc',
+        },
+      ],
     });
   }
 
