@@ -21,6 +21,7 @@ export type AppSubject =
   | 'Registration'
   | 'Medication'
   | 'Prescription'
+  | 'DispenseRecord'
   | 'all';
 export type AppAbility = MongoAbility<[AppAction, AppSubject]>;
 export type AppRule = RawRuleOf<AppAbility>;
