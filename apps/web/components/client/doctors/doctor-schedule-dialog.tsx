@@ -55,6 +55,7 @@ export function DoctorScheduleDialog({
       startTime: schedule.startTime,
       endTime: schedule.endTime,
       isAvailable: schedule.isAvailable,
+      maxPatients: schedule.maxPatients,
     })),
   );
   const [scheduleError, setScheduleError] = useState<string | null>(null);

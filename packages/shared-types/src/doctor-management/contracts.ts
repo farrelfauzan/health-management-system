@@ -23,6 +23,7 @@ export type DoctorScheduleEntry = {
   startTime: string;
   endTime: string;
   isAvailable: boolean;
+  maxPatients: number | null;
 };
 
 export type DoctorListItem = DoctorProfile & {

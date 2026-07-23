@@ -4419,6 +4419,11 @@ components:
               isAvailable:
                 type: boolean
                 default: true
+              maxPatients:
+                type: integer
+                minimum: 1
+                exclusiveMinimum: false
+                nullable: true
             required:
               - dayOfWeek
               - startTime

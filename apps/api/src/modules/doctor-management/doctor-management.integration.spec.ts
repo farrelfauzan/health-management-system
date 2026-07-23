@@ -242,7 +242,9 @@ describe('DoctorManagement integration', () => {
     ]);
     expect(doctorRepositoryMock.replaceDoctorSchedules).toHaveBeenCalledWith({
       doctorId,
-      entries: [{ dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true }],
+      entries: [
+        { dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true, maxPatients: null },
+      ],
     });
   });
 });

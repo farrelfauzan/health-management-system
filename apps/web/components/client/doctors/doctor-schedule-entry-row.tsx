@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@hms/ui';
 
+import { DoctorScheduleCapacityField } from '#components/client/doctors/doctor-schedule-capacity-field';
 import { formatDayOfWeekLabel } from '#lib/doctors/day-of-week-label';
 
 const DAYS_OF_WEEK = [0, 1, 2, 3, 4, 5, 6] as const;
@@ -61,6 +62,11 @@ export function DoctorScheduleEntryRow({
         aria-label={`End time for entry ${index + 1}`}
         value={entry.endTime}
         onChange={(event) => onChange(index, { ...entry, endTime: event.target.value })}
+      />
+      <DoctorScheduleCapacityField
+        index={index}
+        maxPatients={entry.maxPatients}
+        onChange={(maxPatients) => onChange(index, { ...entry, maxPatients })}
       />
       <label className="flex cursor-pointer items-center gap-1.5 text-xs text-slate-600">
         <Checkbox

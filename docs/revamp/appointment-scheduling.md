@@ -1,6 +1,6 @@
 # Appointment & Doctor Scheduling Revamp
 
-- **Status:** Phase A (schema + API) implemented on `feature/appointment-session-scheduling`; Phase B (web booking UX) pending
+- **Status:** Phases A (schema + API) and B (web booking UX) implemented on `feature/appointment-session-scheduling`; waitlist deferred to a future phase
 - **Scope:** `appointment-management`, `doctor-management` (schedules), `registration-flow` touchpoints, web booking UX
 - **Supersedes:** the exact-time (`scheduledAt`) booking model described in [docs/MVP/api-contract.md](../MVP/api-contract.md) and [docs/MVP/database.md](../MVP/database.md)
 

@@ -10,6 +10,7 @@ function buildEntry(overrides: Partial<DoctorScheduleEntry>): DoctorScheduleEntr
     startTime: '08:00',
     endTime: '16:00',
     isAvailable: true,
+    maxPatients: null,
     ...overrides,
   };
 }

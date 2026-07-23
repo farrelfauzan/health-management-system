@@ -17,8 +17,8 @@ const DOCTOR: DoctorListItem = {
   updatedAt: '2026-07-10T00:00:00.000Z',
   patientCount: 4,
   schedules: [
-    { id: 's1', dayOfWeek: 1, startTime: '08:00', endTime: '16:00', isAvailable: true },
-    { id: 's2', dayOfWeek: 2, startTime: '08:00', endTime: '16:00', isAvailable: true },
+    { id: 's1', dayOfWeek: 1, startTime: '08:00', endTime: '16:00', isAvailable: true, maxPatients: null },
+    { id: 's2', dayOfWeek: 2, startTime: '08:00', endTime: '16:00', isAvailable: true, maxPatients: null },
   ],
 };
 

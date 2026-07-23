@@ -6,6 +6,7 @@ import { Card, CardContent } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { AppointmentDetailsDialog } from '#components/client/appointments/appointment-details-dialog';
+import { AppointmentRequestsPanel } from '#components/client/appointments/appointment-requests-panel';
 import { AppointmentsSidePanel } from '#components/client/appointments/appointments-side-panel';
 import { AppointmentsTable } from '#components/client/appointments/appointments-table';
 import { CalendarToolbar } from '#components/client/appointments/calendar-toolbar';
@@ -14,6 +15,7 @@ import { DayView } from '#components/client/appointments/day-view';
 import { MonthView } from '#components/client/appointments/month-view';
 import { RescheduleAppointmentDialog } from '#components/client/appointments/reschedule-appointment-dialog';
 import { ScheduleAppointmentDialog } from '#components/client/appointments/schedule-appointment-dialog';
+import { SessionQueueDialog } from '#components/client/appointments/session-queue-dialog';
 import { WeekView } from '#components/client/appointments/week-view';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
@@ -85,6 +87,7 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
   const [cancellingAppointment, setCancellingAppointment] = useState<AppointmentListItem | null>(
     null,
   );
+  const [viewingQueueSessionId, setViewingQueueSessionId] = useState<string | null>(null);
   const visibleAppointments = filterAppointmentsByDoctors(
     appointmentsQuery.appointments,
     selectedDoctorIds,
@@ -155,6 +158,8 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
           {appointmentsQuery.error.message}
         </p>
       ) : null}
+
+      <AppointmentRequestsPanel />
 
       <div className="flex flex-col gap-6 xl:flex-row">
         <AppointmentsSidePanel
@@ -255,6 +260,23 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
           appointment={viewingAppointment}
           onReschedule={handleRescheduleAppointment}
           onCancel={handleCancelAppointment}
+          onViewQueue={(sessionId) => {
+            setViewingAppointment(null);
+            setViewingQueueSessionId(sessionId);
+          }}
+        />
+      ) : null}
+
+      {viewingQueueSessionId ? (
+        <SessionQueueDialog
+          key={viewingQueueSessionId}
+          open={Boolean(viewingQueueSessionId)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setViewingQueueSessionId(null);
+            }
+          }}
+          sessionId={viewingQueueSessionId}
         />
       ) : null}
 
