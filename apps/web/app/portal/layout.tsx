@@ -3,8 +3,9 @@ import type { ReactNode } from 'react';
 
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
 import { PortalTopBar } from '#components/server/portal/portal-top-bar';
-import { decodeAccessTokenClaims, isAccessTokenExpired } from '#lib/auth/access-token-claims';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
+import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
+import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
 
@@ -15,8 +16,9 @@ type PortalLayoutProps = {
 export default async function PortalLayout({ children }: PortalLayoutProps) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-  const claims = accessToken ? decodeAccessTokenClaims(accessToken) : null;
-  const rules = isAccessTokenExpired(claims) ? [] : resolveAppAbilityRules(claims);
+  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
+  const claims = resolveSessionClaims({ accessToken, refreshToken });
+  const rules = resolveAppAbilityRules(claims);
   const profile = resolveShellProfile(claims);
   return (
     <AppAbilityProvider rules={rules}>

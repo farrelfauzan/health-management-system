@@ -89,8 +89,27 @@ model User {
   createdAppointments      Appointment[]           @relation("AppointmentCreatedBy")
   createdRegistrations     Registration[]          @relation("RegistrationCreatedBy")
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
+  refreshTokens            RefreshToken[]
 
   @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  familyId  String    @map("family_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+  @@map("refresh_tokens")
 }
 
 model PatientProfile {
