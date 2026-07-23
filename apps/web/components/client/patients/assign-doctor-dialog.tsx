@@ -21,7 +21,7 @@ import {
 import { doctorPatientControllerAssignDoctorToPatientV1 } from '#lib/api/generated/doctor-patient/doctor-patient';
 import { isApiStatusError } from '#lib/api/is-api-status-error';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidatePatientQueries } from '#lib/patients/invalidate-patient-queries';
 import { useActiveDoctors } from '#lib/patients/use-active-doctors';
 
@@ -76,7 +76,7 @@ export function AssignDoctorDialog({
         setAssignError(DUPLICATE_ASSIGNMENT_MESSAGE);
         return;
       }
-      setAssignError(resolveApiErrorMessage(error, ASSIGN_ERROR_FALLBACK));
+      setAssignError(notifyApiError(error, ASSIGN_ERROR_FALLBACK));
     }
   }
 

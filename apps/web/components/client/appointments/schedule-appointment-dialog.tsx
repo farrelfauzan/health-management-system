@@ -25,7 +25,7 @@ import {
 
 import { appointmentManagementControllerCreateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
 import { usePatientsList } from '#lib/patients/use-patients-list';
@@ -91,7 +91,7 @@ export function ScheduleAppointmentDialog({
         await invalidateAppointmentQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
-        setFormError(resolveApiErrorMessage(error, SCHEDULE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, SCHEDULE_ERROR_FALLBACK));
       }
     },
   });

@@ -22,7 +22,7 @@ import {
 import { DoctorScheduleEntryRow } from '#components/client/doctors/doctor-schedule-entry-row';
 import { doctorManagementControllerUpdateDoctorScheduleV1 } from '#lib/api/generated/doctor-management/doctor-management';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries';
 
 const SAVE_ERROR_FALLBACK = 'Unable to save the schedule. Please try again.';
@@ -88,7 +88,7 @@ export function DoctorScheduleDialog({
       await invalidateDoctorQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setScheduleError(resolveApiErrorMessage(error, SAVE_ERROR_FALLBACK));
+      setScheduleError(notifyApiError(error, SAVE_ERROR_FALLBACK));
     }
   }
 

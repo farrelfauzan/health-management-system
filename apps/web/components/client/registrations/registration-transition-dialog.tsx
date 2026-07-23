@@ -15,7 +15,7 @@ import {
 
 import { registrationFlowControllerUpdateRegistrationV1 } from '#lib/api/generated/registration-flow/registration-flow';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateRegistrationQueries } from '#lib/registrations/invalidate-registration-queries';
 import {
   REGISTRATION_TRANSITION_META,
@@ -54,7 +54,7 @@ export function RegistrationTransitionDialog({
       await invalidateRegistrationQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setActionError(resolveApiErrorMessage(error, TRANSITION_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, TRANSITION_ERROR_FALLBACK));
     }
   }
 

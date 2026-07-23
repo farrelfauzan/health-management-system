@@ -18,7 +18,7 @@ import {
 
 import { appointmentManagementControllerUpdateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import { formatTimeInputValue } from '#lib/appointments/format-appointment-time';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
 import { formatDateParam } from '#lib/appointments/week-range';
@@ -64,7 +64,7 @@ export function RescheduleAppointmentDialog({
         await invalidateAppointmentQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
-        setFormError(resolveApiErrorMessage(error, RESCHEDULE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, RESCHEDULE_ERROR_FALLBACK));
       }
     },
   });

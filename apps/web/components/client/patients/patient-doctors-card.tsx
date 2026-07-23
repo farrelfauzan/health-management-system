@@ -8,7 +8,7 @@ import { Button, Can, Card, CardContent, CardHeader, CardTitle, Icon } from '@hm
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { doctorPatientControllerUnassignDoctorFromPatientV1 } from '#lib/api/generated/doctor-patient/doctor-patient';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidatePatientQueries } from '#lib/patients/invalidate-patient-queries';
 
 const UNASSIGN_ERROR_FALLBACK = 'Unable to unassign the doctor. Please try again.';
@@ -33,7 +33,7 @@ export function PatientDoctorsCard({ patient, onAssignDoctor }: PatientDoctorsCa
       parseApiSuccess<DoctorPatientAssignment>(response, UNASSIGN_ERROR_FALLBACK);
       await invalidatePatientQueries(queryClient);
     } catch (error) {
-      setUnassignError(resolveApiErrorMessage(error, UNASSIGN_ERROR_FALLBACK));
+      setUnassignError(notifyApiError(error, UNASSIGN_ERROR_FALLBACK));
     }
   }
 

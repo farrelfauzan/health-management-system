@@ -22,7 +22,7 @@ import {
 
 import { registrationFlowControllerCreateRegistrationV1 } from '#lib/api/generated/registration-flow/registration-flow';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import { usePatientsList } from '#lib/patients/use-patients-list';
 import { formatRegisteredAt } from '#lib/registrations/format-registered-at';
 import { invalidateRegistrationQueries } from '#lib/registrations/invalidate-registration-queries';
@@ -79,7 +79,7 @@ export function RegistrationCreateDialog({
         await invalidateRegistrationQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
-        setFormError(resolveApiErrorMessage(error, CREATE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, CREATE_ERROR_FALLBACK));
       }
     },
   });
