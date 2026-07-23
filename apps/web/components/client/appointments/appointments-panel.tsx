@@ -20,6 +20,9 @@ import { SessionQueueDialog } from '#components/client/appointments/session-queu
 import { WeekView } from '#components/client/appointments/week-view';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
+import { appointmentManagementControllerGetAppointmentByIdV1 } from '#lib/api/generated/appointment-management/appointment-management';
+import { notifyApiError } from '#lib/api/notify-api-error';
+import { parseApiSuccess } from '#lib/api/response';
 import { filterAppointmentsByDoctors } from '#lib/appointments/filter-appointments-by-doctors';
 import {
   buildAppointmentsSearchParams,
@@ -156,6 +159,27 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
   function handleCancelAppointment(appointment: AppointmentListItem): void {
     setViewingAppointment(null);
     setCancellingAppointment(appointment);
+  }
+
+  async function handleSelectQueueEntry(appointmentId: string): Promise<void> {
+    setViewingSession(null);
+    const loadedAppointment = appointmentsQuery.appointments.find(
+      (appointment) => appointment.id === appointmentId,
+    );
+    if (loadedAppointment) {
+      setViewingAppointment(loadedAppointment);
+      return;
+    }
+    try {
+      const response = await appointmentManagementControllerGetAppointmentByIdV1(appointmentId);
+      const envelope = parseApiSuccess<AppointmentListItem>(
+        response,
+        'Unable to load the appointment.',
+      );
+      setViewingAppointment(envelope.data);
+    } catch (error) {
+      notifyApiError(error, 'Unable to load the appointment.');
+    }
   }
 
   return (
@@ -296,6 +320,7 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
             }
           }}
           session={viewingSession}
+          onSelectAppointment={(appointmentId) => void handleSelectQueueEntry(appointmentId)}
         />
       ) : null}
 

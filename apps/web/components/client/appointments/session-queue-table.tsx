@@ -8,15 +8,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  cn,
 } from '@hms/ui';
 
 import { StatusBadge } from '#components/shared/status-badge';
 
 type SessionQueueTableProps = {
   queue: SessionQueueEntry[];
+  onSelectEntry?: (entry: SessionQueueEntry) => void;
 };
 
-export function SessionQueueTable({ queue }: SessionQueueTableProps) {
+export function SessionQueueTable({ queue, onSelectEntry }: SessionQueueTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -28,7 +30,24 @@ export function SessionQueueTable({ queue }: SessionQueueTableProps) {
       </TableHeader>
       <TableBody>
         {queue.map((entry) => (
-          <TableRow key={entry.appointmentId}>
+          <TableRow
+            key={entry.appointmentId}
+            className={cn(onSelectEntry && 'cursor-pointer hover:bg-slate-50')}
+            {...(onSelectEntry
+              ? {
+                  role: 'button',
+                  tabIndex: 0,
+                  'aria-label': `View appointment for ${entry.patient.fullName}`,
+                  onClick: () => onSelectEntry(entry),
+                  onKeyDown: (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onSelectEntry(entry);
+                    }
+                  },
+                }
+              : {})}
+          >
             <TableCell className="font-mono text-sm">{entry.queueNumber ?? '—'}</TableCell>
             <TableCell>
               <span className="block text-sm font-medium text-slate-900">

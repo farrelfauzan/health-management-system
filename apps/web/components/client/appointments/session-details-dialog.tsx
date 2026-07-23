@@ -16,6 +16,7 @@ type SessionDetailsDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   session: DoctorSessionCalendarItem;
+  onSelectAppointment?: (appointmentId: string) => void;
 };
 
 function formatCapacitySummary(session: DoctorSessionCalendarItem): string {
@@ -25,7 +26,12 @@ function formatCapacitySummary(session: DoctorSessionCalendarItem): string {
   return `${session.bookedCount} of ${session.maxPatients} patients booked`;
 }
 
-export function SessionDetailsDialog({ open, onOpenChange, session }: SessionDetailsDialogProps) {
+export function SessionDetailsDialog({
+  open,
+  onOpenChange,
+  session,
+  onSelectAppointment,
+}: SessionDetailsDialogProps) {
   const queueQuery = useSessionQueue(session.id ?? '');
 
   return (
@@ -59,11 +65,19 @@ export function SessionDetailsDialog({ open, onOpenChange, session }: SessionDet
               Failed to load the session patients.
             </p>
           ) : (
-            <SessionQueueTable queue={queueQuery.queue} />
+            <SessionQueueTable
+              queue={queueQuery.queue}
+              onSelectEntry={
+                onSelectAppointment
+                  ? (entry) => onSelectAppointment(entry.appointmentId)
+                  : undefined
+              }
+            />
           )}
           <p className="text-xs text-slate-500">
             Queue numbers are assigned at check-in, first come first served. Patients without a
             number have not arrived yet.
+            {onSelectAppointment ? ' Click a patient to open their appointment.' : ''}
           </p>
         </div>
       </DialogContent>
