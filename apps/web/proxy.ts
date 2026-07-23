@@ -1,7 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
-import { decodeAccessTokenClaims, hasAnyRole, isAccessTokenExpired } from '#lib/auth/access-token-claims';
+import { hasAnyRole } from '#lib/auth/access-token-claims';
+import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
+import { resolveSessionClaims } from '#lib/auth/session-claims';
 
 const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN'];
 const PATIENT_ROLES = ['PATIENT'];
@@ -13,13 +15,15 @@ const PORTAL_PATH_PREFIX = '/portal';
 function buildLoginRedirectWithClearedCookie(request: NextRequest) {
   const response = NextResponse.redirect(new URL(LOGIN_PATH, request.url));
   response.cookies.delete(ACCESS_TOKEN_COOKIE_NAME);
+  response.cookies.delete(REFRESH_TOKEN_COOKIE_NAME);
   return response;
 }
 
 export function proxy(request: NextRequest) {
-  const token = request.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-  const claims = token ? decodeAccessTokenClaims(token) : null;
-  const hasValidSession = Boolean(token) && !isAccessTokenExpired(claims);
+  const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
+  const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
+  const claims = resolveSessionClaims({ accessToken, refreshToken });
+  const hasValidSession = claims !== null;
   const hasAdminSession = hasValidSession && hasAnyRole(claims, ADMIN_ROLES);
   const hasPatientSession = hasValidSession && hasAnyRole(claims, PATIENT_ROLES);
   const pathname = request.nextUrl.pathname;
@@ -34,7 +38,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!token) {
+  if (!hasValidSession) {
+    if (accessToken || refreshToken) {
+      return buildLoginRedirectWithClearedCookie(request);
+    }
     return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
   }
 

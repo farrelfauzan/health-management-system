@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { proxy } from './proxy';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
+import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -15,8 +16,12 @@ function buildToken(claims: object): string {
   return `${encodeBase64Url({ alg: 'HS256', typ: 'JWT' })}.${encodeBase64Url(claims)}.signature`;
 }
 
-function buildRequest(path: string, token?: string): NextRequest {
-  const headers = token ? { cookie: `${ACCESS_TOKEN_COOKIE_NAME}=${token}` } : undefined;
+function buildRequest(path: string, token?: string, refreshToken?: string): NextRequest {
+  const cookies = [
+    token ? `${ACCESS_TOKEN_COOKIE_NAME}=${token}` : null,
+    refreshToken ? `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}` : null,
+  ].filter((cookie): cookie is string => cookie !== null);
+  const headers = cookies.length > 0 ? { cookie: cookies.join('; ') } : undefined;
   return new NextRequest(`${BASE_URL}${path}`, { headers });
 }
 
@@ -57,6 +62,14 @@ describe('proxy', () => {
   it('allows /admin requests with a valid admin session', () => {
     const adminToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'] });
     const response = proxy(buildRequest('/admin/users', adminToken));
+
+    expect(response.headers.get('x-middleware-next')).toBe('1');
+  });
+
+  it('allows an expired access session while its refresh token remains valid', () => {
+    const expiredAccessToken = buildToken({ exp: pastUnix(), roles: ['ADMIN'] });
+    const refreshToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'], tokenType: 'refresh' });
+    const response = proxy(buildRequest('/admin/users', expiredAccessToken, refreshToken));
 
     expect(response.headers.get('x-middleware-next')).toBe('1');
   });

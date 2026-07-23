@@ -4,8 +4,9 @@ import { Button, Icon } from '@hms/ui';
 
 import { CurrentDateChip } from '#components/server/dashboard/current-date-chip';
 import { PageHeader } from '#components/shared/page-header';
-import { decodeAccessTokenClaims } from '#lib/auth/access-token-claims';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
+import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
+import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { buildDashboardGreeting } from '#lib/dashboard/greeting';
 import { FACILITY_CONFIG } from '#lib/facility/facility-config';
 import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
@@ -14,7 +15,8 @@ import { resolveShellProfile } from '#lib/shell/shell-profile';
 export async function DashboardHeader() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-  const claims = accessToken ? decodeAccessTokenClaims(accessToken) : null;
+  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
+  const claims = resolveSessionClaims({ accessToken, refreshToken });
   const profile = resolveShellProfile(claims);
   const metadata = ADMIN_ROUTE_METADATA.dashboard;
   const greeting = buildDashboardGreeting({

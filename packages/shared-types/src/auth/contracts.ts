@@ -7,6 +7,7 @@ export type AuthTokens = {
 
 export type RefreshedAuthTokens = {
   accessToken: string;
+  refreshToken: string;
   tokenType: string;
   expiresIn: string;
 };
