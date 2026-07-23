@@ -1,5 +1,11 @@
-import { AdminPlaceholderPage } from '#components/server/shell/admin-placeholder-page';
+import { PharmacyPanel } from '#components/client/pharmacy/pharmacy-panel';
+import { parsePharmacySearchParams } from '#lib/pharmacy/search-params';
 
-export default function AdminPharmacyPage() {
-  return <AdminPlaceholderPage routeKey="pharmacy" />;
+type AdminPharmacyPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminPharmacyPage({ searchParams }: AdminPharmacyPageProps) {
+  const query = parsePharmacySearchParams(await searchParams);
+  return <PharmacyPanel initialQuery={query} />;
 }

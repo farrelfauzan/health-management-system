@@ -30,6 +30,7 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   registration: 'Registration',
   medication: 'Medication',
   prescription: 'Prescription',
+  dispense: 'DispenseRecord',
 };
 
 function isSupportedAction(action: string): action is AppAction {
