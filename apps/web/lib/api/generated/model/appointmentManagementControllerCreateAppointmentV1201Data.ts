@@ -10,6 +10,9 @@ export type AppointmentManagementControllerCreateAppointmentV1201Data = {
   id: string;
   patientId: string;
   doctorId: string;
+  type: string;
+  sessionId: string;
+  queueNumber: number;
   scheduledAt: string;
   status: string;
   reason: string;

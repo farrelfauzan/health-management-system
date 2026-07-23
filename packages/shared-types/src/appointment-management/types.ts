@@ -1,4 +1,8 @@
-import type { AppointmentStatusValue } from '#appointment-management/schemas';
+import type {
+  AppointmentSessionStatusValue,
+  AppointmentStatusValue,
+  AppointmentTypeValue,
+} from '#appointment-management/schemas';
 
 export type ListAppointmentsParams = {
   page: number;
@@ -14,11 +18,33 @@ export type ListAppointmentsParams = {
 export type CreateAppointmentRecordPayload = {
   patientId: string;
   doctorId: string;
+  type: AppointmentTypeValue;
+  scheduledAt: Date;
+  status: AppointmentStatusValue;
+  reason?: string;
+  notes?: string;
+  createdById: string;
+};
+
+export type BookSessionSlotPayload = {
+  patientId: string;
+  doctorId: string;
+  scheduleId: string;
+  sessionDate: string;
+  startTime: string;
+  endTime: string;
+  maxPatients: number | null;
   scheduledAt: Date;
   reason?: string;
   notes?: string;
   createdById: string;
 };
+
+export type BookSessionSlotResult =
+  | { outcome: 'SESSION_NOT_OPEN' }
+  | { outcome: 'SESSION_FULL' }
+  | { outcome: 'ALREADY_BOOKED' }
+  | { outcome: 'BOOKED'; appointmentId: string };
 
 export type UpdateAppointmentRecordPayload = {
   id: string;
@@ -39,10 +65,25 @@ export type FindConflictingAppointmentParams = {
   excludeAppointmentId?: string;
 };
 
+export type ListDoctorSessionsParams = {
+  doctorId: string;
+  fromDate: string;
+  toDate: string;
+};
+
+export type UpdateAppointmentSessionRecordPayload = {
+  id: string;
+  maxPatients?: number | null;
+  status?: AppointmentSessionStatusValue;
+};
+
 export type AppointmentRecord = {
   id: string;
   patientId: string;
   doctorId: string;
+  type: AppointmentTypeValue;
+  sessionId: string | null;
+  queueNumber: number | null;
   scheduledAt: Date;
   status: AppointmentStatusValue;
   reason: string | null;
@@ -50,6 +91,26 @@ export type AppointmentRecord = {
   createdById: string | null;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type AppointmentSessionRecord = {
+  id: string;
+  doctorId: string;
+  scheduleId: string | null;
+  sessionDate: Date;
+  startTime: string;
+  endTime: string;
+  maxPatients: number | null;
+  status: AppointmentSessionStatusValue;
+};
+
+export type DoctorScheduleWindowRecord = {
+  id: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  isAvailable: boolean;
+  maxPatients: number | null;
 };
 
 export type AppointmentPatientProjection = {

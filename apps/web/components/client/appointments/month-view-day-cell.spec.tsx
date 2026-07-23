@@ -10,6 +10,7 @@ function buildAppointment(id: string, fullName: string): AppointmentListItem {
     id,
     patientId: `patient-${id}`,
     doctorId: 'doctor-1',
+    type: 'SPECIAL_REQUEST',
     scheduledAt: new Date(2026, 6, 21, 10, 30).toISOString(),
     status: 'SCHEDULED',
     createdAt: '2026-07-01T00:00:00.000Z',

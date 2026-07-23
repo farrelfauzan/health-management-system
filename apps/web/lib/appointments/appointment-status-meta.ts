@@ -7,6 +7,11 @@ export type AppointmentStatusMeta = {
 };
 
 export const APPOINTMENT_STATUS_META: Record<AppointmentStatusValue, AppointmentStatusMeta> = {
+  REQUESTED: {
+    label: 'Requested',
+    dotClassName: 'bg-warning',
+    blockClassName: 'border-warning bg-warning-tint text-warning',
+  },
   SCHEDULED: {
     label: 'Scheduled',
     dotClassName: 'bg-primary',
@@ -25,6 +30,11 @@ export const APPOINTMENT_STATUS_META: Record<AppointmentStatusValue, Appointment
   },
   CANCELLED: {
     label: 'Cancelled',
+    dotClassName: 'bg-danger',
+    blockClassName: 'border-danger bg-danger-tint text-danger',
+  },
+  REJECTED: {
+    label: 'Rejected',
     dotClassName: 'bg-danger',
     blockClassName: 'border-danger bg-danger-tint text-danger',
   },

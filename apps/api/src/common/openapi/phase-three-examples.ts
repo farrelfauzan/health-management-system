@@ -46,10 +46,14 @@ const doctor = {
   createdAt: timestamp,
   updatedAt: timestamp,
 };
+const sessionId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const appointment = {
   id: appointmentId,
   patientId,
   doctorId,
+  type: 'SESSION',
+  sessionId,
+  queueNumber: 3,
   scheduledAt: '2026-07-21T09:00:00.000Z',
   status: 'SCHEDULED',
   reason: 'Routine consultation',
@@ -57,6 +61,18 @@ const appointment = {
   createdById: userId,
   createdAt: timestamp,
   updatedAt: timestamp,
+};
+const appointmentSession = {
+  id: sessionId,
+  scheduleId: '99999999-9999-4999-8999-999999999999',
+  doctorId,
+  sessionDate: '2026-07-27',
+  startTime: '08:00',
+  endTime: '12:00',
+  status: 'OPEN',
+  maxPatients: 10,
+  bookedCount: 3,
+  remaining: 7,
 };
 const registration = {
   id: registrationId,
@@ -183,12 +199,23 @@ export const PHASE_THREE_EXAMPLES = {
   },
   appointment: {
     createRequest: {
+      type: 'SESSION',
       patientId,
       doctorId,
-      scheduledAt: '2026-07-21T09:00:00+07:00',
+      scheduleId: '99999999-9999-4999-8999-999999999999',
+      sessionDate: '2026-07-27',
       reason: 'Routine consultation',
       notes: 'First visit',
     },
+    createSpecialRequest: {
+      type: 'SPECIAL_REQUEST',
+      patientId,
+      doctorId,
+      requestedAt: '2026-07-21T09:00:00+07:00',
+      reason: 'Needs a longer consultation slot',
+    },
+    approveRequest: { scheduledAt: '2026-07-21T10:00:00+07:00' },
+    rejectRequest: { reason: 'Doctor is unavailable outside practice hours' },
     updateRequest: {
       scheduledAt: '2026-07-21T10:00:00+07:00',
       status: 'CONFIRMED',
@@ -204,6 +231,20 @@ export const PHASE_THREE_EXAMPLES = {
         specialty: doctor.specialty,
       },
     },
+    session: appointmentSession,
+    sessionQueue: {
+      session: appointmentSession,
+      queue: [
+        {
+          appointmentId,
+          queueNumber: 3,
+          status: 'SCHEDULED',
+          reason: 'Routine consultation',
+          patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
+        },
+      ],
+    },
+    sessionUpdateRequest: { maxPatients: 15, status: 'CLOSED' },
   },
   registration: {
     createRequest: { patientId, appointmentId },

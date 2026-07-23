@@ -10,9 +10,11 @@ export type AppointmentManagementControllerListAppointmentsV1Status = typeof App
 
 
 export const AppointmentManagementControllerListAppointmentsV1Status = {
+  REQUESTED: 'REQUESTED',
   SCHEDULED: 'SCHEDULED',
   CONFIRMED: 'CONFIRMED',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
+  REJECTED: 'REJECTED',
   NO_SHOW: 'NO_SHOW',
 } as const;

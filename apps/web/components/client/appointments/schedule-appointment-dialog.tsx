@@ -69,16 +69,21 @@ export function ScheduleAppointmentDialog({
         setFormError('Patient, doctor, date, and time are required.');
         return;
       }
+      if (value.reason.trim().length < 2) {
+        setFormError('Reason is required for a specific-time appointment.');
+        return;
+      }
       const scheduledAtDate = new Date(`${value.date}T${value.time}`);
       if (Number.isNaN(scheduledAtDate.getTime())) {
         setFormError('Enter a valid date and time.');
         return;
       }
       const parsed = createAppointmentSchema.safeParse({
+        type: 'SPECIAL_REQUEST',
         patientId: value.patientId,
         doctorId: value.doctorId,
-        scheduledAt: scheduledAtDate.toISOString(),
-        reason: value.reason.trim() ? value.reason.trim() : undefined,
+        requestedAt: scheduledAtDate.toISOString(),
+        reason: value.reason.trim(),
         notes: value.notes.trim() ? value.notes.trim() : undefined,
       });
       if (!parsed.success) {
@@ -227,7 +232,7 @@ export function ScheduleAppointmentDialog({
                   htmlFor={field.name}
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  Reason (optional)
+                  Reason
                 </label>
                 <Textarea
                   id={field.name}

@@ -28,6 +28,7 @@ function buildAppointment(status: AppointmentStatusValue): AppointmentListItem {
     id: 'appointment-1',
     patientId: 'patient-1',
     doctorId: 'doctor-1',
+    type: 'SPECIAL_REQUEST',
     scheduledAt: '2026-07-21T03:30:00.000Z',
     status,
     reason: 'Routine check',
