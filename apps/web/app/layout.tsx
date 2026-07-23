@@ -5,6 +5,7 @@ import { GeistMono } from 'geist/font/mono';
 import type { ReactNode } from 'react';
 
 import { ReactQueryProvider } from '#components/client/react-query-provider';
+import { AppToaster } from '#components/client/shared/app-toaster';
 
 import './globals.css';
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" className={`${inter.variable} ${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
         <ReactQueryProvider>{children}</ReactQueryProvider>
+        <AppToaster />
       </body>
     </html>
   );

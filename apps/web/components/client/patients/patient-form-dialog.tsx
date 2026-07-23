@@ -35,7 +35,7 @@ import {
   patientManagementControllerUpdatePatientV1,
 } from '#lib/api/generated/patient-management/patient-management';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidatePatientQueries } from '#lib/patients/invalidate-patient-queries';
 import { formatPatientSexLabel } from '#lib/patients/patient-sex-label';
 import { formatPatientStatusLabel } from '#lib/patients/patient-status-label';
@@ -105,7 +105,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
         await invalidatePatientQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
-        setFormError(resolveApiErrorMessage(error, SAVE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, SAVE_ERROR_FALLBACK));
       }
     },
   });

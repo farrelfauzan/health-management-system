@@ -122,6 +122,8 @@ export {
 } from '#components/sidebar';
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#components/tooltip';
 export { Skeleton } from '#components/skeleton';
+export { Toaster } from '#components/sonner';
+export { toast } from 'sonner';
 export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from '#components/tabs';
 export { Textarea } from '#components/textarea';
 export { cn } from '#lib/utils';

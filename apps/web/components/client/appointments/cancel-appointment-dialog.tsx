@@ -17,7 +17,7 @@ import {
 
 import { appointmentManagementControllerCancelAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import {
   formatAppointmentDate,
   formatAppointmentTime,
@@ -60,7 +60,7 @@ export function CancelAppointmentDialog({
       await invalidateAppointmentQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setCancelError(resolveApiErrorMessage(error, CANCEL_ERROR_FALLBACK));
+      setCancelError(notifyApiError(error, CANCEL_ERROR_FALLBACK));
     }
   }
 

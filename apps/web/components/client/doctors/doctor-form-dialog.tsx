@@ -28,7 +28,7 @@ import {
   doctorManagementControllerUpdateDoctorV1,
 } from '#lib/api/generated/doctor-management/doctor-management';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries';
 import { usePatientsList } from '#lib/patients/use-patients-list';
 
@@ -90,7 +90,7 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
         await invalidateDoctorQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
-        setFormError(resolveApiErrorMessage(error, SAVE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, SAVE_ERROR_FALLBACK));
       }
     },
   });

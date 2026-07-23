@@ -19,7 +19,7 @@ import { AvatarInitials } from '#components/shared/avatar-initials';
 import { StatusBadge } from '#components/shared/status-badge';
 import { appointmentManagementControllerUpdateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { parseApiSuccess } from '#lib/api/response';
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { notifyApiError } from '#lib/api/notify-api-error';
 import {
   formatAppointmentDate,
   formatAppointmentTime,
@@ -76,7 +76,7 @@ export function AppointmentDetailsDialog({
       await invalidateAppointmentQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setActionError(resolveApiErrorMessage(error, STATUS_UPDATE_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, STATUS_UPDATE_ERROR_FALLBACK));
     }
   }
 
