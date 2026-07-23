@@ -47,7 +47,7 @@ export function PatientsFilterCard({
   const [createdFrom, setCreatedFrom] = useState<string>(initialQuery.createdFrom ?? '');
   const [createdTo, setCreatedTo] = useState<string>(initialQuery.createdTo ?? '');
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
+  function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>): void {
     event.preventDefault();
     event.stopPropagation();
     const trimmedSearch = search.trim();

@@ -39,6 +39,8 @@ Examples:
 
 - `user.read:any`
 - `appointment.read:own`
+- `appointment.approve:any`
+- `appointment.session.read:any`
 - `prescription.write:any`
 - `chat.message.create:own`
 - `doctor-patient.assign:any`
@@ -314,6 +316,7 @@ DTO/schema contract rule:
 - Other roles get least privilege by default.
 - Include RBAC management permissions such as `role.read:any`, `role.assign:any`, and `role.unassign:any` for admin-level workflows.
 - Seed doctor-patient assignment, unassignment, and activity-read permissions for `SUPER_ADMIN` and `ADMIN`; grant doctors `patient.read:own` only for actively assigned patients.
+- Seed `appointment.approve:any` and `appointment.session.update:any` for `ADMIN` only; seed `appointment.session.read:any` for `ADMIN`, `DOCTOR`, and `PATIENT` (session listings drive patient self-service booking).
 
 ## 8. Implementation Checklist
 

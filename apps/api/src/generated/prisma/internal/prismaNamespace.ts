@@ -388,6 +388,7 @@ export const ModelName = {
   PatientProfile: 'PatientProfile',
   DoctorProfile: 'DoctorProfile',
   DoctorSchedule: 'DoctorSchedule',
+  AppointmentSession: 'AppointmentSession',
   DoctorPatient: 'DoctorPatient',
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "patientProfile" | "doctorProfile" | "doctorSchedule" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole"
+    modelProps: "user" | "patientProfile" | "doctorProfile" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -713,6 +714,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DoctorScheduleCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DoctorScheduleCountAggregateOutputType> | number
+        }
+      }
+    }
+    AppointmentSession: {
+      payload: Prisma.$AppointmentSessionPayload<ExtArgs>
+      fields: Prisma.AppointmentSessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AppointmentSessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AppointmentSessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload>
+        }
+        findFirst: {
+          args: Prisma.AppointmentSessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AppointmentSessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload>
+        }
+        findMany: {
+          args: Prisma.AppointmentSessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload>[]
+        }
+        create: {
+          args: Prisma.AppointmentSessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload>
+        }
+        createMany: {
+          args: Prisma.AppointmentSessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AppointmentSessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload>[]
+        }
+        delete: {
+          args: Prisma.AppointmentSessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload>
+        }
+        update: {
+          args: Prisma.AppointmentSessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.AppointmentSessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AppointmentSessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AppointmentSessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.AppointmentSessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionPayload>
+        }
+        aggregate: {
+          args: Prisma.AppointmentSessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAppointmentSession>
+        }
+        groupBy: {
+          args: Prisma.AppointmentSessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppointmentSessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AppointmentSessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppointmentSessionCountAggregateOutputType> | number
         }
       }
     }
@@ -1772,11 +1847,28 @@ export const DoctorScheduleScalarFieldEnum = {
   startTime: 'startTime',
   endTime: 'endTime',
   isAvailable: 'isAvailable',
+  maxPatients: 'maxPatients',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type DoctorScheduleScalarFieldEnum = (typeof DoctorScheduleScalarFieldEnum)[keyof typeof DoctorScheduleScalarFieldEnum]
+
+
+export const AppointmentSessionScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  scheduleId: 'scheduleId',
+  sessionDate: 'sessionDate',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  maxPatients: 'maxPatients',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppointmentSessionScalarFieldEnum = (typeof AppointmentSessionScalarFieldEnum)[keyof typeof AppointmentSessionScalarFieldEnum]
 
 
 export const DoctorPatientScalarFieldEnum = {
@@ -1809,6 +1901,9 @@ export const AppointmentScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
   doctorId: 'doctorId',
+  type: 'type',
+  sessionId: 'sessionId',
+  queueNumber: 'queueNumber',
   scheduledAt: 'scheduledAt',
   status: 'status',
   reason: 'reason',
@@ -2074,6 +2169,20 @@ export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'AppointmentSessionStatus'
+ */
+export type EnumAppointmentSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentSessionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'AppointmentSessionStatus[]'
+ */
+export type ListEnumAppointmentSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentSessionStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'DoctorPatientActivityAction'
  */
 export type EnumDoctorPatientActivityActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorPatientActivityAction'>
@@ -2084,6 +2193,20 @@ export type EnumDoctorPatientActivityActionFieldRefInput<$PrismaModel> = FieldRe
  * Reference to a field of type 'DoctorPatientActivityAction[]'
  */
 export type ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorPatientActivityAction[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AppointmentType'
+ */
+export type EnumAppointmentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentType'>
+    
+
+
+/**
+ * Reference to a field of type 'AppointmentType[]'
+ */
+export type ListEnumAppointmentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentType[]'>
     
 
 
@@ -2284,6 +2407,7 @@ export type GlobalOmitConfig = {
   patientProfile?: Prisma.PatientProfileOmit
   doctorProfile?: Prisma.DoctorProfileOmit
   doctorSchedule?: Prisma.DoctorScheduleOmit
+  appointmentSession?: Prisma.AppointmentSessionOmit
   doctorPatient?: Prisma.DoctorPatientOmit
   doctorPatientActivity?: Prisma.DoctorPatientActivityOmit
   appointment?: Prisma.AppointmentOmit

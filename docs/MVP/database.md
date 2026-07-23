@@ -45,11 +45,24 @@ enum Gender {
 }
 
 enum AppointmentStatus {
+  REQUESTED
   SCHEDULED
   CONFIRMED
   COMPLETED
   CANCELLED
+  REJECTED
   NO_SHOW
+}
+
+enum AppointmentType {
+  SESSION
+  SPECIAL_REQUEST
+}
+
+enum AppointmentSessionStatus {
+  OPEN
+  CLOSED
+  CANCELLED
 }
 
 enum RegistrationStatus {
@@ -281,19 +294,45 @@ model DoctorSchedule {
   startTime   String        @map("start_time")
   endTime     String        @map("end_time")
   isAvailable Boolean       @default(true) @map("is_available")
+  maxPatients Int?          @map("max_patients")
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 
-  doctor      DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctor      DoctorProfile        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  sessions    AppointmentSession[]
 
   @@index([doctorId, dayOfWeek])
   @@map("doctor_schedules")
+}
+
+model AppointmentSession {
+  id          String                   @id @default(uuid()) @db.Uuid
+  doctorId    String                   @db.Uuid @map("doctor_id")
+  scheduleId  String?                  @db.Uuid @map("schedule_id")
+  sessionDate DateTime                 @map("session_date") @db.Date
+  startTime   String                   @map("start_time")
+  endTime     String                   @map("end_time")
+  maxPatients Int?                     @map("max_patients")
+  status      AppointmentSessionStatus @default(OPEN)
+  createdAt   DateTime                 @default(now()) @map("created_at")
+  updatedAt   DateTime                 @updatedAt @map("updated_at")
+
+  doctor       DoctorProfile   @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  schedule     DoctorSchedule? @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+  appointments Appointment[]
+
+  @@unique([doctorId, sessionDate, startTime])
+  @@index([doctorId, sessionDate])
+  @@map("appointment_sessions")
 }
 
 model Appointment {
   id           String            @id @default(uuid()) @db.Uuid
   patientId    String            @db.Uuid @map("patient_id")
   doctorId     String            @db.Uuid @map("doctor_id")
+  type         AppointmentType   @default(SESSION)
+  sessionId    String?           @db.Uuid @map("session_id")
+  queueNumber  Int?              @map("queue_number")
   scheduledAt  DateTime          @map("scheduled_at")
   status       AppointmentStatus @default(SCHEDULED)
   reason       String?
@@ -303,14 +342,17 @@ model Appointment {
   updatedAt    DateTime          @updatedAt @map("updated_at")
   deletedAt    DateTime?         @map("deleted_at")
 
-  patient      PatientProfile    @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  doctor       DoctorProfile     @relation(fields: [doctorId], references: [id], onDelete: Restrict)
-  createdBy    User?             @relation("AppointmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  patient      PatientProfile      @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor       DoctorProfile       @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  session      AppointmentSession? @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  createdBy    User?               @relation("AppointmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   registration Registration?
 
+  @@unique([sessionId, queueNumber])
   @@index([doctorId, scheduledAt])
   @@index([patientId, scheduledAt])
   @@index([status, scheduledAt])
+  @@index([sessionId])
   @@map("appointments")
 }
 

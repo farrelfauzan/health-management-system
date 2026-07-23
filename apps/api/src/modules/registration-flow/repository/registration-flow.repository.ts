@@ -7,6 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma, RegistrationStatus } from '../../../generated/prisma/client';
 
 const OPEN_REGISTRATION_STATUSES: RegistrationStatus[] = ['PENDING', 'CHECKED_IN'];
@@ -196,7 +197,7 @@ export class RegistrationFlowRepository {
 
   async updateRegistration(payload: UpdateRegistrationRecordPayload) {
     return this.prisma.executeTransaction(async (tx) => {
-      return tx.registration.update({
+      const updated = await tx.registration.update({
         where: {
           id: payload.id,
         },
@@ -208,6 +209,54 @@ export class RegistrationFlowRepository {
         },
         include: REGISTRATION_RELATIONS_INCLUDE,
       });
+      if (payload.status === 'CHECKED_IN' && updated.appointmentId) {
+        await this.assignSessionQueueNumber(tx, updated.appointmentId);
+      }
+      return updated;
+    });
+  }
+
+  private async assignSessionQueueNumber(
+    tx: PrismaTransactionClient,
+    appointmentId: string,
+  ): Promise<void> {
+    const appointment = await tx.appointment.findFirst({
+      where: {
+        id: appointmentId,
+        type: 'SESSION',
+        queueNumber: null,
+        sessionId: {
+          not: null,
+        },
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        sessionId: true,
+      },
+    });
+    if (!appointment?.sessionId) {
+      return;
+    }
+    await tx.$queryRaw`SELECT "id" FROM "appointment_sessions" WHERE "id" = ${appointment.sessionId}::uuid FOR UPDATE`;
+    const highestQueue = await tx.appointment.aggregate({
+      where: {
+        sessionId: appointment.sessionId,
+        queueNumber: {
+          not: null,
+        },
+      },
+      _max: {
+        queueNumber: true,
+      },
+    });
+    await tx.appointment.update({
+      where: {
+        id: appointment.id,
+      },
+      data: {
+        queueNumber: (highestQueue._max.queueNumber ?? 0) + 1,
+      },
     });
   }
 }

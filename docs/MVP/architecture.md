@@ -78,6 +78,7 @@ apps/api/src/common/storage/
 Domain modules:
 
 - `auth`, `users`, `admin-management`, `patient-management`, `doctor-management`, `appointment-management`, `registration-flow`, `pharmacy-flow`.
+- `appointment-management` owns the session-based scheduling model (see [docs/revamp/appointment-scheduling.md](../revamp/appointment-scheduling.md)): a primary appointments controller plus a secondary `AppointmentSession` controller (doctor session projection, cross-doctor calendar listing, queue, capacity/status management). The registration flow assigns session queue numbers at check-in.
 - `ai-chatbot` (post-MVP Phase 13 — see [docs/post-mvp/ai-chatbot.md](../post-mvp/ai-chatbot.md)).
 
 AI chatbot module strategy (post-MVP):

@@ -43,6 +43,7 @@ type AppointmentDetailsDialogProps = {
   appointment: AppointmentListItem;
   onReschedule: (appointment: AppointmentListItem) => void;
   onCancel: (appointment: AppointmentListItem) => void;
+  onViewQueue?: (sessionId: string) => void;
 };
 
 export function AppointmentDetailsDialog({
@@ -51,6 +52,7 @@ export function AppointmentDetailsDialog({
   appointment,
   onReschedule,
   onCancel,
+  onViewQueue,
 }: AppointmentDetailsDialogProps) {
   const ability = useAbility();
   const queryClient = useQueryClient();
@@ -61,9 +63,14 @@ export function AppointmentDetailsDialog({
   });
   const canUpdate = ability.can('update', 'Appointment');
   const allowedTargets = APPOINTMENT_STATUS_TRANSITIONS[appointment.status].filter(
-    (status): status is AppointmentTransitionTarget => status !== 'CANCELLED',
+    (status): status is AppointmentTransitionTarget => status in TRANSITION_ACTION_LABELS,
   );
-  const canReschedule = canUpdate && RESCHEDULABLE_STATUSES.includes(appointment.status);
+  const canReschedule =
+    canUpdate &&
+    appointment.type !== 'SESSION' &&
+    RESCHEDULABLE_STATUSES.includes(appointment.status);
+  const canViewQueue =
+    Boolean(appointment.sessionId && onViewQueue) && ability.can('read', 'AppointmentSession');
   const canCancel =
     ability.can('cancel', 'Appointment') &&
     canTransitionAppointmentStatus(appointment.status, 'CANCELLED');
@@ -134,6 +141,15 @@ export function AppointmentDetailsDialog({
           </dl>
         </div>
         <DialogFooter className="flex-wrap">
+          {canViewQueue && appointment.sessionId ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onViewQueue?.(appointment.sessionId as string)}
+            >
+              View Session Queue
+            </Button>
+          ) : null}
           {canReschedule ? (
             <Button type="button" variant="outline" onClick={() => onReschedule(appointment)}>
               Reschedule

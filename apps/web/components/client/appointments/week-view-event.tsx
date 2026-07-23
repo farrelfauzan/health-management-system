@@ -17,7 +17,7 @@ export function WeekViewEvent({ appointment, onSelect }: WeekViewEventProps) {
     <button
       type="button"
       className={cn(
-        'flex h-full w-full flex-col overflow-hidden rounded-r-md border-l-4 p-1.5 text-left transition-shadow hover:shadow-md',
+        'flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-r-md border-l-4 p-1.5 text-left transition-shadow hover:shadow-md',
         meta.blockClassName,
       )}
       onClick={() => onSelect(appointment)}

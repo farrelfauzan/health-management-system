@@ -125,3 +125,24 @@
 - **Decision:** Define and export a typed object-storage provider in the NestJS common layer, with S3 as its infrastructure adapter. Domain modules inject this provider when their workflows need file storage.
 - **Why:** Keeps AWS SDK concerns out of feature services, supports test doubles and S3-compatible environments, and avoids creating a generic storage API that bypasses domain authorization and lifecycle rules.
 - **Consequence:** The provider offers upload, get, signed-URL, and idempotent delete operations; `ConfigService` supplies validated runtime configuration; each owning module defines its own file endpoints and persists object keys only; every S3-backed URL returned by an API is short-lived and signed, and signed URLs are never persisted.
+
+## D-019: Clinic Timezone Convention
+
+- **Status:** Accepted
+- **Decision:** Doctor schedule windows and appointment sessions are wall-clock values in a single configurable clinic timezone (`CLINIC_TIMEZONE` env, default `Asia/Jakarta`). The API converts UTC instants into that zone (via shared helpers `isWithinDoctorAvailability`/`buildZonedDateTime` in `@hms/shared-types`) before any schedule validation.
+- **Why:** Availability was previously compared against UTC clock time, rejecting valid clinic-local slots (e.g. Monday 09:00 WIB arriving as 02:00Z against an 08:00–12:00 window).
+- **Consequence:** All new schedule/session date-time logic must go through the shared timezone helpers; the browser is assumed to run in the clinic timezone for wall-clock inputs.
+
+## D-020: Session-Based Appointment Scheduling
+
+- **Status:** Accepted (full design: [docs/revamp/appointment-scheduling.md](../revamp/appointment-scheduling.md))
+- **Decision:** The default booking unit is a doctor practice **session** (a lazily materialized occurrence of a weekly schedule window, with limited `maxPatients` or unlimited capacity) that patients join without picking a time. Exact-time needs are `SPECIAL_REQUEST` appointments that require clinic approval (`REQUESTED → SCHEDULED/REJECTED`) unless created by an `appointment.approve` holder. Queue numbers are assigned at clinic check-in (first come, first served); a booking is only a participation record. Session booking closes 60 minutes before the window starts; patient-initiated special requests need 3 days' lead. The web calendar renders sessions with patient totals (overlapping cards in side-by-side columns) and a details modal with the check-in queue.
+- **Why:** Consult duration inside the doctor's room is highly dynamic, so promising exact clock times misleads patients; the clinic's real workflow is arrival-order queues within practice windows.
+- **Consequence:** `POST /appointments` is a discriminated union (`SESSION`/`SPECIAL_REQUEST`); capacity and queue assignment run under session row locks; session bookings cannot be rescheduled to timestamps (cancel and rebook); approval/rejection events are the future WhatsApp-chatbot notification hook (per D-007); a session waitlist is approved but deferred to a later phase.
+
+## D-021: Backend Error Message Surfacing on the Web
+
+- **Status:** Accepted
+- **Decision:** All web mutation error paths resolve the backend message through a shared `resolveApiErrorMessage` (tolerating both the documented error envelope and Nest's default exception shape) and surface it via `notifyApiError`, which fires a top-right shadcn/sonner toast from `@hms/ui` in addition to any inline form alert.
+- **Why:** Feature code previously showed generic fallbacks because the resolver only understood the envelope shape the API never emitted; users lost actionable messages such as capacity or availability rejections.
+- **Consequence:** Features must not hand-write error text in catch blocks; a global Nest exception filter emitting the documented envelope remains an open conformance task (see api-contract.md).

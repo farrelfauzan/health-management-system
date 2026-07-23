@@ -44,6 +44,7 @@ export type DoctorScheduleRecord = {
   startTime: string;
   endTime: string;
   isAvailable: boolean;
+  maxPatients: number | null;
 };
 
 export type ReplaceDoctorSchedulesPayload = {
@@ -53,5 +54,6 @@ export type ReplaceDoctorSchedulesPayload = {
     startTime: string;
     endTime: string;
     isAvailable: boolean;
+    maxPatients?: number | null;
   }>;
 };

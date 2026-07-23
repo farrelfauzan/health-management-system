@@ -8,7 +8,8 @@ export type AppAction =
   | 'assign'
   | 'unassign'
   | 'write'
-  | 'cancel';
+  | 'cancel'
+  | 'approve';
 export type AppSubject =
   | 'User'
   | 'Role'
@@ -18,6 +19,7 @@ export type AppSubject =
   | 'DoctorPatient'
   | 'DoctorPatientActivity'
   | 'Appointment'
+  | 'AppointmentSession'
   | 'Registration'
   | 'Medication'
   | 'Prescription'

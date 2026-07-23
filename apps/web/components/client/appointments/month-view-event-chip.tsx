@@ -17,7 +17,7 @@ export function MonthViewEventChip({ appointment, onSelect }: MonthViewEventChip
     <button
       type="button"
       className={cn(
-        'flex w-full items-center gap-1 overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium transition-shadow hover:shadow-sm',
+        'flex w-full cursor-pointer items-center gap-1 overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium transition-shadow hover:shadow-sm',
         meta.blockClassName,
       )}
       onClick={() => onSelect(appointment)}

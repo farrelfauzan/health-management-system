@@ -55,6 +55,7 @@ export const ModelName = {
   PatientProfile: 'PatientProfile',
   DoctorProfile: 'DoctorProfile',
   DoctorSchedule: 'DoctorSchedule',
+  AppointmentSession: 'AppointmentSession',
   DoctorPatient: 'DoctorPatient',
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
@@ -141,11 +142,28 @@ export const DoctorScheduleScalarFieldEnum = {
   startTime: 'startTime',
   endTime: 'endTime',
   isAvailable: 'isAvailable',
+  maxPatients: 'maxPatients',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type DoctorScheduleScalarFieldEnum = (typeof DoctorScheduleScalarFieldEnum)[keyof typeof DoctorScheduleScalarFieldEnum]
+
+
+export const AppointmentSessionScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  scheduleId: 'scheduleId',
+  sessionDate: 'sessionDate',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  maxPatients: 'maxPatients',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppointmentSessionScalarFieldEnum = (typeof AppointmentSessionScalarFieldEnum)[keyof typeof AppointmentSessionScalarFieldEnum]
 
 
 export const DoctorPatientScalarFieldEnum = {
@@ -178,6 +196,9 @@ export const AppointmentScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
   doctorId: 'doctorId',
+  type: 'type',
+  sessionId: 'sessionId',
+  queueNumber: 'queueNumber',
   scheduledAt: 'scheduledAt',
   status: 'status',
   reason: 'reason',

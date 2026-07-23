@@ -1,14 +1,16 @@
 'use client';
 
-import type { AppointmentListItem } from '@hms/shared-types';
+import type { AppointmentListItem, DoctorSessionCalendarItem } from '@hms/shared-types';
 import { Skeleton, cn } from '@hms/ui';
 
 import { CurrentTimeIndicator } from '#components/client/appointments/current-time-indicator';
+import { SessionCalendarBlock } from '#components/client/appointments/session-calendar-block';
 import { WeekViewEvent } from '#components/client/appointments/week-view-event';
 import {
   CALENDAR_END_HOUR,
   CALENDAR_START_HOUR,
   layoutWeekEvent,
+  layoutWeekSessionColumns,
 } from '#lib/appointments/event-layout';
 import { isSameDay } from '#lib/appointments/week-range';
 import { WEEKDAY_LABELS } from '#lib/appointments/weekday-labels';
@@ -28,15 +30,19 @@ function formatHourLabel(hour: number): string {
 type WeekViewProps = {
   weekDays: Date[];
   appointments: AppointmentListItem[];
+  sessions: DoctorSessionCalendarItem[];
   isPending: boolean;
   onSelectAppointment: (appointment: AppointmentListItem) => void;
+  onSelectSession: (session: DoctorSessionCalendarItem) => void;
 };
 
 export function WeekView({
   weekDays,
   appointments,
+  sessions,
   isPending,
   onSelectAppointment,
+  onSelectSession,
 }: WeekViewProps) {
   if (isPending) {
     return (
@@ -116,6 +122,26 @@ export function WeekView({
               </div>
             ))}
           </div>
+          {layoutWeekSessionColumns({ sessions, weekStart }).map((placement, index) => {
+            const session = sessions[index];
+            if (!placement || !session) {
+              return null;
+            }
+            return (
+              <div
+                key={`${session.doctorId}|${session.sessionDate}|${session.startTime}`}
+                className="absolute z-10 p-0.5"
+                style={{
+                  top: `${placement.topPx}px`,
+                  height: `${placement.heightPx}px`,
+                  left: `calc(${TIME_COLUMN_WIDTH_PX}px + (100% - ${TIME_COLUMN_WIDTH_PX}px) / 7 * ${placement.dayIndex + placement.columnIndex / placement.columnCount})`,
+                  width: `calc((100% - ${TIME_COLUMN_WIDTH_PX}px) / ${7 * placement.columnCount})`,
+                }}
+              >
+                <SessionCalendarBlock session={session} onSelect={onSelectSession} />
+              </div>
+            );
+          })}
           {appointments.map((appointment) => {
             const placement = layoutWeekEvent({
               scheduledAt: appointment.scheduledAt,

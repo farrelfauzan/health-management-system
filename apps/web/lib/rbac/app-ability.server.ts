@@ -17,6 +17,7 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'unassign',
   'write',
   'cancel',
+  'approve',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',
@@ -27,6 +28,7 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'doctor-patient': 'DoctorPatient',
   'doctor-patient.activity': 'DoctorPatientActivity',
   appointment: 'Appointment',
+  'appointment.session': 'AppointmentSession',
   registration: 'Registration',
   medication: 'Medication',
   prescription: 'Prescription',

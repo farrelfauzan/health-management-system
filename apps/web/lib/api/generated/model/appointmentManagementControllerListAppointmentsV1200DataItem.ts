@@ -12,6 +12,9 @@ export type AppointmentManagementControllerListAppointmentsV1200DataItem = {
   id: string;
   patientId: string;
   doctorId: string;
+  type: string;
+  sessionId: string;
+  queueNumber: number;
   scheduledAt: string;
   status: string;
   reason: string;
