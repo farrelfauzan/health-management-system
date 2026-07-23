@@ -37,18 +37,49 @@ export type AppointmentAvailabilityWindow = {
   isAvailable: boolean;
 };
 
+const WEEKDAY_INDEX_BY_LABEL: Record<string, number> = {
+  Sun: 0,
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+};
+
+function getZonedDayAndTime(
+  scheduledAt: Date,
+  timeZone: string,
+): { dayOfWeek: number; timeOfDay: string } {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(scheduledAt);
+  const findPart = (type: Intl.DateTimeFormatPartTypes): string =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  return {
+    dayOfWeek: WEEKDAY_INDEX_BY_LABEL[findPart('weekday')] ?? -1,
+    timeOfDay: `${findPart('hour')}:${findPart('minute')}`,
+  };
+}
+
+/**
+ * Checks a UTC instant against schedule windows whose dayOfWeek/startTime/endTime
+ * are wall-clock values in the given IANA timeZone (defaults to UTC).
+ */
 export function isWithinDoctorAvailability(params: {
   scheduledAt: Date;
   schedules: AppointmentAvailabilityWindow[];
+  timeZone?: string;
 }): boolean {
-  const { scheduledAt, schedules } = params;
+  const { scheduledAt, schedules, timeZone = 'UTC' } = params;
   if (schedules.length === 0) {
     return true;
   }
-  const dayOfWeek = scheduledAt.getUTCDay();
-  const hours = String(scheduledAt.getUTCHours()).padStart(2, '0');
-  const minutes = String(scheduledAt.getUTCMinutes()).padStart(2, '0');
-  const timeOfDay = `${hours}:${minutes}`;
+  const { dayOfWeek, timeOfDay } = getZonedDayAndTime(scheduledAt, timeZone);
   return schedules.some(
     (window) =>
       window.isAvailable &&

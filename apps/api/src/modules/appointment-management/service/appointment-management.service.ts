@@ -13,6 +13,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
@@ -23,13 +24,19 @@ import { UpdateAppointmentDto } from '../dto/update-appointment.dto';
 import { AppointmentManagementRepository } from '../repository/appointment-management.repository';
 
 const RESCHEDULABLE_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
+const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 @Injectable()
 export class AppointmentManagementService {
+  private readonly clinicTimeZone: string;
+
   constructor(
     private readonly appointmentManagementRepository: AppointmentManagementRepository,
     private readonly authRepository: AuthRepository,
-  ) {}
+    configService: ConfigService,
+  ) {
+    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+  }
 
   async listAppointments(query: ListAppointmentsQueryDto, currentUser: CurrentUser) {
     const actor = await this.getActorOrThrow(currentUser);
@@ -275,7 +282,7 @@ export class AppointmentManagementService {
       throw new BadRequestException('scheduledAt must be in the future');
     }
 
-    if (!isWithinDoctorAvailability({ scheduledAt, schedules })) {
+    if (!isWithinDoctorAvailability({ scheduledAt, schedules, timeZone: this.clinicTimeZone })) {
       throw new BadRequestException('Doctor is not available at the requested time');
     }
 

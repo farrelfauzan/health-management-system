@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { AppointmentManagementRepository } from '../repository/appointment-management.repository';
@@ -55,9 +56,14 @@ describe('AppointmentManagementService', () => {
     findUserById: jest.fn(),
   } as unknown as AuthRepository;
 
+  const configServiceMock = {
+    get: jest.fn().mockReturnValue('Asia/Jakarta'),
+  } as unknown as ConfigService;
+
   const service = new AppointmentManagementService(
     appointmentManagementRepositoryMock,
     authRepositoryMock,
+    configServiceMock,
   );
 
   const currentUser = {
@@ -291,7 +297,31 @@ describe('AppointmentManagementService', () => {
       );
     });
 
-    it('accepts a slot inside an available schedule window', async () => {
+    it('accepts a slot inside an available schedule window in clinic time', async () => {
+      mockPermissions([{ action: 'create', resource: 'Appointment', scope: 'ANY' }]);
+      repositoryMock.findActiveDoctorById.mockResolvedValue({
+        id: doctorId,
+        ownerUserId: null,
+        schedules: [
+          {
+            dayOfWeek: 1,
+            startTime: '08:00',
+            endTime: '12:00',
+            isAvailable: true,
+          },
+        ],
+      });
+      const inputMondayNineJakarta = '2027-01-04T02:00:00.000Z';
+
+      const actualAppointment = await service.createAppointment(
+        { ...createPayload, scheduledAt: inputMondayNineJakarta },
+        currentUser,
+      );
+
+      expect(actualAppointment.id).toBe(appointmentId);
+    });
+
+    it('rejects a slot that only matches the schedule window in UTC', async () => {
       mockPermissions([{ action: 'create', resource: 'Appointment', scope: 'ANY' }]);
       repositoryMock.findActiveDoctorById.mockResolvedValue({
         id: doctorId,
@@ -306,9 +336,9 @@ describe('AppointmentManagementService', () => {
         ],
       });
 
-      const actualAppointment = await service.createAppointment(createPayload, currentUser);
-
-      expect(actualAppointment.id).toBe(appointmentId);
+      await expect(service.createAppointment(createPayload, currentUser)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
     });
 
     it('throws conflict when doctor already has an open appointment at the slot', async () => {
