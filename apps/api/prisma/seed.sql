@@ -218,6 +218,99 @@ WHERE rp."role_id" = r."id"
   AND r."code" = 'DOCTOR'
   AND p."permission_key" = 'patient.read:any';
 
+-- Development demo patients. Replace or remove this block for production seeds.
+WITH seed_patients(mrn, full_name, date_of_birth, sex, status, phone_number, address) AS (
+  VALUES
+    ('MRN-0001', 'Budi Santoso', '1985-03-12', 'MALE', 'OUT_PATIENT', '+62-812-1000-0001', 'Jl. Merdeka No. 12, Jakarta Pusat'),
+    ('MRN-0002', 'Siti Rahayu', '1992-07-28', 'FEMALE', 'OUT_PATIENT', '+62-812-1000-0002', 'Jl. Sudirman No. 45, Jakarta Selatan'),
+    ('MRN-0003', 'Agus Wijaya', '1978-11-05', 'MALE', 'IN_PATIENT', '+62-812-1000-0003', 'Jl. Gatot Subroto No. 8, Bandung'),
+    ('MRN-0004', 'Dewi Lestari', '2001-01-19', 'FEMALE', 'OUT_PATIENT', '+62-812-1000-0004', 'Jl. Diponegoro No. 21, Surabaya'),
+    ('MRN-0005', 'Rina Kusuma', '1965-09-30', 'FEMALE', 'DISCHARGED', '+62-812-1000-0005', 'Jl. Ahmad Yani No. 3, Yogyakarta')
+)
+INSERT INTO "patient_profiles" (
+  "id",
+  "mrn",
+  "full_name",
+  "date_of_birth",
+  "sex",
+  "status",
+  "phone_number",
+  "address",
+  "owner_user_id",
+  "is_active",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('patient:' || mrn)::uuid,
+  mrn,
+  full_name,
+  date_of_birth::date,
+  sex::"PatientSex",
+  status::"PatientStatus",
+  phone_number,
+  address,
+  NULL,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_patients
+ON CONFLICT ("mrn") DO UPDATE
+SET
+  "full_name" = EXCLUDED."full_name",
+  "date_of_birth" = EXCLUDED."date_of_birth",
+  "sex" = EXCLUDED."sex",
+  "status" = EXCLUDED."status",
+  "phone_number" = EXCLUDED."phone_number",
+  "address" = EXCLUDED."address",
+  "is_active" = true,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
+-- Development demo doctors. Replace or remove this block for production seeds.
+WITH seed_doctors(license_number, full_name, specialty, phone_number) AS (
+  VALUES
+    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001'),
+    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002'),
+    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003'),
+    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004'),
+    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005')
+)
+INSERT INTO "doctor_profiles" (
+  "id",
+  "license_number",
+  "full_name",
+  "specialty",
+  "phone_number",
+  "owner_user_id",
+  "is_active",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('doctor:' || license_number)::uuid,
+  license_number,
+  full_name,
+  specialty,
+  phone_number,
+  NULL,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_doctors
+ON CONFLICT ("license_number") DO UPDATE
+SET
+  "full_name" = EXCLUDED."full_name",
+  "specialty" = EXCLUDED."specialty",
+  "phone_number" = EXCLUDED."phone_number",
+  "is_active" = true,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
 -- Development admin account. Credentials: admin@salingjaga.com / Admin123!
 -- The hash is bcryptjs (cost 10). Replace or remove this block for production seeds.
 WITH seed_users(email, password_hash) AS (
