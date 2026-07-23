@@ -111,6 +111,116 @@ export function layoutWeekSessionBlock(params: {
   return { dayIndex, ...placement };
 }
 
+export type SessionColumnPlacement = DayEventPlacement & {
+  columnIndex: number;
+  columnCount: number;
+};
+
+export type WeekSessionColumnPlacement = SessionColumnPlacement & {
+  dayIndex: number;
+};
+
+type SessionWindow = {
+  sessionDate: string;
+  startTime: string;
+  endTime: string;
+};
+
+function getMinutesOfDay(time: string): number {
+  const [hours = 0, minutes = 0] = time.split(':').map(Number);
+  return hours * MINUTES_PER_HOUR + minutes;
+}
+
+export function layoutDaySessionColumns(params: {
+  sessions: SessionWindow[];
+  day: Date;
+}): Array<SessionColumnPlacement | null> {
+  const { sessions, day } = params;
+  const positioned = sessions
+    .map((session, index) => {
+      const placement = layoutDaySessionBlock({ ...session, day });
+      if (!placement) {
+        return null;
+      }
+      return {
+        index,
+        placement,
+        startMinutes: getMinutesOfDay(session.startTime),
+        endMinutes: getMinutesOfDay(session.endTime),
+      };
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+    .sort((a, b) => a.startMinutes - b.startMinutes || b.endMinutes - a.endMinutes);
+  const results: Array<SessionColumnPlacement | null> = sessions.map(() => null);
+  let cluster: typeof positioned = [];
+  let clusterEndMinutes = Number.NEGATIVE_INFINITY;
+  function flushCluster(): void {
+    if (cluster.length === 0) {
+      return;
+    }
+    const columnEndMinutes: number[] = [];
+    const assignments = cluster.map((entry) => {
+      let columnIndex = columnEndMinutes.findIndex((end) => end <= entry.startMinutes);
+      if (columnIndex === -1) {
+        columnIndex = columnEndMinutes.length;
+        columnEndMinutes.push(entry.endMinutes);
+      } else {
+        columnEndMinutes[columnIndex] = entry.endMinutes;
+      }
+      return { entry, columnIndex };
+    });
+    for (const { entry, columnIndex } of assignments) {
+      results[entry.index] = {
+        ...entry.placement,
+        columnIndex,
+        columnCount: columnEndMinutes.length,
+      };
+    }
+    cluster = [];
+  }
+  for (const entry of positioned) {
+    if (entry.startMinutes >= clusterEndMinutes) {
+      flushCluster();
+      clusterEndMinutes = entry.endMinutes;
+    } else {
+      clusterEndMinutes = Math.max(clusterEndMinutes, entry.endMinutes);
+    }
+    cluster.push(entry);
+  }
+  flushCluster();
+  return results;
+}
+
+export function layoutWeekSessionColumns(params: {
+  sessions: SessionWindow[];
+  weekStart: Date;
+}): Array<WeekSessionColumnPlacement | null> {
+  const { sessions, weekStart } = params;
+  const results: Array<WeekSessionColumnPlacement | null> = sessions.map(() => null);
+  for (let dayIndex = 0; dayIndex < DAYS_PER_WEEK; dayIndex += 1) {
+    const day = addDays(weekStart, dayIndex);
+    const daySessions = sessions
+      .map((session, index) => ({ session, index }))
+      .filter(({ session }) =>
+        isSameDay(new Date(`${session.sessionDate}T${session.startTime}`), day),
+      );
+    if (daySessions.length === 0) {
+      continue;
+    }
+    const placements = layoutDaySessionColumns({
+      sessions: daySessions.map(({ session }) => session),
+      day,
+    });
+    placements.forEach((placement, position) => {
+      const target = daySessions[position];
+      if (placement && target) {
+        results[target.index] = { ...placement, dayIndex };
+      }
+    });
+  }
+  return results;
+}
+
 export function layoutWeekEvent(params: {
   scheduledAt: string;
   weekStart: Date;

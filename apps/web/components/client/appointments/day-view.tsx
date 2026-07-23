@@ -10,7 +10,7 @@ import {
   CALENDAR_END_HOUR,
   CALENDAR_START_HOUR,
   layoutDayEvent,
-  layoutDaySessionBlock,
+  layoutDaySessionColumns,
 } from '#lib/appointments/event-layout';
 import { isSameDay } from '#lib/appointments/week-range';
 
@@ -96,14 +96,9 @@ export function DayView({
             ))}
           </div>
         </div>
-        {sessions.map((session) => {
-          const placement = layoutDaySessionBlock({
-            sessionDate: session.sessionDate,
-            startTime: session.startTime,
-            endTime: session.endTime,
-            day,
-          });
-          if (!placement) {
+        {layoutDaySessionColumns({ sessions, day }).map((placement, index) => {
+          const session = sessions[index];
+          if (!placement || !session) {
             return null;
           }
           return (
@@ -113,8 +108,8 @@ export function DayView({
               style={{
                 top: `${placement.topPx}px`,
                 height: `${placement.heightPx}px`,
-                left: `${TIME_COLUMN_WIDTH_PX}px`,
-                width: `calc(100% - ${TIME_COLUMN_WIDTH_PX}px)`,
+                left: `calc(${TIME_COLUMN_WIDTH_PX}px + (100% - ${TIME_COLUMN_WIDTH_PX}px) * ${placement.columnIndex / placement.columnCount})`,
+                width: `calc((100% - ${TIME_COLUMN_WIDTH_PX}px) / ${placement.columnCount})`,
               }}
             >
               <SessionCalendarBlock session={session} onSelect={onSelectSession} />

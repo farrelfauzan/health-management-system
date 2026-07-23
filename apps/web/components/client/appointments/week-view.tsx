@@ -10,7 +10,7 @@ import {
   CALENDAR_END_HOUR,
   CALENDAR_START_HOUR,
   layoutWeekEvent,
-  layoutWeekSessionBlock,
+  layoutWeekSessionColumns,
 } from '#lib/appointments/event-layout';
 import { isSameDay } from '#lib/appointments/week-range';
 import { WEEKDAY_LABELS } from '#lib/appointments/weekday-labels';
@@ -122,14 +122,9 @@ export function WeekView({
               </div>
             ))}
           </div>
-          {sessions.map((session) => {
-            const placement = layoutWeekSessionBlock({
-              sessionDate: session.sessionDate,
-              startTime: session.startTime,
-              endTime: session.endTime,
-              weekStart,
-            });
-            if (!placement) {
+          {layoutWeekSessionColumns({ sessions, weekStart }).map((placement, index) => {
+            const session = sessions[index];
+            if (!placement || !session) {
               return null;
             }
             return (
@@ -139,8 +134,8 @@ export function WeekView({
                 style={{
                   top: `${placement.topPx}px`,
                   height: `${placement.heightPx}px`,
-                  left: `calc(${TIME_COLUMN_WIDTH_PX}px + (100% - ${TIME_COLUMN_WIDTH_PX}px) / 7 * ${placement.dayIndex})`,
-                  width: `calc((100% - ${TIME_COLUMN_WIDTH_PX}px) / 7)`,
+                  left: `calc(${TIME_COLUMN_WIDTH_PX}px + (100% - ${TIME_COLUMN_WIDTH_PX}px) / 7 * ${placement.dayIndex + placement.columnIndex / placement.columnCount})`,
+                  width: `calc((100% - ${TIME_COLUMN_WIDTH_PX}px) / ${7 * placement.columnCount})`,
                 }}
               >
                 <SessionCalendarBlock session={session} onSelect={onSelectSession} />
