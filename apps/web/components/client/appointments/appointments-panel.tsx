@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { AppointmentListItem } from '@hms/shared-types';
+import type { AppointmentListItem, DoctorSessionCalendarItem } from '@hms/shared-types';
 import { Card, CardContent } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -15,6 +15,7 @@ import { DayView } from '#components/client/appointments/day-view';
 import { MonthView } from '#components/client/appointments/month-view';
 import { RescheduleAppointmentDialog } from '#components/client/appointments/reschedule-appointment-dialog';
 import { ScheduleAppointmentDialog } from '#components/client/appointments/schedule-appointment-dialog';
+import { SessionDetailsDialog } from '#components/client/appointments/session-details-dialog';
 import { SessionQueueDialog } from '#components/client/appointments/session-queue-dialog';
 import { WeekView } from '#components/client/appointments/week-view';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
@@ -26,6 +27,7 @@ import {
   type AppointmentsView,
 } from '#lib/appointments/search-params';
 import { useAppointmentsList } from '#lib/appointments/use-appointments-list';
+import { useSessionsCalendar } from '#lib/appointments/use-sessions-calendar';
 import {
   addDays,
   addMonths,
@@ -78,6 +80,10 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
     scheduledFrom: rangeStart.toISOString(),
     scheduledTo: new Date(addDays(rangeStart, rangeLengthDays).getTime() - 1).toISOString(),
   });
+  const sessionsQuery = useSessionsCalendar({
+    from: formatDateParam(rangeStart),
+    to: formatDateParam(addDays(rangeStart, rangeLengthDays - 1)),
+  });
   const doctorsQuery = useDoctorsList(MEDICAL_STAFF_QUERY);
   const [selectedDoctorIds, setSelectedDoctorIds] = useState<string[] | null>(null);
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState<boolean>(false);
@@ -88,9 +94,16 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
     null,
   );
   const [viewingQueueSessionId, setViewingQueueSessionId] = useState<string | null>(null);
+  const [viewingSession, setViewingSession] = useState<DoctorSessionCalendarItem | null>(null);
   const visibleAppointments = filterAppointmentsByDoctors(
     appointmentsQuery.appointments,
     selectedDoctorIds,
+  );
+  const calendarAppointments = visibleAppointments.filter(
+    (appointment) => appointment.type !== 'SESSION',
+  );
+  const visibleSessions = sessionsQuery.sessions.filter(
+    (session) => selectedDoctorIds === null || selectedDoctorIds.includes(session.doctorId),
   );
 
   function navigateWithParams(next: AppointmentsSearchParams): void {
@@ -193,25 +206,31 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
             {initialQuery.view === 'day' ? (
               <DayView
                 day={anchorDate}
-                appointments={visibleAppointments}
+                appointments={calendarAppointments}
+                sessions={visibleSessions}
                 isPending={appointmentsQuery.isPending}
                 onSelectAppointment={setViewingAppointment}
+                onSelectSession={setViewingSession}
               />
             ) : initialQuery.view === 'month' ? (
               <MonthView
                 monthDate={anchorDate}
                 days={monthGridDays}
-                appointments={visibleAppointments}
+                appointments={calendarAppointments}
+                sessions={visibleSessions}
                 isPending={appointmentsQuery.isPending}
                 onSelectAppointment={setViewingAppointment}
+                onSelectSession={setViewingSession}
                 onSelectDay={handleSelectDay}
               />
             ) : initialQuery.view === 'week' ? (
               <WeekView
                 weekDays={weekDays}
-                appointments={visibleAppointments}
+                appointments={calendarAppointments}
+                sessions={visibleSessions}
                 isPending={appointmentsQuery.isPending}
                 onSelectAppointment={setViewingAppointment}
+                onSelectSession={setViewingSession}
               />
             ) : (
               <>
@@ -264,6 +283,19 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
             setViewingAppointment(null);
             setViewingQueueSessionId(sessionId);
           }}
+        />
+      ) : null}
+
+      {viewingSession ? (
+        <SessionDetailsDialog
+          key={`${viewingSession.doctorId}|${viewingSession.sessionDate}|${viewingSession.startTime}`}
+          open={Boolean(viewingSession)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setViewingSession(null);
+            }
+          }}
+          session={viewingSession}
         />
       ) : null}
 

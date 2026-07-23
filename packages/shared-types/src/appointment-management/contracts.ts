@@ -56,6 +56,10 @@ export type DoctorSessionListItem = {
   remaining: number | null;
 };
 
+export type DoctorSessionCalendarItem = DoctorSessionListItem & {
+  doctor: AppointmentRelatedDoctor;
+};
+
 export type SessionQueueEntry = {
   appointmentId: string;
   queueNumber: number | null;

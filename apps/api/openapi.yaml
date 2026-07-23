@@ -2792,6 +2792,121 @@ paths:
       summary: List bookable sessions for a doctor
       tags: &a7
         - Appointment Management
+  /api/v1/appointment-sessions:
+    get:
+      operationId: AppointmentSessionController_listSessionsCalendar_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+      responses:
+        "200":
+          description: Sessions for every active doctor over the date range, with doctor
+            info and booked counts, for calendar display.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        scheduleId:
+                          type: string
+                        doctorId:
+                          type: string
+                        sessionDate:
+                          type: string
+                        startTime:
+                          type: string
+                        endTime:
+                          type: string
+                        status:
+                          type: string
+                        maxPatients:
+                          type: integer
+                        bookedCount:
+                          type: integer
+                        remaining:
+                          type: integer
+                        doctor:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            fullName:
+                              type: string
+                            specialty:
+                              type: string
+                          required:
+                            - id
+                            - fullName
+                            - specialty
+                      required:
+                        - id
+                        - scheduleId
+                        - doctorId
+                        - sessionDate
+                        - startTime
+                        - endTime
+                        - status
+                        - maxPatients
+                        - bookedCount
+                        - remaining
+                        - doctor
+                required:
+                  - data
+                example:
+                  data:
+                    - id: aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                      scheduleId: 99999999-9999-4999-8999-999999999999
+                      doctorId: 22222222-2222-4222-8222-222222222222
+                      sessionDate: 2026-07-27
+                      startTime: 08:00
+                      endTime: 12:00
+                      status: OPEN
+                      maxPatients: 10
+                      bookedCount: 3
+                      remaining: 7
+                      doctor:
+                        id: 22222222-2222-4222-8222-222222222222
+                        fullName: Dr. Budi Santoso
+                        specialty: Internal Medicine
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List sessions across all doctors
+      tags: *a7
   /api/v1/appointment-sessions/{id}/queue:
     get:
       operationId: AppointmentSessionController_getSessionQueue_v1

@@ -6,15 +6,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from '@hms/ui';
 
-import { StatusBadge } from '#components/shared/status-badge';
+import { SessionQueueTable } from '#components/client/appointments/session-queue-table';
 import { useSessionQueue } from '#lib/appointments/use-session-queue';
 
 type SessionQueueDialogProps = {
@@ -55,35 +49,7 @@ export function SessionQueueDialog({ open, onOpenChange, sessionId }: SessionQue
         ) : queueQuery.queue.length === 0 ? (
           <p className="text-sm text-slate-500">No patients booked into this session yet.</p>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-16">Queue</TableHead>
-                <TableHead>Patient</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {queueQuery.queue.map((entry) => (
-                <TableRow key={entry.appointmentId}>
-                  <TableCell className="font-mono text-sm">
-                    {entry.queueNumber ?? '—'}
-                  </TableCell>
-                  <TableCell>
-                    <span className="block text-sm font-medium text-slate-900">
-                      {entry.patient.fullName}
-                    </span>
-                    <span className="block font-mono text-xs text-slate-500">
-                      {entry.patient.mrn}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={entry.status} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <SessionQueueTable queue={queueQuery.queue} />
         )}
         <p className="text-xs text-slate-500">
           Queue numbers are assigned at check-in, first come first served. Patients without a number

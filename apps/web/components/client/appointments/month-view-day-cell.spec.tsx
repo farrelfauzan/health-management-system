@@ -33,7 +33,9 @@ describe('MonthViewDayCell', () => {
         isCurrentMonth
         isToday={false}
         appointments={[appointment]}
+        sessions={[]}
         onSelectAppointment={handleSelectAppointment}
+        onSelectSession={vi.fn()}
         onSelectDay={vi.fn()}
       />,
     );
@@ -55,7 +57,9 @@ describe('MonthViewDayCell', () => {
         isCurrentMonth
         isToday={false}
         appointments={appointments}
+        sessions={[]}
         onSelectAppointment={vi.fn()}
+        onSelectSession={vi.fn()}
         onSelectDay={handleSelectDay}
       />,
     );
@@ -77,7 +81,9 @@ describe('MonthViewDayCell', () => {
         isCurrentMonth={false}
         isToday={false}
         appointments={[]}
+        sessions={[]}
         onSelectAppointment={vi.fn()}
+        onSelectSession={vi.fn()}
         onSelectDay={handleSelectDay}
       />,
     );

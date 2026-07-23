@@ -1,18 +1,20 @@
 'use client';
 
-import type { AppointmentListItem } from '@hms/shared-types';
+import type { AppointmentListItem, DoctorSessionCalendarItem } from '@hms/shared-types';
 import { Skeleton } from '@hms/ui';
 
 import { MonthViewDayCell } from '#components/client/appointments/month-view-day-cell';
-import { isSameDay } from '#lib/appointments/week-range';
+import { formatDateParam, isSameDay } from '#lib/appointments/week-range';
 import { WEEKDAY_LABELS } from '#lib/appointments/weekday-labels';
 
 type MonthViewProps = {
   monthDate: Date;
   days: Date[];
   appointments: AppointmentListItem[];
+  sessions: DoctorSessionCalendarItem[];
   isPending: boolean;
   onSelectAppointment: (appointment: AppointmentListItem) => void;
+  onSelectSession: (session: DoctorSessionCalendarItem) => void;
   onSelectDay: (day: Date) => void;
 };
 
@@ -20,8 +22,10 @@ export function MonthView({
   monthDate,
   days,
   appointments,
+  sessions,
   isPending,
   onSelectAppointment,
+  onSelectSession,
   onSelectDay,
 }: MonthViewProps) {
   if (isPending) {
@@ -58,7 +62,9 @@ export function MonthView({
               appointments={sortedAppointments.filter((appointment) =>
                 isSameDay(new Date(appointment.scheduledAt), day),
               )}
+              sessions={sessions.filter((session) => session.sessionDate === formatDateParam(day))}
               onSelectAppointment={onSelectAppointment}
+              onSelectSession={onSelectSession}
               onSelectDay={onSelectDay}
             />
           ))}

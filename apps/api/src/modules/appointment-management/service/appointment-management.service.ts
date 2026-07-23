@@ -6,6 +6,7 @@ import {
   CreateAppointmentInput,
   CreateSessionAppointmentInput,
   CreateSpecialRequestAppointmentInput,
+  DoctorSessionCalendarItem,
   DoctorSessionListItem,
   SESSION_BOOKING_CUTOFF_MINUTES,
   SPECIAL_REQUEST_MIN_LEAD_DAYS,
@@ -218,6 +219,90 @@ export class AppointmentManagementService {
         toDate: query.to,
       },
     );
+
+    return this.buildDoctorSessionItems({
+      doctorId,
+      schedules: doctor.schedules,
+      materializedSessions,
+      from: query.from,
+      to: query.to,
+    });
+  }
+
+  async listSessionsCalendar(
+    query: ListDoctorSessionsQueryDto,
+    currentUser: CurrentUser,
+  ): Promise<DoctorSessionCalendarItem[]> {
+    const actor = await this.getActorOrThrow(currentUser);
+    const readScope = this.resolveScope(actor, 'AppointmentSession', 'read');
+
+    if (!readScope.hasAny && !readScope.hasOwn) {
+      throw new ForbiddenException('You are not allowed to read appointment sessions');
+    }
+
+    this.assertSessionRangeWithinLimit(query.from, query.to);
+
+    const doctors = await this.appointmentManagementRepository.listActiveDoctorsWithSchedules();
+    const materializedSessions = await this.appointmentManagementRepository.listSessionsWithCounts(
+      {
+        fromDate: query.from,
+        toDate: query.to,
+      },
+    );
+    const sessionsByDoctor = new Map<string, typeof materializedSessions>();
+    for (const session of materializedSessions) {
+      const doctorSessions = sessionsByDoctor.get(session.doctorId) ?? [];
+      doctorSessions.push(session);
+      sessionsByDoctor.set(session.doctorId, doctorSessions);
+    }
+
+    return doctors
+      .flatMap((doctor) =>
+        this.buildDoctorSessionItems({
+          doctorId: doctor.id,
+          schedules: doctor.schedules,
+          materializedSessions: sessionsByDoctor.get(doctor.id) ?? [],
+          from: query.from,
+          to: query.to,
+        }).map((session) => ({
+          ...session,
+          doctor: {
+            id: doctor.id,
+            fullName: doctor.fullName,
+            specialty: doctor.specialty,
+          },
+        })),
+      )
+      .sort((a, b) =>
+        `${a.sessionDate}|${a.startTime}`.localeCompare(`${b.sessionDate}|${b.startTime}`),
+      );
+  }
+
+  private buildDoctorSessionItems(params: {
+    doctorId: string;
+    schedules: Array<{
+      id: string;
+      dayOfWeek: number;
+      startTime: string;
+      endTime: string;
+      isAvailable: boolean;
+      maxPatients: number | null;
+    }>;
+    materializedSessions: Array<{
+      id: string;
+      doctorId: string;
+      scheduleId: string | null;
+      sessionDate: Date;
+      startTime: string;
+      endTime: string;
+      maxPatients: number | null;
+      status: DoctorSessionListItem['status'];
+      _count: { appointments: number };
+    }>;
+    from: string;
+    to: string;
+  }): DoctorSessionListItem[] {
+    const { doctorId, schedules, materializedSessions, from, to } = params;
     const sessionsByKey = new Map(
       materializedSessions.map((session) => [
         `${this.toDateString(session.sessionDate)}|${session.startTime}`,
@@ -226,13 +311,11 @@ export class AppointmentManagementService {
     );
     const coveredKeys = new Set<string>();
     const items: DoctorSessionListItem[] = [];
-
-    for (const date of this.enumerateDates(query.from, query.to)) {
+    for (const date of this.enumerateDates(from, to)) {
       const dayOfWeek = getDayOfWeekForDate(date);
-      const windows = doctor.schedules.filter(
+      const windows = schedules.filter(
         (schedule) => schedule.isAvailable && schedule.dayOfWeek === dayOfWeek,
       );
-
       for (const window of windows) {
         const key = `${date}|${window.startTime}`;
         const session = sessionsByKey.get(key);
@@ -255,13 +338,11 @@ export class AppointmentManagementService {
         );
       }
     }
-
     for (const [key, session] of sessionsByKey) {
       if (!coveredKeys.has(key)) {
         items.push(this.toSessionListItem(session, session.scheduleId ?? ''));
       }
     }
-
     return items.sort((a, b) =>
       `${a.sessionDate}|${a.startTime}`.localeCompare(`${b.sessionDate}|${b.startTime}`),
     );

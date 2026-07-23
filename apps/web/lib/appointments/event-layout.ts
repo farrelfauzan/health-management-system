@@ -52,6 +52,65 @@ export function layoutDayEvent(params: {
   return clampToCalendarGrid(getMinutesFromCalendarStart(startsAt));
 }
 
+function clampRangeToCalendarGrid(
+  startMinutes: number,
+  endMinutes: number,
+): DayEventPlacement | null {
+  if (endMinutes <= 0 || startMinutes >= CALENDAR_GRID_HEIGHT_PX) {
+    return null;
+  }
+  const clampedTop = Math.max(0, startMinutes);
+  const clampedBottom = Math.min(CALENDAR_GRID_HEIGHT_PX, endMinutes);
+  const heightPx = Math.max(clampedBottom - clampedTop, MIN_EVENT_HEIGHT_PX);
+  const topPx = Math.min(clampedTop, CALENDAR_GRID_HEIGHT_PX - heightPx);
+  return { topPx, heightPx };
+}
+
+export function layoutDaySessionBlock(params: {
+  sessionDate: string;
+  startTime: string;
+  endTime: string;
+  day: Date;
+}): DayEventPlacement | null {
+  const { sessionDate, startTime, endTime, day } = params;
+  const startsAt = new Date(`${sessionDate}T${startTime}`);
+  const endsAt = new Date(`${sessionDate}T${endTime}`);
+  if (Number.isNaN(startsAt.getTime()) || Number.isNaN(endsAt.getTime())) {
+    return null;
+  }
+  if (!isSameDay(startsAt, day)) {
+    return null;
+  }
+  return clampRangeToCalendarGrid(
+    getMinutesFromCalendarStart(startsAt),
+    getMinutesFromCalendarStart(endsAt),
+  );
+}
+
+export function layoutWeekSessionBlock(params: {
+  sessionDate: string;
+  startTime: string;
+  endTime: string;
+  weekStart: Date;
+}): WeekEventPlacement | null {
+  const { sessionDate, startTime, weekStart } = params;
+  const startsAt = new Date(`${sessionDate}T${startTime}`);
+  if (Number.isNaN(startsAt.getTime())) {
+    return null;
+  }
+  const dayIndex = Array.from({ length: DAYS_PER_WEEK }, (_, index) => index).find((index) =>
+    isSameDay(startsAt, addDays(weekStart, index)),
+  );
+  if (dayIndex === undefined) {
+    return null;
+  }
+  const placement = layoutDaySessionBlock({ ...params, day: startsAt });
+  if (!placement) {
+    return null;
+  }
+  return { dayIndex, ...placement };
+}
+
 export function layoutWeekEvent(params: {
   scheduledAt: string;
   weekStart: Date;

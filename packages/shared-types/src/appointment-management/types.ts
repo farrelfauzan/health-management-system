@@ -66,7 +66,7 @@ export type FindConflictingAppointmentParams = {
 };
 
 export type ListDoctorSessionsParams = {
-  doctorId: string;
+  doctorId?: string;
   fromDate: string;
   toDate: string;
 };

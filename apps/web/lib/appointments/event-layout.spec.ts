@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { getMinutesFromCalendarStart, layoutDayEvent, layoutWeekEvent } from './event-layout';
+import {
+  getMinutesFromCalendarStart,
+  layoutDayEvent,
+  layoutDaySessionBlock,
+  layoutWeekEvent,
+  layoutWeekSessionBlock,
+} from './event-layout';
 
 const WEEK_START = new Date(2026, 6, 20);
 
@@ -90,5 +96,61 @@ describe('getMinutesFromCalendarStart', () => {
     expect(getMinutesFromCalendarStart(new Date(2026, 6, 20, 8, 0))).toBe(0);
     expect(getMinutesFromCalendarStart(new Date(2026, 6, 20, 11, 15))).toBe(195);
     expect(getMinutesFromCalendarStart(new Date(2026, 6, 20, 7, 0))).toBe(-60);
+  });
+});
+
+describe('layoutWeekSessionBlock', () => {
+  it('spans the full session window in the matching column', () => {
+    const placement = layoutWeekSessionBlock({
+      sessionDate: '2026-07-20',
+      startTime: '08:00',
+      endTime: '12:00',
+      weekStart: WEEK_START,
+    });
+
+    expect(placement).toEqual({ dayIndex: 0, topPx: 0, heightPx: 240 });
+  });
+
+  it('returns null for a session outside the visible week', () => {
+    expect(
+      layoutWeekSessionBlock({
+        sessionDate: '2026-07-28',
+        startTime: '08:00',
+        endTime: '12:00',
+        weekStart: WEEK_START,
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('layoutDaySessionBlock', () => {
+  it('spans the session window on the matching day and clamps to the grid', () => {
+    expect(
+      layoutDaySessionBlock({
+        sessionDate: '2026-07-21',
+        startTime: '13:00',
+        endTime: '17:00',
+        day: new Date(2026, 6, 21),
+      }),
+    ).toEqual({ topPx: 300, heightPx: 240 });
+    expect(
+      layoutDaySessionBlock({
+        sessionDate: '2026-07-21',
+        startTime: '07:00',
+        endTime: '10:00',
+        day: new Date(2026, 6, 21),
+      }),
+    ).toEqual({ topPx: 0, heightPx: 120 });
+  });
+
+  it('returns null for a session on another day', () => {
+    expect(
+      layoutDaySessionBlock({
+        sessionDate: '2026-07-22',
+        startTime: '08:00',
+        endTime: '12:00',
+        day: new Date(2026, 6, 21),
+      }),
+    ).toBeNull();
   });
 });

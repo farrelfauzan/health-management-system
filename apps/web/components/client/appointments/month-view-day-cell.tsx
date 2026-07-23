@@ -1,9 +1,10 @@
 'use client';
 
-import type { AppointmentListItem } from '@hms/shared-types';
+import type { AppointmentListItem, DoctorSessionCalendarItem } from '@hms/shared-types';
 import { cn } from '@hms/ui';
 
 import { MonthViewEventChip } from '#components/client/appointments/month-view-event-chip';
+import { MonthViewSessionChip } from '#components/client/appointments/month-view-session-chip';
 
 const MAX_VISIBLE_EVENTS = 3;
 const WEEKEND_DAY_INDEXES = [0, 6];
@@ -13,7 +14,9 @@ type MonthViewDayCellProps = {
   isCurrentMonth: boolean;
   isToday: boolean;
   appointments: AppointmentListItem[];
+  sessions: DoctorSessionCalendarItem[];
   onSelectAppointment: (appointment: AppointmentListItem) => void;
+  onSelectSession: (session: DoctorSessionCalendarItem) => void;
   onSelectDay: (day: Date) => void;
 };
 
@@ -22,11 +25,16 @@ export function MonthViewDayCell({
   isCurrentMonth,
   isToday,
   appointments,
+  sessions,
   onSelectAppointment,
+  onSelectSession,
   onSelectDay,
 }: MonthViewDayCellProps) {
-  const visibleAppointments = appointments.slice(0, MAX_VISIBLE_EVENTS);
-  const hiddenCount = appointments.length - visibleAppointments.length;
+  const visibleSessions = sessions.slice(0, MAX_VISIBLE_EVENTS);
+  const remainingSlots = Math.max(0, MAX_VISIBLE_EVENTS - visibleSessions.length);
+  const visibleAppointments = appointments.slice(0, remainingSlots);
+  const hiddenCount =
+    sessions.length - visibleSessions.length + appointments.length - visibleAppointments.length;
   const isWeekend = WEEKEND_DAY_INDEXES.includes(day.getDay());
   return (
     <div
@@ -48,6 +56,13 @@ export function MonthViewDayCell({
       >
         {day.getDate()}
       </button>
+      {visibleSessions.map((session) => (
+        <MonthViewSessionChip
+          key={`${session.doctorId}|${session.sessionDate}|${session.startTime}`}
+          session={session}
+          onSelect={onSelectSession}
+        />
+      ))}
       {visibleAppointments.map((appointment) => (
         <MonthViewEventChip
           key={appointment.id}

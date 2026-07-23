@@ -50,6 +50,7 @@ describe('AppointmentManagementService', () => {
     findConflictingAppointment: jest.fn(),
     createAppointment: jest.fn(),
     bookSessionSlot: jest.fn(),
+    listActiveDoctorsWithSchedules: jest.fn(),
     listSessionsWithCounts: jest.fn(),
     findSessionWithCountById: jest.fn(),
     getSessionQueue: jest.fn(),
@@ -132,6 +133,7 @@ describe('AppointmentManagementService', () => {
     findConflictingAppointment: jest.Mock;
     createAppointment: jest.Mock;
     bookSessionSlot: jest.Mock;
+    listActiveDoctorsWithSchedules: jest.Mock;
     listSessionsWithCounts: jest.Mock;
     findSessionWithCountById: jest.Mock;
     getSessionQueue: jest.Mock;
@@ -173,6 +175,7 @@ describe('AppointmentManagementService', () => {
       outcome: 'BOOKED',
       appointmentId,
     });
+    repositoryMock.listActiveDoctorsWithSchedules.mockResolvedValue([]);
     repositoryMock.listSessionsWithCounts.mockResolvedValue([]);
     repositoryMock.findSessionWithCountById.mockResolvedValue(null);
     repositoryMock.getSessionQueue.mockResolvedValue([]);
@@ -598,6 +601,53 @@ describe('AppointmentManagementService', () => {
       await expect(
         service.listDoctorSessions(doctorId, { from: '2027-01-01', to: '2027-06-01' }, currentUser),
       ).rejects.toBeInstanceOf(BadRequestException);
+    });
+  });
+
+  describe('listSessionsCalendar', () => {
+    it('projects sessions for every active doctor with doctor info attached', async () => {
+      mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'ANY' }]);
+      repositoryMock.listActiveDoctorsWithSchedules.mockResolvedValue([
+        {
+          id: doctorId,
+          fullName: 'Dr. First',
+          specialty: 'Cardiology',
+          schedules: [scheduleWindow],
+        },
+      ]);
+      repositoryMock.listSessionsWithCounts.mockResolvedValue([
+        {
+          id: sessionId,
+          doctorId,
+          scheduleId,
+          sessionDate: new Date('2027-01-04T00:00:00.000Z'),
+          startTime: '08:00',
+          endTime: '12:00',
+          maxPatients: 10,
+          status: 'OPEN',
+          _count: { appointments: 4 },
+        },
+      ]);
+
+      const actualSessions = await service.listSessionsCalendar(
+        { from: '2027-01-04', to: '2027-01-04' },
+        currentUser,
+      );
+
+      expect(actualSessions).toHaveLength(1);
+      expect(actualSessions[0]).toMatchObject({
+        id: sessionId,
+        bookedCount: 4,
+        doctor: { id: doctorId, fullName: 'Dr. First', specialty: 'Cardiology' },
+      });
+    });
+
+    it('throws forbidden without session read permission', async () => {
+      mockPermissions([]);
+
+      await expect(
+        service.listSessionsCalendar({ from: '2027-01-04', to: '2027-01-04' }, currentUser),
+      ).rejects.toBeInstanceOf(ForbiddenException);
     });
   });
 

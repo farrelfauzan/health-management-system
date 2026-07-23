@@ -290,10 +290,36 @@ export class AppointmentManagementRepository {
     });
   }
 
+  async listActiveDoctorsWithSchedules() {
+    return this.prisma.findManyActive(this.prisma.doctorProfile, {
+      where: {
+        isActive: true,
+      },
+      select: {
+        id: true,
+        fullName: true,
+        specialty: true,
+        schedules: {
+          select: {
+            id: true,
+            dayOfWeek: true,
+            startTime: true,
+            endTime: true,
+            isAvailable: true,
+            maxPatients: true,
+          },
+        },
+      },
+      orderBy: {
+        fullName: 'asc',
+      },
+    });
+  }
+
   async listSessionsWithCounts(params: ListDoctorSessionsParams) {
     return this.prisma.appointmentSession.findMany({
       where: {
-        doctorId: params.doctorId,
+        ...(params.doctorId ? { doctorId: params.doctorId } : {}),
         sessionDate: {
           gte: new Date(`${params.fromDate}T00:00:00.000Z`),
           lte: new Date(`${params.toDate}T00:00:00.000Z`),
