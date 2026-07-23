@@ -23,7 +23,7 @@ export function SessionCalendarBlock({ session, onSelect }: SessionCalendarBlock
       type="button"
       onClick={() => onSelect(session)}
       className={cn(
-        'flex h-full w-full flex-col overflow-hidden rounded-md border-l-4 px-2 py-1 text-left text-xs transition-colors',
+        'flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-md border-l-4 px-2 py-1 text-left text-xs transition-colors',
         isCancelled
           ? 'border-danger bg-danger-tint/60 text-danger hover:bg-danger-tint'
           : 'border-primary bg-info-tint text-primary hover:bg-info-tint/70',

@@ -15,7 +15,7 @@ export function MonthViewSessionChip({ session, onSelect }: MonthViewSessionChip
       type="button"
       onClick={() => onSelect(session)}
       className={cn(
-        'flex w-full items-center gap-1 truncate rounded border-l-2 px-1 py-0.5 text-left text-[10px] transition-colors',
+        'flex w-full cursor-pointer items-center gap-1 truncate rounded border-l-2 px-1 py-0.5 text-left text-[10px] transition-colors',
         isCancelled
           ? 'border-danger bg-danger-tint/60 text-danger hover:bg-danger-tint'
           : 'border-primary bg-info-tint text-primary hover:bg-info-tint/70',
