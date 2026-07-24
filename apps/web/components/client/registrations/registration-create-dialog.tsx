@@ -7,6 +7,7 @@ import type { CreateRegistrationInput, RegistrationListItem } from '@hms/shared-
 import { createRegistrationSchema } from '@hms/shared-types';
 import {
   Button,
+  Combobox,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -130,30 +131,24 @@ export function RegistrationCreateDialog({
                 >
                   Patient
                 </label>
-                <Select
+                <Combobox
+                  id="registration-patient-select"
+                  options={patientsQuery.patients.map((patient) => ({
+                    value: patient.id,
+                    label: `${patient.fullName} — ${patient.mrn}`,
+                  }))}
                   value={field.state.value}
+                  placeholder="Select a patient"
+                  searchPlaceholder="Search by name or MRN..."
+                  emptyMessage="No patient found."
+                  isLoading={patientsQuery.isPending}
                   disabled={variant === 'patient'}
-                  onValueChange={(nextValue) => {
+                  onChange={(nextValue) => {
                     field.handleChange(nextValue);
                     setSelectedPatientId(nextValue);
                     form.setFieldValue('appointmentId', NO_APPOINTMENT_VALUE);
                   }}
-                >
-                  <SelectTrigger id="registration-patient-select" className="w-full">
-                    <SelectValue
-                      placeholder={
-                        patientsQuery.isPending ? 'Loading patients…' : 'Select a patient'
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {patientsQuery.patients.map((patient) => (
-                      <SelectItem key={patient.id} value={patient.id}>
-                        {patient.fullName} — {patient.mrn}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               </div>
             )}
           </form.Field>

@@ -5,17 +5,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { CreateDoctorPatientAssignmentInput, DoctorPatientAssignment } from '@hms/shared-types';
 import {
   Button,
+  Combobox,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from '@hms/ui';
 
 import { doctorPatientControllerAssignDoctorToPatientV1 } from '#lib/api/generated/doctor-patient/doctor-patient';
@@ -104,20 +100,19 @@ export function AssignPatientDialog({
             >
               Patient
             </label>
-            <Select value={selectedPatientId} onValueChange={setSelectedPatientId}>
-              <SelectTrigger id="assign-patient-select" className="w-full">
-                <SelectValue
-                  placeholder={patientsQuery.isPending ? 'Loading patients…' : 'Select a patient'}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {selectablePatients.map((patient) => (
-                  <SelectItem key={patient.id} value={patient.id}>
-                    {patient.fullName} — {patient.mrn}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              id="assign-patient-select"
+              options={selectablePatients.map((patient) => ({
+                value: patient.id,
+                label: `${patient.fullName} — ${patient.mrn}`,
+              }))}
+              value={selectedPatientId}
+              placeholder="Select a patient"
+              searchPlaceholder="Search by name or MRN..."
+              emptyMessage="No patient found."
+              isLoading={patientsQuery.isPending}
+              onChange={setSelectedPatientId}
+            />
           </div>
         </div>
         <DialogFooter>
