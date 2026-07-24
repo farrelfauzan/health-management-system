@@ -387,6 +387,7 @@ export const ModelName = {
   User: 'User',
   RefreshToken: 'RefreshToken',
   PatientProfile: 'PatientProfile',
+  Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
   DoctorSchedule: 'DoctorSchedule',
   AppointmentSession: 'AppointmentSession',
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "patientProfile" | "doctorProfile" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole"
+    modelProps: "user" | "refreshToken" | "patientProfile" | "specialty" | "doctorProfile" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -641,6 +642,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PatientProfileCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PatientProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    Specialty: {
+      payload: Prisma.$SpecialtyPayload<ExtArgs>
+      fields: Prisma.SpecialtyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SpecialtyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SpecialtyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload>
+        }
+        findFirst: {
+          args: Prisma.SpecialtyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SpecialtyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload>
+        }
+        findMany: {
+          args: Prisma.SpecialtyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload>[]
+        }
+        create: {
+          args: Prisma.SpecialtyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload>
+        }
+        createMany: {
+          args: Prisma.SpecialtyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SpecialtyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload>[]
+        }
+        delete: {
+          args: Prisma.SpecialtyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload>
+        }
+        update: {
+          args: Prisma.SpecialtyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload>
+        }
+        deleteMany: {
+          args: Prisma.SpecialtyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SpecialtyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SpecialtyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload>[]
+        }
+        upsert: {
+          args: Prisma.SpecialtyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpecialtyPayload>
+        }
+        aggregate: {
+          args: Prisma.SpecialtyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSpecialty>
+        }
+        groupBy: {
+          args: Prisma.SpecialtyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SpecialtyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SpecialtyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SpecialtyCountAggregateOutputType> | number
         }
       }
     }
@@ -1912,11 +1987,24 @@ export const PatientProfileScalarFieldEnum = {
 export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]
 
 
+export const SpecialtyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type SpecialtyScalarFieldEnum = (typeof SpecialtyScalarFieldEnum)[keyof typeof SpecialtyScalarFieldEnum]
+
+
 export const DoctorProfileScalarFieldEnum = {
   id: 'id',
   licenseNumber: 'licenseNumber',
   fullName: 'fullName',
-  specialty: 'specialty',
+  specialtyId: 'specialtyId',
   phoneNumber: 'phoneNumber',
   ownerUserId: 'ownerUserId',
   isActive: 'isActive',
@@ -2494,6 +2582,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   refreshToken?: Prisma.RefreshTokenOmit
   patientProfile?: Prisma.PatientProfileOmit
+  specialty?: Prisma.SpecialtyOmit
   doctorProfile?: Prisma.DoctorProfileOmit
   doctorSchedule?: Prisma.DoctorScheduleOmit
   appointmentSession?: Prisma.AppointmentSessionOmit

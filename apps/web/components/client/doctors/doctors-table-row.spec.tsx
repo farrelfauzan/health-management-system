@@ -10,6 +10,7 @@ const DOCTOR: DoctorListItem = {
   id: 'doctor-1',
   licenseNumber: 'SIP-2026-0001',
   fullName: 'Dr. Budi Santoso',
+  specialtyId: '0f1cbb1f-8f4a-4bb0-9a5e-2d94f7a3c111',
   specialty: 'Cardiology',
   phoneNumber: '+628129876543',
   isActive: true,

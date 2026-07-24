@@ -11,14 +11,16 @@ import {
   SelectValue,
 } from '@hms/ui';
 
+import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
 import { FilterCard } from '#components/shared/filter-card';
 import type { DoctorsSearchParams } from '#lib/doctors/search-params';
+import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 
 const ALL_STATUSES_VALUE = 'ALL';
 
 export type DoctorsFilterValues = {
   search?: string;
-  specialty?: string;
+  specialtyId?: string;
   isActive?: 'true' | 'false';
 };
 
@@ -30,24 +32,24 @@ type DoctorsFilterCardProps = {
 
 export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFilterCardProps) {
   const [search, setSearch] = useState<string>(initialQuery.search ?? '');
-  const [specialty, setSpecialty] = useState<string>(initialQuery.specialty ?? '');
+  const [specialtyId, setSpecialtyId] = useState<string>(initialQuery.specialtyId ?? '');
   const [status, setStatus] = useState<string>(initialQuery.isActive ?? ALL_STATUSES_VALUE);
+  const specialtiesQuery = useSpecialtiesList();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     event.stopPropagation();
     const trimmedSearch = search.trim();
-    const trimmedSpecialty = specialty.trim();
     onApply({
       search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
-      specialty: trimmedSpecialty.length > 0 ? trimmedSpecialty : undefined,
+      specialtyId: specialtyId.length > 0 ? specialtyId : undefined,
       isActive: status === ALL_STATUSES_VALUE ? undefined : (status as 'true' | 'false'),
     });
   }
 
   function handleReset(): void {
     setSearch('');
-    setSpecialty('');
+    setSpecialtyId('');
     setStatus(ALL_STATUSES_VALUE);
     onReset();
   }
@@ -80,18 +82,20 @@ export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFil
             onChange={(event) => setSearch(event.target.value)}
           />
         </div>
-        <div className="w-44">
+        <div className="w-52">
           <label
             htmlFor="doctors-specialty-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
             Specialty
           </label>
-          <Input
+          <SpecialtyCombobox
             id="doctors-specialty-filter"
-            placeholder="e.g. Cardiology"
-            value={specialty}
-            onChange={(event) => setSpecialty(event.target.value)}
+            specialties={specialtiesQuery.specialties}
+            value={specialtyId}
+            isLoading={specialtiesQuery.isPending}
+            emptyOptionLabel="All Specialties"
+            onChange={setSpecialtyId}
           />
         </div>
         <div className="w-40">

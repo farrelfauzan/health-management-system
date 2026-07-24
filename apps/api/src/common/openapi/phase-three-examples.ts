@@ -35,11 +35,20 @@ const doctorScheduleEntry = {
   endTime: '16:00',
   isAvailable: true,
 };
+const specialtyId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+const specialty = {
+  id: specialtyId,
+  name: 'Internal Medicine',
+  isActive: true,
+  createdAt: timestamp,
+  updatedAt: timestamp,
+};
 const doctor = {
   id: doctorId,
   licenseNumber: 'SIP-2026-0001',
   fullName: 'Dr. Budi Santoso',
-  specialty: 'Internal Medicine',
+  specialtyId,
+  specialty: specialty.name,
   phoneNumber: '+628129876543',
   ownerUserId: userId,
   isActive: true,
@@ -141,17 +150,20 @@ export const PHASE_THREE_EXAMPLES = {
       doctors: [patientRelatedDoctor],
     },
   },
+  specialty: {
+    item: specialty,
+  },
   doctor: {
     createRequest: {
       licenseNumber: 'SIP-2026-0001',
       fullName: 'Dr. Budi Santoso',
-      specialty: 'Internal Medicine',
+      specialtyId,
       phoneNumber: '+628129876543',
       ownerUserId: userId,
       patientIds: [patientId],
     },
     updateRequest: {
-      specialty: 'Cardiology',
+      specialtyId,
       phoneNumber: '+628129876500',
       isActive: true,
     },

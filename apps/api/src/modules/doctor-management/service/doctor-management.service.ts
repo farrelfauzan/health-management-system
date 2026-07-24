@@ -119,12 +119,13 @@ export class DoctorManagementService {
       }
     }
 
+    await this.assertActiveSpecialtyId(payload.specialtyId);
     await this.assertAssignablePatientIds(payload.patientIds);
 
     const created = await this.doctorManagementRepository.createDoctor({
       licenseNumber: payload.licenseNumber,
       fullName: payload.fullName,
-      specialty: payload.specialty,
+      specialtyId: payload.specialtyId,
       phoneNumber: payload.phoneNumber,
       ownerUserId: payload.ownerUserId,
       isActive: payload.isActive,
@@ -177,9 +178,13 @@ export class DoctorManagementService {
       }
     }
 
+    if (payload.specialtyId !== undefined) {
+      await this.assertActiveSpecialtyId(payload.specialtyId);
+    }
+
     const updated = await this.doctorManagementRepository.updateDoctor(id, {
       fullName: payload.fullName,
-      specialty: payload.specialty,
+      specialtyId: payload.specialtyId,
       phoneNumber: payload.phoneNumber,
       ownerUserId: payload.ownerUserId,
       isActive: payload.isActive,
@@ -254,6 +259,13 @@ export class DoctorManagementService {
     }
   }
 
+  private async assertActiveSpecialtyId(specialtyId: string): Promise<void> {
+    const specialty = await this.doctorManagementRepository.findActiveSpecialtyById(specialtyId);
+    if (!specialty) {
+      throw new BadRequestException('Specialty not found or inactive');
+    }
+  }
+
   private async assertAssignablePatientIds(patientIds?: string[]): Promise<void> {
     if (!patientIds || patientIds.length === 0) {
       return;
@@ -313,7 +325,8 @@ export class DoctorManagementService {
       id: doctor.id,
       licenseNumber: doctor.licenseNumber,
       fullName: doctor.fullName,
-      specialty: doctor.specialty,
+      specialtyId: doctor.specialtyId,
+      specialty: doctor.specialty.name,
       phoneNumber: doctor.phoneNumber ?? undefined,
       ownerUserId: doctor.ownerUserId ?? undefined,
       isActive: doctor.isActive,

@@ -72,7 +72,7 @@ describe('AppointmentManagement integration', () => {
     doctor: {
       id: doctorId,
       fullName: 'Dr. First',
-      specialty: 'Cardiology',
+      specialty: { name: 'Cardiology' },
       ownerUserId: null,
     },
   };

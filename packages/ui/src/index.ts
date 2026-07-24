@@ -10,6 +10,18 @@ export {
 } from '#components/card';
 export { Calendar, CalendarDayButton } from '#components/calendar';
 export { Checkbox } from '#components/checkbox';
+export { Combobox, type ComboboxOption } from '#components/combobox';
+export {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from '#components/command';
 export { DatePicker } from '#components/date-picker';
 export { Input } from '#components/input';
 export {

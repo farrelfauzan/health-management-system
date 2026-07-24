@@ -4,7 +4,7 @@ export type DoctorsSearchParams = {
   page: number;
   limit: number;
   search?: string;
-  specialty?: string;
+  specialtyId?: string;
   isActive?: 'true' | 'false';
 };
 
@@ -28,7 +28,7 @@ export function parseDoctorsSearchParams(raw: RawSearchParams): DoctorsSearchPar
     page: pickFirst(raw.page),
     limit: pickFirst(raw.limit),
     search: pickFirst(raw.q),
-    specialty: pickFirst(raw.specialty),
+    specialtyId: pickFirst(raw.specialtyId),
     isActive: active,
   });
 
@@ -40,7 +40,7 @@ export function parseDoctorsSearchParams(raw: RawSearchParams): DoctorsSearchPar
     page: parsed.data.page,
     limit: parsed.data.limit,
     search: parsed.data.search,
-    specialty: parsed.data.specialty,
+    specialtyId: parsed.data.specialtyId,
     isActive: active === 'true' || active === 'false' ? active : undefined,
   };
 }
@@ -54,8 +54,8 @@ export function buildDoctorsSearchParams(next: DoctorsSearchParams): URLSearchPa
   if (next.search) {
     params.set('q', next.search);
   }
-  if (next.specialty) {
-    params.set('specialty', next.specialty);
+  if (next.specialtyId) {
+    params.set('specialtyId', next.specialtyId);
   }
   if (next.isActive) {
     params.set('active', next.isActive);

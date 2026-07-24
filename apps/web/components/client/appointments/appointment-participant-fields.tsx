@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@hms/ui';
+import { Combobox } from '@hms/ui';
 
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
 import { usePatientsList } from '#lib/patients/use-patients-list';
@@ -39,20 +33,19 @@ export function AppointmentParticipantFields({
         >
           Patient
         </label>
-        <Select value={patientId} onValueChange={onPatientChange}>
-          <SelectTrigger id="appointment-patient-select" className="w-full">
-            <SelectValue
-              placeholder={patientsQuery.isPending ? 'Loading patients…' : 'Select a patient'}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {patientsQuery.patients.map((patient) => (
-              <SelectItem key={patient.id} value={patient.id}>
-                {patient.fullName} — {patient.mrn}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          id="appointment-patient-select"
+          options={patientsQuery.patients.map((patient) => ({
+            value: patient.id,
+            label: `${patient.fullName} — ${patient.mrn}`,
+          }))}
+          value={patientId}
+          placeholder="Select a patient"
+          searchPlaceholder="Search by name or MRN..."
+          emptyMessage="No patient found."
+          isLoading={patientsQuery.isPending}
+          onChange={onPatientChange}
+        />
       </div>
       <div className="space-y-1.5">
         <label
@@ -61,20 +54,19 @@ export function AppointmentParticipantFields({
         >
           Doctor
         </label>
-        <Select value={doctorId} onValueChange={onDoctorChange}>
-          <SelectTrigger id="appointment-doctor-select" className="w-full">
-            <SelectValue
-              placeholder={doctorsQuery.isPending ? 'Loading doctors…' : 'Select a doctor'}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {doctorsQuery.doctors.map((doctor) => (
-              <SelectItem key={doctor.id} value={doctor.id}>
-                {doctor.fullName} ({doctor.specialty})
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Combobox
+          id="appointment-doctor-select"
+          options={doctorsQuery.doctors.map((doctor) => ({
+            value: doctor.id,
+            label: `${doctor.fullName} (${doctor.specialty})`,
+          }))}
+          value={doctorId}
+          placeholder="Select a doctor"
+          searchPlaceholder="Search by name or specialty..."
+          emptyMessage="No doctor found."
+          isLoading={doctorsQuery.isPending}
+          onChange={onDoctorChange}
+        />
       </div>
     </>
   );

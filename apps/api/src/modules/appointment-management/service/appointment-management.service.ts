@@ -269,7 +269,7 @@ export class AppointmentManagementService {
           doctor: {
             id: doctor.id,
             fullName: doctor.fullName,
-            specialty: doctor.specialty,
+            specialty: doctor.specialty.name,
           },
         })),
       )
@@ -863,7 +863,7 @@ export class AppointmentManagementService {
       doctor: {
         id: appointment.doctor.id,
         fullName: appointment.doctor.fullName,
-        specialty: appointment.doctor.specialty,
+        specialty: appointment.doctor.specialty.name,
       },
     };
   }

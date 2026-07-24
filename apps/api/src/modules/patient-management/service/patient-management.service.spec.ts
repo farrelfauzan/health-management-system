@@ -91,7 +91,7 @@ describe('PatientManagementService', () => {
               doctor: {
                 id: '58e9a316-40b2-4f4c-9207-2a58028babc4',
                 fullName: 'Dr. Assigned',
-                specialty: 'Cardiology',
+                specialty: { name: 'Cardiology' },
               },
             },
           ],
@@ -185,7 +185,7 @@ describe('PatientManagementService', () => {
           doctor: {
             id: '58e9a316-40b2-4f4c-9207-2a58028babc4',
             fullName: 'Dr. Assigned',
-            specialty: 'Cardiology',
+            specialty: { name: 'Cardiology' },
           },
         },
       ],

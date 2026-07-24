@@ -59,7 +59,7 @@ export const listDoctorsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
   search: z.string().trim().min(1).optional(),
-  specialty: z.string().trim().min(1).optional(),
+  specialtyId: z.string().uuid().optional(),
   patientId: z.string().uuid().optional(),
   isActive: z
     .enum(['true', 'false'])
@@ -70,7 +70,7 @@ export const listDoctorsQuerySchema = z.object({
 export const createDoctorSchema = z.object({
   licenseNumber: z.string().trim().min(3).max(64),
   fullName: z.string().trim().min(2).max(120),
-  specialty: z.string().trim().min(2).max(120),
+  specialtyId: z.string().uuid(),
   phoneNumber: z.string().trim().min(6).max(32),
   ownerUserId: z.string().uuid().optional(),
   isActive: z.boolean().optional().default(true),
@@ -85,7 +85,7 @@ export const createDoctorSchema = z.object({
 export const updateDoctorSchema = z
   .object({
     fullName: z.string().trim().min(2).max(120).optional(),
-    specialty: z.string().trim().min(2).max(120).optional(),
+    specialtyId: z.string().uuid().optional(),
     phoneNumber: z.string().trim().min(6).max(32).optional(),
     ownerUserId: z.string().uuid().nullable().optional(),
     isActive: z.boolean().optional(),

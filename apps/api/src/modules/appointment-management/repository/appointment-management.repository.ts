@@ -29,7 +29,7 @@ const APPOINTMENT_RELATIONS_INCLUDE = {
     select: {
       id: true,
       fullName: true,
-      specialty: true,
+      specialty: { select: { name: true } },
       ownerUserId: true,
     },
   },
@@ -298,7 +298,7 @@ export class AppointmentManagementRepository {
       select: {
         id: true,
         fullName: true,
-        specialty: true,
+        specialty: { select: { name: true } },
         schedules: {
           select: {
             id: true,

@@ -2,13 +2,15 @@ import { describe, expect, it } from 'vitest';
 
 import { buildDoctorsSearchParams, parseDoctorsSearchParams } from './search-params';
 
+const SPECIALTY_ID = '0f1cbb1f-8f4a-4bb0-9a5e-2d94f7a3c111';
+
 describe('doctors search params', () => {
   it('parses url params into a validated query', () => {
     const parsed = parseDoctorsSearchParams({
       page: '2',
       limit: '25',
       q: 'budi',
-      specialty: 'cardio',
+      specialtyId: SPECIALTY_ID,
       active: 'true',
     });
 
@@ -16,7 +18,7 @@ describe('doctors search params', () => {
       page: 2,
       limit: 25,
       search: 'budi',
-      specialty: 'cardio',
+      specialtyId: SPECIALTY_ID,
       isActive: 'true',
     });
   });
@@ -32,7 +34,7 @@ describe('doctors search params', () => {
       page: 3,
       limit: 10,
       search: 'SIP-2026',
-      specialty: 'Neurology',
+      specialtyId: SPECIALTY_ID,
       isActive: 'false' as const,
     };
 
