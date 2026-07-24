@@ -10,6 +10,7 @@ export type DoctorManagementControllerCreateDoctorV1201Data = {
   id: string;
   licenseNumber: string;
   fullName: string;
+  specialtyId: string;
   specialty: string;
   phoneNumber: string;
   ownerUserId: string;

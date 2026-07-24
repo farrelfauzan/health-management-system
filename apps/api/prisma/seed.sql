@@ -269,8 +269,51 @@ SET
   "updated_at" = NOW(),
   "deleted_at" = NULL;
 
+-- Specialty catalog baseline. Safe to re-run; keeps names unique and revives soft-deleted rows.
+WITH seed_specialties(name) AS (
+  VALUES
+    ('General Practice'),
+    ('Internal Medicine'),
+    ('Pediatrics'),
+    ('Cardiology'),
+    ('Obstetrics & Gynecology'),
+    ('General Surgery'),
+    ('Orthopedics'),
+    ('Neurology'),
+    ('Psychiatry'),
+    ('Dermatology & Venereology'),
+    ('Ophthalmology'),
+    ('Otorhinolaryngology (ENT)'),
+    ('Pulmonology'),
+    ('Urology'),
+    ('Anesthesiology'),
+    ('Radiology'),
+    ('Dentistry')
+)
+INSERT INTO "specialties" (
+  "id",
+  "name",
+  "is_active",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('specialty:' || lower(name))::uuid,
+  name,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_specialties
+ON CONFLICT ("name") DO UPDATE
+SET
+  "is_active" = true,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
 -- Development demo doctors. Replace or remove this block for production seeds.
-WITH seed_doctors(license_number, full_name, specialty, phone_number) AS (
+WITH seed_doctors(license_number, full_name, specialty_name, phone_number) AS (
   VALUES
     ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001'),
     ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002'),
@@ -282,7 +325,7 @@ INSERT INTO "doctor_profiles" (
   "id",
   "license_number",
   "full_name",
-  "specialty",
+  "specialty_id",
   "phone_number",
   "owner_user_id",
   "is_active",
@@ -294,7 +337,7 @@ SELECT
   md5('doctor:' || license_number)::uuid,
   license_number,
   full_name,
-  specialty,
+  specialties."id",
   phone_number,
   NULL,
   true,
@@ -302,10 +345,11 @@ SELECT
   NOW(),
   NULL
 FROM seed_doctors
+JOIN "specialties" AS specialties ON lower(specialties."name") = lower(specialty_name)
 ON CONFLICT ("license_number") DO UPDATE
 SET
   "full_name" = EXCLUDED."full_name",
-  "specialty" = EXCLUDED."specialty",
+  "specialty_id" = EXCLUDED."specialty_id",
   "phone_number" = EXCLUDED."phone_number",
   "is_active" = true,
   "updated_at" = NOW(),

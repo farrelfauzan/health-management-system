@@ -86,7 +86,7 @@ export class PatientManagementService {
           id: assignment.doctor.id,
           assignmentId: assignment.id,
           fullName: assignment.doctor.fullName,
-          specialty: assignment.doctor.specialty,
+          specialty: assignment.doctor.specialty.name,
         })),
       })),
       meta: {
@@ -121,7 +121,7 @@ export class PatientManagementService {
         id: assignment.doctor.id,
         assignmentId: assignment.id,
         fullName: assignment.doctor.fullName,
-        specialty: assignment.doctor.specialty,
+        specialty: assignment.doctor.specialty.name,
       })),
     };
   }

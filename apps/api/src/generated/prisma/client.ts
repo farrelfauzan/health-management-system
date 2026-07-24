@@ -55,6 +55,11 @@ export type RefreshToken = Prisma.RefreshTokenModel
  */
 export type PatientProfile = Prisma.PatientProfileModel
 /**
+ * Model Specialty
+ * 
+ */
+export type Specialty = Prisma.SpecialtyModel
+/**
  * Model DoctorProfile
  * 
  */

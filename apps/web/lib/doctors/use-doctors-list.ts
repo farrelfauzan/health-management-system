@@ -13,7 +13,7 @@ export function useDoctorsList(params: DoctorsSearchParams) {
     page: params.page,
     limit: params.limit,
     search: params.search,
-    specialty: params.specialty,
+    specialtyId: params.specialtyId,
     isActive: params.isActive,
   };
 

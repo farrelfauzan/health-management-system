@@ -125,7 +125,7 @@ export class PatientManagementRepository {
                 select: {
                   id: true,
                   fullName: true,
-                  specialty: true,
+                  specialty: { select: { name: true } },
                 },
               },
             },
@@ -177,7 +177,7 @@ export class PatientManagementRepository {
               select: {
                 id: true,
                 fullName: true,
-                specialty: true,
+                specialty: { select: { name: true } },
               },
             },
           },

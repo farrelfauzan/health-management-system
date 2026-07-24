@@ -26,6 +26,7 @@ describe('DoctorManagement integration', () => {
     findDoctorByLicenseNumber: jest.fn(),
     findDoctorByOwnerUserId: jest.fn(),
     findActiveUserById: jest.fn(),
+    findActiveSpecialtyById: jest.fn(),
     findActivePatientsByIds: jest.fn(),
     createDoctor: jest.fn(),
     replaceDoctorSchedules: jest.fn(),
@@ -36,11 +37,14 @@ describe('DoctorManagement integration', () => {
     $disconnect: jest.fn(),
   };
 
+  const specialtyId = '0f1cbb1f-8f4a-4bb0-9a5e-2d94f7a3c111';
+
   const doctorRecord = {
     id: doctorId,
     licenseNumber: 'LIC-0001',
     fullName: 'Dr. First',
-    specialty: 'Cardiology',
+    specialtyId,
+    specialty: { id: specialtyId, name: 'Cardiology' },
     phoneNumber: '0812345678',
     ownerUserId: null,
     isActive: true,
@@ -152,6 +156,7 @@ describe('DoctorManagement integration', () => {
   it('creates a doctor with create:any permission', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
     mockActorWithPermissions([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]);
+    doctorRepositoryMock.findActiveSpecialtyById.mockResolvedValue({ id: specialtyId });
 
     const response = await request(app.getHttpServer())
       .post('/api/v1/v1/doctors')
@@ -159,7 +164,7 @@ describe('DoctorManagement integration', () => {
       .send({
         licenseNumber: 'LIC-0001',
         fullName: 'Dr. First',
-        specialty: 'Cardiology',
+        specialtyId,
         phoneNumber: '0812345678',
       });
 
@@ -186,7 +191,7 @@ describe('DoctorManagement integration', () => {
       .send({
         licenseNumber: 'LIC-0001',
         fullName: 'Dr. First',
-        specialty: 'Cardiology',
+        specialtyId,
         phoneNumber: '0812345678',
       });
 

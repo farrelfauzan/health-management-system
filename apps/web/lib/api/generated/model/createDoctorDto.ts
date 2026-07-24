@@ -17,11 +17,7 @@ export interface CreateDoctorDto {
      * @maxLength 120
      */
   fullName: string;
-  /**
-     * @minLength 2
-     * @maxLength 120
-     */
-  specialty: string;
+  specialtyId: string;
   /**
      * @minLength 6
      * @maxLength 32

@@ -123,7 +123,7 @@ export type AppointmentPatientProjection = {
 export type AppointmentDoctorProjection = {
   id: string;
   fullName: string;
-  specialty: string;
+  specialty: { name: string };
   ownerUserId: string | null;
 };
 

@@ -10,6 +10,7 @@ export type DoctorManagementControllerUpdateDoctorV1200Data = {
   id: string;
   licenseNumber: string;
   fullName: string;
+  specialtyId: string;
   specialty: string;
   phoneNumber: string;
   ownerUserId: string;

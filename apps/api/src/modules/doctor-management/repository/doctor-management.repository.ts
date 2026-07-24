@@ -14,25 +14,24 @@ const SCHEDULE_ORDER_BY: Prisma.DoctorScheduleOrderByWithRelationInput[] = [
   { dayOfWeek: 'asc' },
   { startTime: 'asc' },
 ];
+const SPECIALTY_SELECT = {
+  select: {
+    id: true,
+    name: true,
+  },
+} satisfies Prisma.SpecialtyDefaultArgs;
 
 @Injectable()
 export class DoctorManagementRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listDoctors(params: ListDoctorsParams) {
-    const { page, limit, search, specialty, patientId, isActive } = params;
+    const { page, limit, search, specialtyId, patientId, isActive } = params;
     const skip = (page - 1) * limit;
 
     const where = {
       ...(isActive === undefined ? {} : { isActive }),
-      ...(specialty
-        ? {
-            specialty: {
-              contains: specialty,
-              mode: 'insensitive' as const,
-            },
-          }
-        : {}),
+      ...(specialtyId ? { specialtyId } : {}),
       ...(patientId
         ? {
             patients: {
@@ -60,8 +59,10 @@ export class DoctorManagementRepository {
               },
               {
                 specialty: {
-                  contains: search,
-                  mode: 'insensitive' as const,
+                  name: {
+                    contains: search,
+                    mode: 'insensitive' as const,
+                  },
                 },
               },
             ],
@@ -78,6 +79,7 @@ export class DoctorManagementRepository {
           createdAt: 'desc',
         },
         include: {
+          specialty: SPECIALTY_SELECT,
           _count: {
             select: {
               patients: {
@@ -120,6 +122,7 @@ export class DoctorManagementRepository {
         id,
       },
       include: {
+        specialty: SPECIALTY_SELECT,
         _count: {
           select: {
             patients: {
@@ -192,6 +195,18 @@ export class DoctorManagementRepository {
     });
   }
 
+  async findActiveSpecialtyById(id: string) {
+    return this.prisma.findFirstActive(this.prisma.specialty, {
+      where: {
+        id,
+        isActive: true,
+      },
+      select: {
+        id: true,
+      },
+    });
+  }
+
   async findActivePatientsByIds(ids: string[]) {
     return this.prisma.findManyActive(this.prisma.patientProfile, {
       where: {
@@ -212,10 +227,13 @@ export class DoctorManagementRepository {
         data: {
           licenseNumber: payload.licenseNumber,
           fullName: payload.fullName,
-          specialty: payload.specialty,
+          specialtyId: payload.specialtyId,
           phoneNumber: payload.phoneNumber,
           ownerUserId: payload.ownerUserId ?? null,
           isActive: payload.isActive,
+        },
+        include: {
+          specialty: SPECIALTY_SELECT,
         },
       });
 
@@ -248,10 +266,13 @@ export class DoctorManagementRepository {
       },
       data: {
         ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
-        ...(payload.specialty !== undefined ? { specialty: payload.specialty } : {}),
+        ...(payload.specialtyId !== undefined ? { specialtyId: payload.specialtyId } : {}),
         ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
         ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
         ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
+      },
+      include: {
+        specialty: SPECIALTY_SELECT,
       },
     });
   }

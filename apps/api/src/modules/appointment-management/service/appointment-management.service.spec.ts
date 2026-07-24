@@ -109,7 +109,7 @@ describe('AppointmentManagementService', () => {
     doctor: {
       id: doctorId,
       fullName: 'Dr. First',
-      specialty: 'Cardiology',
+      specialty: { name: 'Cardiology' },
       ownerUserId: null,
     },
   };
@@ -611,7 +611,7 @@ describe('AppointmentManagementService', () => {
         {
           id: doctorId,
           fullName: 'Dr. First',
-          specialty: 'Cardiology',
+          specialty: { name: 'Cardiology' },
           schedules: [scheduleWindow],
         },
       ]);

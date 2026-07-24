@@ -2,6 +2,7 @@ export type DoctorProfile = {
   id: string;
   licenseNumber: string;
   fullName: string;
+  specialtyId: string;
   specialty: string;
   phoneNumber?: string;
   ownerUserId?: string;

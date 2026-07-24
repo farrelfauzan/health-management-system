@@ -22,6 +22,7 @@ import {
 } from '@hms/ui';
 
 import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-picker';
+import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
 import { FieldError } from '#components/client/shared/field-error';
 import {
   doctorManagementControllerCreateDoctorV1,
@@ -31,6 +32,7 @@ import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries';
 import { usePatientsList } from '#lib/patients/use-patients-list';
+import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 
 const SAVE_ERROR_FALLBACK = 'Unable to save the doctor. Please try again.';
 const PATIENT_PICKER_PAGE = { page: 1, limit: 100 };
@@ -46,6 +48,7 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const patientsQuery = usePatientsList(PATIENT_PICKER_PAGE);
+  const specialtiesQuery = useSpecialtiesList();
   const createMutation = useMutation({
     mutationFn: (input: CreateDoctorInput) => doctorManagementControllerCreateDoctorV1(input),
   });
@@ -57,7 +60,7 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
     defaultValues: {
       licenseNumber: doctor?.licenseNumber ?? '',
       fullName: doctor?.fullName ?? '',
-      specialty: doctor?.specialty ?? '',
+      specialtyId: doctor?.specialtyId ?? '',
       phoneNumber: doctor?.phoneNumber ?? '',
       isActive: doctor?.isActive ?? true,
       patientIds: [] as string[],
@@ -70,7 +73,7 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
             id: doctor.id,
             input: {
               fullName: value.fullName,
-              specialty: value.specialty,
+              specialtyId: value.specialtyId,
               phoneNumber: value.phoneNumber,
               isActive: value.isActive,
             },
@@ -80,7 +83,7 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
           const response = await createMutation.mutateAsync({
             licenseNumber: value.licenseNumber,
             fullName: value.fullName,
-            specialty: value.specialty,
+            specialtyId: value.specialtyId,
             phoneNumber: value.phoneNumber,
             isActive: value.isActive,
             patientIds: value.patientIds.length > 0 ? value.patientIds : undefined,
@@ -177,8 +180,8 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
 
           <div className="grid grid-cols-2 gap-3">
             <form.Field
-              name="specialty"
-              validators={{ onSubmit: createDoctorSchema.shape.specialty }}
+              name="specialtyId"
+              validators={{ onSubmit: createDoctorSchema.shape.specialtyId }}
             >
               {(field) => (
                 <div className="space-y-1.5">
@@ -188,13 +191,13 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
                   >
                     Specialty
                   </label>
-                  <Input
+                  <SpecialtyCombobox
                     id={field.name}
+                    specialties={specialtiesQuery.specialties}
                     value={field.state.value}
-                    placeholder="Cardiology"
-                    onChange={(event) => field.handleChange(event.target.value)}
-                    onBlur={field.handleBlur}
-                    aria-invalid={field.state.meta.errors.length > 0}
+                    isLoading={specialtiesQuery.isPending}
+                    hasError={field.state.meta.errors.length > 0}
+                    onChange={(specialtyId) => field.handleChange(specialtyId)}
                   />
                   <FieldError errors={field.state.meta.errors} />
                 </div>

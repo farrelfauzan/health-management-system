@@ -46,6 +46,7 @@ describe('DoctorManagementService', () => {
     findDoctorByLicenseNumber: jest.fn(),
     findDoctorByOwnerUserId: jest.fn(),
     findActiveUserById: jest.fn(),
+    findActiveSpecialtyById: jest.fn(),
     findActivePatientsByIds: jest.fn(),
     createDoctor: jest.fn(),
     updateDoctor: jest.fn(),
@@ -65,11 +66,15 @@ describe('DoctorManagementService', () => {
 
   const doctorId = '58e9a316-40b2-4f4c-9207-2a58028babc4';
 
+  const specialtyId = '0f1cbb1f-8f4a-4bb0-9a5e-2d94f7a3c111';
+  const neurologySpecialtyId = '1a2dcc2a-9b5b-4cc1-8b6f-3ea508b4d222';
+
   const doctorRecord = {
     id: doctorId,
     licenseNumber: 'LIC-0001',
     fullName: 'Dr. First',
-    specialty: 'Cardiology',
+    specialtyId,
+    specialty: { id: specialtyId, name: 'Cardiology' },
     phoneNumber: '0812345678',
     ownerUserId: null,
     isActive: true,
@@ -149,7 +154,7 @@ describe('DoctorManagementService', () => {
         {
           licenseNumber: 'LIC-0001',
           fullName: 'Dr. First',
-          specialty: 'Cardiology',
+          specialtyId,
           phoneNumber: '0812345678',
           isActive: true,
         },
@@ -178,7 +183,7 @@ describe('DoctorManagementService', () => {
         {
           licenseNumber: 'LIC-0002',
           fullName: 'Dr. Second',
-          specialty: 'Neurology',
+          specialtyId: neurologySpecialtyId,
           phoneNumber: '0812345679',
           ownerUserId: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
           isActive: true,
@@ -196,6 +201,9 @@ describe('DoctorManagementService', () => {
     (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
       null,
     );
+    (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+      id: neurologySpecialtyId,
+    });
     (doctorManagementRepositoryMock.findActivePatientsByIds as jest.Mock).mockResolvedValue([
       { id: '3a6d785d-f729-4af2-b415-30f96439dad0' },
     ]);
@@ -205,7 +213,7 @@ describe('DoctorManagementService', () => {
         {
           licenseNumber: 'LIC-0002',
           fullName: 'Dr. Second',
-          specialty: 'Neurology',
+          specialtyId: neurologySpecialtyId,
           phoneNumber: '0812345679',
           isActive: true,
           patientIds: [
@@ -227,6 +235,9 @@ describe('DoctorManagementService', () => {
     (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
       null,
     );
+    (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+      id: specialtyId,
+    });
     (doctorManagementRepositoryMock.findActivePatientsByIds as jest.Mock).mockResolvedValue([
       { id: '3a6d785d-f729-4af2-b415-30f96439dad0' },
       { id: '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8' },
@@ -237,7 +248,7 @@ describe('DoctorManagementService', () => {
       {
         licenseNumber: 'LIC-0001',
         fullName: 'Dr. First',
-        specialty: 'Cardiology',
+        specialtyId,
         phoneNumber: '0812345678',
         isActive: true,
         patientIds: ['3a6d785d-f729-4af2-b415-30f96439dad0', '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8'],
@@ -410,16 +421,24 @@ describe('DoctorManagementService', () => {
       buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
     );
     (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+    (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+      id: neurologySpecialtyId,
+    });
     (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
       ...doctorRecord,
-      specialty: 'Neurology',
+      specialtyId: neurologySpecialtyId,
+      specialty: { id: neurologySpecialtyId, name: 'Neurology' },
     });
 
-    const result = await service.updateDoctor(doctorId, { specialty: 'Neurology' }, currentUser);
+    const result = await service.updateDoctor(
+      doctorId,
+      { specialtyId: neurologySpecialtyId },
+      currentUser,
+    );
 
     expect(doctorManagementRepositoryMock.updateDoctor).toHaveBeenCalledWith(
       doctorId,
-      expect.objectContaining({ specialty: 'Neurology' }),
+      expect.objectContaining({ specialtyId: neurologySpecialtyId }),
     );
     expect(result.specialty).toBe('Neurology');
   });
