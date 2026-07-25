@@ -1,49 +1,47 @@
 import { listUsersQuerySchema } from '@hms/shared-types';
 
-export type AdminCapabilityMode = 'admin' | 'readonly';
-
 export type AdminUsersSearchParams = {
   page: number;
   limit: number;
   search?: string;
-  mode: AdminCapabilityMode;
+  roleCode?: string;
+  isActive?: 'true' | 'false';
 };
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
+
+const DEFAULT_PARAMS: AdminUsersSearchParams = {
+  page: 1,
+  limit: 10,
+};
 
 function pickFirst(value: string | string[] | undefined): string | undefined {
   if (Array.isArray(value)) {
     return value[0];
   }
-
   return value;
 }
 
-function parseMode(value: string | undefined): AdminCapabilityMode {
-  if (value === 'readonly') {
-    return 'readonly';
-  }
-
-  return 'admin';
-}
-
 export function parseAdminUsersSearchParams(raw: RawSearchParams): AdminUsersSearchParams {
-  const page = pickFirst(raw.page);
-  const limit = pickFirst(raw.limit);
-  const search = pickFirst(raw.search);
-  const mode = pickFirst(raw.mode);
-
-  const listQuery = listUsersQuerySchema.parse({
-    page,
-    limit,
-    search,
+  const active = pickFirst(raw.active);
+  const parsed = listUsersQuerySchema.safeParse({
+    page: pickFirst(raw.page),
+    limit: pickFirst(raw.limit),
+    search: pickFirst(raw.q),
+    roleCode: pickFirst(raw.role),
+    isActive: active,
   });
 
+  if (!parsed.success) {
+    return DEFAULT_PARAMS;
+  }
+
   return {
-    page: listQuery.page,
-    limit: listQuery.limit,
-    search: listQuery.search,
-    mode: parseMode(mode),
+    page: parsed.data.page,
+    limit: parsed.data.limit,
+    search: parsed.data.search,
+    roleCode: parsed.data.roleCode,
+    isActive: active === 'true' || active === 'false' ? active : undefined,
   };
 }
 
@@ -52,10 +50,15 @@ export function buildAdminUsersSearchParams(next: AdminUsersSearchParams): URLSe
 
   params.set('page', String(next.page));
   params.set('limit', String(next.limit));
-  params.set('mode', next.mode);
 
   if (next.search) {
-    params.set('search', next.search);
+    params.set('q', next.search);
+  }
+  if (next.roleCode) {
+    params.set('role', next.roleCode);
+  }
+  if (next.isActive) {
+    params.set('active', next.isActive);
   }
 
   return params;

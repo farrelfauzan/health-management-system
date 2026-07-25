@@ -1,0 +1,78 @@
+'use client';
+
+import type { AdminUser } from '@hms/shared-types';
+import { Badge, TableCell, TableRow, useAbility } from '@hms/ui';
+
+import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
+import { AvatarInitials } from '#components/shared/avatar-initials';
+import { StatusBadge } from '#components/shared/status-badge';
+import { formatMediumDate } from '#lib/shared/format-medium-date';
+
+type AdminUsersTableRowProps = {
+  user: AdminUser;
+  onEdit: (user: AdminUser) => void;
+  onToggleActive: (user: AdminUser) => void;
+};
+
+export function AdminUsersTableRow({ user, onEdit, onToggleActive }: AdminUsersTableRowProps) {
+  const ability = useAbility();
+  const actions: RowAction[] = ability.can('update', 'User')
+    ? [
+        { label: 'Edit', icon: 'edit', onSelect: () => onEdit(user) },
+        user.isActive
+          ? {
+              label: 'Deactivate',
+              icon: 'block',
+              isDestructive: true,
+              onSelect: () => onToggleActive(user),
+            }
+          : {
+              label: 'Activate',
+              icon: 'check_circle',
+              onSelect: () => onToggleActive(user),
+            },
+      ]
+    : [];
+
+  return (
+    <TableRow className="transition-colors hover:bg-slate-50">
+      <TableCell className="px-4 py-3">
+        <div className="flex items-center gap-3">
+          <AvatarInitials name={user.email} />
+          <div>
+            <p className="text-sm font-medium text-slate-900">{user.email}</p>
+            <p className="text-xs text-slate-500">Joined {formatMediumDate(user.createdAt)}</p>
+          </div>
+        </div>
+      </TableCell>
+      <TableCell className="px-4">
+        <div className="flex flex-wrap gap-1.5">
+          {user.roles.length === 0 ? (
+            <span className="text-sm text-slate-500">No roles</span>
+          ) : (
+            user.roles.map((role) => (
+              <Badge
+                key={role.code}
+                variant="secondary"
+                className="font-heading text-[11px] font-medium tracking-wide"
+              >
+                {role.name}
+              </Badge>
+            ))
+          )}
+        </div>
+      </TableCell>
+      <TableCell className="px-4">
+        <StatusBadge status={user.isActive ? 'active' : 'inactive'} />
+      </TableCell>
+      <TableCell className="px-4 text-sm text-slate-600">
+        {formatMediumDate(user.updatedAt)}
+      </TableCell>
+      <TableCell className="px-4 text-right">
+        {actions.length > 0 ? (
+          <RowActionsMenu actions={actions} triggerLabel={`Actions for ${user.email}`} />
+        ) : null}
+      </TableCell>
+    </TableRow>
+  );
+}

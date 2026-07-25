@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { AdminManagementControllerListUsersV1IsActive } from './adminManagementControllerListUsersV1IsActive';
 
 export type AdminManagementControllerListUsersV1Params = {
 /**
@@ -20,4 +21,9 @@ limit?: number;
  * @minLength 1
  */
 search?: string;
+/**
+ * @minLength 1
+ */
+roleCode?: string;
+isActive?: AdminManagementControllerListUsersV1IsActive;
 };

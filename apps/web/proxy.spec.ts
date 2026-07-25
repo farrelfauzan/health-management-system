@@ -35,7 +35,7 @@ function pastUnix(): number {
 
 describe('proxy', () => {
   it('redirects /admin requests without a token to /login', () => {
-    const response = proxy(buildRequest('/admin/users'));
+    const response = proxy(buildRequest('/admin/administration'));
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
@@ -43,7 +43,7 @@ describe('proxy', () => {
 
   it('redirects expired sessions to /login and clears the cookie', () => {
     const expiredToken = buildToken({ exp: pastUnix(), roles: ['ADMIN'] });
-    const response = proxy(buildRequest('/admin/users', expiredToken));
+    const response = proxy(buildRequest('/admin/administration', expiredToken));
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
@@ -52,7 +52,7 @@ describe('proxy', () => {
 
   it('redirects valid sessions without an admin role to /login and clears the cookie', () => {
     const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
-    const response = proxy(buildRequest('/admin/users', doctorToken));
+    const response = proxy(buildRequest('/admin/administration', doctorToken));
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
@@ -61,7 +61,7 @@ describe('proxy', () => {
 
   it('allows /admin requests with a valid admin session', () => {
     const adminToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'] });
-    const response = proxy(buildRequest('/admin/users', adminToken));
+    const response = proxy(buildRequest('/admin/administration', adminToken));
 
     expect(response.headers.get('x-middleware-next')).toBe('1');
   });
@@ -69,7 +69,7 @@ describe('proxy', () => {
   it('allows an expired access session while its refresh token remains valid', () => {
     const expiredAccessToken = buildToken({ exp: pastUnix(), roles: ['ADMIN'] });
     const refreshToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'], tokenType: 'refresh' });
-    const response = proxy(buildRequest('/admin/users', expiredAccessToken, refreshToken));
+    const response = proxy(buildRequest('/admin/administration', expiredAccessToken, refreshToken));
 
     expect(response.headers.get('x-middleware-next')).toBe('1');
   });

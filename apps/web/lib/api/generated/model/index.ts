@@ -9,6 +9,7 @@
 export * from './adminManagementControllerCreateAdminUserV1201';
 export * from './adminManagementControllerCreateAdminUserV1201Data';
 export * from './adminManagementControllerCreateAdminUserV1201DataRolesItem';
+export * from './adminManagementControllerListUsersV1IsActive';
 export * from './adminManagementControllerListUsersV1Params';
 export * from './adminManagementControllerListUsersV1200';
 export * from './adminManagementControllerListUsersV1200DataItem';

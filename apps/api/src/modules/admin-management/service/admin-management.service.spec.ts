@@ -50,6 +50,28 @@ describe('AdminManagementService', () => {
     jest.clearAllMocks();
   });
 
+  it('forwards role and status filters to the repository and maps the list result', async () => {
+    (adminManagementRepositoryMock.listUsers as jest.Mock).mockResolvedValue({
+      items: [persistedUser],
+      total: 1,
+      page: 1,
+      limit: 10,
+    });
+
+    const inputQuery = { page: 1, limit: 10, search: 'admin', roleCode: 'ADMIN', isActive: true };
+    const actualResult = await service.listUsers(inputQuery);
+
+    expect(adminManagementRepositoryMock.listUsers).toHaveBeenCalledWith(inputQuery);
+    expect(actualResult.items).toEqual([
+      expect.objectContaining({
+        id: persistedUser.id,
+        email: persistedUser.email,
+        roles: [{ code: 'SUPER_ADMIN', name: 'Super Admin' }],
+      }),
+    ]);
+    expect(actualResult.meta).toEqual({ page: 1, limit: 10, total: 1 });
+  });
+
   it('denies assigning SUPER_ADMIN on create when actor is not a super admin', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
       buildActorWithRoleCodes(['ADMIN']),

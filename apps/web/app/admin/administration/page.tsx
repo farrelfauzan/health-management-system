@@ -1,17 +1,14 @@
-import Link from 'next/link';
-import { Button } from '@hms/ui';
+import { AdminUsersPanel } from '#components/client/administration/admin-users-panel';
+import { parseAdminUsersSearchParams } from '#lib/admin-users/search-params';
 
-import { AdminPlaceholderPage } from '#components/server/shell/admin-placeholder-page';
+type AdminAdministrationPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default function AdminAdministrationPage() {
-  return (
-    <AdminPlaceholderPage
-      routeKey="administration"
-      action={
-        <Button asChild variant="outline">
-          <Link href="/admin/users">Open user management</Link>
-        </Button>
-      }
-    />
-  );
+export default async function AdminAdministrationPage({
+  searchParams,
+}: AdminAdministrationPageProps) {
+  const query = parseAdminUsersSearchParams(await searchParams);
+
+  return <AdminUsersPanel initialQuery={query} />;
 }
