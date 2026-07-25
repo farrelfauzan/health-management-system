@@ -7,6 +7,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { AuditService } from '../../../common/audit/audit.service';
+import { AuditAction } from '../../../generated/prisma/client';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateAdminUserDto } from '../dto/create-admin-user.dto';
 import { ListUsersQueryDto } from '../dto/list-users-query.dto';
@@ -21,6 +23,7 @@ export class AdminManagementService {
   constructor(
     private readonly adminManagementRepository: AdminManagementRepository,
     private readonly authRepository: AuthRepository,
+    private readonly auditService: AuditService,
   ) {}
 
   async listUsers(query: ListUsersQueryDto) {
@@ -74,6 +77,14 @@ export class AdminManagementService {
     if (!createdUser) {
       throw new NotFoundException('Created user not found');
     }
+
+    await this.auditService.record({
+      action: AuditAction.USER_CREATED,
+      resource: 'user',
+      actorUserId: currentUserId,
+      resourceId: createdUser.id,
+      metadata: { email: createdUser.email, roleCodes: payload.roleCodes },
+    });
 
     return {
       id: createdUser.id,
@@ -131,6 +142,14 @@ export class AdminManagementService {
     if (!updatedUser) {
       throw new NotFoundException('Updated user not found');
     }
+
+    await this.auditService.record({
+      action: AuditAction.USER_UPDATED,
+      resource: 'user',
+      actorUserId: currentUserId,
+      resourceId: updatedUser.id,
+      metadata: { changedFields: Object.keys(payload) },
+    });
 
     return {
       id: updatedUser.id,

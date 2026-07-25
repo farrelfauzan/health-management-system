@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { RefreshTokenPayload } from '@hms/shared-types';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { AuthRepository } from '../repository/auth.repository';
 import { AuthService } from './auth.service';
 
@@ -24,7 +25,10 @@ describe('AuthService', () => {
     JWT_ACCESS_EXPIRES_IN: '15m',
     JWT_REFRESH_EXPIRES_IN: '7d',
   });
-  const service = new AuthService(authRepositoryMock, jwtService, configService);
+  const auditServiceMock = {
+    record: jest.fn().mockResolvedValue(undefined),
+  } as unknown as AuditService;
+  const service = new AuthService(authRepositoryMock, jwtService, configService, auditServiceMock);
   const user = {
     id: userId,
     email: 'admin@hms.local',

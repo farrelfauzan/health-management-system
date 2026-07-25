@@ -1,5 +1,6 @@
 import { ForbiddenException } from '@nestjs/common';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { AdminManagementRepository } from '../repository/admin-management.repository';
 import { AdminManagementService } from './admin-management.service';
@@ -26,7 +27,15 @@ describe('AdminManagementService', () => {
     findUserById: jest.fn(),
   } as unknown as AuthRepository;
 
-  const service = new AdminManagementService(adminManagementRepositoryMock, authRepositoryMock);
+  const auditServiceMock = {
+    record: jest.fn().mockResolvedValue(undefined),
+  } as unknown as AuditService;
+
+  const service = new AdminManagementService(
+    adminManagementRepositoryMock,
+    authRepositoryMock,
+    auditServiceMock,
+  );
 
   const currentUserId = '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8';
 

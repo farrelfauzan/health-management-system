@@ -17,6 +17,17 @@ enum DoctorPatientActivityAction {
   UNASSIGNED
 }
 
+enum AuditAction {
+  USER_LOGIN
+  USER_LOGIN_FAILED
+  TOKEN_REFRESHED
+  USER_LOGOUT
+  USER_CREATED
+  USER_UPDATED
+  ROLE_ASSIGNED
+  ROLE_UNASSIGNED
+}
+
 enum PatientStatus {
   IN_PATIENT
   OUT_PATIENT
@@ -90,6 +101,7 @@ model User {
   createdRegistrations     Registration[]          @relation("RegistrationCreatedBy")
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
   refreshTokens            RefreshToken[]
+  auditLogs                AuditLog[]              @relation("AuditLogActor")
 
   @@map("users")
 }
@@ -488,4 +500,23 @@ model UserRole {
   @@index([roleId])
   @@index([deletedAt])
   @@map("user_roles")
+}
+
+model AuditLog {
+  id          String      @id @default(uuid()) @db.Uuid
+  actorUserId String?     @map("actor_user_id") @db.Uuid
+  action      AuditAction
+  resource    String
+  resourceId  String?     @map("resource_id")
+  metadata    Json?
+  requestId   String?     @map("request_id")
+  occurredAt  DateTime    @default(now()) @map("occurred_at")
+
+  actor User? @relation("AuditLogActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId, occurredAt])
+  @@index([action, occurredAt])
+  @@index([resource, resourceId])
+  @@index([occurredAt])
+  @@map("audit_logs")
 }

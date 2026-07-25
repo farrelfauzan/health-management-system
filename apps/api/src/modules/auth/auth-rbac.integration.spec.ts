@@ -167,6 +167,6 @@ describe('Auth + RBAC integration', () => {
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.status).toBe(401);
-    expect(response.body.message).toBe(new UnauthorizedException('User not found').message);
+    expect(response.body.error.message).toBe(new UnauthorizedException('User not found').message);
   });
 });
