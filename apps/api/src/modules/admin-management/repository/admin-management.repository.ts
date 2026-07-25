@@ -8,7 +8,7 @@ export class AdminManagementRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listUsers(params: ListUsersParams) {
-    const { page, limit, search } = params;
+    const { page, limit, search, roleCode, isActive } = params;
     const skip = (page - 1) * limit;
 
     const where = {
@@ -17,6 +17,19 @@ export class AdminManagementRepository {
             email: {
               contains: search,
               mode: 'insensitive' as const,
+            },
+          }
+        : {}),
+      ...(isActive !== undefined ? { isActive } : {}),
+      ...(roleCode
+        ? {
+            roles: {
+              some: {
+                deletedAt: null,
+                role: {
+                  code: roleCode,
+                },
+              },
             },
           }
         : {}),
