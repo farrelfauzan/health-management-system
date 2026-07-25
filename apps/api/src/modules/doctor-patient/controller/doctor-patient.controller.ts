@@ -98,6 +98,7 @@ export class DoctorPatientController {
       },
       message: 'Doctor unassigned from patient',
     },
+    notFoundDescription: 'Assignment not found.',
   })
   async unassignDoctorFromPatient(
     @Param('id', new ParseUUIDPipe()) id: string,

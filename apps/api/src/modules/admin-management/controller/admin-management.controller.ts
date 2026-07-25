@@ -90,6 +90,7 @@ export class AdminManagementController {
     },
     requestType: UpdateAdminUserDto,
     requestExample: PHASE_THREE_EXAMPLES.admin.updateRequest,
+    notFoundDescription: 'User not found.',
   })
   async updateAdminUser(
     @Param('id', new ParseUUIDPipe()) id: string,

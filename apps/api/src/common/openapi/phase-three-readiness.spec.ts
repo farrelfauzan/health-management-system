@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { parse } from 'yaml';
 
 import { AdminManagementController } from '../../modules/admin-management/controller/admin-management.controller';
+import { RbacController } from '../../modules/rbac/controller/rbac.controller';
 import { AppointmentManagementController } from '../../modules/appointment-management/controller/appointment-management.controller';
 import { DoctorManagementController } from '../../modules/doctor-management/controller/doctor-management.controller';
 import { DoctorPatientController } from '../../modules/doctor-patient/controller/doctor-patient.controller';
@@ -83,6 +84,22 @@ const expectedOperations: readonly ExpectedOperation[] = [
   operation(MedicationController, 'listMedications', 'get', '/api/v1/medications', 'read', 'Medication'),
   operation(PrescriptionController, 'createPrescription', 'post', '/api/v1/prescriptions', 'write', 'Prescription', true),
   operation(DispenseController, 'createDispense', 'post', '/api/v1/dispenses', 'write', 'DispenseRecord', true),
+  operation(RbacController, 'getRoles', 'get', '/api/v1/rbac/roles', 'read', 'Role'),
+  operation(RbacController, 'assignRole', 'post', '/api/v1/rbac/assign-role', 'assign', 'Role', true),
+  operation(RbacController, 'unassignRole', 'post', '/api/v1/rbac/unassign-role', 'unassign', 'Role', true),
+];
+
+type ExpectedPublicOperation = {
+  readonly httpMethod: ExpectedOperation['httpMethod'];
+  readonly path: string;
+  readonly hasRequestBody: boolean;
+};
+
+const expectedPublicOperations: readonly ExpectedPublicOperation[] = [
+  { httpMethod: 'post', path: '/api/v1/auth/login', hasRequestBody: true },
+  { httpMethod: 'post', path: '/api/v1/auth/refresh', hasRequestBody: true },
+  { httpMethod: 'post', path: '/api/v1/auth/logout', hasRequestBody: true },
+  { httpMethod: 'get', path: '/api/v1/health', hasRequestBody: false },
 ];
 
 function operation(
@@ -130,6 +147,24 @@ describe('Phase 3 backend readiness', () => {
       expect(actualOperation?.security).toEqual(
         expect.arrayContaining([expect.objectContaining({ bearer: [] })]),
       );
+      const successStatus = Object.keys(actualOperation?.responses ?? {}).find((status) =>
+        status.startsWith('2'),
+      );
+      const successMediaType =
+        actualOperation?.responses?.[successStatus ?? '']?.content?.['application/json'];
+      expect(successMediaType?.schema?.example).toBeDefined();
+      if (expectedOperation.hasRequestBody) {
+        const requestMediaType = actualOperation?.requestBody?.content?.['application/json'];
+        expect(requestMediaType?.examples?.default?.value).toBeDefined();
+      }
+    });
+  });
+
+  it('publishes documented public OpenAPI operations with examples', () => {
+    const document = loadOpenApiDocument();
+    expectedPublicOperations.forEach((expectedOperation) => {
+      const actualOperation = document.paths[expectedOperation.path]?.[expectedOperation.httpMethod];
+      expect(actualOperation?.summary).toBeTruthy();
       const successStatus = Object.keys(actualOperation?.responses ?? {}).find((status) =>
         status.startsWith('2'),
       );

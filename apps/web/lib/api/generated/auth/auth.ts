@@ -21,6 +21,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AuthControllerLoginV1200,
+  AuthControllerLogoutV1200,
+  AuthControllerRefreshV1200,
   LoginDto,
   LogoutDto,
   RefreshTokenDto
@@ -46,13 +49,16 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary Log in with email and password
+ */
 export const authControllerLoginV1 = (
     loginDto: LoginDto,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<AuthControllerLoginV1200>(
       {url: `/api/v1/auth/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: loginDto, signal
@@ -116,6 +122,9 @@ export function useAuthControllerLoginV1<TData = Awaited<ReturnType<typeof authC
  loginDto: LoginDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerLoginV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Log in with email and password
+ */
 
 export function useAuthControllerLoginV1<TData = Awaited<ReturnType<typeof authControllerLoginV1>>, TError = unknown>(
  loginDto: LoginDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerLoginV1>>, TError, TData>>, }
@@ -134,13 +143,16 @@ export function useAuthControllerLoginV1<TData = Awaited<ReturnType<typeof authC
 
 
 
+/**
+ * @summary Rotate a refresh token
+ */
 export const authControllerRefreshV1 = (
     refreshTokenDto: RefreshTokenDto,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<AuthControllerRefreshV1200>(
       {url: `/api/v1/auth/refresh`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: refreshTokenDto, signal
@@ -204,6 +216,9 @@ export function useAuthControllerRefreshV1<TData = Awaited<ReturnType<typeof aut
  refreshTokenDto: RefreshTokenDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRefreshV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Rotate a refresh token
+ */
 
 export function useAuthControllerRefreshV1<TData = Awaited<ReturnType<typeof authControllerRefreshV1>>, TError = unknown>(
  refreshTokenDto: RefreshTokenDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRefreshV1>>, TError, TData>>, }
@@ -222,13 +237,16 @@ export function useAuthControllerRefreshV1<TData = Awaited<ReturnType<typeof aut
 
 
 
+/**
+ * @summary Log out and revoke the refresh token family
+ */
 export const authControllerLogoutV1 = (
     logoutDto: LogoutDto,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<AuthControllerLogoutV1200>(
       {url: `/api/v1/auth/logout`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: logoutDto, signal
@@ -292,6 +310,9 @@ export function useAuthControllerLogoutV1<TData = Awaited<ReturnType<typeof auth
  logoutDto: LogoutDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerLogoutV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Log out and revoke the refresh token family
+ */
 
 export function useAuthControllerLogoutV1<TData = Awaited<ReturnType<typeof authControllerLogoutV1>>, TError = unknown>(
  logoutDto: LogoutDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerLogoutV1>>, TError, TData>>, }

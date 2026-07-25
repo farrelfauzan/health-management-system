@@ -106,6 +106,57 @@ const medication = {
 };
 
 export const PHASE_THREE_EXAMPLES = {
+  auth: {
+    loginRequest: {
+      email: 'admin@example.com',
+      password: 'SecurePassword123!',
+    },
+    refreshRequest: {
+      refreshToken: 'eyJhbGciOiJIUzI1NiJ9.refresh.example',
+    },
+    logoutRequest: {
+      refreshToken: 'eyJhbGciOiJIUzI1NiJ9.refresh.example',
+    },
+    tokens: {
+      accessToken: 'eyJhbGciOiJIUzI1NiJ9.access.example',
+      refreshToken: 'eyJhbGciOiJIUzI1NiJ9.refresh.example',
+      tokenType: 'Bearer',
+      expiresIn: '15m',
+    },
+    logoutResult: {
+      success: true,
+      message: 'Logged out',
+    },
+  },
+  rbac: {
+    roleItem: {
+      id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+      code: 'ADMIN',
+      name: 'Administrator',
+    },
+    assignRequest: {
+      userId,
+      roleCode: 'ADMIN',
+    },
+    assignment: {
+      id: 'abababab-abab-4bab-8bab-abababababab',
+      userId,
+      roleId: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+      assignedAt: timestamp,
+    },
+    unassignment: {
+      id: 'abababab-abab-4bab-8bab-abababababab',
+      userId,
+      roleId: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+      unassignedAt: timestamp,
+    },
+  },
+  health: {
+    status: {
+      status: 'ok',
+      service: 'api',
+    },
+  },
   admin: {
     createRequest: {
       email: 'admin@example.com',

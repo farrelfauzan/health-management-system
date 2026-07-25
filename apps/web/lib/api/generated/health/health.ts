@@ -20,6 +20,10 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
+import type {
+  HealthControllerGetHealthV1200
+} from '../model';
+
 import { orvalAxiosMutator } from '../../http';
 
 
@@ -40,13 +44,16 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary Check API liveness
+ */
 export const healthControllerGetHealthV1 = (
 
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<HealthControllerGetHealthV1200>(
       {url: `/api/v1/health`, method: 'GET', signal
     },
       );
@@ -108,6 +115,9 @@ export function useHealthControllerGetHealthV1<TData = Awaited<ReturnType<typeof
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof healthControllerGetHealthV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Check API liveness
+ */
 
 export function useHealthControllerGetHealthV1<TData = Awaited<ReturnType<typeof healthControllerGetHealthV1>>, TError = unknown>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof healthControllerGetHealthV1>>, TError, TData>>, }
