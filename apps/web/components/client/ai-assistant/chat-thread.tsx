@@ -1,0 +1,33 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+
+import { AssistantMessage } from '#components/client/ai-assistant/assistant-message';
+import { TypingIndicator } from '#components/client/ai-assistant/typing-indicator';
+import { UserMessage } from '#components/client/ai-assistant/user-message';
+import type { ConversationMessage } from '#lib/ai-assistant/conversation-types';
+
+type ChatThreadProps = {
+  messages: ConversationMessage[];
+  isReplying: boolean;
+};
+
+export function ChatThread({ messages, isReplying }: ChatThreadProps) {
+  const threadEndRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    threadEndRef.current?.scrollIntoView?.({ block: 'end' });
+  }, [messages.length, isReplying]);
+  return (
+    <div role="log" aria-label="Conversation" className="flex-1 space-y-8 overflow-y-auto px-6 py-6">
+      {messages.map((message) =>
+        message.role === 'assistant' ? (
+          <AssistantMessage key={message.id} message={message} />
+        ) : (
+          <UserMessage key={message.id} message={message} />
+        ),
+      )}
+      {isReplying ? <TypingIndicator /> : null}
+      <div ref={threadEndRef} />
+    </div>
+  );
+}

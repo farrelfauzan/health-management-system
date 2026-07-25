@@ -57,7 +57,12 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
   {
     label: 'Advanced',
     items: [
-      { href: '/admin/ai-assistant', label: 'AI Assistant', icon: 'psychology', ability: null },
+      {
+        href: '/admin/ai-assistant',
+        label: 'AI Assistant',
+        icon: 'psychology',
+        ability: { action: 'create', subject: 'ChatSession' },
+      },
       {
         href: '/admin/administration',
         label: 'Administration',

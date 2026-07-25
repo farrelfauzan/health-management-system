@@ -73,7 +73,7 @@ describe('AppSidebar', () => {
 
     expect(screen.getByRole('link', { name: 'Patients' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'AI Assistant' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'AI Assistant' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Doctors' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Pharmacy' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Administration' })).not.toBeInTheDocument();

@@ -34,4 +34,7 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'Medication' },
   { action: 'read', subject: 'Prescription' },
   { action: 'write', subject: 'DispenseRecord' },
+  { action: 'create', subject: 'ChatSession' },
+  { action: 'create', subject: 'ChatMessage' },
+  { action: 'read', subject: 'ChatMessage' },
 ];

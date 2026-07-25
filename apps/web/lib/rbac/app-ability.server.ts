@@ -33,6 +33,8 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   medication: 'Medication',
   prescription: 'Prescription',
   dispense: 'DispenseRecord',
+  'chat.session': 'ChatSession',
+  'chat.message': 'ChatMessage',
 };
 
 function isSupportedAction(action: string): action is AppAction {
