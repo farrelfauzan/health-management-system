@@ -59,6 +59,7 @@ export class PatientManagementController {
     summary: 'Get a patient',
     responseDescription: 'The patient and active doctor relationships.',
     responseExample: { data: PHASE_THREE_EXAMPLES.patient.detail },
+    notFoundDescription: 'Patient not found.',
   })
   async getPatientById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -113,6 +114,7 @@ export class PatientManagementController {
     },
     requestType: UpdatePatientDto,
     requestExample: PHASE_THREE_EXAMPLES.patient.updateRequest,
+    notFoundDescription: 'Patient not found.',
   })
   async updatePatient(
     @Param('id', new ParseUUIDPipe()) id: string,

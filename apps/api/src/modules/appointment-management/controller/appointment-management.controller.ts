@@ -67,6 +67,7 @@ export class AppointmentManagementController {
     summary: 'Get an appointment',
     responseDescription: 'The appointment visible to the authenticated actor.',
     responseExample: { data: PHASE_THREE_EXAMPLES.appointment.item },
+    notFoundDescription: 'Appointment not found.',
   })
   async getAppointmentById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -101,6 +102,8 @@ export class AppointmentManagementController {
     successStatus: 201,
   })
   async createAppointment(
+    // Runtime validation needs the discriminated union; CreateAppointmentDto wraps the
+    // flattened doc schema because discriminated unions do not survive OpenAPI codegen.
     @Body(new ZodValidationPipe(createAppointmentSchema)) payload: CreateAppointmentInput,
     @AuthUser() currentUser?: CurrentUser,
   ) {
@@ -130,6 +133,7 @@ export class AppointmentManagementController {
     },
     requestType: UpdateAppointmentDto,
     requestExample: PHASE_THREE_EXAMPLES.appointment.updateRequest,
+    notFoundDescription: 'Appointment not found.',
   })
   async updateAppointment(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -164,6 +168,7 @@ export class AppointmentManagementController {
     },
     requestType: ApproveAppointmentDto,
     requestExample: PHASE_THREE_EXAMPLES.appointment.approveRequest,
+    notFoundDescription: 'Appointment not found.',
   })
   async approveAppointment(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -202,6 +207,7 @@ export class AppointmentManagementController {
     },
     requestType: RejectAppointmentDto,
     requestExample: PHASE_THREE_EXAMPLES.appointment.rejectRequest,
+    notFoundDescription: 'Appointment not found.',
   })
   async rejectAppointment(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -240,6 +246,7 @@ export class AppointmentManagementController {
     },
     requestType: CancelAppointmentDto,
     requestExample: PHASE_THREE_EXAMPLES.appointment.cancelRequest,
+    notFoundDescription: 'Appointment not found.',
   })
   async cancelAppointment(
     @Param('id', new ParseUUIDPipe()) id: string,

@@ -62,6 +62,7 @@ export class RegistrationFlowController {
     summary: 'Get a registration',
     responseDescription: 'The registration visible to the authenticated actor.',
     responseExample: { data: PHASE_THREE_EXAMPLES.registration.item },
+    notFoundDescription: 'Registration not found.',
   })
   async getRegistrationById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -126,6 +127,7 @@ export class RegistrationFlowController {
     },
     requestType: UpdateRegistrationDto,
     requestExample: PHASE_THREE_EXAMPLES.registration.updateRequest,
+    notFoundDescription: 'Registration not found.',
   })
   async updateRegistration(
     @Param('id', new ParseUUIDPipe()) id: string,

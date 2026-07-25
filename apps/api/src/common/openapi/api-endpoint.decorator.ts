@@ -13,6 +13,9 @@ type ApiEndpointOptions = {
   readonly requestType?: Type<unknown>;
   readonly requestExample?: Record<string, unknown>;
   readonly successStatus?: number;
+  readonly isPublic?: boolean;
+  readonly unauthorizedDescription?: string;
+  readonly notFoundDescription?: string;
 };
 
 type OpenApiSchema = {
@@ -52,11 +55,13 @@ function inferSchema(value: unknown): OpenApiSchema {
 }
 
 /**
- * Documents an authenticated API operation with canonical HMS examples.
+ * Documents an API operation with canonical HMS examples. Authenticated by
+ * default; pass isPublic for routes outside the bearer guard. Documents 400
+ * automatically whenever a request body is declared, 401/403 for
+ * authenticated routes, and 404 when notFoundDescription is provided.
  */
 export function ApiEndpoint(options: ApiEndpointOptions): MethodDecorator {
   const decorators: MethodDecorator[] = [
-    ApiBearerAuth(),
     ApiOperation({ summary: options.summary }),
     ApiResponse({
       status: options.successStatus ?? DEFAULT_SUCCESS_STATUS,
@@ -66,33 +71,70 @@ export function ApiEndpoint(options: ApiEndpointOptions): MethodDecorator {
         example: options.responseExample,
       },
     }),
-    ApiResponse({
-      status: 401,
-      description: 'Authentication is required.',
-      schema: {
-        example: {
-          error: {
-            code: 'UNAUTHORIZED',
-            message: 'Authentication is required',
-          },
-        },
-      },
-    }),
-    ApiResponse({
-      status: 403,
-      description: 'The authenticated user does not have the required permission.',
-      schema: {
-        example: {
-          error: {
-            code: 'FORBIDDEN',
-            message: 'Insufficient permission',
-          },
-        },
-      },
-    }),
   ];
+  if (!options.isPublic) {
+    decorators.unshift(ApiBearerAuth());
+    decorators.push(
+      ApiResponse({
+        status: 403,
+        description: 'The authenticated user does not have the required permission.',
+        schema: {
+          example: {
+            error: {
+              code: 'FORBIDDEN',
+              message: 'Insufficient permission',
+            },
+          },
+        },
+      }),
+    );
+  }
+  if (!options.isPublic || options.unauthorizedDescription) {
+    decorators.push(
+      ApiResponse({
+        status: 401,
+        description: options.unauthorizedDescription ?? 'Authentication is required.',
+        schema: {
+          example: {
+            error: {
+              code: 'UNAUTHORIZED',
+              message: options.unauthorizedDescription ?? 'Authentication is required',
+            },
+          },
+        },
+      }),
+    );
+  }
+  if (options.notFoundDescription) {
+    decorators.push(
+      ApiResponse({
+        status: 404,
+        description: options.notFoundDescription,
+        schema: {
+          example: {
+            error: {
+              code: 'NOT_FOUND',
+              message: options.notFoundDescription,
+            },
+          },
+        },
+      }),
+    );
+  }
   if (options.requestType && options.requestExample) {
     decorators.push(
+      ApiResponse({
+        status: 400,
+        description: 'Request validation failed.',
+        schema: {
+          example: {
+            error: {
+              code: 'BAD_REQUEST',
+              message: 'Request validation failed',
+            },
+          },
+        },
+      }),
       ApiBody({
         type: options.requestType,
         examples: {

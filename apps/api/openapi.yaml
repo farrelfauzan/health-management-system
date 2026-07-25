@@ -10,9 +10,67 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/LoginDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  email: admin@example.com
+                  password: SecurePassword123!
       responses:
         "200":
-          description: ""
+          description: Access and refresh tokens for the authenticated user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                      refreshToken:
+                        type: string
+                      tokenType:
+                        type: string
+                      expiresIn:
+                        type: string
+                    required:
+                      - accessToken
+                      - refreshToken
+                      - tokenType
+                      - expiresIn
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    accessToken: eyJhbGciOiJIUzI1NiJ9.access.example
+                    refreshToken: eyJhbGciOiJIUzI1NiJ9.refresh.example
+                    tokenType: Bearer
+                    expiresIn: 15m
+                  message: Login success
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Invalid credentials.
+      summary: Log in with email and password
       tags: &a1
         - Auth
   /api/v1/auth/refresh:
@@ -25,9 +83,66 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/RefreshTokenDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  refreshToken: eyJhbGciOiJIUzI1NiJ9.refresh.example
       responses:
         "200":
-          description: ""
+          description: A new access token and rotated refresh token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                      refreshToken:
+                        type: string
+                      tokenType:
+                        type: string
+                      expiresIn:
+                        type: string
+                    required:
+                      - accessToken
+                      - refreshToken
+                      - tokenType
+                      - expiresIn
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    accessToken: eyJhbGciOiJIUzI1NiJ9.access.example
+                    refreshToken: eyJhbGciOiJIUzI1NiJ9.refresh.example
+                    tokenType: Bearer
+                    expiresIn: 15m
+                  message: Token refreshed
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Invalid refresh token.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Invalid refresh token.
+      summary: Rotate a refresh token
       tags: *a1
   /api/v1/auth/logout:
     post:
@@ -39,9 +154,58 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/LogoutDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  refreshToken: eyJhbGciOiJIUzI1NiJ9.refresh.example
       responses:
         "200":
-          description: ""
+          description: Confirmation that the refresh token family was revoked.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                      message:
+                        type: string
+                    required:
+                      - success
+                      - message
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    success: true
+                    message: Logged out
+                  message: Logout success
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Invalid refresh token.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Invalid refresh token.
+      summary: Log out and revoke the refresh token family
       tags: *a1
   /api/v1/users:
     get:
@@ -254,6 +418,15 @@ paths:
                       - code: ADMIN
                         name: Administrator
                   message: User created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -354,6 +527,15 @@ paths:
                       - code: ADMIN
                         name: Administrator
                   message: User updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -372,6 +554,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: User not found.
       security:
         - bearer: []
       summary: Update an admin user
@@ -657,6 +848,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Patient created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -794,6 +994,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found.
       security:
         - bearer: []
       summary: Get a patient
@@ -887,6 +1096,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Patient updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -905,6 +1123,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found.
       security:
         - bearer: []
       summary: Update a patient
@@ -1247,6 +1474,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Doctor created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -1408,6 +1644,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Doctor not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found.
       security:
         - bearer: []
       summary: Get a doctor
@@ -1493,6 +1738,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Doctor updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -1511,6 +1765,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Doctor not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found.
       security:
         - bearer: []
       summary: Update a doctor
@@ -1581,6 +1844,15 @@ paths:
                       endTime: 16:00
                       isAvailable: true
                   message: Doctor schedule updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -1599,6 +1871,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Doctor not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found.
       security:
         - bearer: []
       summary: Replace a doctor schedule
@@ -1667,6 +1948,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Doctor assigned to patient
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -1919,6 +2209,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Assignment not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Assignment not found.
       security:
         - bearer: []
       summary: Unassign a doctor from a patient
@@ -2221,6 +2520,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Appointment created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -2338,6 +2646,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Appointment not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Appointment not found.
       security:
         - bearer: []
       summary: Get an appointment
@@ -2434,6 +2751,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Appointment updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -2452,6 +2778,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Appointment not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Appointment not found.
       security:
         - bearer: []
       summary: Update an appointment
@@ -2548,6 +2883,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Appointment request approved
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -2566,6 +2910,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Appointment not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Appointment not found.
       security:
         - bearer: []
       summary: Approve a special appointment request
@@ -2662,6 +3015,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Appointment request rejected
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -2680,6 +3042,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Appointment not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Appointment not found.
       security:
         - bearer: []
       summary: Reject a special appointment request
@@ -2776,6 +3147,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Appointment cancelled
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -2794,6 +3174,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Appointment not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Appointment not found.
       security:
         - bearer: []
       summary: Cancel an appointment
@@ -3233,6 +3622,15 @@ paths:
                     bookedCount: 3
                     remaining: 7
                   message: Session updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -3505,6 +3903,15 @@ paths:
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Registration created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -3602,6 +4009,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Registration not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Registration not found.
       security:
         - bearer: []
       summary: Get a registration
@@ -3681,6 +4097,15 @@ paths:
                     updatedAt: 2026-07-20T08:00:00.000Z
                     checkedInAt: 2026-07-20T08:00:00.000Z
                   message: Registration updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -3699,6 +4124,15 @@ paths:
                   error:
                     code: FORBIDDEN
                     message: Insufficient permission
+        "404":
+          description: Registration not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Registration not found.
       security:
         - bearer: []
       summary: Update a registration
@@ -4198,6 +4632,15 @@ paths:
                         quantity: 9
                         instructions: Take after meals
                   message: Prescription created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -4324,6 +4767,15 @@ paths:
                         medicationName: Paracetamol
                         quantity: 9
                   message: Dispense recorded
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -4353,9 +4805,57 @@ paths:
       parameters: []
       responses:
         "200":
-          description: ""
+          description: All active roles available for assignment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                      required:
+                        - id
+                        - code
+                        - name
+                required:
+                  - data
+                example:
+                  data:
+                    - id: ffffffff-ffff-4fff-8fff-ffffffffffff
+                      code: ADMIN
+                      name: Administrator
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List active roles
       tags: &a10
-        - Rbac
+        - RBAC
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -4366,9 +4866,87 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/AssignRoleDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  userId: 33333333-3333-4333-8333-333333333333
+                  roleCode: ADMIN
       responses:
         "200":
-          description: ""
+          description: The created or restored role assignment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      userId:
+                        type: string
+                      roleId:
+                        type: string
+                      assignedAt:
+                        type: string
+                    required:
+                      - id
+                      - userId
+                      - roleId
+                      - assignedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: abababab-abab-4bab-8bab-abababababab
+                    userId: 33333333-3333-4333-8333-333333333333
+                    roleId: ffffffff-ffff-4fff-8fff-ffffffffffff
+                    assignedAt: 2026-07-20T08:00:00.000Z
+                  message: Role assigned
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Role not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Role not found.
+      security:
+        - bearer: []
+      summary: Assign a role to a user
       tags: *a10
   /api/v1/rbac/unassign-role:
     post:
@@ -4380,9 +4958,87 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UnassignRoleDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  userId: 33333333-3333-4333-8333-333333333333
+                  roleCode: ADMIN
       responses:
         "200":
-          description: ""
+          description: The revoked role assignment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      userId:
+                        type: string
+                      roleId:
+                        type: string
+                      unassignedAt:
+                        type: string
+                    required:
+                      - id
+                      - userId
+                      - roleId
+                      - unassignedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: abababab-abab-4bab-8bab-abababababab
+                    userId: 33333333-3333-4333-8333-333333333333
+                    roleId: ffffffff-ffff-4fff-8fff-ffffffffffff
+                    unassignedAt: 2026-07-20T08:00:00.000Z
+                  message: Role unassigned
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Role assignment not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Role assignment not found.
+      security:
+        - bearer: []
+      summary: Unassign a role from a user
       tags: *a10
   /api/v1/health:
     get:
@@ -4390,7 +5046,23 @@ paths:
       parameters: []
       responses:
         "200":
-          description: ""
+          description: Static liveness payload for probes and uptime checks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  service:
+                    type: string
+                required:
+                  - status
+                  - service
+                example:
+                  status: ok
+                  service: api
+      summary: Check API liveness
       tags:
         - Health
 info:

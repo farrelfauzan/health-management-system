@@ -60,6 +60,7 @@ export class DoctorManagementController {
     summary: 'Get a doctor',
     responseDescription: 'The doctor, schedule, and permitted patient relationships.',
     responseExample: { data: PHASE_THREE_EXAMPLES.doctor.detail },
+    notFoundDescription: 'Doctor not found.',
   })
   async getDoctorById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -114,6 +115,7 @@ export class DoctorManagementController {
     },
     requestType: UpdateDoctorDto,
     requestExample: PHASE_THREE_EXAMPLES.doctor.updateRequest,
+    notFoundDescription: 'Doctor not found.',
   })
   async updateDoctor(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -143,6 +145,7 @@ export class DoctorManagementController {
     },
     requestType: UpdateDoctorScheduleDto,
     requestExample: PHASE_THREE_EXAMPLES.doctor.scheduleRequest,
+    notFoundDescription: 'Doctor not found.',
   })
   async updateDoctorSchedule(
     @Param('id', new ParseUUIDPipe()) id: string,

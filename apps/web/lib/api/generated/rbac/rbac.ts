@@ -22,6 +22,9 @@ import type {
 
 import type {
   AssignRoleDto,
+  RbacControllerAssignRoleV1200,
+  RbacControllerGetRolesV1200,
+  RbacControllerUnassignRoleV1200,
   UnassignRoleDto
 } from '../model';
 
@@ -45,13 +48,16 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * @summary List active roles
+ */
 export const rbacControllerGetRolesV1 = (
 
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<RbacControllerGetRolesV1200>(
       {url: `/api/v1/rbac/roles`, method: 'GET', signal
     },
       );
@@ -113,6 +119,9 @@ export function useRbacControllerGetRolesV1<TData = Awaited<ReturnType<typeof rb
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetRolesV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List active roles
+ */
 
 export function useRbacControllerGetRolesV1<TData = Awaited<ReturnType<typeof rbacControllerGetRolesV1>>, TError = unknown>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetRolesV1>>, TError, TData>>, }
@@ -131,13 +140,16 @@ export function useRbacControllerGetRolesV1<TData = Awaited<ReturnType<typeof rb
 
 
 
+/**
+ * @summary Assign a role to a user
+ */
 export const rbacControllerAssignRoleV1 = (
     assignRoleDto: AssignRoleDto,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<RbacControllerAssignRoleV1200>(
       {url: `/api/v1/rbac/assign-role`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: assignRoleDto, signal
@@ -201,6 +213,9 @@ export function useRbacControllerAssignRoleV1<TData = Awaited<ReturnType<typeof 
  assignRoleDto: AssignRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerAssignRoleV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Assign a role to a user
+ */
 
 export function useRbacControllerAssignRoleV1<TData = Awaited<ReturnType<typeof rbacControllerAssignRoleV1>>, TError = unknown>(
  assignRoleDto: AssignRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerAssignRoleV1>>, TError, TData>>, }
@@ -219,13 +234,16 @@ export function useRbacControllerAssignRoleV1<TData = Awaited<ReturnType<typeof 
 
 
 
+/**
+ * @summary Unassign a role from a user
+ */
 export const rbacControllerUnassignRoleV1 = (
     unassignRoleDto: UnassignRoleDto,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<void>(
+      return orvalAxiosMutator<RbacControllerUnassignRoleV1200>(
       {url: `/api/v1/rbac/unassign-role`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: unassignRoleDto, signal
@@ -289,6 +307,9 @@ export function useRbacControllerUnassignRoleV1<TData = Awaited<ReturnType<typeo
  unassignRoleDto: UnassignRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerUnassignRoleV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Unassign a role from a user
+ */
 
 export function useRbacControllerUnassignRoleV1<TData = Awaited<ReturnType<typeof rbacControllerUnassignRoleV1>>, TError = unknown>(
  unassignRoleDto: UnassignRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerUnassignRoleV1>>, TError, TData>>, }
