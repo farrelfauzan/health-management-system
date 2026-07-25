@@ -3,7 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
 import { PrismaModule } from './common/prisma/prisma.module';
+import { AuditModule } from './common/audit/audit.module';
 import { AuthorizationModule } from './common/authorization/authorization.module';
+import { ObservabilityModule } from './common/observability/observability.module';
 import { StorageModule } from './common/storage/storage.module';
 import { AdminManagementModule } from './modules/admin-management/admin-management.module';
 import { AppointmentManagementModule } from './modules/appointment-management/appointment-management.module';
@@ -29,6 +31,8 @@ import { SpecialtyModule } from './modules/specialty/specialty.module';
         secret: configService.get<string>('JWT_ACCESS_SECRET') ?? 'dev-access-secret',
       }),
     }),
+    ObservabilityModule,
+    AuditModule,
     AuthorizationModule,
     StorageModule,
     AdminManagementModule,

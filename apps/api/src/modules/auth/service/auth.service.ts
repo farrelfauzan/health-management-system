@@ -14,7 +14,9 @@ import {
   RefreshTokenPayload,
 } from '@hms/shared-types';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { resolveJwtExpiresIn } from '../../../common/auth/jwt-expires.util';
+import { AuditAction } from '../../../generated/prisma/client';
 import { LoginDto } from '../dto/login.dto';
 import { AuthRepository } from '../repository/auth.repository';
 
@@ -24,15 +26,18 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly auditService: AuditService,
   ) {}
 
   async login(payload: LoginDto): Promise<AuthTokens> {
     const user = await this.authRepository.findUserByEmail(payload.email);
     if (!user) {
+      await this.recordFailedLogin(payload.email);
       throw new UnauthorizedException('Invalid credentials');
     }
     const isValidPassword = await compare(payload.password, user.passwordHash);
     if (!isValidPassword) {
+      await this.recordFailedLogin(payload.email);
       throw new UnauthorizedException('Invalid credentials');
     }
     const claims: JwtPayload = {
@@ -46,6 +51,13 @@ export class AuthService {
       familyId: randomUUID(),
     });
     await this.authRepository.createRefreshToken(issuedRefreshToken.record);
+    await this.auditService.record({
+      action: AuditAction.USER_LOGIN,
+      resource: 'auth',
+      actorUserId: user.id,
+      resourceId: user.id,
+      metadata: { email: user.email },
+    });
     return {
       accessToken,
       refreshToken: issuedRefreshToken.token,
@@ -80,6 +92,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
     const accessToken = await this.issueAccessToken(claims);
+    await this.auditService.record({
+      action: AuditAction.TOKEN_REFRESHED,
+      resource: 'auth',
+      actorUserId: user.id,
+      resourceId: user.id,
+    });
     return {
       accessToken,
       refreshToken: issuedRefreshToken.token,
@@ -91,10 +109,24 @@ export class AuthService {
   async logout(refreshToken: string): Promise<LogoutResult> {
     const decoded = await this.verifyRefreshToken(refreshToken);
     await this.authRepository.revokeRefreshTokenFamily(decoded.familyId);
+    await this.auditService.record({
+      action: AuditAction.USER_LOGOUT,
+      resource: 'auth',
+      actorUserId: decoded.sub,
+      resourceId: decoded.sub,
+    });
     return {
       success: true,
       message: 'Logged out',
     };
+  }
+
+  private async recordFailedLogin(email: string): Promise<void> {
+    await this.auditService.record({
+      action: AuditAction.USER_LOGIN_FAILED,
+      resource: 'auth',
+      metadata: { email },
+    });
   }
 
   private resolveActiveRoleCodes(

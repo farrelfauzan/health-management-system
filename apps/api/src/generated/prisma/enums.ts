@@ -25,6 +25,20 @@ export const DoctorPatientActivityAction = {
 export type DoctorPatientActivityAction = (typeof DoctorPatientActivityAction)[keyof typeof DoctorPatientActivityAction]
 
 
+export const AuditAction = {
+  USER_LOGIN: 'USER_LOGIN',
+  USER_LOGIN_FAILED: 'USER_LOGIN_FAILED',
+  TOKEN_REFRESHED: 'TOKEN_REFRESHED',
+  USER_LOGOUT: 'USER_LOGOUT',
+  USER_CREATED: 'USER_CREATED',
+  USER_UPDATED: 'USER_UPDATED',
+  ROLE_ASSIGNED: 'ROLE_ASSIGNED',
+  ROLE_UNASSIGNED: 'ROLE_UNASSIGNED'
+} as const
+
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
 export const PatientStatus = {
   IN_PATIENT: 'IN_PATIENT',
   OUT_PATIENT: 'OUT_PATIENT',
