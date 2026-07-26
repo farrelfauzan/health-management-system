@@ -1,5 +1,16 @@
-import type { DoctorEducationInput } from '#doctor-management/schemas';
+import type { DoctorEducationInput, DoctorLicenseTypeValue } from '#doctor-management/schemas';
 import type { SpecialtySummary } from '#specialty/contracts';
+
+/**
+ * License entry as the repository persists it. The service converts the
+ * YYYY-MM-DD schema input into `Date` values before crossing this boundary.
+ */
+export type DoctorLicenseWritePayload = {
+  type: DoctorLicenseTypeValue;
+  licenseNumber: string;
+  issuedAt: Date | null;
+  expiresAt: Date | null;
+};
 
 export type ListDoctorsParams = {
   page: number;
@@ -18,6 +29,9 @@ export type CreateDoctorRecordPayload = {
   email?: string;
   title?: string;
   degrees?: string;
+  nik?: string;
+  satusehatPractitionerId?: string;
+  licenses?: DoctorLicenseWritePayload[];
   educations?: DoctorEducationInput[];
   ownerUserId?: string;
   isActive: boolean;
@@ -32,6 +46,10 @@ export type UpdateDoctorRecordPayload = {
   email?: string | null;
   title?: string | null;
   degrees?: string | null;
+  nik?: string | null;
+  satusehatPractitionerId?: string | null;
+  /** When present, replaces the whole active license list. */
+  licenses?: DoctorLicenseWritePayload[];
   /** When present, replaces the whole active education list. */
   educations?: DoctorEducationInput[];
   ownerUserId?: string | null;
@@ -48,8 +66,20 @@ export type DoctorRecord = {
   email: string | null;
   title: string | null;
   degrees: string | null;
+  nik: string | null;
+  satusehatPractitionerId: string | null;
   ownerUserId: string | null;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type DoctorLicenseRecord = {
+  id: string;
+  type: DoctorLicenseTypeValue;
+  licenseNumber: string;
+  issuedAt: Date | null;
+  expiresAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };

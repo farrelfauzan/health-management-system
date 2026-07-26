@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { CreateDoctorDtoEducationsItem } from './createDoctorDtoEducationsItem';
+import type { CreateDoctorDtoLicensesItem } from './createDoctorDtoLicensesItem';
 
 export interface CreateDoctorDto {
   /**
@@ -36,6 +37,14 @@ export interface CreateDoctorDto {
      * @maxLength 120
      */
   degrees?: string;
+  nik?: string;
+  /**
+     * @minLength 1
+     * @maxLength 64
+     */
+  satusehatPractitionerId?: string;
+  /** @maxItems 20 */
+  licenses?: CreateDoctorDtoLicensesItem[];
   /** @maxItems 20 */
   educations?: CreateDoctorDtoEducationsItem[];
   ownerUserId?: string;

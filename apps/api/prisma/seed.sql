@@ -313,6 +313,8 @@ SET
   "deleted_at" = NULL;
 
 -- Development demo doctors. Replace or remove this block for production seeds.
+-- NIK values are synthetic (structurally valid 16 digits, never real ones):
+-- digits 7-12 encode DD/MM/YY with +40 on DD for female practitioners.
 WITH seed_doctors(
   license_number,
   full_name,
@@ -320,14 +322,15 @@ WITH seed_doctors(
   phone_number,
   email,
   title,
-  degrees
+  degrees,
+  nik
 ) AS (
   VALUES
-    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', 'andi.prasetyo@clinic.local', 'dr.', 'Sp.PD'),
-    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', 'maya.sari@clinic.local', 'dr.', 'Sp.A'),
-    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', 'hendra.gunawan@clinic.local', 'dr.', 'Sp.JP'),
-    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', 'fitri.handayani@clinic.local', 'dr.', 'Sp.OG'),
-    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', 'yusuf.hidayat@clinic.local', 'dr.', NULL)
+    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', 'andi.prasetyo@clinic.local', 'dr.', 'Sp.PD', '3173011001800001'),
+    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', 'maya.sari@clinic.local', 'dr.', 'Sp.A', '3173015504850002'),
+    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', 'hendra.gunawan@clinic.local', 'dr.', 'Sp.JP', '3173012208780003'),
+    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', 'fitri.handayani@clinic.local', 'dr.', 'Sp.OG', '3173014512830004'),
+    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', 'yusuf.hidayat@clinic.local', 'dr.', NULL, '3173013006900005')
 )
 INSERT INTO "doctor_profiles" (
   "id",
@@ -338,6 +341,8 @@ INSERT INTO "doctor_profiles" (
   "email",
   "title",
   "degrees",
+  "nik",
+  "satusehat_practitioner_id",
   "owner_user_id",
   "is_active",
   "created_at",
@@ -353,6 +358,8 @@ SELECT
   email,
   title,
   degrees,
+  nik,
+  NULL,
   NULL,
   true,
   NOW(),
@@ -368,7 +375,54 @@ SET
   "email" = EXCLUDED."email",
   "title" = EXCLUDED."title",
   "degrees" = EXCLUDED."degrees",
+  "nik" = EXCLUDED."nik",
   "is_active" = true,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
+-- Development demo practitioner licenses (synthetic STR/SIP numbers).
+-- STR entries have no expiry (lifetime under UU Kesehatan No. 17/2023);
+-- SIP entries are time-limited per practice location.
+WITH seed_doctor_licenses(doctor_license_number, type, license_number, issued_at, expires_at) AS (
+  VALUES
+    ('SIP-2026-0001', 'STR', 'STR-31-2019-000101', DATE '2019-03-01', NULL::date),
+    ('SIP-2026-0001', 'SIP', 'SIP-2026-0001', DATE '2026-01-02', DATE '2031-01-01'),
+    ('SIP-2026-0002', 'STR', 'STR-31-2020-000202', DATE '2020-07-15', NULL::date),
+    ('SIP-2026-0002', 'SIP', 'SIP-2026-0002', DATE '2026-01-02', DATE '2031-01-01'),
+    ('SIP-2026-0003', 'STR', 'STR-31-2017-000303', DATE '2017-11-20', NULL::date),
+    ('SIP-2026-0003', 'SIP', 'SIP-2026-0003', DATE '2026-01-02', DATE '2031-01-01'),
+    ('SIP-2026-0004', 'STR', 'STR-31-2021-000404', DATE '2021-05-10', NULL::date),
+    ('SIP-2026-0004', 'SIP', 'SIP-2026-0004', DATE '2026-01-02', DATE '2031-01-01'),
+    ('SIP-2026-0005', 'STR', 'STR-31-2022-000505', DATE '2022-09-05', NULL::date),
+    ('SIP-2026-0005', 'SIP', 'SIP-2026-0005', DATE '2026-01-02', DATE '2031-01-01')
+)
+INSERT INTO "doctor_licenses" (
+  "id",
+  "doctor_id",
+  "type",
+  "license_number",
+  "issued_at",
+  "expires_at",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('doctor-license:' || type || ':' || license_number)::uuid,
+  md5('doctor:' || doctor_license_number)::uuid,
+  type::"DoctorLicenseType",
+  license_number,
+  issued_at,
+  expires_at,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_doctor_licenses
+ON CONFLICT ("id") DO UPDATE
+SET
+  "license_number" = EXCLUDED."license_number",
+  "issued_at" = EXCLUDED."issued_at",
+  "expires_at" = EXCLUDED."expires_at",
   "updated_at" = NOW(),
   "deleted_at" = NULL;
 

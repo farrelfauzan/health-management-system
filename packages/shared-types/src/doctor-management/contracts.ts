@@ -1,3 +1,5 @@
+import type { DoctorLicenseTypeValue } from '#doctor-management/schemas';
+
 export type DoctorProfile = {
   id: string;
   licenseNumber: string;
@@ -8,8 +10,20 @@ export type DoctorProfile = {
   email?: string;
   title?: string;
   degrees?: string;
+  nik?: string;
+  satusehatPractitionerId?: string;
   ownerUserId?: string;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DoctorLicense = {
+  id: string;
+  type: DoctorLicenseTypeValue;
+  licenseNumber: string;
+  issuedAt?: string;
+  expiresAt?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -48,6 +62,7 @@ export type DoctorListItem = DoctorProfile & {
 export type DoctorDetail = DoctorProfile & {
   patientCount: number;
   schedules: DoctorScheduleEntry[];
+  licenses: DoctorLicense[];
   educations: DoctorEducation[];
   patients?: DoctorRelatedPatient[];
 };

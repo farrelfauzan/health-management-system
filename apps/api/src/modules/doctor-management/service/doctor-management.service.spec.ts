@@ -43,6 +43,7 @@ describe('DoctorManagementService', () => {
     listDoctors: jest.fn(),
     findDoctorById: jest.fn(),
     findDoctorDetailById: jest.fn(),
+    findDoctorByNik: jest.fn(),
     findDoctorByLicenseNumber: jest.fn(),
     findDoctorByOwnerUserId: jest.fn(),
     findActiveUserById: jest.fn(),
@@ -79,11 +80,16 @@ describe('DoctorManagementService', () => {
     email: null,
     title: null,
     degrees: null,
+    nik: null,
+    satusehatPractitionerId: null,
     ownerUserId: null,
     isActive: true,
     createdAt: new Date('2026-07-01T00:00:00.000Z'),
     updatedAt: new Date('2026-07-01T00:00:00.000Z'),
   };
+
+  // Synthetic 16-digit NIK — digits 7-12 encode 15/03/80 for a male doctor.
+  const inputDoctorNik = '3173011503800002';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -271,6 +277,186 @@ describe('DoctorManagementService', () => {
     expect(result.licenseNumber).toBe('LIC-0001');
   });
 
+  describe('licensing and identity fields', () => {
+    it('throws conflict when the NIK already belongs to another doctor', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
+        null,
+      );
+      (doctorManagementRepositoryMock.findDoctorByNik as jest.Mock).mockResolvedValue({
+        id: 'existing-doctor',
+      });
+
+      await expect(
+        service.createDoctor(
+          {
+            licenseNumber: 'LIC-0002',
+            fullName: 'Dr. Second',
+            specialtyId,
+            phoneNumber: '0812345679',
+            nik: inputDoctorNik,
+            isActive: true,
+          },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(doctorManagementRepositoryMock.createDoctor).not.toHaveBeenCalled();
+    });
+
+    it('creates a doctor with NIK and licenses converted to write payloads', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
+        null,
+      );
+      (doctorManagementRepositoryMock.findDoctorByNik as jest.Mock).mockResolvedValue(null);
+      (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+        id: specialtyId,
+      });
+      (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        nik: inputDoctorNik,
+        satusehatPractitionerId: '10009880728',
+      });
+
+      const result = await service.createDoctor(
+        {
+          licenseNumber: 'LIC-0001',
+          fullName: 'Dr. First',
+          specialtyId,
+          phoneNumber: '0812345678',
+          nik: inputDoctorNik,
+          satusehatPractitionerId: '10009880728',
+          licenses: [
+            { type: 'STR', licenseNumber: 'STR-31-2019-000101', issuedAt: '2019-03-01' },
+            {
+              type: 'SIP',
+              licenseNumber: 'LIC-0001',
+              issuedAt: '2026-01-02',
+              expiresAt: '2031-01-01',
+            },
+          ],
+          isActive: true,
+        },
+        currentUser,
+      );
+
+      expect(doctorManagementRepositoryMock.createDoctor).toHaveBeenCalledWith(
+        expect.objectContaining({
+          nik: inputDoctorNik,
+          satusehatPractitionerId: '10009880728',
+          licenses: [
+            {
+              type: 'STR',
+              licenseNumber: 'STR-31-2019-000101',
+              issuedAt: new Date('2019-03-01T00:00:00.000Z'),
+              expiresAt: null,
+            },
+            {
+              type: 'SIP',
+              licenseNumber: 'LIC-0001',
+              issuedAt: new Date('2026-01-02T00:00:00.000Z'),
+              expiresAt: new Date('2031-01-01T00:00:00.000Z'),
+            },
+          ],
+        }),
+      );
+      expect(result.nik).toBe(inputDoctorNik);
+      expect(result.satusehatPractitionerId).toBe('10009880728');
+    });
+
+    it('allows a doctor to keep its own NIK on update', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+      (doctorManagementRepositoryMock.findDoctorByNik as jest.Mock).mockResolvedValue({
+        id: doctorId,
+      });
+      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        nik: inputDoctorNik,
+      });
+
+      const result = await service.updateDoctor(doctorId, { nik: inputDoctorNik }, currentUser);
+
+      expect(result.nik).toBe(inputDoctorNik);
+    });
+
+    it('replaces the license list on update', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue(doctorRecord);
+
+      await service.updateDoctor(
+        doctorId,
+        {
+          licenses: [
+            { type: 'SIP', licenseNumber: 'SIP-2026-0009', expiresAt: '2031-01-01' },
+          ],
+        },
+        currentUser,
+      );
+
+      expect(doctorManagementRepositoryMock.updateDoctor).toHaveBeenCalledWith(
+        doctorId,
+        expect.objectContaining({
+          licenses: [
+            {
+              type: 'SIP',
+              licenseNumber: 'SIP-2026-0009',
+              issuedAt: null,
+              expiresAt: new Date('2031-01-01T00:00:00.000Z'),
+            },
+          ],
+        }),
+      );
+    });
+
+    it('returns active licenses with date-only strings in the doctor detail', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorDetailById as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        _count: { patients: 0 },
+        patients: [],
+        schedules: [],
+        educations: [],
+        licenses: [
+          {
+            id: 'f0e1d2c3-b4a5-4657-8899-aabbccddeeff',
+            type: 'STR',
+            licenseNumber: 'STR-31-2019-000101',
+            issuedAt: new Date('2019-03-01T00:00:00.000Z'),
+            expiresAt: null,
+            createdAt: new Date('2026-07-01T00:00:00.000Z'),
+            updatedAt: new Date('2026-07-01T00:00:00.000Z'),
+          },
+        ],
+      });
+
+      const result = await service.getDoctorById(doctorId, currentUser);
+
+      expect(result.licenses).toEqual([
+        {
+          id: 'f0e1d2c3-b4a5-4657-8899-aabbccddeeff',
+          type: 'STR',
+          licenseNumber: 'STR-31-2019-000101',
+          issuedAt: '2019-03-01',
+          expiresAt: undefined,
+          createdAt: '2026-07-01T00:00:00.000Z',
+          updatedAt: '2026-07-01T00:00:00.000Z',
+        },
+      ]);
+    });
+  });
+
   describe('profile listing fields', () => {
     it('creates a doctor with title, degrees, email, and educations', async () => {
       (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
@@ -356,6 +542,7 @@ describe('DoctorManagementService', () => {
         _count: { patients: 0 },
         patients: [],
         schedules: [],
+        licenses: [],
         educations: [
           {
             id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
@@ -486,6 +673,8 @@ describe('DoctorManagementService', () => {
     const detailRecord = {
       ...doctorRecord,
       ownerUserId: currentUser.sub,
+      licenses: [],
+      educations: [],
       _count: {
         patients: 1,
       },
@@ -500,7 +689,6 @@ describe('DoctorManagementService', () => {
         },
       ],
       schedules: [],
-      educations: [],
     };
 
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(

@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { UpdateDoctorDtoEducationsItem } from './updateDoctorDtoEducationsItem';
+import type { UpdateDoctorDtoLicensesItem } from './updateDoctorDtoLicensesItem';
 
 export interface UpdateDoctorDto {
   /**
@@ -36,6 +37,16 @@ export interface UpdateDoctorDto {
      * @nullable
      */
   degrees?: string | null;
+  /** @nullable */
+  nik?: string | null;
+  /**
+     * @minLength 1
+     * @maxLength 64
+     * @nullable
+     */
+  satusehatPractitionerId?: string | null;
+  /** @maxItems 20 */
+  licenses?: UpdateDoctorDtoLicensesItem[];
   /** @maxItems 20 */
   educations?: UpdateDoctorDtoEducationsItem[];
   /** @nullable */

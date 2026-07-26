@@ -16,6 +16,8 @@ export type DoctorManagementControllerUpdateDoctorV1200Data = {
   email: string;
   title: string;
   degrees: string;
+  nik: string;
+  satusehatPractitionerId: string;
   ownerUserId: string;
   isActive: boolean;
   createdAt: string;

@@ -1,11 +1,72 @@
 import { z } from 'zod';
 
+// The canonical NIK validator lives with the patient domain because patients
+// adopted national identifiers first; practitioners share the exact same
+// 16-digit Dukcapil format, so reuse it instead of diverging.
+import { nikSchema } from '#patient-management/schemas';
+
 export const MAX_INITIAL_PATIENT_ASSIGNMENTS = 20;
 export const MAX_SCHEDULE_ENTRIES = 28;
+export const MAX_DOCTOR_LICENSES = 20;
 export const MAX_DOCTOR_EDUCATIONS = 20;
 
 const CURRENT_GRADUATION_YEAR = new Date().getUTCFullYear();
 const MIN_GRADUATION_YEAR = 1950;
+
+export const licenseDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD format')
+  .refine(isValidLicenseDate, 'Date must be a valid calendar date');
+
+function isValidLicenseDate(value: string): boolean {
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+  if (Number.isNaN(parsed.getTime())) {
+    return false;
+  }
+  const [year, month, day] = value.split('-').map((part) => Number(part));
+  return (
+    parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() + 1 === month &&
+    parsed.getUTCDate() === day
+  );
+}
+
+/**
+ * Practitioner credential types on Indonesian licensing documents: STR (Surat
+ * Tanda Registrasi — lifetime under UU Kesehatan No. 17/2023) and SIP (Surat
+ * Izin Praktik — per practice location, time-limited).
+ */
+export const DOCTOR_LICENSE_TYPES = ['STR', 'SIP'] as const;
+
+export const doctorLicenseTypeSchema = z.enum(DOCTOR_LICENSE_TYPES);
+
+export type DoctorLicenseTypeValue = z.infer<typeof doctorLicenseTypeSchema>;
+
+export const doctorLicenseInputSchema = z
+  .object({
+    type: doctorLicenseTypeSchema,
+    licenseNumber: z.string().trim().min(3).max(64),
+    issuedAt: licenseDateSchema.optional(),
+    expiresAt: licenseDateSchema.optional(),
+  })
+  .refine(
+    (license) => !license.issuedAt || !license.expiresAt || license.issuedAt <= license.expiresAt,
+    'issuedAt must be before or equal to expiresAt',
+  );
+
+export const doctorLicensesSchema = z
+  .array(doctorLicenseInputSchema)
+  .max(MAX_DOCTOR_LICENSES)
+  .refine(
+    (licenses) =>
+      new Set(licenses.map((license) => `${license.type}:${license.licenseNumber.toLowerCase()}`))
+        .size === licenses.length,
+    'License numbers must be unique per license type',
+  );
+
+export type DoctorLicenseInput = z.infer<typeof doctorLicenseInputSchema>;
+
+export const satusehatPractitionerIdSchema = z.string().trim().min(1).max(64);
 
 export const doctorTitleSchema = z.string().trim().min(1).max(32);
 export const doctorDegreesSchema = z.string().trim().min(1).max(120);
@@ -113,6 +174,11 @@ export const createDoctorSchema = z.object({
   email: doctorEmailSchema.optional(),
   title: doctorTitleSchema.optional(),
   degrees: doctorDegreesSchema.optional(),
+  // Nullable: required for SATUSEHAT practitioner lookup, but legacy records
+  // and foreign practitioners may not have one yet.
+  nik: nikSchema.optional(),
+  satusehatPractitionerId: satusehatPractitionerIdSchema.optional(),
+  licenses: doctorLicensesSchema.optional(),
   educations: doctorEducationsSchema.optional(),
   ownerUserId: z.string().uuid().optional(),
   isActive: z.boolean().optional().default(true),
@@ -132,6 +198,12 @@ export const updateDoctorSchema = z
     email: doctorEmailSchema.nullable().optional(),
     title: doctorTitleSchema.nullable().optional(),
     degrees: doctorDegreesSchema.nullable().optional(),
+    nik: nikSchema.nullable().optional(),
+    satusehatPractitionerId: satusehatPractitionerIdSchema.nullable().optional(),
+    // Replaces the whole list: the client always submits the complete set of
+    // active licenses, and removed entries are soft-deleted rather than
+    // dropped, so the credential history survives licensing audits.
+    licenses: doctorLicensesSchema.optional(),
     // Replaces the whole list: the client submits the complete set of active
     // education rows, and removed entries are soft-deleted so the history
     // survives profile edits and SATUSEHAT qualification remaps.

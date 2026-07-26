@@ -1,6 +1,7 @@
 import {
   CreateDoctorRecordPayload,
   DoctorEducationInput,
+  DoctorLicenseWritePayload,
   ListDoctorsParams,
   ReplaceDoctorSchedulesPayload,
   UpdateDoctorRecordPayload,
@@ -21,6 +22,21 @@ const SPECIALTY_SELECT = {
     name: true,
   },
 } satisfies Prisma.SpecialtyDefaultArgs;
+const LICENSES_INCLUDE = {
+  where: {
+    deletedAt: null,
+  },
+  orderBy: [{ type: 'asc' }, { createdAt: 'asc' }],
+  select: {
+    id: true,
+    type: true,
+    licenseNumber: true,
+    issuedAt: true,
+    expiresAt: true,
+    createdAt: true,
+    updatedAt: true,
+  },
+} satisfies Prisma.DoctorProfile$licensesArgs;
 const EDUCATIONS_INCLUDE = {
   where: {
     deletedAt: null,
@@ -36,6 +52,20 @@ const EDUCATIONS_INCLUDE = {
     updatedAt: true,
   },
 } satisfies Prisma.DoctorProfile$educationsArgs;
+
+function toLicenseCreateData(license: DoctorLicenseWritePayload): {
+  type: DoctorLicenseWritePayload['type'];
+  licenseNumber: string;
+  issuedAt: Date | null;
+  expiresAt: Date | null;
+} {
+  return {
+    type: license.type,
+    licenseNumber: license.licenseNumber,
+    issuedAt: license.issuedAt,
+    expiresAt: license.expiresAt,
+  };
+}
 
 function toEducationCreateData(education: DoctorEducationInput): {
   institution: string;
@@ -58,6 +88,7 @@ export class DoctorManagementRepository {
   async listDoctors(params: ListDoctorsParams) {
     const { page, limit, search, specialtyId, patientId, isActive } = params;
     const skip = (page - 1) * limit;
+
     const where = {
       ...(isActive === undefined ? {} : { isActive }),
       ...(specialtyId ? { specialtyId } : {}),
@@ -98,6 +129,7 @@ export class DoctorManagementRepository {
           }
         : {}),
     };
+
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {
       const doctors = await this.prisma.findManyActive(tx.doctorProfile, {
         where,
@@ -122,9 +154,12 @@ export class DoctorManagementRepository {
           },
         },
       });
+
       const count = await this.prisma.countActive(tx.doctorProfile, { where });
+
       return [doctors, count] as const;
     });
+
     return {
       items,
       total,
@@ -182,7 +217,19 @@ export class DoctorManagementRepository {
         schedules: {
           orderBy: SCHEDULE_ORDER_BY,
         },
+        licenses: LICENSES_INCLUDE,
         educations: EDUCATIONS_INCLUDE,
+      },
+    });
+  }
+
+  async findDoctorByNik(nik: string) {
+    return this.prisma.findUniqueActive(this.prisma.doctorProfile, {
+      where: {
+        nik,
+      },
+      select: {
+        id: true,
       },
     });
   }
@@ -258,8 +305,13 @@ export class DoctorManagementRepository {
           email: payload.email ?? null,
           title: payload.title ?? null,
           degrees: payload.degrees ?? null,
+          nik: payload.nik ?? null,
+          satusehatPractitionerId: payload.satusehatPractitionerId ?? null,
           ownerUserId: payload.ownerUserId ?? null,
           isActive: payload.isActive,
+          licenses: {
+            create: (payload.licenses ?? []).map(toLicenseCreateData),
+          },
           educations: {
             create: (payload.educations ?? []).map(toEducationCreateData),
           },
@@ -268,6 +320,7 @@ export class DoctorManagementRepository {
           specialty: SPECIALTY_SELECT,
         },
       });
+
       for (const patientId of payload.patientIds ?? []) {
         const assignment = await tx.doctorPatient.create({
           data: {
@@ -276,6 +329,7 @@ export class DoctorManagementRepository {
             assignedById: payload.actorUserId,
           },
         });
+
         await tx.doctorPatientActivity.create({
           data: {
             assignmentId: assignment.id,
@@ -284,12 +338,24 @@ export class DoctorManagementRepository {
           },
         });
       }
+
       return doctor;
     });
   }
 
   async updateDoctor(id: string, payload: UpdateDoctorRecordPayload) {
     return this.prisma.executeTransaction(async (tx) => {
+      if (payload.licenses !== undefined) {
+        await tx.doctorLicense.updateMany({
+          where: {
+            doctorId: id,
+            deletedAt: null,
+          },
+          data: {
+            deletedAt: new Date(),
+          },
+        });
+      }
       if (payload.educations !== undefined) {
         await tx.doctorEducation.updateMany({
           where: {
@@ -312,8 +378,15 @@ export class DoctorManagementRepository {
           ...(payload.email !== undefined ? { email: payload.email } : {}),
           ...(payload.title !== undefined ? { title: payload.title } : {}),
           ...(payload.degrees !== undefined ? { degrees: payload.degrees } : {}),
+          ...(payload.nik !== undefined ? { nik: payload.nik } : {}),
+          ...(payload.satusehatPractitionerId !== undefined
+            ? { satusehatPractitionerId: payload.satusehatPractitionerId }
+            : {}),
           ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
           ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
+          ...(payload.licenses !== undefined
+            ? { licenses: { create: payload.licenses.map(toLicenseCreateData) } }
+            : {}),
           ...(payload.educations !== undefined
             ? { educations: { create: payload.educations.map(toEducationCreateData) } }
             : {}),
@@ -332,6 +405,7 @@ export class DoctorManagementRepository {
           doctorId: payload.doctorId,
         },
       });
+
       for (const entry of payload.entries) {
         await tx.doctorSchedule.create({
           data: {
@@ -344,6 +418,7 @@ export class DoctorManagementRepository {
           },
         });
       }
+
       return tx.doctorSchedule.findMany({
         where: {
           doctorId: payload.doctorId,

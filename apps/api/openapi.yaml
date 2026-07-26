@@ -1604,6 +1604,10 @@ paths:
                           type: string
                         degrees:
                           type: string
+                        nik:
+                          type: string
+                        satusehatPractitionerId:
+                          type: string
                         ownerUserId:
                           type: string
                         isActive:
@@ -1645,6 +1649,8 @@ paths:
                         - email
                         - title
                         - degrees
+                        - nik
+                        - satusehatPractitionerId
                         - ownerUserId
                         - isActive
                         - createdAt
@@ -1678,6 +1684,8 @@ paths:
                       email: budi.santoso@clinic.local
                       title: dr.
                       degrees: Sp.PD
+                      nik: "3173011503800002"
+                      satusehatPractitionerId: "10009880728"
                       ownerUserId: 33333333-3333-4333-8333-333333333333
                       isActive: true
                       createdAt: 2026-07-20T08:00:00.000Z
@@ -1736,6 +1744,15 @@ paths:
                   email: budi.santoso@clinic.local
                   title: dr.
                   degrees: Sp.PD
+                  nik: "3173011503800002"
+                  licenses:
+                    - type: STR
+                      licenseNumber: STR-33-2020-000123
+                      issuedAt: 2020-02-01
+                    - type: SIP
+                      licenseNumber: SIP-2026-0001
+                      issuedAt: 2026-01-15
+                      expiresAt: 2031-01-14
                   educations:
                     - institution: Universitas Indonesia
                       degree: dr.
@@ -1777,6 +1794,10 @@ paths:
                         type: string
                       degrees:
                         type: string
+                      nik:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
                       ownerUserId:
                         type: string
                       isActive:
@@ -1795,6 +1816,8 @@ paths:
                       - email
                       - title
                       - degrees
+                      - nik
+                      - satusehatPractitionerId
                       - ownerUserId
                       - isActive
                       - createdAt
@@ -1815,6 +1838,8 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
+                    nik: "3173011503800002"
+                    satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -1889,6 +1914,10 @@ paths:
                         type: string
                       degrees:
                         type: string
+                      nik:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
                       ownerUserId:
                         type: string
                       isActive:
@@ -1920,6 +1949,30 @@ paths:
                             - startTime
                             - endTime
                             - isAvailable
+                      licenses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            type:
+                              type: string
+                            licenseNumber:
+                              type: string
+                            issuedAt:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - type
+                            - licenseNumber
+                            - issuedAt
+                            - createdAt
+                            - updatedAt
                       educations:
                         type: array
                         items:
@@ -1975,12 +2028,15 @@ paths:
                       - email
                       - title
                       - degrees
+                      - nik
+                      - satusehatPractitionerId
                       - ownerUserId
                       - isActive
                       - createdAt
                       - updatedAt
                       - patientCount
                       - schedules
+                      - licenses
                       - educations
                       - patients
                 required:
@@ -1996,6 +2052,8 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
+                    nik: "3173011503800002"
+                    satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -2007,6 +2065,20 @@ paths:
                         startTime: 08:00
                         endTime: 16:00
                         isAvailable: true
+                    licenses:
+                      - id: cdcdcdcd-cdcd-4dcd-8dcd-cdcdcdcdcdcd
+                        type: STR
+                        licenseNumber: STR-33-2020-000123
+                        issuedAt: 2020-02-01
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                      - id: dededede-dede-4ede-8ede-dededededede
+                        type: SIP
+                        licenseNumber: SIP-2026-0001
+                        issuedAt: 2026-01-15
+                        expiresAt: 2031-01-14
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
                     educations:
                       - id: fafafafa-fafa-4afa-8afa-fafafafafafa
                         institution: Universitas Indonesia
@@ -2111,6 +2183,10 @@ paths:
                         type: string
                       degrees:
                         type: string
+                      nik:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
                       ownerUserId:
                         type: string
                       isActive:
@@ -2129,6 +2205,8 @@ paths:
                       - email
                       - title
                       - degrees
+                      - nik
+                      - satusehatPractitionerId
                       - ownerUserId
                       - isActive
                       - createdAt
@@ -2149,6 +2227,8 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
+                    nik: "3173011503800002"
+                    satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -5860,6 +5940,36 @@ components:
           type: string
           minLength: 1
           maxLength: 120
+        nik:
+          type: string
+        satusehatPractitionerId:
+          type: string
+          minLength: 1
+          maxLength: 64
+        licenses:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - STR
+                  - SIP
+              licenseNumber:
+                type: string
+                minLength: 3
+                maxLength: 64
+              issuedAt:
+                type: string
+                pattern: ^\d{4}-\d{2}-\d{2}$
+              expiresAt:
+                type: string
+                pattern: ^\d{4}-\d{2}-\d{2}$
+            required:
+              - type
+              - licenseNumber
         educations:
           type: array
           maxItems: 20
@@ -5934,6 +6044,38 @@ components:
           minLength: 1
           maxLength: 120
           nullable: true
+        nik:
+          type: string
+          nullable: true
+        satusehatPractitionerId:
+          type: string
+          minLength: 1
+          maxLength: 64
+          nullable: true
+        licenses:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - STR
+                  - SIP
+              licenseNumber:
+                type: string
+                minLength: 3
+                maxLength: 64
+              issuedAt:
+                type: string
+                pattern: ^\d{4}-\d{2}-\d{2}$
+              expiresAt:
+                type: string
+                pattern: ^\d{4}-\d{2}-\d{2}$
+            required:
+              - type
+              - licenseNumber
         educations:
           type: array
           maxItems: 20
