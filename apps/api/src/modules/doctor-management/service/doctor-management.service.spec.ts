@@ -76,6 +76,9 @@ describe('DoctorManagementService', () => {
     specialtyId,
     specialty: { id: specialtyId, name: 'Cardiology' },
     phoneNumber: '0812345678',
+    email: null,
+    title: null,
+    degrees: null,
     ownerUserId: null,
     isActive: true,
     createdAt: new Date('2026-07-01T00:00:00.000Z'),
@@ -268,6 +271,121 @@ describe('DoctorManagementService', () => {
     expect(result.licenseNumber).toBe('LIC-0001');
   });
 
+  describe('profile listing fields', () => {
+    it('creates a doctor with title, degrees, email, and educations', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
+        null,
+      );
+      (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+        id: specialtyId,
+      });
+      (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        email: 'dr.first@clinic.local',
+        title: 'dr.',
+        degrees: 'Sp.JP',
+      });
+      const inputEducations = [
+        {
+          institution: 'Universitas Indonesia',
+          degree: 'dr.',
+          fieldOfStudy: 'Kedokteran',
+          graduationYear: 2004,
+        },
+      ];
+      const result = await service.createDoctor(
+        {
+          licenseNumber: 'LIC-0001',
+          fullName: 'Dr. First',
+          specialtyId,
+          phoneNumber: '0812345678',
+          email: 'dr.first@clinic.local',
+          title: 'dr.',
+          degrees: 'Sp.JP',
+          educations: inputEducations,
+          isActive: true,
+        },
+        currentUser,
+      );
+      expect(doctorManagementRepositoryMock.createDoctor).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'dr.first@clinic.local',
+          title: 'dr.',
+          degrees: 'Sp.JP',
+          educations: inputEducations,
+        }),
+      );
+      expect(result.email).toBe('dr.first@clinic.local');
+      expect(result.title).toBe('dr.');
+      expect(result.degrees).toBe('Sp.JP');
+    });
+
+    it('replaces the education list on update', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue(doctorRecord);
+      const inputEducations = [
+        {
+          institution: 'Universitas Gadjah Mada',
+          degree: 'Sp.A',
+          fieldOfStudy: 'Ilmu Kesehatan Anak',
+          graduationYear: 2014,
+        },
+      ];
+      await service.updateDoctor(doctorId, { educations: inputEducations }, currentUser);
+      expect(doctorManagementRepositoryMock.updateDoctor).toHaveBeenCalledWith(
+        doctorId,
+        expect.objectContaining({ educations: inputEducations }),
+      );
+    });
+
+    it('returns active educations in the doctor detail', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorDetailById as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        title: 'dr.',
+        degrees: 'Sp.PD',
+        email: 'dr.first@clinic.local',
+        _count: { patients: 0 },
+        patients: [],
+        schedules: [],
+        educations: [
+          {
+            id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+            institution: 'Universitas Indonesia',
+            degree: 'Sp.PD',
+            fieldOfStudy: 'Penyakit Dalam',
+            graduationYear: 2010,
+            createdAt: new Date('2026-07-01T00:00:00.000Z'),
+            updatedAt: new Date('2026-07-01T00:00:00.000Z'),
+          },
+        ],
+      });
+      const result = await service.getDoctorById(doctorId, currentUser);
+      expect(result.title).toBe('dr.');
+      expect(result.degrees).toBe('Sp.PD');
+      expect(result.email).toBe('dr.first@clinic.local');
+      expect(result.educations).toEqual([
+        {
+          id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+          institution: 'Universitas Indonesia',
+          degree: 'Sp.PD',
+          fieldOfStudy: 'Penyakit Dalam',
+          graduationYear: 2010,
+          createdAt: '2026-07-01T00:00:00.000Z',
+          updatedAt: '2026-07-01T00:00:00.000Z',
+        },
+      ]);
+    });
+  });
+
   it('rejects overlapping schedule entries on the same day', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
       buildActor([{ action: 'write', resource: 'DoctorSchedule', scope: 'ANY' }]),
@@ -382,6 +500,7 @@ describe('DoctorManagementService', () => {
         },
       ],
       schedules: [],
+      educations: [],
     };
 
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(

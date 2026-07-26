@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateDoctorDtoEducationsItem } from './updateDoctorDtoEducationsItem';
 
 export interface UpdateDoctorDto {
   /**
@@ -18,6 +19,25 @@ export interface UpdateDoctorDto {
      * @maxLength 32
      */
   phoneNumber?: string;
+  /**
+     * @maxLength 254
+     * @nullable
+     */
+  email?: string | null;
+  /**
+     * @minLength 1
+     * @maxLength 32
+     * @nullable
+     */
+  title?: string | null;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     * @nullable
+     */
+  degrees?: string | null;
+  /** @maxItems 20 */
+  educations?: UpdateDoctorDtoEducationsItem[];
   /** @nullable */
   ownerUserId?: string | null;
   isActive?: boolean;

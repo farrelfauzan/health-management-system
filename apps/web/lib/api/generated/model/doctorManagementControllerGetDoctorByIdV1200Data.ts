@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { DoctorManagementControllerGetDoctorByIdV1200DataEducationsItem } from './doctorManagementControllerGetDoctorByIdV1200DataEducationsItem';
 import type { DoctorManagementControllerGetDoctorByIdV1200DataPatientsItem } from './doctorManagementControllerGetDoctorByIdV1200DataPatientsItem';
 import type { DoctorManagementControllerGetDoctorByIdV1200DataSchedulesItem } from './doctorManagementControllerGetDoctorByIdV1200DataSchedulesItem';
 
@@ -15,11 +16,15 @@ export type DoctorManagementControllerGetDoctorByIdV1200Data = {
   specialtyId: string;
   specialty: string;
   phoneNumber: string;
+  email: string;
+  title: string;
+  degrees: string;
   ownerUserId: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
   patientCount: number;
   schedules: DoctorManagementControllerGetDoctorByIdV1200DataSchedulesItem[];
+  educations: DoctorManagementControllerGetDoctorByIdV1200DataEducationsItem[];
   patients: DoctorManagementControllerGetDoctorByIdV1200DataPatientsItem[];
 };

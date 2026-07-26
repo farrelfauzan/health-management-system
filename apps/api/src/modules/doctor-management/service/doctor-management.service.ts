@@ -1,5 +1,6 @@
 import {
   Actor,
+  DoctorEducationRecord,
   DoctorRecord,
   DoctorScheduleRecord,
   hasScheduleOverlap,
@@ -72,6 +73,7 @@ export class DoctorManagementService {
       ...this.toDoctorResponse(doctor),
       patientCount: doctor._count.patients,
       schedules: doctor.schedules.map((schedule) => this.toScheduleResponse(schedule)),
+      educations: doctor.educations.map((education) => this.toEducationResponse(education)),
       ...(canReadRelatedPatients
         ? {
             patients: doctor.patients.map((assignment) => ({
@@ -127,6 +129,10 @@ export class DoctorManagementService {
       fullName: payload.fullName,
       specialtyId: payload.specialtyId,
       phoneNumber: payload.phoneNumber,
+      email: payload.email,
+      title: payload.title,
+      degrees: payload.degrees,
+      educations: payload.educations,
       ownerUserId: payload.ownerUserId,
       isActive: payload.isActive,
       patientIds: payload.patientIds,
@@ -186,6 +192,10 @@ export class DoctorManagementService {
       fullName: payload.fullName,
       specialtyId: payload.specialtyId,
       phoneNumber: payload.phoneNumber,
+      email: payload.email,
+      title: payload.title,
+      degrees: payload.degrees,
+      educations: payload.educations,
       ownerUserId: payload.ownerUserId,
       isActive: payload.isActive,
     });
@@ -328,10 +338,25 @@ export class DoctorManagementService {
       specialtyId: doctor.specialtyId,
       specialty: doctor.specialty.name,
       phoneNumber: doctor.phoneNumber ?? undefined,
+      email: doctor.email ?? undefined,
+      title: doctor.title ?? undefined,
+      degrees: doctor.degrees ?? undefined,
       ownerUserId: doctor.ownerUserId ?? undefined,
       isActive: doctor.isActive,
       createdAt: doctor.createdAt.toISOString(),
       updatedAt: doctor.updatedAt.toISOString(),
+    };
+  }
+
+  private toEducationResponse(education: DoctorEducationRecord) {
+    return {
+      id: education.id,
+      institution: education.institution,
+      degree: education.degree,
+      fieldOfStudy: education.fieldOfStudy ?? undefined,
+      graduationYear: education.graduationYear ?? undefined,
+      createdAt: education.createdAt.toISOString(),
+      updatedAt: education.updatedAt.toISOString(),
     };
   }
 

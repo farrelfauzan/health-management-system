@@ -21,6 +21,8 @@ limit?: number;
  * @minLength 1
  */
 search?: string;
+nik?: string;
+bpjsNumber?: string;
 doctorId?: string;
 status?: PatientManagementControllerListPatientsV1Status;
 /**

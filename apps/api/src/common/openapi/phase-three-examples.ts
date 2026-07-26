@@ -77,11 +77,34 @@ const doctor = {
   specialtyId,
   specialty: specialty.name,
   phoneNumber: '+628129876543',
+  email: 'budi.santoso@clinic.local',
+  title: 'dr.',
+  degrees: 'Sp.PD',
   ownerUserId: userId,
   isActive: true,
   createdAt: timestamp,
   updatedAt: timestamp,
 };
+const doctorEducations = [
+  {
+    id: 'fafafafa-fafa-4afa-8afa-fafafafafafa',
+    institution: 'Universitas Indonesia',
+    degree: 'dr.',
+    fieldOfStudy: 'Kedokteran',
+    graduationYear: 2004,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  },
+  {
+    id: 'fbfbfbfb-fbfb-4bfb-8bfb-fbfbfbfbfbfb',
+    institution: 'Universitas Indonesia',
+    degree: 'Sp.PD',
+    fieldOfStudy: 'Penyakit Dalam',
+    graduationYear: 2010,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  },
+];
 const sessionId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const appointment = {
   id: appointmentId,
@@ -257,12 +280,32 @@ export const PHASE_THREE_EXAMPLES = {
       fullName: 'Dr. Budi Santoso',
       specialtyId,
       phoneNumber: '+628129876543',
+      email: 'budi.santoso@clinic.local',
+      title: 'dr.',
+      degrees: 'Sp.PD',
+      educations: [
+        {
+          institution: 'Universitas Indonesia',
+          degree: 'dr.',
+          fieldOfStudy: 'Kedokteran',
+          graduationYear: 2004,
+        },
+        {
+          institution: 'Universitas Indonesia',
+          degree: 'Sp.PD',
+          fieldOfStudy: 'Penyakit Dalam',
+          graduationYear: 2010,
+        },
+      ],
       ownerUserId: userId,
       patientIds: [patientId],
     },
     updateRequest: {
       specialtyId,
       phoneNumber: '+628129876500',
+      email: 'budi.santoso@clinic.local',
+      title: 'dr.',
+      degrees: 'Sp.PD',
       isActive: true,
     },
     scheduleRequest: {
@@ -281,6 +324,7 @@ export const PHASE_THREE_EXAMPLES = {
       ...doctor,
       patientCount: 1,
       schedules: [doctorScheduleEntry],
+      educations: doctorEducations,
       patients: [
         { id: patientId, assignmentId, mrn: patient.mrn, fullName: patient.fullName },
       ],

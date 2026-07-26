@@ -5,8 +5,21 @@ export type DoctorProfile = {
   specialtyId: string;
   specialty: string;
   phoneNumber?: string;
+  email?: string;
+  title?: string;
+  degrees?: string;
   ownerUserId?: string;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DoctorEducation = {
+  id: string;
+  institution: string;
+  degree: string;
+  fieldOfStudy?: string;
+  graduationYear?: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -35,6 +48,7 @@ export type DoctorListItem = DoctorProfile & {
 export type DoctorDetail = DoctorProfile & {
   patientCount: number;
   schedules: DoctorScheduleEntry[];
+  educations: DoctorEducation[];
   patients?: DoctorRelatedPatient[];
 };
 

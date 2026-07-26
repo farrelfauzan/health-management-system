@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateDoctorDtoEducationsItem } from './createDoctorDtoEducationsItem';
 
 export interface CreateDoctorDto {
   /**
@@ -23,6 +24,20 @@ export interface CreateDoctorDto {
      * @maxLength 32
      */
   phoneNumber: string;
+  /** @maxLength 254 */
+  email?: string;
+  /**
+     * @minLength 1
+     * @maxLength 32
+     */
+  title?: string;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  degrees?: string;
+  /** @maxItems 20 */
+  educations?: CreateDoctorDtoEducationsItem[];
   ownerUserId?: string;
   isActive?: boolean;
   /**

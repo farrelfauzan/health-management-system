@@ -390,6 +390,7 @@ export const ModelName = {
   PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
+  DoctorEducation: 'DoctorEducation',
   DoctorSchedule: 'DoctorSchedule',
   AppointmentSession: 'AppointmentSession',
   DoctorPatient: 'DoctorPatient',
@@ -421,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
+    modelProps: "user" | "refreshToken" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -866,6 +867,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DoctorProfileCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DoctorProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    DoctorEducation: {
+      payload: Prisma.$DoctorEducationPayload<ExtArgs>
+      fields: Prisma.DoctorEducationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DoctorEducationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DoctorEducationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload>
+        }
+        findFirst: {
+          args: Prisma.DoctorEducationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DoctorEducationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload>
+        }
+        findMany: {
+          args: Prisma.DoctorEducationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload>[]
+        }
+        create: {
+          args: Prisma.DoctorEducationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload>
+        }
+        createMany: {
+          args: Prisma.DoctorEducationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DoctorEducationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload>[]
+        }
+        delete: {
+          args: Prisma.DoctorEducationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload>
+        }
+        update: {
+          args: Prisma.DoctorEducationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload>
+        }
+        deleteMany: {
+          args: Prisma.DoctorEducationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DoctorEducationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DoctorEducationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload>[]
+        }
+        upsert: {
+          args: Prisma.DoctorEducationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorEducationPayload>
+        }
+        aggregate: {
+          args: Prisma.DoctorEducationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDoctorEducation>
+        }
+        groupBy: {
+          args: Prisma.DoctorEducationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorEducationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DoctorEducationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorEducationCountAggregateOutputType> | number
         }
       }
     }
@@ -2195,10 +2270,28 @@ export const DoctorProfileScalarFieldEnum = {
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  title: 'title',
+  degrees: 'degrees',
+  email: 'email'
 } as const
 
 export type DoctorProfileScalarFieldEnum = (typeof DoctorProfileScalarFieldEnum)[keyof typeof DoctorProfileScalarFieldEnum]
+
+
+export const DoctorEducationScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  institution: 'institution',
+  degree: 'degree',
+  fieldOfStudy: 'fieldOfStudy',
+  graduationYear: 'graduationYear',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorEducationScalarFieldEnum = (typeof DoctorEducationScalarFieldEnum)[keyof typeof DoctorEducationScalarFieldEnum]
 
 
 export const DoctorScheduleScalarFieldEnum = {
@@ -2899,6 +2992,7 @@ export type GlobalOmitConfig = {
   patientAllergy?: Prisma.PatientAllergyOmit
   specialty?: Prisma.SpecialtyOmit
   doctorProfile?: Prisma.DoctorProfileOmit
+  doctorEducation?: Prisma.DoctorEducationOmit
   doctorSchedule?: Prisma.DoctorScheduleOmit
   appointmentSession?: Prisma.AppointmentSessionOmit
   doctorPatient?: Prisma.DoctorPatientOmit

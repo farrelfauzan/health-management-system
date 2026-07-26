@@ -273,6 +273,15 @@ model DoctorProfile {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
 
+  // Listing/profile fields clinics expect on doctor directories (P7-T04).
+  // Specialty remains the existing Specialty reference table; title/degrees
+  // cover honorifics and academic credentials (e.g. "dr.", "Sp.PD").
+  // phoneNumber already existed; email is required by SATUSEHAT Practitioner
+  // ContactPoint alongside phone.
+  title     String?
+  degrees   String?
+  email     String?
+
   specialty           Specialty            @relation(fields: [specialtyId], references: [id])
   ownerUser           User?                @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
   patients            DoctorPatient[]
@@ -280,12 +289,33 @@ model DoctorProfile {
   appointments        Appointment[]
   appointmentSessions AppointmentSession[]
   prescriptions       Prescription[]
+  educations          DoctorEducation[]
 
   @@index([deletedAt])
   @@index([isActive])
   @@index([fullName])
   @@index([specialtyId])
   @@map("doctor_profiles")
+}
+
+/// Academic qualifications mapped later to SATUSEHAT Practitioner.qualification
+/// together with licensing records. Soft-deleted so history survives edits.
+model DoctorEducation {
+  id             String    @id @default(uuid()) @db.Uuid
+  doctorId       String    @map("doctor_id") @db.Uuid
+  institution    String
+  degree         String
+  fieldOfStudy   String?   @map("field_of_study")
+  graduationYear Int?      @map("graduation_year")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+
+  doctor DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@index([deletedAt])
+  @@map("doctor_educations")
 }
 
 model DoctorSchedule {

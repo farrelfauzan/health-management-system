@@ -14,6 +14,9 @@ export type DoctorManagementControllerListDoctorsV1200DataItem = {
   specialtyId: string;
   specialty: string;
   phoneNumber: string;
+  email: string;
+  title: string;
+  degrees: string;
   ownerUserId: string;
   isActive: boolean;
   createdAt: string;
