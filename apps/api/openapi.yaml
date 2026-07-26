@@ -643,6 +643,8 @@ paths:
                           type: string
                         dateOfBirth:
                           type: string
+                        placeOfBirth:
+                          type: string
                         sex:
                           type: string
                         status:
@@ -650,6 +652,32 @@ paths:
                         phoneNumber:
                           type: string
                         address:
+                          type: string
+                        nikMasked:
+                          type: string
+                        bpjsNumberMasked:
+                          type: string
+                        hasSatusehatPatientId:
+                          type: boolean
+                        email:
+                          type: string
+                        bloodType:
+                          type: string
+                        rhesusFactor:
+                          type: string
+                        maritalStatus:
+                          type: string
+                        occupation:
+                          type: string
+                        religion:
+                          type: string
+                        emergencyContactName:
+                          type: string
+                        emergencyContactPhone:
+                          type: string
+                        guardianName:
+                          type: string
+                        guardianRelation:
                           type: string
                         ownerUserId:
                           type: string
@@ -660,6 +688,8 @@ paths:
                         updatedAt:
                           type: string
                         doctorCount:
+                          type: integer
+                        allergyCount:
                           type: integer
                         doctors:
                           type: array
@@ -684,15 +714,30 @@ paths:
                         - mrn
                         - fullName
                         - dateOfBirth
+                        - placeOfBirth
                         - sex
                         - status
                         - phoneNumber
                         - address
+                        - nikMasked
+                        - bpjsNumberMasked
+                        - hasSatusehatPatientId
+                        - email
+                        - bloodType
+                        - rhesusFactor
+                        - maritalStatus
+                        - occupation
+                        - religion
+                        - emergencyContactName
+                        - emergencyContactPhone
+                        - guardianName
+                        - guardianRelation
                         - ownerUserId
                         - isActive
                         - createdAt
                         - updatedAt
                         - doctorCount
+                        - allergyCount
                         - doctors
                   meta:
                     type: object
@@ -716,15 +761,30 @@ paths:
                       mrn: MRN-2026-0001
                       fullName: Aisha Rahman
                       dateOfBirth: 1990-05-12
+                      placeOfBirth: Bandung
                       sex: FEMALE
                       status: OUT_PATIENT
                       phoneNumber: "+628123456789"
                       address: Jakarta
+                      nikMasked: ••••••••0001
+                      bpjsNumberMasked: ••••••••7890
+                      hasSatusehatPatientId: false
+                      email: aisha.rahman@example.com
+                      bloodType: O
+                      rhesusFactor: POSITIVE
+                      maritalStatus: MARRIED
+                      occupation: Teacher
+                      religion: ISLAM
+                      emergencyContactName: Rahmat Rahman
+                      emergencyContactPhone: "+628123456700"
+                      guardianName: Rahmat Rahman
+                      guardianRelation: Spouse
                       ownerUserId: 33333333-3333-4333-8333-333333333333
                       isActive: true
                       createdAt: 2026-07-20T08:00:00.000Z
                       updatedAt: 2026-07-20T08:00:00.000Z
                       doctorCount: 1
+                      allergyCount: 1
                       doctors:
                         - id: 22222222-2222-4222-8222-222222222222
                           assignmentId: 88888888-8888-4888-8888-888888888888
@@ -773,10 +833,25 @@ paths:
                   mrn: MRN-2026-0001
                   fullName: Aisha Rahman
                   dateOfBirth: 1990-05-12
+                  placeOfBirth: Bandung
                   sex: FEMALE
                   status: OUT_PATIENT
                   phoneNumber: "+628123456789"
                   address: Jakarta
+                  nik: "3201015205900001"
+                  bpjsNumber: "0001234567890"
+                  email: aisha.rahman@example.com
+                  bloodType: O
+                  rhesusFactor: POSITIVE
+                  maritalStatus: MARRIED
+                  occupation: Teacher
+                  religion: ISLAM
+                  emergencyContactName: Rahmat Rahman
+                  emergencyContactPhone: "+628123456700"
+                  allergies:
+                    - substance: Penicillin
+                      reaction: Urticaria and swelling
+                      severity: SEVERE
                   ownerUserId: 33333333-3333-4333-8333-333333333333
                   doctorIds:
                     - 22222222-2222-4222-8222-222222222222
@@ -799,6 +874,8 @@ paths:
                         type: string
                       dateOfBirth:
                         type: string
+                      placeOfBirth:
+                        type: string
                       sex:
                         type: string
                       status:
@@ -806,6 +883,32 @@ paths:
                       phoneNumber:
                         type: string
                       address:
+                        type: string
+                      nikMasked:
+                        type: string
+                      bpjsNumberMasked:
+                        type: string
+                      hasSatusehatPatientId:
+                        type: boolean
+                      email:
+                        type: string
+                      bloodType:
+                        type: string
+                      rhesusFactor:
+                        type: string
+                      maritalStatus:
+                        type: string
+                      occupation:
+                        type: string
+                      religion:
+                        type: string
+                      emergencyContactName:
+                        type: string
+                      emergencyContactPhone:
+                        type: string
+                      guardianName:
+                        type: string
+                      guardianRelation:
                         type: string
                       ownerUserId:
                         type: string
@@ -820,18 +923,41 @@ paths:
                       - mrn
                       - fullName
                       - dateOfBirth
+                      - placeOfBirth
                       - sex
                       - status
                       - phoneNumber
                       - address
+                      - nikMasked
+                      - bpjsNumberMasked
+                      - hasSatusehatPatientId
+                      - email
+                      - bloodType
+                      - rhesusFactor
+                      - maritalStatus
+                      - occupation
+                      - religion
+                      - emergencyContactName
+                      - emergencyContactPhone
+                      - guardianName
+                      - guardianRelation
                       - ownerUserId
                       - isActive
                       - createdAt
                       - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      identifierWarnings:
+                        type: array
+                        items: {}
+                    required:
+                      - identifierWarnings
                   message:
                     type: string
                 required:
                   - data
+                  - meta
                   - message
                 example:
                   data:
@@ -839,14 +965,30 @@ paths:
                     mrn: MRN-2026-0001
                     fullName: Aisha Rahman
                     dateOfBirth: 1990-05-12
+                    placeOfBirth: Bandung
                     sex: FEMALE
                     status: OUT_PATIENT
                     phoneNumber: "+628123456789"
                     address: Jakarta
+                    nikMasked: ••••••••0001
+                    bpjsNumberMasked: ••••••••7890
+                    hasSatusehatPatientId: false
+                    email: aisha.rahman@example.com
+                    bloodType: O
+                    rhesusFactor: POSITIVE
+                    maritalStatus: MARRIED
+                    occupation: Teacher
+                    religion: ISLAM
+                    emergencyContactName: Rahmat Rahman
+                    emergencyContactPhone: "+628123456700"
+                    guardianName: Rahmat Rahman
+                    guardianRelation: Spouse
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
+                  meta:
+                    identifierWarnings: []
                   message: Patient created
         "400":
           description: Request validation failed.
@@ -907,6 +1049,8 @@ paths:
                         type: string
                       dateOfBirth:
                         type: string
+                      placeOfBirth:
+                        type: string
                       sex:
                         type: string
                       status:
@@ -914,6 +1058,32 @@ paths:
                       phoneNumber:
                         type: string
                       address:
+                        type: string
+                      nikMasked:
+                        type: string
+                      bpjsNumberMasked:
+                        type: string
+                      hasSatusehatPatientId:
+                        type: boolean
+                      email:
+                        type: string
+                      bloodType:
+                        type: string
+                      rhesusFactor:
+                        type: string
+                      maritalStatus:
+                        type: string
+                      occupation:
+                        type: string
+                      religion:
+                        type: string
+                      emergencyContactName:
+                        type: string
+                      emergencyContactPhone:
+                        type: string
+                      guardianName:
+                        type: string
+                      guardianRelation:
                         type: string
                       ownerUserId:
                         type: string
@@ -941,20 +1111,59 @@ paths:
                             - assignmentId
                             - fullName
                             - specialty
+                      allergies:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            substance:
+                              type: string
+                            reaction:
+                              type: string
+                            severity:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - substance
+                            - reaction
+                            - severity
+                            - createdAt
+                            - updatedAt
                     required:
                       - id
                       - mrn
                       - fullName
                       - dateOfBirth
+                      - placeOfBirth
                       - sex
                       - status
                       - phoneNumber
                       - address
+                      - nikMasked
+                      - bpjsNumberMasked
+                      - hasSatusehatPatientId
+                      - email
+                      - bloodType
+                      - rhesusFactor
+                      - maritalStatus
+                      - occupation
+                      - religion
+                      - emergencyContactName
+                      - emergencyContactPhone
+                      - guardianName
+                      - guardianRelation
                       - ownerUserId
                       - isActive
                       - createdAt
                       - updatedAt
                       - doctors
+                      - allergies
                 required:
                   - data
                 example:
@@ -963,10 +1172,24 @@ paths:
                     mrn: MRN-2026-0001
                     fullName: Aisha Rahman
                     dateOfBirth: 1990-05-12
+                    placeOfBirth: Bandung
                     sex: FEMALE
                     status: OUT_PATIENT
                     phoneNumber: "+628123456789"
                     address: Jakarta
+                    nikMasked: ••••••••0001
+                    bpjsNumberMasked: ••••••••7890
+                    hasSatusehatPatientId: false
+                    email: aisha.rahman@example.com
+                    bloodType: O
+                    rhesusFactor: POSITIVE
+                    maritalStatus: MARRIED
+                    occupation: Teacher
+                    religion: ISLAM
+                    emergencyContactName: Rahmat Rahman
+                    emergencyContactPhone: "+628123456700"
+                    guardianName: Rahmat Rahman
+                    guardianRelation: Spouse
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -976,6 +1199,13 @@ paths:
                         assignmentId: 88888888-8888-4888-8888-888888888888
                         fullName: Dr. Budi Santoso
                         specialty: Internal Medicine
+                    allergies:
+                      - id: bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb
+                        substance: Penicillin
+                        reaction: Urticaria and swelling
+                        severity: SEVERE
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
         "401":
           description: Authentication is required.
           content:
@@ -1028,6 +1258,9 @@ paths:
                   phoneNumber: "+628123456780"
                   address: Bandung
                   status: IN_PATIENT
+                  allergies:
+                    - substance: Penicillin
+                      severity: MODERATE
       responses:
         "200":
           description: The patient was updated.
@@ -1047,6 +1280,8 @@ paths:
                         type: string
                       dateOfBirth:
                         type: string
+                      placeOfBirth:
+                        type: string
                       sex:
                         type: string
                       status:
@@ -1054,6 +1289,32 @@ paths:
                       phoneNumber:
                         type: string
                       address:
+                        type: string
+                      nikMasked:
+                        type: string
+                      bpjsNumberMasked:
+                        type: string
+                      hasSatusehatPatientId:
+                        type: boolean
+                      email:
+                        type: string
+                      bloodType:
+                        type: string
+                      rhesusFactor:
+                        type: string
+                      maritalStatus:
+                        type: string
+                      occupation:
+                        type: string
+                      religion:
+                        type: string
+                      emergencyContactName:
+                        type: string
+                      emergencyContactPhone:
+                        type: string
+                      guardianName:
+                        type: string
+                      guardianRelation:
                         type: string
                       ownerUserId:
                         type: string
@@ -1068,18 +1329,41 @@ paths:
                       - mrn
                       - fullName
                       - dateOfBirth
+                      - placeOfBirth
                       - sex
                       - status
                       - phoneNumber
                       - address
+                      - nikMasked
+                      - bpjsNumberMasked
+                      - hasSatusehatPatientId
+                      - email
+                      - bloodType
+                      - rhesusFactor
+                      - maritalStatus
+                      - occupation
+                      - religion
+                      - emergencyContactName
+                      - emergencyContactPhone
+                      - guardianName
+                      - guardianRelation
                       - ownerUserId
                       - isActive
                       - createdAt
                       - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      identifierWarnings:
+                        type: array
+                        items: {}
+                    required:
+                      - identifierWarnings
                   message:
                     type: string
                 required:
                   - data
+                  - meta
                   - message
                 example:
                   data:
@@ -1087,14 +1371,30 @@ paths:
                     mrn: MRN-2026-0001
                     fullName: Aisha Rahman
                     dateOfBirth: 1990-05-12
+                    placeOfBirth: Bandung
                     sex: FEMALE
                     status: OUT_PATIENT
                     phoneNumber: "+628123456789"
                     address: Jakarta
+                    nikMasked: ••••••••0001
+                    bpjsNumberMasked: ••••••••7890
+                    hasSatusehatPatientId: false
+                    email: aisha.rahman@example.com
+                    bloodType: O
+                    rhesusFactor: POSITIVE
+                    maritalStatus: MARRIED
+                    occupation: Teacher
+                    religion: ISLAM
+                    emergencyContactName: Rahmat Rahman
+                    emergencyContactPhone: "+628123456700"
+                    guardianName: Rahmat Rahman
+                    guardianRelation: Spouse
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
+                  meta:
+                    identifierWarnings: []
                   message: Patient updated
         "400":
           description: Request validation failed.

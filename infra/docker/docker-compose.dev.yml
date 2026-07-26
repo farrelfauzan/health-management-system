@@ -24,6 +24,9 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/hms_dev?schema=public
       PORT: 3001
+      # Dev-only identifier encryption keys. Never reuse these outside local docker.
+      PATIENT_PII_ENCRYPTION_KEY: ${PATIENT_PII_ENCRYPTION_KEY:-ZGV2LW9ubHktcGF0aWVudC1waWktZW5jLWtleS0wMDE=}
+      PATIENT_PII_INDEX_KEY: ${PATIENT_PII_INDEX_KEY:-ZGV2LW9ubHktcGF0aWVudC1waWktaWR4LWtleS0wMDE=}
     ports:
       - '3001:3001'
     depends_on:

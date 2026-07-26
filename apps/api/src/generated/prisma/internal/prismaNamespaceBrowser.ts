@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   RefreshToken: 'RefreshToken',
   PatientProfile: 'PatientProfile',
+  PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
   DoctorSchedule: 'DoctorSchedule',
@@ -121,6 +122,7 @@ export const PatientProfileScalarFieldEnum = {
   mrn: 'mrn',
   fullName: 'fullName',
   dateOfBirth: 'dateOfBirth',
+  placeOfBirth: 'placeOfBirth',
   sex: 'sex',
   status: 'status',
   phoneNumber: 'phoneNumber',
@@ -129,10 +131,44 @@ export const PatientProfileScalarFieldEnum = {
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  email: 'email',
+  bloodType: 'bloodType',
+  rhesusFactor: 'rhesusFactor',
+  maritalStatus: 'maritalStatus',
+  occupation: 'occupation',
+  religion: 'religion',
+  emergencyContactName: 'emergencyContactName',
+  emergencyContactPhone: 'emergencyContactPhone',
+  guardianName: 'guardianName',
+  guardianRelation: 'guardianRelation',
+  nikCiphertext: 'nikCiphertext',
+  nikIndex: 'nikIndex',
+  nikLast4: 'nikLast4',
+  nikKeyVersion: 'nikKeyVersion',
+  bpjsNumberCiphertext: 'bpjsNumberCiphertext',
+  bpjsNumberIndex: 'bpjsNumberIndex',
+  bpjsNumberLast4: 'bpjsNumberLast4',
+  bpjsNumberKeyVersion: 'bpjsNumberKeyVersion',
+  satusehatPatientIdCiphertext: 'satusehatPatientIdCiphertext',
+  satusehatPatientIdKeyVersion: 'satusehatPatientIdKeyVersion'
 } as const
 
 export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]
+
+
+export const PatientAllergyScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  substance: 'substance',
+  reaction: 'reaction',
+  severity: 'severity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type PatientAllergyScalarFieldEnum = (typeof PatientAllergyScalarFieldEnum)[keyof typeof PatientAllergyScalarFieldEnum]
 
 
 export const SpecialtyScalarFieldEnum = {

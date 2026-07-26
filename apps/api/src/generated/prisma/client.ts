@@ -55,6 +55,12 @@ export type RefreshToken = Prisma.RefreshTokenModel
  */
 export type PatientProfile = Prisma.PatientProfileModel
 /**
+ * Model PatientAllergy
+ * Free-text substance plus a severity grade. Deliberately uncoded for now —
+ * allergen and reaction move to coded terminology in the EMR phase.
+ */
+export type PatientAllergy = Prisma.PatientAllergyModel
+/**
  * Model Specialty
  * 
  */

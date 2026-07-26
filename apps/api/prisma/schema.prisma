@@ -39,6 +39,43 @@ enum PatientSex {
   FEMALE
 }
 
+enum BloodType {
+  A
+  B
+  AB
+  O
+}
+
+enum RhesusFactor {
+  POSITIVE
+  NEGATIVE
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+}
+
+// The six religions recognised on Indonesian civil registration documents,
+// plus an escape hatch for records that do not fit them.
+enum Religion {
+  ISLAM
+  PROTESTANTISM
+  CATHOLICISM
+  HINDUISM
+  BUDDHISM
+  CONFUCIANISM
+  OTHER
+}
+
+enum AllergySeverity {
+  MILD
+  MODERATE
+  SEVERE
+}
+
 enum AppointmentStatus {
   REQUESTED
   SCHEDULED
@@ -125,25 +162,61 @@ model RefreshToken {
 }
 
 model PatientProfile {
-  id          String        @id @default(uuid()) @db.Uuid
-  mrn         String        @unique
-  fullName    String        @map("full_name")
-  dateOfBirth DateTime      @map("date_of_birth") @db.Date
-  sex         PatientSex?
-  status      PatientStatus @default(OUT_PATIENT)
-  phoneNumber String        @map("phone_number")
-  address     String
-  ownerUserId String?       @map("owner_user_id") @db.Uuid
-  isActive    Boolean       @default(true) @map("is_active")
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
-  deletedAt   DateTime?     @map("deleted_at")
+  id           String        @id @default(uuid()) @db.Uuid
+  mrn          String        @unique
+  fullName     String        @map("full_name")
+  dateOfBirth  DateTime      @map("date_of_birth") @db.Date
+  placeOfBirth String?       @map("place_of_birth")
+  sex          PatientSex?
+  status       PatientStatus @default(OUT_PATIENT)
+  phoneNumber  String        @map("phone_number")
+  address      String
+  ownerUserId  String?       @map("owner_user_id") @db.Uuid
+  isActive     Boolean       @default(true) @map("is_active")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  deletedAt    DateTime?     @map("deleted_at")
 
-  ownerUser     User?           @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  // Demographic and clinical-safety identity fields required by PMK 24/2022
+  // and expected on Indonesian registration forms. All optional so existing
+  // MVP records stay valid; required-ness tightens in the EMR phase.
+  email                 String?        @map("email")
+  bloodType             BloodType?     @map("blood_type")
+  rhesusFactor          RhesusFactor?  @map("rhesus_factor")
+  maritalStatus         MaritalStatus? @map("marital_status")
+  occupation            String?
+  religion              Religion?
+  emergencyContactName  String?        @map("emergency_contact_name")
+  emergencyContactPhone String?        @map("emergency_contact_phone")
+  // Penanggung jawab — required in practice for minors.
+  guardianName          String?        @map("guardian_name")
+  guardianRelation      String?        @map("guardian_relation")
+
+  // National and payer identifiers are never stored in plaintext. Each
+  // searchable identifier lives across three columns: AES-256-GCM ciphertext
+  // for retrieval, an HMAC-SHA256 blind index for lookup and uniqueness, and
+  // the last four digits for masked display. See
+  // docs/post-mvp/patient-identifiers.md.
+  // Key version is per identifier, not per row: identifiers are written
+  // independently, so one row-level version could not describe two values
+  // encrypted under different keys during an incremental rotation.
+  nikCiphertext                 String? @map("nik_ciphertext")
+  nikIndex                      String? @unique @map("nik_index")
+  nikLast4                      String? @map("nik_last4")
+  nikKeyVersion                 Int?    @map("nik_key_version") @db.SmallInt
+  bpjsNumberCiphertext          String? @map("bpjs_number_ciphertext")
+  bpjsNumberIndex               String? @unique @map("bpjs_number_index")
+  bpjsNumberLast4               String? @map("bpjs_number_last4")
+  bpjsNumberKeyVersion          Int?    @map("bpjs_number_key_version") @db.SmallInt
+  satusehatPatientIdCiphertext  String? @map("satusehat_patient_id_ciphertext")
+  satusehatPatientIdKeyVersion  Int?    @map("satusehat_patient_id_key_version") @db.SmallInt
+
+  ownerUser     User?            @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
   doctors       DoctorPatient[]
   appointments  Appointment[]
   registrations Registration[]
   prescriptions Prescription[]
+  allergies     PatientAllergy[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -151,6 +224,25 @@ model PatientProfile {
   @@index([fullName])
   @@index([status])
   @@map("patient_profiles")
+}
+
+/// Free-text substance plus a severity grade. Deliberately uncoded for now —
+/// allergen and reaction move to coded terminology in the EMR phase.
+model PatientAllergy {
+  id        String          @id @default(uuid()) @db.Uuid
+  patientId String          @map("patient_id") @db.Uuid
+  substance String
+  reaction  String?
+  severity  AllergySeverity
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+  deletedAt DateTime?       @map("deleted_at")
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([deletedAt])
+  @@map("patient_allergies")
 }
 
 model Specialty {

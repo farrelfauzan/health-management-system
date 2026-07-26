@@ -12,17 +12,19 @@ Research summary (July 2026), full context in session research:
 
 Conclusion: compliance features (coded EMR, SATUSEHAT, BPJS) and front-desk basics (queue, billing) are the purchase triggers for Indonesian small clinics. They are ordered first below. The AGENTS.md MVP scope note ("do not expand scope until MVP modules are stable") is superseded by this plan once Phase 5 (MVP hardening) is complete.
 
-## 2. Phase 7 - Clinical Data Model Enrichment (Backend, 5 Tasks)
+## 2. Phase 7 - Clinical Data Model Enrichment (Backend, 7 Tasks)
 
 Goal: extend `PatientProfile`, `DoctorProfile`, and `Medication` with the identity and credential fields required by PMK 24/2022, SATUSEHAT, and BPJS — **before** more production data accumulates. All fields go through `packages/shared-types` schemas per repo convention.
 
+Identifier storage and MRN allocation are specified in [patient-identifiers.md](./patient-identifiers.md) — read it before starting `P7-T01`.
+
 ### 2.1 Patient fields (`P7-T01`, `P7-T02`)
 
-1. `P7-T01` Migration + schema: national identity and payer fields.
-   - `nik` (string, 16 digits, unique, nullable — newborns/foreigners may lack one; validate checksum format only). SATUSEHAT uses NIK as the master patient index key (`https://fhir.kemkes.go.id/id/nik` identifier system).
-   - `bpjsNumber` (string, 13 digits, unique, nullable).
-   - `satusehatPatientId` (IHS number, string, nullable — filled after first successful SATUSEHAT patient lookup/registration).
-   - `gender` (enum `MALE | FEMALE` — required by both SATUSEHAT and PCare), `placeOfBirth`.
+1. `P7-T01` Migration + schema: national identity and payer fields. Land these columns **already encrypted** (`P7-T07`) so no plaintext window exists.
+   - `nik` (16 digits, nullable — newborns/foreigners may lack one). Stored as `nikCiphertext` + `nikIndex` (unique) + `nikLast4`; validate structure, not a checksum — NIK has none, but digits 7–12 encode `DDMMYY` with +40 on `DD` for female, so it cross-checks against `dateOfBirth`/`gender` as a soft warning. SATUSEHAT uses NIK as the master patient index key (`https://fhir.kemkes.go.id/id/nik` identifier system).
+   - `bpjsNumber` (13 digits, nullable). Same encrypted + blind-index treatment, unique on the index.
+   - `satusehatPatientId` (IHS number, nullable — filled after first successful SATUSEHAT patient lookup/registration). Encrypted, no blind index.
+   - `placeOfBirth`. **Do not add `gender`** — `PatientProfile` already has `sex PatientSex?` with the same `MALE | FEMALE` values; keep one field and map it to FHIR `gender` in the SATUSEHAT adapter.
 2. `P7-T02` Migration + schema: demographic and clinical-safety fields required by PMK 24/2022 patient identity / expected by clinics.
    - `bloodType` (enum A/B/AB/O + rhesus), `maritalStatus`, `occupation`, `religion` (optional; present on Indonesian registration forms and PCare).
    - `email` (optional), `emergencyContactName`, `emergencyContactPhone`, `guardianName`/`guardianRelation` (penanggung jawab — required for minors).
@@ -44,10 +46,19 @@ Goal: extend `PatientProfile`, `DoctorProfile`, and `Medication` with the identi
 
 5. `P7-T05` Migration + schema: `kfaCode` (Kamus Farmasi dan Alat Kesehatan code, nullable, unique when present — required for SATUSEHAT medication resources), `unit` (tablet/kapsul/ml), `category`. Add the missing medication create/update admin endpoints (catalog is currently read-only via API).
 
+### 2.4 Identifier handling (`P7-T06`, `P7-T07`)
+
+Design: [patient-identifiers.md](./patient-identifiers.md).
+
+6. `P7-T06` MRN auto-generation. `MrnCounter` migration + atomic `UPDATE … RETURNING` allocation inside the patient-create transaction; remove `mrn` from `createPatientSchema` (response-only from here on); admin legacy-import path for clinics migrating existing MRNs, gated by a new `patient.import-identifier` permission; decide MRN uniqueness scope (global vs `@@unique([facilityId, mrn])`) before any production data exists. MRN is immutable — no update path. Regenerate the web client.
+7. `P7-T07` Identifier encryption at rest. `PatientIdentifierCryptoService` in `apps/api/src/common/crypto/` (AES-256-GCM for ciphertext, HMAC-SHA256 blind index for lookup/uniqueness — a plain hash is brute-forceable because name/DOB/address sit in plaintext in the same row); shared normaliser used by every write path; `patient.read-identifier` permission with masked-by-default responses and an audit event on every unmask; `PATIENT_PII_ENCRYPTION_KEY` + `PATIENT_PII_INDEX_KEY` (both distinct from `AI_PROVIDER_ENCRYPTION_KEY`); key- and pepper-rotation procedures added to the release runbook.
+
 Phase 7 notes:
 
 - Every new field is optional/nullable at the API layer except where noted, so existing MVP data and flows keep working; enforce required-ness progressively in the EMR/SATUSEHAT phases.
 - Update seeders, integration tests, and regenerate the web client (`pnpm api:contract:sync`) per task.
+- `P7-T06` and `P7-T07` must land with (or before) `P7-T01` — retrofitting either onto live clinical records means a plaintext window plus renumbering MRNs already printed on physical folders.
+- Never put real NIK or BPJS values in seeders or fixtures; use structurally valid synthetic values.
 
 ## 3. Phase 8 - Encounter / EMR Module and Queue (Backend, 6 Tasks)
 

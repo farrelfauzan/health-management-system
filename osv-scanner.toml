@@ -1,0 +1,36 @@
+[[IgnoredVulns]]
+id = "GHSA-mh99-v99m-4gvg"
+ignoreUntil = 2026-10-31
+reason = """
+The affected brace-expansion 1.x copy is only reachable through development
+tooling (ESLint, Jest, and Nest CLI). The HMS application does not pass
+user-controlled glob patterns to this dependency. Remove this exception when
+those upstream dependency chains no longer require minimatch 3.
+"""
+
+[[IgnoredVulns]]
+id = "GHSA-92pp-h63x-v22m"
+ignoreUntil = 2026-10-31
+reason = """
+This moderate-severity @hono/node-server finding is transitive through Prisma
+and shadcn tooling. HMS does not use Hono serveStatic or its route middleware.
+Remove this exception after those upstream packages adopt the fixed release.
+"""
+
+[[IgnoredVulns]]
+id = "GHSA-frvp-7c67-39w9"
+ignoreUntil = 2026-10-31
+reason = """
+This moderate-severity @hono/node-server finding affects serveStatic on Windows.
+HMS does not run Hono or serve static files through it. Remove this exception
+after the Prisma and shadcn dependency chains adopt @hono/node-server 2.0.5.
+"""
+
+[[IgnoredVulns]]
+id = "GHSA-5qjj-4xww-7phc"
+ignoreUntil = 2026-10-31
+reason = """
+This moderate-severity Valibot finding is transitive through Prisma tooling.
+HMS request validation uses Zod and never calls Valibot flatten(). Remove this
+exception after Prisma adopts Valibot 1.4.2 or later.
+"""

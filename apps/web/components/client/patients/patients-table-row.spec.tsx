@@ -15,9 +15,12 @@ const PATIENT: PatientListItem = {
   status: 'IN_PATIENT',
   phoneNumber: '+628123456789',
   address: 'Jakarta',
+  nikMasked: '••••••••0001',
+  hasSatusehatPatientId: false,
   isActive: true,
   createdAt: '2026-07-01T00:00:00.000Z',
   updatedAt: '2026-07-10T00:00:00.000Z',
+  allergyCount: 1,
   doctorCount: 3,
   doctors: [
     { id: 'doctor-1', assignmentId: 'assignment-1', fullName: 'Dr. Budi', specialty: 'Cardiology' },
