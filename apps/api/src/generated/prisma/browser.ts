@@ -49,6 +49,13 @@ export type Specialty = Prisma.SpecialtyModel
  */
 export type DoctorProfile = Prisma.DoctorProfileModel
 /**
+ * Model DoctorLicense
+ * Practitioner credentials modelled as a child table rather than flat
+ * columns: a doctor holds one lifetime STR but may hold several SIPs (one per
+ * practice location), and clinics must track SIP expiry for licensing audits.
+ */
+export type DoctorLicense = Prisma.DoctorLicenseModel
+/**
  * Model DoctorSchedule
  * 
  */

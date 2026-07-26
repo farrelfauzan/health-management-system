@@ -57,6 +57,7 @@ export const ModelName = {
   PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
+  DoctorLicense: 'DoctorLicense',
   DoctorSchedule: 'DoctorSchedule',
   AppointmentSession: 'AppointmentSession',
   DoctorPatient: 'DoctorPatient',
@@ -194,10 +195,27 @@ export const DoctorProfileScalarFieldEnum = {
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  nik: 'nik',
+  satusehatPractitionerId: 'satusehatPractitionerId'
 } as const
 
 export type DoctorProfileScalarFieldEnum = (typeof DoctorProfileScalarFieldEnum)[keyof typeof DoctorProfileScalarFieldEnum]
+
+
+export const DoctorLicenseScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  type: 'type',
+  licenseNumber: 'licenseNumber',
+  issuedAt: 'issuedAt',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorLicenseScalarFieldEnum = (typeof DoctorLicenseScalarFieldEnum)[keyof typeof DoctorLicenseScalarFieldEnum]
 
 
 export const DoctorScheduleScalarFieldEnum = {

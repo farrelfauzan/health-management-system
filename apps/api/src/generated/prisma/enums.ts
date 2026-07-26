@@ -106,6 +106,14 @@ export const AllergySeverity = {
 export type AllergySeverity = (typeof AllergySeverity)[keyof typeof AllergySeverity]
 
 
+export const DoctorLicenseType = {
+  STR: 'STR',
+  SIP: 'SIP'
+} as const
+
+export type DoctorLicenseType = (typeof DoctorLicenseType)[keyof typeof DoctorLicenseType]
+
+
 export const AppointmentStatus = {
   REQUESTED: 'REQUESTED',
   SCHEDULED: 'SCHEDULED',

@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateDoctorDtoLicensesItem } from './updateDoctorDtoLicensesItem';
 
 export interface UpdateDoctorDto {
   /**
@@ -18,6 +19,16 @@ export interface UpdateDoctorDto {
      * @maxLength 32
      */
   phoneNumber?: string;
+  /** @nullable */
+  nik?: string | null;
+  /**
+     * @minLength 1
+     * @maxLength 64
+     * @nullable
+     */
+  satusehatPractitionerId?: string | null;
+  /** @maxItems 20 */
+  licenses?: UpdateDoctorDtoLicensesItem[];
   /** @nullable */
   ownerUserId?: string | null;
   isActive?: boolean;

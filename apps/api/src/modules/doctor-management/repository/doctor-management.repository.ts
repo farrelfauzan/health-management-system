@@ -1,5 +1,6 @@
 import {
   CreateDoctorRecordPayload,
+  DoctorLicenseWritePayload,
   ListDoctorsParams,
   ReplaceDoctorSchedulesPayload,
   UpdateDoctorRecordPayload,
@@ -20,6 +21,35 @@ const SPECIALTY_SELECT = {
     name: true,
   },
 } satisfies Prisma.SpecialtyDefaultArgs;
+const LICENSES_INCLUDE = {
+  where: {
+    deletedAt: null,
+  },
+  orderBy: [{ type: 'asc' }, { createdAt: 'asc' }],
+  select: {
+    id: true,
+    type: true,
+    licenseNumber: true,
+    issuedAt: true,
+    expiresAt: true,
+    createdAt: true,
+    updatedAt: true,
+  },
+} satisfies Prisma.DoctorProfile$licensesArgs;
+
+function toLicenseCreateData(license: DoctorLicenseWritePayload): {
+  type: DoctorLicenseWritePayload['type'];
+  licenseNumber: string;
+  issuedAt: Date | null;
+  expiresAt: Date | null;
+} {
+  return {
+    type: license.type,
+    licenseNumber: license.licenseNumber,
+    issuedAt: license.issuedAt,
+    expiresAt: license.expiresAt,
+  };
+}
 
 @Injectable()
 export class DoctorManagementRepository {
@@ -157,6 +187,18 @@ export class DoctorManagementRepository {
         schedules: {
           orderBy: SCHEDULE_ORDER_BY,
         },
+        licenses: LICENSES_INCLUDE,
+      },
+    });
+  }
+
+  async findDoctorByNik(nik: string) {
+    return this.prisma.findUniqueActive(this.prisma.doctorProfile, {
+      where: {
+        nik,
+      },
+      select: {
+        id: true,
       },
     });
   }
@@ -229,8 +271,13 @@ export class DoctorManagementRepository {
           fullName: payload.fullName,
           specialtyId: payload.specialtyId,
           phoneNumber: payload.phoneNumber,
+          nik: payload.nik ?? null,
+          satusehatPractitionerId: payload.satusehatPractitionerId ?? null,
           ownerUserId: payload.ownerUserId ?? null,
           isActive: payload.isActive,
+          licenses: {
+            create: (payload.licenses ?? []).map(toLicenseCreateData),
+          },
         },
         include: {
           specialty: SPECIALTY_SELECT,
@@ -260,20 +307,41 @@ export class DoctorManagementRepository {
   }
 
   async updateDoctor(id: string, payload: UpdateDoctorRecordPayload) {
-    return this.prisma.doctorProfile.update({
-      where: {
-        id,
-      },
-      data: {
-        ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
-        ...(payload.specialtyId !== undefined ? { specialtyId: payload.specialtyId } : {}),
-        ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
-        ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
-        ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
-      },
-      include: {
-        specialty: SPECIALTY_SELECT,
-      },
+    return this.prisma.executeTransaction(async (tx) => {
+      if (payload.licenses !== undefined) {
+        await tx.doctorLicense.updateMany({
+          where: {
+            doctorId: id,
+            deletedAt: null,
+          },
+          data: {
+            deletedAt: new Date(),
+          },
+        });
+      }
+
+      return tx.doctorProfile.update({
+        where: {
+          id,
+        },
+        data: {
+          ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
+          ...(payload.specialtyId !== undefined ? { specialtyId: payload.specialtyId } : {}),
+          ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
+          ...(payload.nik !== undefined ? { nik: payload.nik } : {}),
+          ...(payload.satusehatPractitionerId !== undefined
+            ? { satusehatPractitionerId: payload.satusehatPractitionerId }
+            : {}),
+          ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
+          ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
+          ...(payload.licenses !== undefined
+            ? { licenses: { create: payload.licenses.map(toLicenseCreateData) } }
+            : {}),
+        },
+        include: {
+          specialty: SPECIALTY_SELECT,
+        },
+      });
     });
   }
 

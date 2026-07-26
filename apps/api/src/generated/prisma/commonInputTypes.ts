@@ -348,6 +348,23 @@ export type EnumAllergySeverityWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumAllergySeverityFilter<$PrismaModel>
 }
 
+export type EnumDoctorLicenseTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorLicenseType | Prisma.EnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorLicenseTypeFilter<$PrismaModel> | $Enums.DoctorLicenseType
+}
+
+export type EnumDoctorLicenseTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorLicenseType | Prisma.EnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorLicenseTypeWithAggregatesFilter<$PrismaModel> | $Enums.DoctorLicenseType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorLicenseTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorLicenseTypeFilter<$PrismaModel>
+}
+
 export type IntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -920,6 +937,23 @@ export type NestedEnumAllergySeverityWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAllergySeverityFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAllergySeverityFilter<$PrismaModel>
+}
+
+export type NestedEnumDoctorLicenseTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorLicenseType | Prisma.EnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorLicenseTypeFilter<$PrismaModel> | $Enums.DoctorLicenseType
+}
+
+export type NestedEnumDoctorLicenseTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorLicenseType | Prisma.EnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorLicenseTypeWithAggregatesFilter<$PrismaModel> | $Enums.DoctorLicenseType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorLicenseTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorLicenseTypeFilter<$PrismaModel>
 }
 
 export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
