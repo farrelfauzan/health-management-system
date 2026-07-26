@@ -11,6 +11,7 @@
 export type * from './models/User'
 export type * from './models/RefreshToken'
 export type * from './models/PatientProfile'
+export type * from './models/PatientAllergy'
 export type * from './models/Specialty'
 export type * from './models/DoctorProfile'
 export type * from './models/DoctorSchedule'

@@ -84,6 +84,7 @@ export class PatientManagementController {
     responseDescription: 'The patient and optional initial doctor assignments were created.',
     responseExample: {
       data: PHASE_THREE_EXAMPLES.patient.item,
+      meta: PHASE_THREE_EXAMPLES.patient.mutationMeta,
       message: 'Patient created',
     },
     requestType: CreatePatientDto,
@@ -95,10 +96,11 @@ export class PatientManagementController {
       throw new UnauthorizedException('Missing authenticated user');
     }
 
-    const patient = await this.patientManagementService.createPatient(payload, currentUser);
+    const result = await this.patientManagementService.createPatient(payload, currentUser);
 
     return {
-      data: patient,
+      data: result.patient,
+      meta: { identifierWarnings: result.identifierWarnings },
       message: 'Patient created',
     };
   }
@@ -110,6 +112,7 @@ export class PatientManagementController {
     responseDescription: 'The patient was updated.',
     responseExample: {
       data: PHASE_THREE_EXAMPLES.patient.item,
+      meta: PHASE_THREE_EXAMPLES.patient.mutationMeta,
       message: 'Patient updated',
     },
     requestType: UpdatePatientDto,
@@ -125,10 +128,11 @@ export class PatientManagementController {
       throw new UnauthorizedException('Missing authenticated user');
     }
 
-    const patient = await this.patientManagementService.updatePatient(id, payload, currentUser);
+    const result = await this.patientManagementService.updatePatient(id, payload, currentUser);
 
     return {
-      data: patient,
+      data: result.patient,
+      meta: { identifierWarnings: result.identifierWarnings },
       message: 'Patient updated',
     };
   }

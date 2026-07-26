@@ -517,14 +517,6 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type DoctorScheduleCreateNestedOneWithoutSessionsInput = {
   create?: Prisma.XOR<Prisma.DoctorScheduleCreateWithoutSessionsInput, Prisma.DoctorScheduleUncheckedCreateWithoutSessionsInput>
   connectOrCreate?: Prisma.DoctorScheduleCreateOrConnectWithoutSessionsInput

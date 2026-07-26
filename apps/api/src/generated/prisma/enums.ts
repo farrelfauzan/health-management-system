@@ -56,6 +56,56 @@ export const PatientSex = {
 export type PatientSex = (typeof PatientSex)[keyof typeof PatientSex]
 
 
+export const BloodType = {
+  A: 'A',
+  B: 'B',
+  AB: 'AB',
+  O: 'O'
+} as const
+
+export type BloodType = (typeof BloodType)[keyof typeof BloodType]
+
+
+export const RhesusFactor = {
+  POSITIVE: 'POSITIVE',
+  NEGATIVE: 'NEGATIVE'
+} as const
+
+export type RhesusFactor = (typeof RhesusFactor)[keyof typeof RhesusFactor]
+
+
+export const MaritalStatus = {
+  SINGLE: 'SINGLE',
+  MARRIED: 'MARRIED',
+  DIVORCED: 'DIVORCED',
+  WIDOWED: 'WIDOWED'
+} as const
+
+export type MaritalStatus = (typeof MaritalStatus)[keyof typeof MaritalStatus]
+
+
+export const Religion = {
+  ISLAM: 'ISLAM',
+  PROTESTANTISM: 'PROTESTANTISM',
+  CATHOLICISM: 'CATHOLICISM',
+  HINDUISM: 'HINDUISM',
+  BUDDHISM: 'BUDDHISM',
+  CONFUCIANISM: 'CONFUCIANISM',
+  OTHER: 'OTHER'
+} as const
+
+export type Religion = (typeof Religion)[keyof typeof Religion]
+
+
+export const AllergySeverity = {
+  MILD: 'MILD',
+  MODERATE: 'MODERATE',
+  SEVERE: 'SEVERE'
+} as const
+
+export type AllergySeverity = (typeof AllergySeverity)[keyof typeof AllergySeverity]
+
+
 export const AppointmentStatus = {
   REQUESTED: 'REQUESTED',
   SCHEDULED: 'SCHEDULED',

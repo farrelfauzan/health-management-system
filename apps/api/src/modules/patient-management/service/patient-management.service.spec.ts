@@ -1,6 +1,7 @@
 import { BadRequestException, ConflictException, ForbiddenException } from '@nestjs/common';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
 import { PatientManagementService } from './patient-management.service';
 
@@ -40,6 +41,8 @@ describe('PatientManagementService', () => {
     findPatientById: jest.fn(),
     findPatientDetailById: jest.fn(),
     findPatientByMrn: jest.fn(),
+    findPatientIdByNik: jest.fn(),
+    findPatientIdByBpjsNumber: jest.fn(),
     findActiveUserById: jest.fn(),
     findActiveDoctorsByIds: jest.fn(),
     hasActiveAssignmentWithDoctorUser: jest.fn(),
@@ -60,6 +63,8 @@ describe('PatientManagementService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (patientManagementRepositoryMock.findPatientIdByNik as jest.Mock).mockResolvedValue(null);
+    (patientManagementRepositoryMock.findPatientIdByBpjsNumber as jest.Mock).mockResolvedValue(null);
   });
 
   it('lists patients with any-scope permission', async () => {
@@ -84,6 +89,7 @@ describe('PatientManagementService', () => {
           updatedAt: new Date('2026-01-02T00:00:00.000Z'),
           _count: {
             doctors: 2,
+            allergies: 1,
           },
           doctors: [
             {
@@ -187,6 +193,16 @@ describe('PatientManagementService', () => {
             fullName: 'Dr. Assigned',
             specialty: { name: 'Cardiology' },
           },
+        },
+      ],
+      allergies: [
+        {
+          id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+          substance: 'Penicillin',
+          reaction: 'Urticaria',
+          severity: 'SEVERE',
+          createdAt: new Date('2026-01-01T00:00:00.000Z'),
+          updatedAt: new Date('2026-01-01T00:00:00.000Z'),
         },
       ],
     });
@@ -350,7 +366,7 @@ describe('PatientManagementService', () => {
         actorUserId: currentUser.sub,
       }),
     );
-    expect(result.mrn).toBe('MRN-0003');
+    expect(result.patient.mrn).toBe('MRN-0003');
   });
 
   it('throws bad request when date value is invalid', async () => {
@@ -375,5 +391,313 @@ describe('PatientManagementService', () => {
         currentUser,
       ),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  describe('national and payer identifiers', () => {
+    const inputCreatePayload = {
+      mrn: 'MRN-0100',
+      fullName: 'Aisha Rahman',
+      dateOfBirth: '1990-05-12',
+      sex: 'FEMALE' as const,
+      status: 'OUT_PATIENT' as const,
+      phoneNumber: '12345',
+      address: 'Main Street',
+      isActive: true,
+      nik: '3201015205900001',
+    };
+
+    const mockCreatedPatient = {
+      id: '3a6d785d-f729-4af2-b415-30f96439dad0',
+      mrn: 'MRN-0100',
+      fullName: 'Aisha Rahman',
+      dateOfBirth: new Date('1990-05-12T00:00:00.000Z'),
+      placeOfBirth: null,
+      sex: 'FEMALE',
+      status: 'OUT_PATIENT',
+      phoneNumber: '12345',
+      address: 'Main Street',
+      nikLast4: '0001',
+      bpjsNumberLast4: null,
+      hasSatusehatPatientId: false,
+      ownerUserId: null,
+      isActive: true,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+    };
+
+    beforeEach(() => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([
+          { action: 'create', resource: 'Patient', scope: 'ANY' },
+          { action: 'update', resource: 'Patient', scope: 'ANY' },
+        ]),
+      );
+      (patientManagementRepositoryMock.findPatientByMrn as jest.Mock).mockResolvedValue(null);
+      (patientManagementRepositoryMock.createPatient as jest.Mock).mockResolvedValue(
+        mockCreatedPatient,
+      );
+      (patientManagementRepositoryMock.updatePatient as jest.Mock).mockResolvedValue(
+        mockCreatedPatient,
+      );
+      (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue(
+        mockCreatedPatient,
+      );
+    });
+
+    it('returns the identifier masked, never in plaintext', async () => {
+      const actual = await service.createPatient(inputCreatePayload, currentUser);
+
+      expect(actual.patient.nikMasked).toBe('••••••••0001');
+      expect(JSON.stringify(actual.patient)).not.toContain('3201015205900001');
+    });
+
+    it('reports no SATUSEHAT linkage until one is resolved', async () => {
+      const actual = await service.createPatient(inputCreatePayload, currentUser);
+
+      expect(actual.patient.hasSatusehatPatientId).toBe(false);
+    });
+
+    it('rejects a NIK already registered to another patient', async () => {
+      (patientManagementRepositoryMock.findPatientIdByNik as jest.Mock).mockResolvedValue({
+        id: 'ca8c0a6e-1d2e-4f70-9d1a-1a7b0f4a0f11',
+      });
+
+      await expect(service.createPatient(inputCreatePayload, currentUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+      expect(patientManagementRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
+
+    it('rejects a BPJS number already registered to another patient', async () => {
+      (patientManagementRepositoryMock.findPatientIdByBpjsNumber as jest.Mock).mockResolvedValue({
+        id: 'ca8c0a6e-1d2e-4f70-9d1a-1a7b0f4a0f11',
+      });
+
+      await expect(
+        service.createPatient(
+          { ...inputCreatePayload, bpjsNumber: '0001234567890' },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('translates a concurrent uniqueness race into the same conflict', async () => {
+      (patientManagementRepositoryMock.createPatient as jest.Mock).mockRejectedValue(
+        new PatientIdentifierConflictError('nik'),
+      );
+
+      await expect(service.createPatient(inputCreatePayload, currentUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+    });
+
+    it('allows a patient to keep its own identifier on update', async () => {
+      (patientManagementRepositoryMock.findPatientIdByNik as jest.Mock).mockResolvedValue({
+        id: mockCreatedPatient.id,
+      });
+
+      await expect(
+        service.updatePatient(mockCreatedPatient.id, { nik: '3201015205900001' }, currentUser),
+      ).resolves.toBeDefined();
+    });
+
+    it('returns no warning when the NIK agrees with birth date and sex', async () => {
+      const actual = await service.createPatient(inputCreatePayload, currentUser);
+
+      expect(actual.identifierWarnings).toEqual([]);
+    });
+
+    it('warns without rejecting when the NIK encodes a different sex', async () => {
+      const actual = await service.createPatient(
+        { ...inputCreatePayload, nik: '3201011205900001' },
+        currentUser,
+      );
+
+      expect(actual.identifierWarnings).toEqual([
+        'NIK encodes MALE but FEMALE was submitted',
+      ]);
+      expect(patientManagementRepositoryMock.createPatient).toHaveBeenCalled();
+    });
+
+    it('warns without rejecting when the NIK encodes a different birth date', async () => {
+      const actual = await service.createPatient(
+        { ...inputCreatePayload, nik: '3201015206900001' },
+        currentUser,
+      );
+
+      expect(actual.identifierWarnings).toEqual([
+        'NIK encodes a different birth date than the one submitted',
+      ]);
+    });
+
+    it('returns no warnings when no NIK was submitted', async () => {
+      const actual = await service.createPatient(
+        { ...inputCreatePayload, nik: undefined },
+        currentUser,
+      );
+
+      expect(actual.identifierWarnings).toEqual([]);
+    });
+
+    it('passes the identifier through to the repository for encryption', async () => {
+      await service.createPatient(inputCreatePayload, currentUser);
+
+      expect(patientManagementRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({ nik: '3201015205900001' }),
+      );
+    });
+  });
+
+  describe('demographic and clinical-safety fields', () => {
+    const mockPatientRecord = {
+      id: '3a6d785d-f729-4af2-b415-30f96439dad0',
+      mrn: 'MRN-0200',
+      fullName: 'Aisha Rahman',
+      dateOfBirth: new Date('1990-05-12T00:00:00.000Z'),
+      placeOfBirth: 'Bandung',
+      sex: 'FEMALE',
+      status: 'OUT_PATIENT',
+      phoneNumber: '12345',
+      address: 'Main Street',
+      nikLast4: null,
+      bpjsNumberLast4: null,
+      hasSatusehatPatientId: false,
+      email: 'aisha.rahman@example.com',
+      bloodType: 'O',
+      rhesusFactor: 'POSITIVE',
+      maritalStatus: 'MARRIED',
+      occupation: 'Teacher',
+      religion: 'ISLAM',
+      emergencyContactName: 'Rahmat Rahman',
+      emergencyContactPhone: '+628123456700',
+      guardianName: 'Rahmat Rahman',
+      guardianRelation: 'Spouse',
+      ownerUserId: null,
+      isActive: true,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+    };
+
+    const inputCreatePayload = {
+      mrn: 'MRN-0200',
+      fullName: 'Aisha Rahman',
+      dateOfBirth: '1990-05-12',
+      sex: 'FEMALE' as const,
+      status: 'OUT_PATIENT' as const,
+      phoneNumber: '12345',
+      address: 'Main Street',
+      isActive: true,
+      bloodType: 'O' as const,
+      rhesusFactor: 'POSITIVE' as const,
+      religion: 'ISLAM' as const,
+      allergies: [{ substance: 'Penicillin', severity: 'SEVERE' as const }],
+    };
+
+    beforeEach(() => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([
+          { action: 'create', resource: 'Patient', scope: 'ANY' },
+          { action: 'update', resource: 'Patient', scope: 'ANY' },
+          { action: 'read', resource: 'Patient', scope: 'ANY' },
+        ]),
+      );
+      (patientManagementRepositoryMock.findPatientByMrn as jest.Mock).mockResolvedValue(null);
+      (patientManagementRepositoryMock.createPatient as jest.Mock).mockResolvedValue(
+        mockPatientRecord,
+      );
+      (patientManagementRepositoryMock.updatePatient as jest.Mock).mockResolvedValue(
+        mockPatientRecord,
+      );
+      (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue(
+        mockPatientRecord,
+      );
+    });
+
+    it('returns the demographic fields on the response', async () => {
+      const actual = await service.createPatient(inputCreatePayload, currentUser);
+
+      expect(actual.patient).toEqual(
+        expect.objectContaining({
+          placeOfBirth: 'Bandung',
+          bloodType: 'O',
+          rhesusFactor: 'POSITIVE',
+          maritalStatus: 'MARRIED',
+          occupation: 'Teacher',
+          religion: 'ISLAM',
+          email: 'aisha.rahman@example.com',
+          emergencyContactName: 'Rahmat Rahman',
+          emergencyContactPhone: '+628123456700',
+          guardianName: 'Rahmat Rahman',
+          guardianRelation: 'Spouse',
+        }),
+      );
+    });
+
+    it('passes the allergy list through to the repository', async () => {
+      await service.createPatient(inputCreatePayload, currentUser);
+
+      expect(patientManagementRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          allergies: [{ substance: 'Penicillin', severity: 'SEVERE' }],
+        }),
+      );
+    });
+
+    it('forwards an empty allergy list so the existing list is cleared', async () => {
+      await service.updatePatient(mockPatientRecord.id, { allergies: [] }, currentUser);
+
+      expect(patientManagementRepositoryMock.updatePatient).toHaveBeenCalledWith(
+        mockPatientRecord.id,
+        expect.objectContaining({ allergies: [] }),
+      );
+    });
+
+    it('leaves the allergy list untouched when the update omits it', async () => {
+      await service.updatePatient(mockPatientRecord.id, { occupation: 'Nurse' }, currentUser);
+
+      expect(patientManagementRepositoryMock.updatePatient).toHaveBeenCalledWith(
+        mockPatientRecord.id,
+        expect.objectContaining({ allergies: undefined, occupation: 'Nurse' }),
+      );
+    });
+
+    it('clears a demographic field when the update sends null', async () => {
+      await service.updatePatient(mockPatientRecord.id, { occupation: null }, currentUser);
+
+      expect(patientManagementRepositoryMock.updatePatient).toHaveBeenCalledWith(
+        mockPatientRecord.id,
+        expect.objectContaining({ occupation: null }),
+      );
+    });
+
+    it('exposes the allergy list on the detail response', async () => {
+      (patientManagementRepositoryMock.findPatientDetailById as jest.Mock).mockResolvedValue({
+        ...mockPatientRecord,
+        doctors: [],
+        allergies: [
+          {
+            id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+            substance: 'Penicillin',
+            reaction: null,
+            severity: 'SEVERE',
+            createdAt: new Date('2026-01-01T00:00:00.000Z'),
+            updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+          },
+        ],
+      });
+
+      const actual = await service.getPatientById(mockPatientRecord.id, currentUser);
+
+      expect(actual.allergies).toEqual([
+        {
+          id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+          substance: 'Penicillin',
+          reaction: undefined,
+          severity: 'SEVERE',
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+        },
+      ]);
+    });
   });
 });

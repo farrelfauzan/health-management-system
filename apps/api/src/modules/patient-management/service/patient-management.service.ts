@@ -7,13 +7,20 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { Actor, PatientRecord } from '@hms/shared-types';
+import {
+  Actor,
+  collectNikDemographicWarnings,
+  maskIdentifierLast4,
+  PatientRecord,
+  PatientSexValue,
+} from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
+import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
 
 function parseDateOnly(value: string): Date {
@@ -69,6 +76,8 @@ export class PatientManagementService {
         page: query.page,
         limit: query.limit,
         search: query.search,
+        nik: query.nik,
+        bpjsNumber: query.bpjsNumber,
         doctorId: query.doctorId,
         status: query.status,
         createdFrom: query.createdFrom ? parseDateOnly(query.createdFrom) : undefined,
@@ -82,6 +91,7 @@ export class PatientManagementService {
       items: result.items.map((patient) => ({
         ...this.toPatientResponse(patient),
         doctorCount: patient._count.doctors,
+        allergyCount: patient._count.allergies,
         doctors: patient.doctors.map((assignment) => ({
           id: assignment.doctor.id,
           assignmentId: assignment.id,
@@ -123,6 +133,14 @@ export class PatientManagementService {
         fullName: assignment.doctor.fullName,
         specialty: assignment.doctor.specialty.name,
       })),
+      allergies: patient.allergies.map((allergy) => ({
+        id: allergy.id,
+        substance: allergy.substance,
+        reaction: allergy.reaction ?? undefined,
+        severity: allergy.severity,
+        createdAt: allergy.createdAt.toISOString(),
+        updatedAt: allergy.updatedAt.toISOString(),
+      })),
     };
   }
 
@@ -149,22 +167,18 @@ export class PatientManagementService {
     }
 
     await this.assertAssignableDoctorIds(payload.doctorIds);
+    await this.assertIdentifiersAvailable({ nik: payload.nik, bpjsNumber: payload.bpjsNumber });
 
-    const created = await this.patientManagementRepository.createPatient({
-      mrn: payload.mrn,
-      fullName: payload.fullName,
-      dateOfBirth: parseDateOnly(payload.dateOfBirth),
-      sex: payload.sex,
-      status: payload.status,
-      phoneNumber: payload.phoneNumber,
-      address: payload.address,
-      ownerUserId: payload.ownerUserId,
-      isActive: payload.isActive,
-      doctorIds: payload.doctorIds,
-      actorUserId: currentUser.sub,
-    });
+    const created = await this.createPatientRecord(payload, currentUser);
 
-    return this.toPatientResponse(created);
+    return {
+      patient: this.toPatientResponse(created),
+      identifierWarnings: this.collectIdentifierWarnings({
+        nik: payload.nik,
+        dateOfBirth: payload.dateOfBirth,
+        sex: payload.sex,
+      }),
+    };
   }
 
   async updatePatient(id: string, payload: UpdatePatientDto, currentUser: CurrentUser) {
@@ -199,18 +213,144 @@ export class PatientManagementService {
       }
     }
 
-    const updated = await this.patientManagementRepository.updatePatient(id, {
-      fullName: payload.fullName,
-      dateOfBirth: payload.dateOfBirth ? parseDateOnly(payload.dateOfBirth) : undefined,
-      sex: payload.sex,
-      status: payload.status,
-      phoneNumber: payload.phoneNumber,
-      address: payload.address,
-      ownerUserId: payload.ownerUserId,
-      isActive: payload.isActive,
-    });
+    await this.assertIdentifiersAvailable(
+      { nik: payload.nik, bpjsNumber: payload.bpjsNumber },
+      id,
+    );
 
-    return this.toPatientResponse(updated);
+    const updated = await this.updatePatientRecord(id, payload);
+
+    return {
+      patient: this.toPatientResponse(updated),
+      identifierWarnings: this.collectIdentifierWarnings({
+        nik: payload.nik,
+        dateOfBirth: payload.dateOfBirth ?? toDateOnly(patient.dateOfBirth),
+        sex: payload.sex ?? patient.sex ?? undefined,
+      }),
+    };
+  }
+
+  private async createPatientRecord(
+    payload: CreatePatientDto,
+    currentUser: CurrentUser,
+  ): Promise<PatientRecord> {
+    try {
+      return await this.patientManagementRepository.createPatient({
+        mrn: payload.mrn,
+        fullName: payload.fullName,
+        dateOfBirth: parseDateOnly(payload.dateOfBirth),
+        placeOfBirth: payload.placeOfBirth,
+        sex: payload.sex,
+        status: payload.status,
+        phoneNumber: payload.phoneNumber,
+        address: payload.address,
+        nik: payload.nik,
+        bpjsNumber: payload.bpjsNumber,
+        email: payload.email,
+        bloodType: payload.bloodType,
+        rhesusFactor: payload.rhesusFactor,
+        maritalStatus: payload.maritalStatus,
+        occupation: payload.occupation,
+        religion: payload.religion,
+        emergencyContactName: payload.emergencyContactName,
+        emergencyContactPhone: payload.emergencyContactPhone,
+        guardianName: payload.guardianName,
+        guardianRelation: payload.guardianRelation,
+        allergies: payload.allergies,
+        ownerUserId: payload.ownerUserId,
+        isActive: payload.isActive,
+        doctorIds: payload.doctorIds,
+        actorUserId: currentUser.sub,
+      });
+    } catch (err) {
+      throw this.toIdentifierConflictException(err);
+    }
+  }
+
+  private async updatePatientRecord(
+    id: string,
+    payload: UpdatePatientDto,
+  ): Promise<PatientRecord> {
+    try {
+      return await this.patientManagementRepository.updatePatient(id, {
+        fullName: payload.fullName,
+        dateOfBirth: payload.dateOfBirth ? parseDateOnly(payload.dateOfBirth) : undefined,
+        placeOfBirth: payload.placeOfBirth,
+        sex: payload.sex,
+        status: payload.status,
+        phoneNumber: payload.phoneNumber,
+        address: payload.address,
+        nik: payload.nik,
+        bpjsNumber: payload.bpjsNumber,
+        email: payload.email,
+        bloodType: payload.bloodType,
+        rhesusFactor: payload.rhesusFactor,
+        maritalStatus: payload.maritalStatus,
+        occupation: payload.occupation,
+        religion: payload.religion,
+        emergencyContactName: payload.emergencyContactName,
+        emergencyContactPhone: payload.emergencyContactPhone,
+        guardianName: payload.guardianName,
+        guardianRelation: payload.guardianRelation,
+        allergies: payload.allergies,
+        ownerUserId: payload.ownerUserId,
+        isActive: payload.isActive,
+      });
+    } catch (err) {
+      throw this.toIdentifierConflictException(err);
+    }
+  }
+
+  /**
+   * Rejects a create or update that would attach an identifier already held by
+   * another patient. A collision means the two records are the same person, so
+   * the operation is refused and routed to the duplicate-merge workflow rather
+   * than producing a second record.
+   */
+  private async assertIdentifiersAvailable(
+    identifiers: { nik?: string | null; bpjsNumber?: string | null },
+    excludePatientId?: string,
+  ): Promise<void> {
+    if (identifiers.nik) {
+      const existing = await this.patientManagementRepository.findPatientIdByNik(identifiers.nik);
+      if (existing && existing.id !== excludePatientId) {
+        throw new ConflictException('NIK already registered to another patient');
+      }
+    }
+    if (identifiers.bpjsNumber) {
+      const existing = await this.patientManagementRepository.findPatientIdByBpjsNumber(
+        identifiers.bpjsNumber,
+      );
+      if (existing && existing.id !== excludePatientId) {
+        throw new ConflictException('BPJS number already registered to another patient');
+      }
+    }
+  }
+
+  private toIdentifierConflictException(err: unknown): unknown {
+    if (err instanceof PatientIdentifierConflictError) {
+      return new ConflictException(
+        err.field === 'nik'
+          ? 'NIK already registered to another patient'
+          : 'BPJS number already registered to another patient',
+      );
+    }
+    return err;
+  }
+
+  private collectIdentifierWarnings(input: {
+    nik?: string | null;
+    dateOfBirth?: string;
+    sex?: PatientSexValue;
+  }): string[] {
+    if (!input.nik) {
+      return [];
+    }
+    return collectNikDemographicWarnings({
+      nik: input.nik,
+      dateOfBirth: input.dateOfBirth,
+      sex: input.sex,
+    });
   }
 
   private async canReadOwnPatient(
@@ -280,16 +420,35 @@ export class PatientManagementService {
     };
   }
 
+  /**
+   * Identifiers leave the API masked. Full values require the
+   * `patient.read-identifier` permission and an audit event, both delivered in
+   * P7-T07 — until then there is no unmask path at all.
+   */
   private toPatientResponse(patient: PatientRecord) {
     return {
       id: patient.id,
       mrn: patient.mrn,
       fullName: patient.fullName,
       dateOfBirth: toDateOnly(patient.dateOfBirth),
+      placeOfBirth: patient.placeOfBirth ?? undefined,
       sex: patient.sex ?? undefined,
       status: patient.status,
       phoneNumber: patient.phoneNumber,
       address: patient.address,
+      nikMasked: maskIdentifierLast4(patient.nikLast4),
+      bpjsNumberMasked: maskIdentifierLast4(patient.bpjsNumberLast4),
+      hasSatusehatPatientId: patient.hasSatusehatPatientId,
+      email: patient.email ?? undefined,
+      bloodType: patient.bloodType ?? undefined,
+      rhesusFactor: patient.rhesusFactor ?? undefined,
+      maritalStatus: patient.maritalStatus ?? undefined,
+      occupation: patient.occupation ?? undefined,
+      religion: patient.religion ?? undefined,
+      emergencyContactName: patient.emergencyContactName ?? undefined,
+      emergencyContactPhone: patient.emergencyContactPhone ?? undefined,
+      guardianName: patient.guardianName ?? undefined,
+      guardianRelation: patient.guardianRelation ?? undefined,
       ownerUserId: patient.ownerUserId ?? undefined,
       isActive: patient.isActive,
       createdAt: patient.createdAt.toISOString(),

@@ -8,17 +8,44 @@ const prescriptionId = '77777777-7777-4777-8777-777777777777';
 const assignmentId = '88888888-8888-4888-8888-888888888888';
 const timestamp = '2026-07-20T08:00:00.000Z';
 const paginationMeta = { page: 1, limit: 10, total: 1 };
+// Synthetic identifiers only — never a real NIK or BPJS number. This NIK is
+// structurally consistent with the example patient: digits 7-12 encode
+// DD+40 (female) / MM / YY for 1990-05-12.
+const syntheticNik = '3201015205900001';
+const syntheticBpjsNumber = '0001234567890';
 const patient = {
   id: patientId,
   mrn: 'MRN-2026-0001',
   fullName: 'Aisha Rahman',
   dateOfBirth: '1990-05-12',
+  placeOfBirth: 'Bandung',
   sex: 'FEMALE',
   status: 'OUT_PATIENT',
   phoneNumber: '+628123456789',
   address: 'Jakarta',
+  nikMasked: '••••••••0001',
+  bpjsNumberMasked: '••••••••7890',
+  hasSatusehatPatientId: false,
+  email: 'aisha.rahman@example.com',
+  bloodType: 'O',
+  rhesusFactor: 'POSITIVE',
+  maritalStatus: 'MARRIED',
+  occupation: 'Teacher',
+  religion: 'ISLAM',
+  emergencyContactName: 'Rahmat Rahman',
+  emergencyContactPhone: '+628123456700',
+  guardianName: 'Rahmat Rahman',
+  guardianRelation: 'Spouse',
   ownerUserId: userId,
   isActive: true,
+  createdAt: timestamp,
+  updatedAt: timestamp,
+};
+const patientAllergy = {
+  id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+  substance: 'Penicillin',
+  reaction: 'Urticaria and swelling',
+  severity: 'SEVERE',
   createdAt: timestamp,
   updatedAt: timestamp,
 };
@@ -182,10 +209,22 @@ export const PHASE_THREE_EXAMPLES = {
       mrn: 'MRN-2026-0001',
       fullName: 'Aisha Rahman',
       dateOfBirth: '1990-05-12',
+      placeOfBirth: 'Bandung',
       sex: 'FEMALE',
       status: 'OUT_PATIENT',
       phoneNumber: '+628123456789',
       address: 'Jakarta',
+      nik: syntheticNik,
+      bpjsNumber: syntheticBpjsNumber,
+      email: 'aisha.rahman@example.com',
+      bloodType: 'O',
+      rhesusFactor: 'POSITIVE',
+      maritalStatus: 'MARRIED',
+      occupation: 'Teacher',
+      religion: 'ISLAM',
+      emergencyContactName: 'Rahmat Rahman',
+      emergencyContactPhone: '+628123456700',
+      allergies: [{ substance: 'Penicillin', reaction: 'Urticaria and swelling', severity: 'SEVERE' }],
       ownerUserId: userId,
       doctorIds: [doctorId],
     },
@@ -193,12 +232,20 @@ export const PHASE_THREE_EXAMPLES = {
       phoneNumber: '+628123456780',
       address: 'Bandung',
       status: 'IN_PATIENT',
+      allergies: [{ substance: 'Penicillin', severity: 'MODERATE' }],
     },
+    mutationMeta: { identifierWarnings: [] },
     item: patient,
-    listItem: { ...patient, doctorCount: 1, doctors: [patientRelatedDoctor] },
+    listItem: {
+      ...patient,
+      doctorCount: 1,
+      allergyCount: 1,
+      doctors: [patientRelatedDoctor],
+    },
     detail: {
       ...patient,
       doctors: [patientRelatedDoctor],
+      allergies: [patientAllergy],
     },
   },
   specialty: {

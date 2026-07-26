@@ -13,9 +13,11 @@ function buildPatient(overrides: Partial<PatientListItem> = {}): PatientListItem
     status: 'OUT_PATIENT',
     phoneNumber: '+628123456789',
     address: 'Jakarta',
+    hasSatusehatPatientId: false,
     isActive: true,
     createdAt: '2026-07-01T00:00:00.000Z',
     updatedAt: '2026-07-10T00:00:00.000Z',
+    allergyCount: 0,
     doctorCount: 1,
     doctors: [
       { id: 'doctor-1', assignmentId: 'assignment-1', fullName: 'Dr. Budi', specialty: 'Cardiology' },

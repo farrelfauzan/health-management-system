@@ -1,6 +1,7 @@
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
+import { ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 
 import { AppModule } from '../../app.module';
@@ -22,6 +23,8 @@ describe('PatientManagement integration', () => {
     findPatientById: jest.fn(),
     findPatientDetailById: jest.fn(),
     findPatientByMrn: jest.fn(),
+    findPatientIdByNik: jest.fn(),
+    findPatientIdByBpjsNumber: jest.fn(),
     findActiveUserById: jest.fn(),
     findActiveDoctorsByIds: jest.fn(),
     hasActiveAssignmentWithDoctorUser: jest.fn(),
@@ -53,6 +56,7 @@ describe('PatientManagement integration', () => {
       type: VersioningType.URI,
     });
     app.setGlobalPrefix('api/v1');
+    app.useGlobalPipes(new ZodValidationPipe());
     await app.init();
 
     jwtService = moduleRef.get(JwtService);
@@ -72,16 +76,22 @@ describe('PatientManagement integration', () => {
       limit: 10,
     });
     patientRepositoryMock.findPatientByMrn.mockResolvedValue(null);
+    patientRepositoryMock.findPatientIdByNik.mockResolvedValue(null);
+    patientRepositoryMock.findPatientIdByBpjsNumber.mockResolvedValue(null);
     patientRepositoryMock.findActiveUserById.mockResolvedValue(null);
     patientRepositoryMock.createPatient.mockResolvedValue({
       id: '5bd5e23d-098a-4ee6-a777-cf5f850ece2f',
       mrn: 'MRN-1001',
       fullName: 'Patient One',
       dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+      placeOfBirth: null,
       sex: 'MALE',
       status: 'OUT_PATIENT',
       phoneNumber: '123456',
       address: 'Main Street',
+      nikLast4: '0001',
+      bpjsNumberLast4: null,
+      hasSatusehatPatientId: false,
       ownerUserId: null,
       isActive: true,
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
@@ -303,5 +313,260 @@ describe('PatientManagement integration', () => {
       });
 
     expect(response.status).toBe(409);
+  });
+
+  describe('national and payer identifiers', () => {
+    async function signCreateToken(): Promise<string> {
+      authRepositoryMock.findUserById.mockResolvedValue({
+        id: 'admin-user',
+        roles: [
+          {
+            role: {
+              code: 'ADMIN',
+              permissions: [
+                { permission: { action: 'create', resource: 'Patient', scope: 'ANY' } },
+              ],
+            },
+          },
+        ],
+      });
+
+      return jwtService.signAsync(
+        { sub: 'admin-user', email: 'admin@hms.local' },
+        { secret: 'dev-access-secret' },
+      );
+    }
+
+    it('returns the NIK masked and never in plaintext', async () => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'MRN-1001',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '123456',
+          address: 'Main Street',
+          nik: '3201010101900001',
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.nikMasked).toBe('••••••••0001');
+      expect(JSON.stringify(response.body)).not.toContain('3201010101900001');
+    });
+
+    it('rejects a malformed NIK', async () => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'MRN-1001',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '123456',
+          address: 'Main Street',
+          nik: '12345',
+        });
+
+      expect(response.status).toBe(400);
+      expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
+
+    it('accepts a NIK written with separators', async () => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'MRN-1001',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '123456',
+          address: 'Main Street',
+          nik: '3201 0101 0190 0001',
+        });
+
+      expect(response.status).toBe(201);
+      expect(patientRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({ nik: '3201010101900001' }),
+      );
+    });
+
+    it('returns 409 when the NIK already belongs to another patient', async () => {
+      const token = await signCreateToken();
+      patientRepositoryMock.findPatientIdByNik.mockResolvedValue({ id: 'existing-patient' });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'MRN-1001',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '123456',
+          address: 'Main Street',
+          nik: '3201010101900001',
+        });
+
+      expect(response.status).toBe(409);
+      expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
+
+    it('surfaces a demographic mismatch as a warning rather than a rejection', async () => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'MRN-1001',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '123456',
+          address: 'Main Street',
+          nik: '3201014101900001',
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.meta.identifierWarnings).toEqual([
+        'NIK encodes FEMALE but MALE was submitted',
+      ]);
+    });
+  });
+
+  describe('demographic and clinical-safety fields', () => {
+    async function signCreateToken(): Promise<string> {
+      authRepositoryMock.findUserById.mockResolvedValue({
+        id: 'admin-user',
+        roles: [
+          {
+            role: {
+              code: 'ADMIN',
+              permissions: [
+                { permission: { action: 'create', resource: 'Patient', scope: 'ANY' } },
+              ],
+            },
+          },
+        ],
+      });
+
+      return jwtService.signAsync(
+        { sub: 'admin-user', email: 'admin@hms.local' },
+        { secret: 'dev-access-secret' },
+      );
+    }
+
+    function buildCreateBody(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+      return {
+        mrn: 'MRN-1001',
+        fullName: 'Patient One',
+        dateOfBirth: '1990-01-01',
+        sex: 'MALE',
+        phoneNumber: '123456',
+        address: 'Main Street',
+        ...overrides,
+      };
+    }
+
+    it('accepts the full demographic payload', async () => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send(
+          buildCreateBody({
+            placeOfBirth: 'Bandung',
+            email: 'patient.one@example.com',
+            bloodType: 'O',
+            rhesusFactor: 'POSITIVE',
+            maritalStatus: 'MARRIED',
+            occupation: 'Teacher',
+            religion: 'ISLAM',
+            emergencyContactName: 'Rahmat Rahman',
+            emergencyContactPhone: '+628123456700',
+            guardianName: 'Rahmat Rahman',
+            guardianRelation: 'Spouse',
+          }),
+        );
+
+      expect(response.status).toBe(201);
+      expect(patientRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          placeOfBirth: 'Bandung',
+          bloodType: 'O',
+          rhesusFactor: 'POSITIVE',
+          religion: 'ISLAM',
+          guardianRelation: 'Spouse',
+        }),
+      );
+    });
+
+    it('rejects an unrecognised religion value', async () => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send(buildCreateBody({ religion: 'JEDI' }));
+
+      expect(response.status).toBe(400);
+      expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
+
+    it('accepts a structured allergy list', async () => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send(
+          buildCreateBody({
+            allergies: [
+              { substance: 'Penicillin', reaction: 'Urticaria', severity: 'SEVERE' },
+              { substance: 'Peanuts', severity: 'MILD' },
+            ],
+          }),
+        );
+
+      expect(response.status).toBe(201);
+      expect(patientRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          allergies: [
+            { substance: 'Penicillin', reaction: 'Urticaria', severity: 'SEVERE' },
+            { substance: 'Peanuts', severity: 'MILD' },
+          ],
+        }),
+      );
+    });
+
+    it('rejects a duplicate allergy substance', async () => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send(
+          buildCreateBody({
+            allergies: [
+              { substance: 'Penicillin', severity: 'SEVERE' },
+              { substance: 'penicillin', severity: 'MILD' },
+            ],
+          }),
+        );
+
+      expect(response.status).toBe(400);
+      expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
   });
 });

@@ -387,6 +387,7 @@ export const ModelName = {
   User: 'User',
   RefreshToken: 'RefreshToken',
   PatientProfile: 'PatientProfile',
+  PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
   DoctorSchedule: 'DoctorSchedule',
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "patientProfile" | "specialty" | "doctorProfile" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
+    modelProps: "user" | "refreshToken" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -643,6 +644,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PatientProfileCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PatientProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    PatientAllergy: {
+      payload: Prisma.$PatientAllergyPayload<ExtArgs>
+      fields: Prisma.PatientAllergyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PatientAllergyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PatientAllergyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload>
+        }
+        findFirst: {
+          args: Prisma.PatientAllergyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PatientAllergyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload>
+        }
+        findMany: {
+          args: Prisma.PatientAllergyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload>[]
+        }
+        create: {
+          args: Prisma.PatientAllergyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload>
+        }
+        createMany: {
+          args: Prisma.PatientAllergyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PatientAllergyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload>[]
+        }
+        delete: {
+          args: Prisma.PatientAllergyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload>
+        }
+        update: {
+          args: Prisma.PatientAllergyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload>
+        }
+        deleteMany: {
+          args: Prisma.PatientAllergyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PatientAllergyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PatientAllergyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload>[]
+        }
+        upsert: {
+          args: Prisma.PatientAllergyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientAllergyPayload>
+        }
+        aggregate: {
+          args: Prisma.PatientAllergyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePatientAllergy>
+        }
+        groupBy: {
+          args: Prisma.PatientAllergyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatientAllergyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PatientAllergyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatientAllergyCountAggregateOutputType> | number
         }
       }
     }
@@ -2048,6 +2123,7 @@ export const PatientProfileScalarFieldEnum = {
   mrn: 'mrn',
   fullName: 'fullName',
   dateOfBirth: 'dateOfBirth',
+  placeOfBirth: 'placeOfBirth',
   sex: 'sex',
   status: 'status',
   phoneNumber: 'phoneNumber',
@@ -2056,10 +2132,44 @@ export const PatientProfileScalarFieldEnum = {
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  email: 'email',
+  bloodType: 'bloodType',
+  rhesusFactor: 'rhesusFactor',
+  maritalStatus: 'maritalStatus',
+  occupation: 'occupation',
+  religion: 'religion',
+  emergencyContactName: 'emergencyContactName',
+  emergencyContactPhone: 'emergencyContactPhone',
+  guardianName: 'guardianName',
+  guardianRelation: 'guardianRelation',
+  nikCiphertext: 'nikCiphertext',
+  nikIndex: 'nikIndex',
+  nikLast4: 'nikLast4',
+  nikKeyVersion: 'nikKeyVersion',
+  bpjsNumberCiphertext: 'bpjsNumberCiphertext',
+  bpjsNumberIndex: 'bpjsNumberIndex',
+  bpjsNumberLast4: 'bpjsNumberLast4',
+  bpjsNumberKeyVersion: 'bpjsNumberKeyVersion',
+  satusehatPatientIdCiphertext: 'satusehatPatientIdCiphertext',
+  satusehatPatientIdKeyVersion: 'satusehatPatientIdKeyVersion'
 } as const
 
 export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]
+
+
+export const PatientAllergyScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  substance: 'substance',
+  reaction: 'reaction',
+  severity: 'severity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type PatientAllergyScalarFieldEnum = (typeof PatientAllergyScalarFieldEnum)[keyof typeof PatientAllergyScalarFieldEnum]
 
 
 export const SpecialtyScalarFieldEnum = {
@@ -2437,6 +2547,62 @@ export type ListEnumPatientStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'BloodType'
+ */
+export type EnumBloodTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BloodType'>
+    
+
+
+/**
+ * Reference to a field of type 'BloodType[]'
+ */
+export type ListEnumBloodTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BloodType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RhesusFactor'
+ */
+export type EnumRhesusFactorFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RhesusFactor'>
+    
+
+
+/**
+ * Reference to a field of type 'RhesusFactor[]'
+ */
+export type ListEnumRhesusFactorFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RhesusFactor[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MaritalStatus'
+ */
+export type EnumMaritalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MaritalStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'MaritalStatus[]'
+ */
+export type ListEnumMaritalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MaritalStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Religion'
+ */
+export type EnumReligionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Religion'>
+    
+
+
+/**
+ * Reference to a field of type 'Religion[]'
+ */
+export type ListEnumReligionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Religion[]'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -2447,6 +2613,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AllergySeverity'
+ */
+export type EnumAllergySeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AllergySeverity'>
+    
+
+
+/**
+ * Reference to a field of type 'AllergySeverity[]'
+ */
+export type ListEnumAllergySeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AllergySeverity[]'>
     
 
 
@@ -2716,6 +2896,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   refreshToken?: Prisma.RefreshTokenOmit
   patientProfile?: Prisma.PatientProfileOmit
+  patientAllergy?: Prisma.PatientAllergyOmit
   specialty?: Prisma.SpecialtyOmit
   doctorProfile?: Prisma.DoctorProfileOmit
   doctorSchedule?: Prisma.DoctorScheduleOmit
