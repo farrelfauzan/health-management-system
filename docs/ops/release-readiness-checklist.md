@@ -6,7 +6,7 @@ Walk this list top-to-bottom before tagging a release. Every box must be ticked 
 
 - [ ] All release-scoped PRs merged to `main`; no half-merged feature spanning multiple open PRs.
 - [ ] CI fully green on `main` (lint, typecheck, unit tests, integration tests, build, Prisma validate + migrate status + drift check, API/web docker builds).
-- [ ] A regression pass has been recorded for this release (see `regression-pass-<date>.md`; latest: [2026-07-25](regression-pass-2026-07-25.md)).
+- [ ] A regression pass has been recorded for this release (see `regression-pass-<date>.md`; latest: [2026-07-26](regression-pass-2026-07-26.md)).
 - [ ] No `// DUMMY-DATA:` module newly exposed to end users without its screen being labeled "Preview".
 
 ## 2. API contract
