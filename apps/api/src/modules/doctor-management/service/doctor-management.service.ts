@@ -1,5 +1,8 @@
 import {
   Actor,
+  DoctorLicenseInput,
+  DoctorLicenseRecord,
+  DoctorLicenseWritePayload,
   DoctorRecord,
   DoctorScheduleRecord,
   hasScheduleOverlap,
@@ -20,6 +23,23 @@ import { ListDoctorsQueryDto } from '../dto/list-doctors-query.dto';
 import { UpdateDoctorDto } from '../dto/update-doctor.dto';
 import { UpdateDoctorScheduleDto } from '../dto/update-doctor-schedule.dto';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
+
+function parseDateOnly(value: string): Date {
+  return new Date(`${value}T00:00:00.000Z`);
+}
+
+function toDateOnly(value: Date): string {
+  return value.toISOString().slice(0, 10);
+}
+
+function toLicenseWritePayload(license: DoctorLicenseInput): DoctorLicenseWritePayload {
+  return {
+    type: license.type,
+    licenseNumber: license.licenseNumber,
+    issuedAt: license.issuedAt ? parseDateOnly(license.issuedAt) : null,
+    expiresAt: license.expiresAt ? parseDateOnly(license.expiresAt) : null,
+  };
+}
 
 @Injectable()
 export class DoctorManagementService {
@@ -72,6 +92,7 @@ export class DoctorManagementService {
       ...this.toDoctorResponse(doctor),
       patientCount: doctor._count.patients,
       schedules: doctor.schedules.map((schedule) => this.toScheduleResponse(schedule)),
+      licenses: doctor.licenses.map((license) => this.toLicenseResponse(license)),
       ...(canReadRelatedPatients
         ? {
             patients: doctor.patients.map((assignment) => ({
@@ -101,6 +122,10 @@ export class DoctorManagementService {
       throw new ConflictException('Doctor license number already exists');
     }
 
+    if (payload.nik) {
+      await this.assertNikNotTaken(payload.nik);
+    }
+
     if (payload.ownerUserId) {
       const ownerUser = await this.doctorManagementRepository.findActiveUserById(
         payload.ownerUserId,
@@ -127,6 +152,9 @@ export class DoctorManagementService {
       fullName: payload.fullName,
       specialtyId: payload.specialtyId,
       phoneNumber: payload.phoneNumber,
+      nik: payload.nik,
+      satusehatPractitionerId: payload.satusehatPractitionerId,
+      licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
       ownerUserId: payload.ownerUserId,
       isActive: payload.isActive,
       patientIds: payload.patientIds,
@@ -182,10 +210,17 @@ export class DoctorManagementService {
       await this.assertActiveSpecialtyId(payload.specialtyId);
     }
 
+    if (payload.nik) {
+      await this.assertNikNotTaken(payload.nik, id);
+    }
+
     const updated = await this.doctorManagementRepository.updateDoctor(id, {
       fullName: payload.fullName,
       specialtyId: payload.specialtyId,
       phoneNumber: payload.phoneNumber,
+      nik: payload.nik,
+      satusehatPractitionerId: payload.satusehatPractitionerId,
+      licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
       ownerUserId: payload.ownerUserId,
       isActive: payload.isActive,
     });
@@ -259,6 +294,13 @@ export class DoctorManagementService {
     }
   }
 
+  private async assertNikNotTaken(nik: string, currentDoctorId?: string): Promise<void> {
+    const doctorWithSameNik = await this.doctorManagementRepository.findDoctorByNik(nik);
+    if (doctorWithSameNik && doctorWithSameNik.id !== currentDoctorId) {
+      throw new ConflictException('Doctor NIK already exists');
+    }
+  }
+
   private async assertActiveSpecialtyId(specialtyId: string): Promise<void> {
     const specialty = await this.doctorManagementRepository.findActiveSpecialtyById(specialtyId);
     if (!specialty) {
@@ -328,10 +370,24 @@ export class DoctorManagementService {
       specialtyId: doctor.specialtyId,
       specialty: doctor.specialty.name,
       phoneNumber: doctor.phoneNumber ?? undefined,
+      nik: doctor.nik ?? undefined,
+      satusehatPractitionerId: doctor.satusehatPractitionerId ?? undefined,
       ownerUserId: doctor.ownerUserId ?? undefined,
       isActive: doctor.isActive,
       createdAt: doctor.createdAt.toISOString(),
       updatedAt: doctor.updatedAt.toISOString(),
+    };
+  }
+
+  private toLicenseResponse(license: DoctorLicenseRecord) {
+    return {
+      id: license.id,
+      type: license.type,
+      licenseNumber: license.licenseNumber,
+      issuedAt: license.issuedAt ? toDateOnly(license.issuedAt) : undefined,
+      expiresAt: license.expiresAt ? toDateOnly(license.expiresAt) : undefined,
+      createdAt: license.createdAt.toISOString(),
+      updatedAt: license.updatedAt.toISOString(),
     };
   }
 

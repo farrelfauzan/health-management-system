@@ -23,6 +23,7 @@ describe('DoctorManagement integration', () => {
     listDoctors: jest.fn(),
     findDoctorById: jest.fn(),
     findDoctorDetailById: jest.fn(),
+    findDoctorByNik: jest.fn(),
     findDoctorByLicenseNumber: jest.fn(),
     findDoctorByOwnerUserId: jest.fn(),
     findActiveUserById: jest.fn(),
@@ -118,6 +119,7 @@ describe('DoctorManagement integration', () => {
       limit: 10,
     });
     doctorRepositoryMock.findDoctorByLicenseNumber.mockResolvedValue(null);
+    doctorRepositoryMock.findDoctorByNik.mockResolvedValue(null);
     doctorRepositoryMock.findActivePatientsByIds.mockResolvedValue([]);
     doctorRepositoryMock.createDoctor.mockResolvedValue(doctorRecord);
     doctorRepositoryMock.findDoctorById.mockResolvedValue(doctorRecord);

@@ -5,6 +5,11 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdatePatientDtoAllergiesItem } from './updatePatientDtoAllergiesItem';
+import type { UpdatePatientDtoBloodType } from './updatePatientDtoBloodType';
+import type { UpdatePatientDtoMaritalStatus } from './updatePatientDtoMaritalStatus';
+import type { UpdatePatientDtoReligion } from './updatePatientDtoReligion';
+import type { UpdatePatientDtoRhesusFactor } from './updatePatientDtoRhesusFactor';
 import type { UpdatePatientDtoSex } from './updatePatientDtoSex';
 import type { UpdatePatientDtoStatus } from './updatePatientDtoStatus';
 
@@ -16,6 +21,12 @@ export interface UpdatePatientDto {
   fullName?: string;
   /** @pattern ^\d{4}-\d{2}-\d{2}$ */
   dateOfBirth?: string;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     * @nullable
+     */
+  placeOfBirth?: string | null;
   sex?: UpdatePatientDtoSex;
   status?: UpdatePatientDtoStatus;
   /**
@@ -28,6 +39,55 @@ export interface UpdatePatientDto {
      * @maxLength 300
      */
   address?: string;
+  /** @nullable */
+  nik?: string | null;
+  /** @nullable */
+  bpjsNumber?: string | null;
+  /**
+     * @maxLength 254
+     * @nullable
+     */
+  email?: string | null;
+  /** @nullable */
+  bloodType?: UpdatePatientDtoBloodType;
+  /** @nullable */
+  rhesusFactor?: UpdatePatientDtoRhesusFactor;
+  /** @nullable */
+  maritalStatus?: UpdatePatientDtoMaritalStatus;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     * @nullable
+     */
+  occupation?: string | null;
+  /** @nullable */
+  religion?: UpdatePatientDtoReligion;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     * @nullable
+     */
+  emergencyContactName?: string | null;
+  /**
+     * @minLength 6
+     * @maxLength 32
+     * @nullable
+     */
+  emergencyContactPhone?: string | null;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     * @nullable
+     */
+  guardianName?: string | null;
+  /**
+     * @minLength 2
+     * @maxLength 60
+     * @nullable
+     */
+  guardianRelation?: string | null;
+  /** @maxItems 50 */
+  allergies?: UpdatePatientDtoAllergiesItem[];
   /** @nullable */
   ownerUserId?: string | null;
   isActive?: boolean;

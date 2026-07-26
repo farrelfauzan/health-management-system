@@ -595,6 +595,16 @@ paths:
           schema:
             minLength: 1
             type: string
+        - name: nik
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: bpjsNumber
+          required: false
+          in: query
+          schema:
+            type: string
         - name: doctorId
           required: false
           in: query
@@ -1588,6 +1598,10 @@ paths:
                           type: string
                         phoneNumber:
                           type: string
+                        nik:
+                          type: string
+                        satusehatPractitionerId:
+                          type: string
                         ownerUserId:
                           type: string
                         isActive:
@@ -1626,6 +1640,8 @@ paths:
                         - specialtyId
                         - specialty
                         - phoneNumber
+                        - nik
+                        - satusehatPractitionerId
                         - ownerUserId
                         - isActive
                         - createdAt
@@ -1656,6 +1672,8 @@ paths:
                       specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                       specialty: Internal Medicine
                       phoneNumber: "+628129876543"
+                      nik: "3173011503800002"
+                      satusehatPractitionerId: "10009880728"
                       ownerUserId: 33333333-3333-4333-8333-333333333333
                       isActive: true
                       createdAt: 2026-07-20T08:00:00.000Z
@@ -1711,6 +1729,15 @@ paths:
                   fullName: Dr. Budi Santoso
                   specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                   phoneNumber: "+628129876543"
+                  nik: "3173011503800002"
+                  licenses:
+                    - type: STR
+                      licenseNumber: STR-33-2020-000123
+                      issuedAt: 2020-02-01
+                    - type: SIP
+                      licenseNumber: SIP-2026-0001
+                      issuedAt: 2026-01-15
+                      expiresAt: 2031-01-14
                   ownerUserId: 33333333-3333-4333-8333-333333333333
                   patientIds:
                     - 11111111-1111-4111-8111-111111111111
@@ -1737,6 +1764,10 @@ paths:
                         type: string
                       phoneNumber:
                         type: string
+                      nik:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
                       ownerUserId:
                         type: string
                       isActive:
@@ -1752,6 +1783,8 @@ paths:
                       - specialtyId
                       - specialty
                       - phoneNumber
+                      - nik
+                      - satusehatPractitionerId
                       - ownerUserId
                       - isActive
                       - createdAt
@@ -1769,6 +1802,8 @@ paths:
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
                     phoneNumber: "+628129876543"
+                    nik: "3173011503800002"
+                    satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -1837,6 +1872,10 @@ paths:
                         type: string
                       phoneNumber:
                         type: string
+                      nik:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
                       ownerUserId:
                         type: string
                       isActive:
@@ -1868,6 +1907,30 @@ paths:
                             - startTime
                             - endTime
                             - isAvailable
+                      licenses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            type:
+                              type: string
+                            licenseNumber:
+                              type: string
+                            issuedAt:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - type
+                            - licenseNumber
+                            - issuedAt
+                            - createdAt
+                            - updatedAt
                       patients:
                         type: array
                         items:
@@ -1893,12 +1956,15 @@ paths:
                       - specialtyId
                       - specialty
                       - phoneNumber
+                      - nik
+                      - satusehatPractitionerId
                       - ownerUserId
                       - isActive
                       - createdAt
                       - updatedAt
                       - patientCount
                       - schedules
+                      - licenses
                       - patients
                 required:
                   - data
@@ -1910,6 +1976,8 @@ paths:
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
                     phoneNumber: "+628129876543"
+                    nik: "3173011503800002"
+                    satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -1921,6 +1989,20 @@ paths:
                         startTime: 08:00
                         endTime: 16:00
                         isAvailable: true
+                    licenses:
+                      - id: cdcdcdcd-cdcd-4dcd-8dcd-cdcdcdcdcdcd
+                        type: STR
+                        licenseNumber: STR-33-2020-000123
+                        issuedAt: 2020-02-01
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                      - id: dededede-dede-4ede-8ede-dededededede
+                        type: SIP
+                        licenseNumber: SIP-2026-0001
+                        issuedAt: 2026-01-15
+                        expiresAt: 2031-01-14
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
                     patients:
                       - id: 11111111-1111-4111-8111-111111111111
                         assignmentId: 88888888-8888-4888-8888-888888888888
@@ -2001,6 +2083,10 @@ paths:
                         type: string
                       phoneNumber:
                         type: string
+                      nik:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
                       ownerUserId:
                         type: string
                       isActive:
@@ -2016,6 +2102,8 @@ paths:
                       - specialtyId
                       - specialty
                       - phoneNumber
+                      - nik
+                      - satusehatPractitionerId
                       - ownerUserId
                       - isActive
                       - createdAt
@@ -2033,6 +2121,8 @@ paths:
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
                     phoneNumber: "+628129876543"
+                    nik: "3173011503800002"
+                    satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -5458,6 +5548,10 @@ components:
         dateOfBirth:
           type: string
           pattern: ^\d{4}-\d{2}-\d{2}$
+        placeOfBirth:
+          type: string
+          minLength: 2
+          maxLength: 120
         sex:
           type: string
           enum:
@@ -5478,6 +5572,86 @@ components:
           type: string
           minLength: 3
           maxLength: 300
+        nik:
+          type: string
+        bpjsNumber:
+          type: string
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        bloodType:
+          type: string
+          enum:
+            - A
+            - B
+            - AB
+            - O
+        rhesusFactor:
+          type: string
+          enum:
+            - POSITIVE
+            - NEGATIVE
+        maritalStatus:
+          type: string
+          enum:
+            - SINGLE
+            - MARRIED
+            - DIVORCED
+            - WIDOWED
+        occupation:
+          type: string
+          minLength: 2
+          maxLength: 120
+        religion:
+          type: string
+          enum:
+            - ISLAM
+            - PROTESTANTISM
+            - CATHOLICISM
+            - HINDUISM
+            - BUDDHISM
+            - CONFUCIANISM
+            - OTHER
+        emergencyContactName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        emergencyContactPhone:
+          type: string
+          minLength: 6
+          maxLength: 32
+        guardianName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        guardianRelation:
+          type: string
+          minLength: 2
+          maxLength: 60
+        allergies:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            properties:
+              substance:
+                type: string
+                minLength: 2
+                maxLength: 120
+              reaction:
+                type: string
+                minLength: 2
+                maxLength: 300
+              severity:
+                type: string
+                enum:
+                  - MILD
+                  - MODERATE
+                  - SEVERE
+            required:
+              - substance
+              - severity
         ownerUserId:
           type: string
           format: uuid
@@ -5508,6 +5682,11 @@ components:
         dateOfBirth:
           type: string
           pattern: ^\d{4}-\d{2}-\d{2}$
+        placeOfBirth:
+          type: string
+          minLength: 2
+          maxLength: 120
+          nullable: true
         sex:
           type: string
           enum:
@@ -5527,6 +5706,98 @@ components:
           type: string
           minLength: 3
           maxLength: 300
+        nik:
+          type: string
+          nullable: true
+        bpjsNumber:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          nullable: true
+        bloodType:
+          type: string
+          enum:
+            - A
+            - B
+            - AB
+            - O
+          nullable: true
+        rhesusFactor:
+          type: string
+          enum:
+            - POSITIVE
+            - NEGATIVE
+          nullable: true
+        maritalStatus:
+          type: string
+          enum:
+            - SINGLE
+            - MARRIED
+            - DIVORCED
+            - WIDOWED
+          nullable: true
+        occupation:
+          type: string
+          minLength: 2
+          maxLength: 120
+          nullable: true
+        religion:
+          type: string
+          enum:
+            - ISLAM
+            - PROTESTANTISM
+            - CATHOLICISM
+            - HINDUISM
+            - BUDDHISM
+            - CONFUCIANISM
+            - OTHER
+          nullable: true
+        emergencyContactName:
+          type: string
+          minLength: 2
+          maxLength: 120
+          nullable: true
+        emergencyContactPhone:
+          type: string
+          minLength: 6
+          maxLength: 32
+          nullable: true
+        guardianName:
+          type: string
+          minLength: 2
+          maxLength: 120
+          nullable: true
+        guardianRelation:
+          type: string
+          minLength: 2
+          maxLength: 60
+          nullable: true
+        allergies:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            properties:
+              substance:
+                type: string
+                minLength: 2
+                maxLength: 120
+              reaction:
+                type: string
+                minLength: 2
+                maxLength: 300
+              severity:
+                type: string
+                enum:
+                  - MILD
+                  - MODERATE
+                  - SEVERE
+            required:
+              - substance
+              - severity
         ownerUserId:
           type: string
           format: uuid
@@ -5551,6 +5822,36 @@ components:
           type: string
           minLength: 6
           maxLength: 32
+        nik:
+          type: string
+        satusehatPractitionerId:
+          type: string
+          minLength: 1
+          maxLength: 64
+        licenses:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - STR
+                  - SIP
+              licenseNumber:
+                type: string
+                minLength: 3
+                maxLength: 64
+              issuedAt:
+                type: string
+                pattern: ^\d{4}-\d{2}-\d{2}$
+              expiresAt:
+                type: string
+                pattern: ^\d{4}-\d{2}-\d{2}$
+            required:
+              - type
+              - licenseNumber
         ownerUserId:
           type: string
           format: uuid
@@ -5583,6 +5884,38 @@ components:
           type: string
           minLength: 6
           maxLength: 32
+        nik:
+          type: string
+          nullable: true
+        satusehatPractitionerId:
+          type: string
+          minLength: 1
+          maxLength: 64
+          nullable: true
+        licenses:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - STR
+                  - SIP
+              licenseNumber:
+                type: string
+                minLength: 3
+                maxLength: 64
+              issuedAt:
+                type: string
+                pattern: ^\d{4}-\d{2}-\d{2}$
+              expiresAt:
+                type: string
+                pattern: ^\d{4}-\d{2}-\d{2}$
+            required:
+              - type
+              - licenseNumber
         ownerUserId:
           type: string
           format: uuid

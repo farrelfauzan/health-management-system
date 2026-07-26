@@ -5,6 +5,11 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreatePatientDtoAllergiesItem } from './createPatientDtoAllergiesItem';
+import type { CreatePatientDtoBloodType } from './createPatientDtoBloodType';
+import type { CreatePatientDtoMaritalStatus } from './createPatientDtoMaritalStatus';
+import type { CreatePatientDtoReligion } from './createPatientDtoReligion';
+import type { CreatePatientDtoRhesusFactor } from './createPatientDtoRhesusFactor';
 import type { CreatePatientDtoSex } from './createPatientDtoSex';
 import type { CreatePatientDtoStatus } from './createPatientDtoStatus';
 
@@ -21,6 +26,11 @@ export interface CreatePatientDto {
   fullName: string;
   /** @pattern ^\d{4}-\d{2}-\d{2}$ */
   dateOfBirth: string;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  placeOfBirth?: string;
   sex: CreatePatientDtoSex;
   status?: CreatePatientDtoStatus;
   /**
@@ -33,6 +43,41 @@ export interface CreatePatientDto {
      * @maxLength 300
      */
   address: string;
+  nik?: string;
+  bpjsNumber?: string;
+  /** @maxLength 254 */
+  email?: string;
+  bloodType?: CreatePatientDtoBloodType;
+  rhesusFactor?: CreatePatientDtoRhesusFactor;
+  maritalStatus?: CreatePatientDtoMaritalStatus;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  occupation?: string;
+  religion?: CreatePatientDtoReligion;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  emergencyContactName?: string;
+  /**
+     * @minLength 6
+     * @maxLength 32
+     */
+  emergencyContactPhone?: string;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  guardianName?: string;
+  /**
+     * @minLength 2
+     * @maxLength 60
+     */
+  guardianRelation?: string;
+  /** @maxItems 50 */
+  allergies?: CreatePatientDtoAllergiesItem[];
   ownerUserId?: string;
   isActive?: boolean;
   /**

@@ -390,6 +390,7 @@ export const ModelName = {
   PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
+  DoctorLicense: 'DoctorLicense',
   DoctorSchedule: 'DoctorSchedule',
   AppointmentSession: 'AppointmentSession',
   DoctorPatient: 'DoctorPatient',
@@ -421,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
+    modelProps: "user" | "refreshToken" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -866,6 +867,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DoctorProfileCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DoctorProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    DoctorLicense: {
+      payload: Prisma.$DoctorLicensePayload<ExtArgs>
+      fields: Prisma.DoctorLicenseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DoctorLicenseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DoctorLicenseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload>
+        }
+        findFirst: {
+          args: Prisma.DoctorLicenseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DoctorLicenseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload>
+        }
+        findMany: {
+          args: Prisma.DoctorLicenseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload>[]
+        }
+        create: {
+          args: Prisma.DoctorLicenseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload>
+        }
+        createMany: {
+          args: Prisma.DoctorLicenseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DoctorLicenseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload>[]
+        }
+        delete: {
+          args: Prisma.DoctorLicenseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload>
+        }
+        update: {
+          args: Prisma.DoctorLicenseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload>
+        }
+        deleteMany: {
+          args: Prisma.DoctorLicenseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DoctorLicenseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DoctorLicenseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload>[]
+        }
+        upsert: {
+          args: Prisma.DoctorLicenseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicensePayload>
+        }
+        aggregate: {
+          args: Prisma.DoctorLicenseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDoctorLicense>
+        }
+        groupBy: {
+          args: Prisma.DoctorLicenseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorLicenseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DoctorLicenseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorLicenseCountAggregateOutputType> | number
         }
       }
     }
@@ -2195,10 +2270,27 @@ export const DoctorProfileScalarFieldEnum = {
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  nik: 'nik',
+  satusehatPractitionerId: 'satusehatPractitionerId'
 } as const
 
 export type DoctorProfileScalarFieldEnum = (typeof DoctorProfileScalarFieldEnum)[keyof typeof DoctorProfileScalarFieldEnum]
+
+
+export const DoctorLicenseScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  type: 'type',
+  licenseNumber: 'licenseNumber',
+  issuedAt: 'issuedAt',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorLicenseScalarFieldEnum = (typeof DoctorLicenseScalarFieldEnum)[keyof typeof DoctorLicenseScalarFieldEnum]
 
 
 export const DoctorScheduleScalarFieldEnum = {
@@ -2631,6 +2723,20 @@ export type ListEnumAllergySeverityFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'DoctorLicenseType'
+ */
+export type EnumDoctorLicenseTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorLicenseType'>
+    
+
+
+/**
+ * Reference to a field of type 'DoctorLicenseType[]'
+ */
+export type ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorLicenseType[]'>
+    
+
+
+/**
  * Reference to a field of type 'AppointmentSessionStatus'
  */
 export type EnumAppointmentSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentSessionStatus'>
@@ -2899,6 +3005,7 @@ export type GlobalOmitConfig = {
   patientAllergy?: Prisma.PatientAllergyOmit
   specialty?: Prisma.SpecialtyOmit
   doctorProfile?: Prisma.DoctorProfileOmit
+  doctorLicense?: Prisma.DoctorLicenseOmit
   doctorSchedule?: Prisma.DoctorScheduleOmit
   appointmentSession?: Prisma.AppointmentSessionOmit
   doctorPatient?: Prisma.DoctorPatientOmit

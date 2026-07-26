@@ -70,6 +70,9 @@ const specialty = {
   createdAt: timestamp,
   updatedAt: timestamp,
 };
+// Synthetic practitioner NIK — digits 7-12 encode DD/MM/YY for a male doctor
+// born 1980-03-15. Never a real NIK.
+const syntheticDoctorNik = '3173011503800002';
 const doctor = {
   id: doctorId,
   licenseNumber: 'SIP-2026-0001',
@@ -77,11 +80,32 @@ const doctor = {
   specialtyId,
   specialty: specialty.name,
   phoneNumber: '+628129876543',
+  nik: syntheticDoctorNik,
+  satusehatPractitionerId: '10009880728',
   ownerUserId: userId,
   isActive: true,
   createdAt: timestamp,
   updatedAt: timestamp,
 };
+const doctorLicenses = [
+  {
+    id: 'cdcdcdcd-cdcd-4dcd-8dcd-cdcdcdcdcdcd',
+    type: 'STR',
+    licenseNumber: 'STR-33-2020-000123',
+    issuedAt: '2020-02-01',
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  },
+  {
+    id: 'dededede-dede-4ede-8ede-dededededede',
+    type: 'SIP',
+    licenseNumber: 'SIP-2026-0001',
+    issuedAt: '2026-01-15',
+    expiresAt: '2031-01-14',
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  },
+];
 const sessionId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const appointment = {
   id: appointmentId,
@@ -257,6 +281,16 @@ export const PHASE_THREE_EXAMPLES = {
       fullName: 'Dr. Budi Santoso',
       specialtyId,
       phoneNumber: '+628129876543',
+      nik: syntheticDoctorNik,
+      licenses: [
+        { type: 'STR', licenseNumber: 'STR-33-2020-000123', issuedAt: '2020-02-01' },
+        {
+          type: 'SIP',
+          licenseNumber: 'SIP-2026-0001',
+          issuedAt: '2026-01-15',
+          expiresAt: '2031-01-14',
+        },
+      ],
       ownerUserId: userId,
       patientIds: [patientId],
     },
@@ -281,6 +315,7 @@ export const PHASE_THREE_EXAMPLES = {
       ...doctor,
       patientCount: 1,
       schedules: [doctorScheduleEntry],
+      licenses: doctorLicenses,
       patients: [
         { id: patientId, assignmentId, mrn: patient.mrn, fullName: patient.fullName },
       ],

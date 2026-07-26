@@ -76,6 +76,14 @@ enum AllergySeverity {
   SEVERE
 }
 
+// Indonesian practitioner credentials: STR (Surat Tanda Registrasi — lifetime
+// under UU Kesehatan No. 17/2023) and SIP (Surat Izin Praktik — issued per
+// practice location and time-limited).
+enum DoctorLicenseType {
+  STR
+  SIP
+}
+
 enum AppointmentStatus {
   REQUESTED
   SCHEDULED
@@ -273,6 +281,16 @@ model DoctorProfile {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
 
+  // National identity and SATUSEHAT linkage required by PMK 24/2022.
+  // SATUSEHAT resolves practitioners by NIK, so it must be unique when
+  // present; nullable so existing MVP records stay valid. Unlike patient
+  // identifiers, practitioner credentials are registry-public data, so they
+  // are stored in plaintext (see docs/post-mvp/implementation-plan.md P7-T03).
+  nik                     String? @unique
+  // IHS practitioner number, filled after the first successful SATUSEHAT
+  // practitioner lookup.
+  satusehatPractitionerId String? @map("satusehat_practitioner_id")
+
   specialty           Specialty            @relation(fields: [specialtyId], references: [id])
   ownerUser           User?                @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
   patients            DoctorPatient[]
@@ -280,12 +298,35 @@ model DoctorProfile {
   appointments        Appointment[]
   appointmentSessions AppointmentSession[]
   prescriptions       Prescription[]
+  licenses            DoctorLicense[]
 
   @@index([deletedAt])
   @@index([isActive])
   @@index([fullName])
   @@index([specialtyId])
   @@map("doctor_profiles")
+}
+
+/// Practitioner credentials modelled as a child table rather than flat
+/// columns: a doctor holds one lifetime STR but may hold several SIPs (one per
+/// practice location), and clinics must track SIP expiry for licensing audits.
+model DoctorLicense {
+  id            String            @id @default(uuid()) @db.Uuid
+  doctorId      String            @map("doctor_id") @db.Uuid
+  type          DoctorLicenseType
+  licenseNumber String            @map("license_number")
+  issuedAt      DateTime?         @map("issued_at") @db.Date
+  expiresAt     DateTime?         @map("expires_at") @db.Date
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+  deletedAt     DateTime?         @map("deleted_at")
+
+  doctor DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@index([deletedAt])
+  @@index([expiresAt])
+  @@map("doctor_licenses")
 }
 
 model DoctorSchedule {
