@@ -7,6 +7,9 @@ export type DoctorProfile = {
   specialtyId: string;
   specialty: string;
   phoneNumber?: string;
+  email?: string;
+  title?: string;
+  degrees?: string;
   nik?: string;
   satusehatPractitionerId?: string;
   ownerUserId?: string;
@@ -21,6 +24,16 @@ export type DoctorLicense = {
   licenseNumber: string;
   issuedAt?: string;
   expiresAt?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DoctorEducation = {
+  id: string;
+  institution: string;
+  degree: string;
+  fieldOfStudy?: string;
+  graduationYear?: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -50,6 +63,7 @@ export type DoctorDetail = DoctorProfile & {
   patientCount: number;
   schedules: DoctorScheduleEntry[];
   licenses: DoctorLicense[];
+  educations: DoctorEducation[];
   patients?: DoctorRelatedPatient[];
 };
 

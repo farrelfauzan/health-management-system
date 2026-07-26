@@ -315,13 +315,22 @@ SET
 -- Development demo doctors. Replace or remove this block for production seeds.
 -- NIK values are synthetic (structurally valid 16 digits, never real ones):
 -- digits 7-12 encode DD/MM/YY with +40 on DD for female practitioners.
-WITH seed_doctors(license_number, full_name, specialty_name, phone_number, nik) AS (
+WITH seed_doctors(
+  license_number,
+  full_name,
+  specialty_name,
+  phone_number,
+  email,
+  title,
+  degrees,
+  nik
+) AS (
   VALUES
-    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', '3173011001800001'),
-    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', '3173015504850002'),
-    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', '3173012208780003'),
-    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', '3173014512830004'),
-    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', '3173013006900005')
+    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', 'andi.prasetyo@clinic.local', 'dr.', 'Sp.PD', '3173011001800001'),
+    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', 'maya.sari@clinic.local', 'dr.', 'Sp.A', '3173015504850002'),
+    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', 'hendra.gunawan@clinic.local', 'dr.', 'Sp.JP', '3173012208780003'),
+    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', 'fitri.handayani@clinic.local', 'dr.', 'Sp.OG', '3173014512830004'),
+    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', 'yusuf.hidayat@clinic.local', 'dr.', NULL, '3173013006900005')
 )
 INSERT INTO "doctor_profiles" (
   "id",
@@ -329,6 +338,9 @@ INSERT INTO "doctor_profiles" (
   "full_name",
   "specialty_id",
   "phone_number",
+  "email",
+  "title",
+  "degrees",
   "nik",
   "satusehat_practitioner_id",
   "owner_user_id",
@@ -343,6 +355,9 @@ SELECT
   full_name,
   specialties."id",
   phone_number,
+  email,
+  title,
+  degrees,
   nik,
   NULL,
   NULL,
@@ -357,6 +372,9 @@ SET
   "full_name" = EXCLUDED."full_name",
   "specialty_id" = EXCLUDED."specialty_id",
   "phone_number" = EXCLUDED."phone_number",
+  "email" = EXCLUDED."email",
+  "title" = EXCLUDED."title",
+  "degrees" = EXCLUDED."degrees",
   "nik" = EXCLUDED."nik",
   "is_active" = true,
   "updated_at" = NOW(),
@@ -405,6 +423,56 @@ SET
   "license_number" = EXCLUDED."license_number",
   "issued_at" = EXCLUDED."issued_at",
   "expires_at" = EXCLUDED."expires_at",
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
+-- Development demo doctor education rows (synthetic institutions/years).
+WITH seed_doctor_educations(
+  doctor_license_number,
+  institution,
+  degree,
+  field_of_study,
+  graduation_year
+) AS (
+  VALUES
+    ('SIP-2026-0001', 'Universitas Indonesia', 'dr.', 'Kedokteran', 2004),
+    ('SIP-2026-0001', 'Universitas Indonesia', 'Sp.PD', 'Penyakit Dalam', 2010),
+    ('SIP-2026-0002', 'Universitas Gadjah Mada', 'dr.', 'Kedokteran', 2008),
+    ('SIP-2026-0002', 'Universitas Gadjah Mada', 'Sp.A', 'Ilmu Kesehatan Anak', 2014),
+    ('SIP-2026-0003', 'Universitas Airlangga', 'dr.', 'Kedokteran', 2002),
+    ('SIP-2026-0003', 'Universitas Airlangga', 'Sp.JP', 'Jantung dan Pembuluh Darah', 2009),
+    ('SIP-2026-0004', 'Universitas Padjadjaran', 'dr.', 'Kedokteran', 2006),
+    ('SIP-2026-0004', 'Universitas Padjadjaran', 'Sp.OG', 'Obstetri dan Ginekologi', 2012),
+    ('SIP-2026-0005', 'Universitas Sumatera Utara', 'dr.', 'Kedokteran', 2015)
+)
+INSERT INTO "doctor_educations" (
+  "id",
+  "doctor_id",
+  "institution",
+  "degree",
+  "field_of_study",
+  "graduation_year",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('doctor-education:' || doctor_license_number || ':' || degree || ':' || COALESCE(field_of_study, '') || ':' || COALESCE(graduation_year::text, ''))::uuid,
+  md5('doctor:' || doctor_license_number)::uuid,
+  institution,
+  degree,
+  field_of_study,
+  graduation_year,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_doctor_educations
+ON CONFLICT ("id") DO UPDATE
+SET
+  "institution" = EXCLUDED."institution",
+  "degree" = EXCLUDED."degree",
+  "field_of_study" = EXCLUDED."field_of_study",
+  "graduation_year" = EXCLUDED."graduation_year",
   "updated_at" = NOW(),
   "deleted_at" = NULL;
 

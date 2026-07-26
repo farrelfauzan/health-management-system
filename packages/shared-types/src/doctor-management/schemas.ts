@@ -8,6 +8,10 @@ import { nikSchema } from '#patient-management/schemas';
 export const MAX_INITIAL_PATIENT_ASSIGNMENTS = 20;
 export const MAX_SCHEDULE_ENTRIES = 28;
 export const MAX_DOCTOR_LICENSES = 20;
+export const MAX_DOCTOR_EDUCATIONS = 20;
+
+const CURRENT_GRADUATION_YEAR = new Date().getUTCFullYear();
+const MIN_GRADUATION_YEAR = 1950;
 
 export const licenseDateSchema = z
   .string()
@@ -63,6 +67,38 @@ export const doctorLicensesSchema = z
 export type DoctorLicenseInput = z.infer<typeof doctorLicenseInputSchema>;
 
 export const satusehatPractitionerIdSchema = z.string().trim().min(1).max(64);
+
+export const doctorTitleSchema = z.string().trim().min(1).max(32);
+export const doctorDegreesSchema = z.string().trim().min(1).max(120);
+export const doctorEmailSchema = z.string().trim().email().max(254);
+
+export const doctorEducationInputSchema = z.object({
+  institution: z.string().trim().min(2).max(160),
+  degree: z.string().trim().min(1).max(80),
+  fieldOfStudy: z.string().trim().min(2).max(120).optional(),
+  graduationYear: z
+    .number()
+    .int()
+    .min(MIN_GRADUATION_YEAR)
+    .max(CURRENT_GRADUATION_YEAR + 1)
+    .optional(),
+});
+
+export const doctorEducationsSchema = z
+  .array(doctorEducationInputSchema)
+  .max(MAX_DOCTOR_EDUCATIONS)
+  .refine(
+    (educations) =>
+      new Set(
+        educations.map(
+          (education) =>
+            `${education.institution.toLowerCase()}|${education.degree.toLowerCase()}|${education.fieldOfStudy?.toLowerCase() ?? ''}|${education.graduationYear ?? ''}`,
+        ),
+      ).size === educations.length,
+    'Education entries must be unique',
+  );
+
+export type DoctorEducationInput = z.infer<typeof doctorEducationInputSchema>;
 
 export const scheduleTimeSchema = z
   .string()
@@ -132,12 +168,18 @@ export const createDoctorSchema = z.object({
   licenseNumber: z.string().trim().min(3).max(64),
   fullName: z.string().trim().min(2).max(120),
   specialtyId: z.string().uuid(),
+  // SATUSEHAT Practitioner requires at least one ContactPoint; phone remains
+  // required on create while email is optional until clinics fill profiles.
   phoneNumber: z.string().trim().min(6).max(32),
+  email: doctorEmailSchema.optional(),
+  title: doctorTitleSchema.optional(),
+  degrees: doctorDegreesSchema.optional(),
   // Nullable: required for SATUSEHAT practitioner lookup, but legacy records
   // and foreign practitioners may not have one yet.
   nik: nikSchema.optional(),
   satusehatPractitionerId: satusehatPractitionerIdSchema.optional(),
   licenses: doctorLicensesSchema.optional(),
+  educations: doctorEducationsSchema.optional(),
   ownerUserId: z.string().uuid().optional(),
   isActive: z.boolean().optional().default(true),
   patientIds: z
@@ -153,12 +195,19 @@ export const updateDoctorSchema = z
     fullName: z.string().trim().min(2).max(120).optional(),
     specialtyId: z.string().uuid().optional(),
     phoneNumber: z.string().trim().min(6).max(32).optional(),
+    email: doctorEmailSchema.nullable().optional(),
+    title: doctorTitleSchema.nullable().optional(),
+    degrees: doctorDegreesSchema.nullable().optional(),
     nik: nikSchema.nullable().optional(),
     satusehatPractitionerId: satusehatPractitionerIdSchema.nullable().optional(),
     // Replaces the whole list: the client always submits the complete set of
     // active licenses, and removed entries are soft-deleted rather than
     // dropped, so the credential history survives licensing audits.
     licenses: doctorLicensesSchema.optional(),
+    // Replaces the whole list: the client submits the complete set of active
+    // education rows, and removed entries are soft-deleted so the history
+    // survives profile edits and SATUSEHAT qualification remaps.
+    educations: doctorEducationsSchema.optional(),
     ownerUserId: z.string().uuid().nullable().optional(),
     isActive: z.boolean().optional(),
   })

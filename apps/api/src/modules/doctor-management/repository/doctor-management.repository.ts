@@ -1,5 +1,6 @@
 import {
   CreateDoctorRecordPayload,
+  DoctorEducationInput,
   DoctorLicenseWritePayload,
   ListDoctorsParams,
   ReplaceDoctorSchedulesPayload,
@@ -36,6 +37,21 @@ const LICENSES_INCLUDE = {
     updatedAt: true,
   },
 } satisfies Prisma.DoctorProfile$licensesArgs;
+const EDUCATIONS_INCLUDE = {
+  where: {
+    deletedAt: null,
+  },
+  orderBy: [{ graduationYear: 'desc' }, { createdAt: 'asc' }],
+  select: {
+    id: true,
+    institution: true,
+    degree: true,
+    fieldOfStudy: true,
+    graduationYear: true,
+    createdAt: true,
+    updatedAt: true,
+  },
+} satisfies Prisma.DoctorProfile$educationsArgs;
 
 function toLicenseCreateData(license: DoctorLicenseWritePayload): {
   type: DoctorLicenseWritePayload['type'];
@@ -48,6 +64,20 @@ function toLicenseCreateData(license: DoctorLicenseWritePayload): {
     licenseNumber: license.licenseNumber,
     issuedAt: license.issuedAt,
     expiresAt: license.expiresAt,
+  };
+}
+
+function toEducationCreateData(education: DoctorEducationInput): {
+  institution: string;
+  degree: string;
+  fieldOfStudy: string | null;
+  graduationYear: number | null;
+} {
+  return {
+    institution: education.institution,
+    degree: education.degree,
+    fieldOfStudy: education.fieldOfStudy ?? null,
+    graduationYear: education.graduationYear ?? null,
   };
 }
 
@@ -188,6 +218,7 @@ export class DoctorManagementRepository {
           orderBy: SCHEDULE_ORDER_BY,
         },
         licenses: LICENSES_INCLUDE,
+        educations: EDUCATIONS_INCLUDE,
       },
     });
   }
@@ -271,12 +302,18 @@ export class DoctorManagementRepository {
           fullName: payload.fullName,
           specialtyId: payload.specialtyId,
           phoneNumber: payload.phoneNumber,
+          email: payload.email ?? null,
+          title: payload.title ?? null,
+          degrees: payload.degrees ?? null,
           nik: payload.nik ?? null,
           satusehatPractitionerId: payload.satusehatPractitionerId ?? null,
           ownerUserId: payload.ownerUserId ?? null,
           isActive: payload.isActive,
           licenses: {
             create: (payload.licenses ?? []).map(toLicenseCreateData),
+          },
+          educations: {
+            create: (payload.educations ?? []).map(toEducationCreateData),
           },
         },
         include: {
@@ -319,7 +356,17 @@ export class DoctorManagementRepository {
           },
         });
       }
-
+      if (payload.educations !== undefined) {
+        await tx.doctorEducation.updateMany({
+          where: {
+            doctorId: id,
+            deletedAt: null,
+          },
+          data: {
+            deletedAt: new Date(),
+          },
+        });
+      }
       return tx.doctorProfile.update({
         where: {
           id,
@@ -328,6 +375,9 @@ export class DoctorManagementRepository {
           ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
           ...(payload.specialtyId !== undefined ? { specialtyId: payload.specialtyId } : {}),
           ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
+          ...(payload.email !== undefined ? { email: payload.email } : {}),
+          ...(payload.title !== undefined ? { title: payload.title } : {}),
+          ...(payload.degrees !== undefined ? { degrees: payload.degrees } : {}),
           ...(payload.nik !== undefined ? { nik: payload.nik } : {}),
           ...(payload.satusehatPractitionerId !== undefined
             ? { satusehatPractitionerId: payload.satusehatPractitionerId }
@@ -336,6 +386,9 @@ export class DoctorManagementRepository {
           ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
           ...(payload.licenses !== undefined
             ? { licenses: { create: payload.licenses.map(toLicenseCreateData) } }
+            : {}),
+          ...(payload.educations !== undefined
+            ? { educations: { create: payload.educations.map(toEducationCreateData) } }
             : {}),
         },
         include: {

@@ -37,6 +37,9 @@ export type DoctorProfileMinAggregateOutputType = {
   deletedAt: Date | null
   nik: string | null
   satusehatPractitionerId: string | null
+  title: string | null
+  degrees: string | null
+  email: string | null
 }
 
 export type DoctorProfileMaxAggregateOutputType = {
@@ -52,6 +55,9 @@ export type DoctorProfileMaxAggregateOutputType = {
   deletedAt: Date | null
   nik: string | null
   satusehatPractitionerId: string | null
+  title: string | null
+  degrees: string | null
+  email: string | null
 }
 
 export type DoctorProfileCountAggregateOutputType = {
@@ -67,6 +73,9 @@ export type DoctorProfileCountAggregateOutputType = {
   deletedAt: number
   nik: number
   satusehatPractitionerId: number
+  title: number
+  degrees: number
+  email: number
   _all: number
 }
 
@@ -84,6 +93,9 @@ export type DoctorProfileMinAggregateInputType = {
   deletedAt?: true
   nik?: true
   satusehatPractitionerId?: true
+  title?: true
+  degrees?: true
+  email?: true
 }
 
 export type DoctorProfileMaxAggregateInputType = {
@@ -99,6 +111,9 @@ export type DoctorProfileMaxAggregateInputType = {
   deletedAt?: true
   nik?: true
   satusehatPractitionerId?: true
+  title?: true
+  degrees?: true
+  email?: true
 }
 
 export type DoctorProfileCountAggregateInputType = {
@@ -114,6 +129,9 @@ export type DoctorProfileCountAggregateInputType = {
   deletedAt?: true
   nik?: true
   satusehatPractitionerId?: true
+  title?: true
+  degrees?: true
+  email?: true
   _all?: true
 }
 
@@ -202,6 +220,9 @@ export type DoctorProfileGroupByOutputType = {
   deletedAt: Date | null
   nik: string | null
   satusehatPractitionerId: string | null
+  title: string | null
+  degrees: string | null
+  email: string | null
   _count: DoctorProfileCountAggregateOutputType | null
   _min: DoctorProfileMinAggregateOutputType | null
   _max: DoctorProfileMaxAggregateOutputType | null
@@ -238,6 +259,9 @@ export type DoctorProfileWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"DoctorProfile"> | Date | string | null
   nik?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   satusehatPractitionerId?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  title?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  degrees?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  email?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   specialty?: Prisma.XOR<Prisma.SpecialtyScalarRelationFilter, Prisma.SpecialtyWhereInput>
   ownerUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   patients?: Prisma.DoctorPatientListRelationFilter
@@ -246,6 +270,7 @@ export type DoctorProfileWhereInput = {
   appointmentSessions?: Prisma.AppointmentSessionListRelationFilter
   prescriptions?: Prisma.PrescriptionListRelationFilter
   licenses?: Prisma.DoctorLicenseListRelationFilter
+  educations?: Prisma.DoctorEducationListRelationFilter
 }
 
 export type DoctorProfileOrderByWithRelationInput = {
@@ -261,6 +286,9 @@ export type DoctorProfileOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   nik?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrderInput | Prisma.SortOrder
+  degrees?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   specialty?: Prisma.SpecialtyOrderByWithRelationInput
   ownerUser?: Prisma.UserOrderByWithRelationInput
   patients?: Prisma.DoctorPatientOrderByRelationAggregateInput
@@ -269,6 +297,7 @@ export type DoctorProfileOrderByWithRelationInput = {
   appointmentSessions?: Prisma.AppointmentSessionOrderByRelationAggregateInput
   prescriptions?: Prisma.PrescriptionOrderByRelationAggregateInput
   licenses?: Prisma.DoctorLicenseOrderByRelationAggregateInput
+  educations?: Prisma.DoctorEducationOrderByRelationAggregateInput
 }
 
 export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -287,6 +316,9 @@ export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"DoctorProfile"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"DoctorProfile"> | Date | string | null
   satusehatPractitionerId?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  title?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  degrees?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  email?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   specialty?: Prisma.XOR<Prisma.SpecialtyScalarRelationFilter, Prisma.SpecialtyWhereInput>
   ownerUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   patients?: Prisma.DoctorPatientListRelationFilter
@@ -295,6 +327,7 @@ export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
   appointmentSessions?: Prisma.AppointmentSessionListRelationFilter
   prescriptions?: Prisma.PrescriptionListRelationFilter
   licenses?: Prisma.DoctorLicenseListRelationFilter
+  educations?: Prisma.DoctorEducationListRelationFilter
 }, "id" | "licenseNumber" | "ownerUserId" | "nik">
 
 export type DoctorProfileOrderByWithAggregationInput = {
@@ -310,6 +343,9 @@ export type DoctorProfileOrderByWithAggregationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   nik?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  title?: Prisma.SortOrderInput | Prisma.SortOrder
+  degrees?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.DoctorProfileCountOrderByAggregateInput
   _max?: Prisma.DoctorProfileMaxOrderByAggregateInput
   _min?: Prisma.DoctorProfileMinOrderByAggregateInput
@@ -331,6 +367,9 @@ export type DoctorProfileScalarWhereWithAggregatesInput = {
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"DoctorProfile"> | Date | string | null
   nik?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
   satusehatPractitionerId?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
+  title?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
+  degrees?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
+  email?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
 }
 
 export type DoctorProfileCreateInput = {
@@ -344,6 +383,9 @@ export type DoctorProfileCreateInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -352,6 +394,7 @@ export type DoctorProfileCreateInput = {
   appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateInput = {
@@ -367,12 +410,16 @@ export type DoctorProfileUncheckedCreateInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUpdateInput = {
@@ -386,6 +433,9 @@ export type DoctorProfileUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -394,6 +444,7 @@ export type DoctorProfileUpdateInput = {
   appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateInput = {
@@ -409,12 +460,16 @@ export type DoctorProfileUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileCreateManyInput = {
@@ -430,6 +485,9 @@ export type DoctorProfileCreateManyInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
 }
 
 export type DoctorProfileUpdateManyMutationInput = {
@@ -443,6 +501,9 @@ export type DoctorProfileUpdateManyMutationInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type DoctorProfileUncheckedUpdateManyInput = {
@@ -458,6 +519,9 @@ export type DoctorProfileUncheckedUpdateManyInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type DoctorProfileNullableScalarRelationFilter = {
@@ -488,6 +552,9 @@ export type DoctorProfileCountOrderByAggregateInput = {
   deletedAt?: Prisma.SortOrder
   nik?: Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  degrees?: Prisma.SortOrder
+  email?: Prisma.SortOrder
 }
 
 export type DoctorProfileMaxOrderByAggregateInput = {
@@ -503,6 +570,9 @@ export type DoctorProfileMaxOrderByAggregateInput = {
   deletedAt?: Prisma.SortOrder
   nik?: Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  degrees?: Prisma.SortOrder
+  email?: Prisma.SortOrder
 }
 
 export type DoctorProfileMinOrderByAggregateInput = {
@@ -518,6 +588,9 @@ export type DoctorProfileMinOrderByAggregateInput = {
   deletedAt?: Prisma.SortOrder
   nik?: Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrder
+  title?: Prisma.SortOrder
+  degrees?: Prisma.SortOrder
+  email?: Prisma.SortOrder
 }
 
 export type DoctorProfileScalarRelationFilter = {
@@ -597,6 +670,20 @@ export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyNestedInput = {
   update?: Prisma.DoctorProfileUpdateWithWhereUniqueWithoutSpecialtyInput | Prisma.DoctorProfileUpdateWithWhereUniqueWithoutSpecialtyInput[]
   updateMany?: Prisma.DoctorProfileUpdateManyWithWhereWithoutSpecialtyInput | Prisma.DoctorProfileUpdateManyWithWhereWithoutSpecialtyInput[]
   deleteMany?: Prisma.DoctorProfileScalarWhereInput | Prisma.DoctorProfileScalarWhereInput[]
+}
+
+export type DoctorProfileCreateNestedOneWithoutEducationsInput = {
+  create?: Prisma.XOR<Prisma.DoctorProfileCreateWithoutEducationsInput, Prisma.DoctorProfileUncheckedCreateWithoutEducationsInput>
+  connectOrCreate?: Prisma.DoctorProfileCreateOrConnectWithoutEducationsInput
+  connect?: Prisma.DoctorProfileWhereUniqueInput
+}
+
+export type DoctorProfileUpdateOneRequiredWithoutEducationsNestedInput = {
+  create?: Prisma.XOR<Prisma.DoctorProfileCreateWithoutEducationsInput, Prisma.DoctorProfileUncheckedCreateWithoutEducationsInput>
+  connectOrCreate?: Prisma.DoctorProfileCreateOrConnectWithoutEducationsInput
+  upsert?: Prisma.DoctorProfileUpsertWithoutEducationsInput
+  connect?: Prisma.DoctorProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorProfileUpdateToOneWithWhereWithoutEducationsInput, Prisma.DoctorProfileUpdateWithoutEducationsInput>, Prisma.DoctorProfileUncheckedUpdateWithoutEducationsInput>
 }
 
 export type DoctorProfileCreateNestedOneWithoutLicensesInput = {
@@ -694,6 +781,9 @@ export type DoctorProfileCreateWithoutOwnerUserInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleCreateNestedManyWithoutDoctorInput
@@ -701,6 +791,7 @@ export type DoctorProfileCreateWithoutOwnerUserInput = {
   appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutOwnerUserInput = {
@@ -715,12 +806,16 @@ export type DoctorProfileUncheckedCreateWithoutOwnerUserInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutOwnerUserInput = {
@@ -750,6 +845,9 @@ export type DoctorProfileUpdateWithoutOwnerUserInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUpdateManyWithoutDoctorNestedInput
@@ -757,6 +855,7 @@ export type DoctorProfileUpdateWithoutOwnerUserInput = {
   appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutOwnerUserInput = {
@@ -771,12 +870,16 @@ export type DoctorProfileUncheckedUpdateWithoutOwnerUserInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutSpecialtyInput = {
@@ -790,6 +893,9 @@ export type DoctorProfileCreateWithoutSpecialtyInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleCreateNestedManyWithoutDoctorInput
@@ -797,6 +903,7 @@ export type DoctorProfileCreateWithoutSpecialtyInput = {
   appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutSpecialtyInput = {
@@ -811,12 +918,16 @@ export type DoctorProfileUncheckedCreateWithoutSpecialtyInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutSpecialtyInput = {
@@ -861,6 +972,121 @@ export type DoctorProfileScalarWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"DoctorProfile"> | Date | string | null
   nik?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   satusehatPractitionerId?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  title?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  degrees?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  email?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+}
+
+export type DoctorProfileCreateWithoutEducationsInput = {
+  id?: string
+  licenseNumber: string
+  fullName: string
+  phoneNumber?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  nik?: string | null
+  satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
+  specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
+  ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
+  patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
+  schedules?: Prisma.DoctorScheduleCreateNestedManyWithoutDoctorInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
+  appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
+  licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+}
+
+export type DoctorProfileUncheckedCreateWithoutEducationsInput = {
+  id?: string
+  licenseNumber: string
+  fullName: string
+  specialtyId: string
+  phoneNumber?: string | null
+  ownerUserId?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  nik?: string | null
+  satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
+  patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
+  schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
+  appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
+  licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+}
+
+export type DoctorProfileCreateOrConnectWithoutEducationsInput = {
+  where: Prisma.DoctorProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.DoctorProfileCreateWithoutEducationsInput, Prisma.DoctorProfileUncheckedCreateWithoutEducationsInput>
+}
+
+export type DoctorProfileUpsertWithoutEducationsInput = {
+  update: Prisma.XOR<Prisma.DoctorProfileUpdateWithoutEducationsInput, Prisma.DoctorProfileUncheckedUpdateWithoutEducationsInput>
+  create: Prisma.XOR<Prisma.DoctorProfileCreateWithoutEducationsInput, Prisma.DoctorProfileUncheckedCreateWithoutEducationsInput>
+  where?: Prisma.DoctorProfileWhereInput
+}
+
+export type DoctorProfileUpdateToOneWithWhereWithoutEducationsInput = {
+  where?: Prisma.DoctorProfileWhereInput
+  data: Prisma.XOR<Prisma.DoctorProfileUpdateWithoutEducationsInput, Prisma.DoctorProfileUncheckedUpdateWithoutEducationsInput>
+}
+
+export type DoctorProfileUpdateWithoutEducationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
+  ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
+  patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
+  schedules?: Prisma.DoctorScheduleUpdateManyWithoutDoctorNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
+  appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
+  licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+}
+
+export type DoctorProfileUncheckedUpdateWithoutEducationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
+  schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
+  appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
+  licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutLicensesInput = {
@@ -874,6 +1100,9 @@ export type DoctorProfileCreateWithoutLicensesInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -881,6 +1110,7 @@ export type DoctorProfileCreateWithoutLicensesInput = {
   appointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutLicensesInput = {
@@ -896,11 +1126,15 @@ export type DoctorProfileUncheckedCreateWithoutLicensesInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutLicensesInput = {
@@ -930,6 +1164,9 @@ export type DoctorProfileUpdateWithoutLicensesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -937,6 +1174,7 @@ export type DoctorProfileUpdateWithoutLicensesInput = {
   appointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutLicensesInput = {
@@ -952,11 +1190,15 @@ export type DoctorProfileUncheckedUpdateWithoutLicensesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutSchedulesInput = {
@@ -970,6 +1212,9 @@ export type DoctorProfileCreateWithoutSchedulesInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -977,6 +1222,7 @@ export type DoctorProfileCreateWithoutSchedulesInput = {
   appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutSchedulesInput = {
@@ -992,11 +1238,15 @@ export type DoctorProfileUncheckedCreateWithoutSchedulesInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutSchedulesInput = {
@@ -1026,6 +1276,9 @@ export type DoctorProfileUpdateWithoutSchedulesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -1033,6 +1286,7 @@ export type DoctorProfileUpdateWithoutSchedulesInput = {
   appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutSchedulesInput = {
@@ -1048,11 +1302,15 @@ export type DoctorProfileUncheckedUpdateWithoutSchedulesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
@@ -1066,6 +1324,9 @@ export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -1073,6 +1334,7 @@ export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
   appointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAppointmentSessionsInput = {
@@ -1088,11 +1350,15 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentSessionsInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAppointmentSessionsInput = {
@@ -1122,6 +1388,9 @@ export type DoctorProfileUpdateWithoutAppointmentSessionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -1129,6 +1398,7 @@ export type DoctorProfileUpdateWithoutAppointmentSessionsInput = {
   appointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAppointmentSessionsInput = {
@@ -1144,11 +1414,15 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentSessionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutPatientsInput = {
@@ -1162,6 +1436,9 @@ export type DoctorProfileCreateWithoutPatientsInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   schedules?: Prisma.DoctorScheduleCreateNestedManyWithoutDoctorInput
@@ -1169,6 +1446,7 @@ export type DoctorProfileCreateWithoutPatientsInput = {
   appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutPatientsInput = {
@@ -1184,11 +1462,15 @@ export type DoctorProfileUncheckedCreateWithoutPatientsInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutPatientsInput = {
@@ -1218,6 +1500,9 @@ export type DoctorProfileUpdateWithoutPatientsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   schedules?: Prisma.DoctorScheduleUpdateManyWithoutDoctorNestedInput
@@ -1225,6 +1510,7 @@ export type DoctorProfileUpdateWithoutPatientsInput = {
   appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutPatientsInput = {
@@ -1240,11 +1526,15 @@ export type DoctorProfileUncheckedUpdateWithoutPatientsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutAppointmentsInput = {
@@ -1258,6 +1548,9 @@ export type DoctorProfileCreateWithoutAppointmentsInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -1265,6 +1558,7 @@ export type DoctorProfileCreateWithoutAppointmentsInput = {
   appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAppointmentsInput = {
@@ -1280,11 +1574,15 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentsInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAppointmentsInput = {
@@ -1314,6 +1612,9 @@ export type DoctorProfileUpdateWithoutAppointmentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -1321,6 +1622,7 @@ export type DoctorProfileUpdateWithoutAppointmentsInput = {
   appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAppointmentsInput = {
@@ -1336,11 +1638,15 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutPrescriptionsInput = {
@@ -1354,6 +1660,9 @@ export type DoctorProfileCreateWithoutPrescriptionsInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -1361,6 +1670,7 @@ export type DoctorProfileCreateWithoutPrescriptionsInput = {
   appointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutPrescriptionsInput = {
@@ -1376,11 +1686,15 @@ export type DoctorProfileUncheckedCreateWithoutPrescriptionsInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
   licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutPrescriptionsInput = {
@@ -1410,6 +1724,9 @@ export type DoctorProfileUpdateWithoutPrescriptionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -1417,6 +1734,7 @@ export type DoctorProfileUpdateWithoutPrescriptionsInput = {
   appointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutPrescriptionsInput = {
@@ -1432,11 +1750,15 @@ export type DoctorProfileUncheckedUpdateWithoutPrescriptionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileCreateManySpecialtyInput = {
@@ -1451,6 +1773,9 @@ export type DoctorProfileCreateManySpecialtyInput = {
   deletedAt?: Date | string | null
   nik?: string | null
   satusehatPractitionerId?: string | null
+  title?: string | null
+  degrees?: string | null
+  email?: string | null
 }
 
 export type DoctorProfileUpdateWithoutSpecialtyInput = {
@@ -1464,6 +1789,9 @@ export type DoctorProfileUpdateWithoutSpecialtyInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUpdateManyWithoutDoctorNestedInput
@@ -1471,6 +1799,7 @@ export type DoctorProfileUpdateWithoutSpecialtyInput = {
   appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutSpecialtyInput = {
@@ -1485,12 +1814,16 @@ export type DoctorProfileUncheckedUpdateWithoutSpecialtyInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
   licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyInput = {
@@ -1505,6 +1838,9 @@ export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nik?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1519,6 +1855,7 @@ export type DoctorProfileCountOutputType = {
   appointmentSessions: number
   prescriptions: number
   licenses: number
+  educations: number
 }
 
 export type DoctorProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1528,6 +1865,7 @@ export type DoctorProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Ext
   appointmentSessions?: boolean | DoctorProfileCountOutputTypeCountAppointmentSessionsArgs
   prescriptions?: boolean | DoctorProfileCountOutputTypeCountPrescriptionsArgs
   licenses?: boolean | DoctorProfileCountOutputTypeCountLicensesArgs
+  educations?: boolean | DoctorProfileCountOutputTypeCountEducationsArgs
 }
 
 /**
@@ -1582,6 +1920,13 @@ export type DoctorProfileCountOutputTypeCountLicensesArgs<ExtArgs extends runtim
   where?: Prisma.DoctorLicenseWhereInput
 }
 
+/**
+ * DoctorProfileCountOutputType without action
+ */
+export type DoctorProfileCountOutputTypeCountEducationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DoctorEducationWhereInput
+}
+
 
 export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1596,6 +1941,9 @@ export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   deletedAt?: boolean
   nik?: boolean
   satusehatPractitionerId?: boolean
+  title?: boolean
+  degrees?: boolean
+  email?: boolean
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
   patients?: boolean | Prisma.DoctorProfile$patientsArgs<ExtArgs>
@@ -1604,6 +1952,7 @@ export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   appointmentSessions?: boolean | Prisma.DoctorProfile$appointmentSessionsArgs<ExtArgs>
   prescriptions?: boolean | Prisma.DoctorProfile$prescriptionsArgs<ExtArgs>
   licenses?: boolean | Prisma.DoctorProfile$licensesArgs<ExtArgs>
+  educations?: boolean | Prisma.DoctorProfile$educationsArgs<ExtArgs>
   _count?: boolean | Prisma.DoctorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["doctorProfile"]>
 
@@ -1620,6 +1969,9 @@ export type DoctorProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   deletedAt?: boolean
   nik?: boolean
   satusehatPractitionerId?: boolean
+  title?: boolean
+  degrees?: boolean
+  email?: boolean
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
 }, ExtArgs["result"]["doctorProfile"]>
@@ -1637,6 +1989,9 @@ export type DoctorProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   deletedAt?: boolean
   nik?: boolean
   satusehatPractitionerId?: boolean
+  title?: boolean
+  degrees?: boolean
+  email?: boolean
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
 }, ExtArgs["result"]["doctorProfile"]>
@@ -1654,9 +2009,12 @@ export type DoctorProfileSelectScalar = {
   deletedAt?: boolean
   nik?: boolean
   satusehatPractitionerId?: boolean
+  title?: boolean
+  degrees?: boolean
+  email?: boolean
 }
 
-export type DoctorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "licenseNumber" | "fullName" | "specialtyId" | "phoneNumber" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "nik" | "satusehatPractitionerId", ExtArgs["result"]["doctorProfile"]>
+export type DoctorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "licenseNumber" | "fullName" | "specialtyId" | "phoneNumber" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "nik" | "satusehatPractitionerId" | "title" | "degrees" | "email", ExtArgs["result"]["doctorProfile"]>
 export type DoctorProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
@@ -1666,6 +2024,7 @@ export type DoctorProfileInclude<ExtArgs extends runtime.Types.Extensions.Intern
   appointmentSessions?: boolean | Prisma.DoctorProfile$appointmentSessionsArgs<ExtArgs>
   prescriptions?: boolean | Prisma.DoctorProfile$prescriptionsArgs<ExtArgs>
   licenses?: boolean | Prisma.DoctorProfile$licensesArgs<ExtArgs>
+  educations?: boolean | Prisma.DoctorProfile$educationsArgs<ExtArgs>
   _count?: boolean | Prisma.DoctorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DoctorProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1688,6 +2047,7 @@ export type $DoctorProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     appointmentSessions: Prisma.$AppointmentSessionPayload<ExtArgs>[]
     prescriptions: Prisma.$PrescriptionPayload<ExtArgs>[]
     licenses: Prisma.$DoctorLicensePayload<ExtArgs>[]
+    educations: Prisma.$DoctorEducationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1702,6 +2062,9 @@ export type $DoctorProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     deletedAt: Date | null
     nik: string | null
     satusehatPractitionerId: string | null
+    title: string | null
+    degrees: string | null
+    email: string | null
   }, ExtArgs["result"]["doctorProfile"]>
   composites: {}
 }
@@ -2104,6 +2467,7 @@ export interface Prisma__DoctorProfileClient<T, Null = never, ExtArgs extends ru
   appointmentSessions<T extends Prisma.DoctorProfile$appointmentSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$appointmentSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   prescriptions<T extends Prisma.DoctorProfile$prescriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$prescriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   licenses<T extends Prisma.DoctorProfile$licensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$licensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoctorLicensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  educations<T extends Prisma.DoctorProfile$educationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$educationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoctorEducationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2145,6 +2509,9 @@ export interface DoctorProfileFieldRefs {
   readonly deletedAt: Prisma.FieldRef<"DoctorProfile", 'DateTime'>
   readonly nik: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly satusehatPractitionerId: Prisma.FieldRef<"DoctorProfile", 'String'>
+  readonly title: Prisma.FieldRef<"DoctorProfile", 'String'>
+  readonly degrees: Prisma.FieldRef<"DoctorProfile", 'String'>
+  readonly email: Prisma.FieldRef<"DoctorProfile", 'String'>
 }
     
 
@@ -2706,6 +3073,30 @@ export type DoctorProfile$licensesArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.DoctorLicenseScalarFieldEnum | Prisma.DoctorLicenseScalarFieldEnum[]
+}
+
+/**
+ * DoctorProfile.educations
+ */
+export type DoctorProfile$educationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DoctorEducation
+   */
+  select?: Prisma.DoctorEducationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DoctorEducation
+   */
+  omit?: Prisma.DoctorEducationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DoctorEducationInclude<ExtArgs> | null
+  where?: Prisma.DoctorEducationWhereInput
+  orderBy?: Prisma.DoctorEducationOrderByWithRelationInput | Prisma.DoctorEducationOrderByWithRelationInput[]
+  cursor?: Prisma.DoctorEducationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DoctorEducationScalarFieldEnum | Prisma.DoctorEducationScalarFieldEnum[]
 }
 
 /**

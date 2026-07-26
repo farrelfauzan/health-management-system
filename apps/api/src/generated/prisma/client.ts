@@ -71,6 +71,12 @@ export type Specialty = Prisma.SpecialtyModel
  */
 export type DoctorProfile = Prisma.DoctorProfileModel
 /**
+ * Model DoctorEducation
+ * Academic qualifications mapped later to SATUSEHAT Practitioner.qualification
+ * together with licensing records. Soft-deleted so history survives edits.
+ */
+export type DoctorEducation = Prisma.DoctorEducationModel
+/**
  * Model DoctorLicense
  * Practitioner credentials modelled as a child table rather than flat
  * columns: a doctor holds one lifetime STR but may hold several SIPs (one per
