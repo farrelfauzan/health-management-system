@@ -4193,6 +4193,12 @@ paths:
           schema:
             format: uuid
             type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
         - name: registeredFrom
           required: false
           in: query
@@ -4256,10 +4262,24 @@ paths:
                               type: string
                             status:
                               type: string
+                            doctor:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                fullName:
+                                  type: string
+                                specialty:
+                                  type: string
+                              required:
+                                - id
+                                - fullName
+                                - specialty
                           required:
                             - id
                             - scheduledAt
                             - status
+                            - doctor
                       required:
                         - id
                         - patientId
@@ -4305,6 +4325,10 @@ paths:
                         id: 44444444-4444-4444-8444-444444444444
                         scheduledAt: 2026-07-21T09:00:00.000Z
                         status: SCHEDULED
+                        doctor:
+                          id: 22222222-2222-4222-8222-222222222222
+                          fullName: Dr. Budi Santoso
+                          specialty: Internal Medicine
                   meta:
                     page: 1
                     limit: 10

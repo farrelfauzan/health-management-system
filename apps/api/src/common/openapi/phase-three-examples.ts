@@ -469,6 +469,7 @@ export const PHASE_THREE_EXAMPLES = {
         id: appointmentId,
         scheduledAt: appointment.scheduledAt,
         status: appointment.status,
+        doctor: { id: doctorId, fullName: doctor.fullName, specialty: doctor.specialty },
       },
     },
   },

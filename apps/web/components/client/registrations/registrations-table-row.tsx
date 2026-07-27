@@ -66,6 +66,16 @@ export function RegistrationsTableRow({
         )}
       </TableCell>
       <TableCell className="px-4">
+        {registration.appointment ? (
+          <div>
+            <p className="text-sm text-slate-700">{registration.appointment.doctor.fullName}</p>
+            <p className="text-xs text-slate-400">{registration.appointment.doctor.specialty}</p>
+          </div>
+        ) : (
+          <span className="text-sm text-slate-400">Unassigned</span>
+        )}
+      </TableCell>
+      <TableCell className="px-4">
         <StatusBadge status={registration.status} />
       </TableCell>
       <TableCell className="px-4 text-right">

@@ -15,7 +15,10 @@ const FULL_ACCESS_RULES: AppRule[] = [
 
 const READ_ONLY_RULES: AppRule[] = [{ action: 'read', subject: 'Registration' }];
 
-function buildRegistration(status: RegistrationStatusValue): RegistrationListItem {
+function buildRegistration(
+  status: RegistrationStatusValue,
+  appointment?: RegistrationListItem['appointment'],
+): RegistrationListItem {
   return {
     id: 'registration-1',
     patientId: 'patient-1',
@@ -24,6 +27,7 @@ function buildRegistration(status: RegistrationStatusValue): RegistrationListIte
     createdAt: '2026-07-18T08:00:00.000Z',
     updatedAt: '2026-07-18T08:00:00.000Z',
     patient: { id: 'patient-1', mrn: 'MRN-0001', fullName: 'John Doe' },
+    appointment,
   };
 }
 
@@ -31,6 +35,7 @@ function renderRow(params: {
   status: RegistrationStatusValue;
   rules: AppRule[];
   variant: RegistrationsViewVariant;
+  appointment?: RegistrationListItem['appointment'];
   onTransition?: (
     registration: RegistrationListItem,
     target: 'CHECKED_IN' | 'COMPLETED' | 'CANCELLED',
@@ -41,7 +46,7 @@ function renderRow(params: {
       <Table>
         <TableBody>
           <RegistrationsTableRow
-            registration={buildRegistration(params.status)}
+            registration={buildRegistration(params.status, params.appointment)}
             variant={params.variant}
             onTransition={params.onTransition ?? vi.fn()}
           />
@@ -59,6 +64,25 @@ describe('RegistrationsTableRow', () => {
     expect(screen.getByText('MRN-0001')).toBeInTheDocument();
     expect(screen.getByText('PENDING')).toBeInTheDocument();
     expect(screen.getByText('Walk-in')).toBeInTheDocument();
+    expect(screen.getByText('Unassigned')).toBeInTheDocument();
+  });
+
+  it('renders the doctor of the linked appointment', () => {
+    renderRow({
+      status: 'PENDING',
+      rules: FULL_ACCESS_RULES,
+      variant: 'admin',
+      appointment: {
+        id: 'appointment-1',
+        scheduledAt: '2026-07-18T09:00:00.000Z',
+        status: 'SCHEDULED',
+        doctor: { id: 'doctor-1', fullName: 'Dr. Budi Santoso', specialty: 'Internal Medicine' },
+      },
+    });
+
+    expect(screen.getByText('Dr. Budi Santoso')).toBeInTheDocument();
+    expect(screen.getByText('Internal Medicine')).toBeInTheDocument();
+    expect(screen.queryByText('Unassigned')).not.toBeInTheDocument();
   });
 
   it('offers only API-allowed transitions for a pending registration', async () => {

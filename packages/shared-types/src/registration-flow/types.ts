@@ -7,6 +7,7 @@ export type ListRegistrationsParams = {
   search?: string;
   status?: RegistrationStatusValue;
   patientId?: string;
+  doctorId?: string;
   registeredFrom?: Date;
   registeredTo?: Date;
   ownerUserId?: string;
@@ -51,10 +52,19 @@ export type RegistrationPatientProjection = {
   ownerUserId: string | null;
 };
 
+export type RegistrationDoctorProjection = {
+  id: string;
+  fullName: string;
+  specialty: {
+    name: string;
+  };
+};
+
 export type RegistrationAppointmentProjection = {
   id: string;
   scheduledAt: Date;
   status: AppointmentStatusValue;
+  doctor: RegistrationDoctorProjection;
 };
 
 export type RegistrationWithRelationsRecord = RegistrationRecord & {

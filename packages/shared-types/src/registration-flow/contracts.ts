@@ -20,10 +20,17 @@ export type RegistrationRelatedPatient = {
   fullName: string;
 };
 
+export type RegistrationRelatedDoctor = {
+  id: string;
+  fullName: string;
+  specialty: string;
+};
+
 export type RegistrationRelatedAppointment = {
   id: string;
   scheduledAt: string;
   status: AppointmentStatusValue;
+  doctor: RegistrationRelatedDoctor;
 };
 
 export type RegistrationListItem = RegistrationResponse & {

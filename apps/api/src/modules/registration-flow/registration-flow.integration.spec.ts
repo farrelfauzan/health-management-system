@@ -15,6 +15,7 @@ describe('RegistrationFlow integration', () => {
 
   const registrationId = '0d9b34a1-7c2f-4bd0-8a8e-6a3c1de1a001';
   const patientId = '38a3f0f1-51d3-4f68-9d54-1f6a1de1a002';
+  const doctorId = '7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11';
 
   const authRepositoryMock = {
     findUserById: jest.fn(),
@@ -202,6 +203,34 @@ describe('RegistrationFlow integration', () => {
         registeredTo: new Date('2026-07-18T00:00:00.000Z'),
       }),
     );
+  });
+
+  it('passes the doctor filter through the registration list query', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/registrations')
+      .query({ doctorId })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(registrationRepositoryMock.listRegistrations).toHaveBeenCalledWith(
+      expect.objectContaining({ doctorId }),
+    );
+  });
+
+  it('returns 400 for a registration list query with a non-uuid doctor filter', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/registrations')
+      .query({ doctorId: 'not-a-uuid' })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(registrationRepositoryMock.listRegistrations).not.toHaveBeenCalled();
   });
 
   it('returns 400 for a registration list query with an invalid calendar date', async () => {

@@ -50,6 +50,7 @@ export class RegistrationFlowService {
       search: query.search,
       status: query.status,
       patientId: query.patientId,
+      doctorId: query.doctorId,
       registeredFrom: query.registeredFrom
         ? parseRegistrationDateOnly(query.registeredFrom)
         : undefined,
@@ -321,6 +322,11 @@ export class RegistrationFlowService {
             id: registration.appointment.id,
             scheduledAt: registration.appointment.scheduledAt.toISOString(),
             status: registration.appointment.status,
+            doctor: {
+              id: registration.appointment.doctor.id,
+              fullName: registration.appointment.doctor.fullName,
+              specialty: registration.appointment.doctor.specialty.name,
+            },
           }
         : undefined,
     };

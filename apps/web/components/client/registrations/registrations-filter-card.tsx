@@ -13,15 +13,19 @@ import {
   SelectValue,
 } from '@hms/ui';
 
+import { DoctorCombobox } from '#components/client/doctors/doctor-combobox';
 import { FilterCard } from '#components/shared/filter-card';
+import { useDoctorsList } from '#lib/doctors/use-doctors-list';
 import type { RegistrationsSearchParams } from '#lib/registrations/search-params';
 import { formatStatusLabel } from '#lib/shared/status-label';
 
 const ALL_STATUSES_VALUE = 'ALL';
+const DOCTOR_PICKER_QUERY = { page: 1, limit: 100, isActive: 'true' as const };
 
 export type RegistrationsFilterValues = {
   search?: string;
   status?: RegistrationStatusValue;
+  doctorId?: string;
   registeredFrom?: string;
   registeredTo?: string;
 };
@@ -39,6 +43,8 @@ export function RegistrationsFilterCard({
 }: RegistrationsFilterCardProps) {
   const [search, setSearch] = useState<string>(initialQuery.search ?? '');
   const [status, setStatus] = useState<string>(initialQuery.status ?? ALL_STATUSES_VALUE);
+  const [doctorId, setDoctorId] = useState<string>(initialQuery.doctorId ?? '');
+  const doctorsQuery = useDoctorsList(DOCTOR_PICKER_QUERY);
   const [registeredFrom, setRegisteredFrom] = useState<string>(initialQuery.registeredFrom ?? '');
   const [registeredTo, setRegisteredTo] = useState<string>(initialQuery.registeredTo ?? '');
 
@@ -49,6 +55,7 @@ export function RegistrationsFilterCard({
     onApply({
       search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
       status: status === ALL_STATUSES_VALUE ? undefined : (status as RegistrationStatusValue),
+      doctorId: doctorId.length > 0 ? doctorId : undefined,
       registeredFrom: registeredFrom.length > 0 ? registeredFrom : undefined,
       registeredTo: registeredTo.length > 0 ? registeredTo : undefined,
     });
@@ -57,6 +64,7 @@ export function RegistrationsFilterCard({
   function handleReset(): void {
     setSearch('');
     setStatus(ALL_STATUSES_VALUE);
+    setDoctorId('');
     setRegisteredFrom('');
     setRegisteredTo('');
     onReset();
@@ -117,6 +125,22 @@ export function RegistrationsFilterCard({
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div className="w-56">
+          <label
+            htmlFor="registrations-doctor-filter"
+            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          >
+            Doctor
+          </label>
+          <DoctorCombobox
+            id="registrations-doctor-filter"
+            doctors={doctorsQuery.doctors}
+            value={doctorId}
+            isLoading={doctorsQuery.isPending}
+            emptyOptionLabel="All Doctors"
+            onChange={setDoctorId}
+          />
         </div>
         <div>
           <span className="mb-1.5 block font-heading text-xs font-medium text-slate-600">
