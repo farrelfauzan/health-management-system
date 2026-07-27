@@ -77,6 +77,8 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('registration.update:any', 'Registration', 'update', 'ANY', 'Update all registrations'),
     ('registration.update:own', 'Registration', 'update', 'OWN', 'Update own registrations'),
     ('medication.read:any', 'Medication', 'read', 'ANY', 'Read medications'),
+    ('medication.create:any', 'Medication', 'create', 'ANY', 'Create medication catalog entries'),
+    ('medication.update:any', 'Medication', 'update', 'ANY', 'Update medication catalog entries'),
     ('prescription.read:any', 'Prescription', 'read', 'ANY', 'Read all prescriptions'),
     ('prescription.read:own', 'Prescription', 'read', 'OWN', 'Read own prescriptions'),
     ('prescription.write:any', 'Prescription', 'write', 'ANY', 'Write prescriptions for any patient'),
@@ -145,6 +147,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'registration.create:any'),
     ('ADMIN', 'registration.update:any'),
     ('ADMIN', 'medication.read:any'),
+    ('ADMIN', 'medication.create:any'),
+    ('ADMIN', 'medication.update:any'),
     ('ADMIN', 'prescription.read:any'),
     ('ADMIN', 'prescription.write:any'),
     ('ADMIN', 'dispense.write:any'),
@@ -169,6 +173,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'chat.message.read:own'),
     ('PHARMACIST', 'auth.logout:own'),
     ('PHARMACIST', 'medication.read:any'),
+    ('PHARMACIST', 'medication.create:any'),
+    ('PHARMACIST', 'medication.update:any'),
     ('PHARMACIST', 'prescription.read:any'),
     ('PHARMACIST', 'dispense.write:any'),
     ('PATIENT', 'auth.logout:own'),
@@ -313,8 +319,10 @@ SET
   "deleted_at" = NULL;
 
 -- Development demo doctors. Replace or remove this block for production seeds.
--- NIK values are synthetic (structurally valid 16 digits, never real ones):
--- digits 7-12 encode DD/MM/YY with +40 on DD for female practitioners.
+-- Practitioner NIK is deliberately absent: it is encrypted at rest
+-- (nik_ciphertext / nik_index / nik_last4 / nik_key_version) by
+-- NationalIdentifierCryptoService, so plain SQL cannot produce valid columns.
+-- Set doctor NIKs through the API, or via `pnpm --filter @hms/api backfill:doctor-nik`.
 WITH seed_doctors(
   license_number,
   full_name,
@@ -322,15 +330,14 @@ WITH seed_doctors(
   phone_number,
   email,
   title,
-  degrees,
-  nik
+  degrees
 ) AS (
   VALUES
-    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', 'andi.prasetyo@clinic.local', 'dr.', 'Sp.PD', '3173011001800001'),
-    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', 'maya.sari@clinic.local', 'dr.', 'Sp.A', '3173015504850002'),
-    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', 'hendra.gunawan@clinic.local', 'dr.', 'Sp.JP', '3173012208780003'),
-    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', 'fitri.handayani@clinic.local', 'dr.', 'Sp.OG', '3173014512830004'),
-    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', 'yusuf.hidayat@clinic.local', 'dr.', NULL, '3173013006900005')
+    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', 'andi.prasetyo@clinic.local', 'dr.', 'Sp.PD'),
+    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', 'maya.sari@clinic.local', 'dr.', 'Sp.A'),
+    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', 'hendra.gunawan@clinic.local', 'dr.', 'Sp.JP'),
+    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', 'fitri.handayani@clinic.local', 'dr.', 'Sp.OG'),
+    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', 'yusuf.hidayat@clinic.local', 'dr.', NULL)
 )
 INSERT INTO "doctor_profiles" (
   "id",
@@ -341,7 +348,6 @@ INSERT INTO "doctor_profiles" (
   "email",
   "title",
   "degrees",
-  "nik",
   "satusehat_practitioner_id",
   "owner_user_id",
   "is_active",
@@ -358,7 +364,6 @@ SELECT
   email,
   title,
   degrees,
-  nik,
   NULL,
   NULL,
   true,
@@ -375,7 +380,6 @@ SET
   "email" = EXCLUDED."email",
   "title" = EXCLUDED."title",
   "degrees" = EXCLUDED."degrees",
-  "nik" = EXCLUDED."nik",
   "is_active" = true,
   "updated_at" = NOW(),
   "deleted_at" = NULL;

@@ -22,13 +22,17 @@ import type {
 
 import type {
   CreateDispenseDto,
+  CreateMedicationDto,
   CreatePrescriptionDto,
   DispenseControllerCreateDispenseV1201,
+  MedicationControllerCreateMedicationV1201,
   MedicationControllerListMedicationsV1200,
   MedicationControllerListMedicationsV1Params,
+  MedicationControllerUpdateMedicationV1200,
   PrescriptionControllerCreatePrescriptionV1201,
   PrescriptionControllerListPrescriptionsV1200,
-  PrescriptionControllerListPrescriptionsV1Params
+  PrescriptionControllerListPrescriptionsV1Params,
+  UpdateMedicationDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -133,6 +137,201 @@ export function useMedicationControllerListMedicationsV1<TData = Awaited<ReturnT
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getMedicationControllerListMedicationsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Create a medication
+ */
+export const medicationControllerCreateMedicationV1 = (
+    createMedicationDto: CreateMedicationDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<MedicationControllerCreateMedicationV1201>(
+      {url: `/api/v1/medications`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createMedicationDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getMedicationControllerCreateMedicationV1QueryKey = (createMedicationDto?: CreateMedicationDto,) => {
+    return [
+    'POST', `/api/v1/medications`, createMedicationDto
+    ] as const;
+    }
+
+
+export const getMedicationControllerCreateMedicationV1QueryOptions = <TData = Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError = unknown>(createMedicationDto: CreateMedicationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getMedicationControllerCreateMedicationV1QueryKey(createMedicationDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>> = ({ signal }) => medicationControllerCreateMedicationV1(createMedicationDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MedicationControllerCreateMedicationV1QueryResult = NonNullable<Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>>
+export type MedicationControllerCreateMedicationV1QueryError = unknown
+
+
+export function useMedicationControllerCreateMedicationV1<TData = Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError = unknown>(
+ createMedicationDto: CreateMedicationDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerCreateMedicationV1<TData = Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError = unknown>(
+ createMedicationDto: CreateMedicationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerCreateMedicationV1<TData = Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError = unknown>(
+ createMedicationDto: CreateMedicationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Create a medication
+ */
+
+export function useMedicationControllerCreateMedicationV1<TData = Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError = unknown>(
+ createMedicationDto: CreateMedicationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerCreateMedicationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getMedicationControllerCreateMedicationV1QueryOptions(createMedicationDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Update a medication
+ */
+export const medicationControllerUpdateMedicationV1 = (
+    id: string,
+    updateMedicationDto: UpdateMedicationDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<MedicationControllerUpdateMedicationV1200>(
+      {url: `/api/v1/medications/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateMedicationDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getMedicationControllerUpdateMedicationV1QueryKey = (id: string,
+    updateMedicationDto?: UpdateMedicationDto,) => {
+    return [
+    'PATCH', `/api/v1/medications/${id}`, updateMedicationDto
+    ] as const;
+    }
+
+
+export const getMedicationControllerUpdateMedicationV1QueryOptions = <TData = Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError = unknown>(id: string,
+    updateMedicationDto: UpdateMedicationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getMedicationControllerUpdateMedicationV1QueryKey(id,updateMedicationDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>> = ({ signal }) => medicationControllerUpdateMedicationV1(id,updateMedicationDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MedicationControllerUpdateMedicationV1QueryResult = NonNullable<Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>>
+export type MedicationControllerUpdateMedicationV1QueryError = unknown
+
+
+export function useMedicationControllerUpdateMedicationV1<TData = Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError = unknown>(
+ id: string,
+    updateMedicationDto: UpdateMedicationDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerUpdateMedicationV1<TData = Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError = unknown>(
+ id: string,
+    updateMedicationDto: UpdateMedicationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerUpdateMedicationV1<TData = Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError = unknown>(
+ id: string,
+    updateMedicationDto: UpdateMedicationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Update a medication
+ */
+
+export function useMedicationControllerUpdateMedicationV1<TData = Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError = unknown>(
+ id: string,
+    updateMedicationDto: UpdateMedicationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerUpdateMedicationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getMedicationControllerUpdateMedicationV1QueryOptions(id,updateMedicationDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

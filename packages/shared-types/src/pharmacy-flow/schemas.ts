@@ -12,6 +12,46 @@ export const prescriptionStatusSchema = z.enum(PRESCRIPTION_STATUSES);
 
 export type PrescriptionStatusValue = z.infer<typeof prescriptionStatusSchema>;
 
+export const MEDICATION_UNITS = [
+  'TABLET',
+  'KAPSUL',
+  'KAPLET',
+  'SACHET',
+  'AMPUL',
+  'VIAL',
+  'BOTOL',
+  'TUBE',
+  'STRIP',
+  'BOX',
+  'PCS',
+  'ML',
+  'MG',
+  'GRAM',
+  'MCG',
+  'IU',
+  'TETES',
+  'SUPOSITORIA',
+] as const;
+
+export const medicationUnitSchema = z.enum(MEDICATION_UNITS);
+
+export type MedicationUnitValue = z.infer<typeof medicationUnitSchema>;
+
+export const MEDICATION_CATEGORIES = [
+  'OBAT_BEBAS',
+  'OBAT_BEBAS_TERBATAS',
+  'OBAT_KERAS',
+  'PSIKOTROPIKA',
+  'NARKOTIKA',
+  'OBAT_HERBAL',
+  'SUPLEMEN',
+  'ALAT_KESEHATAN',
+] as const;
+
+export const medicationCategorySchema = z.enum(MEDICATION_CATEGORIES);
+
+export type MedicationCategoryValue = z.infer<typeof medicationCategorySchema>;
+
 export const DISPENSE_STATUSES = ['DISPENSED', 'CANCELLED'] as const;
 
 export const dispenseStatusSchema = z.enum(DISPENSE_STATUSES);
@@ -42,7 +82,58 @@ export const listMedicationsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
   search: z.string().trim().min(1).max(100).optional(),
+  category: medicationCategorySchema.optional(),
 });
+
+export const medicationCodeSchema = z
+  .string()
+  .trim()
+  .min(2)
+  .max(64)
+  .regex(
+    /^[A-Za-z0-9._-]+$/,
+    'Medication code may only contain letters, digits, dot, dash, underscore',
+  );
+
+// KFA (Kamus Farmasi dan Alat Kesehatan) product codes are numeric strings
+// issued by Kemenkes; SATUSEHAT medication resources are keyed by them.
+export const kfaCodeSchema = z
+  .string()
+  .trim()
+  .regex(/^[0-9]{4,20}$/, 'KFA code must be 4-20 digits');
+
+export const medicationNameSchema = z.string().trim().min(2).max(200);
+export const medicationFormSchema = z.string().trim().min(1).max(100);
+export const medicationStrengthSchema = z.string().trim().min(1).max(100);
+export const medicationStockQtySchema = z.number().int().min(0).max(1000000);
+
+export const createMedicationSchema = z.object({
+  code: medicationCodeSchema,
+  kfaCode: kfaCodeSchema.optional(),
+  name: medicationNameSchema,
+  form: medicationFormSchema.optional(),
+  strength: medicationStrengthSchema.optional(),
+  unit: medicationUnitSchema.optional(),
+  category: medicationCategorySchema.optional(),
+  stockQty: medicationStockQtySchema.optional().default(0),
+});
+
+export const updateMedicationSchema = z
+  .object({
+    code: medicationCodeSchema.optional(),
+    kfaCode: kfaCodeSchema.nullable().optional(),
+    name: medicationNameSchema.optional(),
+    form: medicationFormSchema.nullable().optional(),
+    strength: medicationStrengthSchema.nullable().optional(),
+    unit: medicationUnitSchema.nullable().optional(),
+    category: medicationCategorySchema.nullable().optional(),
+    // Absolute stock correction. Dispensing decrements stock transactionally in
+    // the pharmacy flow; this path exists for catalog receipts and stock takes.
+    stockQty: medicationStockQtySchema.optional(),
+  })
+  .refine((payload) => Object.values(payload).some((value) => value !== undefined), {
+    message: 'At least one field is required',
+  });
 
 export const listPrescriptionsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -90,6 +181,8 @@ export const createDispenseSchema = z
   });
 
 export type ListMedicationsQueryInput = z.infer<typeof listMedicationsQuerySchema>;
+export type CreateMedicationInput = z.infer<typeof createMedicationSchema>;
+export type UpdateMedicationInput = z.infer<typeof updateMedicationSchema>;
 export type ListPrescriptionsQueryInput = z.infer<typeof listPrescriptionsQuerySchema>;
 export type PrescriptionItemInput = z.infer<typeof prescriptionItemSchema>;
 export type CreatePrescriptionInput = z.infer<typeof createPrescriptionSchema>;

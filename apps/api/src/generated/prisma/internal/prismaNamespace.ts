@@ -2486,10 +2486,12 @@ export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[k
 export const MedicationScalarFieldEnum = {
   id: 'id',
   code: 'code',
+  kfaCode: 'kfaCode',
   name: 'name',
   form: 'form',
   strength: 'strength',
   unit: 'unit',
+  category: 'category',
   stockQty: 'stockQty',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -2899,6 +2901,34 @@ export type EnumRegistrationStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'RegistrationStatus[]'
  */
 export type ListEnumRegistrationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RegistrationStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MedicationUnit'
+ */
+export type EnumMedicationUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MedicationUnit'>
+    
+
+
+/**
+ * Reference to a field of type 'MedicationUnit[]'
+ */
+export type ListEnumMedicationUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MedicationUnit[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MedicationCategory'
+ */
+export type EnumMedicationCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MedicationCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'MedicationCategory[]'
+ */
+export type ListEnumMedicationCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MedicationCategory[]'>
     
 
 

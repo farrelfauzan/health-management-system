@@ -337,10 +337,12 @@ export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[k
 export const MedicationScalarFieldEnum = {
   id: 'id',
   code: 'code',
+  kfaCode: 'kfaCode',
   name: 'name',
   form: 'form',
   strength: 'strength',
   unit: 'unit',
+  category: 'category',
   stockQty: 'stockQty',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

@@ -21,9 +21,12 @@ import {
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateDispenseDto } from '../dto/create-dispense.dto';
+import { CreateMedicationDto } from '../dto/create-medication.dto';
 import { CreatePrescriptionDto } from '../dto/create-prescription.dto';
 import { ListMedicationsQueryDto } from '../dto/list-medications-query.dto';
 import { ListPrescriptionsQueryDto } from '../dto/list-prescriptions-query.dto';
+import { UpdateMedicationDto } from '../dto/update-medication.dto';
+import { MedicationIdentifierConflictError } from '../repository/medication-identifier-conflict.error';
 import { PharmacyFlowRepository } from '../repository/pharmacy-flow.repository';
 
 @Injectable()
@@ -45,6 +48,7 @@ export class PharmacyFlowService {
       page: query.page,
       limit: query.limit,
       search: query.search,
+      category: query.category,
     });
 
     return {
@@ -55,6 +59,72 @@ export class PharmacyFlowService {
         total: result.total,
       },
     };
+  }
+
+  async createMedication(
+    payload: CreateMedicationDto,
+    currentUser: CurrentUser,
+  ): Promise<MedicationResponse> {
+    const actor = await this.getActorOrThrow(currentUser);
+    const createScope = this.resolveScope(actor, 'Medication', 'create');
+
+    if (!createScope.hasAny) {
+      throw new ForbiddenException('You are not allowed to create medications');
+    }
+
+    await this.assertMedicationCodeAvailable(payload.code);
+
+    if (payload.kfaCode) {
+      await this.assertKfaCodeAvailable(payload.kfaCode);
+    }
+
+    const created = await this.runWithIdentifierConflictMapping(() =>
+      this.pharmacyFlowRepository.createMedication({
+        code: payload.code,
+        kfaCode: payload.kfaCode,
+        name: payload.name,
+        form: payload.form,
+        strength: payload.strength,
+        unit: payload.unit,
+        category: payload.category,
+        stockQty: payload.stockQty,
+      }),
+    );
+
+    return this.toMedicationResponse(created);
+  }
+
+  async updateMedication(
+    id: string,
+    payload: UpdateMedicationDto,
+    currentUser: CurrentUser,
+  ): Promise<MedicationResponse> {
+    const actor = await this.getActorOrThrow(currentUser);
+    const updateScope = this.resolveScope(actor, 'Medication', 'update');
+
+    if (!updateScope.hasAny) {
+      throw new ForbiddenException('You are not allowed to update medications');
+    }
+
+    const medication = await this.pharmacyFlowRepository.findMedicationById(id);
+
+    if (!medication) {
+      throw new NotFoundException('Medication not found');
+    }
+
+    if (payload.code !== undefined && payload.code !== medication.code) {
+      await this.assertMedicationCodeAvailable(payload.code, id);
+    }
+
+    if (payload.kfaCode && payload.kfaCode !== medication.kfaCode) {
+      await this.assertKfaCodeAvailable(payload.kfaCode, id);
+    }
+
+    const updated = await this.runWithIdentifierConflictMapping(() =>
+      this.pharmacyFlowRepository.updateMedication(id, payload),
+    );
+
+    return this.toMedicationResponse(updated);
   }
 
   async listPrescriptions(query: ListPrescriptionsQueryDto, currentUser: CurrentUser) {
@@ -259,6 +329,42 @@ export class PharmacyFlowService {
     }
   }
 
+  private async assertMedicationCodeAvailable(code: string, excludedId?: string): Promise<void> {
+    const existing = await this.pharmacyFlowRepository.findMedicationByCode(code);
+
+    if (existing && existing.id !== excludedId) {
+      throw new ConflictException('Medication code already exists');
+    }
+  }
+
+  private async assertKfaCodeAvailable(kfaCode: string, excludedId?: string): Promise<void> {
+    const existing = await this.pharmacyFlowRepository.findMedicationByKfaCode(kfaCode);
+
+    if (existing && existing.id !== excludedId) {
+      throw new ConflictException('Medication KFA code already exists');
+    }
+  }
+
+  /**
+   * Maps the repository-level uniqueness race onto the same conflict the
+   * pre-checks raise, so concurrent catalog writes never surface a raw Prisma
+   * error.
+   */
+  private async runWithIdentifierConflictMapping<T>(operation: () => Promise<T>): Promise<T> {
+    try {
+      return await operation();
+    } catch (err) {
+      if (err instanceof MedicationIdentifierConflictError) {
+        throw new ConflictException(
+          err.field === 'kfaCode'
+            ? 'Medication KFA code already exists'
+            : 'Medication code already exists',
+        );
+      }
+      throw err;
+    }
+  }
+
   private async getActorOrThrow(currentUser: CurrentUser): Promise<Actor> {
     const actor = await this.authRepository.findUserById(currentUser.sub);
 
@@ -297,10 +403,12 @@ export class PharmacyFlowService {
     return {
       id: medication.id,
       code: medication.code,
+      kfaCode: medication.kfaCode ?? undefined,
       name: medication.name,
       form: medication.form ?? undefined,
       strength: medication.strength ?? undefined,
       unit: medication.unit ?? undefined,
+      category: medication.category ?? undefined,
       stockQty: medication.stockQty,
       createdAt: medication.createdAt.toISOString(),
       updatedAt: medication.updatedAt.toISOString(),

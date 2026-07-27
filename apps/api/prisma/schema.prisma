@@ -125,6 +125,43 @@ enum DispenseStatus {
   CANCELLED
 }
 
+/// Dispensing and dose units accepted by the medication catalog. Mirrors the
+/// "satuan" values used by KFA (Kamus Farmasi dan Alat Kesehatan) so SATUSEHAT
+/// medication resources can be mapped without free-text normalisation.
+enum MedicationUnit {
+  TABLET
+  KAPSUL
+  KAPLET
+  SACHET
+  AMPUL
+  VIAL
+  BOTOL
+  TUBE
+  STRIP
+  BOX
+  PCS
+  ML
+  MG
+  GRAM
+  MCG
+  IU
+  TETES
+  SUPOSITORIA
+}
+
+/// Indonesian legal medication classification (golongan obat) per BPOM. Drives
+/// dispensing rules and reporting duties for psychotropics and narcotics.
+enum MedicationCategory {
+  OBAT_BEBAS
+  OBAT_BEBAS_TERBATAS
+  OBAT_KERAS
+  PSIKOTROPIKA
+  NARKOTIKA
+  OBAT_HERBAL
+  SUPLEMEN
+  ALAT_KESEHATAN
+}
+
 model User {
   id           String    @id @default(uuid()) @db.Uuid
   email        String    @unique
@@ -504,21 +541,24 @@ model Registration {
 }
 
 model Medication {
-  id        String    @id @default(uuid()) @db.Uuid
-  code      String    @unique
+  id        String              @id @default(uuid()) @db.Uuid
+  code      String              @unique
+  kfaCode   String?             @unique @map("kfa_code")
   name      String
   form      String?
   strength  String?
-  unit      String?
-  stockQty  Int       @default(0) @map("stock_qty")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  unit      MedicationUnit?
+  category  MedicationCategory?
+  stockQty  Int                 @default(0) @map("stock_qty")
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @updatedAt @map("updated_at")
+  deletedAt DateTime?           @map("deleted_at")
 
   prescriptionItems PrescriptionMedication[]
   dispenseItems     DispenseItem[]
 
   @@index([name])
+  @@index([category])
   @@index([deletedAt])
   @@map("medications")
 }

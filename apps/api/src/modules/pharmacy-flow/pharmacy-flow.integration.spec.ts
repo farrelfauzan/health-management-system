@@ -25,6 +25,11 @@ describe('PharmacyFlow integration', () => {
 
   const pharmacyRepositoryMock = {
     listMedications: jest.fn(),
+    findMedicationById: jest.fn(),
+    findMedicationByCode: jest.fn(),
+    findMedicationByKfaCode: jest.fn(),
+    createMedication: jest.fn(),
+    updateMedication: jest.fn(),
     listPrescriptions: jest.fn(),
     findActiveMedicationsByIds: jest.fn(),
     findActivePatientById: jest.fn(),
@@ -44,10 +49,12 @@ describe('PharmacyFlow integration', () => {
   const medicationRecord = {
     id: medicationId,
     code: 'MED-0001',
+    kfaCode: '93000001',
     name: 'Amoxicillin',
     form: 'capsule',
-    strength: '500',
-    unit: 'mg',
+    strength: '500 mg',
+    unit: 'KAPSUL',
+    category: 'OBAT_KERAS',
     stockQty: 100,
     createdAt: new Date('2026-07-19T08:00:00.000Z'),
     updatedAt: new Date('2026-07-19T08:00:00.000Z'),
@@ -217,6 +224,11 @@ describe('PharmacyFlow integration', () => {
     pharmacyRepositoryMock.findPrescriptionDetailById.mockResolvedValue(prescriptionRecord);
     pharmacyRepositoryMock.createPrescription.mockResolvedValue(prescriptionRecord);
     pharmacyRepositoryMock.createDispense.mockResolvedValue(dispenseRecord);
+    pharmacyRepositoryMock.findMedicationById.mockResolvedValue(medicationRecord);
+    pharmacyRepositoryMock.findMedicationByCode.mockResolvedValue(null);
+    pharmacyRepositoryMock.findMedicationByKfaCode.mockResolvedValue(null);
+    pharmacyRepositoryMock.createMedication.mockResolvedValue(medicationRecord);
+    pharmacyRepositoryMock.updateMedication.mockResolvedValue(medicationRecord);
   });
 
   describe('GET /medications', () => {
@@ -248,6 +260,146 @@ describe('PharmacyFlow integration', () => {
       expect(response.status).toBe(200);
       expect(response.body.data).toHaveLength(1);
       expect(response.body.data[0].stockQty).toBe(100);
+      expect(response.body.data[0].kfaCode).toBe('93000001');
+      expect(response.body.data[0].unit).toBe('KAPSUL');
+      expect(response.body.data[0].category).toBe('OBAT_KERAS');
+    });
+
+    it('returns 400 for an unknown category filter', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/medications?category=OBAT_AJAIB')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(400);
+    });
+  });
+
+  describe('POST /medications', () => {
+    const createPayload = {
+      code: 'MED-0001',
+      kfaCode: '93000001',
+      name: 'Amoxicillin',
+      form: 'capsule',
+      strength: '500 mg',
+      unit: 'KAPSUL',
+      category: 'OBAT_KERAS',
+      stockQty: 100,
+    };
+
+    it('returns 401 when bearer token is missing', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/medications')
+        .send(createPayload);
+
+      expect(response.status).toBe(401);
+    });
+
+    it('returns 403 when user lacks medication.create permission', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/medications')
+        .set('Authorization', `Bearer ${token}`)
+        .send(createPayload);
+
+      expect(response.status).toBe(403);
+    });
+
+    it('returns 201 with medication.create:any permission', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/medications')
+        .set('Authorization', `Bearer ${token}`)
+        .send(createPayload);
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.kfaCode).toBe('93000001');
+      expect(response.body.message).toBe('Medication created');
+    });
+
+    it('returns 400 for a non-numeric KFA code', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/medications')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ...createPayload, kfaCode: 'KFA-001' });
+
+      expect(response.status).toBe(400);
+    });
+
+    it('returns 409 when the KFA code is already taken', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+      pharmacyRepositoryMock.findMedicationByKfaCode.mockResolvedValue({
+        id: 'b62f10d4-2a4f-4f4e-90cf-5f6a1de1a005',
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/medications')
+        .set('Authorization', `Bearer ${token}`)
+        .send(createPayload);
+
+      expect(response.status).toBe(409);
+    });
+  });
+
+  describe('PATCH /medications/:id', () => {
+    it('returns 403 when user lacks medication.update permission', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/v1/medications/${medicationId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ stockQty: 50 });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('returns 200 with medication.update:any permission', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/v1/medications/${medicationId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ category: 'OBAT_BEBAS', stockQty: 50 });
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('Medication updated');
+    });
+
+    it('returns 400 for an empty update payload', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/v1/medications/${medicationId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({});
+
+      expect(response.status).toBe(400);
+    });
+
+    it('returns 404 when the medication does not exist', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+      pharmacyRepositoryMock.findMedicationById.mockResolvedValue(null);
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/v1/medications/${medicationId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ stockQty: 50 });
+
+      expect(response.status).toBe(404);
     });
   });
 
