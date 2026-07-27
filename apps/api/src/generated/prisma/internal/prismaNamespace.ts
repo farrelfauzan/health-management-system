@@ -400,6 +400,7 @@ export const ModelName = {
   Appointment: 'Appointment',
   Registration: 'Registration',
   Encounter: 'Encounter',
+  VitalSigns: 'VitalSigns',
   Medication: 'Medication',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
@@ -425,7 +426,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "encounter" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "encounter" | "vitalSigns" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1613,6 +1614,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    VitalSigns: {
+      payload: Prisma.$VitalSignsPayload<ExtArgs>
+      fields: Prisma.VitalSignsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VitalSignsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VitalSignsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload>
+        }
+        findFirst: {
+          args: Prisma.VitalSignsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VitalSignsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload>
+        }
+        findMany: {
+          args: Prisma.VitalSignsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload>[]
+        }
+        create: {
+          args: Prisma.VitalSignsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload>
+        }
+        createMany: {
+          args: Prisma.VitalSignsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VitalSignsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload>[]
+        }
+        delete: {
+          args: Prisma.VitalSignsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload>
+        }
+        update: {
+          args: Prisma.VitalSignsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload>
+        }
+        deleteMany: {
+          args: Prisma.VitalSignsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VitalSignsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VitalSignsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload>[]
+        }
+        upsert: {
+          args: Prisma.VitalSignsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VitalSignsPayload>
+        }
+        aggregate: {
+          args: Prisma.VitalSignsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVitalSigns>
+        }
+        groupBy: {
+          args: Prisma.VitalSignsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VitalSignsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VitalSignsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VitalSignsCountAggregateOutputType> | number
+        }
+      }
+    }
     Medication: {
       payload: Prisma.$MedicationPayload<ExtArgs>
       fields: Prisma.MedicationFieldRefs
@@ -2659,6 +2734,28 @@ export const EncounterScalarFieldEnum = {
 export type EncounterScalarFieldEnum = (typeof EncounterScalarFieldEnum)[keyof typeof EncounterScalarFieldEnum]
 
 
+export const VitalSignsScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  heightCm: 'heightCm',
+  weightKg: 'weightKg',
+  systolicBloodPressure: 'systolicBloodPressure',
+  diastolicBloodPressure: 'diastolicBloodPressure',
+  pulseRate: 'pulseRate',
+  respiratoryRate: 'respiratoryRate',
+  temperatureCelsius: 'temperatureCelsius',
+  oxygenSaturation: 'oxygenSaturation',
+  notes: 'notes',
+  recordedAt: 'recordedAt',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type VitalSignsScalarFieldEnum = (typeof VitalSignsScalarFieldEnum)[keyof typeof VitalSignsScalarFieldEnum]
+
+
 export const MedicationScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -3109,6 +3206,20 @@ export type ListEnumEncounterStatusFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
  * Reference to a field of type 'MedicationUnit'
  */
 export type EnumMedicationUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MedicationUnit'>
@@ -3345,6 +3456,7 @@ export type GlobalOmitConfig = {
   appointment?: Prisma.AppointmentOmit
   registration?: Prisma.RegistrationOmit
   encounter?: Prisma.EncounterOmit
+  vitalSigns?: Prisma.VitalSignsOmit
   medication?: Prisma.MedicationOmit
   prescription?: Prisma.PrescriptionOmit
   prescriptionMedication?: Prisma.PrescriptionMedicationOmit
