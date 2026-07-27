@@ -196,6 +196,7 @@ model User {
   createdAppointments      Appointment[]           @relation("AppointmentCreatedBy")
   createdRegistrations     Registration[]          @relation("RegistrationCreatedBy")
   createdEncounters        Encounter[]             @relation("EncounterCreatedBy")
+  recordedVitalSigns       VitalSigns[]            @relation("VitalSignsRecordedBy")
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
   refreshTokens            RefreshToken[]
   auditLogs                AuditLog[]              @relation("AuditLogActor")
@@ -607,12 +608,59 @@ model Encounter {
   patient      PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
   doctor       DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Restrict)
   createdBy    User?          @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  vitalSigns   VitalSigns[]
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
   @@index([status, startedAt])
   @@index([deletedAt])
   @@map("encounters")
+}
+
+/// One set of vital signs measured during an encounter — the "hasil
+/// pemeriksaan fisik" half of the PMK 24/2022 minimum record.
+///
+/// Many rows per encounter, not one: re-measuring after an abnormal reading
+/// (a blood-pressure recheck, a post-antipyretic temperature) is routine, and
+/// overwriting the first reading would erase the finding that prompted the
+/// second. Each row is an independent measurement stamped with `recordedAt`,
+/// which is also exactly how it maps to a SATUSEHAT `Observation` in P10-T03.
+/// "The" vitals for a submission or a summary view are the newest row.
+///
+/// Every measurement is nullable — front desks record weight and blood
+/// pressure while a full set only appears when clinically indicated. Units are
+/// fixed by the column (cm, kg, °C, mmHg, beats/min, breaths/min, %) so no
+/// unit column is needed; LOINC codes live in the SATUSEHAT adapter, never
+/// here. BMI is derived from height and weight on read and is deliberately not
+/// stored — a stored copy goes stale the moment either input is corrected.
+///
+/// The CHECK constraints reject physiologically impossible values (a decimal
+/// typo turning 36.8 °C into 368), not clinically abnormal ones: a genuinely
+/// critical reading must still be recordable.
+model VitalSigns {
+  id                      String    @id @default(uuid()) @db.Uuid
+  encounterId             String    @map("encounter_id") @db.Uuid
+  heightCm                Decimal?  @map("height_cm") @db.Decimal(5, 2)
+  weightKg                Decimal?  @map("weight_kg") @db.Decimal(5, 2)
+  systolicBloodPressure   Int?      @map("systolic_blood_pressure")
+  diastolicBloodPressure  Int?      @map("diastolic_blood_pressure")
+  pulseRate               Int?      @map("pulse_rate")
+  respiratoryRate         Int?      @map("respiratory_rate")
+  temperatureCelsius      Decimal?  @map("temperature_celsius") @db.Decimal(4, 1)
+  oxygenSaturation        Int?      @map("oxygen_saturation")
+  notes                   String?
+  recordedAt              DateTime  @default(now()) @map("recorded_at")
+  recordedById            String?   @map("recorded_by_id") @db.Uuid
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  deletedAt               DateTime? @map("deleted_at")
+
+  encounter  Encounter @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  recordedBy User?     @relation("VitalSignsRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+
+  @@index([encounterId, recordedAt])
+  @@index([deletedAt])
+  @@map("vital_signs")
 }
 
 model Medication {

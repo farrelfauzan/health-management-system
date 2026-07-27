@@ -124,6 +124,30 @@ export type Registration = Prisma.RegistrationModel
  */
 export type Encounter = Prisma.EncounterModel
 /**
+ * Model VitalSigns
+ * One set of vital signs measured during an encounter — the "hasil
+ * pemeriksaan fisik" half of the PMK 24/2022 minimum record.
+ * 
+ * Many rows per encounter, not one: re-measuring after an abnormal reading
+ * (a blood-pressure recheck, a post-antipyretic temperature) is routine, and
+ * overwriting the first reading would erase the finding that prompted the
+ * second. Each row is an independent measurement stamped with `recordedAt`,
+ * which is also exactly how it maps to a SATUSEHAT `Observation` in P10-T03.
+ * "The" vitals for a submission or a summary view are the newest row.
+ * 
+ * Every measurement is nullable — front desks record weight and blood
+ * pressure while a full set only appears when clinically indicated. Units are
+ * fixed by the column (cm, kg, °C, mmHg, beats/min, breaths/min, %) so no
+ * unit column is needed; LOINC codes live in the SATUSEHAT adapter, never
+ * here. BMI is derived from height and weight on read and is deliberately not
+ * stored — a stored copy goes stale the moment either input is corrected.
+ * 
+ * The CHECK constraints reject physiologically impossible values (a decimal
+ * typo turning 36.8 °C into 368), not clinically abnormal ones: a genuinely
+ * critical reading must still be recordable.
+ */
+export type VitalSigns = Prisma.VitalSignsModel
+/**
  * Model Medication
  * 
  */

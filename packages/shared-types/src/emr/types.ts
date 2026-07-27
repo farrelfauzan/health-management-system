@@ -25,3 +25,37 @@ export type UpdateEncounterRecordPayload = {
   status?: EncounterStatusValue;
   endedAt?: Date;
 };
+
+/**
+ * The measured values of one vital-signs set. Every field is optional: a front
+ * desk records weight and blood pressure, a full set appears only when
+ * clinically indicated. Decimal columns surface as numbers — the repository
+ * converts at the Prisma boundary so no Decimal type escapes into the domain.
+ */
+export type VitalSignsMeasurements = {
+  heightCm: number | null;
+  weightKg: number | null;
+  systolicBloodPressure: number | null;
+  diastolicBloodPressure: number | null;
+  pulseRate: number | null;
+  respiratoryRate: number | null;
+  temperatureCelsius: number | null;
+  oxygenSaturation: number | null;
+};
+
+export type VitalSignsRecord = VitalSignsMeasurements & {
+  id: string;
+  encounterId: string;
+  notes: string | null;
+  recordedAt: Date;
+  recordedById: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CreateVitalSignsRecordPayload = Partial<VitalSignsMeasurements> & {
+  encounterId: string;
+  notes?: string;
+  recordedAt?: Date;
+  recordedById: string;
+};

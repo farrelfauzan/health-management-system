@@ -67,6 +67,7 @@ export const ModelName = {
   Appointment: 'Appointment',
   Registration: 'Registration',
   Encounter: 'Encounter',
+  VitalSigns: 'VitalSigns',
   Medication: 'Medication',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
@@ -360,6 +361,28 @@ export const EncounterScalarFieldEnum = {
 } as const
 
 export type EncounterScalarFieldEnum = (typeof EncounterScalarFieldEnum)[keyof typeof EncounterScalarFieldEnum]
+
+
+export const VitalSignsScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  heightCm: 'heightCm',
+  weightKg: 'weightKg',
+  systolicBloodPressure: 'systolicBloodPressure',
+  diastolicBloodPressure: 'diastolicBloodPressure',
+  pulseRate: 'pulseRate',
+  respiratoryRate: 'respiratoryRate',
+  temperatureCelsius: 'temperatureCelsius',
+  oxygenSaturation: 'oxygenSaturation',
+  notes: 'notes',
+  recordedAt: 'recordedAt',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type VitalSignsScalarFieldEnum = (typeof VitalSignsScalarFieldEnum)[keyof typeof VitalSignsScalarFieldEnum]
 
 
 export const MedicationScalarFieldEnum = {
