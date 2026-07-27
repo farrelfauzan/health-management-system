@@ -1,6 +1,7 @@
 import {
   CreateDoctorRecordPayload,
   DoctorEducationInput,
+  DoctorIdentifierPlaintext,
   DoctorLicenseWritePayload,
   ListDoctorsParams,
   ReplaceDoctorSchedulesPayload,
@@ -280,6 +281,33 @@ export class DoctorManagementRepository {
         educations: EDUCATIONS_INCLUDE,
       },
     });
+  }
+
+  /**
+   * The one query allowed to decrypt a practitioner NIK. Kept apart from every
+   * read path so plaintext is produced only after the service has checked
+   * `doctor.read-identifier` and written the audit event.
+   */
+  async findDoctorIdentifiers(id: string): Promise<DoctorIdentifierPlaintext | null> {
+    const doctor = await this.prisma.findUniqueActive(this.prisma.doctorProfile, {
+      where: {
+        id,
+      },
+      select: {
+        nikCiphertext: true,
+      },
+    });
+
+    if (!doctor) {
+      return null;
+    }
+
+    return {
+      nik:
+        doctor.nikCiphertext === null
+          ? null
+          : this.identifierCrypto.decryptIdentifier(doctor.nikCiphertext),
+    };
   }
 
   /**

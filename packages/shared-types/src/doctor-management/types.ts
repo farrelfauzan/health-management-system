@@ -107,6 +107,14 @@ export type DoctorScheduleRecord = {
   maxPatients: number | null;
 };
 
+/**
+ * Decrypted practitioner identifier, produced only by the repository's explicit
+ * unmask query. Practitioner equivalent of `PatientIdentifierPlaintext`.
+ */
+export type DoctorIdentifierPlaintext = {
+  nik: string | null;
+};
+
 export type ReplaceDoctorSchedulesPayload = {
   doctorId: string;
   entries: Array<{

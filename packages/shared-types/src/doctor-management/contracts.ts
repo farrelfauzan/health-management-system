@@ -12,8 +12,9 @@ export type DoctorProfile = {
   degrees?: string;
   /**
    * Masked NIK (`••••••••0001`), rendered from the stored last four digits
-   * without decrypting a row. Absent when no NIK is on file. Full values
-   * require the `patient.read-identifier` permission delivered in P7-T07.
+   * without decrypting a row. Absent when no NIK is on file. Full values come
+   * from `GET /doctors/{id}/identifiers`, which requires
+   * `doctor.read-identifier` and is audited.
    */
   nikMasked?: string;
   satusehatPractitionerId?: string;
@@ -70,6 +71,17 @@ export type DoctorDetail = DoctorProfile & {
   licenses: DoctorLicense[];
   educations: DoctorEducation[];
   patients?: DoctorRelatedPatient[];
+};
+
+/**
+ * Full, decrypted practitioner identifiers. Same rules as the patient
+ * equivalent: dedicated route, `doctor.read-identifier` permission, audited on
+ * every read. STR and SIP numbers are absent because they are not secret —
+ * KKI/IDI publish them, so they ride along unmasked on `DoctorDetail`.
+ */
+export type DoctorIdentifiers = {
+  id: string;
+  nik?: string;
 };
 
 export type DoctorsListMeta = {

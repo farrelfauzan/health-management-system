@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, ForbiddenException } from '@nestjs/common';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
@@ -46,6 +47,7 @@ describe('PatientManagementService', () => {
     findActiveUserById: jest.fn(),
     findActiveDoctorsByIds: jest.fn(),
     hasActiveAssignmentWithDoctorUser: jest.fn(),
+    findPatientIdentifiers: jest.fn(),
     createPatient: jest.fn(),
     updatePatient: jest.fn(),
   } as unknown as PatientManagementRepository;
@@ -54,7 +56,15 @@ describe('PatientManagementService', () => {
     findUserById: jest.fn(),
   } as unknown as AuthRepository;
 
-  const service = new PatientManagementService(patientManagementRepositoryMock, authRepositoryMock);
+  const auditServiceMock = {
+    record: jest.fn(),
+  } as unknown as AuditService;
+
+  const service = new PatientManagementService(
+    patientManagementRepositoryMock,
+    authRepositoryMock,
+    auditServiceMock,
+  );
 
   const currentUser = {
     sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8',
@@ -228,9 +238,9 @@ describe('PatientManagementService', () => {
     ]);
   });
 
-  it('throws conflict when MRN already exists', async () => {
+  it('rejects a legacy import whose MRN is already in use', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
-      buildActor([{ action: 'create', resource: 'Patient', scope: 'ANY' }]),
+      buildActor([{ action: 'import-identifier', resource: 'Patient', scope: 'ANY' }]),
     );
 
     (patientManagementRepositoryMock.findPatientByMrn as jest.Mock).mockResolvedValue({
@@ -238,7 +248,7 @@ describe('PatientManagementService', () => {
     });
 
     await expect(
-      service.createPatient(
+      service.importPatient(
         {
           mrn: 'MRN-0001',
           fullName: 'John Patient',
@@ -252,6 +262,67 @@ describe('PatientManagementService', () => {
         currentUser,
       ),
     ).rejects.toBeInstanceOf(ConflictException);
+    expect(patientManagementRepositoryMock.createPatient).not.toHaveBeenCalled();
+  });
+
+  it('refuses a legacy import without the import-identifier permission', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'create', resource: 'Patient', scope: 'ANY' }]),
+    );
+
+    await expect(
+      service.importPatient(
+        {
+          mrn: 'MRN-0001',
+          fullName: 'John Patient',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          status: 'OUT_PATIENT',
+          phoneNumber: '12345',
+          address: 'Main Street',
+          isActive: true,
+        },
+        currentUser,
+      ),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
+  it('never forwards an MRN on the ordinary create path', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'create', resource: 'Patient', scope: 'ANY' }]),
+    );
+    (patientManagementRepositoryMock.createPatient as jest.Mock).mockResolvedValue({
+      id: '3a6d785d-f729-4af2-b415-30f96439dad0',
+      mrn: '00000042',
+      fullName: 'John Patient',
+      dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+      sex: 'MALE',
+      status: 'OUT_PATIENT',
+      phoneNumber: '12345',
+      address: 'Main Street',
+      ownerUserId: null,
+      isActive: true,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+
+    const actual = await service.createPatient(
+      {
+        fullName: 'John Patient',
+        dateOfBirth: '1990-01-01',
+        sex: 'MALE',
+        status: 'OUT_PATIENT',
+        phoneNumber: '12345',
+        address: 'Main Street',
+        isActive: true,
+      },
+      currentUser,
+    );
+
+    expect(patientManagementRepositoryMock.createPatient).toHaveBeenCalledWith(
+      expect.objectContaining({ mrn: undefined }),
+    );
+    expect(actual.patient.mrn).toBe('00000042');
   });
 
   it('denies own-scope update when attempting owner reassignment', async () => {
@@ -298,7 +369,6 @@ describe('PatientManagementService', () => {
     await expect(
       service.createPatient(
         {
-          mrn: 'MRN-0003',
           fullName: 'Jane Patient',
           dateOfBirth: '1990-01-01',
           sex: 'FEMALE',
@@ -344,7 +414,6 @@ describe('PatientManagementService', () => {
 
     const result = await service.createPatient(
       {
-        mrn: 'MRN-0003',
         fullName: 'Jane Patient',
         dateOfBirth: '1990-01-01',
         sex: 'FEMALE',
@@ -379,7 +448,6 @@ describe('PatientManagementService', () => {
     await expect(
       service.createPatient(
         {
-          mrn: 'MRN-0002',
           fullName: 'Jane Patient',
           dateOfBirth: '1990-13-01',
           sex: 'FEMALE',
@@ -395,7 +463,6 @@ describe('PatientManagementService', () => {
 
   describe('national and payer identifiers', () => {
     const inputCreatePayload = {
-      mrn: 'MRN-0100',
       fullName: 'Aisha Rahman',
       dateOfBirth: '1990-05-12',
       sex: 'FEMALE' as const,
@@ -408,7 +475,6 @@ describe('PatientManagementService', () => {
 
     const mockCreatedPatient = {
       id: '3a6d785d-f729-4af2-b415-30f96439dad0',
-      mrn: 'MRN-0100',
       fullName: 'Aisha Rahman',
       dateOfBirth: new Date('1990-05-12T00:00:00.000Z'),
       placeOfBirth: null,
@@ -698,6 +764,123 @@ describe('PatientManagementService', () => {
           updatedAt: '2026-01-01T00:00:00.000Z',
         },
       ]);
+    });
+  });
+
+  describe('identifier unmasking', () => {
+    const mockPatient = {
+      id: '3a6d785d-f729-4af2-b415-30f96439dad0',
+      mrn: '00000042',
+      fullName: 'Aisha Rahman',
+      dateOfBirth: new Date('1990-05-12T00:00:00.000Z'),
+      placeOfBirth: null,
+      sex: 'FEMALE',
+      status: 'OUT_PATIENT',
+      phoneNumber: '12345',
+      address: 'Main Street',
+      nikLast4: '0001',
+      bpjsNumberLast4: null,
+      hasSatusehatPatientId: false,
+      ownerUserId: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
+      isActive: true,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+    };
+
+    beforeEach(() => {
+      (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue(mockPatient);
+      (patientManagementRepositoryMock.findPatientIdentifiers as jest.Mock).mockResolvedValue({
+        nik: '3201015205900001',
+        bpjsNumber: null,
+        satusehatPatientId: null,
+      });
+    });
+
+    it('refuses a caller holding only patient.read', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read', resource: 'Patient', scope: 'ANY' }]),
+      );
+
+      await expect(
+        service.getPatientIdentifiers(mockPatient.id, currentUser),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(patientManagementRepositoryMock.findPatientIdentifiers).not.toHaveBeenCalled();
+    });
+
+    it('returns the decrypted identifiers to an any-scope caller', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read-identifier', resource: 'Patient', scope: 'ANY' }]),
+      );
+
+      const actual = await service.getPatientIdentifiers(mockPatient.id, currentUser);
+
+      expect(actual).toEqual({
+        id: mockPatient.id,
+        mrn: '00000042',
+        nik: '3201015205900001',
+        bpjsNumber: undefined,
+        satusehatPatientId: undefined,
+      });
+    });
+
+    it('audits the unmask without recording the identifier itself', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read-identifier', resource: 'Patient', scope: 'ANY' }]),
+      );
+
+      await service.getPatientIdentifiers(mockPatient.id, currentUser);
+
+      expect(auditServiceMock.record).toHaveBeenCalledWith({
+        action: 'PATIENT_IDENTIFIER_UNMASKED',
+        resource: 'PatientProfile',
+        resourceId: mockPatient.id,
+        actorUserId: currentUser.sub,
+        metadata: { scope: 'ANY', fields: ['nik'] },
+      });
+      expect(JSON.stringify((auditServiceMock.record as jest.Mock).mock.calls)).not.toContain(
+        '3201015205900001',
+      );
+    });
+
+    it('denies an own-scope caller who does not own the record', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read-identifier', resource: 'Patient', scope: 'OWN' }]),
+      );
+
+      await expect(
+        service.getPatientIdentifiers(mockPatient.id, currentUser),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(patientManagementRepositoryMock.findPatientIdentifiers).not.toHaveBeenCalled();
+    });
+
+    it('never widens own scope through a doctor assignment', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read-identifier', resource: 'Patient', scope: 'OWN' }]),
+      );
+      (
+        patientManagementRepositoryMock.hasActiveAssignmentWithDoctorUser as jest.Mock
+      ).mockResolvedValue(true);
+
+      await expect(
+        service.getPatientIdentifiers(mockPatient.id, currentUser),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('lets an own-scope owner read their own identifiers', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read-identifier', resource: 'Patient', scope: 'OWN' }]),
+      );
+      (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue({
+        ...mockPatient,
+        ownerUserId: currentUser.sub,
+      });
+
+      const actual = await service.getPatientIdentifiers(mockPatient.id, currentUser);
+
+      expect(actual.nik).toBe('3201015205900001');
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({ metadata: { scope: 'OWN', fields: ['nik'] } }),
+      );
     });
   });
 });

@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   RefreshToken: 'RefreshToken',
+  MrnCounter: 'MrnCounter',
   PatientProfile: 'PatientProfile',
   PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
@@ -117,6 +118,15 @@ export const RefreshTokenScalarFieldEnum = {
 } as const
 
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
+
+
+export const MrnCounterScalarFieldEnum = {
+  facilityId: 'facilityId',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MrnCounterScalarFieldEnum = (typeof MrnCounterScalarFieldEnum)[keyof typeof MrnCounterScalarFieldEnum]
 
 
 export const PatientProfileScalarFieldEnum = {

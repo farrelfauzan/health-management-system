@@ -15,7 +15,8 @@ const syntheticNik = '3201015205900001';
 const syntheticBpjsNumber = '0001234567890';
 const patient = {
   id: patientId,
-  mrn: 'MRN-2026-0001',
+  // Server-allocated: zero-padded to PATIENT_MRN_WIDTH, never client-supplied.
+  mrn: '00000001',
   fullName: 'Aisha Rahman',
   dateOfBirth: '1990-05-12',
   placeOfBirth: 'Bandung',
@@ -276,7 +277,6 @@ export const PHASE_THREE_EXAMPLES = {
   },
   patient: {
     createRequest: {
-      mrn: 'MRN-2026-0001',
       fullName: 'Aisha Rahman',
       dateOfBirth: '1990-05-12',
       placeOfBirth: 'Bandung',
@@ -298,6 +298,17 @@ export const PHASE_THREE_EXAMPLES = {
       ownerUserId: userId,
       doctorIds: [doctorId],
     },
+    // Legacy migration only: the MRN is already printed on a physical folder,
+    // so it is accepted verbatim instead of being allocated.
+    importRequest: {
+      mrn: 'RM-2019-0417',
+      fullName: 'Aisha Rahman',
+      dateOfBirth: '1990-05-12',
+      sex: 'FEMALE',
+      phoneNumber: '+628123456789',
+      address: 'Jakarta',
+      nik: syntheticNik,
+    },
     updateRequest: {
       phoneNumber: '+628123456780',
       address: 'Bandung',
@@ -305,6 +316,12 @@ export const PHASE_THREE_EXAMPLES = {
       allergies: [{ substance: 'Penicillin', severity: 'MODERATE' }],
     },
     mutationMeta: { identifierWarnings: [] },
+    identifiers: {
+      id: patientId,
+      mrn: patient.mrn,
+      nik: syntheticNik,
+      bpjsNumber: syntheticBpjsNumber,
+    },
     item: patient,
     listItem: {
       ...patient,
@@ -374,6 +391,10 @@ export const PHASE_THREE_EXAMPLES = {
           isAvailable: true,
         },
       ],
+    },
+    identifiers: {
+      id: doctorId,
+      nik: syntheticDoctorNik,
     },
     item: doctor,
     listItem: { ...doctor, patientCount: 1, schedules: [doctorScheduleEntry] },

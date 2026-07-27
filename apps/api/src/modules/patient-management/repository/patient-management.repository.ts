@@ -3,6 +3,7 @@ import {
   ListPatientsParams,
   PatientAllergyInput,
   PatientDemographicFields,
+  PatientIdentifierPlaintext,
   PatientRecord,
   UpdatePatientRecordPayload,
 } from '@hms/shared-types';
@@ -10,6 +11,7 @@ import { Injectable } from '@nestjs/common';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
+import { MrnAllocatorRepository } from '../../../common/mrn/mrn-allocator.repository';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PatientIdentifierConflictError } from './patient-identifier-conflict.error';
 
@@ -163,6 +165,9 @@ function rethrowIdentifierConflict(err: unknown): never {
   if (isUniqueConstraintErrorOn(err, 'bpjs_number_index')) {
     throw new PatientIdentifierConflictError('bpjsNumber');
   }
+  if (isUniqueConstraintErrorOn(err, 'mrn')) {
+    throw new PatientIdentifierConflictError('mrn');
+  }
   throw err;
 }
 
@@ -171,6 +176,7 @@ export class PatientManagementRepository {
   constructor(
     private readonly prisma: PrismaService,
     private readonly identifierCrypto: NationalIdentifierCryptoService,
+    private readonly mrnAllocator: MrnAllocatorRepository,
   ) {}
 
   async listPatients(params: ListPatientsParams, currentUser: CurrentUser, hasAnyScope: boolean) {
@@ -399,6 +405,36 @@ export class PatientManagementRepository {
     });
   }
 
+  /**
+   * The one query allowed to decrypt. Kept separate from every read path so
+   * plaintext is produced only when a caller has explicitly asked for it and
+   * the service has already checked `patient.read-identifier` and written the
+   * audit event. The decrypted values live in memory for the duration of the
+   * response and are never logged.
+   */
+  async findPatientIdentifiers(id: string): Promise<PatientIdentifierPlaintext | null> {
+    const patient = await this.prisma.findUniqueActive(this.prisma.patientProfile, {
+      where: {
+        id,
+      },
+      select: {
+        nikCiphertext: true,
+        bpjsNumberCiphertext: true,
+        satusehatPatientIdCiphertext: true,
+      },
+    });
+
+    if (!patient) {
+      return null;
+    }
+
+    return {
+      nik: this.decryptOptional(patient.nikCiphertext),
+      bpjsNumber: this.decryptOptional(patient.bpjsNumberCiphertext),
+      satusehatPatientId: this.decryptOptional(patient.satusehatPatientIdCiphertext),
+    };
+  }
+
   async findActiveUserById(id: string) {
     return this.prisma.findFirstActive(this.prisma.user, {
       where: {
@@ -444,9 +480,19 @@ export class PatientManagementRepository {
   async createPatient(payload: CreatePatientRecordPayload): Promise<PatientRecord> {
     const patient = await this.prisma
       .executeTransaction(async (tx) => {
+        // Allocation shares this transaction on purpose: the row lock behind
+        // the counter update serialises concurrent registrations, and a
+        // rolled-back create rolls the counter back with it rather than leaving
+        // a hole in the sequence.
+        const mrn = payload.mrn ?? (await this.mrnAllocator.allocateMrn(tx));
+
+        if (payload.mrn) {
+          await this.mrnAllocator.raiseCounterAbove(tx, payload.mrn);
+        }
+
         const created = await tx.patientProfile.create({
           data: {
-            mrn: payload.mrn,
+            mrn,
             fullName: payload.fullName,
             dateOfBirth: payload.dateOfBirth,
             placeOfBirth: payload.placeOfBirth ?? null,
@@ -554,6 +600,10 @@ export class PatientManagementRepository {
       ...this.buildSearchableIdentifierColumns('nik', input.nik),
       ...this.buildSearchableIdentifierColumns('bpjsNumber', input.bpjsNumber),
     };
+  }
+
+  private decryptOptional(ciphertext: string | null): string | null {
+    return ciphertext === null ? null : this.identifierCrypto.decryptIdentifier(ciphertext);
   }
 
   private buildSearchableIdentifierColumns(

@@ -6,6 +6,7 @@ import { PrismaModule } from './common/prisma/prisma.module';
 import { AuditModule } from './common/audit/audit.module';
 import { AuthorizationModule } from './common/authorization/authorization.module';
 import { CryptoModule } from './common/crypto/crypto.module';
+import { MrnModule } from './common/mrn/mrn.module';
 import { ObservabilityModule } from './common/observability/observability.module';
 import { StorageModule } from './common/storage/storage.module';
 import { AdminManagementModule } from './modules/admin-management/admin-management.module';
@@ -35,6 +36,7 @@ import { SpecialtyModule } from './modules/specialty/specialty.module';
     ObservabilityModule,
     AuditModule,
     CryptoModule,
+    MrnModule,
     AuthorizationModule,
     StorageModule,
     AdminManagementModule,

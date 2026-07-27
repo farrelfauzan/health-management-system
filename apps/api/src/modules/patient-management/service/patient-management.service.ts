@@ -11,17 +11,29 @@ import {
   Actor,
   collectNikDemographicWarnings,
   maskIdentifierLast4,
+  PatientIdentifierPlaintext,
+  PatientIdentifiers,
   PatientRecord,
   PatientSexValue,
 } from '@hms/shared-types';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreatePatientDto } from '../dto/create-patient.dto';
+import { ImportPatientDto } from '../dto/import-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
 import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
+
+const PATIENT_AUDIT_RESOURCE = 'PatientProfile';
+
+const IDENTIFIER_CONFLICT_MESSAGES = {
+  nik: 'NIK already registered to another patient',
+  bpjsNumber: 'BPJS number already registered to another patient',
+  mrn: 'Patient MRN already exists',
+} as const;
 
 function parseDateOnly(value: string): Date {
   const parts = value.split('-');
@@ -61,6 +73,7 @@ export class PatientManagementService {
   constructor(
     private readonly patientManagementRepository: PatientManagementRepository,
     private readonly authRepository: AuthRepository,
+    private readonly auditService: AuditService,
   ) {}
 
   async listPatients(query: ListPatientsQueryDto, currentUser: CurrentUser) {
@@ -152,12 +165,6 @@ export class PatientManagementService {
       throw new ForbiddenException('You are not allowed to create patients');
     }
 
-    const existingPatient = await this.patientManagementRepository.findPatientByMrn(payload.mrn);
-
-    if (existingPatient) {
-      throw new ConflictException('Patient MRN already exists');
-    }
-
     if (payload.ownerUserId) {
       const ownerUser = await this.patientManagementRepository.findActiveUserById(payload.ownerUserId);
 
@@ -178,6 +185,113 @@ export class PatientManagementService {
         dateOfBirth: payload.dateOfBirth,
         sex: payload.sex,
       }),
+    };
+  }
+
+  /**
+   * Registers a patient whose MRN comes from the clinic's previous system.
+   * Separate from {@link createPatient} and separately permissioned, because
+   * accepting a caller-supplied MRN is exactly what the generated path exists to
+   * prevent — it is allowed only while migrating numbers already printed on
+   * physical folders, and the counter is lifted past every imported value so the
+   * number can never be handed out again.
+   */
+  async importPatient(payload: ImportPatientDto, currentUser: CurrentUser) {
+    const actor = await this.getActorOrThrow(currentUser);
+    const importScope = this.resolveScope(actor, 'Patient', 'import-identifier');
+
+    if (!importScope.hasAny) {
+      throw new ForbiddenException('You are not allowed to import patient identifiers');
+    }
+
+    const existingPatient = await this.patientManagementRepository.findPatientByMrn(payload.mrn);
+
+    if (existingPatient) {
+      throw new ConflictException('Patient MRN already exists');
+    }
+
+    if (payload.ownerUserId) {
+      const ownerUser = await this.patientManagementRepository.findActiveUserById(payload.ownerUserId);
+
+      if (!ownerUser) {
+        throw new BadRequestException('Owner user not found');
+      }
+    }
+
+    await this.assertAssignableDoctorIds(payload.doctorIds);
+    await this.assertIdentifiersAvailable({ nik: payload.nik, bpjsNumber: payload.bpjsNumber });
+
+    const created = await this.createPatientRecord(payload, currentUser);
+
+    await this.auditService.record({
+      action: 'PATIENT_MRN_IMPORTED',
+      resource: PATIENT_AUDIT_RESOURCE,
+      resourceId: created.id,
+      actorUserId: currentUser.sub,
+      metadata: { mrn: created.mrn },
+    });
+
+    return {
+      patient: this.toPatientResponse(created),
+      identifierWarnings: this.collectIdentifierWarnings({
+        nik: payload.nik,
+        dateOfBirth: payload.dateOfBirth,
+        sex: payload.sex,
+      }),
+    };
+  }
+
+  /**
+   * Reveals the decrypted identifiers for one patient. Decryption is a
+   * privileged operation, not a side effect of reading a patient, so it needs
+   * `patient.read-identifier` and leaves an audit trail — the `OWN` scope is
+   * strictly the patient themselves, never a treating doctor, because clinical
+   * work runs on the MRN.
+   */
+  async getPatientIdentifiers(id: string, currentUser: CurrentUser): Promise<PatientIdentifiers> {
+    const actor = await this.getActorOrThrow(currentUser);
+    const revealScope = this.resolveScope(actor, 'Patient', 'read-identifier');
+
+    if (!revealScope.hasAny && !revealScope.hasOwn) {
+      throw new ForbiddenException('You are not allowed to read patient identifiers');
+    }
+
+    const patient = await this.patientManagementRepository.findPatientById(id);
+
+    if (!patient) {
+      throw new NotFoundException('Patient not found');
+    }
+
+    if (!revealScope.hasAny && patient.ownerUserId !== currentUser.sub) {
+      throw new ForbiddenException('You are not allowed to read this patient identifiers');
+    }
+
+    const identifiers = await this.patientManagementRepository.findPatientIdentifiers(id);
+
+    if (!identifiers) {
+      throw new NotFoundException('Patient not found');
+    }
+
+    // Recorded before the values leave the service, and deliberately without
+    // them: the audit row says which identifiers were revealed, never what they
+    // were.
+    await this.auditService.record({
+      action: 'PATIENT_IDENTIFIER_UNMASKED',
+      resource: PATIENT_AUDIT_RESOURCE,
+      resourceId: id,
+      actorUserId: currentUser.sub,
+      metadata: {
+        scope: revealScope.hasAny ? 'ANY' : 'OWN',
+        fields: this.listRevealedFields(identifiers),
+      },
+    });
+
+    return {
+      id: patient.id,
+      mrn: patient.mrn,
+      nik: identifiers.nik ?? undefined,
+      bpjsNumber: identifiers.bpjsNumber ?? undefined,
+      satusehatPatientId: identifiers.satusehatPatientId ?? undefined,
     };
   }
 
@@ -231,11 +345,13 @@ export class PatientManagementService {
   }
 
   private async createPatientRecord(
-    payload: CreatePatientDto,
+    payload: CreatePatientDto & { mrn?: string },
     currentUser: CurrentUser,
   ): Promise<PatientRecord> {
     try {
       return await this.patientManagementRepository.createPatient({
+        // Absent on the ordinary create path, where the repository allocates
+        // the next number from the counter.
         mrn: payload.mrn,
         fullName: payload.fullName,
         dateOfBirth: parseDateOnly(payload.dateOfBirth),
@@ -329,13 +445,19 @@ export class PatientManagementService {
 
   private toIdentifierConflictException(err: unknown): unknown {
     if (err instanceof PatientIdentifierConflictError) {
-      return new ConflictException(
-        err.field === 'nik'
-          ? 'NIK already registered to another patient'
-          : 'BPJS number already registered to another patient',
-      );
+      return new ConflictException(IDENTIFIER_CONFLICT_MESSAGES[err.field]);
     }
     return err;
+  }
+
+  /**
+   * Names the identifiers an unmask actually returned, so the audit row records
+   * the shape of the disclosure without recording the values themselves.
+   */
+  private listRevealedFields(identifiers: PatientIdentifierPlaintext): string[] {
+    return Object.entries(identifiers)
+      .filter(([, value]) => value !== null)
+      .map(([field]) => field);
   }
 
   private collectIdentifierWarnings(input: {
@@ -421,9 +543,9 @@ export class PatientManagementService {
   }
 
   /**
-   * Identifiers leave the API masked. Full values require the
-   * `patient.read-identifier` permission and an audit event, both delivered in
-   * P7-T07 — until then there is no unmask path at all.
+   * Identifiers leave the API masked. Full values come only from
+   * {@link getPatientIdentifiers}, which requires `patient.read-identifier` and
+   * audits the disclosure.
    */
   private toPatientResponse(patient: PatientRecord) {
     return {

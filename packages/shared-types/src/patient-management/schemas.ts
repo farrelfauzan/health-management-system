@@ -89,6 +89,14 @@ export const bpjsNumberSchema = buildDigitsSchema(BPJS_NUMBER_LENGTH, 'BPJS numb
 
 export const satusehatPatientIdSchema = z.string().trim().min(1).max(64);
 
+/**
+ * Medical record number. Server-generated on create and immutable afterwards,
+ * so this schema is only ever used by the legacy-import path, where a clinic
+ * migrating from paper or another vendor carries MRNs already printed on
+ * physical folders.
+ */
+export const mrnSchema = z.string().trim().min(3).max(64);
+
 export const placeOfBirthSchema = z.string().trim().min(2).max(120);
 
 /**
@@ -230,8 +238,13 @@ export const listPatientsQuerySchema = z
     { message: 'Created-from must be before or equal to created-to', path: ['createdFrom'] },
   );
 
+/**
+ * `mrn` is deliberately absent: it is allocated by the server inside the create
+ * transaction. A client-supplied MRN can collide with an existing record and
+ * nothing stops a caller from inventing a format. Clinics importing MRNs that
+ * already exist on paper use {@link importPatientSchema} instead.
+ */
 export const createPatientSchema = z.object({
-  mrn: z.string().trim().min(3).max(64),
   fullName: z.string().trim().min(2).max(120),
   dateOfBirth: patientDateSchema
     .refine(isValidDateValue, 'Date of birth must be a valid calendar date')
@@ -267,6 +280,21 @@ export const createPatientSchema = z.object({
     .optional(),
 });
 
+/**
+ * Legacy import. Identical to a create except that the MRN comes from the
+ * clinic's previous system, so it must be accepted verbatim — the number is
+ * already printed on a folder and cannot be renumbered. Gated by
+ * `patient.import-identifier`, never exposed on the ordinary create route.
+ */
+export const importPatientSchema = createPatientSchema.extend({
+  mrn: mrnSchema,
+});
+
+/**
+ * `mrn` is absent here too, and permanently. Correcting a wrong record is a
+ * merge operation, not an MRN edit — a re-pointed MRN silently merges two
+ * patients' histories.
+ */
 export const updatePatientSchema = z
   .object({
     fullName: z.string().trim().min(2).max(120).optional(),
@@ -304,4 +332,5 @@ export const updatePatientSchema = z
 
 export type ListPatientsQueryInput = z.infer<typeof listPatientsQuerySchema>;
 export type CreatePatientInput = z.infer<typeof createPatientSchema>;
+export type ImportPatientInput = z.infer<typeof importPatientSchema>;
 export type UpdatePatientInput = z.infer<typeof updatePatientSchema>;

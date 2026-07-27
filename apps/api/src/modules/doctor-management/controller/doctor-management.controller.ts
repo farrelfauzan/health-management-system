@@ -77,6 +77,30 @@ export class DoctorManagementController {
     };
   }
 
+  @Get(':id/identifiers')
+  @Auth([{ action: 'read-identifier', subject: 'Doctor' }])
+  @ApiEndpoint({
+    summary: 'Reveal a practitioner national identifier',
+    responseDescription:
+      'The decrypted practitioner NIK. Every call is recorded as an audit event; ordinary doctor responses carry the masked value instead. STR and SIP numbers are public registry data and stay unmasked on the doctor detail response.',
+    responseExample: { data: PHASE_THREE_EXAMPLES.doctor.identifiers },
+    notFoundDescription: 'Doctor not found.',
+  })
+  async getDoctorIdentifiers(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const identifiers = await this.doctorManagementService.getDoctorIdentifiers(id, currentUser);
+
+    return {
+      data: identifiers,
+    };
+  }
+
   @Post()
   @HttpCode(201)
   @Auth([{ action: 'create', subject: 'Doctor' }])

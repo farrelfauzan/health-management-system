@@ -22,8 +22,11 @@ import type {
 
 import type {
   CreatePatientDto,
+  ImportPatientDto,
   PatientManagementControllerCreatePatientV1201,
   PatientManagementControllerGetPatientByIdV1200,
+  PatientManagementControllerGetPatientIdentifiersV1200,
+  PatientManagementControllerImportPatientV1201,
   PatientManagementControllerListPatientsV1200,
   PatientManagementControllerListPatientsV1Params,
   PatientManagementControllerUpdatePatientV1200,
@@ -419,6 +422,192 @@ export function usePatientManagementControllerUpdatePatientV1<TData = Awaited<Re
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getPatientManagementControllerUpdatePatientV1QueryOptions(id,updatePatientDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Import a patient with an existing medical record number
+ */
+export const patientManagementControllerImportPatientV1 = (
+    importPatientDto: ImportPatientDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientManagementControllerImportPatientV1201>(
+      {url: `/api/v1/patients/import`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: importPatientDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientManagementControllerImportPatientV1QueryKey = (importPatientDto?: ImportPatientDto,) => {
+    return [
+    'POST', `/api/v1/patients/import`, importPatientDto
+    ] as const;
+    }
+
+
+export const getPatientManagementControllerImportPatientV1QueryOptions = <TData = Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError = unknown>(importPatientDto: ImportPatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientManagementControllerImportPatientV1QueryKey(importPatientDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>> = ({ signal }) => patientManagementControllerImportPatientV1(importPatientDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientManagementControllerImportPatientV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>>
+export type PatientManagementControllerImportPatientV1QueryError = unknown
+
+
+export function usePatientManagementControllerImportPatientV1<TData = Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError = unknown>(
+ importPatientDto: ImportPatientDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerImportPatientV1<TData = Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError = unknown>(
+ importPatientDto: ImportPatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerImportPatientV1<TData = Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError = unknown>(
+ importPatientDto: ImportPatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Import a patient with an existing medical record number
+ */
+
+export function usePatientManagementControllerImportPatientV1<TData = Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError = unknown>(
+ importPatientDto: ImportPatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerImportPatientV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientManagementControllerImportPatientV1QueryOptions(importPatientDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Reveal a patient national and payer identifiers
+ */
+export const patientManagementControllerGetPatientIdentifiersV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientManagementControllerGetPatientIdentifiersV1200>(
+      {url: `/api/v1/patients/${id}/identifiers`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientManagementControllerGetPatientIdentifiersV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/patients/${id}/identifiers`
+    ] as const;
+    }
+
+
+export const getPatientManagementControllerGetPatientIdentifiersV1QueryOptions = <TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientManagementControllerGetPatientIdentifiersV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>> = ({ signal }) => patientManagementControllerGetPatientIdentifiersV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientManagementControllerGetPatientIdentifiersV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>>
+export type PatientManagementControllerGetPatientIdentifiersV1QueryError = unknown
+
+
+export function usePatientManagementControllerGetPatientIdentifiersV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerGetPatientIdentifiersV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerGetPatientIdentifiersV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Reveal a patient national and payer identifiers
+ */
+
+export function usePatientManagementControllerGetPatientIdentifiersV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientIdentifiersV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientManagementControllerGetPatientIdentifiersV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

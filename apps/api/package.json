@@ -9,7 +9,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "jest --config ./jest.config.cjs --runInBand --passWithNoTests",
-    "integration:test": "jest --config ./jest.config.cjs --runInBand --testPathPattern=integration\\.spec\\.ts$",
+    "integration:test": "jest --config ./jest.config.cjs --runInBand --testPathIgnorePatterns=/node_modules/ --testPathPattern=integration\\.spec\\.ts$",
     "format": "prettier --check .",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",

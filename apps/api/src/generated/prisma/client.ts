@@ -50,6 +50,21 @@ export type User = Prisma.UserModel
  */
 export type RefreshToken = Prisma.RefreshTokenModel
 /**
+ * Model MrnCounter
+ * Sequence source for medical record numbers. Allocation is a single atomic
+ * `UPDATE … RETURNING` (never `MAX(mrn) + 1`, which races), run inside the
+ * same transaction as the patient insert. A rolled-back create burns a number;
+ * gaps are permanent and are never reused, because a reused MRN silently
+ * merges two patients' histories.
+ * 
+ * HMS ships single-facility, so `PatientProfile.mrn` stays globally `@unique`
+ * and exactly one counter row exists, keyed by the nil-UUID sentinel. The
+ * column is already a UUID PK so a multi-facility deployment adds rows and
+ * switches the patient constraint to `@@unique([facilityId, mrn])` without a
+ * table rewrite. See docs/post-mvp/patient-identifiers.md §2.3.
+ */
+export type MrnCounter = Prisma.MrnCounterModel
+/**
  * Model PatientProfile
  * 
  */

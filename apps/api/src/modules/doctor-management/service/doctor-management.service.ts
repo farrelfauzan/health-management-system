@@ -1,6 +1,7 @@
 import {
   Actor,
   DoctorEducationRecord,
+  DoctorIdentifiers,
   DoctorLicenseInput,
   DoctorLicenseRecord,
   DoctorLicenseWritePayload,
@@ -18,6 +19,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateDoctorDto } from '../dto/create-doctor.dto';
@@ -26,6 +28,8 @@ import { UpdateDoctorDto } from '../dto/update-doctor.dto';
 import { UpdateDoctorScheduleDto } from '../dto/update-doctor-schedule.dto';
 import { DoctorIdentifierConflictError } from '../repository/doctor-identifier-conflict.error';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
+
+const DOCTOR_AUDIT_RESOURCE = 'DoctorProfile';
 
 function parseDateOnly(value: string): Date {
   return new Date(`${value}T00:00:00.000Z`);
@@ -49,6 +53,7 @@ export class DoctorManagementService {
   constructor(
     private readonly doctorManagementRepository: DoctorManagementRepository,
     private readonly authRepository: AuthRepository,
+    private readonly auditService: AuditService,
   ) {}
 
   async listDoctors(query: ListDoctorsQueryDto, currentUser: CurrentUser) {
@@ -107,6 +112,56 @@ export class DoctorManagementService {
             })),
           }
         : {}),
+    };
+  }
+
+  /**
+   * Reveals the decrypted practitioner NIK. Same rules as the patient
+   * equivalent — dedicated permission, audit event on every call — because a
+   * practitioner NIK is the same Dukcapil citizen identifier and carries
+   * identical UU PDP obligations. The `OWN` scope lets a doctor read back their
+   * own NIK; nothing else reaches it.
+   */
+  async getDoctorIdentifiers(id: string, currentUser: CurrentUser): Promise<DoctorIdentifiers> {
+    const actor = await this.getActorOrThrow(currentUser);
+    const revealScope = this.resolveScope(actor, 'Doctor', 'read-identifier');
+
+    if (!revealScope.hasAny && !revealScope.hasOwn) {
+      throw new ForbiddenException('You are not allowed to read doctor identifiers');
+    }
+
+    const doctor = await this.doctorManagementRepository.findDoctorById(id);
+
+    if (!doctor) {
+      throw new NotFoundException('Doctor not found');
+    }
+
+    if (!revealScope.hasAny && doctor.ownerUserId !== currentUser.sub) {
+      throw new ForbiddenException('You are not allowed to read this doctor identifiers');
+    }
+
+    const identifiers = await this.doctorManagementRepository.findDoctorIdentifiers(id);
+
+    if (!identifiers) {
+      throw new NotFoundException('Doctor not found');
+    }
+
+    // The audit row records that a NIK was revealed and to whom, never the
+    // value itself.
+    await this.auditService.record({
+      action: 'DOCTOR_IDENTIFIER_UNMASKED',
+      resource: DOCTOR_AUDIT_RESOURCE,
+      resourceId: id,
+      actorUserId: currentUser.sub,
+      metadata: {
+        scope: revealScope.hasAny ? 'ANY' : 'OWN',
+        fields: identifiers.nik === null ? [] : ['nik'],
+      },
+    });
+
+    return {
+      id: doctor.id,
+      nik: identifiers.nik ?? undefined,
     };
   }
 
@@ -396,8 +451,8 @@ export class DoctorManagementService {
 
   /**
    * The practitioner NIK leaves the API masked, exactly like a patient's. Full
-   * values require the `patient.read-identifier` permission and an audit event,
-   * both delivered in P7-T07 — until then there is no unmask path at all.
+   * values come only from {@link getDoctorIdentifiers}, which requires
+   * `doctor.read-identifier` and audits the disclosure.
    */
   private toDoctorResponse(doctor: DoctorRecord) {
     return {

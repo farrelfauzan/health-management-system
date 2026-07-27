@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   RefreshToken: 'RefreshToken',
+  MrnCounter: 'MrnCounter',
   PatientProfile: 'PatientProfile',
   PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
@@ -423,7 +424,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -572,6 +573,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.RefreshTokenCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.RefreshTokenCountAggregateOutputType> | number
+        }
+      }
+    }
+    MrnCounter: {
+      payload: Prisma.$MrnCounterPayload<ExtArgs>
+      fields: Prisma.MrnCounterFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MrnCounterFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MrnCounterFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload>
+        }
+        findFirst: {
+          args: Prisma.MrnCounterFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MrnCounterFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload>
+        }
+        findMany: {
+          args: Prisma.MrnCounterFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload>[]
+        }
+        create: {
+          args: Prisma.MrnCounterCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload>
+        }
+        createMany: {
+          args: Prisma.MrnCounterCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MrnCounterCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload>[]
+        }
+        delete: {
+          args: Prisma.MrnCounterDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload>
+        }
+        update: {
+          args: Prisma.MrnCounterUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload>
+        }
+        deleteMany: {
+          args: Prisma.MrnCounterDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MrnCounterUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MrnCounterUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload>[]
+        }
+        upsert: {
+          args: Prisma.MrnCounterUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MrnCounterPayload>
+        }
+        aggregate: {
+          args: Prisma.MrnCounterAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMrnCounter>
+        }
+        groupBy: {
+          args: Prisma.MrnCounterGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MrnCounterGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MrnCounterCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MrnCounterCountAggregateOutputType> | number
         }
       }
     }
@@ -2268,6 +2343,15 @@ export const RefreshTokenScalarFieldEnum = {
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
+export const MrnCounterScalarFieldEnum = {
+  facilityId: 'facilityId',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MrnCounterScalarFieldEnum = (typeof MrnCounterScalarFieldEnum)[keyof typeof MrnCounterScalarFieldEnum]
+
+
 export const PatientProfileScalarFieldEnum = {
   id: 'id',
   mrn: 'mrn',
@@ -2709,6 +2793,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'BigInt'
+ */
+export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+/**
+ * Reference to a field of type 'BigInt[]'
+ */
+export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+/**
  * Reference to a field of type 'PatientSex'
  */
 export type EnumPatientSexFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PatientSex'>
@@ -3127,6 +3225,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   refreshToken?: Prisma.RefreshTokenOmit
+  mrnCounter?: Prisma.MrnCounterOmit
   patientProfile?: Prisma.PatientProfileOmit
   patientAllergy?: Prisma.PatientAllergyOmit
   specialty?: Prisma.SpecialtyOmit
