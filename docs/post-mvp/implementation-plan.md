@@ -33,7 +33,7 @@ Identifier storage and MRN allocation are specified in [patient-identifiers.md](
 ### 2.2 Doctor fields (`P7-T03`, `P7-T04`)
 
 3. `P7-T03` Migration + schema: licensing and identity.
-   - `nik` (unique, required for SATUSEHAT practitioner lookup).
+   - `nik` (unique, required for SATUSEHAT practitioner lookup). **Encrypted at rest exactly like a patient NIK** — a practitioner NIK is the same citizen identifier and carries the same UU PDP obligations, so it uses the `nikCiphertext` / `nikIndex` / `nikLast4` / `nikKeyVersion` scheme from [patient-identifiers.md](./patient-identifiers.md) §3 and is masked in every response. Only STR/SIP numbers are registry-public and stay plaintext, on `DoctorLicense`.
    - `strNumber` (Surat Tanda Registrasi — SATUSEHAT resolves practitioners against STR data). Note: under UU Kesehatan No. 17/2023 STR is now lifetime, so no expiry field; verify current rule at implementation time.
    - `sipNumber` + `sipExpiresAt` (Surat Izin Praktik — per practice location, time-limited; clinics must track expiry for licensing audits). Model as a `DoctorLicense` child table (type enum `STR | SIP`, number, issuedAt, expiresAt nullable) rather than flat columns, so multi-SIP doctors are representable.
    - `satusehatPractitionerId` (IHS number, nullable).
@@ -51,7 +51,7 @@ Identifier storage and MRN allocation are specified in [patient-identifiers.md](
 Design: [patient-identifiers.md](./patient-identifiers.md).
 
 6. `P7-T06` MRN auto-generation. `MrnCounter` migration + atomic `UPDATE … RETURNING` allocation inside the patient-create transaction; remove `mrn` from `createPatientSchema` (response-only from here on); admin legacy-import path for clinics migrating existing MRNs, gated by a new `patient.import-identifier` permission; decide MRN uniqueness scope (global vs `@@unique([facilityId, mrn])`) before any production data exists. MRN is immutable — no update path. Regenerate the web client.
-7. `P7-T07` Identifier encryption at rest. `PatientIdentifierCryptoService` in `apps/api/src/common/crypto/` (AES-256-GCM for ciphertext, HMAC-SHA256 blind index for lookup/uniqueness — a plain hash is brute-forceable because name/DOB/address sit in plaintext in the same row); shared normaliser used by every write path; `patient.read-identifier` permission with masked-by-default responses and an audit event on every unmask; `PATIENT_PII_ENCRYPTION_KEY` + `PATIENT_PII_INDEX_KEY` (both distinct from `AI_PROVIDER_ENCRYPTION_KEY`); key- and pepper-rotation procedures added to the release runbook.
+7. `P7-T07` Identifier encryption at rest. `NationalIdentifierCryptoService` in `apps/api/src/common/crypto/` (AES-256-GCM for ciphertext, HMAC-SHA256 blind index for lookup/uniqueness — a plain hash is brute-forceable because name/DOB/address sit in plaintext in the same row); shared normaliser used by every write path; `patient.read-identifier` permission with masked-by-default responses and an audit event on every unmask; `PATIENT_PII_ENCRYPTION_KEY` + `PATIENT_PII_INDEX_KEY` (both distinct from `AI_PROVIDER_ENCRYPTION_KEY`); key- and pepper-rotation procedures added to the release runbook.
 
 Phase 7 notes:
 

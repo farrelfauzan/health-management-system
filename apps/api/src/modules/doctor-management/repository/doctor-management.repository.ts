@@ -8,10 +8,36 @@ import {
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
+import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { Prisma } from '../../../generated/prisma/client';
+import { DoctorIdentifierConflictError } from './doctor-identifier-conflict.error';
 
 const RELATED_PATIENTS_DETAIL_LIMIT = 20;
+const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
+
+/**
+ * The only projection of `doctor_profiles` any query is allowed to request.
+ * Listing the columns explicitly keeps `nikCiphertext` and `nikIndex` out of
+ * every result by default, so a future column cannot leak through a
+ * `select`-less query.
+ */
+const DOCTOR_RECORD_SELECT = {
+  id: true,
+  licenseNumber: true,
+  fullName: true,
+  specialtyId: true,
+  phoneNumber: true,
+  email: true,
+  title: true,
+  degrees: true,
+  nikLast4: true,
+  satusehatPractitionerId: true,
+  ownerUserId: true,
+  isActive: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
 const SCHEDULE_ORDER_BY: Prisma.DoctorScheduleOrderByWithRelationInput[] = [
   { dayOfWeek: 'asc' },
   { startTime: 'asc' },
@@ -53,6 +79,33 @@ const EDUCATIONS_INCLUDE = {
   },
 } satisfies Prisma.DoctorProfile$educationsArgs;
 
+function isUniqueConstraintErrorOn(err: unknown, target: string): boolean {
+  if (typeof err !== 'object' || err === null) {
+    return false;
+  }
+  const candidate = err as { code?: unknown; meta?: { target?: unknown } };
+  if (candidate.code !== UNIQUE_CONSTRAINT_ERROR_CODE) {
+    return false;
+  }
+  const targets = candidate.meta?.target;
+  if (Array.isArray(targets)) {
+    return targets.includes(target);
+  }
+  return typeof targets === 'string' && targets.includes(target);
+}
+
+/**
+ * Translates the database-level uniqueness race — two concurrent writes with
+ * the same NIK both passing the service pre-check — into the same conflict the
+ * pre-check raises.
+ */
+function rethrowIdentifierConflict(err: unknown): never {
+  if (isUniqueConstraintErrorOn(err, 'nik_index')) {
+    throw new DoctorIdentifierConflictError('nik');
+  }
+  throw err;
+}
+
 function toLicenseCreateData(license: DoctorLicenseWritePayload): {
   type: DoctorLicenseWritePayload['type'];
   licenseNumber: string;
@@ -83,7 +136,10 @@ function toEducationCreateData(education: DoctorEducationInput): {
 
 @Injectable()
 export class DoctorManagementRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly identifierCrypto: NationalIdentifierCryptoService,
+  ) {}
 
   async listDoctors(params: ListDoctorsParams) {
     const { page, limit, search, specialtyId, patientId, isActive } = params;
@@ -138,7 +194,8 @@ export class DoctorManagementRepository {
         orderBy: {
           createdAt: 'desc',
         },
-        include: {
+        select: {
+          ...DOCTOR_RECORD_SELECT,
           specialty: SPECIALTY_SELECT,
           _count: {
             select: {
@@ -173,6 +230,7 @@ export class DoctorManagementRepository {
       where: {
         id,
       },
+      select: DOCTOR_RECORD_SELECT,
     });
   }
 
@@ -181,7 +239,8 @@ export class DoctorManagementRepository {
       where: {
         id,
       },
-      include: {
+      select: {
+        ...DOCTOR_RECORD_SELECT,
         specialty: SPECIALTY_SELECT,
         _count: {
           select: {
@@ -223,10 +282,15 @@ export class DoctorManagementRepository {
     });
   }
 
-  async findDoctorByNik(nik: string) {
-    return this.prisma.findUniqueActive(this.prisma.doctorProfile, {
+  /**
+   * Resolves a doctor by exact NIK. Normalisation happens in the schema layer;
+   * this hashes with the secret pepper and queries the blind index. Exact match
+   * only — the blind index supports equality, never `contains`.
+   */
+  async findDoctorByNik(normalisedNik: string) {
+    return this.prisma.findFirstActive(this.prisma.doctorProfile, {
       where: {
-        nik,
+        nikIndex: this.identifierCrypto.computeBlindIndex(normalisedNik),
       },
       select: {
         id: true,
@@ -295,107 +359,131 @@ export class DoctorManagementRepository {
   }
 
   async createDoctor(payload: CreateDoctorRecordPayload) {
-    return this.prisma.executeTransaction(async (tx) => {
-      const doctor = await tx.doctorProfile.create({
-        data: {
-          licenseNumber: payload.licenseNumber,
-          fullName: payload.fullName,
-          specialtyId: payload.specialtyId,
-          phoneNumber: payload.phoneNumber,
-          email: payload.email ?? null,
-          title: payload.title ?? null,
-          degrees: payload.degrees ?? null,
-          nik: payload.nik ?? null,
-          satusehatPractitionerId: payload.satusehatPractitionerId ?? null,
-          ownerUserId: payload.ownerUserId ?? null,
-          isActive: payload.isActive,
-          licenses: {
-            create: (payload.licenses ?? []).map(toLicenseCreateData),
-          },
-          educations: {
-            create: (payload.educations ?? []).map(toEducationCreateData),
-          },
-        },
-        include: {
-          specialty: SPECIALTY_SELECT,
-        },
-      });
-
-      for (const patientId of payload.patientIds ?? []) {
-        const assignment = await tx.doctorPatient.create({
+    return this.prisma
+      .executeTransaction(async (tx) => {
+        const doctor = await tx.doctorProfile.create({
           data: {
-            doctorId: doctor.id,
-            patientId,
-            assignedById: payload.actorUserId,
+            licenseNumber: payload.licenseNumber,
+            fullName: payload.fullName,
+            specialtyId: payload.specialtyId,
+            phoneNumber: payload.phoneNumber,
+            email: payload.email ?? null,
+            title: payload.title ?? null,
+            degrees: payload.degrees ?? null,
+            satusehatPractitionerId: payload.satusehatPractitionerId ?? null,
+            ownerUserId: payload.ownerUserId ?? null,
+            isActive: payload.isActive,
+            ...this.buildNikColumns(payload.nik ?? null),
+            licenses: {
+              create: (payload.licenses ?? []).map(toLicenseCreateData),
+            },
+            educations: {
+              create: (payload.educations ?? []).map(toEducationCreateData),
+            },
+          },
+          select: {
+            ...DOCTOR_RECORD_SELECT,
+            specialty: SPECIALTY_SELECT,
           },
         });
 
-        await tx.doctorPatientActivity.create({
-          data: {
-            assignmentId: assignment.id,
-            action: 'ASSIGNED',
-            actorUserId: payload.actorUserId,
-          },
-        });
-      }
+        for (const patientId of payload.patientIds ?? []) {
+          const assignment = await tx.doctorPatient.create({
+            data: {
+              doctorId: doctor.id,
+              patientId,
+              assignedById: payload.actorUserId,
+            },
+          });
 
-      return doctor;
-    });
+          await tx.doctorPatientActivity.create({
+            data: {
+              assignmentId: assignment.id,
+              action: 'ASSIGNED',
+              actorUserId: payload.actorUserId,
+            },
+          });
+        }
+
+        return doctor;
+      })
+      .catch(rethrowIdentifierConflict);
   }
 
   async updateDoctor(id: string, payload: UpdateDoctorRecordPayload) {
-    return this.prisma.executeTransaction(async (tx) => {
-      if (payload.licenses !== undefined) {
-        await tx.doctorLicense.updateMany({
+    return this.prisma
+      .executeTransaction(async (tx) => {
+        if (payload.licenses !== undefined) {
+          await tx.doctorLicense.updateMany({
+            where: {
+              doctorId: id,
+              deletedAt: null,
+            },
+            data: {
+              deletedAt: new Date(),
+            },
+          });
+        }
+        if (payload.educations !== undefined) {
+          await tx.doctorEducation.updateMany({
+            where: {
+              doctorId: id,
+              deletedAt: null,
+            },
+            data: {
+              deletedAt: new Date(),
+            },
+          });
+        }
+        return tx.doctorProfile.update({
           where: {
-            doctorId: id,
-            deletedAt: null,
+            id,
           },
           data: {
-            deletedAt: new Date(),
+            ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
+            ...(payload.specialtyId !== undefined ? { specialtyId: payload.specialtyId } : {}),
+            ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
+            ...(payload.email !== undefined ? { email: payload.email } : {}),
+            ...(payload.title !== undefined ? { title: payload.title } : {}),
+            ...(payload.degrees !== undefined ? { degrees: payload.degrees } : {}),
+            ...(payload.satusehatPractitionerId !== undefined
+              ? { satusehatPractitionerId: payload.satusehatPractitionerId }
+              : {}),
+            ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
+            ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
+            ...this.buildNikColumns(payload.nik),
+            ...(payload.licenses !== undefined
+              ? { licenses: { create: payload.licenses.map(toLicenseCreateData) } }
+              : {}),
+            ...(payload.educations !== undefined
+              ? { educations: { create: payload.educations.map(toEducationCreateData) } }
+              : {}),
+          },
+          select: {
+            ...DOCTOR_RECORD_SELECT,
+            specialty: SPECIALTY_SELECT,
           },
         });
-      }
-      if (payload.educations !== undefined) {
-        await tx.doctorEducation.updateMany({
-          where: {
-            doctorId: id,
-            deletedAt: null,
-          },
-          data: {
-            deletedAt: new Date(),
-          },
-        });
-      }
-      return tx.doctorProfile.update({
-        where: {
-          id,
-        },
-        data: {
-          ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
-          ...(payload.specialtyId !== undefined ? { specialtyId: payload.specialtyId } : {}),
-          ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
-          ...(payload.email !== undefined ? { email: payload.email } : {}),
-          ...(payload.title !== undefined ? { title: payload.title } : {}),
-          ...(payload.degrees !== undefined ? { degrees: payload.degrees } : {}),
-          ...(payload.nik !== undefined ? { nik: payload.nik } : {}),
-          ...(payload.satusehatPractitionerId !== undefined
-            ? { satusehatPractitionerId: payload.satusehatPractitionerId }
-            : {}),
-          ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
-          ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
-          ...(payload.licenses !== undefined
-            ? { licenses: { create: payload.licenses.map(toLicenseCreateData) } }
-            : {}),
-          ...(payload.educations !== undefined
-            ? { educations: { create: payload.educations.map(toEducationCreateData) } }
-            : {}),
-        },
-        include: {
-          specialty: SPECIALTY_SELECT,
-        },
-      });
-    });
+      })
+      .catch(rethrowIdentifierConflict);
+  }
+
+  /**
+   * Maps a plaintext NIK onto its persistence columns. `undefined` leaves the
+   * identifier untouched, `null` clears it, and a value re-encrypts and
+   * re-indexes it under the current key version.
+   */
+  private buildNikColumns(nik: string | null | undefined): Record<string, string | number | null> {
+    if (nik === undefined) {
+      return {};
+    }
+    const encrypted = nik ? this.identifierCrypto.encryptSearchableIdentifier(nik) : null;
+    return {
+      nikCiphertext: encrypted?.ciphertext ?? null,
+      nikIndex: encrypted?.index ?? null,
+      nikLast4: encrypted?.last4 ?? null,
+      nikKeyVersion: encrypted?.keyVersion ?? null,
+    };
   }
 
   async replaceDoctorSchedules(payload: ReplaceDoctorSchedulesPayload) {

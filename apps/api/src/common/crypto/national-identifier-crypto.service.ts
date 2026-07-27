@@ -3,12 +3,12 @@ import { createCipheriv, createDecipheriv, createHmac, randomBytes, timingSafeEq
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { resolvePatientIdentifierCryptoConfig } from './patient-identifier-crypto.config';
+import { resolveNationalIdentifierCryptoConfig } from './national-identifier-crypto.config';
 import {
   EncryptedIdentifier,
-  PatientIdentifierCryptoConfig,
+  NationalIdentifierCryptoConfig,
   SealedIdentifier,
-} from './patient-identifier-crypto.types';
+} from './national-identifier-crypto.types';
 
 const CIPHER_ALGORITHM = 'aes-256-gcm';
 const INITIALISATION_VECTOR_LENGTH_BYTES = 12;
@@ -16,7 +16,8 @@ const AUTH_TAG_LENGTH_BYTES = 16;
 const MASK_VISIBLE_DIGITS = 4;
 
 /**
- * Encrypts and blind-indexes patient national/payer identifiers.
+ * Encrypts and blind-indexes Indonesian national and payer identifiers —
+ * patient NIK and BPJS numbers, and practitioner NIK.
  *
  * Ciphertext uses AES-256-GCM with a random IV per row, so the same NIK never
  * produces the same ciphertext twice. Because that makes equality lookup and
@@ -26,11 +27,11 @@ const MASK_VISIBLE_DIGITS = 4;
  * plaintext in the same row and fix all but the last four NIK digits.
  */
 @Injectable()
-export class PatientIdentifierCryptoService {
-  private readonly config: PatientIdentifierCryptoConfig;
+export class NationalIdentifierCryptoService {
+  private readonly config: NationalIdentifierCryptoConfig;
 
   constructor(configService: ConfigService) {
-    this.config = resolvePatientIdentifierCryptoConfig(configService);
+    this.config = resolveNationalIdentifierCryptoConfig(configService);
   }
 
   get keyVersion(): number {

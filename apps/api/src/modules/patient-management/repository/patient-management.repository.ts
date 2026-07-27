@@ -9,7 +9,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
-import { PatientIdentifierCryptoService } from '../../../common/crypto/patient-identifier-crypto.service';
+import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PatientIdentifierConflictError } from './patient-identifier-conflict.error';
 
@@ -170,7 +170,7 @@ function rethrowIdentifierConflict(err: unknown): never {
 export class PatientManagementRepository {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly identifierCrypto: PatientIdentifierCryptoService,
+    private readonly identifierCrypto: NationalIdentifierCryptoService,
   ) {}
 
   async listPatients(params: ListPatientsParams, currentUser: CurrentUser, hasAnyScope: boolean) {

@@ -1,9 +1,10 @@
 /**
- * Adapter-only wire types for patient identifier encryption. These describe how
- * an identifier is persisted and must never leak into `@hms/shared-types` — the
- * domain type carries the plaintext identifier, the persistence row never does.
+ * Adapter-only wire types for national identifier encryption. These describe
+ * how an identifier is persisted and must never leak into `@hms/shared-types` —
+ * the domain type carries the plaintext identifier, the persistence row never
+ * does.
  */
-export type PatientIdentifierCryptoConfig = {
+export type NationalIdentifierCryptoConfig = {
   readonly encryptionKey: Buffer;
   readonly indexKey: Buffer;
   readonly keyVersion: number;

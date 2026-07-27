@@ -131,6 +131,8 @@ Therefore:
 | `bpjsNumber` | Yes | Yes | Payer identifier, needs uniqueness; low entropy so keyed index required |
 | `satusehatPatientId` | Yes | **No** | See note below |
 
+**Practitioners use the same scheme.** `DoctorProfile.nik` is stored as `nikCiphertext` / `nikIndex` / `nikLast4` / `nikKeyVersion` and masked in responses, for the same reason: a practitioner NIK is the same Dukcapil citizen identifier as a patient's and carries identical UU PDP obligations. What is *not* encrypted is `DoctorLicense.licenseNumber` (STR/SIP) — those are professional registry numbers, published by KKI/IDI and verifiable by the public, so they carry no comparable sensitivity. `satusehatPractitionerId` stays plaintext for the reasons in the note below, which apply to it with more force than to the patient IHS number: it is read on every outbound FHIR call and never searched by value.
+
 **Note on `satusehatPatientId`:** encrypting it was requested and is implemented here, but it is worth knowing the trade-off. The IHS number is already a *pseudonymous* identifier issued by Kemenkes precisely so NIK does not have to be passed around; it is not usable outside SATUSEHAT. It is also read on every outbound FHIR submission, so encryption adds a decrypt on each call. It needs no blind index because it is always reached via the internal patient id, never searched. If the decrypt overhead shows up in SATUSEHAT submission latency during Phase 10, storing it in plaintext is a defensible reversal — the sensitivity argument that justifies encrypting NIK does not apply to it with the same force.
 
 ### 3.6 Key management
@@ -151,7 +153,7 @@ Document both procedures in the ops runbook. Never log a decrypted identifier, a
 
 ### 3.7 Where the crypto lives
 
-Add `PatientIdentifierCryptoService` under `apps/api/src/common/crypto/`, with adapter-only wire types in `patient-identifier-crypto.types.ts` per the `common/*.types.ts` convention (this is framework infrastructure that must not leak into `@hms/shared-types`).
+Add `NationalIdentifierCryptoService` under `apps/api/src/common/crypto/`, with adapter-only wire types in `national-identifier-crypto.types.ts` per the `common/*.types.ts` convention (this is framework infrastructure that must not leak into `@hms/shared-types`). It serves every domain that stores a national identifier — patient and practitioner alike. The environment variables keep their `PATIENT_PII_` prefix for continuity with existing deployments.
 
 Encrypt and decrypt in the **repository layer**, consistent with the rule that only repositories touch Prisma. Two guardrails, because the failure mode is a developer forgetting:
 
@@ -192,7 +194,7 @@ Any WhatsApp registration draft table storing these identifiers uses the same en
 Added after the existing `P7-T01`–`P7-T05`.
 
 1. `P7-T06` MRN auto-generation: `MrnCounter` migration, atomic allocation inside the create transaction, remove `mrn` from `createPatientSchema`, admin legacy-import path + `patient.import-identifier` permission, decide uniqueness scope (§2.3), regenerate the web client.
-2. `P7-T07` Identifier encryption: `PatientIdentifierCryptoService` (AES-256-GCM + HMAC blind index), `*Ciphertext` / `*Index` / `*Last4` / `keyVersion` columns, shared normaliser, `patient.read-identifier` permission + masked responses + audit hook, key-rotation runbook entries.
+2. `P7-T07` Identifier encryption: `NationalIdentifierCryptoService` (AES-256-GCM + HMAC blind index), `*Ciphertext` / `*Index` / `*Last4` / `keyVersion` columns, shared normaliser, `patient.read-identifier` permission + masked responses + audit hook, key-rotation runbook entries.
 
 `P7-T01` changes accordingly: land the identifier columns **already encrypted**, so no plaintext window ever exists. Also reconcile the duplicate sex/gender field — `PatientProfile` already has `sex PatientSex?` with the same `MALE | FEMALE` values that `P7-T01` proposes to add as `gender`; keep exactly one, and map to FHIR `gender` in the SATUSEHAT adapter if the existing name is retained.
 

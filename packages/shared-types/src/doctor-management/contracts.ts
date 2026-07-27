@@ -10,7 +10,12 @@ export type DoctorProfile = {
   email?: string;
   title?: string;
   degrees?: string;
-  nik?: string;
+  /**
+   * Masked NIK (`••••••••0001`), rendered from the stored last four digits
+   * without decrypting a row. Absent when no NIK is on file. Full values
+   * require the `patient.read-identifier` permission delivered in P7-T07.
+   */
+  nikMasked?: string;
   satusehatPractitionerId?: string;
   ownerUserId?: string;
   isActive: boolean;

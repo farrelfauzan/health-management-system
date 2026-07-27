@@ -83,7 +83,7 @@ const doctor = {
   email: 'budi.santoso@clinic.local',
   title: 'dr.',
   degrees: 'Sp.PD',
-  nik: syntheticDoctorNik,
+  nikMasked: '••••••••0002',
   satusehatPractitionerId: '10009880728',
   ownerUserId: userId,
   isActive: true,

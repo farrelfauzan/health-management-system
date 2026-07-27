@@ -7,6 +7,7 @@ import {
   DoctorRecord,
   DoctorScheduleRecord,
   hasScheduleOverlap,
+  maskIdentifierLast4,
 } from '@hms/shared-types';
 import {
   BadRequestException,
@@ -23,6 +24,7 @@ import { CreateDoctorDto } from '../dto/create-doctor.dto';
 import { ListDoctorsQueryDto } from '../dto/list-doctors-query.dto';
 import { UpdateDoctorDto } from '../dto/update-doctor.dto';
 import { UpdateDoctorScheduleDto } from '../dto/update-doctor-schedule.dto';
+import { DoctorIdentifierConflictError } from '../repository/doctor-identifier-conflict.error';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
 
 function parseDateOnly(value: string): Date {
@@ -149,23 +151,25 @@ export class DoctorManagementService {
     await this.assertActiveSpecialtyId(payload.specialtyId);
     await this.assertAssignablePatientIds(payload.patientIds);
 
-    const created = await this.doctorManagementRepository.createDoctor({
-      licenseNumber: payload.licenseNumber,
-      fullName: payload.fullName,
-      specialtyId: payload.specialtyId,
-      phoneNumber: payload.phoneNumber,
-      email: payload.email,
-      title: payload.title,
-      degrees: payload.degrees,
-      nik: payload.nik,
-      satusehatPractitionerId: payload.satusehatPractitionerId,
-      licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
-      educations: payload.educations,
-      ownerUserId: payload.ownerUserId,
-      isActive: payload.isActive,
-      patientIds: payload.patientIds,
-      actorUserId: currentUser.sub,
-    });
+    const created = await this.runWithIdentifierConflictMapping(() =>
+      this.doctorManagementRepository.createDoctor({
+        licenseNumber: payload.licenseNumber,
+        fullName: payload.fullName,
+        specialtyId: payload.specialtyId,
+        phoneNumber: payload.phoneNumber,
+        email: payload.email,
+        title: payload.title,
+        degrees: payload.degrees,
+        nik: payload.nik,
+        satusehatPractitionerId: payload.satusehatPractitionerId,
+        licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
+        educations: payload.educations,
+        ownerUserId: payload.ownerUserId,
+        isActive: payload.isActive,
+        patientIds: payload.patientIds,
+        actorUserId: currentUser.sub,
+      }),
+    );
 
     return this.toDoctorResponse(created);
   }
@@ -220,20 +224,22 @@ export class DoctorManagementService {
       await this.assertNikNotTaken(payload.nik, id);
     }
 
-    const updated = await this.doctorManagementRepository.updateDoctor(id, {
-      fullName: payload.fullName,
-      specialtyId: payload.specialtyId,
-      phoneNumber: payload.phoneNumber,
-      email: payload.email,
-      title: payload.title,
-      degrees: payload.degrees,
-      nik: payload.nik,
-      satusehatPractitionerId: payload.satusehatPractitionerId,
-      licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
-      educations: payload.educations,
-      ownerUserId: payload.ownerUserId,
-      isActive: payload.isActive,
-    });
+    const updated = await this.runWithIdentifierConflictMapping(() =>
+      this.doctorManagementRepository.updateDoctor(id, {
+        fullName: payload.fullName,
+        specialtyId: payload.specialtyId,
+        phoneNumber: payload.phoneNumber,
+        email: payload.email,
+        title: payload.title,
+        degrees: payload.degrees,
+        nik: payload.nik,
+        satusehatPractitionerId: payload.satusehatPractitionerId,
+        licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
+        educations: payload.educations,
+        ownerUserId: payload.ownerUserId,
+        isActive: payload.isActive,
+      }),
+    );
 
     return this.toDoctorResponse(updated);
   }
@@ -311,6 +317,22 @@ export class DoctorManagementService {
     }
   }
 
+  /**
+   * Maps the repository's uniqueness-race error onto the same 409 the
+   * {@link assertNikNotTaken} pre-check raises, so a concurrent write and a
+   * sequential one are indistinguishable to the caller.
+   */
+  private async runWithIdentifierConflictMapping<T>(operation: () => Promise<T>): Promise<T> {
+    try {
+      return await operation();
+    } catch (err) {
+      if (err instanceof DoctorIdentifierConflictError) {
+        throw new ConflictException('Doctor NIK already exists');
+      }
+      throw err;
+    }
+  }
+
   private async assertActiveSpecialtyId(specialtyId: string): Promise<void> {
     const specialty = await this.doctorManagementRepository.findActiveSpecialtyById(specialtyId);
     if (!specialty) {
@@ -372,6 +394,11 @@ export class DoctorManagementService {
     };
   }
 
+  /**
+   * The practitioner NIK leaves the API masked, exactly like a patient's. Full
+   * values require the `patient.read-identifier` permission and an audit event,
+   * both delivered in P7-T07 — until then there is no unmask path at all.
+   */
   private toDoctorResponse(doctor: DoctorRecord) {
     return {
       id: doctor.id,
@@ -383,7 +410,7 @@ export class DoctorManagementService {
       email: doctor.email ?? undefined,
       title: doctor.title ?? undefined,
       degrees: doctor.degrees ?? undefined,
-      nik: doctor.nik ?? undefined,
+      nikMasked: maskIdentifierLast4(doctor.nikLast4),
       satusehatPractitionerId: doctor.satusehatPractitionerId ?? undefined,
       ownerUserId: doctor.ownerUserId ?? undefined,
       isActive: doctor.isActive,

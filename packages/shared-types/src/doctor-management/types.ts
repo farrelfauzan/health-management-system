@@ -66,7 +66,11 @@ export type DoctorRecord = {
   email: string | null;
   title: string | null;
   degrees: string | null;
-  nik: string | null;
+  /**
+   * Masked last four digits only — the `nikCiphertext` and `nikIndex` columns
+   * never leave the repository layer, and the plaintext NIK is never read back.
+   */
+  nikLast4: string | null;
   satusehatPractitionerId: string | null;
   ownerUserId: string | null;
   isActive: boolean;
