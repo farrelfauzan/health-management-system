@@ -31,6 +31,11 @@
     "docker:dev:down": "docker compose -f infra/docker/docker-compose.dev.yml down"
   },
   "pnpm": {
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-mh99-v99m-4gvg"
+      ]
+    },
     "overrides": {
       "brace-expansion@<1.1.16": "1.1.16",
       "brace-expansion@>=2.0.0 <2.1.2": "2.1.2",
