@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { DoctorIdentifierConflictError } from '../repository/doctor-identifier-conflict.error';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
 import { DoctorManagementService } from './doctor-management.service';
 
@@ -80,7 +81,7 @@ describe('DoctorManagementService', () => {
     email: null,
     title: null,
     degrees: null,
-    nik: null,
+    nikLast4: null,
     satusehatPractitionerId: null,
     ownerUserId: null,
     isActive: true,
@@ -318,7 +319,7 @@ describe('DoctorManagementService', () => {
       });
       (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockResolvedValue({
         ...doctorRecord,
-        nik: inputDoctorNik,
+        nikLast4: '0002',
         satusehatPractitionerId: '10009880728',
       });
 
@@ -364,7 +365,7 @@ describe('DoctorManagementService', () => {
           ],
         }),
       );
-      expect(result.nik).toBe(inputDoctorNik);
+      expect(result.nikMasked).toBe('••••••••0002');
       expect(result.satusehatPractitionerId).toBe('10009880728');
     });
 
@@ -378,12 +379,109 @@ describe('DoctorManagementService', () => {
       });
       (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
         ...doctorRecord,
-        nik: inputDoctorNik,
+        nikLast4: '0002',
       });
 
       const result = await service.updateDoctor(doctorId, { nik: inputDoctorNik }, currentUser);
 
-      expect(result.nik).toBe(inputDoctorNik);
+      expect(result.nikMasked).toBe('••••••••0002');
+    });
+
+    it('never returns the plaintext NIK on any response', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
+        null,
+      );
+      (doctorManagementRepositoryMock.findDoctorByNik as jest.Mock).mockResolvedValue(null);
+      (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+        id: specialtyId,
+      });
+      (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        nikLast4: '0002',
+      });
+
+      const result = await service.createDoctor(
+        {
+          licenseNumber: 'LIC-0001',
+          fullName: 'Dr. First',
+          specialtyId,
+          phoneNumber: '0812345678',
+          nik: inputDoctorNik,
+          isActive: true,
+        },
+        currentUser,
+      );
+
+      expect(JSON.stringify(result)).not.toContain(inputDoctorNik);
+      expect(result).not.toHaveProperty('nik');
+    });
+
+    it('translates a concurrent NIK uniqueness race into the same conflict', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
+        null,
+      );
+      (doctorManagementRepositoryMock.findDoctorByNik as jest.Mock).mockResolvedValue(null);
+      (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+        id: specialtyId,
+      });
+      (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockRejectedValue(
+        new DoctorIdentifierConflictError('nik'),
+      );
+
+      await expect(
+        service.createDoctor(
+          {
+            licenseNumber: 'LIC-0001',
+            fullName: 'Dr. First',
+            specialtyId,
+            phoneNumber: '0812345678',
+            nik: inputDoctorNik,
+            isActive: true,
+          },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('passes the plaintext NIK to the repository so it can encrypt it', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+      (doctorManagementRepositoryMock.findDoctorByNik as jest.Mock).mockResolvedValue(null);
+      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        nikLast4: '0002',
+      });
+
+      await service.updateDoctor(doctorId, { nik: inputDoctorNik }, currentUser);
+
+      expect(doctorManagementRepositoryMock.updateDoctor).toHaveBeenCalledWith(
+        doctorId,
+        expect.objectContaining({ nik: inputDoctorNik }),
+      );
+    });
+
+    it('clears the NIK when the update sends null', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue(doctorRecord);
+
+      const result = await service.updateDoctor(doctorId, { nik: null }, currentUser);
+
+      expect(doctorManagementRepositoryMock.updateDoctor).toHaveBeenCalledWith(
+        doctorId,
+        expect.objectContaining({ nik: null }),
+      );
+      expect(result.nikMasked).toBeUndefined();
     });
 
     it('replaces the license list on update', async () => {

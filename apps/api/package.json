@@ -17,6 +17,7 @@
     "prisma:validate": "prisma validate",
     "prisma:seed": "prisma db seed",
     "prisma:migrate:reset": "prisma migrate reset",
+    "backfill:doctor-nik": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/backfill-doctor-nik.js",
     "openapi:export": "curl -fsS \"${OPENAPI_URL:-http://localhost:3001/api/openapi.yaml}\" -o ./openapi.yaml"
   },
   "dependencies": {

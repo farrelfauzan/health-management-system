@@ -1604,7 +1604,7 @@ paths:
                           type: string
                         degrees:
                           type: string
-                        nik:
+                        nikMasked:
                           type: string
                         satusehatPractitionerId:
                           type: string
@@ -1649,7 +1649,7 @@ paths:
                         - email
                         - title
                         - degrees
-                        - nik
+                        - nikMasked
                         - satusehatPractitionerId
                         - ownerUserId
                         - isActive
@@ -1684,7 +1684,7 @@ paths:
                       email: budi.santoso@clinic.local
                       title: dr.
                       degrees: Sp.PD
-                      nik: "3173011503800002"
+                      nikMasked: ••••••••0002
                       satusehatPractitionerId: "10009880728"
                       ownerUserId: 33333333-3333-4333-8333-333333333333
                       isActive: true
@@ -1794,7 +1794,7 @@ paths:
                         type: string
                       degrees:
                         type: string
-                      nik:
+                      nikMasked:
                         type: string
                       satusehatPractitionerId:
                         type: string
@@ -1816,7 +1816,7 @@ paths:
                       - email
                       - title
                       - degrees
-                      - nik
+                      - nikMasked
                       - satusehatPractitionerId
                       - ownerUserId
                       - isActive
@@ -1838,7 +1838,7 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
-                    nik: "3173011503800002"
+                    nikMasked: ••••••••0002
                     satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
@@ -1914,7 +1914,7 @@ paths:
                         type: string
                       degrees:
                         type: string
-                      nik:
+                      nikMasked:
                         type: string
                       satusehatPractitionerId:
                         type: string
@@ -2028,7 +2028,7 @@ paths:
                       - email
                       - title
                       - degrees
-                      - nik
+                      - nikMasked
                       - satusehatPractitionerId
                       - ownerUserId
                       - isActive
@@ -2052,7 +2052,7 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
-                    nik: "3173011503800002"
+                    nikMasked: ••••••••0002
                     satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true
@@ -2183,7 +2183,7 @@ paths:
                         type: string
                       degrees:
                         type: string
-                      nik:
+                      nikMasked:
                         type: string
                       satusehatPractitionerId:
                         type: string
@@ -2205,7 +2205,7 @@ paths:
                       - email
                       - title
                       - degrees
-                      - nik
+                      - nikMasked
                       - satusehatPractitionerId
                       - ownerUserId
                       - isActive
@@ -2227,7 +2227,7 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
-                    nik: "3173011503800002"
+                    nikMasked: ••••••••0002
                     satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
                     isActive: true

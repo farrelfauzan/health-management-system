@@ -282,13 +282,21 @@ model DoctorProfile {
   deletedAt     DateTime? @map("deleted_at")
 
   // National identity and SATUSEHAT linkage required by PMK 24/2022.
-  // SATUSEHAT resolves practitioners by NIK, so it must be unique when
-  // present; nullable so existing MVP records stay valid. Unlike patient
-  // identifiers, practitioner credentials are registry-public data, so they
-  // are stored in plaintext (see docs/post-mvp/implementation-plan.md P7-T03).
-  nik                     String? @unique
+  //
+  // A practitioner NIK is the same citizen identifier as a patient NIK and
+  // carries the same UU PDP obligations, so it is stored exactly like one:
+  // AES-256-GCM ciphertext for retrieval, an HMAC-SHA256 blind index for
+  // lookup and uniqueness (SATUSEHAT resolves practitioners by NIK), and the
+  // last four digits for masked display. See
+  // docs/post-mvp/patient-identifiers.md — only STR/SIP numbers are
+  // registry-public and stay plaintext, on DoctorLicense.
+  nikCiphertext           String? @map("nik_ciphertext")
+  nikIndex                String? @unique @map("nik_index")
+  nikLast4                String? @map("nik_last4")
+  nikKeyVersion           Int?    @map("nik_key_version") @db.SmallInt
   // IHS practitioner number, filled after the first successful SATUSEHAT
-  // practitioner lookup.
+  // practitioner lookup. Plaintext: it is a pseudonymous Kemenkes-issued
+  // identifier, read on every outbound FHIR call and never searched by value.
   satusehatPractitionerId String? @map("satusehat_practitioner_id")
 
   // Listing/profile fields clinics expect on doctor directories (P7-T04).

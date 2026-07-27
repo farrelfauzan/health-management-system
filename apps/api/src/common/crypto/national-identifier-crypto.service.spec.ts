@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 
-import { PatientIdentifierCryptoService } from './patient-identifier-crypto.service';
+import { NationalIdentifierCryptoService } from './national-identifier-crypto.service';
 
 const inputEncryptionKey = Buffer.alloc(32, 1).toString('base64');
 const inputIndexKey = Buffer.alloc(32, 2).toString('base64');
@@ -16,13 +16,13 @@ function buildConfigService(overrides: Record<string, string> = {}): ConfigServi
   } as unknown as ConfigService;
 }
 
-describe('PatientIdentifierCryptoService', () => {
-  const service = new PatientIdentifierCryptoService(buildConfigService());
+describe('NationalIdentifierCryptoService', () => {
+  const service = new NationalIdentifierCryptoService(buildConfigService());
 
   describe('configuration', () => {
     it('rejects a missing encryption key', () => {
       const inputConfigService = buildConfigService({ PATIENT_PII_ENCRYPTION_KEY: '' });
-      expect(() => new PatientIdentifierCryptoService(inputConfigService)).toThrow(
+      expect(() => new NationalIdentifierCryptoService(inputConfigService)).toThrow(
         /PATIENT_PII_ENCRYPTION_KEY must be set/,
       );
     });
@@ -31,21 +31,21 @@ describe('PatientIdentifierCryptoService', () => {
       const inputConfigService = buildConfigService({
         PATIENT_PII_INDEX_KEY: Buffer.alloc(16, 3).toString('base64'),
       });
-      expect(() => new PatientIdentifierCryptoService(inputConfigService)).toThrow(
+      expect(() => new NationalIdentifierCryptoService(inputConfigService)).toThrow(
         /must decode to 32 bytes/,
       );
     });
 
     it('rejects reusing one key for both ciphertext and blind index', () => {
       const inputConfigService = buildConfigService({ PATIENT_PII_INDEX_KEY: inputEncryptionKey });
-      expect(() => new PatientIdentifierCryptoService(inputConfigService)).toThrow(/must differ/);
+      expect(() => new NationalIdentifierCryptoService(inputConfigService)).toThrow(/must differ/);
     });
 
     it('accepts a hex-encoded key', () => {
       const inputConfigService = buildConfigService({
         PATIENT_PII_ENCRYPTION_KEY: Buffer.alloc(32, 4).toString('hex'),
       });
-      expect(() => new PatientIdentifierCryptoService(inputConfigService)).not.toThrow();
+      expect(() => new NationalIdentifierCryptoService(inputConfigService)).not.toThrow();
     });
   });
 
@@ -90,7 +90,7 @@ describe('PatientIdentifierCryptoService', () => {
 
     it('stamps the configured key version', () => {
       const inputConfigService = buildConfigService({ PATIENT_PII_KEY_VERSION: '3' });
-      const inputService = new PatientIdentifierCryptoService(inputConfigService);
+      const inputService = new NationalIdentifierCryptoService(inputConfigService);
       expect(inputService.encryptSearchableIdentifier('3201011234567890').keyVersion).toBe(3);
     });
   });
@@ -118,7 +118,7 @@ describe('PatientIdentifierCryptoService', () => {
     });
 
     it('cannot decrypt ciphertext produced under a different key', () => {
-      const inputOtherService = new PatientIdentifierCryptoService(
+      const inputOtherService = new NationalIdentifierCryptoService(
         buildConfigService({ PATIENT_PII_ENCRYPTION_KEY: Buffer.alloc(32, 9).toString('base64') }),
       );
       const actual = inputOtherService.encryptSearchableIdentifier('3201011234567890');
@@ -128,7 +128,7 @@ describe('PatientIdentifierCryptoService', () => {
 
   describe('computeBlindIndex', () => {
     it('depends on the index key', () => {
-      const inputOtherService = new PatientIdentifierCryptoService(
+      const inputOtherService = new NationalIdentifierCryptoService(
         buildConfigService({ PATIENT_PII_INDEX_KEY: Buffer.alloc(32, 7).toString('base64') }),
       );
       expect(service.computeBlindIndex('3201011234567890')).not.toBe(

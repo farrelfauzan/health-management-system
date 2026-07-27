@@ -37,6 +37,24 @@ Order matters: **backup → migrate → API → web**. Migrations must be backwa
    pnpm db:migrate:deploy          # or: pnpm docker:dev:migrate (compose 'migrate' service)
    pnpm --filter @hms/api exec prisma migrate status   # must print "Database schema is up to date!"
    ```
+   **Data migrations that need application keys.** A few migrations encrypt existing
+   values and therefore cannot be expressed in SQL, because the AES/HMAC keys live
+   only in the application environment. These ship as an *expand → backfill →
+   contract* trio, and the contract migration refuses to run while un-backfilled
+   rows remain, so a plain `migrate deploy` fails loudly rather than destroying
+   data. When a release contains one, run the backfill between the two migrations:
+
+   ```bash
+   pnpm db:migrate:deploy                        # applies the expand migration
+   pnpm --filter @hms/api backfill:doctor-nik    # encrypts existing plaintext values
+   pnpm db:migrate:deploy                        # applies the contract migration
+   ```
+
+   Backfill scripts are idempotent — rows already converted are skipped, so a
+   partial run can simply be repeated. They exit non-zero and skip any row whose
+   value is malformed; correct those rows and re-run before the contract
+   migration will pass. Shipped so far: `backfill:doctor-nik` (doctor NIK
+   encryption, `20260727090000` → `20260727091000`).
 4. **Roll the API**: deploy the new image; wait until `GET /api/v1/health` returns 200 and startup logs show `Nest application successfully started`.
 5. **Roll the web**: deploy the rebuilt Next.js image (rebuild if `NEXT_PUBLIC_API_BASE_URL` changed).
 6. **Unfreeze** after post-deploy verification (§6) passes.
