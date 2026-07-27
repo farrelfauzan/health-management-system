@@ -115,6 +115,17 @@ enum RegistrationStatus {
   CANCELLED
 }
 
+/// Lifecycle of a clinical encounter (the PMK 24/2022 medical record for one
+/// visit). An encounter opens when the doctor starts seeing a checked-in
+/// patient and is terminal once closed: FINISHED when the visit was delivered,
+/// CANCELLED when it was opened in error. Records are never re-opened — a
+/// correction is a new encounter, so the original stays auditable.
+enum EncounterStatus {
+  IN_PROGRESS
+  FINISHED
+  CANCELLED
+}
+
 enum PrescriptionStatus {
   DRAFT
   ISSUED
@@ -184,6 +195,7 @@ model User {
   doctorPatientActivities  DoctorPatientActivity[] @relation("DoctorPatientActivityActor")
   createdAppointments      Appointment[]           @relation("AppointmentCreatedBy")
   createdRegistrations     Registration[]          @relation("RegistrationCreatedBy")
+  createdEncounters        Encounter[]             @relation("EncounterCreatedBy")
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
   refreshTokens            RefreshToken[]
   auditLogs                AuditLog[]              @relation("AuditLogActor")
@@ -285,6 +297,7 @@ model PatientProfile {
   registrations Registration[]
   prescriptions Prescription[]
   allergies     PatientAllergy[]
+  encounters    Encounter[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -377,6 +390,7 @@ model DoctorProfile {
   prescriptions       Prescription[]
   licenses            DoctorLicense[]
   educations          DoctorEducation[]
+  encounters          Encounter[]
 
   @@index([deletedAt])
   @@index([isActive])
@@ -556,11 +570,49 @@ model Registration {
   patient     PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
   appointment Appointment?   @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
   createdBy   User?          @relation("RegistrationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  encounter   Encounter?
 
   @@index([patientId, status])
   @@index([status, registeredAt])
   @@index([deletedAt])
   @@map("registrations")
+}
+
+/// The clinical record of one visit, mandated by PMK 24/2022. Opened from a
+/// CHECKED_IN registration and closed when the doctor finishes; vitals,
+/// diagnoses, SOAP notes, and procedures hang off it in later tasks.
+///
+/// `registrationId` is unique — one encounter per registration. A second visit
+/// on the same day is a second registration, which is also what the queue and
+/// the payer expect.
+///
+/// `doctorId` is stored on the encounter rather than read through the
+/// appointment: walk-in registrations have no appointment at all, and the
+/// doctor who actually attended may differ from the one booked. The medical
+/// record must name the practitioner who signed it.
+model Encounter {
+  id             String          @id @default(uuid()) @db.Uuid
+  registrationId String          @unique @map("registration_id") @db.Uuid
+  patientId      String          @map("patient_id") @db.Uuid
+  doctorId       String          @map("doctor_id") @db.Uuid
+  status         EncounterStatus @default(IN_PROGRESS)
+  startedAt      DateTime        @default(now()) @map("started_at")
+  endedAt        DateTime?       @map("ended_at")
+  createdById    String?         @map("created_by_id") @db.Uuid
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  deletedAt      DateTime?       @map("deleted_at")
+
+  registration Registration   @relation(fields: [registrationId], references: [id], onDelete: Restrict)
+  patient      PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor       DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  createdBy    User?          @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([patientId, startedAt])
+  @@index([doctorId, startedAt])
+  @@index([status, startedAt])
+  @@index([deletedAt])
+  @@map("encounters")
 }
 
 model Medication {

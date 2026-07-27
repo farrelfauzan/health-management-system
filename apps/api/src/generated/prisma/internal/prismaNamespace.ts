@@ -399,6 +399,7 @@ export const ModelName = {
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
   Registration: 'Registration',
+  Encounter: 'Encounter',
   Medication: 'Medication',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
@@ -424,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "encounter" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1538,6 +1539,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Encounter: {
+      payload: Prisma.$EncounterPayload<ExtArgs>
+      fields: Prisma.EncounterFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EncounterFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EncounterFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload>
+        }
+        findFirst: {
+          args: Prisma.EncounterFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EncounterFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload>
+        }
+        findMany: {
+          args: Prisma.EncounterFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload>[]
+        }
+        create: {
+          args: Prisma.EncounterCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload>
+        }
+        createMany: {
+          args: Prisma.EncounterCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EncounterCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload>[]
+        }
+        delete: {
+          args: Prisma.EncounterDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload>
+        }
+        update: {
+          args: Prisma.EncounterUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload>
+        }
+        deleteMany: {
+          args: Prisma.EncounterDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EncounterUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EncounterUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload>[]
+        }
+        upsert: {
+          args: Prisma.EncounterUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EncounterPayload>
+        }
+        aggregate: {
+          args: Prisma.EncounterAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEncounter>
+        }
+        groupBy: {
+          args: Prisma.EncounterGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EncounterGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EncounterCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EncounterCountAggregateOutputType> | number
+        }
+      }
+    }
     Medication: {
       payload: Prisma.$MedicationPayload<ExtArgs>
       fields: Prisma.MedicationFieldRefs
@@ -2567,6 +2642,23 @@ export const RegistrationScalarFieldEnum = {
 export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[keyof typeof RegistrationScalarFieldEnum]
 
 
+export const EncounterScalarFieldEnum = {
+  id: 'id',
+  registrationId: 'registrationId',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  status: 'status',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type EncounterScalarFieldEnum = (typeof EncounterScalarFieldEnum)[keyof typeof EncounterScalarFieldEnum]
+
+
 export const MedicationScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -3003,6 +3095,20 @@ export type ListEnumRegistrationStatusFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'EncounterStatus'
+ */
+export type EnumEncounterStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EncounterStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'EncounterStatus[]'
+ */
+export type ListEnumEncounterStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EncounterStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'MedicationUnit'
  */
 export type EnumMedicationUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MedicationUnit'>
@@ -3238,6 +3344,7 @@ export type GlobalOmitConfig = {
   doctorPatientActivity?: Prisma.DoctorPatientActivityOmit
   appointment?: Prisma.AppointmentOmit
   registration?: Prisma.RegistrationOmit
+  encounter?: Prisma.EncounterOmit
   medication?: Prisma.MedicationOmit
   prescription?: Prisma.PrescriptionOmit
   prescriptionMedication?: Prisma.PrescriptionMedicationOmit

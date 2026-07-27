@@ -31,9 +31,10 @@ export type RefreshToken = Prisma.RefreshTokenModel
  * Model MrnCounter
  * Sequence source for medical record numbers. Allocation is a single atomic
  * `UPDATE … RETURNING` (never `MAX(mrn) + 1`, which races), run inside the
- * same transaction as the patient insert. A rolled-back create burns a number;
- * gaps are permanent and are never reused, because a reused MRN silently
- * merges two patients' histories.
+ * same transaction as the patient insert — so a rolled-back create rolls the
+ * counter back with it and the number is handed to the next caller instead of
+ * leaving a hole. Committed numbers are never reissued or renumbered: a reused
+ * MRN silently merges two patients' histories.
  * 
  * HMS ships single-facility, so `PatientProfile.mrn` stays globally `@unique`
  * and exactly one counter row exists, keyed by the nil-UUID sentinel. The
@@ -106,6 +107,22 @@ export type Appointment = Prisma.AppointmentModel
  * 
  */
 export type Registration = Prisma.RegistrationModel
+/**
+ * Model Encounter
+ * The clinical record of one visit, mandated by PMK 24/2022. Opened from a
+ * CHECKED_IN registration and closed when the doctor finishes; vitals,
+ * diagnoses, SOAP notes, and procedures hang off it in later tasks.
+ * 
+ * `registrationId` is unique — one encounter per registration. A second visit
+ * on the same day is a second registration, which is also what the queue and
+ * the payer expect.
+ * 
+ * `doctorId` is stored on the encounter rather than read through the
+ * appointment: walk-in registrations have no appointment at all, and the
+ * doctor who actually attended may differ from the one booked. The medical
+ * record must name the practitioner who signed it.
+ */
+export type Encounter = Prisma.EncounterModel
 /**
  * Model Medication
  * 

@@ -16,6 +16,8 @@
     "#appointment-management/schemas": "./src/appointment-management/schemas.ts",
     "#appointment-management/contracts": "./src/appointment-management/contracts.ts",
     "#appointment-management/types": "./src/appointment-management/types.ts",
+    "#emr/schemas": "./src/emr/schemas.ts",
+    "#emr/types": "./src/emr/types.ts",
     "#registration-flow/schemas": "./src/registration-flow/schemas.ts",
     "#registration-flow/contracts": "./src/registration-flow/contracts.ts",
     "#registration-flow/types": "./src/registration-flow/types.ts",

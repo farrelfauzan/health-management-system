@@ -24,6 +24,8 @@ export * from '#doctor-management/types';
 export * from '#appointment-management/schemas';
 export * from '#appointment-management/contracts';
 export * from '#appointment-management/types';
+export * from '#emr/schemas';
+export * from '#emr/types';
 export * from '#registration-flow/schemas';
 export * from '#registration-flow/contracts';
 export * from '#registration-flow/types';

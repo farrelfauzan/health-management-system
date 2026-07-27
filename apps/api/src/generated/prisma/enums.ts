@@ -157,6 +157,15 @@ export const RegistrationStatus = {
 export type RegistrationStatus = (typeof RegistrationStatus)[keyof typeof RegistrationStatus]
 
 
+export const EncounterStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  FINISHED: 'FINISHED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type EncounterStatus = (typeof EncounterStatus)[keyof typeof EncounterStatus]
+
+
 export const PrescriptionStatus = {
   DRAFT: 'DRAFT',
   ISSUED: 'ISSUED',
