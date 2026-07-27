@@ -66,6 +66,7 @@ export const ModelName = {
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
   Registration: 'Registration',
+  Encounter: 'Encounter',
   Medication: 'Medication',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
@@ -342,6 +343,23 @@ export const RegistrationScalarFieldEnum = {
 } as const
 
 export type RegistrationScalarFieldEnum = (typeof RegistrationScalarFieldEnum)[keyof typeof RegistrationScalarFieldEnum]
+
+
+export const EncounterScalarFieldEnum = {
+  id: 'id',
+  registrationId: 'registrationId',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  status: 'status',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type EncounterScalarFieldEnum = (typeof EncounterScalarFieldEnum)[keyof typeof EncounterScalarFieldEnum]
 
 
 export const MedicationScalarFieldEnum = {

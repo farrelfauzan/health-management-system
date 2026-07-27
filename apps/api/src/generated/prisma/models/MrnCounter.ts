@@ -16,9 +16,10 @@ import type * as Prisma from "../internal/prismaNamespace"
  * Model MrnCounter
  * Sequence source for medical record numbers. Allocation is a single atomic
  * `UPDATE … RETURNING` (never `MAX(mrn) + 1`, which races), run inside the
- * same transaction as the patient insert. A rolled-back create burns a number;
- * gaps are permanent and are never reused, because a reused MRN silently
- * merges two patients' histories.
+ * same transaction as the patient insert — so a rolled-back create rolls the
+ * counter back with it and the number is handed to the next caller instead of
+ * leaving a hole. Committed numbers are never reissued or renumbered: a reused
+ * MRN silently merges two patients' histories.
  * 
  * HMS ships single-facility, so `PatientProfile.mrn` stays globally `@unique`
  * and exactly one counter row exists, keyed by the nil-UUID sentinel. The
