@@ -91,14 +91,26 @@ Goal: FHIR R4 submission to Kemenkes. Build as an infrastructure adapter in `src
 5. `P10-T05` Medication resources: MedicationRequest/MedicationDispense from prescription + dispense records using `kfaCode` (skip items without a KFA code, log a gap report).
 6. `P10-T06` Ops surface: submission status endpoint + retry endpoint for admins; integration tests against recorded sandbox fixtures.
 
-## 6. Phase 11 - BPJS PCare Bridging (Backend, Scoping + 4 Tasks)
+## 6. Phase 11 - BPJS PCare Bridging (Backend + Frontend, Scoping + 7 Tasks)
 
-Goal: serve JKN clinics (the majority of klinik pratama). Highest external-dependency risk — PCare credentials are issued per facility and the API has its own conventions (custom signature headers, non-FHIR payloads). Start with a scoping spike.
+Goal: serve JKN clinics (the majority of klinik pratama). Highest external-dependency risk — PCare credentials are issued per facility and the API has its own conventions (custom signature headers, AES+LZ-String encrypted responses, non-FHIR payloads, BPJS-specific code systems). Start with a scoping spike.
 
-1. `P11-T01` Spike: obtain PCare dev credentials, document auth (cons id / secret / user key signature), map required flows: pendaftaran (visit registration), kunjungan (encounter with ICD-10), obat, rujukan (referral). Output: ADR in `docs/post-mvp/decisions.md`.
-2. `P11-T02` Adapter + config (per-clinic credentials), eligibility check by BPJS number on registration.
-3. `P11-T03` Visit registration + encounter submission to PCare from existing registration/encounter data.
-4. `P11-T04` Antrean online (Mobile JKN queue) bridging — evaluate after core PCare flows; queue-number model from `P8-T06` is the prerequisite.
+Full design: [bpjs-pcare.md](./bpjs-pcare.md) — read before starting `P11-T01`.
+
+1. `P11-T01` Spike: obtain PCare dev credentials; confirm auth headers (cons id / timestamp / HMAC signature / X-Authorization / user key) and the response decrypt routine (AES + LZ-String) against the dev environment; map required flows: peserta (eligibility), pendaftaran, kunjungan, obat, rujukan. Output: working codec utility with recorded fixtures + ADR in `docs/post-mvp/decisions.md`.
+2. `P11-T02` `BpjsPcareConfig` schema (per-facility, nullable `facilityId`) with AES-256-GCM credential encryption reusing the `P7-T07` crypto pattern; adapter foundation (signature interceptor, codec, timeout/retry/circuit-breaker); admin CRUD with write-only secrets + test-connection endpoint; `bpjs.config.manage` permission.
+3. `P11-T03` Reference-data sync (poli, dokter, kesadaran, tindakan, diagnosa, DPHO, spesialis, sarana) into local tables + mapping surfaces: `DoctorProfile.bpjsDoctorCode`, poli mapping, `Medication.dphoCode`. Submissions must fail fast with a readable message when a mapping is missing.
+4. `P11-T04` Eligibility check by BPJS number / NIK at registration check-in. Synchronous (front desk needs it immediately), cached per patient per day, degrades to an explicit "BPJS unreachable" state rather than blocking registration.
+5. `P11-T05` Submission pipeline: `BpjsSubmission` outbox (mirrors `SatusehatSubmission`) + async worker; submit `pendaftaran` on check-in and `kunjungan` on encounter close; status on registration/encounter; retry endpoint; propagate HMS-side cancellation as `pendaftaran` DELETE.
+6. `P11-T06` Rujukan (referral) issuance from encounter close + monthly reconciliation report (tercatat vs terkirim vs gagal) for the claim deadline.
+7. `P11-T07` Frontend: BPJS settings page, mapping screens, eligibility card at registration, bridging status chips, and a **shared Integrations monitor** covering both SATUSEHAT (`P10-T06`) and PCare submissions. May be folded into `P12-T01`.
+8. `P11-T08` Antrean online (Mobile JKN queue) bridging — evaluate after core PCare flows; queue-number model from `P8-T06` is the prerequisite.
+
+Phase 11 notes:
+
+- `P11-T03` through `P11-T06` require Phase 8: PCare `pendaftaran` needs vitals and `kunjungan` needs a coded ICD-10 diagnosis. Do not start them before `P8-T05` lands.
+- New RBAC permissions: `bpjs.config.manage`, `bpjs.submission.read`, `bpjs.submission.retry`, `bpjs.eligibility.check`.
+- HMS holds the clinic's real PCare login (it can create and delete claims). Secrets are write-only in the API, encrypted at rest under a dedicated key, audited on every change, and never logged.
 
 ## 7. Phase 12 - Frontend, Localization, and Depth (Parallelizable)
 
@@ -129,7 +141,7 @@ Rationale: incumbents already ship clinical AI (e.g. Assist.id voice-to-EMR/ICD 
 
 ## 9. Sequencing Rules
 
-- Phase 7 must land before Phases 8-11 (they all consume the new fields). Phases 8 and 9 can proceed in parallel after Phase 7. Phase 10 requires Phase 8. Phase 11 requires Phases 7-8; its spike (`P11-T01`) can start anytime. Phase 13 requires Phase 10 (`P10-T06`); Phases 11-12 may proceed in parallel with Phase 13 backend tasks but context enrichment (`P13-T06`) must not ship to production until SATUSEHAT master-data linkage is verified.
+- Phase 7 must land before Phases 8-11 (they all consume the new fields). Phases 8 and 9 can proceed in parallel after Phase 7. Phase 10 requires Phase 8. Phase 11 requires Phases 7-8 from `P11-T03` onward; its spike (`P11-T01`) and config/adapter task (`P11-T02`) can start anytime, and both are gated externally on a pilot clinic's BPJS branch-office bridging request. Phase 13 requires Phase 10 (`P10-T06`); Phases 11-12 may proceed in parallel with Phase 13 backend tasks but context enrichment (`P13-T06`) must not ship to production until SATUSEHAT master-data linkage is verified.
 - Definition of Done, branching, and quality gates: identical to MVP plan sections 8-9.
 
 ## 10. Sources
