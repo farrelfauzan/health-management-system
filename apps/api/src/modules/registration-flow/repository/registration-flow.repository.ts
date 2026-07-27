@@ -30,6 +30,17 @@ const REGISTRATION_RELATIONS_INCLUDE = {
       id: true,
       scheduledAt: true,
       status: true,
+      doctor: {
+        select: {
+          id: true,
+          fullName: true,
+          specialty: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
     },
   },
 } satisfies Prisma.RegistrationInclude;
@@ -39,8 +50,17 @@ export class RegistrationFlowRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listRegistrations(params: ListRegistrationsParams) {
-    const { page, limit, search, status, patientId, registeredFrom, registeredTo, ownerUserId } =
-      params;
+    const {
+      page,
+      limit,
+      search,
+      status,
+      patientId,
+      doctorId,
+      registeredFrom,
+      registeredTo,
+      ownerUserId,
+    } = params;
     const skip = (page - 1) * limit;
 
     const patientFilter = {
@@ -68,6 +88,15 @@ export class RegistrationFlowRepository {
     const where = {
       ...(status ? { status } : {}),
       ...(patientId ? { patientId } : {}),
+      ...(doctorId
+        ? {
+            appointment: {
+              is: {
+                doctorId,
+              },
+            },
+          }
+        : {}),
       ...(registeredFrom || registeredTo
         ? {
             registeredAt: {

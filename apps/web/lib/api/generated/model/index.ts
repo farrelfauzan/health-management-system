@@ -172,6 +172,7 @@ export * from './registrationFlowControllerListRegistrationsV1Status';
 export * from './registrationFlowControllerListRegistrationsV1200';
 export * from './registrationFlowControllerListRegistrationsV1200DataItem';
 export * from './registrationFlowControllerListRegistrationsV1200DataItemAppointment';
+export * from './registrationFlowControllerListRegistrationsV1200DataItemAppointmentDoctor';
 export * from './registrationFlowControllerListRegistrationsV1200DataItemPatient';
 export * from './registrationFlowControllerListRegistrationsV1200Meta';
 export * from './registrationFlowControllerUpdateRegistrationV1200';

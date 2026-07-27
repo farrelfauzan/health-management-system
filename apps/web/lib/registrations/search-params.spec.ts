@@ -9,6 +9,7 @@ describe('registrations search params', () => {
       limit: '25',
       q: 'MRN-0001',
       status: 'CHECKED_IN',
+      doctor: '0d2f0f2e-1b6a-4a5f-8f3f-4d7e1f0b9c11',
       from: '2026-07-01',
       to: '2026-07-18',
     });
@@ -18,6 +19,7 @@ describe('registrations search params', () => {
       limit: 25,
       search: 'MRN-0001',
       status: 'CHECKED_IN',
+      doctorId: '0d2f0f2e-1b6a-4a5f-8f3f-4d7e1f0b9c11',
       registeredFrom: '2026-07-01',
       registeredTo: '2026-07-18',
     });
@@ -41,6 +43,7 @@ describe('registrations search params', () => {
       limit: 10,
       search: 'Siti',
       status: 'PENDING' as const,
+      doctorId: '0d2f0f2e-1b6a-4a5f-8f3f-4d7e1f0b9c11',
       registeredFrom: '2026-07-01',
       registeredTo: '2026-07-21',
     };

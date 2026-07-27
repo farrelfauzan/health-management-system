@@ -92,7 +92,7 @@ export function RegistrationsQueuePanel({
       />
 
       <RegistrationsFilterCard
-        key={`${initialQuery.search ?? ''}|${initialQuery.status ?? ''}|${initialQuery.registeredFrom ?? ''}|${initialQuery.registeredTo ?? ''}`}
+        key={`${initialQuery.search ?? ''}|${initialQuery.status ?? ''}|${initialQuery.doctorId ?? ''}|${initialQuery.registeredFrom ?? ''}|${initialQuery.registeredTo ?? ''}`}
         initialQuery={initialQuery}
         onApply={handleApplyFilters}
         onReset={handleResetFilters}

@@ -5,6 +5,7 @@ export type RegistrationsSearchParams = {
   limit: number;
   search?: string;
   status?: RegistrationStatusValue;
+  doctorId?: string;
   registeredFrom?: string;
   registeredTo?: string;
 };
@@ -29,6 +30,7 @@ export function parseRegistrationsSearchParams(raw: RawSearchParams): Registrati
     limit: pickFirst(raw.limit),
     search: pickFirst(raw.q),
     status: pickFirst(raw.status),
+    doctorId: pickFirst(raw.doctor),
     registeredFrom: pickFirst(raw.from),
     registeredTo: pickFirst(raw.to),
   });
@@ -42,6 +44,7 @@ export function parseRegistrationsSearchParams(raw: RawSearchParams): Registrati
     limit: parsed.data.limit,
     search: parsed.data.search,
     status: parsed.data.status,
+    doctorId: parsed.data.doctorId,
     registeredFrom: parsed.data.registeredFrom,
     registeredTo: parsed.data.registeredTo,
   };
@@ -58,6 +61,9 @@ export function buildRegistrationsSearchParams(next: RegistrationsSearchParams):
   }
   if (next.status) {
     params.set('status', next.status);
+  }
+  if (next.doctorId) {
+    params.set('doctor', next.doctorId);
   }
   if (next.registeredFrom) {
     params.set('from', next.registeredFrom);

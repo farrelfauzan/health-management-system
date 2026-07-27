@@ -65,6 +65,7 @@ describe('RegistrationFlowService', () => {
   const registrationId = '0d9b34a1-7c2f-4bd0-8a8e-6a3c1de1a001';
   const patientId = '38a3f0f1-51d3-4f68-9d54-1f6a1de1a002';
   const appointmentId = '58e9a316-40b2-4f4c-9207-2a58028babc4';
+  const doctorId = '7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11';
 
   const registrationRecord = {
     id: registrationId,
@@ -168,6 +169,16 @@ describe('RegistrationFlowService', () => {
 
       expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(
         expect.objectContaining({ search: 'MRN-0001' }),
+      );
+    });
+
+    it('passes the doctor filter through to the repository', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+      await service.listRegistrations({ page: 1, limit: 10, doctorId }, currentUser);
+
+      expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(
+        expect.objectContaining({ doctorId }),
       );
     });
 

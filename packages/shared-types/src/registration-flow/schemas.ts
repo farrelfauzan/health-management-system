@@ -59,6 +59,7 @@ export const listRegistrationsQuerySchema = z
     search: z.string().trim().min(1).optional(),
     status: registrationStatusSchema.optional(),
     patientId: z.string().uuid().optional(),
+    doctorId: z.string().uuid().optional(),
     registeredFrom: registrationDateSchema
       .refine(isValidRegistrationDateValue, 'Registered-from must be a valid calendar date')
       .optional(),

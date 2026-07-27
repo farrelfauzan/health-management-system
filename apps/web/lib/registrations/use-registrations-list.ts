@@ -14,6 +14,7 @@ export function useRegistrationsList(params: RegistrationsSearchParams) {
     limit: params.limit,
     search: params.search,
     status: params.status,
+    doctorId: params.doctorId,
     registeredFrom: params.registeredFrom,
     registeredTo: params.registeredTo,
   };

@@ -5,9 +5,11 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { RegistrationFlowControllerListRegistrationsV1200DataItemAppointmentDoctor } from './registrationFlowControllerListRegistrationsV1200DataItemAppointmentDoctor';
 
 export type RegistrationFlowControllerListRegistrationsV1200DataItemAppointment = {
   id: string;
   scheduledAt: string;
   status: string;
+  doctor: RegistrationFlowControllerListRegistrationsV1200DataItemAppointmentDoctor;
 };
