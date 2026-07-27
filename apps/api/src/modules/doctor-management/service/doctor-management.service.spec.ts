@@ -4,6 +4,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DoctorIdentifierConflictError } from '../repository/doctor-identifier-conflict.error';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
@@ -50,6 +51,7 @@ describe('DoctorManagementService', () => {
     findActiveUserById: jest.fn(),
     findActiveSpecialtyById: jest.fn(),
     findActivePatientsByIds: jest.fn(),
+    findDoctorIdentifiers: jest.fn(),
     createDoctor: jest.fn(),
     updateDoctor: jest.fn(),
     replaceDoctorSchedules: jest.fn(),
@@ -59,7 +61,15 @@ describe('DoctorManagementService', () => {
     findUserById: jest.fn(),
   } as unknown as AuthRepository;
 
-  const service = new DoctorManagementService(doctorManagementRepositoryMock, authRepositoryMock);
+  const auditServiceMock = {
+    record: jest.fn(),
+  } as unknown as AuditService;
+
+  const service = new DoctorManagementService(
+    doctorManagementRepositoryMock,
+    authRepositoryMock,
+    auditServiceMock,
+  );
 
   const currentUser = {
     sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8',
@@ -886,5 +896,68 @@ describe('DoctorManagementService', () => {
       ),
     ).rejects.toBeInstanceOf(ConflictException);
     expect(doctorManagementRepositoryMock.updateDoctor).not.toHaveBeenCalled();
+  });
+  describe('identifier unmasking', () => {
+    beforeEach(() => {
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+      (doctorManagementRepositoryMock.findDoctorIdentifiers as jest.Mock).mockResolvedValue({
+        nik: inputDoctorNik,
+      });
+    });
+
+    it('refuses a caller holding only doctor.read', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read', resource: 'Doctor', scope: 'ANY' }]),
+      );
+
+      await expect(service.getDoctorIdentifiers(doctorId, currentUser)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+      expect(doctorManagementRepositoryMock.findDoctorIdentifiers).not.toHaveBeenCalled();
+    });
+
+    it('returns the decrypted practitioner NIK and audits the disclosure', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read-identifier', resource: 'Doctor', scope: 'ANY' }]),
+      );
+
+      const actual = await service.getDoctorIdentifiers(doctorId, currentUser);
+
+      expect(actual).toEqual({ id: doctorId, nik: inputDoctorNik });
+      expect(auditServiceMock.record).toHaveBeenCalledWith({
+        action: 'DOCTOR_IDENTIFIER_UNMASKED',
+        resource: 'DoctorProfile',
+        resourceId: doctorId,
+        actorUserId: currentUser.sub,
+        metadata: { scope: 'ANY', fields: ['nik'] },
+      });
+      expect(JSON.stringify((auditServiceMock.record as jest.Mock).mock.calls)).not.toContain(
+        inputDoctorNik,
+      );
+    });
+
+    it('denies an own-scope caller who does not own the profile', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read-identifier', resource: 'Doctor', scope: 'OWN' }]),
+      );
+
+      await expect(service.getDoctorIdentifiers(doctorId, currentUser)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
+
+    it('lets a doctor read back their own NIK', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read-identifier', resource: 'Doctor', scope: 'OWN' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        ownerUserId: currentUser.sub,
+      });
+
+      const actual = await service.getDoctorIdentifiers(doctorId, currentUser);
+
+      expect(actual.nik).toBe(inputDoctorNik);
+    });
   });
 });

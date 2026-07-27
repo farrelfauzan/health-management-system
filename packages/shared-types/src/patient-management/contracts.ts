@@ -29,8 +29,9 @@ export type PatientProfile = {
   address: string;
   /**
    * Masked NIK (`••••••••7890`), rendered from the stored last four digits
-   * without decrypting a row. Absent when no NIK is on file. Full values
-   * require the `patient.read-identifier` permission delivered in P7-T07.
+   * without decrypting a row. Absent when no NIK is on file. Full values come
+   * from `GET /patients/{id}/identifiers`, which requires
+   * `patient.read-identifier` and is audited.
    */
   nikMasked?: string;
   /** Masked BPJS number, same rules as {@link PatientProfile.nikMasked}. */
@@ -79,6 +80,20 @@ export type PatientListItem = PatientProfile & {
 export type PatientDetail = PatientProfile & {
   doctors: PatientRelatedDoctor[];
   allergies: PatientAllergy[];
+};
+
+/**
+ * Full, decrypted patient identifiers. Returned only by the dedicated unmask
+ * route, only to a caller holding `patient.read-identifier`, and every response
+ * is recorded as an audit event. Never embedded in a list or detail payload —
+ * those carry {@link PatientProfile.nikMasked} instead.
+ */
+export type PatientIdentifiers = {
+  id: string;
+  mrn: string;
+  nik?: string;
+  bpjsNumber?: string;
+  satusehatPatientId?: string;
 };
 
 export type PatientsListMeta = {

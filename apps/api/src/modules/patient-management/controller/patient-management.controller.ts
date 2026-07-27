@@ -18,6 +18,7 @@ import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
 import { CreatePatientDto } from '../dto/create-patient.dto';
+import { ImportPatientDto } from '../dto/import-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
 import { PatientManagementService } from '../service/patient-management.service';
@@ -102,6 +103,60 @@ export class PatientManagementController {
       data: result.patient,
       meta: { identifierWarnings: result.identifierWarnings },
       message: 'Patient created',
+    };
+  }
+
+  @Post('import')
+  @HttpCode(201)
+  @Auth([{ action: 'import-identifier', subject: 'Patient' }])
+  @ApiEndpoint({
+    summary: 'Import a patient with an existing medical record number',
+    responseDescription:
+      'The patient was created with the supplied MRN and the allocation counter was lifted past it.',
+    responseExample: {
+      data: PHASE_THREE_EXAMPLES.patient.item,
+      meta: PHASE_THREE_EXAMPLES.patient.mutationMeta,
+      message: 'Patient imported',
+    },
+    requestType: ImportPatientDto,
+    requestExample: PHASE_THREE_EXAMPLES.patient.importRequest,
+    successStatus: 201,
+  })
+  async importPatient(@Body() payload: ImportPatientDto, @AuthUser() currentUser?: CurrentUser) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const result = await this.patientManagementService.importPatient(payload, currentUser);
+
+    return {
+      data: result.patient,
+      meta: { identifierWarnings: result.identifierWarnings },
+      message: 'Patient imported',
+    };
+  }
+
+  @Get(':id/identifiers')
+  @Auth([{ action: 'read-identifier', subject: 'Patient' }])
+  @ApiEndpoint({
+    summary: 'Reveal a patient national and payer identifiers',
+    responseDescription:
+      'The decrypted identifiers. Every call is recorded as an audit event; ordinary patient responses carry masked values instead.',
+    responseExample: { data: PHASE_THREE_EXAMPLES.patient.identifiers },
+    notFoundDescription: 'Patient not found.',
+  })
+  async getPatientIdentifiers(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const identifiers = await this.patientManagementService.getPatientIdentifiers(id, currentUser);
+
+    return {
+      data: identifiers,
     };
   }
 

@@ -20,6 +20,8 @@ API (`apps/api/.env.example` is the authoritative list):
 - `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN` — e.g. `15m` / `7d`.
 - `S3_REGION`, `S3_BUCKET`, `S3_ENDPOINT`, `S3_FORCE_PATH_STYLE`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_REQUEST_TIMEOUT_MS`, `S3_SIGNED_URL_EXPIRES_IN_SECONDS`, `S3_MAX_UPLOAD_SIZE_BYTES`, `S3_ALLOWED_MIME_TYPES` — object storage.
 - `CLINIC_TIMEZONE` — IANA zone for session scheduling (e.g. `Asia/Jakarta`).
+- `PATIENT_PII_ENCRYPTION_KEY`, `PATIENT_PII_INDEX_KEY`, `PATIENT_PII_KEY_VERSION` — identifier encryption. Both keys are 32 bytes (base64 or hex), must differ from each other and from `AI_PROVIDER_ENCRYPTION_KEY`, and the API refuses to boot without them. Rotation procedures in §5.
+- `PATIENT_MRN_PREFIX`, `PATIENT_MRN_WIDTH` — medical record number format. **Set once, before the first patient exists.** Every number already allocated carries the old format, and MRNs printed on physical folders cannot be renumbered.
 - `PORT` — defaults to 3001.
 
 Web:
@@ -71,8 +73,31 @@ Application rollback and schema rollback are separate decisions — consult the 
 
 - **Seed roles/permissions baseline** (fresh environment only): `pnpm db:seed`.
 - **Logs**: API writes structured JSON lines to stdout — access logs under the `HttpAccess` context (`requestId`, `method`, `path`, `statusCode`, `durationMs`, `userId`), 5xx details under `AllExceptionsFilter`. Correlate any user report via the `X-Request-Id` response header.
-- **Audit trail**: sensitive mutations (logins, user management, role changes) are recorded in the `audit_logs` table (`actor_user_id`, `action`, `resource`, `metadata`, `occurred_at`).
+- **Audit trail**: sensitive mutations (logins, user management, role changes) are recorded in the `audit_logs` table (`actor_user_id`, `action`, `resource`, `metadata`, `occurred_at`). Identifier disclosure is audited too — `PATIENT_IDENTIFIER_UNMASKED` and `DOCTOR_IDENTIFIER_UNMASKED` name which fields were revealed and to whom, never the values; `PATIENT_MRN_IMPORTED` records legacy migrations.
 - **API docs**: Swagger UI at `/api/docs`, contract YAML at `/api/openapi.yaml`.
+
+### 5.1 Rotating `PATIENT_PII_ENCRYPTION_KEY` (ciphertext key)
+
+Incremental, resumable, and safe to run against a live database — ciphertext is per-row, so rows can move to the new key in batches.
+
+1. Deploy the new key alongside the old one and bump `PATIENT_PII_KEY_VERSION`. Keep the old key readable until step 4 completes.
+2. Batch over `patient_profiles` and `doctor_profiles` where `*_key_version` is below the new version: decrypt with the old key, re-encrypt with the new, write ciphertext and `*_key_version` in one update per row.
+3. Blind indexes are untouched — the pepper did not change, so uniqueness holds throughout and no constraint needs rebuilding.
+4. When no row remains at the old version, remove the old key from the environment.
+
+Interrupting the backfill is safe: rows are independent and `*_key_version` records exactly how far it got.
+
+### 5.2 Rotating `PATIENT_PII_INDEX_KEY` (blind-index pepper)
+
+**Expensive — plan a maintenance window, and only do this on compromise.** Recomputing an HMAC needs the plaintext, so every row must be decrypted first, and the unique constraint must hold the whole way through.
+
+1. Add a second index column per identifier (e.g. `nik_index_next`) with a unique constraint, nullable.
+2. Deploy a build that dual-writes both index columns on every write path (create, update, legacy import).
+3. Backfill `*_index_next` for existing rows: decrypt, normalise, HMAC with the new pepper. A duplicate here means two records are the same person — route them to the merge workflow rather than forcing the write.
+4. Swap reads to the new column, drop the old column and its constraint, and rename.
+5. Retire the old pepper.
+
+Never log a decrypted identifier, a key, or a pepper at any step. A lost `PATIENT_PII_ENCRYPTION_KEY` is unrecoverable data loss — key custody and backup are a precondition for going live, not a follow-up.
 
 ## 6. Post-deploy verification
 

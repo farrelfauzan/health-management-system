@@ -41,6 +41,8 @@ This is a breaking API change — regenerate the web client (`pnpm api:contract:
 
 Default to a zero-padded sequence, width configurable (`PATIENT_MRN_WIDTH`, default 8) with an optional facility prefix (`PATIENT_MRN_PREFIX`). Front-desk staff read these aloud and write them on physical folders — brevity and unambiguous characters matter more than information density.
 
+Both settings are validated at startup (width 4–18, prefix uppercase letters/digits/hyphens, max 8 characters) and are baked into every number already allocated, so they must be chosen before the first patient exists. A sequence wider than the padding is never truncated — the number simply grows.
+
 ### 2.3 Uniqueness scope
 
 `mrn` is currently globally `@unique`. In Indonesian practice MRN is **per-facility**, and `AiProviderConfig` already assumes a `facilityId` that `PatientProfile` does not have.
@@ -51,6 +53,8 @@ Decide now, in Phase 7:
 - **Multi-facility:** add `facilityId` to `PatientProfile` and switch to `@@unique([facilityId, mrn])`.
 
 Changing this after production data exists requires renumbering live records that are already printed on physical folders.
+
+**Decision (`P7-T06`): single-facility.** `PatientProfile.mrn` stays globally `@unique` and `MrnCounter` holds exactly one row, keyed by the nil-UUID sentinel `00000000-0000-0000-0000-000000000000`. The counter PK is already a UUID column, so a multi-facility deployment adds rows and switches the patient constraint without a table rewrite — the allocation statement itself does not change.
 
 ### 2.4 Atomic allocation
 
@@ -75,8 +79,8 @@ RETURNING next_value - 1 AS allocated;
 
 Rules:
 
-- Allocation runs **inside the same transaction** as the `PatientProfile` insert. A rolled-back create burns a number — that is acceptable.
-- **Gaps are permanent.** Never reuse or backfill a gap; a reused MRN silently merges two patients' histories.
+- Allocation runs **inside the same transaction** as the `PatientProfile` insert. Because the counter update is transactional, a rolled-back create rolls the increment back too and the number goes to the next caller — no hole appears. This is safe and was verified against real Postgres: the abandoned number was never committed to a record, so no folder was ever printed with it. (An earlier draft of this document assumed a rolled-back create "burns" a number; that would be true of a Postgres sequence, which is non-transactional, but not of a counter row.)
+- **A committed MRN is never reissued and never renumbered.** Gaps that do arise — from a legacy import lifting the counter, or a manual bump — are left alone; a reused MRN silently merges two patients' histories.
 - **MRN is immutable.** No update path, no admin edit. Correcting a wrong record is a merge operation, not an MRN edit.
 - **Idempotency.** Retried creates (WhatsApp draft submission, webhook redelivery) must pass an idempotency key. If a patient already exists for that key, return it — do not allocate a second MRN.
 
@@ -169,8 +173,10 @@ For SATUSEHAT resolution, decrypt the NIK in memory for the duration of the outb
 Decryption is a privileged operation, not a side effect of reading a patient.
 
 - New permission **`patient.read-identifier`** (scope `own` / `any`). Default: patients may see their own identifiers; `ADMIN` and `SUPER_ADMIN` get `any`. `DOCTOR` and `PHARMACIST` do **not** need it — clinical work uses `mrn`.
-- Responses return masked values (`nikLast4`) by default. Full values require the permission and an explicit request.
-- Every unmask emits an audit event via the existing `common/audit` infrastructure, aligning with the UU PDP field-level audit work in `P12-T05`.
+- Practitioners get a **separate** permission, **`doctor.read-identifier`** (scope `own` / `any`), rather than reusing the patient one. The storage scheme is identical, but the grants are not the same decision: an admin who may verify a patient's KTP is not automatically entitled to staff NIKs, and a doctor holding `doctor.read-identifier:own` can read back their own NIK without gaining any patient disclosure. `ADMIN` and `SUPER_ADMIN` get `any`; `DOCTOR` gets `own`.
+- Responses return masked values (`nikLast4`) by default. Full values require the permission and an explicit request — a dedicated route (`GET /patients/{id}/identifiers`, `GET /doctors/{id}/identifiers`), never a flag on the ordinary read.
+- The `own` scope means the record's `ownerUserId` and nothing else. It is deliberately **not** widened by an active doctor–patient assignment the way `patient.read` is: a treating doctor works from the MRN.
+- Every unmask emits an audit event (`PATIENT_IDENTIFIER_UNMASKED` / `DOCTOR_IDENTIFIER_UNMASKED`) via the existing `common/audit` infrastructure, recording the actor, the scope used, and which fields were revealed — never the values. This aligns with the UU PDP field-level audit work in `P12-T05`.
 
 ### 3.9 Accepted limitations
 
@@ -193,19 +199,20 @@ Any WhatsApp registration draft table storing these identifiers uses the same en
 
 Added after the existing `P7-T01`–`P7-T05`.
 
-1. `P7-T06` MRN auto-generation: `MrnCounter` migration, atomic allocation inside the create transaction, remove `mrn` from `createPatientSchema`, admin legacy-import path + `patient.import-identifier` permission, decide uniqueness scope (§2.3), regenerate the web client.
-2. `P7-T07` Identifier encryption: `NationalIdentifierCryptoService` (AES-256-GCM + HMAC blind index), `*Ciphertext` / `*Index` / `*Last4` / `keyVersion` columns, shared normaliser, `patient.read-identifier` permission + masked responses + audit hook, key-rotation runbook entries.
+1. `P7-T06` MRN auto-generation — **delivered**. `MrnCounter` migration, `MrnAllocatorRepository` (`apps/api/src/common/mrn/`) allocating inside the create transaction, `mrn` removed from `createPatientSchema`, `POST /api/v1/patients/import` + `patient.import-identifier` permission, uniqueness scope decided as single-facility (§2.3), web client regenerated.
+2. `P7-T07` Identifier encryption — **delivered**. `NationalIdentifierCryptoService` (AES-256-GCM + HMAC blind index), `*Ciphertext` / `*Index` / `*Last4` / `keyVersion` columns, shared normaliser, `patient.read-identifier` and `doctor.read-identifier` permissions, masked-by-default responses with dedicated unmask routes, audit event per disclosure, key- and pepper-rotation procedures in [deployment-runbook.md](../ops/deployment-runbook.md) §5.1–5.2.
 
 `P7-T01` changes accordingly: land the identifier columns **already encrypted**, so no plaintext window ever exists. Also reconcile the duplicate sex/gender field — `PatientProfile` already has `sex PatientSex?` with the same `MALE | FEMALE` values that `P7-T01` proposes to add as `gender`; keep exactly one, and map to FHIR `gender` in the SATUSEHAT adapter if the existing name is retained.
 
 ## 6. Testing
 
-| Level | Focus |
-| ----- | ----- |
-| Unit | Crypto round-trip; auth-tag tampering rejected; normaliser idempotence; HMAC determinism across equivalent inputs; NIK↔DOB↔gender cross-check; MRN formatting/width |
-| Concurrency | N parallel creates allocate N distinct MRNs with no duplicates (integration test against real Postgres) |
-| Integration | Duplicate NIK returns a collision rather than creating; masked-by-default responses; 403 without `patient.read-identifier`; audit row written on unmask; legacy import rejects an MRN already in use |
-| Contract | OpenAPI shows `mrn` as response-only; identifier fields masked in examples |
+| Level | Focus | Where |
+| ----- | ----- | ----- |
+| Unit | Crypto round-trip; auth-tag tampering rejected; normaliser idempotence; HMAC determinism across equivalent inputs; NIK↔DOB↔gender cross-check; MRN formatting/width/prefix validation | `national-identifier-crypto.service.spec.ts`, `mrn-allocator.repository.spec.ts`, `patient-identifier-validation.spec.ts` |
+| Concurrency | 25 parallel allocations produce 25 distinct MRNs; a rolled-back allocation returns its number; an imported MRN lifts the counter | `mrn-allocation.integration.spec.ts` — **real Postgres**, which is why CI runs `integration:test` after `prisma migrate deploy` |
+| Integration | Duplicate NIK returns a collision rather than creating; masked-by-default responses; a client-supplied `mrn` is stripped on create; 403 without `patient.read-identifier` / `doctor.read-identifier` / `patient.import-identifier`; legacy import rejects an MRN already in use | `patient-management.integration.spec.ts`, `doctor-management.integration.spec.ts` |
+| Service | Audit row written on unmask and free of the identifier value; `OWN` scope not widened by a doctor assignment | `patient-management.service.spec.ts`, `doctor-management.service.spec.ts` |
+| Contract | OpenAPI shows `mrn` as response-only; identifier fields masked in examples | `apps/api/openapi.yaml` |
 
 Never place real NIK or BPJS values in fixtures or seed data — use structurally valid synthetic values.
 

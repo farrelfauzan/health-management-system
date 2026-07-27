@@ -48,7 +48,12 @@ export type ListPatientsParams = {
 };
 
 export type CreatePatientRecordPayload = {
-  mrn: string;
+  /**
+   * Legacy import only. Omitted for an ordinary create, in which case the
+   * repository allocates the next MRN from the counter inside the same
+   * transaction as the insert.
+   */
+  mrn?: string;
   fullName: string;
   dateOfBirth: Date;
   placeOfBirth?: string;
@@ -113,6 +118,18 @@ export type PatientRecord = {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+};
+
+/**
+ * Decrypted identifiers, produced only by the repository's explicit unmask
+ * query. This is the one projection allowed to carry plaintext: it never feeds
+ * a list or detail response, is reachable only with `patient.read-identifier`,
+ * and every read of it is audited.
+ */
+export type PatientIdentifierPlaintext = {
+  nik: string | null;
+  bpjsNumber: string | null;
+  satusehatPatientId: string | null;
 };
 
 /**

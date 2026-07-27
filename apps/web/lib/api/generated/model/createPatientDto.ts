@@ -15,11 +15,6 @@ import type { CreatePatientDtoStatus } from './createPatientDtoStatus';
 
 export interface CreatePatientDto {
   /**
-     * @minLength 3
-     * @maxLength 64
-     */
-  mrn: string;
-  /**
      * @minLength 2
      * @maxLength 120
      */

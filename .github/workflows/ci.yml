@@ -56,12 +56,6 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
-      - name: Integration tests
-        run: pnpm integration:test
-
-      - name: Build
-        run: pnpm build
-
       - name: Wait for postgres
         run: |
           for i in {1..30}; do
@@ -84,6 +78,15 @@ jobs:
 
       - name: Prisma schema drift check
         run: pnpm --filter @hms/api exec prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
+
+      # Runs after migrate deploy: MRN allocation is proven against real
+      # Postgres, because the row lock that serialises concurrent registrations
+      # only exists in the database.
+      - name: Integration tests
+        run: pnpm integration:test
+
+      - name: Build
+        run: pnpm build
 
       - name: API docker build
         run: docker build -f infra/docker/api/Dockerfile.dev .

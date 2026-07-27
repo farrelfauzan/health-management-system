@@ -28,6 +28,7 @@ describe('PatientManagement integration', () => {
     findActiveUserById: jest.fn(),
     findActiveDoctorsByIds: jest.fn(),
     hasActiveAssignmentWithDoctorUser: jest.fn(),
+    findPatientIdentifiers: jest.fn(),
     createPatient: jest.fn(),
     updatePatient: jest.fn(),
   };
@@ -81,7 +82,7 @@ describe('PatientManagement integration', () => {
     patientRepositoryMock.findActiveUserById.mockResolvedValue(null);
     patientRepositoryMock.createPatient.mockResolvedValue({
       id: '5bd5e23d-098a-4ee6-a777-cf5f850ece2f',
-      mrn: 'MRN-1001',
+      mrn: '00001001',
       fullName: 'Patient One',
       dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
       placeOfBirth: null,
@@ -265,54 +266,150 @@ describe('PatientManagement integration', () => {
     expect(response.status).toBe(403);
   });
 
-  it('returns 409 when creating patient with duplicate MRN', async () => {
-    const token = await jwtService.signAsync(
-      {
-        sub: 'admin-user',
-        email: 'admin@hms.local',
-      },
-      {
-        secret: 'dev-access-secret',
-      },
-    );
-
-    authRepositoryMock.findUserById.mockResolvedValue({
-      id: 'admin-user',
-      roles: [
-        {
-          role: {
-            code: 'ADMIN',
-            permissions: [
-              {
-                permission: {
-                  action: 'create',
-                  resource: 'Patient',
-                  scope: 'ANY',
-                },
-              },
-            ],
+  describe('medical record numbers', () => {
+    async function signTokenWith(
+      permissions: Array<{ action: string; resource: string; scope: 'ANY' | 'OWN' }>,
+    ): Promise<string> {
+      authRepositoryMock.findUserById.mockResolvedValue({
+        id: 'admin-user',
+        roles: [
+          {
+            role: {
+              code: 'ADMIN',
+              permissions: permissions.map((permission) => ({ permission })),
+            },
           },
-        },
-      ],
-    });
-
-    patientRepositoryMock.findPatientByMrn.mockResolvedValue({
-      id: 'existing-patient',
-    });
-
-    const response = await request(app.getHttpServer())
-      .post('/api/v1/v1/patients')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        mrn: 'MRN-1001',
-        fullName: 'Patient One',
-        dateOfBirth: '1990-01-01',
-        sex: 'MALE',
-        phoneNumber: '123456',
-        address: 'Main Street',
+        ],
       });
 
-    expect(response.status).toBe(409);
+      return jwtService.signAsync(
+        { sub: 'admin-user', email: 'admin@hms.local' },
+        { secret: 'dev-access-secret' },
+      );
+    }
+
+    it('rejects a client-supplied MRN on the create route', async () => {
+      const token = await signTokenWith([
+        { action: 'create', resource: 'Patient', scope: 'ANY' },
+      ]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'MRN-1001',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '123456',
+          address: 'Main Street',
+        });
+
+      expect(response.status).toBe(201);
+      // Stripped by the schema, never forwarded to the repository — the MRN on
+      // the response is the one the counter allocated.
+      expect(patientRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({ mrn: undefined }),
+      );
+      expect(response.body.data.mrn).toBe('00001001');
+    });
+
+    it('returns 403 on the import route without patient.import-identifier', async () => {
+      const token = await signTokenWith([
+        { action: 'create', resource: 'Patient', scope: 'ANY' },
+      ]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients/import')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'RM-2019-0417',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '123456',
+          address: 'Main Street',
+        });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('imports a legacy MRN verbatim', async () => {
+      const token = await signTokenWith([
+        { action: 'import-identifier', resource: 'Patient', scope: 'ANY' },
+      ]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients/import')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'RM-2019-0417',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '123456',
+          address: 'Main Street',
+        });
+
+      expect(response.status).toBe(201);
+      expect(patientRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({ mrn: 'RM-2019-0417' }),
+      );
+    });
+
+    it('returns 409 when an imported MRN is already in use', async () => {
+      const token = await signTokenWith([
+        { action: 'import-identifier', resource: 'Patient', scope: 'ANY' },
+      ]);
+
+      patientRepositoryMock.findPatientByMrn.mockResolvedValue({ id: 'existing-patient' });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients/import')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'RM-2019-0417',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '123456',
+          address: 'Main Street',
+        });
+
+      expect(response.status).toBe(409);
+      expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
+
+    it('returns 403 on the unmask route without patient.read-identifier', async () => {
+      const token = await signTokenWith([{ action: 'read', resource: 'Patient', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/patients/f746de50-6b45-4351-9bb6-45aeb3f671f9/identifiers')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(403);
+      expect(patientRepositoryMock.findPatientIdentifiers).not.toHaveBeenCalled();
+    });
+
+    it('returns the decrypted identifiers with patient.read-identifier', async () => {
+      const token = await signTokenWith([
+        { action: 'read-identifier', resource: 'Patient', scope: 'ANY' },
+      ]);
+
+      patientRepositoryMock.findPatientIdentifiers.mockResolvedValue({
+        nik: '3201015205900001',
+        bpjsNumber: null,
+        satusehatPatientId: null,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/patients/f746de50-6b45-4351-9bb6-45aeb3f671f9/identifiers')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.nik).toBe('3201015205900001');
+      expect(response.body.data.bpjsNumber).toBeUndefined();
+    });
   });
 
   describe('national and payer identifiers', () => {

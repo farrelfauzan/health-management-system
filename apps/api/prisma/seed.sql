@@ -50,10 +50,15 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('patient.create:any', 'Patient', 'create', 'ANY', 'Create patients'),
     ('patient.update:any', 'Patient', 'update', 'ANY', 'Update all patients'),
     ('patient.update:own', 'Patient', 'update', 'OWN', 'Update own patient profile'),
+    ('patient.read-identifier:any', 'Patient', 'read-identifier', 'ANY', 'Reveal any patient NIK and BPJS number'),
+    ('patient.read-identifier:own', 'Patient', 'read-identifier', 'OWN', 'Reveal own NIK and BPJS number'),
+    ('patient.import-identifier:any', 'Patient', 'import-identifier', 'ANY', 'Import patients with an existing medical record number'),
     ('doctor.read:any', 'Doctor', 'read', 'ANY', 'Read doctor profiles'),
     ('doctor.create:any', 'Doctor', 'create', 'ANY', 'Create doctor profiles'),
     ('doctor.update:any', 'Doctor', 'update', 'ANY', 'Update all doctor profiles'),
     ('doctor.update:own', 'Doctor', 'update', 'OWN', 'Update own doctor profile'),
+    ('doctor.read-identifier:any', 'Doctor', 'read-identifier', 'ANY', 'Reveal any practitioner NIK'),
+    ('doctor.read-identifier:own', 'Doctor', 'read-identifier', 'OWN', 'Reveal own practitioner NIK'),
     ('doctor-patient.assign:any', 'DoctorPatient', 'assign', 'ANY', 'Assign doctors to patients'),
     ('doctor-patient.unassign:any', 'DoctorPatient', 'unassign', 'ANY', 'Unassign doctor-patient assignments'),
     ('doctor-patient.activity.read:any', 'DoctorPatientActivity', 'read', 'ANY', 'Read doctor-patient assignment activity log'),
@@ -129,6 +134,12 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'patient.read:any'),
     ('ADMIN', 'patient.create:any'),
     ('ADMIN', 'patient.update:any'),
+    -- Unmasking is deliberately narrow: front-desk admins verify a KTP against
+    -- the record and migrate legacy folders; doctors and pharmacists work from
+    -- the MRN and get neither grant.
+    ('ADMIN', 'patient.read-identifier:any'),
+    ('ADMIN', 'patient.import-identifier:any'),
+    ('ADMIN', 'doctor.read-identifier:any'),
     ('ADMIN', 'doctor.read:any'),
     ('ADMIN', 'doctor.create:any'),
     ('ADMIN', 'doctor.update:any'),
@@ -158,6 +169,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'auth.logout:own'),
     ('DOCTOR', 'patient.read:own'),
     ('DOCTOR', 'doctor.read:any'),
+    ('DOCTOR', 'doctor.read-identifier:own'),
     ('DOCTOR', 'doctor.schedule.write:own'),
     ('DOCTOR', 'appointment.read:own'),
     ('DOCTOR', 'appointment.create:own'),
@@ -180,6 +192,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PATIENT', 'auth.logout:own'),
     ('PATIENT', 'patient.read:own'),
     ('PATIENT', 'patient.update:own'),
+    ('PATIENT', 'patient.read-identifier:own'),
     ('PATIENT', 'doctor.read:any'),
     ('PATIENT', 'appointment.read:own'),
     ('PATIENT', 'appointment.create:own'),
@@ -225,6 +238,11 @@ WHERE rp."role_id" = r."id"
   AND p."permission_key" = 'patient.read:any';
 
 -- Development demo patients. Replace or remove this block for production seeds.
+-- These MRNs keep their legacy `MRN-000n` shape deliberately: row ids are
+-- derived from the MRN (`md5('patient:' || mrn)`), so renaming them would add a
+-- second set of demo patients to every existing dev database rather than
+-- updating the current one. They stand in for the legacy-import case; numbers
+-- the server allocates look like `00000006`.
 WITH seed_patients(mrn, full_name, date_of_birth, sex, status, phone_number, address) AS (
   VALUES
     ('MRN-0001', 'Budi Santoso', '1985-03-12', 'MALE', 'OUT_PATIENT', '+62-812-1000-0001', 'Jl. Merdeka No. 12, Jakarta Pusat'),
@@ -274,6 +292,33 @@ SET
   "is_active" = true,
   "updated_at" = NOW(),
   "deleted_at" = NULL;
+
+-- Keep the MRN counter ahead of every seeded record. Without this the first
+-- API-created patient would be handed a number the seed already used, and the
+-- unique constraint would reject an otherwise valid registration. Idempotent
+-- and monotonic: re-running the seed never moves the counter backwards.
+INSERT INTO "mrn_counters" ("facility_id", "next_value", "updated_at")
+VALUES ('00000000-0000-0000-0000-000000000000'::uuid, 1, NOW())
+ON CONFLICT ("facility_id") DO NOTHING;
+
+UPDATE "mrn_counters"
+SET
+  "next_value" = GREATEST(
+    "next_value",
+    COALESCE(
+      (
+        SELECT MAX("digits"::bigint)
+        FROM (
+          SELECT regexp_replace("mrn", '\D', '', 'g') AS "digits"
+          FROM "patient_profiles"
+        ) AS "extracted"
+        WHERE "digits" <> '' AND length("digits") <= 18
+      ),
+      0
+    ) + 1
+  ),
+  "updated_at" = NOW()
+WHERE "facility_id" = '00000000-0000-0000-0000-000000000000'::uuid;
 
 -- Specialty catalog baseline. Safe to re-run; keeps names unique and revives soft-deleted rows.
 WITH seed_specialties(name) AS (

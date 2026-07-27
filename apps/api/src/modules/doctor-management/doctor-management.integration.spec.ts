@@ -29,6 +29,7 @@ describe('DoctorManagement integration', () => {
     findActiveUserById: jest.fn(),
     findActiveSpecialtyById: jest.fn(),
     findActivePatientsByIds: jest.fn(),
+    findDoctorIdentifiers: jest.fn(),
     createDoctor: jest.fn(),
     replaceDoctorSchedules: jest.fn(),
   };
@@ -252,6 +253,36 @@ describe('DoctorManagement integration', () => {
       entries: [
         { dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true, maxPatients: null },
       ],
+    });
+  });
+  describe('practitioner identifier unmasking', () => {
+    it('returns 403 without doctor.read-identifier', async () => {
+      mockActorWithPermissions([{ action: 'read', resource: 'Doctor', scope: 'ANY' }]);
+      const token = await buildToken('actor-user', 'admin@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/v1/doctors/${doctorId}/identifiers`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(403);
+      expect(doctorRepositoryMock.findDoctorIdentifiers).not.toHaveBeenCalled();
+    });
+
+    it('returns the decrypted practitioner NIK with doctor.read-identifier', async () => {
+      mockActorWithPermissions([
+        { action: 'read-identifier', resource: 'Doctor', scope: 'ANY' },
+      ]);
+      doctorRepositoryMock.findDoctorIdentifiers.mockResolvedValue({
+        nik: '3173011503800002',
+      });
+      const token = await buildToken('actor-user', 'admin@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/v1/doctors/${doctorId}/identifiers`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({ id: doctorId, nik: '3173011503800002' });
     });
   });
 });

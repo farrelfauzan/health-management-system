@@ -63,7 +63,6 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
   });
   const form = useForm({
     defaultValues: {
-      mrn: patient?.mrn ?? '',
       fullName: patient?.fullName ?? '',
       dateOfBirth: patient?.dateOfBirth ?? '',
       sex: patient?.sex ?? '',
@@ -90,7 +89,6 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
           parseApiSuccess<PatientProfile>(response, SAVE_ERROR_FALLBACK);
         } else {
           const response = await createMutation.mutateAsync({
-            mrn: value.mrn,
             fullName: value.fullName,
             dateOfBirth: value.dateOfBirth,
             sex: value.sex as CreatePatientInput['sex'],
@@ -141,28 +139,17 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
             </p>
           ) : null}
 
-          {!isEditMode ? (
-            <form.Field name="mrn" validators={{ onSubmit: createPatientSchema.shape.mrn }}>
-              {(field) => (
-                <div className="space-y-1.5">
-                  <label
-                    htmlFor={field.name}
-                    className="block font-heading text-xs font-medium text-slate-600"
-                  >
-                    Patient ID (MRN)
-                  </label>
-                  <Input
-                    id={field.name}
-                    value={field.state.value}
-                    placeholder="MRN-2026-0001"
-                    onChange={(event) => field.handleChange(event.target.value)}
-                    onBlur={field.handleBlur}
-                    aria-invalid={field.state.meta.errors.length > 0}
-                  />
-                  <FieldError errors={field.state.meta.errors} />
-                </div>
-              )}
-            </form.Field>
+          {/* No MRN field: the server allocates it on create and it can never be
+              edited afterwards — correcting a record is a merge, not a renumber. */}
+          {isEditMode && patient ? (
+            <div className="space-y-1.5">
+              <span className="block font-heading text-xs font-medium text-slate-600">
+                Patient ID (MRN)
+              </span>
+              <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-700">
+                {patient.mrn}
+              </p>
+            </div>
           ) : null}
 
           <form.Field name="fullName" validators={{ onSubmit: createPatientSchema.shape.fullName }}>
