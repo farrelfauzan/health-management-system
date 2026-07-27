@@ -171,3 +171,41 @@ export const DispenseStatus = {
 } as const
 
 export type DispenseStatus = (typeof DispenseStatus)[keyof typeof DispenseStatus]
+
+
+export const MedicationUnit = {
+  TABLET: 'TABLET',
+  KAPSUL: 'KAPSUL',
+  KAPLET: 'KAPLET',
+  SACHET: 'SACHET',
+  AMPUL: 'AMPUL',
+  VIAL: 'VIAL',
+  BOTOL: 'BOTOL',
+  TUBE: 'TUBE',
+  STRIP: 'STRIP',
+  BOX: 'BOX',
+  PCS: 'PCS',
+  ML: 'ML',
+  MG: 'MG',
+  GRAM: 'GRAM',
+  MCG: 'MCG',
+  IU: 'IU',
+  TETES: 'TETES',
+  SUPOSITORIA: 'SUPOSITORIA'
+} as const
+
+export type MedicationUnit = (typeof MedicationUnit)[keyof typeof MedicationUnit]
+
+
+export const MedicationCategory = {
+  OBAT_BEBAS: 'OBAT_BEBAS',
+  OBAT_BEBAS_TERBATAS: 'OBAT_BEBAS_TERBATAS',
+  OBAT_KERAS: 'OBAT_KERAS',
+  PSIKOTROPIKA: 'PSIKOTROPIKA',
+  NARKOTIKA: 'NARKOTIKA',
+  OBAT_HERBAL: 'OBAT_HERBAL',
+  SUPLEMEN: 'SUPLEMEN',
+  ALAT_KESEHATAN: 'ALAT_KESEHATAN'
+} as const
+
+export type MedicationCategory = (typeof MedicationCategory)[keyof typeof MedicationCategory]

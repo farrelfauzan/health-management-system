@@ -477,6 +477,40 @@ export type EnumRegistrationStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumRegistrationStatusFilter<$PrismaModel>
 }
 
+export type EnumMedicationUnitNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicationUnit | Prisma.EnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicationUnit[] | Prisma.ListEnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicationUnit[] | Prisma.ListEnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicationUnitNullableFilter<$PrismaModel> | $Enums.MedicationUnit | null
+}
+
+export type EnumMedicationCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicationCategory | Prisma.EnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicationCategory[] | Prisma.ListEnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicationCategory[] | Prisma.ListEnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicationCategoryNullableFilter<$PrismaModel> | $Enums.MedicationCategory | null
+}
+
+export type EnumMedicationUnitNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicationUnit | Prisma.EnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicationUnit[] | Prisma.ListEnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicationUnit[] | Prisma.ListEnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicationUnitNullableWithAggregatesFilter<$PrismaModel> | $Enums.MedicationUnit | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMedicationUnitNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMedicationUnitNullableFilter<$PrismaModel>
+}
+
+export type EnumMedicationCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicationCategory | Prisma.EnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicationCategory[] | Prisma.ListEnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicationCategory[] | Prisma.ListEnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicationCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.MedicationCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMedicationCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMedicationCategoryNullableFilter<$PrismaModel>
+}
+
 export type EnumPrescriptionStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.PrescriptionStatus | Prisma.EnumPrescriptionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
@@ -1066,6 +1100,40 @@ export type NestedEnumRegistrationStatusWithAggregatesFilter<$PrismaModel = neve
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumRegistrationStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumRegistrationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumMedicationUnitNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicationUnit | Prisma.EnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicationUnit[] | Prisma.ListEnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicationUnit[] | Prisma.ListEnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicationUnitNullableFilter<$PrismaModel> | $Enums.MedicationUnit | null
+}
+
+export type NestedEnumMedicationCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicationCategory | Prisma.EnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicationCategory[] | Prisma.ListEnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicationCategory[] | Prisma.ListEnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicationCategoryNullableFilter<$PrismaModel> | $Enums.MedicationCategory | null
+}
+
+export type NestedEnumMedicationUnitNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicationUnit | Prisma.EnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicationUnit[] | Prisma.ListEnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicationUnit[] | Prisma.ListEnumMedicationUnitFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicationUnitNullableWithAggregatesFilter<$PrismaModel> | $Enums.MedicationUnit | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMedicationUnitNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMedicationUnitNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumMedicationCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MedicationCategory | Prisma.EnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.MedicationCategory[] | Prisma.ListEnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.MedicationCategory[] | Prisma.ListEnumMedicationCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumMedicationCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.MedicationCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMedicationCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMedicationCategoryNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumPrescriptionStatusFilter<$PrismaModel = never> = {

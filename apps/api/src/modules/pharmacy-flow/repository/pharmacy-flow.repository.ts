@@ -1,15 +1,20 @@
 import {
   CreateDispenseRecordPayload,
+  CreateMedicationRecordPayload,
   CreatePrescriptionRecordPayload,
   ListMedicationsParams,
   ListPrescriptionsParams,
   resolvePrescriptionStatusAfterDispense,
+  UpdateMedicationRecordPayload,
 } from '@hms/shared-types';
 import { ConflictException, Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma } from '../../../generated/prisma/client';
+import { MedicationIdentifierConflictError } from './medication-identifier-conflict.error';
+
+const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
 
 const MEDICATION_PROJECTION_SELECT = {
   id: true,
@@ -73,20 +78,57 @@ const DISPENSE_DETAIL_INCLUDE = {
   },
 } satisfies Prisma.DispenseRecordInclude;
 
+function isUniqueConstraintErrorOn(err: unknown, target: string): boolean {
+  if (typeof err !== 'object' || err === null) {
+    return false;
+  }
+  const candidate = err as { code?: unknown; meta?: { target?: unknown } };
+  if (candidate.code !== UNIQUE_CONSTRAINT_ERROR_CODE) {
+    return false;
+  }
+  const targets = candidate.meta?.target;
+  if (Array.isArray(targets)) {
+    return targets.includes(target);
+  }
+  return typeof targets === 'string' && targets.includes(target);
+}
+
+/**
+ * Translates the database-level uniqueness race — two concurrent writes with the
+ * same catalog or KFA code both passing the service pre-check — into the same
+ * conflict the pre-check raises. The KFA variants are matched first because
+ * `kfa_code` contains `code` as a substring.
+ */
+function rethrowMedicationIdentifierConflict(err: unknown): never {
+  if (
+    isUniqueConstraintErrorOn(err, 'kfa_code') ||
+    isUniqueConstraintErrorOn(err, 'kfaCode') ||
+    isUniqueConstraintErrorOn(err, 'medications_kfa_code_key')
+  ) {
+    throw new MedicationIdentifierConflictError('kfaCode');
+  }
+  if (isUniqueConstraintErrorOn(err, 'code')) {
+    throw new MedicationIdentifierConflictError('code');
+  }
+  throw err;
+}
+
 @Injectable()
 export class PharmacyFlowRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listMedications(params: ListMedicationsParams) {
-    const { page, limit, search } = params;
+    const { page, limit, search, category } = params;
     const skip = (page - 1) * limit;
 
     const where = {
+      ...(category ? { category } : {}),
       ...(search
         ? {
             OR: [
               { name: { contains: search, mode: 'insensitive' as const } },
               { code: { contains: search, mode: 'insensitive' as const } },
+              { kfaCode: { contains: search, mode: 'insensitive' as const } },
             ],
           }
         : {}),
@@ -152,6 +194,73 @@ export class PharmacyFlowRepository {
       page,
       limit,
     };
+  }
+
+  async findMedicationById(id: string) {
+    return this.prisma.findUniqueActive(this.prisma.medication, {
+      where: {
+        id,
+      },
+    });
+  }
+
+  async findMedicationByCode(code: string) {
+    return this.prisma.findFirstActive(this.prisma.medication, {
+      where: {
+        code,
+      },
+      select: {
+        id: true,
+      },
+    });
+  }
+
+  async findMedicationByKfaCode(kfaCode: string) {
+    return this.prisma.findFirstActive(this.prisma.medication, {
+      where: {
+        kfaCode,
+      },
+      select: {
+        id: true,
+      },
+    });
+  }
+
+  async createMedication(payload: CreateMedicationRecordPayload) {
+    return this.prisma.medication
+      .create({
+        data: {
+          code: payload.code,
+          kfaCode: payload.kfaCode ?? null,
+          name: payload.name,
+          form: payload.form ?? null,
+          strength: payload.strength ?? null,
+          unit: payload.unit ?? null,
+          category: payload.category ?? null,
+          stockQty: payload.stockQty,
+        },
+      })
+      .catch(rethrowMedicationIdentifierConflict);
+  }
+
+  async updateMedication(id: string, payload: UpdateMedicationRecordPayload) {
+    return this.prisma.medication
+      .update({
+        where: {
+          id,
+        },
+        data: {
+          ...(payload.code !== undefined ? { code: payload.code } : {}),
+          ...(payload.kfaCode !== undefined ? { kfaCode: payload.kfaCode } : {}),
+          ...(payload.name !== undefined ? { name: payload.name } : {}),
+          ...(payload.form !== undefined ? { form: payload.form } : {}),
+          ...(payload.strength !== undefined ? { strength: payload.strength } : {}),
+          ...(payload.unit !== undefined ? { unit: payload.unit } : {}),
+          ...(payload.category !== undefined ? { category: payload.category } : {}),
+          ...(payload.stockQty !== undefined ? { stockQty: payload.stockQty } : {}),
+        },
+      })
+      .catch(rethrowMedicationIdentifierConflict);
   }
 
   async findActiveMedicationsByIds(medicationIds: string[]) {

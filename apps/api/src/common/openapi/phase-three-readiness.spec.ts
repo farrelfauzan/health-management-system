@@ -82,6 +82,8 @@ const expectedOperations: readonly ExpectedOperation[] = [
   operation(RegistrationFlowController, 'createRegistration', 'post', '/api/v1/registrations', 'create', 'Registration', true),
   operation(RegistrationFlowController, 'updateRegistration', 'patch', '/api/v1/registrations/{id}', 'update', 'Registration', true),
   operation(MedicationController, 'listMedications', 'get', '/api/v1/medications', 'read', 'Medication'),
+  operation(MedicationController, 'createMedication', 'post', '/api/v1/medications', 'create', 'Medication', true),
+  operation(MedicationController, 'updateMedication', 'patch', '/api/v1/medications/{id}', 'update', 'Medication', true),
   operation(PrescriptionController, 'createPrescription', 'post', '/api/v1/prescriptions', 'write', 'Prescription', true),
   operation(DispenseController, 'createDispense', 'post', '/api/v1/dispenses', 'write', 'DispenseRecord', true),
   operation(RbacController, 'getRoles', 'get', '/api/v1/rbac/roles', 'read', 'Role'),

@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type MedicationControllerListMedicationsV1200DataItem = {
+export type MedicationControllerUpdateMedicationV1200Data = {
   id: string;
   code: string;
   kfaCode: string;

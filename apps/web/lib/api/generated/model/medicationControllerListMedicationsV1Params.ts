@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { MedicationControllerListMedicationsV1Category } from './medicationControllerListMedicationsV1Category';
 
 export type MedicationControllerListMedicationsV1Params = {
 /**
@@ -21,4 +22,5 @@ limit?: number;
  * @maxLength 100
  */
 search?: string;
+category?: MedicationControllerListMedicationsV1Category;
 };

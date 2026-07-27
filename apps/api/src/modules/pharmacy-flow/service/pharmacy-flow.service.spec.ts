@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { MedicationIdentifierConflictError } from '../repository/medication-identifier-conflict.error';
 import { PharmacyFlowRepository } from '../repository/pharmacy-flow.repository';
 import { PharmacyFlowService } from './pharmacy-flow.service';
 
@@ -42,6 +43,11 @@ function buildActor(
 describe('PharmacyFlowService', () => {
   const pharmacyFlowRepositoryMock = {
     listMedications: jest.fn(),
+    findMedicationById: jest.fn(),
+    findMedicationByCode: jest.fn(),
+    findMedicationByKfaCode: jest.fn(),
+    createMedication: jest.fn(),
+    updateMedication: jest.fn(),
     listPrescriptions: jest.fn(),
     findActiveMedicationsByIds: jest.fn(),
     findActivePatientById: jest.fn(),
@@ -73,10 +79,12 @@ describe('PharmacyFlowService', () => {
   const medicationRecord = {
     id: medicationId,
     code: 'MED-0001',
+    kfaCode: '93000001',
     name: 'Amoxicillin',
     form: 'capsule',
-    strength: '500',
-    unit: 'mg',
+    strength: '500 mg',
+    unit: 'KAPSUL',
+    category: 'OBAT_KERAS',
     stockQty: 100,
     createdAt: new Date('2026-07-19T08:00:00.000Z'),
     updatedAt: new Date('2026-07-19T08:00:00.000Z'),
@@ -150,6 +158,11 @@ describe('PharmacyFlowService', () => {
 
   const repositoryMock = pharmacyFlowRepositoryMock as unknown as {
     listMedications: jest.Mock;
+    findMedicationById: jest.Mock;
+    findMedicationByCode: jest.Mock;
+    findMedicationByKfaCode: jest.Mock;
+    createMedication: jest.Mock;
+    updateMedication: jest.Mock;
     listPrescriptions: jest.Mock;
     findActiveMedicationsByIds: jest.Mock;
     findActivePatientById: jest.Mock;
@@ -183,6 +196,11 @@ describe('PharmacyFlowService', () => {
       page: 1,
       limit: 10,
     });
+    repositoryMock.findMedicationById.mockResolvedValue(medicationRecord);
+    repositoryMock.findMedicationByCode.mockResolvedValue(null);
+    repositoryMock.findMedicationByKfaCode.mockResolvedValue(null);
+    repositoryMock.createMedication.mockResolvedValue(medicationRecord);
+    repositoryMock.updateMedication.mockResolvedValue(medicationRecord);
     repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
       {
         id: medicationId,
@@ -234,6 +252,163 @@ describe('PharmacyFlowService', () => {
         page: 1,
         limit: 10,
         search: 'amox',
+        category: undefined,
+      });
+    });
+
+    it('forwards the category filter to the repository', async () => {
+      mockPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      await service.listMedications({ page: 1, limit: 10, category: 'OBAT_KERAS' }, currentUser);
+
+      expect(repositoryMock.listMedications).toHaveBeenCalledWith({
+        page: 1,
+        limit: 10,
+        search: undefined,
+        category: 'OBAT_KERAS',
+      });
+    });
+
+    it('maps the catalog fields onto the medication response', async () => {
+      mockPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      const actualResult = await service.listMedications({ page: 1, limit: 10 }, currentUser);
+
+      expect(actualResult.items[0]).toMatchObject({
+        kfaCode: '93000001',
+        unit: 'KAPSUL',
+        category: 'OBAT_KERAS',
+      });
+    });
+  });
+
+  describe('createMedication', () => {
+    const createInput = {
+      code: 'MED-0001',
+      kfaCode: '93000001',
+      name: 'Amoxicillin',
+      form: 'capsule',
+      strength: '500 mg',
+      unit: 'KAPSUL' as const,
+      category: 'OBAT_KERAS' as const,
+      stockQty: 100,
+    };
+
+    it('throws forbidden when actor lacks medication.create:any permission', async () => {
+      mockPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      await expect(service.createMedication(createInput, currentUser)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
+
+    it('creates a medication with medication.create:any permission', async () => {
+      mockPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+
+      const actualResult = await service.createMedication(createInput, currentUser);
+
+      expect(repositoryMock.createMedication).toHaveBeenCalledWith(createInput);
+      expect(actualResult.code).toBe('MED-0001');
+      expect(actualResult.kfaCode).toBe('93000001');
+    });
+
+    it('rejects a duplicate catalog code', async () => {
+      mockPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+      repositoryMock.findMedicationByCode.mockResolvedValue({ id: otherMedicationId });
+
+      await expect(service.createMedication(createInput, currentUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+      expect(repositoryMock.createMedication).not.toHaveBeenCalled();
+    });
+
+    it('rejects a duplicate KFA code', async () => {
+      mockPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+      repositoryMock.findMedicationByKfaCode.mockResolvedValue({ id: otherMedicationId });
+
+      await expect(service.createMedication(createInput, currentUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+      expect(repositoryMock.createMedication).not.toHaveBeenCalled();
+    });
+
+    it('maps a repository uniqueness race onto a conflict', async () => {
+      mockPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+      repositoryMock.createMedication.mockRejectedValue(
+        new MedicationIdentifierConflictError('kfaCode'),
+      );
+
+      await expect(service.createMedication(createInput, currentUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+    });
+  });
+
+  describe('updateMedication', () => {
+    it('throws forbidden when actor lacks medication.update:any permission', async () => {
+      mockPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      await expect(
+        service.updateMedication(medicationId, { stockQty: 50 }, currentUser),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('throws not found when the medication does not exist', async () => {
+      mockPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+      repositoryMock.findMedicationById.mockResolvedValue(null);
+
+      await expect(
+        service.updateMedication(medicationId, { stockQty: 50 }, currentUser),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('updates a medication with medication.update:any permission', async () => {
+      mockPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+
+      const actualResult = await service.updateMedication(
+        medicationId,
+        { category: 'OBAT_BEBAS', stockQty: 50 },
+        currentUser,
+      );
+
+      expect(repositoryMock.updateMedication).toHaveBeenCalledWith(medicationId, {
+        category: 'OBAT_BEBAS',
+        stockQty: 50,
+      });
+      expect(actualResult.id).toBe(medicationId);
+    });
+
+    it('skips the uniqueness pre-check when the codes are unchanged', async () => {
+      mockPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+
+      await service.updateMedication(
+        medicationId,
+        { code: 'MED-0001', kfaCode: '93000001' },
+        currentUser,
+      );
+
+      expect(repositoryMock.findMedicationByCode).not.toHaveBeenCalled();
+      expect(repositoryMock.findMedicationByKfaCode).not.toHaveBeenCalled();
+    });
+
+    it('rejects a KFA code already used by another medication', async () => {
+      mockPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+      repositoryMock.findMedicationByKfaCode.mockResolvedValue({ id: otherMedicationId });
+
+      await expect(
+        service.updateMedication(medicationId, { kfaCode: '93000002' }, currentUser),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(repositoryMock.updateMedication).not.toHaveBeenCalled();
+    });
+
+    it('clears the KFA code when it is explicitly nulled', async () => {
+      mockPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+
+      await service.updateMedication(medicationId, { kfaCode: null }, currentUser);
+
+      expect(repositoryMock.findMedicationByKfaCode).not.toHaveBeenCalled();
+      expect(repositoryMock.updateMedication).toHaveBeenCalledWith(medicationId, {
+        kfaCode: null,
       });
     });
   });

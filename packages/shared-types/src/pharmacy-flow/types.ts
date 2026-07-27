@@ -1,9 +1,15 @@
-import type { DispenseStatusValue, PrescriptionStatusValue } from '#pharmacy-flow/schemas';
+import type {
+  DispenseStatusValue,
+  MedicationCategoryValue,
+  MedicationUnitValue,
+  PrescriptionStatusValue,
+} from '#pharmacy-flow/schemas';
 
 export type ListMedicationsParams = {
   page: number;
   limit: number;
   search?: string;
+  category?: MedicationCategoryValue;
 };
 
 export type ListPrescriptionsParams = {
@@ -18,13 +24,37 @@ export type ListPrescriptionsParams = {
 export type MedicationRecord = {
   id: string;
   code: string;
+  kfaCode: string | null;
   name: string;
   form: string | null;
   strength: string | null;
-  unit: string | null;
+  unit: MedicationUnitValue | null;
+  category: MedicationCategoryValue | null;
   stockQty: number;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type CreateMedicationRecordPayload = {
+  code: string;
+  kfaCode?: string;
+  name: string;
+  form?: string;
+  strength?: string;
+  unit?: MedicationUnitValue;
+  category?: MedicationCategoryValue;
+  stockQty: number;
+};
+
+export type UpdateMedicationRecordPayload = {
+  code?: string;
+  kfaCode?: string | null;
+  name?: string;
+  form?: string | null;
+  strength?: string | null;
+  unit?: MedicationUnitValue | null;
+  category?: MedicationCategoryValue | null;
+  stockQty?: number;
 };
 
 export type MedicationStockRecord = {

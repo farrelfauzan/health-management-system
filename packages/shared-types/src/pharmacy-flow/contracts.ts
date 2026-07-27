@@ -1,12 +1,19 @@
-import type { DispenseStatusValue, PrescriptionStatusValue } from '#pharmacy-flow/schemas';
+import type {
+  DispenseStatusValue,
+  MedicationCategoryValue,
+  MedicationUnitValue,
+  PrescriptionStatusValue,
+} from '#pharmacy-flow/schemas';
 
 export type MedicationResponse = {
   id: string;
   code: string;
+  kfaCode?: string;
   name: string;
   form?: string;
   strength?: string;
-  unit?: string;
+  unit?: MedicationUnitValue;
+  category?: MedicationCategoryValue;
   stockQty: number;
   createdAt: string;
   updatedAt: string;

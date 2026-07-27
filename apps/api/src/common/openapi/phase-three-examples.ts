@@ -167,16 +167,39 @@ const registration = {
   createdAt: timestamp,
   updatedAt: timestamp,
 };
+// Synthetic KFA code: structurally valid (numeric) but not a real Kemenkes
+// catalog entry.
+const kfaCode = '93000001';
+
 const medication = {
   id: medicationId,
   code: 'MED-PARA-500',
+  kfaCode,
   name: 'Paracetamol',
   form: 'Tablet',
   strength: '500 mg',
-  unit: 'tablet',
+  unit: 'TABLET',
+  category: 'OBAT_BEBAS',
   stockQty: 250,
   createdAt: timestamp,
   updatedAt: timestamp,
+};
+
+const medicationCreateRequest = {
+  code: 'MED-PARA-500',
+  kfaCode,
+  name: 'Paracetamol',
+  form: 'Tablet',
+  strength: '500 mg',
+  unit: 'TABLET',
+  category: 'OBAT_BEBAS',
+  stockQty: 250,
+};
+
+const medicationUpdateRequest = {
+  name: 'Paracetamol 500 mg',
+  category: 'OBAT_BEBAS',
+  stockQty: 300,
 };
 
 export const PHASE_THREE_EXAMPLES = {
@@ -451,6 +474,8 @@ export const PHASE_THREE_EXAMPLES = {
   },
   pharmacy: {
     medication,
+    medicationCreateRequest,
+    medicationUpdateRequest,
     prescriptionRequest: {
       patientId,
       doctorId,
