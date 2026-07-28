@@ -1,4 +1,6 @@
 import type { DiagnosisTypeValue, EncounterStatusValue } from '#emr/schemas';
+import type { PrescriptionStatusValue } from '#pharmacy-flow/schemas';
+import type { RegistrationStatusValue } from '#registration-flow/schemas';
 
 /**
  * The narrative half of an encounter record. Free text by design: the coded
@@ -128,4 +130,83 @@ export type CreateProcedureRecordPayload = {
   notes?: string;
   performedAt?: Date;
   recordedById: string;
+};
+
+/**
+ * Closes an encounter and moves its registration in the same transaction: the
+ * clinical record and the front-desk state describe one visit, and a crash
+ * between the two writes would leave a finished encounter queued as still
+ * being seen.
+ */
+export type CloseEncounterRecordPayload = {
+  id: string;
+  registrationId: string;
+  status: Extract<EncounterStatusValue, 'CANCELLED' | 'FINISHED'>;
+  registrationStatus: Extract<RegistrationStatusValue, 'CANCELLED' | 'COMPLETED'>;
+  endedAt: Date;
+};
+
+export type ListEncountersParams = {
+  page: number;
+  limit: number;
+  status?: EncounterStatusValue;
+  patientId?: string;
+  doctorId?: string;
+  registrationId?: string;
+  startedFrom?: Date;
+  startedTo?: Date;
+  ownerUserId?: string;
+};
+
+export type EncounterRelatedPatientRecord = {
+  id: string;
+  mrn: string;
+  fullName: string;
+  ownerUserId: string | null;
+};
+
+export type EncounterRelatedDoctorRecord = {
+  id: string;
+  licenseNumber: string;
+  fullName: string;
+  ownerUserId: string | null;
+};
+
+export type EncounterChildCounts = {
+  vitalSigns: number;
+  diagnoses: number;
+  procedures: number;
+};
+
+export type EncounterWithRelationsRecord = EncounterRecord & {
+  patient: EncounterRelatedPatientRecord;
+  doctor: EncounterRelatedDoctorRecord;
+  _count: EncounterChildCounts;
+};
+
+export type EncounterPrescriptionRecord = {
+  id: string;
+  status: PrescriptionStatusValue;
+  issuedAt: Date | null;
+  _count: { items: number };
+};
+
+export type EncounterDetailRecord = EncounterRecord & {
+  patient: EncounterRelatedPatientRecord;
+  doctor: EncounterRelatedDoctorRecord;
+  vitalSigns: VitalSignsRecord[];
+  diagnoses: DiagnosisRecord[];
+  procedures: ProcedureRecord[];
+  prescriptions: EncounterPrescriptionRecord[];
+};
+
+/**
+ * The registration an encounter may be opened from, with the patient owner
+ * needed to answer "is this my own record?" without a second query.
+ */
+export type EncounterSourceRegistrationRecord = {
+  id: string;
+  patientId: string;
+  status: RegistrationStatusValue;
+  patient: { id: string; ownerUserId: string | null; isActive: boolean };
 };

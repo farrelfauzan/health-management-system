@@ -20,4 +20,5 @@ limit?: number;
 status?: PrescriptionControllerListPrescriptionsV1Status;
 patientId?: string;
 doctorId?: string;
+encounterId?: string;
 };

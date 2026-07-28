@@ -18,6 +18,7 @@ export type ListPrescriptionsParams = {
   status?: PrescriptionStatusValue;
   patientId?: string;
   doctorId?: string;
+  encounterId?: string;
   ownerUserId?: string;
 };
 
@@ -110,6 +111,7 @@ export type PrescriptionDetailRecord = {
   id: string;
   patientId: string;
   doctorId: string;
+  encounterId: string | null;
   status: PrescriptionStatusValue;
   issuedAt: Date | null;
   notes: string | null;
@@ -133,6 +135,7 @@ export type CreatePrescriptionItemPayload = {
 export type CreatePrescriptionRecordPayload = {
   patientId: string;
   doctorId: string;
+  encounterId?: string;
   notes?: string;
   items: CreatePrescriptionItemPayload[];
 };

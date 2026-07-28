@@ -158,13 +158,14 @@ export class PharmacyFlowRepository {
   }
 
   async listPrescriptions(params: ListPrescriptionsParams) {
-    const { page, limit, status, patientId, doctorId, ownerUserId } = params;
+    const { page, limit, status, patientId, doctorId, encounterId, ownerUserId } = params;
     const skip = (page - 1) * limit;
 
     const where = {
       ...(status ? { status } : {}),
       ...(patientId ? { patientId } : {}),
       ...(doctorId ? { doctorId } : {}),
+      ...(encounterId ? { encounterId } : {}),
       ...(ownerUserId
         ? {
             OR: [{ patient: { ownerUserId } }, { doctor: { ownerUserId } }],
@@ -318,6 +319,22 @@ export class PharmacyFlowRepository {
     });
   }
 
+  /**
+   * The encounter a prescription is being attached to. Only the fields the
+   * pharmacy needs to validate the link — the clinical record itself is read
+   * through the EMR module.
+   */
+  async findEncounterForPrescription(encounterId: string) {
+    return this.prisma.findFirstActive(this.prisma.encounter, {
+      where: { id: encounterId },
+      select: {
+        id: true,
+        patientId: true,
+        status: true,
+      },
+    });
+  }
+
   async findActiveDoctorPatientAssignment(doctorId: string, patientId: string) {
     return this.prisma.doctorPatient.findFirst({
       where: {
@@ -346,6 +363,7 @@ export class PharmacyFlowRepository {
         data: {
           patientId: payload.patientId,
           doctorId: payload.doctorId,
+          encounterId: payload.encounterId,
           status: 'ISSUED',
           issuedAt: new Date(),
           notes: payload.notes,

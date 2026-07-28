@@ -13,6 +13,16 @@ export class Icd10CodeService {
     return codes.map((code) => this.toIcd10CodeResponse(code));
   }
 
+  /**
+   * Resolves a catalog row for callers that snapshot it onto a clinical record
+   * (the EMR module codes diagnoses this way). Returns null when the code does
+   * not exist or has been retired.
+   */
+  async findActiveIcd10CodeById(id: string): Promise<Icd10Code | null> {
+    const code = await this.icd10CodeRepository.findActiveIcd10CodeById(id);
+    return code ? this.toIcd10CodeResponse(code) : null;
+  }
+
   private toIcd10CodeResponse(code: Icd10CodeRecord): Icd10Code {
     return {
       id: code.id,

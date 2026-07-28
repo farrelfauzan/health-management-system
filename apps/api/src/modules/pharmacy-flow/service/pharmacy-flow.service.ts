@@ -141,6 +141,7 @@ export class PharmacyFlowService {
       status: query.status,
       patientId: query.patientId,
       doctorId: query.doctorId,
+      encounterId: query.encounterId,
       ownerUserId: readScope.hasAny ? undefined : currentUser.sub,
     });
 
@@ -175,9 +176,14 @@ export class PharmacyFlowService {
 
     await this.assertMedicationsExist(payload.items.map((item) => item.medicationId));
 
+    if (payload.encounterId) {
+      await this.assertEncounterAcceptsPrescription(payload.encounterId, payload.patientId);
+    }
+
     const created = await this.pharmacyFlowRepository.createPrescription({
       patientId: payload.patientId,
       doctorId,
+      encounterId: payload.encounterId,
       notes: payload.notes,
       items: payload.items,
     });
@@ -247,6 +253,33 @@ export class PharmacyFlowService {
     }
 
     return doctor.id;
+  }
+
+  /**
+   * A prescription may only be attached to an open encounter for the same
+   * patient: attaching it to a closed record would add a treatment to a visit
+   * that is already signed, and attaching it across patients would put one
+   * patient's medication in another's chart.
+   */
+  private async assertEncounterAcceptsPrescription(
+    encounterId: string,
+    patientId: string,
+  ): Promise<void> {
+    const encounter = await this.pharmacyFlowRepository.findEncounterForPrescription(encounterId);
+
+    if (!encounter) {
+      throw new BadRequestException('Encounter not found');
+    }
+
+    if (encounter.patientId !== patientId) {
+      throw new BadRequestException('Encounter belongs to a different patient');
+    }
+
+    if (encounter.status !== 'IN_PROGRESS') {
+      throw new ConflictException(
+        `Encounter in status ${encounter.status} can not receive prescriptions`,
+      );
+    }
   }
 
   private async assertActiveAssignment(doctorId: string, patientId: string): Promise<void> {
@@ -420,6 +453,7 @@ export class PharmacyFlowService {
       id: prescription.id,
       patientId: prescription.patientId,
       doctorId: prescription.doctorId,
+      encounterId: prescription.encounterId ?? undefined,
       status: prescription.status,
       issuedAt: prescription.issuedAt?.toISOString(),
       notes: prescription.notes ?? undefined,

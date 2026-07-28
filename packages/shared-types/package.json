@@ -17,6 +17,7 @@
     "#appointment-management/contracts": "./src/appointment-management/contracts.ts",
     "#appointment-management/types": "./src/appointment-management/types.ts",
     "#emr/schemas": "./src/emr/schemas.ts",
+    "#emr/contracts": "./src/emr/contracts.ts",
     "#emr/types": "./src/emr/types.ts",
     "#terminology/icd10-chapter": "./src/terminology/icd10-chapter.ts",
     "#terminology/schemas": "./src/terminology/schemas.ts",

@@ -633,9 +633,10 @@ model Encounter {
   patient      PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
   doctor       DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Restrict)
   createdBy    User?          @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  vitalSigns   VitalSigns[]
-  diagnoses    Diagnosis[]
-  procedures   Procedure[]
+  vitalSigns    VitalSigns[]
+  diagnoses     Diagnosis[]
+  procedures    Procedure[]
+  prescriptions Prescription[]
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -846,6 +847,11 @@ model Prescription {
   id        String             @id @default(uuid()) @db.Uuid
   patientId String             @map("patient_id") @db.Uuid
   doctorId  String             @map("doctor_id") @db.Uuid
+  /// The visit this prescription was written during. Nullable, and deliberately
+  /// so: repeat prescriptions are issued between visits, and every MVP row
+  /// predates the encounter record. Once set it is never moved — a prescription
+  /// belongs to the visit that produced it.
+  encounterId String?          @map("encounter_id") @db.Uuid
   status    PrescriptionStatus @default(DRAFT)
   issuedAt  DateTime?          @map("issued_at")
   notes     String?
@@ -855,11 +861,13 @@ model Prescription {
 
   patient         PatientProfile           @relation(fields: [patientId], references: [id], onDelete: Restrict)
   doctor          DoctorProfile            @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  encounter       Encounter?               @relation(fields: [encounterId], references: [id], onDelete: Restrict)
   items           PrescriptionMedication[]
   dispenseRecords DispenseRecord[]
 
   @@index([patientId, status])
   @@index([doctorId, status])
+  @@index([encounterId])
   @@index([deletedAt])
   @@map("prescriptions")
 }
