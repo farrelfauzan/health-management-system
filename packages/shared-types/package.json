@@ -27,6 +27,7 @@
     "#registration-flow/contracts": "./src/registration-flow/contracts.ts",
     "#registration-flow/types": "./src/registration-flow/types.ts",
     "#billing/schemas": "./src/billing/schemas.ts",
+    "#billing/contracts": "./src/billing/contracts.ts",
     "#billing/types": "./src/billing/types.ts",
     "#pharmacy-flow/schemas": "./src/pharmacy-flow/schemas.ts",
     "#pharmacy-flow/contracts": "./src/pharmacy-flow/contracts.ts",

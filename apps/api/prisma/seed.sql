@@ -95,6 +95,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('prescription.write:any', 'Prescription', 'write', 'ANY', 'Write prescriptions for any patient'),
     ('prescription.write:own', 'Prescription', 'write', 'OWN', 'Write prescriptions for owned patients'),
     ('dispense.write:any', 'DispenseRecord', 'write', 'ANY', 'Dispense medication records'),
+    ('service-tariff.read:any', 'ServiceTariff', 'read', 'ANY', 'Read the service tariff price list'),
+    ('service-tariff.write:any', 'ServiceTariff', 'write', 'ANY', 'Create and update service tariffs'),
+    ('invoice.read:any', 'Invoice', 'read', 'ANY', 'Read all invoices'),
+    ('invoice.write:any', 'Invoice', 'write', 'ANY', 'Generate, issue, and void invoices'),
+    ('payment.write:any', 'Payment', 'write', 'ANY', 'Record invoice payments'),
     ('chat.session.create:own', 'ChatSession', 'create', 'OWN', 'Create own chat sessions'),
     ('chat.message.create:own', 'ChatMessage', 'create', 'OWN', 'Create own chat messages'),
     ('chat.message.read:any', 'ChatMessage', 'read', 'ANY', 'Read all chat messages'),
@@ -177,6 +182,16 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'prescription.read:any'),
     ('ADMIN', 'prescription.write:any'),
     ('ADMIN', 'dispense.write:any'),
+    -- The cashier is the front desk in an Indonesian pratama clinic, so the
+    -- ADMIN role carries the whole kasir surface. Doctors and patients get no
+    -- billing grant: the invoice reaches the patient as paper (or later via a
+    -- patient-facing read in the frontend phase), and pricing is not a
+    -- clinical decision.
+    ('ADMIN', 'service-tariff.read:any'),
+    ('ADMIN', 'service-tariff.write:any'),
+    ('ADMIN', 'invoice.read:any'),
+    ('ADMIN', 'invoice.write:any'),
+    ('ADMIN', 'payment.write:any'),
     ('ADMIN', 'chat.session.create:own'),
     ('ADMIN', 'chat.message.create:own'),
     ('ADMIN', 'chat.message.read:any'),
@@ -818,5 +833,40 @@ SET
   "unassigned_by_id" = NULL,
   "updated_at" = NOW(),
   "deleted_at" = NULL;
+
+-- Starter service tariffs so invoice generation works out of the box in
+-- development and demos: one consultation fee plus two common tindakan mapped
+-- to codes from the ICD-9-CM starter set. Prices are placeholders — every
+-- clinic sets its own. ON CONFLICT DO NOTHING on purpose, unlike the
+-- reference catalogs: a reseed must never revert a price the clinic edited.
+WITH seed_service_tariffs(code, name, category, icd9cm_code, price) AS (
+  VALUES
+    ('KONSULTASI-UMUM', 'Konsultasi Dokter Umum', 'CONSULTATION', NULL, 50000.00),
+    ('TIND-INJEKSI-AB', 'Injeksi Antibiotik', 'PROCEDURE', '99.21', 35000.00),
+    ('TIND-RAWAT-LUKA', 'Perawatan Luka dan Penggantian Balutan', 'PROCEDURE', '93.57', 45000.00)
+)
+INSERT INTO "service_tariffs" (
+  "id",
+  "code",
+  "name",
+  "category",
+  "icd9cm_code",
+  "price",
+  "is_active",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('service_tariff:' || code)::uuid,
+  code,
+  name,
+  category::"ServiceTariffCategory",
+  icd9cm_code,
+  price,
+  TRUE,
+  NOW(),
+  NOW()
+FROM seed_service_tariffs
+ON CONFLICT ("code") DO NOTHING;
 
 COMMIT;
