@@ -9441,6 +9441,122 @@ paths:
         - bearer: []
       summary: Void an invoice
       tags: *a14
+  /api/v1/reports/cashier-daily:
+    get:
+      operationId: CashierReportController_getDailyReport_v1
+      parameters:
+        - name: date
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+      responses:
+        "200":
+          description: "One clinic day at the cash drawer: settled totals split by payment
+            method and by doctor. Defaults to the clinic's today; unpaid and
+            voided invoices never appear."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                      totals:
+                        type: object
+                        properties:
+                          count:
+                            type: integer
+                          totalAmount:
+                            type: integer
+                        required:
+                          - count
+                          - totalAmount
+                      byMethod:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            method:
+                              type: string
+                            count:
+                              type: integer
+                            totalAmount:
+                              type: integer
+                          required:
+                            - method
+                            - count
+                            - totalAmount
+                      byDoctor:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            doctorId:
+                              type: string
+                            doctorName:
+                              type: string
+                            count:
+                              type: integer
+                            totalAmount:
+                              type: integer
+                          required:
+                            - doctorId
+                            - doctorName
+                            - count
+                            - totalAmount
+                    required:
+                      - date
+                      - totals
+                      - byMethod
+                      - byDoctor
+                required:
+                  - data
+                example:
+                  data:
+                    date: 2026-07-28
+                    totals:
+                      count: 12
+                      totalAmount: 1450000
+                    byMethod:
+                      - method: CASH
+                        count: 8
+                        totalAmount: 900000
+                      - method: QRIS
+                        count: 4
+                        totalAmount: 550000
+                    byDoctor:
+                      - doctorId: 7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11
+                        doctorName: Dr. Budi Santoso
+                        count: 12
+                        totalAmount: 1450000
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Daily cashier report
+      tags:
+        - Reports
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1

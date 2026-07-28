@@ -86,4 +86,20 @@ export const BILLING_EXAMPLES = {
       reason: 'Wrong consultation tariff applied; reissuing with the corrected price list',
     },
   },
+  cashierReport: {
+    date: '2026-07-28',
+    totals: { count: 12, totalAmount: 1450000 },
+    byMethod: [
+      { method: 'CASH', count: 8, totalAmount: 900000 },
+      { method: 'QRIS', count: 4, totalAmount: 550000 },
+    ],
+    byDoctor: [
+      {
+        doctorId: '7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11',
+        doctorName: 'Dr. Budi Santoso',
+        count: 12,
+        totalAmount: 1450000,
+      },
+    ],
+  },
 } as const;

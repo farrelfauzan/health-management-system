@@ -87,6 +87,46 @@ export function getCalendarDateInTimeZone(instant: Date, timeZone: string): stri
   }).format(instant);
 }
 
+const MILLISECONDS_PER_MINUTE = 60_000;
+
+function getTimeZoneOffsetMinutes(instant: Date, timeZone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(instant);
+  const partValue = (type: string): number =>
+    Number(parts.find((part) => part.type === type)?.value ?? 0);
+  const zonedAsUtc = Date.UTC(
+    partValue('year'),
+    partValue('month') - 1,
+    partValue('day'),
+    // `hour12: false` can yield "24" at midnight; normalise it.
+    partValue('hour') % 24,
+    partValue('minute'),
+    partValue('second'),
+  );
+  return (zonedAsUtc - instant.getTime()) / MILLISECONDS_PER_MINUTE;
+}
+
+/**
+ * The UTC instant at which the given YYYY-MM-DD calendar date begins in the
+ * given IANA time zone — the inverse of `getCalendarDateInTimeZone`, needed to
+ * bound timestamp columns by a clinic-local day (Jakarta's day D covers
+ * [D-1 17:00 UTC, D 17:00 UTC)). Offset is resolved per instant, so it stays
+ * correct for zones with DST even though Indonesian zones have none.
+ */
+export function getStartOfCalendarDateInTimeZone(dateValue: string, timeZone: string): Date {
+  const utcMidnight = new Date(`${dateValue}T00:00:00Z`);
+  const offsetMinutes = getTimeZoneOffsetMinutes(utcMidnight, timeZone);
+  return new Date(utcMidnight.getTime() - offsetMinutes * MILLISECONDS_PER_MINUTE);
+}
+
 export const queueBoardQuerySchema = z.object({
   date: registrationDateSchema
     .refine(isValidRegistrationDateValue, 'Queue board date must be a valid calendar date')
