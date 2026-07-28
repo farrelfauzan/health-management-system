@@ -230,6 +230,157 @@ describe('SatusehatFhirMapper', () => {
     });
   });
 
+  describe('medication mapping', () => {
+    it('maps a KFA-coded catalog item to a Medication with the type extension', () => {
+      const actualMedication = mapper.mapMedicationToResource({
+        medicationCode: 'PARA-500',
+        kfaCode: '93001019',
+        name: 'Paracetamol 500 mg Tablet',
+      });
+
+      expect(actualMedication).toEqual({
+        resourceType: 'Medication',
+        identifier: [
+          {
+            system: 'http://sys-ids.kemkes.go.id/medication/10000004',
+            use: 'official',
+            value: 'PARA-500',
+          },
+        ],
+        status: 'active',
+        code: {
+          coding: [
+            {
+              system: 'http://sys-ids.kemkes.go.id/kfa',
+              code: '93001019',
+              display: 'Paracetamol 500 mg Tablet',
+            },
+          ],
+        },
+        extension: [
+          {
+            url: 'https://fhir.kemkes.go.id/r4/StructureDefinition/MedicationType',
+            valueCodeableConcept: {
+              coding: [
+                {
+                  system: 'https://terminology.kemkes.go.id/CodeSystem/medication-type',
+                  code: 'NC',
+                  display: 'Non-compound',
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+
+    it('maps a prescription item to a MedicationRequest with dual identifiers and textual dosage', () => {
+      const actualRequest = mapper.mapPrescriptionItemToMedicationRequest({
+        prescriptionId: 'presc-1',
+        prescriptionItemId: 'presc-item-1',
+        medicationReference: 'urn:uuid:medication-entry',
+        medicationDisplay: 'Paracetamol 500 mg Tablet',
+        patientIhsNumber: 'P02478375538',
+        practitionerIhsNumber: 'N10000001',
+        encounterReference: 'urn:uuid:encounter-entry',
+        dosage: '500 mg',
+        frequency: '3x sehari',
+        instructions: 'Sesudah makan',
+        quantity: 15,
+        unit: 'TABLET',
+        authoredOn: startedAt,
+      });
+
+      expect(actualRequest.identifier).toEqual([
+        {
+          system: 'http://sys-ids.kemkes.go.id/prescription/10000004',
+          use: 'official',
+          value: 'presc-1',
+        },
+        {
+          system: 'http://sys-ids.kemkes.go.id/prescription-item/10000004',
+          use: 'official',
+          value: 'presc-item-1',
+        },
+      ]);
+      expect(actualRequest.status).toBe('completed');
+      expect(actualRequest.intent).toBe('order');
+      expect(actualRequest.dosageInstruction).toEqual([
+        { sequence: 1, text: '500 mg, 3x sehari, Sesudah makan' },
+      ]);
+      expect(actualRequest.dispenseRequest.quantity).toEqual({ value: 15, unit: 'TABLET' });
+      expect(actualRequest.authoredOn).toBe('2026-07-28T02:00:00.000Z');
+      expect(actualRequest.substitution).toEqual({ allowedBoolean: false });
+    });
+
+    it('maps a dispense item to a MedicationDispense performed by the Organization', () => {
+      const actualDispense = mapper.mapDispenseItemToMedicationDispense({
+        dispenseRecordId: 'disp-1',
+        dispenseItemId: 'disp-item-1',
+        medicationReference: 'urn:uuid:medication-entry',
+        medicationDisplay: 'Paracetamol 500 mg Tablet',
+        patientIhsNumber: 'P02478375538',
+        encounterReference: 'urn:uuid:encounter-entry',
+        medicationRequestReference: 'urn:uuid:request-entry',
+        quantity: 15,
+        unit: 'TABLET',
+        dispensedAt: endedAt,
+      });
+
+      expect(actualDispense.identifier).toEqual([
+        {
+          system: 'http://sys-ids.kemkes.go.id/medicationdispense/10000004',
+          use: 'official',
+          value: 'disp-1',
+        },
+        {
+          system: 'http://sys-ids.kemkes.go.id/prescription-item/10000004',
+          use: 'official',
+          value: 'disp-item-1',
+        },
+      ]);
+      expect(actualDispense.performer).toEqual([
+        { actor: { reference: 'Organization/10000004' } },
+      ]);
+      expect(actualDispense.authorizingPrescription).toEqual([
+        { reference: 'urn:uuid:request-entry' },
+      ]);
+      expect(actualDispense.context).toEqual({ reference: 'urn:uuid:encounter-entry' });
+      expect(actualDispense.whenHandedOver).toBe('2026-07-28T02:20:00.000Z');
+      expect(actualDispense.substitution).toEqual({ wasSubstituted: false });
+    });
+
+    it('drops empty dosage parts and the authorizingPrescription when absent', () => {
+      const actualRequest = mapper.mapPrescriptionItemToMedicationRequest({
+        prescriptionId: 'presc-1',
+        prescriptionItemId: 'presc-item-2',
+        medicationReference: 'urn:uuid:medication-entry',
+        medicationDisplay: 'Amoxicillin',
+        patientIhsNumber: 'P02478375538',
+        practitionerIhsNumber: 'N10000001',
+        encounterReference: 'urn:uuid:encounter-entry',
+        dosage: '500 mg',
+        frequency: '3x sehari',
+        quantity: 15,
+      });
+      const actualDispense = mapper.mapDispenseItemToMedicationDispense({
+        dispenseRecordId: 'disp-1',
+        dispenseItemId: 'disp-item-2',
+        medicationReference: 'urn:uuid:medication-entry',
+        medicationDisplay: 'Amoxicillin',
+        patientIhsNumber: 'P02478375538',
+        encounterReference: 'urn:uuid:encounter-entry',
+        quantity: 15,
+        dispensedAt: endedAt,
+      });
+
+      expect(actualRequest.dosageInstruction[0]?.text).toBe('500 mg, 3x sehari');
+      expect(actualRequest.dispenseRequest.quantity).toEqual({ value: 15 });
+      expect(actualDispense.authorizingPrescription).toBeUndefined();
+      expect(actualDispense.quantity).toEqual({ value: 15 });
+    });
+  });
+
   describe('mapVitalSignsToObservations', () => {
     it('maps a full vitals row to eight LOINC-coded observations', () => {
       const actualObservations = mapper.mapVitalSignsToObservations(buildVitalSignsInput());

@@ -125,9 +125,62 @@ export type SatusehatVitalSignsMapInput = {
   oxygenSaturation: number | null;
 };
 
+export type SatusehatFhirExtension = {
+  url: string;
+  valueCodeableConcept: SatusehatFhirCodeableConcept;
+};
+
+export type SatusehatFhirSimpleQuantity = {
+  value: number;
+  unit?: string;
+};
+
+export type SatusehatFhirMedication = {
+  resourceType: 'Medication';
+  identifier: SatusehatFhirIdentifier[];
+  status: 'active';
+  code: SatusehatFhirCodeableConcept;
+  extension: SatusehatFhirExtension[];
+};
+
+export type SatusehatFhirMedicationRequest = {
+  resourceType: 'MedicationRequest';
+  identifier: SatusehatFhirIdentifier[];
+  status: 'completed';
+  intent: 'order';
+  medicationReference: SatusehatFhirReference;
+  subject: SatusehatFhirReference;
+  encounter: SatusehatFhirReference;
+  requester: SatusehatFhirReference;
+  authoredOn?: string;
+  dosageInstruction: Array<{ sequence: number; text: string }>;
+  dispenseRequest: { quantity: SatusehatFhirSimpleQuantity };
+  substitution: { allowedBoolean: boolean };
+};
+
+export type SatusehatFhirMedicationDispense = {
+  resourceType: 'MedicationDispense';
+  identifier: SatusehatFhirIdentifier[];
+  status: 'completed';
+  medicationReference: SatusehatFhirReference;
+  subject: SatusehatFhirReference;
+  context: SatusehatFhirReference;
+  performer: Array<{ actor: SatusehatFhirReference }>;
+  authorizingPrescription?: SatusehatFhirReference[];
+  quantity: SatusehatFhirSimpleQuantity;
+  whenHandedOver: string;
+  substitution: { wasSubstituted: boolean };
+};
+
 export type SatusehatFhirBundleEntry = {
   fullUrl: string;
-  resource: SatusehatFhirEncounter | SatusehatFhirCondition | SatusehatFhirObservation;
+  resource:
+    | SatusehatFhirEncounter
+    | SatusehatFhirCondition
+    | SatusehatFhirObservation
+    | SatusehatFhirMedication
+    | SatusehatFhirMedicationRequest
+    | SatusehatFhirMedicationDispense;
   request: { method: 'POST'; url: string };
 };
 
@@ -150,6 +203,44 @@ export type SatusehatTransactionResponseEntry = {
 
 export type SatusehatTransactionResponse = {
   readonly entry?: readonly SatusehatTransactionResponseEntry[];
+};
+
+export type SatusehatMedicationMapInput = {
+  medicationCode: string;
+  kfaCode: string;
+  name: string;
+};
+
+export type SatusehatMedicationRequestMapInput = {
+  prescriptionId: string;
+  prescriptionItemId: string;
+  medicationReference: string;
+  medicationDisplay: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  practitionerIhsNumber: string;
+  practitionerName?: string;
+  encounterReference: string;
+  dosage: string;
+  frequency: string;
+  instructions?: string;
+  quantity: number;
+  unit?: string;
+  authoredOn?: Date;
+};
+
+export type SatusehatMedicationDispenseMapInput = {
+  dispenseRecordId: string;
+  dispenseItemId: string;
+  medicationReference: string;
+  medicationDisplay: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  encounterReference: string;
+  medicationRequestReference?: string;
+  quantity: number;
+  unit?: string;
+  dispensedAt: Date;
 };
 
 export type SatusehatVitalSignField = keyof Pick<

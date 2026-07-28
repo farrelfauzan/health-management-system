@@ -85,8 +85,77 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
       temperatureCelsius: null,
       oxygenSaturation: null,
     },
+    prescriptions: [],
+    dispenseItems: [],
     ...overrides,
   };
+}
+
+const codedMedication = {
+  medicationId: 'med-coded',
+  code: 'PARA-500',
+  kfaCode: '93001019',
+  name: 'Paracetamol 500 mg Tablet',
+  unit: 'TABLET',
+};
+
+const uncodedMedication = {
+  medicationId: 'med-uncoded',
+  code: 'RACIK-01',
+  kfaCode: null,
+  name: 'Puyer Racikan',
+  unit: 'SACHET',
+};
+
+function buildPharmacyBundleData() {
+  return buildBundleData({
+    diagnoses: [],
+    latestVitalSigns: null,
+    prescriptions: [
+      {
+        prescriptionId: 'presc-1',
+        issuedAt: new Date('2026-07-28T02:15:00.000Z'),
+        items: [
+          {
+            prescriptionItemId: 'presc-item-1',
+            prescriptionId: 'presc-1',
+            medication: codedMedication,
+            dosage: '500 mg',
+            frequency: '3x sehari',
+            instructions: 'Sesudah makan',
+            quantity: 15,
+          },
+          {
+            prescriptionItemId: 'presc-item-2',
+            prescriptionId: 'presc-1',
+            medication: uncodedMedication,
+            dosage: '1 bungkus',
+            frequency: '2x sehari',
+            instructions: null,
+            quantity: 10,
+          },
+        ],
+      },
+    ],
+    dispenseItems: [
+      {
+        dispenseItemId: 'disp-item-1',
+        dispenseRecordId: 'disp-1',
+        prescriptionId: 'presc-1',
+        medication: codedMedication,
+        quantity: 15,
+        dispensedAt: new Date('2026-07-28T02:30:00.000Z'),
+      },
+      {
+        dispenseItemId: 'disp-item-2',
+        dispenseRecordId: 'disp-1',
+        prescriptionId: 'presc-1',
+        medication: uncodedMedication,
+        quantity: 10,
+        dispensedAt: new Date('2026-07-28T02:30:00.000Z'),
+      },
+    ],
+  });
 }
 
 describe('SatusehatSubmissionService', () => {
@@ -315,6 +384,98 @@ describe('SatusehatSubmissionService', () => {
       attempts: 1,
       lastError: 'validation failed',
     });
+  });
+
+  it('maps KFA-coded prescriptions and dispenses into Medication/MedicationRequest/MedicationDispense entries and skips uncoded items', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(buildPharmacyBundleData());
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    expect(bundle.entry.map((entry) => entry.request.url)).toEqual([
+      'Encounter',
+      'Medication',
+      'MedicationRequest',
+      'MedicationDispense',
+    ]);
+    const medicationEntry = bundle.entry[1];
+    const medicationResource = medicationEntry?.resource as {
+      code: { coding: Array<{ system: string; code: string }> };
+      identifier: Array<{ system: string; value: string }>;
+      extension: Array<{ url: string }>;
+    };
+    expect(medicationResource.code.coding[0]).toEqual(
+      expect.objectContaining({ system: 'http://sys-ids.kemkes.go.id/kfa', code: '93001019' }),
+    );
+    expect(medicationResource.identifier[0]).toEqual(
+      expect.objectContaining({
+        system: 'http://sys-ids.kemkes.go.id/medication/10000004',
+        value: 'PARA-500',
+      }),
+    );
+    const requestEntry = bundle.entry[2];
+    const requestResource = requestEntry?.resource as {
+      medicationReference: { reference: string };
+      encounter: { reference: string };
+      requester: { reference: string };
+      dosageInstruction: Array<{ text: string }>;
+      substitution: { allowedBoolean: boolean };
+    };
+    expect(requestResource.medicationReference.reference).toBe(medicationEntry?.fullUrl);
+    expect(requestResource.encounter.reference).toBe(bundle.entry[0]?.fullUrl);
+    expect(requestResource.requester.reference).toBe('Practitioner/N10000001');
+    expect(requestResource.dosageInstruction[0]?.text).toBe('500 mg, 3x sehari, Sesudah makan');
+    expect(requestResource.substitution.allowedBoolean).toBe(false);
+    const dispenseResource = bundle.entry[3]?.resource as {
+      medicationReference: { reference: string };
+      authorizingPrescription?: Array<{ reference: string }>;
+      performer: Array<{ actor: { reference: string } }>;
+      whenHandedOver: string;
+      substitution: { wasSubstituted: boolean };
+    };
+    expect(dispenseResource.medicationReference.reference).toBe(medicationEntry?.fullUrl);
+    expect(dispenseResource.authorizingPrescription?.[0]?.reference).toBe(requestEntry?.fullUrl);
+    expect(dispenseResource.performer[0]?.actor.reference).toBe('Organization/10000004');
+    expect(dispenseResource.whenHandedOver).toBe('2026-07-28T02:30:00.000Z');
+    expect(dispenseResource.substitution.wasSubstituted).toBe(false);
+  });
+
+  it('logs a gap report naming every catalog item skipped for a missing KFA code', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(buildPharmacyBundleData());
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+    const warnSpy = jest.spyOn(
+      (service as unknown as { logger: { warn: (message: string) => void } }).logger,
+      'warn',
+    );
+
+    await service.processSubmission(buildSubmission());
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('1 catalog item(s) without a KFA code were skipped'),
+    );
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('RACIK-01 (Puyer Racikan)'));
+    warnSpy.mockRestore();
+  });
+
+  it('deduplicates the Medication entry when prescription and dispense share one catalog item', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(buildPharmacyBundleData());
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const medicationCount = bundle.entry.filter(
+      (entry) => entry.request.url === 'Medication',
+    ).length;
+    expect(medicationCount).toBe(1);
   });
 
   it('omits observation entries when the encounter recorded no vitals', async () => {

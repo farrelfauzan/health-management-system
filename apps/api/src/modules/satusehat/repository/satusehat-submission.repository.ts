@@ -2,12 +2,45 @@ import {
   MarkSubmissionFailedPayload,
   MarkSubmissionRetryPayload,
   SatusehatSubmissionBundleData,
+  SatusehatSubmissionDispenseItem,
+  SatusehatSubmissionMedication,
+  SatusehatSubmissionPrescription,
   SatusehatSubmissionRecord,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+
+const MEDICATION_SELECT = {
+  select: { id: true, code: true, kfaCode: true, name: true, unit: true },
+} as const;
+
+type MedicationRow = {
+  id: string;
+  code: string;
+  kfaCode: string | null;
+  name: string;
+  unit: string | null;
+};
+
+type PrescriptionRow = {
+  id: string;
+  issuedAt: Date | null;
+  items: Array<{
+    id: string;
+    dosage: string;
+    frequency: string;
+    instructions: string | null;
+    quantity: number;
+    medication: MedicationRow;
+  }>;
+  dispenseRecords: Array<{
+    id: string;
+    dispensedAt: Date;
+    items: Array<{ id: string; quantity: number; medication: MedicationRow }>;
+  }>;
+};
 
 /**
  * Persistence for the SATUSEHAT submission outbox. Rows are created by the
@@ -52,6 +85,40 @@ export class SatusehatSubmissionRepository {
           orderBy: { recordedAt: 'desc' },
           take: 1,
         },
+        prescriptions: {
+          where: {
+            deletedAt: null,
+            status: { in: ['ISSUED', 'PARTIALLY_DISPENSED', 'DISPENSED'] },
+          },
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            issuedAt: true,
+            items: {
+              orderBy: { createdAt: 'asc' },
+              select: {
+                id: true,
+                dosage: true,
+                frequency: true,
+                instructions: true,
+                quantity: true,
+                medication: MEDICATION_SELECT,
+              },
+            },
+            dispenseRecords: {
+              where: { status: 'DISPENSED' },
+              orderBy: { dispensedAt: 'asc' },
+              select: {
+                id: true,
+                dispensedAt: true,
+                items: {
+                  orderBy: { createdAt: 'asc' },
+                  select: { id: true, quantity: true, medication: MEDICATION_SELECT },
+                },
+              },
+            },
+          },
+        },
       },
     });
     if (!encounter) {
@@ -84,6 +151,53 @@ export class SatusehatSubmissionRepository {
             oxygenSaturation: latestVitals.oxygenSaturation,
           }
         : null,
+      prescriptions: encounter.prescriptions.map((prescription) =>
+        this.toSubmissionPrescription(prescription),
+      ),
+      dispenseItems: encounter.prescriptions.flatMap((prescription) =>
+        this.toSubmissionDispenseItems(prescription),
+      ),
+    };
+  }
+
+  private toSubmissionPrescription(prescription: PrescriptionRow): SatusehatSubmissionPrescription {
+    return {
+      prescriptionId: prescription.id,
+      issuedAt: prescription.issuedAt,
+      items: prescription.items.map((item) => ({
+        prescriptionItemId: item.id,
+        prescriptionId: prescription.id,
+        medication: this.toSubmissionMedication(item.medication),
+        dosage: item.dosage,
+        frequency: item.frequency,
+        instructions: item.instructions,
+        quantity: item.quantity,
+      })),
+    };
+  }
+
+  private toSubmissionDispenseItems(
+    prescription: PrescriptionRow,
+  ): SatusehatSubmissionDispenseItem[] {
+    return prescription.dispenseRecords.flatMap((dispenseRecord) =>
+      dispenseRecord.items.map((item) => ({
+        dispenseItemId: item.id,
+        dispenseRecordId: dispenseRecord.id,
+        prescriptionId: prescription.id,
+        medication: this.toSubmissionMedication(item.medication),
+        quantity: item.quantity,
+        dispensedAt: dispenseRecord.dispensedAt,
+      })),
+    );
+  }
+
+  private toSubmissionMedication(medication: MedicationRow): SatusehatSubmissionMedication {
+    return {
+      medicationId: medication.id,
+      code: medication.code,
+      kfaCode: medication.kfaCode,
+      name: medication.name,
+      unit: medication.unit,
     };
   }
 
