@@ -9557,6 +9557,147 @@ paths:
       summary: Daily cashier report
       tags:
         - Reports
+  /api/v1/satusehat/patients/{patientId}/link:
+    post:
+      operationId: SatusehatLinkController_linkPatient_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The patient was resolved on the SATUSEHAT master patient index by
+            NIK and the IHS number was stored encrypted. Idempotent: an already
+            linked patient returns its current state without an upstream call."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      patientId:
+                        type: string
+                      hasSatusehatPatientId:
+                        type: boolean
+                      alreadyLinked:
+                        type: boolean
+                    required:
+                      - patientId
+                      - hasSatusehatPatientId
+                      - alreadyLinked
+                required:
+                  - data
+                example:
+                  data:
+                    patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                    hasSatusehatPatientId: true
+                    alreadyLinked: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient not found, or no SATUSEHAT record matches the stored NIK.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found, or no SATUSEHAT record matches the stored NIK.
+      security:
+        - bearer: []
+      summary: Link a patient to their SATUSEHAT IHS number
+      tags: &a15
+        - SATUSEHAT
+  /api/v1/satusehat/doctors/{doctorId}/link:
+    post:
+      operationId: SatusehatLinkController_linkDoctor_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The practitioner was resolved on the SATUSEHAT index by NIK and
+            the IHS number was stored. Idempotent: an already linked doctor
+            returns its current state without an upstream call."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      doctorId:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
+                      alreadyLinked:
+                        type: boolean
+                    required:
+                      - doctorId
+                      - satusehatPractitionerId
+                      - alreadyLinked
+                required:
+                  - data
+                example:
+                  data:
+                    doctorId: 1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    satusehatPractitionerId: N10000001
+                    alreadyLinked: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor not found, or no SATUSEHAT record matches the stored NIK.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found, or no SATUSEHAT record matches the stored NIK.
+      security:
+        - bearer: []
+      summary: Link a doctor to their SATUSEHAT IHS practitioner number
+      tags: *a15
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -9612,7 +9753,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a15
+      tags: &a16
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -9705,7 +9846,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a15
+      tags: *a16
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -9797,7 +9938,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a15
+      tags: *a16
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
