@@ -8037,6 +8037,1410 @@ paths:
       summary: Dispense a prescription
       tags:
         - Pharmacy Flow
+  /api/v1/service-tariffs:
+    get:
+      operationId: ServiceTariffController_listServiceTariffs_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: category
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - CONSULTATION
+              - PROCEDURE
+              - OTHER
+        - name: isActive
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+      responses:
+        "200":
+          description: The filtered, paginated price list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        category:
+                          type: string
+                        price:
+                          type: integer
+                        isActive:
+                          type: boolean
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - code
+                        - name
+                        - category
+                        - price
+                        - isActive
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                      code: KONSULTASI-UMUM
+                      name: Konsultasi Dokter Umum
+                      category: CONSULTATION
+                      price: 50000
+                      isActive: true
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List service tariffs
+      tags: &a13
+        - Service Tariffs
+    post:
+      operationId: ServiceTariffController_createServiceTariff_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateServiceTariffDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  code: TIND-INJEKSI
+                  name: Injeksi Antibiotik
+                  category: PROCEDURE
+                  icd9cmCode: "99.21"
+                  price: 35000
+      responses:
+        "201":
+          description: The price-list row was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      category:
+                        type: string
+                      price:
+                        type: integer
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - category
+                      - price
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                    code: KONSULTASI-UMUM
+                    name: Konsultasi Dokter Umum
+                    category: CONSULTATION
+                    price: 50000
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Service tariff created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a service tariff
+      tags: *a13
+  /api/v1/service-tariffs/{id}:
+    patch:
+      operationId: ServiceTariffController_updateServiceTariff_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateServiceTariffDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  price: 40000
+                  isActive: true
+      responses:
+        "200":
+          description: The price-list row was updated. Repricing never rewrites issued
+            invoices — their items are snapshots.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      category:
+                        type: string
+                      price:
+                        type: integer
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - category
+                      - price
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                    code: KONSULTASI-UMUM
+                    name: Konsultasi Dokter Umum
+                    category: CONSULTATION
+                    price: 50000
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Service tariff updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Service tariff not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Service tariff not found.
+      security:
+        - bearer: []
+      summary: Update a service tariff
+      tags: *a13
+  /api/v1/invoices:
+    get:
+      operationId: InvoiceController_listInvoices_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - DRAFT
+              - ISSUED
+              - PAID
+              - VOID
+        - name: patientId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: encounterId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: createdFrom
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+        - name: createdTo
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+      responses:
+        "200":
+          description: A filtered, paginated invoice list, newest first.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        invoiceNumber:
+                          type: string
+                        encounterId:
+                          type: string
+                        patientId:
+                          type: string
+                        patient:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            mrn:
+                              type: string
+                            fullName:
+                              type: string
+                          required:
+                            - id
+                            - mrn
+                            - fullName
+                        status:
+                          type: string
+                        totalAmount:
+                          type: integer
+                        itemCount:
+                          type: integer
+                        issuedAt:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - invoiceNumber
+                        - encounterId
+                        - patientId
+                        - patient
+                        - status
+                        - totalAmount
+                        - itemCount
+                        - issuedAt
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                      invoiceNumber: INV/20260728/0001
+                      encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+                      patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                      patient:
+                        id: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                        mrn: RM-000123
+                        fullName: Budi Santoso
+                      status: ISSUED
+                      totalAmount: 125000
+                      itemCount: 3
+                      issuedAt: 2026-07-28T03:15:00.000Z
+                      createdAt: 2026-07-28T03:10:00.000Z
+                      updatedAt: 2026-07-28T03:15:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List invoices
+      tags: &a14
+        - Invoices
+    post:
+      operationId: InvoiceController_generateInvoice_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateInvoiceDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+      responses:
+        "201":
+          description: "A DRAFT invoice auto-collected from the visit: consultation fee,
+            tariffed procedures, dispensed medications. Whatever could not be
+            priced is listed in meta.gaps."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      invoiceNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      status:
+                        type: string
+                      totalAmount:
+                        type: integer
+                      itemCount:
+                        type: integer
+                      issuedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            itemType:
+                              type: string
+                            serviceTariffId:
+                              type: string
+                            description:
+                              type: string
+                            quantity:
+                              type: integer
+                            unitPrice:
+                              type: integer
+                            amount:
+                              type: integer
+                          required:
+                            - id
+                            - itemType
+                            - serviceTariffId
+                            - description
+                            - quantity
+                            - unitPrice
+                            - amount
+                    required:
+                      - id
+                      - invoiceNumber
+                      - encounterId
+                      - patientId
+                      - patient
+                      - status
+                      - totalAmount
+                      - itemCount
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - items
+                  meta:
+                    type: object
+                    properties:
+                      gaps:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            reason:
+                              type: string
+                            description:
+                              type: string
+                          required:
+                            - reason
+                            - description
+                    required:
+                      - gaps
+                  message:
+                    type: string
+                required:
+                  - data
+                  - meta
+                  - message
+                example:
+                  data:
+                    id: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                    invoiceNumber: INV/20260728/0001
+                    encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+                    patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                    patient:
+                      id: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                      mrn: RM-000123
+                      fullName: Budi Santoso
+                    status: DRAFT
+                    totalAmount: 125000
+                    itemCount: 3
+                    issuedAt: 2026-07-28T03:15:00.000Z
+                    createdAt: 2026-07-28T03:10:00.000Z
+                    updatedAt: 2026-07-28T03:15:00.000Z
+                    items:
+                      - id: b4c5d6e7-f8a9-4b0c-9d1e-2f3a4b5c6d7e
+                        itemType: CONSULTATION
+                        serviceTariffId: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                        description: Konsultasi Dokter Umum
+                        quantity: 1
+                        unitPrice: 50000
+                        amount: 50000
+                  meta:
+                    gaps:
+                      - reason: UNPRICED_MEDICATION
+                        description: Paracetamol 500 mg
+                  message: Invoice generated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Generate an invoice from a finished encounter
+      tags: *a14
+  /api/v1/invoices/{id}:
+    get:
+      operationId: InvoiceController_getInvoiceById_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The invoice with its billed lines and settlement, if any.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      invoiceNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      status:
+                        type: string
+                      totalAmount:
+                        type: integer
+                      itemCount:
+                        type: integer
+                      issuedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            itemType:
+                              type: string
+                            serviceTariffId:
+                              type: string
+                            description:
+                              type: string
+                            quantity:
+                              type: integer
+                            unitPrice:
+                              type: integer
+                            amount:
+                              type: integer
+                          required:
+                            - id
+                            - itemType
+                            - serviceTariffId
+                            - description
+                            - quantity
+                            - unitPrice
+                            - amount
+                    required:
+                      - id
+                      - invoiceNumber
+                      - encounterId
+                      - patientId
+                      - patient
+                      - status
+                      - totalAmount
+                      - itemCount
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - items
+                required:
+                  - data
+                example:
+                  data:
+                    id: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                    invoiceNumber: INV/20260728/0001
+                    encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+                    patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                    patient:
+                      id: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                      mrn: RM-000123
+                      fullName: Budi Santoso
+                    status: ISSUED
+                    totalAmount: 125000
+                    itemCount: 3
+                    issuedAt: 2026-07-28T03:15:00.000Z
+                    createdAt: 2026-07-28T03:10:00.000Z
+                    updatedAt: 2026-07-28T03:15:00.000Z
+                    items:
+                      - id: b4c5d6e7-f8a9-4b0c-9d1e-2f3a4b5c6d7e
+                        itemType: CONSULTATION
+                        serviceTariffId: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                        description: Konsultasi Dokter Umum
+                        quantity: 1
+                        unitPrice: 50000
+                        amount: 50000
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Invoice not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Invoice not found.
+      security:
+        - bearer: []
+      summary: Get an invoice
+      tags: *a14
+  /api/v1/invoices/{id}/issue:
+    post:
+      operationId: InvoiceController_issueInvoice_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The invoice is ISSUED — the document handed to the patient. From
+            here it is corrected by voiding and reissuing, never edited.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      invoiceNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      status:
+                        type: string
+                      totalAmount:
+                        type: integer
+                      itemCount:
+                        type: integer
+                      issuedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            itemType:
+                              type: string
+                            serviceTariffId:
+                              type: string
+                            description:
+                              type: string
+                            quantity:
+                              type: integer
+                            unitPrice:
+                              type: integer
+                            amount:
+                              type: integer
+                          required:
+                            - id
+                            - itemType
+                            - serviceTariffId
+                            - description
+                            - quantity
+                            - unitPrice
+                            - amount
+                    required:
+                      - id
+                      - invoiceNumber
+                      - encounterId
+                      - patientId
+                      - patient
+                      - status
+                      - totalAmount
+                      - itemCount
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - items
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                    invoiceNumber: INV/20260728/0001
+                    encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+                    patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                    patient:
+                      id: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                      mrn: RM-000123
+                      fullName: Budi Santoso
+                    status: ISSUED
+                    totalAmount: 125000
+                    itemCount: 3
+                    issuedAt: 2026-07-28T03:15:00.000Z
+                    createdAt: 2026-07-28T03:10:00.000Z
+                    updatedAt: 2026-07-28T03:15:00.000Z
+                    items:
+                      - id: b4c5d6e7-f8a9-4b0c-9d1e-2f3a4b5c6d7e
+                        itemType: CONSULTATION
+                        serviceTariffId: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                        description: Konsultasi Dokter Umum
+                        quantity: 1
+                        unitPrice: 50000
+                        amount: 50000
+                  message: Invoice issued
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Invoice not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Invoice not found.
+      security:
+        - bearer: []
+      summary: Issue a draft invoice
+      tags: *a14
+  /api/v1/invoices/{id}/payment:
+    post:
+      operationId: InvoiceController_recordPayment_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordPaymentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  method: CASH
+                  amount: 125000
+      responses:
+        "200":
+          description: The invoice is PAID. The amount must repeat the invoice total
+            exactly — one full payment per invoice in v1.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      invoiceNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      status:
+                        type: string
+                      totalAmount:
+                        type: integer
+                      itemCount:
+                        type: integer
+                      issuedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            itemType:
+                              type: string
+                            serviceTariffId:
+                              type: string
+                            description:
+                              type: string
+                            quantity:
+                              type: integer
+                            unitPrice:
+                              type: integer
+                            amount:
+                              type: integer
+                          required:
+                            - id
+                            - itemType
+                            - serviceTariffId
+                            - description
+                            - quantity
+                            - unitPrice
+                            - amount
+                      payment:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          invoiceId:
+                            type: string
+                          method:
+                            type: string
+                          amount:
+                            type: integer
+                          paidAt:
+                            type: string
+                          cashierId:
+                            type: string
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - invoiceId
+                          - method
+                          - amount
+                          - paidAt
+                          - cashierId
+                          - createdAt
+                    required:
+                      - id
+                      - invoiceNumber
+                      - encounterId
+                      - patientId
+                      - patient
+                      - status
+                      - totalAmount
+                      - itemCount
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - items
+                      - payment
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                    invoiceNumber: INV/20260728/0001
+                    encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+                    patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                    patient:
+                      id: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                      mrn: RM-000123
+                      fullName: Budi Santoso
+                    status: PAID
+                    totalAmount: 125000
+                    itemCount: 3
+                    issuedAt: 2026-07-28T03:15:00.000Z
+                    createdAt: 2026-07-28T03:10:00.000Z
+                    updatedAt: 2026-07-28T03:15:00.000Z
+                    items:
+                      - id: b4c5d6e7-f8a9-4b0c-9d1e-2f3a4b5c6d7e
+                        itemType: CONSULTATION
+                        serviceTariffId: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                        description: Konsultasi Dokter Umum
+                        quantity: 1
+                        unitPrice: 50000
+                        amount: 50000
+                    payment:
+                      id: c5d6e7f8-a9b0-4c1d-8e2f-3a4b5c6d7e8f
+                      invoiceId: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                      method: CASH
+                      amount: 125000
+                      paidAt: 2026-07-28T03:20:00.000Z
+                      cashierId: d6e7f8a9-b0c1-4d2e-9f3a-4b5c6d7e8f9a
+                      createdAt: 2026-07-28T03:20:00.000Z
+                  message: Payment recorded
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Invoice not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Invoice not found.
+      security:
+        - bearer: []
+      summary: Record the payment for an issued invoice
+      tags: *a14
+  /api/v1/invoices/{id}/void:
+    post:
+      operationId: InvoiceController_voidInvoice_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VoidInvoiceDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  reason: Wrong consultation tariff applied; reissuing with the corrected price
+                    list
+      responses:
+        "200":
+          description: The invoice is VOID with the given reason and an audit event,
+            freeing the encounter for a corrected reissue. PAID invoices can not
+            be voided in v1 — refunds are out of scope.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      invoiceNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      status:
+                        type: string
+                      totalAmount:
+                        type: integer
+                      itemCount:
+                        type: integer
+                      issuedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      voidedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            itemType:
+                              type: string
+                            serviceTariffId:
+                              type: string
+                            description:
+                              type: string
+                            quantity:
+                              type: integer
+                            unitPrice:
+                              type: integer
+                            amount:
+                              type: integer
+                          required:
+                            - id
+                            - itemType
+                            - serviceTariffId
+                            - description
+                            - quantity
+                            - unitPrice
+                            - amount
+                    required:
+                      - id
+                      - invoiceNumber
+                      - encounterId
+                      - patientId
+                      - patient
+                      - status
+                      - totalAmount
+                      - itemCount
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - voidedAt
+                      - items
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                    invoiceNumber: INV/20260728/0001
+                    encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+                    patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                    patient:
+                      id: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                      mrn: RM-000123
+                      fullName: Budi Santoso
+                    status: VOID
+                    totalAmount: 125000
+                    itemCount: 3
+                    issuedAt: 2026-07-28T03:15:00.000Z
+                    createdAt: 2026-07-28T03:10:00.000Z
+                    updatedAt: 2026-07-28T03:15:00.000Z
+                    voidedAt: 2026-07-28T04:00:00.000Z
+                    items:
+                      - id: b4c5d6e7-f8a9-4b0c-9d1e-2f3a4b5c6d7e
+                        itemType: CONSULTATION
+                        serviceTariffId: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                        description: Konsultasi Dokter Umum
+                        quantity: 1
+                        unitPrice: 50000
+                        amount: 50000
+                  message: Invoice voided
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Invoice not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Invoice not found.
+      security:
+        - bearer: []
+      summary: Void an invoice
+      tags: *a14
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -8092,7 +9496,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a13
+      tags: &a15
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -8185,7 +9589,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a13
+      tags: *a15
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -8277,7 +9681,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a13
+      tags: *a15
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -9500,6 +10904,114 @@ components:
       required:
         - prescriptionId
         - items
+    CreateServiceTariffDto:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        category:
+          type: string
+          enum:
+            - CONSULTATION
+            - PROCEDURE
+            - OTHER
+        icd9cmCode:
+          type: string
+          minLength: 1
+          maxLength: 16
+        price:
+          type: number
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 9999999999.99
+          exclusiveMaximum: false
+        isActive:
+          type: boolean
+          default: true
+      required:
+        - code
+        - name
+        - category
+        - price
+    UpdateServiceTariffDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        category:
+          type: string
+          enum:
+            - CONSULTATION
+            - PROCEDURE
+            - OTHER
+        icd9cmCode:
+          type: string
+          minLength: 1
+          maxLength: 16
+          nullable: true
+        price:
+          type: number
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 9999999999.99
+          exclusiveMaximum: false
+        isActive:
+          type: boolean
+    GenerateInvoiceDto:
+      type: object
+      properties:
+        encounterId:
+          type: string
+          format: uuid
+        consultationTariffId:
+          type: string
+          format: uuid
+      required:
+        - encounterId
+    RecordPaymentDto:
+      type: object
+      properties:
+        method:
+          type: string
+          enum:
+            - CASH
+            - TRANSFER
+            - QRIS
+            - INSURANCE
+        amount:
+          type: number
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 9999999999.99
+          exclusiveMaximum: false
+        referenceNumber:
+          type: string
+          minLength: 1
+          maxLength: 100
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - method
+        - amount
+    VoidInvoiceDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+        - reason
     AssignRoleDto:
       type: object
       properties:

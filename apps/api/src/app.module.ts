@@ -14,6 +14,7 @@ import { AppointmentManagementModule } from './modules/appointment-management/ap
 import { AuthModule } from './modules/auth/auth.module';
 import { DoctorManagementModule } from './modules/doctor-management/doctor-management.module';
 import { DoctorPatientModule } from './modules/doctor-patient/doctor-patient.module';
+import { BillingModule } from './modules/billing/billing.module';
 import { EmrModule } from './modules/emr/emr.module';
 import { HealthModule } from './modules/health/health.module';
 import { PatientManagementModule } from './modules/patient-management/patient-management.module';
@@ -51,6 +52,7 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     RegistrationFlowModule,
     EmrModule,
     PharmacyFlowModule,
+    BillingModule,
     AuthModule,
     RbacModule,
     HealthModule,
