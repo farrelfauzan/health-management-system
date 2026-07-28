@@ -281,6 +281,7 @@ export type EncounterWhereInput = {
   diagnoses?: Prisma.DiagnosisListRelationFilter
   procedures?: Prisma.ProcedureListRelationFilter
   prescriptions?: Prisma.PrescriptionListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
 }
 
 export type EncounterOrderByWithRelationInput = {
@@ -307,6 +308,7 @@ export type EncounterOrderByWithRelationInput = {
   diagnoses?: Prisma.DiagnosisOrderByRelationAggregateInput
   procedures?: Prisma.ProcedureOrderByRelationAggregateInput
   prescriptions?: Prisma.PrescriptionOrderByRelationAggregateInput
+  invoices?: Prisma.InvoiceOrderByRelationAggregateInput
 }
 
 export type EncounterWhereUniqueInput = Prisma.AtLeast<{
@@ -336,6 +338,7 @@ export type EncounterWhereUniqueInput = Prisma.AtLeast<{
   diagnoses?: Prisma.DiagnosisListRelationFilter
   procedures?: Prisma.ProcedureListRelationFilter
   prescriptions?: Prisma.PrescriptionListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
 }, "id" | "registrationId">
 
 export type EncounterOrderByWithAggregationInput = {
@@ -400,6 +403,7 @@ export type EncounterCreateInput = {
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateInput = {
@@ -422,6 +426,7 @@ export type EncounterUncheckedCreateInput = {
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUpdateInput = {
@@ -444,6 +449,7 @@ export type EncounterUpdateInput = {
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateInput = {
@@ -466,6 +472,7 @@ export type EncounterUncheckedUpdateInput = {
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateManyInput = {
@@ -812,6 +819,20 @@ export type EncounterUpdateOneWithoutPrescriptionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutPrescriptionsInput, Prisma.EncounterUpdateWithoutPrescriptionsInput>, Prisma.EncounterUncheckedUpdateWithoutPrescriptionsInput>
 }
 
+export type EncounterCreateNestedOneWithoutInvoicesInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutInvoicesInput, Prisma.EncounterUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutInvoicesInput
+  connect?: Prisma.EncounterWhereUniqueInput
+}
+
+export type EncounterUpdateOneRequiredWithoutInvoicesNestedInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutInvoicesInput, Prisma.EncounterUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutInvoicesInput
+  upsert?: Prisma.EncounterUpsertWithoutInvoicesInput
+  connect?: Prisma.EncounterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutInvoicesInput, Prisma.EncounterUpdateWithoutInvoicesInput>, Prisma.EncounterUncheckedUpdateWithoutInvoicesInput>
+}
+
 export type EncounterCreateWithoutCreatedByInput = {
   id?: string
   status?: $Enums.EncounterStatus
@@ -831,6 +852,7 @@ export type EncounterCreateWithoutCreatedByInput = {
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutCreatedByInput = {
@@ -852,6 +874,7 @@ export type EncounterUncheckedCreateWithoutCreatedByInput = {
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutCreatedByInput = {
@@ -920,6 +943,7 @@ export type EncounterCreateWithoutPatientInput = {
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutPatientInput = {
@@ -941,6 +965,7 @@ export type EncounterUncheckedCreateWithoutPatientInput = {
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutPatientInput = {
@@ -988,6 +1013,7 @@ export type EncounterCreateWithoutDoctorInput = {
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutDoctorInput = {
@@ -1009,6 +1035,7 @@ export type EncounterUncheckedCreateWithoutDoctorInput = {
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutDoctorInput = {
@@ -1056,6 +1083,7 @@ export type EncounterCreateWithoutRegistrationInput = {
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutRegistrationInput = {
@@ -1077,6 +1105,7 @@ export type EncounterUncheckedCreateWithoutRegistrationInput = {
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutRegistrationInput = {
@@ -1114,6 +1143,7 @@ export type EncounterUpdateWithoutRegistrationInput = {
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutRegistrationInput = {
@@ -1135,6 +1165,7 @@ export type EncounterUncheckedUpdateWithoutRegistrationInput = {
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutVitalSignsInput = {
@@ -1156,6 +1187,7 @@ export type EncounterCreateWithoutVitalSignsInput = {
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutVitalSignsInput = {
@@ -1177,6 +1209,7 @@ export type EncounterUncheckedCreateWithoutVitalSignsInput = {
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutVitalSignsInput = {
@@ -1214,6 +1247,7 @@ export type EncounterUpdateWithoutVitalSignsInput = {
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutVitalSignsInput = {
@@ -1235,6 +1269,7 @@ export type EncounterUncheckedUpdateWithoutVitalSignsInput = {
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutDiagnosesInput = {
@@ -1256,6 +1291,7 @@ export type EncounterCreateWithoutDiagnosesInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutDiagnosesInput = {
@@ -1277,6 +1313,7 @@ export type EncounterUncheckedCreateWithoutDiagnosesInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutDiagnosesInput = {
@@ -1314,6 +1351,7 @@ export type EncounterUpdateWithoutDiagnosesInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutDiagnosesInput = {
@@ -1335,6 +1373,7 @@ export type EncounterUncheckedUpdateWithoutDiagnosesInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutProceduresInput = {
@@ -1356,6 +1395,7 @@ export type EncounterCreateWithoutProceduresInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutProceduresInput = {
@@ -1377,6 +1417,7 @@ export type EncounterUncheckedCreateWithoutProceduresInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutProceduresInput = {
@@ -1414,6 +1455,7 @@ export type EncounterUpdateWithoutProceduresInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutProceduresInput = {
@@ -1435,6 +1477,7 @@ export type EncounterUncheckedUpdateWithoutProceduresInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutPrescriptionsInput = {
@@ -1456,6 +1499,7 @@ export type EncounterCreateWithoutPrescriptionsInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutPrescriptionsInput = {
@@ -1477,6 +1521,7 @@ export type EncounterUncheckedCreateWithoutPrescriptionsInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutPrescriptionsInput = {
@@ -1514,6 +1559,7 @@ export type EncounterUpdateWithoutPrescriptionsInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutPrescriptionsInput = {
@@ -1535,6 +1581,111 @@ export type EncounterUncheckedUpdateWithoutPrescriptionsInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
+}
+
+export type EncounterCreateWithoutInvoicesInput = {
+  id?: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  registration: Prisma.RegistrationCreateNestedOneWithoutEncounterInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutEncountersInput
+  doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
+  vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+}
+
+export type EncounterUncheckedCreateWithoutInvoicesInput = {
+  id?: string
+  registrationId: string
+  patientId: string
+  doctorId: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+}
+
+export type EncounterCreateOrConnectWithoutInvoicesInput = {
+  where: Prisma.EncounterWhereUniqueInput
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutInvoicesInput, Prisma.EncounterUncheckedCreateWithoutInvoicesInput>
+}
+
+export type EncounterUpsertWithoutInvoicesInput = {
+  update: Prisma.XOR<Prisma.EncounterUpdateWithoutInvoicesInput, Prisma.EncounterUncheckedUpdateWithoutInvoicesInput>
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutInvoicesInput, Prisma.EncounterUncheckedCreateWithoutInvoicesInput>
+  where?: Prisma.EncounterWhereInput
+}
+
+export type EncounterUpdateToOneWithWhereWithoutInvoicesInput = {
+  where?: Prisma.EncounterWhereInput
+  data: Prisma.XOR<Prisma.EncounterUpdateWithoutInvoicesInput, Prisma.EncounterUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type EncounterUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutEncounterNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutEncountersNestedInput
+  doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
+  vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+}
+
+export type EncounterUncheckedUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateManyCreatedByInput = {
@@ -1573,6 +1724,7 @@ export type EncounterUpdateWithoutCreatedByInput = {
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutCreatedByInput = {
@@ -1594,6 +1746,7 @@ export type EncounterUncheckedUpdateWithoutCreatedByInput = {
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1649,6 +1802,7 @@ export type EncounterUpdateWithoutPatientInput = {
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutPatientInput = {
@@ -1670,6 +1824,7 @@ export type EncounterUncheckedUpdateWithoutPatientInput = {
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateManyWithoutPatientInput = {
@@ -1725,6 +1880,7 @@ export type EncounterUpdateWithoutDoctorInput = {
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutDoctorInput = {
@@ -1746,6 +1902,7 @@ export type EncounterUncheckedUpdateWithoutDoctorInput = {
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateManyWithoutDoctorInput = {
@@ -1775,6 +1932,7 @@ export type EncounterCountOutputType = {
   diagnoses: number
   procedures: number
   prescriptions: number
+  invoices: number
 }
 
 export type EncounterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1782,6 +1940,7 @@ export type EncounterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   diagnoses?: boolean | EncounterCountOutputTypeCountDiagnosesArgs
   procedures?: boolean | EncounterCountOutputTypeCountProceduresArgs
   prescriptions?: boolean | EncounterCountOutputTypeCountPrescriptionsArgs
+  invoices?: boolean | EncounterCountOutputTypeCountInvoicesArgs
 }
 
 /**
@@ -1822,6 +1981,13 @@ export type EncounterCountOutputTypeCountPrescriptionsArgs<ExtArgs extends runti
   where?: Prisma.PrescriptionWhereInput
 }
 
+/**
+ * EncounterCountOutputType without action
+ */
+export type EncounterCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvoiceWhereInput
+}
+
 
 export type EncounterSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1847,6 +2013,7 @@ export type EncounterSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   diagnoses?: boolean | Prisma.Encounter$diagnosesArgs<ExtArgs>
   procedures?: boolean | Prisma.Encounter$proceduresArgs<ExtArgs>
   prescriptions?: boolean | Prisma.Encounter$prescriptionsArgs<ExtArgs>
+  invoices?: boolean | Prisma.Encounter$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.EncounterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["encounter"]>
 
@@ -1922,6 +2089,7 @@ export type EncounterInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   diagnoses?: boolean | Prisma.Encounter$diagnosesArgs<ExtArgs>
   procedures?: boolean | Prisma.Encounter$proceduresArgs<ExtArgs>
   prescriptions?: boolean | Prisma.Encounter$prescriptionsArgs<ExtArgs>
+  invoices?: boolean | Prisma.Encounter$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.EncounterCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EncounterIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1948,6 +2116,7 @@ export type $EncounterPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     diagnoses: Prisma.$DiagnosisPayload<ExtArgs>[]
     procedures: Prisma.$ProcedurePayload<ExtArgs>[]
     prescriptions: Prisma.$PrescriptionPayload<ExtArgs>[]
+    invoices: Prisma.$InvoicePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2380,6 +2549,7 @@ export interface Prisma__EncounterClient<T, Null = never, ExtArgs extends runtim
   diagnoses<T extends Prisma.Encounter$diagnosesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$diagnosesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   procedures<T extends Prisma.Encounter$proceduresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$proceduresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProcedurePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   prescriptions<T extends Prisma.Encounter$prescriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$prescriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invoices<T extends Prisma.Encounter$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2937,6 +3107,30 @@ export type Encounter$prescriptionsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.PrescriptionScalarFieldEnum | Prisma.PrescriptionScalarFieldEnum[]
+}
+
+/**
+ * Encounter.invoices
+ */
+export type Encounter$invoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invoice
+   */
+  select?: Prisma.InvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invoice
+   */
+  omit?: Prisma.InvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvoiceInclude<ExtArgs> | null
+  where?: Prisma.InvoiceWhereInput
+  orderBy?: Prisma.InvoiceOrderByWithRelationInput | Prisma.InvoiceOrderByWithRelationInput[]
+  cursor?: Prisma.InvoiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
 }
 
 /**

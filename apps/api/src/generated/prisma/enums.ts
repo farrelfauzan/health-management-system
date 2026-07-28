@@ -229,3 +229,32 @@ export const MedicationCategory = {
 } as const
 
 export type MedicationCategory = (typeof MedicationCategory)[keyof typeof MedicationCategory]
+
+
+export const ServiceTariffCategory = {
+  CONSULTATION: 'CONSULTATION',
+  PROCEDURE: 'PROCEDURE',
+  OTHER: 'OTHER'
+} as const
+
+export type ServiceTariffCategory = (typeof ServiceTariffCategory)[keyof typeof ServiceTariffCategory]
+
+
+export const InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  ISSUED: 'ISSUED',
+  PAID: 'PAID',
+  VOID: 'VOID'
+} as const
+
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
+
+
+export const InvoiceItemType = {
+  CONSULTATION: 'CONSULTATION',
+  PROCEDURE: 'PROCEDURE',
+  MEDICATION: 'MEDICATION',
+  OTHER: 'OTHER'
+} as const
+
+export type InvoiceItemType = (typeof InvoiceItemType)[keyof typeof InvoiceItemType]
