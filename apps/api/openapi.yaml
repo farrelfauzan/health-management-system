@@ -620,6 +620,14 @@ paths:
               - IN_PATIENT
               - OUT_PATIENT
               - DISCHARGED
+        - name: hasAppointment
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
         - name: createdFrom
           required: false
           in: query
@@ -4763,6 +4771,10 @@ paths:
                           type: string
                         status:
                           type: string
+                        queueNumber:
+                          type: integer
+                        queueDate:
+                          type: string
                         registeredAt:
                           type: string
                         createdById:
@@ -4816,6 +4828,8 @@ paths:
                         - patientId
                         - appointmentId
                         - status
+                        - queueNumber
+                        - queueDate
                         - registeredAt
                         - createdById
                         - createdAt
@@ -4844,6 +4858,8 @@ paths:
                       patientId: 11111111-1111-4111-8111-111111111111
                       appointmentId: 44444444-4444-4444-8444-444444444444
                       status: REGISTERED
+                      queueNumber: 1
+                      queueDate: 2026-07-20
                       registeredAt: 2026-07-20T08:00:00.000Z
                       createdById: 33333333-3333-4333-8333-333333333333
                       createdAt: 2026-07-20T08:00:00.000Z
@@ -4921,6 +4937,10 @@ paths:
                         type: string
                       status:
                         type: string
+                      queueNumber:
+                        type: integer
+                      queueDate:
+                        type: string
                       registeredAt:
                         type: string
                       createdById:
@@ -4934,6 +4954,8 @@ paths:
                       - patientId
                       - appointmentId
                       - status
+                      - queueNumber
+                      - queueDate
                       - registeredAt
                       - createdById
                       - createdAt
@@ -4949,6 +4971,8 @@ paths:
                     patientId: 11111111-1111-4111-8111-111111111111
                     appointmentId: 44444444-4444-4444-8444-444444444444
                     status: REGISTERED
+                    queueNumber: 1
+                    queueDate: 2026-07-20
                     registeredAt: 2026-07-20T08:00:00.000Z
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -4985,6 +5009,145 @@ paths:
         - bearer: []
       summary: Create a registration
       tags: *a8
+  /api/v1/registrations/queue-board:
+    get:
+      operationId: RegistrationFlowController_getQueueBoard_v1
+      parameters:
+        - name: date
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+      responses:
+        "200":
+          description: The day's antrian in queue-number order with per-status counts;
+            defaults to today in the clinic time zone.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                      counts:
+                        type: object
+                        properties:
+                          pending:
+                            type: integer
+                          checkedIn:
+                            type: integer
+                          completed:
+                            type: integer
+                          cancelled:
+                            type: integer
+                        required:
+                          - pending
+                          - checkedIn
+                          - completed
+                          - cancelled
+                      entries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            registrationId:
+                              type: string
+                            queueNumber:
+                              type: integer
+                            status:
+                              type: string
+                            registeredAt:
+                              type: string
+                            checkedInAt:
+                              type: string
+                            patient:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                mrn:
+                                  type: string
+                                fullName:
+                                  type: string
+                              required:
+                                - id
+                                - mrn
+                                - fullName
+                            doctor:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                fullName:
+                                  type: string
+                                specialty:
+                                  type: string
+                              required:
+                                - id
+                                - fullName
+                                - specialty
+                          required:
+                            - registrationId
+                            - queueNumber
+                            - status
+                            - registeredAt
+                            - checkedInAt
+                            - patient
+                            - doctor
+                    required:
+                      - date
+                      - counts
+                      - entries
+                required:
+                  - data
+                example:
+                  data:
+                    date: 2026-07-20
+                    counts:
+                      pending: 0
+                      checkedIn: 1
+                      completed: 0
+                      cancelled: 0
+                    entries:
+                      - registrationId: 55555555-5555-4555-8555-555555555555
+                        queueNumber: 1
+                        status: CHECKED_IN
+                        registeredAt: 2026-07-20T08:00:00.000Z
+                        checkedInAt: 2026-07-20T08:00:00.000Z
+                        patient:
+                          id: 11111111-1111-4111-8111-111111111111
+                          mrn: "00000001"
+                          fullName: Aisha Rahman
+                        doctor:
+                          id: 22222222-2222-4222-8222-222222222222
+                          fullName: Dr. Budi Santoso
+                          specialty: Internal Medicine
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get a day's queue board
+      tags: *a8
   /api/v1/registrations/{id}:
     get:
       operationId: RegistrationFlowController_getRegistrationById_v1
@@ -5013,6 +5176,10 @@ paths:
                         type: string
                       status:
                         type: string
+                      queueNumber:
+                        type: integer
+                      queueDate:
+                        type: string
                       registeredAt:
                         type: string
                       createdById:
@@ -5026,6 +5193,8 @@ paths:
                       - patientId
                       - appointmentId
                       - status
+                      - queueNumber
+                      - queueDate
                       - registeredAt
                       - createdById
                       - createdAt
@@ -5038,6 +5207,8 @@ paths:
                     patientId: 11111111-1111-4111-8111-111111111111
                     appointmentId: 44444444-4444-4444-8444-444444444444
                     status: REGISTERED
+                    queueNumber: 1
+                    queueDate: 2026-07-20
                     registeredAt: 2026-07-20T08:00:00.000Z
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -5111,6 +5282,10 @@ paths:
                         type: string
                       status:
                         type: string
+                      queueNumber:
+                        type: integer
+                      queueDate:
+                        type: string
                       registeredAt:
                         type: string
                       createdById:
@@ -5126,6 +5301,8 @@ paths:
                       - patientId
                       - appointmentId
                       - status
+                      - queueNumber
+                      - queueDate
                       - registeredAt
                       - createdById
                       - createdAt
@@ -5142,6 +5319,8 @@ paths:
                     patientId: 11111111-1111-4111-8111-111111111111
                     appointmentId: 44444444-4444-4444-8444-444444444444
                     status: CHECKED_IN
+                    queueNumber: 1
+                    queueDate: 2026-07-20
                     registeredAt: 2026-07-20T08:00:00.000Z
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z

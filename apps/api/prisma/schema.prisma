@@ -565,11 +565,35 @@ model Appointment {
   @@map("appointments")
 }
 
+/// Allocates the daily antrian sequence, one row per clinic-local calendar
+/// day, consumed with a single atomic upsert (`INSERT … ON CONFLICT … UPDATE
+/// … RETURNING`) inside the registration-create transaction — the same
+/// reasoning as `MrnCounter`: concurrent front-desk and self-service
+/// registrations race, and `MAX(queue_number) + 1` hands two patients the
+/// same ticket. The queue is clinic-wide, mirroring the single-facility MRN
+/// decision; a per-poli split arrives with the BPJS poli mapping (P11-T03).
+model QueueCounter {
+  queueDate DateTime @id @map("queue_date") @db.Date
+  nextValue Int      @map("next_value")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("queue_counters")
+}
+
 model Registration {
   id            String             @id @default(uuid()) @db.Uuid
   patientId     String             @map("patient_id") @db.Uuid
   appointmentId String?            @unique @map("appointment_id") @db.Uuid
   status        RegistrationStatus @default(PENDING)
+  /// Daily antrian ticket, allocated from `QueueCounter` when the
+  /// registration is created. Nullable only because rows predate the queue;
+  /// never renumbered and never reissued — a cancellation leaves a gap, which
+  /// is what a paper ticket roll does too.
+  queueNumber   Int?               @map("queue_number")
+  /// The clinic-local (`CLINIC_TIMEZONE`) calendar day the ticket belongs to.
+  /// Stored explicitly rather than derived from `registeredAt` so the board
+  /// query never re-does timezone arithmetic over UTC timestamps.
+  queueDate     DateTime?          @map("queue_date") @db.Date
   registeredAt  DateTime           @default(now()) @map("registered_at")
   checkedInAt   DateTime?          @map("checked_in_at")
   completedAt   DateTime?          @map("completed_at")
@@ -583,6 +607,7 @@ model Registration {
   createdBy   User?          @relation("RegistrationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   encounter   Encounter?
 
+  @@unique([queueDate, queueNumber])
   @@index([patientId, status])
   @@index([status, registeredAt])
   @@index([deletedAt])

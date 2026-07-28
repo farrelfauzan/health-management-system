@@ -43,6 +43,7 @@ export type ListPatientsParams = {
   bpjsNumber?: string;
   doctorId?: string;
   status?: PatientStatusValue;
+  hasAppointment?: boolean;
   createdFrom?: Date;
   createdTo?: Date;
 };

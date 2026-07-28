@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { PatientManagementControllerListPatientsV1HasAppointment } from './patientManagementControllerListPatientsV1HasAppointment';
 import type { PatientManagementControllerListPatientsV1Status } from './patientManagementControllerListPatientsV1Status';
 
 export type PatientManagementControllerListPatientsV1Params = {
@@ -25,6 +26,7 @@ nik?: string;
 bpjsNumber?: string;
 doctorId?: string;
 status?: PatientManagementControllerListPatientsV1Status;
+hasAppointment?: PatientManagementControllerListPatientsV1HasAppointment;
 /**
  * @pattern ^\d{4}-\d{2}-\d{2}$
  */

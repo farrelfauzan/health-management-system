@@ -398,6 +398,7 @@ export const ModelName = {
   DoctorPatient: 'DoctorPatient',
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
+  QueueCounter: 'QueueCounter',
   Registration: 'Registration',
   Encounter: 'Encounter',
   VitalSigns: 'VitalSigns',
@@ -430,7 +431,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1467,6 +1468,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.AppointmentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.AppointmentCountAggregateOutputType> | number
+        }
+      }
+    }
+    QueueCounter: {
+      payload: Prisma.$QueueCounterPayload<ExtArgs>
+      fields: Prisma.QueueCounterFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.QueueCounterFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.QueueCounterFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload>
+        }
+        findFirst: {
+          args: Prisma.QueueCounterFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.QueueCounterFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload>
+        }
+        findMany: {
+          args: Prisma.QueueCounterFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload>[]
+        }
+        create: {
+          args: Prisma.QueueCounterCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload>
+        }
+        createMany: {
+          args: Prisma.QueueCounterCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.QueueCounterCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload>[]
+        }
+        delete: {
+          args: Prisma.QueueCounterDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload>
+        }
+        update: {
+          args: Prisma.QueueCounterUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload>
+        }
+        deleteMany: {
+          args: Prisma.QueueCounterDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.QueueCounterUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.QueueCounterUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload>[]
+        }
+        upsert: {
+          args: Prisma.QueueCounterUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QueueCounterPayload>
+        }
+        aggregate: {
+          args: Prisma.QueueCounterAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateQueueCounter>
+        }
+        groupBy: {
+          args: Prisma.QueueCounterGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QueueCounterGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.QueueCounterCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QueueCounterCountAggregateOutputType> | number
         }
       }
     }
@@ -3000,11 +3075,22 @@ export const AppointmentScalarFieldEnum = {
 export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
 
 
+export const QueueCounterScalarFieldEnum = {
+  queueDate: 'queueDate',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QueueCounterScalarFieldEnum = (typeof QueueCounterScalarFieldEnum)[keyof typeof QueueCounterScalarFieldEnum]
+
+
 export const RegistrationScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
   appointmentId: 'appointmentId',
   status: 'status',
+  queueNumber: 'queueNumber',
+  queueDate: 'queueDate',
   registeredAt: 'registeredAt',
   checkedInAt: 'checkedInAt',
   completedAt: 'completedAt',
@@ -3839,6 +3925,7 @@ export type GlobalOmitConfig = {
   doctorPatient?: Prisma.DoctorPatientOmit
   doctorPatientActivity?: Prisma.DoctorPatientActivityOmit
   appointment?: Prisma.AppointmentOmit
+  queueCounter?: Prisma.QueueCounterOmit
   registration?: Prisma.RegistrationOmit
   encounter?: Prisma.EncounterOmit
   vitalSigns?: Prisma.VitalSignsOmit

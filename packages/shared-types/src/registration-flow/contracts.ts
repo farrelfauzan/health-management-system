@@ -6,6 +6,8 @@ export type RegistrationResponse = {
   patientId: string;
   appointmentId?: string;
   status: RegistrationStatusValue;
+  queueNumber?: number;
+  queueDate?: string;
   registeredAt: string;
   checkedInAt?: string;
   completedAt?: string;
@@ -42,4 +44,27 @@ export type RegistrationsListMeta = {
   page: number;
   limit: number;
   total: number;
+};
+
+export type QueueBoardEntry = {
+  registrationId: string;
+  queueNumber: number;
+  status: RegistrationStatusValue;
+  registeredAt: string;
+  checkedInAt?: string;
+  patient: RegistrationRelatedPatient;
+  doctor?: RegistrationRelatedDoctor;
+};
+
+export type QueueBoardCounts = {
+  pending: number;
+  checkedIn: number;
+  completed: number;
+  cancelled: number;
+};
+
+export type QueueBoardResponse = {
+  date: string;
+  counts: QueueBoardCounts;
+  entries: QueueBoardEntry[];
 };

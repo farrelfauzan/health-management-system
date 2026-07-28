@@ -73,6 +73,26 @@ export const listRegistrationsQuerySchema = z
     { message: 'registeredFrom must be earlier than or equal to registeredTo' },
   );
 
+/**
+ * Formats an instant as the YYYY-MM-DD calendar date it falls on in the given
+ * IANA time zone. The daily queue is a clinic-local concept: a registration
+ * at 23:30 UTC already belongs to the next day's antrian in Asia/Jakarta.
+ */
+export function getCalendarDateInTimeZone(instant: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(instant);
+}
+
+export const queueBoardQuerySchema = z.object({
+  date: registrationDateSchema
+    .refine(isValidRegistrationDateValue, 'Queue board date must be a valid calendar date')
+    .optional(),
+});
+
 export const updateRegistrationStatusSchema = z.enum(['CHECKED_IN', 'COMPLETED', 'CANCELLED']);
 
 export const updateRegistrationSchema = z
@@ -88,3 +108,4 @@ export const updateRegistrationSchema = z
 export type CreateRegistrationInput = z.infer<typeof createRegistrationSchema>;
 export type ListRegistrationsQueryInput = z.infer<typeof listRegistrationsQuerySchema>;
 export type UpdateRegistrationInput = z.infer<typeof updateRegistrationSchema>;
+export type QueueBoardQueryInput = z.infer<typeof queueBoardQuerySchema>;

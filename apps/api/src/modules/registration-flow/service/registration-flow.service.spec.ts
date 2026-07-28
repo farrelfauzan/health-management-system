@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { RegistrationFlowRepository } from '../repository/registration-flow.repository';
@@ -49,13 +50,22 @@ describe('RegistrationFlowService', () => {
     findOpenRegistrationByPatientId: jest.fn(),
     createRegistration: jest.fn(),
     updateRegistration: jest.fn(),
+    listQueueBoard: jest.fn(),
   } as unknown as RegistrationFlowRepository;
 
   const authRepositoryMock = {
     findUserById: jest.fn(),
   } as unknown as AuthRepository;
 
-  const service = new RegistrationFlowService(registrationFlowRepositoryMock, authRepositoryMock);
+  const configServiceMock = {
+    get: jest.fn().mockReturnValue('Asia/Jakarta'),
+  } as unknown as ConfigService;
+
+  const service = new RegistrationFlowService(
+    registrationFlowRepositoryMock,
+    authRepositoryMock,
+    configServiceMock,
+  );
 
   const currentUser = {
     sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8',
@@ -72,6 +82,8 @@ describe('RegistrationFlowService', () => {
     patientId,
     appointmentId: null,
     status: 'PENDING',
+    queueNumber: 1,
+    queueDate: new Date('2026-07-18T00:00:00.000Z'),
     registeredAt: new Date('2026-07-18T08:00:00.000Z'),
     checkedInAt: null,
     completedAt: null,
@@ -103,6 +115,7 @@ describe('RegistrationFlowService', () => {
     findOpenRegistrationByPatientId: jest.Mock;
     createRegistration: jest.Mock;
     updateRegistration: jest.Mock;
+    listQueueBoard: jest.Mock;
   };
 
   const authMock = authRepositoryMock as unknown as { findUserById: jest.Mock };
@@ -131,6 +144,7 @@ describe('RegistrationFlowService', () => {
     repositoryMock.findOpenRegistrationByPatientId.mockResolvedValue(null);
     repositoryMock.createRegistration.mockResolvedValue(registrationRecord);
     repositoryMock.updateRegistration.mockResolvedValue(registrationRecord);
+    repositoryMock.listQueueBoard.mockResolvedValue([registrationRecord]);
   });
 
   describe('listRegistrations', () => {
@@ -339,7 +353,97 @@ describe('RegistrationFlowService', () => {
         patientId,
         appointmentId,
         createdById: currentUser.sub,
+        queueDate: expect.any(Date),
       });
+    });
+
+    it('stamps the clinic-local calendar day as the queue date', async () => {
+      mockPermissions([{ action: 'create', resource: 'Registration', scope: 'ANY' }]);
+      // 18:30 UTC is already 01:30 the next day in Asia/Jakarta (UTC+7).
+      jest.useFakeTimers().setSystemTime(new Date('2026-07-18T18:30:00.000Z'));
+
+      try {
+        await service.createRegistration(createPayload, currentUser);
+      } finally {
+        jest.useRealTimers();
+      }
+
+      expect(repositoryMock.createRegistration).toHaveBeenCalledWith(
+        expect.objectContaining({ queueDate: new Date('2026-07-19T00:00:00.000Z') }),
+      );
+    });
+  });
+
+  describe('getQueueBoard', () => {
+    it('throws forbidden when actor only has read:own scope', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'OWN' }]);
+
+      await expect(service.getQueueBoard({}, currentUser)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
+
+    it('queries the requested calendar date as a UTC day', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+      await service.getQueueBoard({ date: '2026-07-18' }, currentUser);
+
+      expect(repositoryMock.listQueueBoard).toHaveBeenCalledWith({
+        queueDate: new Date('2026-07-18T00:00:00.000Z'),
+      });
+    });
+
+    it('defaults to today in the clinic time zone', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+      // 18:30 UTC is already 01:30 the next day in Asia/Jakarta (UTC+7).
+      jest.useFakeTimers().setSystemTime(new Date('2026-07-18T18:30:00.000Z'));
+
+      try {
+        await service.getQueueBoard({}, currentUser);
+      } finally {
+        jest.useRealTimers();
+      }
+
+      expect(repositoryMock.listQueueBoard).toHaveBeenCalledWith({
+        queueDate: new Date('2026-07-19T00:00:00.000Z'),
+      });
+    });
+
+    it('maps entries in queue order with per-status counts', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+      repositoryMock.listQueueBoard.mockResolvedValue([
+        registrationRecord,
+        {
+          ...registrationRecord,
+          id: 'a3c1de1a-0d9b-44a1-8c2f-6a3c1de1a003',
+          queueNumber: 2,
+          status: 'CHECKED_IN',
+          checkedInAt: new Date('2026-07-18T09:00:00.000Z'),
+        },
+      ]);
+
+      const actualBoard = await service.getQueueBoard({ date: '2026-07-18' }, currentUser);
+
+      expect(actualBoard.date).toBe('2026-07-18');
+      expect(actualBoard.entries.map((entry) => entry.queueNumber)).toEqual([1, 2]);
+      expect(actualBoard.entries[1]?.checkedInAt).toBe('2026-07-18T09:00:00.000Z');
+      expect(actualBoard.counts).toEqual({
+        pending: 1,
+        checkedIn: 1,
+        completed: 0,
+        cancelled: 0,
+      });
+    });
+
+    it('skips legacy rows without a queue number', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+      repositoryMock.listQueueBoard.mockResolvedValue([
+        { ...registrationRecord, queueNumber: null, queueDate: null },
+      ]);
+
+      const actualBoard = await service.getQueueBoard({ date: '2026-07-18' }, currentUser);
+
+      expect(actualBoard.entries).toEqual([]);
     });
   });
 

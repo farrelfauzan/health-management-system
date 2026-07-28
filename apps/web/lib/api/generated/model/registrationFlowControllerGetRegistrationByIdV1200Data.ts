@@ -11,6 +11,8 @@ export type RegistrationFlowControllerGetRegistrationByIdV1200Data = {
   patientId: string;
   appointmentId: string;
   status: string;
+  queueNumber: number;
+  queueDate: string;
   registeredAt: string;
   createdById: string;
   createdAt: string;

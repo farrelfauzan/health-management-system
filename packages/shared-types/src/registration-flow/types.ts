@@ -17,6 +17,15 @@ export type CreateRegistrationRecordPayload = {
   patientId: string;
   appointmentId?: string;
   createdById: string;
+  queueDate: Date;
+};
+
+export type QueueNumberAllocationRow = {
+  allocated: number;
+};
+
+export type ListQueueBoardParams = {
+  queueDate: Date;
 };
 
 export type UpdateRegistrationRecordPayload = {
@@ -37,6 +46,8 @@ export type RegistrationRecord = {
   patientId: string;
   appointmentId: string | null;
   status: RegistrationStatusValue;
+  queueNumber: number | null;
+  queueDate: Date | null;
   registeredAt: Date;
   checkedInAt: Date | null;
   completedAt: Date | null;

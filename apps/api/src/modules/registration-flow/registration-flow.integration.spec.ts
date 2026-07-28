@@ -31,6 +31,7 @@ describe('RegistrationFlow integration', () => {
     findOpenRegistrationByPatientId: jest.fn(),
     createRegistration: jest.fn(),
     updateRegistration: jest.fn(),
+    listQueueBoard: jest.fn(),
   };
 
   const prismaServiceMock = {
@@ -43,6 +44,8 @@ describe('RegistrationFlow integration', () => {
     patientId,
     appointmentId: null,
     status: 'PENDING',
+    queueNumber: 1,
+    queueDate: new Date('2026-07-18T00:00:00.000Z'),
     registeredAt: new Date('2026-07-18T08:00:00.000Z'),
     checkedInAt: null,
     completedAt: null,
@@ -138,6 +141,7 @@ describe('RegistrationFlow integration', () => {
       status: 'CHECKED_IN',
       checkedInAt: new Date('2026-07-18T09:00:00.000Z'),
     });
+    registrationRepositoryMock.listQueueBoard.mockResolvedValue([registrationRecord]);
   });
 
   it('returns 401 when bearer token is missing', async () => {
@@ -244,6 +248,50 @@ describe('RegistrationFlow integration', () => {
 
     expect(response.status).toBe(400);
     expect(registrationRepositoryMock.listRegistrations).not.toHaveBeenCalled();
+  });
+
+  it('returns 200 for the queue board with read:any permission', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/registrations/queue-board')
+      .query({ date: '2026-07-18' })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.date).toBe('2026-07-18');
+    expect(response.body.data.entries).toHaveLength(1);
+    expect(response.body.data.entries[0].queueNumber).toBe(1);
+    expect(response.body.data.counts.pending).toBe(1);
+    expect(registrationRepositoryMock.listQueueBoard).toHaveBeenCalledWith({
+      queueDate: new Date('2026-07-18T00:00:00.000Z'),
+    });
+  });
+
+  it('returns 403 for the queue board with only read:own permission', async () => {
+    const token = await buildToken('own-user', 'own@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'OWN' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/registrations/queue-board')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(403);
+    expect(registrationRepositoryMock.listQueueBoard).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 for a queue board query with an invalid calendar date', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/registrations/queue-board')
+      .query({ date: '2026-02-30' })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(registrationRepositoryMock.listQueueBoard).not.toHaveBeenCalled();
   });
 
   it('returns 201 for registration creation with create:any permission', async () => {

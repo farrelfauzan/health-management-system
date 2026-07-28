@@ -1,6 +1,10 @@
 import {
   Actor,
   canTransitionRegistrationStatus,
+  getCalendarDateInTimeZone,
+  QueueBoardCounts,
+  QueueBoardEntry,
+  QueueBoardResponse,
   RegistrationListItem,
   RegistrationStatusValue,
   RegistrationWithRelationsRecord,
@@ -14,27 +18,39 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateRegistrationDto } from '../dto/create-registration.dto';
 import { ListRegistrationsQueryDto } from '../dto/list-registrations-query.dto';
+import { QueueBoardQueryDto } from '../dto/queue-board-query.dto';
 import { UpdateRegistrationDto } from '../dto/update-registration.dto';
 import { RegistrationFlowRepository } from '../repository/registration-flow.repository';
 
 const REGISTRABLE_APPOINTMENT_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
+const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 function parseRegistrationDateOnly(value: string): Date {
   const [yearPart = '', monthPart = '', dayPart = ''] = value.split('-');
   return new Date(Date.UTC(Number(yearPart), Number(monthPart) - 1, Number(dayPart)));
 }
 
+function formatCalendarDate(value: Date): string {
+  return value.toISOString().slice(0, 10);
+}
+
 @Injectable()
 export class RegistrationFlowService {
+  private readonly clinicTimeZone: string;
+
   constructor(
     private readonly registrationFlowRepository: RegistrationFlowRepository,
     private readonly authRepository: AuthRepository,
-  ) {}
+    configService: ConfigService,
+  ) {
+    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+  }
 
   async listRegistrations(query: ListRegistrationsQueryDto, currentUser: CurrentUser) {
     const actor = await this.getActorOrThrow(currentUser);
@@ -126,9 +142,73 @@ export class RegistrationFlowService {
       patientId: payload.patientId,
       appointmentId: payload.appointmentId,
       createdById: currentUser.sub,
+      queueDate: this.resolveClinicToday(),
     });
 
     return this.toRegistrationListItem(created);
+  }
+
+  async getQueueBoard(query: QueueBoardQueryDto, currentUser: CurrentUser): Promise<QueueBoardResponse> {
+    const actor = await this.getActorOrThrow(currentUser);
+    const readScope = this.resolveScope(actor, 'Registration', 'read');
+    // The board lists every patient in the day's queue by name, so OWN-scoped
+    // read (the patient role) is not enough — patients see their own number on
+    // their registration instead.
+    if (!readScope.hasAny) {
+      throw new ForbiddenException('You are not allowed to read the queue board');
+    }
+    const queueDate = query.date ? parseRegistrationDateOnly(query.date) : this.resolveClinicToday();
+    const registrations = await this.registrationFlowRepository.listQueueBoard({ queueDate });
+    const entries = registrations.flatMap((registration) =>
+      registration.queueNumber === null
+        ? []
+        : [this.toQueueBoardEntry(registration, registration.queueNumber)],
+    );
+    return {
+      date: formatCalendarDate(queueDate),
+      counts: this.countQueueBoardEntries(entries),
+      entries,
+    };
+  }
+
+  private resolveClinicToday(): Date {
+    return parseRegistrationDateOnly(getCalendarDateInTimeZone(new Date(), this.clinicTimeZone));
+  }
+
+  private toQueueBoardEntry(
+    registration: RegistrationWithRelationsRecord,
+    queueNumber: number,
+  ): QueueBoardEntry {
+    return {
+      registrationId: registration.id,
+      queueNumber,
+      status: registration.status,
+      registeredAt: registration.registeredAt.toISOString(),
+      checkedInAt: registration.checkedInAt?.toISOString(),
+      patient: {
+        id: registration.patient.id,
+        mrn: registration.patient.mrn,
+        fullName: registration.patient.fullName,
+      },
+      doctor: registration.appointment
+        ? {
+            id: registration.appointment.doctor.id,
+            fullName: registration.appointment.doctor.fullName,
+            specialty: registration.appointment.doctor.specialty.name,
+          }
+        : undefined,
+    };
+  }
+
+  private countQueueBoardEntries(entries: QueueBoardEntry[]): QueueBoardCounts {
+    const countByStatus = (status: RegistrationStatusValue): number =>
+      entries.filter((entry) => entry.status === status).length;
+    return {
+      pending: countByStatus('PENDING'),
+      checkedIn: countByStatus('CHECKED_IN'),
+      completed: countByStatus('COMPLETED'),
+      cancelled: countByStatus('CANCELLED'),
+    };
   }
 
   async updateRegistration(id: string, payload: UpdateRegistrationDto, currentUser: CurrentUser) {
@@ -306,6 +386,8 @@ export class RegistrationFlowService {
       patientId: registration.patientId,
       appointmentId: registration.appointmentId ?? undefined,
       status: registration.status,
+      queueNumber: registration.queueNumber ?? undefined,
+      queueDate: registration.queueDate ? formatCalendarDate(registration.queueDate) : undefined,
       registeredAt: registration.registeredAt.toISOString(),
       checkedInAt: registration.checkedInAt?.toISOString(),
       completedAt: registration.completedAt?.toISOString(),

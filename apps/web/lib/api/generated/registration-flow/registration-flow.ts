@@ -23,6 +23,8 @@ import type {
 import type {
   CreateRegistrationDto,
   RegistrationFlowControllerCreateRegistrationV1201,
+  RegistrationFlowControllerGetQueueBoardV1200,
+  RegistrationFlowControllerGetQueueBoardV1Params,
   RegistrationFlowControllerGetRegistrationByIdV1200,
   RegistrationFlowControllerListRegistrationsV1200,
   RegistrationFlowControllerListRegistrationsV1Params,
@@ -226,6 +228,99 @@ export function useRegistrationFlowControllerCreateRegistrationV1<TData = Awaite
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getRegistrationFlowControllerCreateRegistrationV1QueryOptions(createRegistrationDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Get a day's queue board
+ */
+export const registrationFlowControllerGetQueueBoardV1 = (
+    params?: RegistrationFlowControllerGetQueueBoardV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<RegistrationFlowControllerGetQueueBoardV1200>(
+      {url: `/api/v1/registrations/queue-board`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getRegistrationFlowControllerGetQueueBoardV1QueryKey = (params?: RegistrationFlowControllerGetQueueBoardV1Params,) => {
+    return [
+    `/api/v1/registrations/queue-board`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getRegistrationFlowControllerGetQueueBoardV1QueryOptions = <TData = Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError = unknown>(params?: RegistrationFlowControllerGetQueueBoardV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getRegistrationFlowControllerGetQueueBoardV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>> = ({ signal }) => registrationFlowControllerGetQueueBoardV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type RegistrationFlowControllerGetQueueBoardV1QueryResult = NonNullable<Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>>
+export type RegistrationFlowControllerGetQueueBoardV1QueryError = unknown
+
+
+export function useRegistrationFlowControllerGetQueueBoardV1<TData = Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError = unknown>(
+ params: undefined |  RegistrationFlowControllerGetQueueBoardV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>,
+          TError,
+          Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRegistrationFlowControllerGetQueueBoardV1<TData = Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError = unknown>(
+ params?: RegistrationFlowControllerGetQueueBoardV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>,
+          TError,
+          Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRegistrationFlowControllerGetQueueBoardV1<TData = Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError = unknown>(
+ params?: RegistrationFlowControllerGetQueueBoardV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a day's queue board
+ */
+
+export function useRegistrationFlowControllerGetQueueBoardV1<TData = Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError = unknown>(
+ params?: RegistrationFlowControllerGetQueueBoardV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof registrationFlowControllerGetQueueBoardV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getRegistrationFlowControllerGetQueueBoardV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

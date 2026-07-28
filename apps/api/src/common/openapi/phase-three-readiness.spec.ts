@@ -80,6 +80,7 @@ const expectedOperations: readonly ExpectedOperation[] = [
   operation(AppointmentManagementController, 'updateAppointment', 'patch', '/api/v1/appointments/{id}', 'update', 'Appointment', true),
   operation(AppointmentManagementController, 'cancelAppointment', 'post', '/api/v1/appointments/{id}/cancel', 'cancel', 'Appointment', true),
   operation(RegistrationFlowController, 'listRegistrations', 'get', '/api/v1/registrations', 'read', 'Registration'),
+  operation(RegistrationFlowController, 'getQueueBoard', 'get', '/api/v1/registrations/queue-board', 'read', 'Registration'),
   operation(RegistrationFlowController, 'getRegistrationById', 'get', '/api/v1/registrations/{id}', 'read', 'Registration'),
   operation(RegistrationFlowController, 'createRegistration', 'post', '/api/v1/registrations', 'create', 'Registration', true),
   operation(RegistrationFlowController, 'updateRegistration', 'patch', '/api/v1/registrations/{id}', 'update', 'Registration', true),
