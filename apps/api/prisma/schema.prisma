@@ -206,6 +206,15 @@ enum InvoiceItemType {
   OTHER
 }
 
+/// How an invoice was settled. INSURANCE covers private payers recorded
+/// manually for now — BPJS claims are not payments and arrive with Phase 11.
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  QRIS
+  INSURANCE
+}
+
 model User {
   id           String    @id @default(uuid()) @db.Uuid
   email        String    @unique
@@ -232,6 +241,7 @@ model User {
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
   createdInvoices          Invoice[]               @relation("InvoiceCreatedBy")
   voidedInvoices           Invoice[]               @relation("InvoiceVoidedBy")
+  receivedPayments         Payment[]               @relation("PaymentCashier")
   refreshTokens            RefreshToken[]
   auditLogs                AuditLog[]              @relation("AuditLogActor")
 
@@ -1064,6 +1074,7 @@ model Invoice {
   voidedBy  User?          @relation("InvoiceVoidedBy", fields: [voidedById], references: [id], onDelete: SetNull)
   createdBy User?          @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   items     InvoiceItem[]
+  payment   Payment?
 
   @@index([encounterId])
   @@index([patientId, createdAt])
@@ -1104,6 +1115,42 @@ model InvoiceItem {
   @@index([serviceTariffId])
   @@index([medicationId])
   @@map("invoice_items")
+}
+
+/// Settlement of one invoice. `invoiceId` is `@unique` on purpose: one full
+/// payment per invoice is the v1 scope (partial payments are out), and the
+/// constraint is that scope stated in the schema — relaxing it later is a
+/// dropped index, not a rewrite. A payment recorded in error is corrected the
+/// same way a wrong invoice is: void the invoice (P9-T03) and reissue, which
+/// produces a fresh invoice for a fresh payment.
+///
+/// No `deletedAt`: a payment is money that changed hands, like a
+/// `DispenseRecord` is stock that left the shelf — the row is permanent.
+/// `cashierId` is `Restrict` for the same accountability reason as the
+/// dispensing pharmacist: the person who took the money must stay resolvable.
+model Payment {
+  id              String        @id @default(uuid()) @db.Uuid
+  invoiceId       String        @unique @map("invoice_id") @db.Uuid
+  method          PaymentMethod
+  /// Rupiah. Must equal the invoice's `totalAmount` — enforced in the service
+  /// (cross-table), while the migration CHECK only rejects negatives.
+  amount          Decimal       @db.Decimal(12, 2)
+  /// External trace for non-cash methods: transfer slip, QRIS transaction id,
+  /// or insurance approval number.
+  referenceNumber String?       @map("reference_number")
+  notes           String?
+  paidAt          DateTime      @default(now()) @map("paid_at")
+  cashierId       String        @map("cashier_id") @db.Uuid
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  cashier User    @relation("PaymentCashier", fields: [cashierId], references: [id], onDelete: Restrict)
+
+  @@index([paidAt])
+  @@index([cashierId])
+  @@index([method, paidAt])
+  @@map("payments")
 }
 
 model Role {

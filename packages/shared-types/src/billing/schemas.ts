@@ -36,6 +36,16 @@ export const invoiceItemTypeSchema = z.enum(INVOICE_ITEM_TYPES);
 
 export type InvoiceItemTypeValue = z.infer<typeof invoiceItemTypeSchema>;
 
+/**
+ * How an invoice was settled. INSURANCE covers private payers recorded
+ * manually; BPJS claims are not payments and arrive with Phase 11.
+ */
+export const PAYMENT_METHODS = ['CASH', 'TRANSFER', 'QRIS', 'INSURANCE'] as const;
+
+export const paymentMethodSchema = z.enum(PAYMENT_METHODS);
+
+export type PaymentMethodValue = z.infer<typeof paymentMethodSchema>;
+
 export function canTransitionInvoiceStatus(
   fromStatus: InvoiceStatusValue,
   toStatus: InvoiceStatusValue,

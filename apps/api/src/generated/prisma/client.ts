@@ -311,6 +311,21 @@ export type Invoice = Prisma.InvoiceModel
  */
 export type InvoiceItem = Prisma.InvoiceItemModel
 /**
+ * Model Payment
+ * Settlement of one invoice. `invoiceId` is `@unique` on purpose: one full
+ * payment per invoice is the v1 scope (partial payments are out), and the
+ * constraint is that scope stated in the schema — relaxing it later is a
+ * dropped index, not a rewrite. A payment recorded in error is corrected the
+ * same way a wrong invoice is: void the invoice (P9-T03) and reissue, which
+ * produces a fresh invoice for a fresh payment.
+ * 
+ * No `deletedAt`: a payment is money that changed hands, like a
+ * `DispenseRecord` is stock that left the shelf — the row is permanent.
+ * `cashierId` is `Restrict` for the same accountability reason as the
+ * dispensing pharmacist: the person who took the money must stay resolvable.
+ */
+export type Payment = Prisma.PaymentModel
+/**
  * Model Role
  * 
  */

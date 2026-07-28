@@ -1,6 +1,7 @@
 import type {
   InvoiceItemTypeValue,
   InvoiceStatusValue,
+  PaymentMethodValue,
   ServiceTariffCategoryValue,
 } from '#billing/schemas';
 
@@ -63,4 +64,22 @@ export type InvoiceRecord = {
 
 export type InvoiceWithItemsRecord = InvoiceRecord & {
   items: InvoiceItemRecord[];
+};
+
+/**
+ * Settlement of one invoice — exactly one per invoice in v1 (partial payments
+ * out of scope). A payment is permanent: a mistake is corrected by voiding
+ * the invoice and reissuing, never by editing or deleting the payment row.
+ */
+export type PaymentRecord = {
+  id: string;
+  invoiceId: string;
+  method: PaymentMethodValue;
+  amount: number;
+  referenceNumber: string | null;
+  notes: string | null;
+  paidAt: Date;
+  cashierId: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
