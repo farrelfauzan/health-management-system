@@ -42,4 +42,22 @@ export class Icd9cmCodeRepository {
       take: limit,
     });
   }
+
+  /** Resolves one active procedure code, for the same reason as the ICD-10 lookup. */
+  async findActiveIcd9cmCodeById(id: string): Promise<Icd9cmCodeRecord | null> {
+    return this.prisma.findFirstActive(this.prisma.icd9cmCode, {
+      where: {
+        id,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        code: true,
+        display: true,
+        displayIndonesian: true,
+        category: true,
+        isActive: true,
+      },
+    });
+  }
 }

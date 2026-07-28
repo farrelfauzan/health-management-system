@@ -5188,6 +5188,1744 @@ paths:
         - bearer: []
       summary: Update a registration
       tags: *a8
+  /api/v1/encounters:
+    get:
+      operationId: EncounterController_listEncounters_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - IN_PROGRESS
+              - FINISHED
+              - CANCELLED
+        - name: patientId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: registrationId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: startedFrom
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+        - name: startedTo
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+      responses:
+        "200":
+          description: A permission-scoped, filtered, paginated encounter list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        registrationId:
+                          type: string
+                        patientId:
+                          type: string
+                        doctorId:
+                          type: string
+                        status:
+                          type: string
+                        startedAt:
+                          type: string
+                        subjective:
+                          type: string
+                        objective:
+                          type: string
+                        assessment:
+                          type: string
+                        plan:
+                          type: string
+                        createdById:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                        patient:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            mrn:
+                              type: string
+                            fullName:
+                              type: string
+                          required:
+                            - id
+                            - mrn
+                            - fullName
+                        doctor:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            licenseNumber:
+                              type: string
+                            fullName:
+                              type: string
+                          required:
+                            - id
+                            - licenseNumber
+                            - fullName
+                        vitalSignsCount:
+                          type: integer
+                        diagnosisCount:
+                          type: integer
+                        procedureCount:
+                          type: integer
+                      required:
+                        - id
+                        - registrationId
+                        - patientId
+                        - doctorId
+                        - status
+                        - startedAt
+                        - subjective
+                        - objective
+                        - assessment
+                        - plan
+                        - createdById
+                        - createdAt
+                        - updatedAt
+                        - patient
+                        - doctor
+                        - vitalSignsCount
+                        - diagnosisCount
+                        - procedureCount
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                      registrationId: 55555555-5555-4555-8555-555555555555
+                      patientId: 11111111-1111-4111-8111-111111111111
+                      doctorId: 22222222-2222-4222-8222-222222222222
+                      status: IN_PROGRESS
+                      startedAt: 2026-07-20T08:00:00.000Z
+                      subjective: Batuk berdahak sejak 3 hari, demam ringan.
+                      objective: Faring hiperemis, tidak ada ronki.
+                      assessment: ISPA non-pneumonia.
+                      plan: Simptomatik, kontrol bila demam menetap 3 hari.
+                      createdById: 33333333-3333-4333-8333-333333333333
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+                      patient:
+                        id: 11111111-1111-4111-8111-111111111111
+                        mrn: "00000001"
+                        fullName: Aisha Rahman
+                      doctor:
+                        id: 22222222-2222-4222-8222-222222222222
+                        licenseNumber: SIP-2026-0001
+                        fullName: Dr. Budi Santoso
+                      vitalSignsCount: 1
+                      diagnosisCount: 1
+                      procedureCount: 1
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List clinical encounters
+      tags: &a9
+        - Encounters
+    post:
+      operationId: EncounterController_openEncounter_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpenEncounterDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  registrationId: 55555555-5555-4555-8555-555555555555
+                  doctorId: 22222222-2222-4222-8222-222222222222
+      responses:
+        "201":
+          description: The encounter was opened for a CHECKED_IN registration.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      registrationId:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      status:
+                        type: string
+                      startedAt:
+                        type: string
+                      subjective:
+                        type: string
+                      objective:
+                        type: string
+                      assessment:
+                        type: string
+                      plan:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      doctor:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          licenseNumber:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - licenseNumber
+                          - fullName
+                      vitalSignsCount:
+                        type: integer
+                      diagnosisCount:
+                        type: integer
+                      procedureCount:
+                        type: integer
+                    required:
+                      - id
+                      - registrationId
+                      - patientId
+                      - doctorId
+                      - status
+                      - startedAt
+                      - subjective
+                      - objective
+                      - assessment
+                      - plan
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                      - patient
+                      - doctor
+                      - vitalSignsCount
+                      - diagnosisCount
+                      - procedureCount
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    registrationId: 55555555-5555-4555-8555-555555555555
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    status: IN_PROGRESS
+                    startedAt: 2026-07-20T08:00:00.000Z
+                    subjective: Batuk berdahak sejak 3 hari, demam ringan.
+                    objective: Faring hiperemis, tidak ada ronki.
+                    assessment: ISPA non-pneumonia.
+                    plan: Simptomatik, kontrol bila demam menetap 3 hari.
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    patient:
+                      id: 11111111-1111-4111-8111-111111111111
+                      mrn: "00000001"
+                      fullName: Aisha Rahman
+                    doctor:
+                      id: 22222222-2222-4222-8222-222222222222
+                      licenseNumber: SIP-2026-0001
+                      fullName: Dr. Budi Santoso
+                    vitalSignsCount: 1
+                    diagnosisCount: 1
+                    procedureCount: 1
+                  message: Encounter opened
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Open a clinical encounter
+      tags: *a9
+  /api/v1/encounters/{id}:
+    get:
+      operationId: EncounterController_getEncounterById_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The full record of one visit: SOAP note, vitals, coded diagnoses
+            and procedures, and the prescriptions written during it."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      registrationId:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      status:
+                        type: string
+                      startedAt:
+                        type: string
+                      subjective:
+                        type: string
+                      objective:
+                        type: string
+                      assessment:
+                        type: string
+                      plan:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      doctor:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          licenseNumber:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - licenseNumber
+                          - fullName
+                      vitalSigns:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            encounterId:
+                              type: string
+                            heightCm:
+                              type: integer
+                            weightKg:
+                              type: number
+                            systolicBloodPressure:
+                              type: integer
+                            diastolicBloodPressure:
+                              type: integer
+                            pulseRate:
+                              type: integer
+                            respiratoryRate:
+                              type: integer
+                            temperatureCelsius:
+                              type: number
+                            oxygenSaturation:
+                              type: integer
+                            bodyMassIndex:
+                              type: number
+                            recordedAt:
+                              type: string
+                            recordedById:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - encounterId
+                            - heightCm
+                            - weightKg
+                            - systolicBloodPressure
+                            - diastolicBloodPressure
+                            - pulseRate
+                            - respiratoryRate
+                            - temperatureCelsius
+                            - oxygenSaturation
+                            - bodyMassIndex
+                            - recordedAt
+                            - recordedById
+                            - createdAt
+                            - updatedAt
+                      diagnoses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            encounterId:
+                              type: string
+                            icd10CodeId:
+                              type: string
+                            code:
+                              type: string
+                            display:
+                              type: string
+                            type:
+                              type: string
+                            recordedAt:
+                              type: string
+                            recordedById:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - encounterId
+                            - icd10CodeId
+                            - code
+                            - display
+                            - type
+                            - recordedAt
+                            - recordedById
+                            - createdAt
+                            - updatedAt
+                      procedures:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            encounterId:
+                              type: string
+                            icd9cmCodeId:
+                              type: string
+                            code:
+                              type: string
+                            display:
+                              type: string
+                            performedAt:
+                              type: string
+                            recordedById:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - encounterId
+                            - icd9cmCodeId
+                            - code
+                            - display
+                            - performedAt
+                            - recordedById
+                            - createdAt
+                            - updatedAt
+                      prescriptions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            status:
+                              type: string
+                            issuedAt:
+                              type: string
+                            itemCount:
+                              type: integer
+                          required:
+                            - id
+                            - status
+                            - issuedAt
+                            - itemCount
+                    required:
+                      - id
+                      - registrationId
+                      - patientId
+                      - doctorId
+                      - status
+                      - startedAt
+                      - subjective
+                      - objective
+                      - assessment
+                      - plan
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                      - patient
+                      - doctor
+                      - vitalSigns
+                      - diagnoses
+                      - procedures
+                      - prescriptions
+                required:
+                  - data
+                example:
+                  data:
+                    id: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    registrationId: 55555555-5555-4555-8555-555555555555
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    status: IN_PROGRESS
+                    startedAt: 2026-07-20T08:00:00.000Z
+                    subjective: Batuk berdahak sejak 3 hari, demam ringan.
+                    objective: Faring hiperemis, tidak ada ronki.
+                    assessment: ISPA non-pneumonia.
+                    plan: Simptomatik, kontrol bila demam menetap 3 hari.
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    patient:
+                      id: 11111111-1111-4111-8111-111111111111
+                      mrn: "00000001"
+                      fullName: Aisha Rahman
+                    doctor:
+                      id: 22222222-2222-4222-8222-222222222222
+                      licenseNumber: SIP-2026-0001
+                      fullName: Dr. Budi Santoso
+                    vitalSigns:
+                      - id: aaaaaaa2-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        heightCm: 162
+                        weightKg: 58.4
+                        systolicBloodPressure: 118
+                        diastolicBloodPressure: 76
+                        pulseRate: 84
+                        respiratoryRate: 18
+                        temperatureCelsius: 37.4
+                        oxygenSaturation: 98
+                        bodyMassIndex: 22.3
+                        recordedAt: 2026-07-20T08:00:00.000Z
+                        recordedById: 33333333-3333-4333-8333-333333333333
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                    diagnoses:
+                      - id: aaaaaaa3-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        icd10CodeId: ffffffff-ffff-4fff-8fff-ffffffffffff
+                        code: J06.9
+                        display: Acute upper respiratory infection, unspecified
+                        type: PRIMARY
+                        recordedAt: 2026-07-20T08:00:00.000Z
+                        recordedById: 33333333-3333-4333-8333-333333333333
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                    procedures:
+                      - id: aaaaaaa4-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        icd9cmCodeId: ffffffff-ffff-4fff-8fff-fffffffffff9
+                        code: "93.94"
+                        display: Respiratory medication administered by nebulizer
+                        performedAt: 2026-07-20T08:00:00.000Z
+                        recordedById: 33333333-3333-4333-8333-333333333333
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                    prescriptions:
+                      - id: 77777777-7777-4777-8777-777777777777
+                        status: ISSUED
+                        issuedAt: 2026-07-20T08:00:00.000Z
+                        itemCount: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Get a clinical encounter
+      tags: *a9
+    patch:
+      operationId: EncounterController_updateEncounterSoap_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEncounterSoapDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  subjective: Batuk berdahak sejak 3 hari, demam ringan.
+                  objective: Faring hiperemis, tidak ada ronki.
+                  assessment: ISPA non-pneumonia.
+                  plan: Simptomatik, kontrol bila demam menetap 3 hari.
+      responses:
+        "200":
+          description: The narrative record was updated. Only IN_PROGRESS encounters
+            accept it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      registrationId:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      status:
+                        type: string
+                      startedAt:
+                        type: string
+                      subjective:
+                        type: string
+                      objective:
+                        type: string
+                      assessment:
+                        type: string
+                      plan:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      doctor:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          licenseNumber:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - licenseNumber
+                          - fullName
+                      vitalSignsCount:
+                        type: integer
+                      diagnosisCount:
+                        type: integer
+                      procedureCount:
+                        type: integer
+                    required:
+                      - id
+                      - registrationId
+                      - patientId
+                      - doctorId
+                      - status
+                      - startedAt
+                      - subjective
+                      - objective
+                      - assessment
+                      - plan
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                      - patient
+                      - doctor
+                      - vitalSignsCount
+                      - diagnosisCount
+                      - procedureCount
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    registrationId: 55555555-5555-4555-8555-555555555555
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    status: IN_PROGRESS
+                    startedAt: 2026-07-20T08:00:00.000Z
+                    subjective: Batuk berdahak sejak 3 hari, demam ringan.
+                    objective: Faring hiperemis, tidak ada ronki.
+                    assessment: ISPA non-pneumonia.
+                    plan: Simptomatik, kontrol bila demam menetap 3 hari.
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    patient:
+                      id: 11111111-1111-4111-8111-111111111111
+                      mrn: "00000001"
+                      fullName: Aisha Rahman
+                    doctor:
+                      id: 22222222-2222-4222-8222-222222222222
+                      licenseNumber: SIP-2026-0001
+                      fullName: Dr. Budi Santoso
+                    vitalSignsCount: 1
+                    diagnosisCount: 1
+                    procedureCount: 1
+                  message: Encounter updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Write the SOAP note
+      tags: *a9
+  /api/v1/encounters/{id}/close:
+    post:
+      operationId: EncounterController_closeEncounter_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The encounter is FINISHED and its registration COMPLETED, in one
+            transaction.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      registrationId:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      status:
+                        type: string
+                      startedAt:
+                        type: string
+                      subjective:
+                        type: string
+                      objective:
+                        type: string
+                      assessment:
+                        type: string
+                      plan:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      doctor:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          licenseNumber:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - licenseNumber
+                          - fullName
+                      vitalSignsCount:
+                        type: integer
+                      diagnosisCount:
+                        type: integer
+                      procedureCount:
+                        type: integer
+                      endedAt:
+                        type: string
+                    required:
+                      - id
+                      - registrationId
+                      - patientId
+                      - doctorId
+                      - status
+                      - startedAt
+                      - subjective
+                      - objective
+                      - assessment
+                      - plan
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                      - patient
+                      - doctor
+                      - vitalSignsCount
+                      - diagnosisCount
+                      - procedureCount
+                      - endedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    registrationId: 55555555-5555-4555-8555-555555555555
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    status: FINISHED
+                    startedAt: 2026-07-20T08:00:00.000Z
+                    subjective: Batuk berdahak sejak 3 hari, demam ringan.
+                    objective: Faring hiperemis, tidak ada ronki.
+                    assessment: ISPA non-pneumonia.
+                    plan: Simptomatik, kontrol bila demam menetap 3 hari.
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    patient:
+                      id: 11111111-1111-4111-8111-111111111111
+                      mrn: "00000001"
+                      fullName: Aisha Rahman
+                    doctor:
+                      id: 22222222-2222-4222-8222-222222222222
+                      licenseNumber: SIP-2026-0001
+                      fullName: Dr. Budi Santoso
+                    vitalSignsCount: 1
+                    diagnosisCount: 1
+                    procedureCount: 1
+                    endedAt: 2026-07-20T08:30:00.000Z
+                  message: Encounter closed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Close a clinical encounter
+      tags: *a9
+  /api/v1/encounters/{id}/cancel:
+    post:
+      operationId: EncounterController_cancelEncounter_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The encounter was opened in error and is retracted with its
+            registration. Records are never re-opened; the patient re-registers.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      registrationId:
+                        type: string
+                      patientId:
+                        type: string
+                      doctorId:
+                        type: string
+                      status:
+                        type: string
+                      startedAt:
+                        type: string
+                      subjective:
+                        type: string
+                      objective:
+                        type: string
+                      assessment:
+                        type: string
+                      plan:
+                        type: string
+                      createdById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      doctor:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          licenseNumber:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - licenseNumber
+                          - fullName
+                      vitalSignsCount:
+                        type: integer
+                      diagnosisCount:
+                        type: integer
+                      procedureCount:
+                        type: integer
+                      endedAt:
+                        type: string
+                    required:
+                      - id
+                      - registrationId
+                      - patientId
+                      - doctorId
+                      - status
+                      - startedAt
+                      - subjective
+                      - objective
+                      - assessment
+                      - plan
+                      - createdById
+                      - createdAt
+                      - updatedAt
+                      - patient
+                      - doctor
+                      - vitalSignsCount
+                      - diagnosisCount
+                      - procedureCount
+                      - endedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    registrationId: 55555555-5555-4555-8555-555555555555
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    status: CANCELLED
+                    startedAt: 2026-07-20T08:00:00.000Z
+                    subjective: Batuk berdahak sejak 3 hari, demam ringan.
+                    objective: Faring hiperemis, tidak ada ronki.
+                    assessment: ISPA non-pneumonia.
+                    plan: Simptomatik, kontrol bila demam menetap 3 hari.
+                    createdById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    patient:
+                      id: 11111111-1111-4111-8111-111111111111
+                      mrn: "00000001"
+                      fullName: Aisha Rahman
+                    doctor:
+                      id: 22222222-2222-4222-8222-222222222222
+                      licenseNumber: SIP-2026-0001
+                      fullName: Dr. Budi Santoso
+                    vitalSignsCount: 1
+                    diagnosisCount: 1
+                    procedureCount: 1
+                    endedAt: 2026-07-20T08:05:00.000Z
+                  message: Encounter cancelled
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Cancel a clinical encounter
+      tags: *a9
+  /api/v1/encounters/{encounterId}/vital-signs:
+    post:
+      operationId: EncounterClinicalDataController_recordVitalSigns_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordVitalSignsDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  heightCm: 162
+                  weightKg: 58.4
+                  systolicBloodPressure: 118
+                  diastolicBloodPressure: 76
+                  pulseRate: 84
+                  respiratoryRate: 18
+                  temperatureCelsius: 37.4
+                  oxygenSaturation: 98
+      responses:
+        "201":
+          description: A new measurement set was appended. Existing sets are never
+            overwritten, so a recheck keeps the reading that prompted it. BMI is
+            derived, not stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      encounterId:
+                        type: string
+                      heightCm:
+                        type: integer
+                      weightKg:
+                        type: number
+                      systolicBloodPressure:
+                        type: integer
+                      diastolicBloodPressure:
+                        type: integer
+                      pulseRate:
+                        type: integer
+                      respiratoryRate:
+                        type: integer
+                      temperatureCelsius:
+                        type: number
+                      oxygenSaturation:
+                        type: integer
+                      bodyMassIndex:
+                        type: number
+                      recordedAt:
+                        type: string
+                      recordedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - encounterId
+                      - heightCm
+                      - weightKg
+                      - systolicBloodPressure
+                      - diastolicBloodPressure
+                      - pulseRate
+                      - respiratoryRate
+                      - temperatureCelsius
+                      - oxygenSaturation
+                      - bodyMassIndex
+                      - recordedAt
+                      - recordedById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaa2-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    heightCm: 162
+                    weightKg: 58.4
+                    systolicBloodPressure: 118
+                    diastolicBloodPressure: 76
+                    pulseRate: 84
+                    respiratoryRate: 18
+                    temperatureCelsius: 37.4
+                    oxygenSaturation: 98
+                    bodyMassIndex: 22.3
+                    recordedAt: 2026-07-20T08:00:00.000Z
+                    recordedById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Vital signs recorded
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Record a vital-signs measurement
+      tags: &a10
+        - Encounters
+  /api/v1/encounters/{encounterId}/diagnoses:
+    post:
+      operationId: EncounterClinicalDataController_addDiagnosis_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddDiagnosisDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  icd10CodeId: ffffffff-ffff-4fff-8fff-ffffffffffff
+                  type: PRIMARY
+      responses:
+        "201":
+          description: The diagnosis was recorded. Naming an ICD-10 catalog row snapshots
+            its code and title from the catalog; a code the catalog does not
+            carry is supplied as code plus display.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      encounterId:
+                        type: string
+                      icd10CodeId:
+                        type: string
+                      code:
+                        type: string
+                      display:
+                        type: string
+                      type:
+                        type: string
+                      recordedAt:
+                        type: string
+                      recordedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - encounterId
+                      - icd10CodeId
+                      - code
+                      - display
+                      - type
+                      - recordedAt
+                      - recordedById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaa3-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    icd10CodeId: ffffffff-ffff-4fff-8fff-ffffffffffff
+                    code: J06.9
+                    display: Acute upper respiratory infection, unspecified
+                    type: PRIMARY
+                    recordedAt: 2026-07-20T08:00:00.000Z
+                    recordedById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Diagnosis recorded
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Code a diagnosis
+      tags: *a10
+  /api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}:
+    delete:
+      operationId: EncounterClinicalDataController_removeDiagnosis_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: diagnosisId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The diagnosis is soft-deleted: it stays auditable while releasing
+            the code and the PRIMARY slot so a correction can be recorded."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Diagnosis retracted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Diagnosis not found on this encounter.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Diagnosis not found on this encounter.
+      security:
+        - bearer: []
+      summary: Retract a diagnosis
+      tags: *a10
+  /api/v1/encounters/{encounterId}/procedures:
+    post:
+      operationId: EncounterClinicalDataController_addProcedure_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddProcedureDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  icd9cmCodeId: ffffffff-ffff-4fff-8fff-fffffffffff9
+      responses:
+        "201":
+          description: The ICD-9-CM procedure was recorded against the encounter. BPJS
+            prices a claim from these rows, so an uncoded action is an
+            unbillable one.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      encounterId:
+                        type: string
+                      icd9cmCodeId:
+                        type: string
+                      code:
+                        type: string
+                      display:
+                        type: string
+                      performedAt:
+                        type: string
+                      recordedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - encounterId
+                      - icd9cmCodeId
+                      - code
+                      - display
+                      - performedAt
+                      - recordedById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaa4-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    icd9cmCodeId: ffffffff-ffff-4fff-8fff-fffffffffff9
+                    code: "93.94"
+                    display: Respiratory medication administered by nebulizer
+                    performedAt: 2026-07-20T08:00:00.000Z
+                    recordedById: 33333333-3333-4333-8333-333333333333
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Procedure recorded
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Code a procedure
+      tags: *a10
+  /api/v1/encounters/{encounterId}/procedures/{procedureId}:
+    delete:
+      operationId: EncounterClinicalDataController_removeProcedure_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: procedureId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The procedure is soft-deleted and stays auditable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Procedure retracted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Procedure not found on this encounter.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Procedure not found on this encounter.
+      security:
+        - bearer: []
+      summary: Retract a procedure
+      tags: *a10
   /api/v1/medications:
     get:
       operationId: MedicationController_listMedications_v1
@@ -5332,7 +7070,7 @@ paths:
       security:
         - bearer: []
       summary: List medications
-      tags: &a9
+      tags: &a11
         - Pharmacy Flow
     post:
       operationId: MedicationController_createMedication_v1
@@ -5449,7 +7187,7 @@ paths:
       security:
         - bearer: []
       summary: Create a medication
-      tags: *a9
+      tags: *a11
   /api/v1/medications/{id}:
     patch:
       operationId: MedicationController_updateMedication_v1
@@ -5575,7 +7313,7 @@ paths:
       security:
         - bearer: []
       summary: Update a medication
-      tags: *a9
+      tags: *a11
   /api/v1/prescriptions:
     get:
       operationId: PrescriptionController_listPrescriptions_v1
@@ -5616,6 +7354,12 @@ paths:
             format: uuid
             type: string
         - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: encounterId
           required: false
           in: query
           schema:
@@ -5790,7 +7534,7 @@ paths:
       security:
         - bearer: []
       summary: List prescriptions
-      tags: &a10
+      tags: &a12
         - Pharmacy Flow
     post:
       operationId: PrescriptionController_createPrescription_v1
@@ -5977,7 +7721,7 @@ paths:
       security:
         - bearer: []
       summary: Create a prescription
-      tags: *a10
+      tags: *a12
   /api/v1/dispenses:
     post:
       operationId: DispenseController_createDispense_v1
@@ -6169,7 +7913,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a11
+      tags: &a13
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -6262,7 +8006,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a11
+      tags: *a13
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -6354,7 +8098,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a11
+      tags: *a13
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -7223,6 +8967,139 @@ components:
           type: string
           format: uuid
           nullable: true
+    OpenEncounterDto:
+      type: object
+      properties:
+        registrationId:
+          type: string
+          format: uuid
+        doctorId:
+          type: string
+          format: uuid
+      required:
+        - registrationId
+    UpdateEncounterSoapDto:
+      type: object
+      properties:
+        subjective:
+          type: string
+          maxLength: 5000
+          nullable: true
+        objective:
+          type: string
+          maxLength: 5000
+          nullable: true
+        assessment:
+          type: string
+          maxLength: 5000
+          nullable: true
+        plan:
+          type: string
+          maxLength: 5000
+          nullable: true
+    RecordVitalSignsDto:
+      type: object
+      properties:
+        heightCm:
+          type: number
+          minimum: 0.01
+          exclusiveMinimum: false
+          maximum: 300
+          exclusiveMaximum: false
+        weightKg:
+          type: number
+          minimum: 0.01
+          exclusiveMinimum: false
+          maximum: 700
+          exclusiveMaximum: false
+        systolicBloodPressure:
+          type: integer
+          minimum: 20
+          exclusiveMinimum: false
+          maximum: 400
+          exclusiveMaximum: false
+        diastolicBloodPressure:
+          type: integer
+          minimum: 10
+          exclusiveMinimum: false
+          maximum: 300
+          exclusiveMaximum: false
+        pulseRate:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 400
+          exclusiveMaximum: false
+        respiratoryRate:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 150
+          exclusiveMaximum: false
+        temperatureCelsius:
+          type: number
+          minimum: 20
+          exclusiveMinimum: false
+          maximum: 46
+          exclusiveMaximum: false
+        oxygenSaturation:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 100
+          exclusiveMaximum: false
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        recordedAt:
+          type: string
+          format: date-time
+    AddDiagnosisDto:
+      type: object
+      properties:
+        icd10CodeId:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 16
+        display:
+          type: string
+          minLength: 1
+          maxLength: 255
+        type:
+          type: string
+          enum:
+            - PRIMARY
+            - SECONDARY
+          default: SECONDARY
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    AddProcedureDto:
+      type: object
+      properties:
+        icd9cmCodeId:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 16
+        display:
+          type: string
+          minLength: 1
+          maxLength: 255
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        performedAt:
+          type: string
+          format: date-time
     CreateMedicationDto:
       type: object
       properties:
@@ -7361,6 +9238,9 @@ components:
           type: string
           format: uuid
         doctorId:
+          type: string
+          format: uuid
+        encounterId:
           type: string
           format: uuid
         notes:

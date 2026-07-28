@@ -80,6 +80,66 @@ const icd9cmCode = {
   category: '93',
   isActive: true,
 };
+const encounterId = 'aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const vitalSignsId = 'aaaaaaa2-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const diagnosisId = 'aaaaaaa3-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const procedureId = 'aaaaaaa4-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const encounter = {
+  id: encounterId,
+  registrationId,
+  patientId,
+  doctorId,
+  status: 'IN_PROGRESS',
+  startedAt: timestamp,
+  subjective: 'Batuk berdahak sejak 3 hari, demam ringan.',
+  objective: 'Faring hiperemis, tidak ada ronki.',
+  assessment: 'ISPA non-pneumonia.',
+  plan: 'Simptomatik, kontrol bila demam menetap 3 hari.',
+  createdById: userId,
+  createdAt: timestamp,
+  updatedAt: timestamp,
+};
+const vitalSigns = {
+  id: vitalSignsId,
+  encounterId,
+  heightCm: 162,
+  weightKg: 58.4,
+  systolicBloodPressure: 118,
+  diastolicBloodPressure: 76,
+  pulseRate: 84,
+  respiratoryRate: 18,
+  temperatureCelsius: 37.4,
+  oxygenSaturation: 98,
+  // Derived from the height and weight on this row, never stored.
+  bodyMassIndex: 22.3,
+  recordedAt: timestamp,
+  recordedById: userId,
+  createdAt: timestamp,
+  updatedAt: timestamp,
+};
+const diagnosis = {
+  id: diagnosisId,
+  encounterId,
+  icd10CodeId: icd10Code.id,
+  code: icd10Code.code,
+  display: icd10Code.display,
+  type: 'PRIMARY',
+  recordedAt: timestamp,
+  recordedById: userId,
+  createdAt: timestamp,
+  updatedAt: timestamp,
+};
+const procedureRecord = {
+  id: procedureId,
+  encounterId,
+  icd9cmCodeId: icd9cmCode.id,
+  code: icd9cmCode.code,
+  display: icd9cmCode.display,
+  performedAt: timestamp,
+  recordedById: userId,
+  createdAt: timestamp,
+  updatedAt: timestamp,
+};
 const specialtyId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
 const specialty = {
   id: specialtyId,
@@ -513,6 +573,47 @@ export const PHASE_THREE_EXAMPLES = {
         status: appointment.status,
         doctor: { id: doctorId, fullName: doctor.fullName, specialty: doctor.specialty },
       },
+    },
+  },
+  encounter: {
+    openRequest: { registrationId, doctorId },
+    soapRequest: {
+      subjective: 'Batuk berdahak sejak 3 hari, demam ringan.',
+      objective: 'Faring hiperemis, tidak ada ronki.',
+      assessment: 'ISPA non-pneumonia.',
+      plan: 'Simptomatik, kontrol bila demam menetap 3 hari.',
+    },
+    vitalSignsRequest: {
+      heightCm: 162,
+      weightKg: 58.4,
+      systolicBloodPressure: 118,
+      diastolicBloodPressure: 76,
+      pulseRate: 84,
+      respiratoryRate: 18,
+      temperatureCelsius: 37.4,
+      oxygenSaturation: 98,
+    },
+    diagnosisRequest: { icd10CodeId: icd10Code.id, type: 'PRIMARY' },
+    procedureRequest: { icd9cmCodeId: icd9cmCode.id },
+    vitalSigns,
+    diagnosis,
+    procedure: procedureRecord,
+    listItem: {
+      ...encounter,
+      patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
+      doctor: { id: doctorId, licenseNumber: doctor.licenseNumber, fullName: doctor.fullName },
+      vitalSignsCount: 1,
+      diagnosisCount: 1,
+      procedureCount: 1,
+    },
+    detail: {
+      ...encounter,
+      patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
+      doctor: { id: doctorId, licenseNumber: doctor.licenseNumber, fullName: doctor.fullName },
+      vitalSigns: [vitalSigns],
+      diagnoses: [diagnosis],
+      procedures: [procedureRecord],
+      prescriptions: [{ id: prescriptionId, status: 'ISSUED', issuedAt: timestamp, itemCount: 1 }],
     },
   },
   pharmacy: {

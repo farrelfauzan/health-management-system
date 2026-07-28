@@ -43,4 +43,28 @@ export class Icd10CodeRepository {
       take: limit,
     });
   }
+
+  /**
+   * Resolves one active catalog row, used when a clinician codes a diagnosis by
+   * picking from the lookup. Deactivated codes are excluded: an encounter being
+   * written now must not be coded with a retired code, even though encounters
+   * already coded with it keep resolving through their stored snapshot.
+   */
+  async findActiveIcd10CodeById(id: string): Promise<Icd10CodeRecord | null> {
+    return this.prisma.findFirstActive(this.prisma.icd10Code, {
+      where: {
+        id,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        code: true,
+        display: true,
+        displayIndonesian: true,
+        category: true,
+        chapter: true,
+        isActive: true,
+      },
+    });
+  }
 }

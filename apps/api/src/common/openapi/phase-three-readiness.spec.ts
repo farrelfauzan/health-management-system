@@ -7,6 +7,8 @@ import { RbacController } from '../../modules/rbac/controller/rbac.controller';
 import { AppointmentManagementController } from '../../modules/appointment-management/controller/appointment-management.controller';
 import { DoctorManagementController } from '../../modules/doctor-management/controller/doctor-management.controller';
 import { DoctorPatientController } from '../../modules/doctor-patient/controller/doctor-patient.controller';
+import { EncounterClinicalDataController } from '../../modules/emr/controller/encounter-clinical-data.controller';
+import { EncounterController } from '../../modules/emr/controller/encounter.controller';
 import { PatientManagementController } from '../../modules/patient-management/controller/patient-management.controller';
 import { DispenseController } from '../../modules/pharmacy-flow/controller/dispense.controller';
 import { MedicationController } from '../../modules/pharmacy-flow/controller/medication.controller';
@@ -81,6 +83,17 @@ const expectedOperations: readonly ExpectedOperation[] = [
   operation(RegistrationFlowController, 'getRegistrationById', 'get', '/api/v1/registrations/{id}', 'read', 'Registration'),
   operation(RegistrationFlowController, 'createRegistration', 'post', '/api/v1/registrations', 'create', 'Registration', true),
   operation(RegistrationFlowController, 'updateRegistration', 'patch', '/api/v1/registrations/{id}', 'update', 'Registration', true),
+  operation(EncounterController, 'listEncounters', 'get', '/api/v1/encounters', 'read', 'Encounter'),
+  operation(EncounterController, 'getEncounterById', 'get', '/api/v1/encounters/{id}', 'read', 'Encounter'),
+  operation(EncounterController, 'openEncounter', 'post', '/api/v1/encounters', 'write', 'Encounter', true),
+  operation(EncounterController, 'updateEncounterSoap', 'patch', '/api/v1/encounters/{id}', 'write', 'Encounter', true),
+  operation(EncounterController, 'closeEncounter', 'post', '/api/v1/encounters/{id}/close', 'write', 'Encounter'),
+  operation(EncounterController, 'cancelEncounter', 'post', '/api/v1/encounters/{id}/cancel', 'write', 'Encounter'),
+  operation(EncounterClinicalDataController, 'recordVitalSigns', 'post', '/api/v1/encounters/{encounterId}/vital-signs', 'write', 'Encounter', true),
+  operation(EncounterClinicalDataController, 'addDiagnosis', 'post', '/api/v1/encounters/{encounterId}/diagnoses', 'write', 'Encounter', true),
+  operation(EncounterClinicalDataController, 'removeDiagnosis', 'delete', '/api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}', 'write', 'Encounter'),
+  operation(EncounterClinicalDataController, 'addProcedure', 'post', '/api/v1/encounters/{encounterId}/procedures', 'write', 'Encounter', true),
+  operation(EncounterClinicalDataController, 'removeProcedure', 'delete', '/api/v1/encounters/{encounterId}/procedures/{procedureId}', 'write', 'Encounter'),
   operation(MedicationController, 'listMedications', 'get', '/api/v1/medications', 'read', 'Medication'),
   operation(MedicationController, 'createMedication', 'post', '/api/v1/medications', 'create', 'Medication', true),
   operation(MedicationController, 'updateMedication', 'patch', '/api/v1/medications/{id}', 'update', 'Medication', true),

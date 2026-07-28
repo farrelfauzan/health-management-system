@@ -10,6 +10,7 @@ import type { CreatePrescriptionDtoItemsItem } from './createPrescriptionDtoItem
 export interface CreatePrescriptionDto {
   patientId: string;
   doctorId?: string;
+  encounterId?: string;
   /**
      * @minLength 1
      * @maxLength 1000

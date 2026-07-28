@@ -141,6 +141,7 @@ export const listPrescriptionsQuerySchema = z.object({
   status: prescriptionStatusSchema.optional(),
   patientId: z.string().uuid().optional(),
   doctorId: z.string().uuid().optional(),
+  encounterId: z.string().uuid().optional(),
 });
 
 export const prescriptionItemSchema = z.object({
@@ -156,6 +157,12 @@ export const createPrescriptionSchema = z
   .object({
     patientId: z.string().uuid(),
     doctorId: z.string().uuid().optional(),
+    /**
+     * The visit this prescription was written during. Optional because a
+     * repeat prescription can be issued between visits, and because MVP rows
+     * predate the encounter record entirely.
+     */
+    encounterId: z.string().uuid().optional(),
     notes: z.string().trim().min(1).max(1000).optional(),
     items: z.array(prescriptionItemSchema).min(1).max(50),
   })

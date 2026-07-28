@@ -13,6 +13,12 @@ export class Icd9cmCodeService {
     return codes.map((code) => this.toIcd9cmCodeResponse(code));
   }
 
+  /** Resolves a procedure code for callers that snapshot it onto an encounter. */
+  async findActiveIcd9cmCodeById(id: string): Promise<Icd9cmCode | null> {
+    const code = await this.icd9cmCodeRepository.findActiveIcd9cmCodeById(id);
+    return code ? this.toIcd9cmCodeResponse(code) : null;
+  }
+
   private toIcd9cmCodeResponse(code: Icd9cmCodeRecord): Icd9cmCode {
     return {
       id: code.id,

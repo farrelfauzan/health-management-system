@@ -59,6 +59,7 @@ export type PrescriptionResponse = {
   id: string;
   patientId: string;
   doctorId: string;
+  encounterId?: string;
   status: PrescriptionStatusValue;
   issuedAt?: string;
   notes?: string;

@@ -25,6 +25,7 @@ export * from '#appointment-management/schemas';
 export * from '#appointment-management/contracts';
 export * from '#appointment-management/types';
 export * from '#emr/schemas';
+export * from '#emr/contracts';
 export * from '#emr/types';
 export * from '#terminology/icd10-chapter';
 export * from '#terminology/schemas';

@@ -81,6 +81,10 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('registration.create:own', 'Registration', 'create', 'OWN', 'Create own registrations'),
     ('registration.update:any', 'Registration', 'update', 'ANY', 'Update all registrations'),
     ('registration.update:own', 'Registration', 'update', 'OWN', 'Update own registrations'),
+    ('encounter.read:any', 'Encounter', 'read', 'ANY', 'Read all clinical encounters'),
+    ('encounter.read:own', 'Encounter', 'read', 'OWN', 'Read own clinical encounters'),
+    ('encounter.write:any', 'Encounter', 'write', 'ANY', 'Open, record, and close any clinical encounter'),
+    ('encounter.write:own', 'Encounter', 'write', 'OWN', 'Open, record, and close own clinical encounters'),
     ('icd10-code.read:any', 'Icd10Code', 'read', 'ANY', 'Search the ICD-10 diagnosis code catalog'),
     ('icd9cm-code.read:any', 'Icd9cmCode', 'read', 'ANY', 'Search the ICD-9-CM procedure code catalog'),
     ('medication.read:any', 'Medication', 'read', 'ANY', 'Read medications'),
@@ -159,6 +163,12 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'registration.read:any'),
     ('ADMIN', 'registration.create:any'),
     ('ADMIN', 'registration.update:any'),
+    -- Front-desk staff open the encounter and record the vitals they take at
+    -- check-in, which is how an Indonesian clinic actually runs; the doctor
+    -- signs the SOAP note and the codes. Authorship is recorded per row
+    -- (`recorded_by_id`), so a shared write grant does not blur who wrote what.
+    ('ADMIN', 'encounter.read:any'),
+    ('ADMIN', 'encounter.write:any'),
     ('ADMIN', 'icd10-code.read:any'),
     ('ADMIN', 'icd9cm-code.read:any'),
     ('ADMIN', 'medication.read:any'),
@@ -181,6 +191,12 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'appointment.cancel:own'),
     ('DOCTOR', 'appointment.session.read:any'),
     ('DOCTOR', 'registration.read:any'),
+    -- OWN for a doctor means the encounters they attended plus those of
+    -- patients actively assigned to them: a clinician needs the previous
+    -- visits to read the current one, and the assignment is what says the
+    -- relationship exists.
+    ('DOCTOR', 'encounter.read:own'),
+    ('DOCTOR', 'encounter.write:own'),
     -- The doctor codes the diagnosis and the procedures, so both lookups are
     -- clinical tools, not admin ones. Pharmacists and patients get no grant.
     ('DOCTOR', 'icd10-code.read:any'),
@@ -210,6 +226,9 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PATIENT', 'registration.read:own'),
     ('PATIENT', 'registration.create:own'),
     ('PATIENT', 'registration.update:own'),
+    -- Read-only, and only their own: PMK 24/2022 gives the patient access to
+    -- the content of their record while authorship stays with the clinic.
+    ('PATIENT', 'encounter.read:own'),
     ('PATIENT', 'prescription.read:own'),
     ('PATIENT', 'chat.session.create:own'),
     ('PATIENT', 'chat.message.create:own'),
