@@ -7,6 +7,7 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { Icd9cmCodeRepository } from './repository/icd9cm-code.repository';
 import { Icd10CodeRepository } from './repository/icd10-code.repository';
 
 describe('Terminology integration', () => {
@@ -22,6 +23,10 @@ describe('Terminology integration', () => {
     searchIcd10Codes: jest.fn(),
   };
 
+  const icd9cmCodeRepositoryMock = {
+    searchIcd9cmCodes: jest.fn(),
+  };
+
   const prismaServiceMock = {
     $connect: jest.fn(),
     $disconnect: jest.fn(),
@@ -34,6 +39,15 @@ describe('Terminology integration', () => {
     displayIndonesian: 'Infeksi saluran napas atas akut, tidak dijelaskan',
     category: 'J06',
     chapter: 'X',
+    isActive: true,
+  };
+
+  const icd9cmCodeRecord = {
+    id: 'ffffffff-ffff-4fff-8fff-fffffffffff9',
+    code: '93.94',
+    display: 'Respiratory medication administered by nebulizer',
+    displayIndonesian: 'Pemberian obat pernapasan melalui nebulizer',
+    category: '93',
     isActive: true,
   };
 
@@ -65,6 +79,8 @@ describe('Terminology integration', () => {
       .useValue(authRepositoryMock)
       .overrideProvider(Icd10CodeRepository)
       .useValue(icd10CodeRepositoryMock)
+      .overrideProvider(Icd9cmCodeRepository)
+      .useValue(icd9cmCodeRepositoryMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();
@@ -89,6 +105,7 @@ describe('Terminology integration', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     icd10CodeRepositoryMock.searchIcd10Codes.mockResolvedValue([icd10CodeRecord]);
+    icd9cmCodeRepositoryMock.searchIcd9cmCodes.mockResolvedValue([icd9cmCodeRecord]);
   });
 
   it('returns 401 when the bearer token is missing', async () => {
@@ -143,5 +160,31 @@ describe('Terminology integration', () => {
 
     expect(response.status).toBe(400);
     expect(icd10CodeRepositoryMock.searchIcd10Codes).not.toHaveBeenCalled();
+  });
+
+  it('returns 403 on the procedure lookup when the user only holds the diagnosis grant', async () => {
+    const token = await buildToken('doctor-user', 'doctor@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Icd10Code', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/icd9cm-codes')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(403);
+  });
+
+  it('returns matching procedure codes for a permitted user', async () => {
+    const token = await buildToken('doctor-user', 'doctor@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Icd9cmCode', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/icd9cm-codes?search=nebul')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual([icd9cmCodeRecord]);
+    expect(icd9cmCodeRepositoryMock.searchIcd9cmCodes).toHaveBeenCalledWith(
+      expect.objectContaining({ search: 'nebul', limit: 20 }),
+    );
   });
 });

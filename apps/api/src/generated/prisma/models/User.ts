@@ -211,6 +211,7 @@ export type UserWhereInput = {
   createdEncounters?: Prisma.EncounterListRelationFilter
   recordedVitalSigns?: Prisma.VitalSignsListRelationFilter
   recordedDiagnoses?: Prisma.DiagnosisListRelationFilter
+  recordedProcedures?: Prisma.ProcedureListRelationFilter
   dispensedByRecords?: Prisma.DispenseRecordListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
@@ -237,6 +238,7 @@ export type UserOrderByWithRelationInput = {
   createdEncounters?: Prisma.EncounterOrderByRelationAggregateInput
   recordedVitalSigns?: Prisma.VitalSignsOrderByRelationAggregateInput
   recordedDiagnoses?: Prisma.DiagnosisOrderByRelationAggregateInput
+  recordedProcedures?: Prisma.ProcedureOrderByRelationAggregateInput
   dispensedByRecords?: Prisma.DispenseRecordOrderByRelationAggregateInput
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
@@ -266,6 +268,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdEncounters?: Prisma.EncounterListRelationFilter
   recordedVitalSigns?: Prisma.VitalSignsListRelationFilter
   recordedDiagnoses?: Prisma.DiagnosisListRelationFilter
+  recordedProcedures?: Prisma.ProcedureListRelationFilter
   dispensedByRecords?: Prisma.DispenseRecordListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
@@ -318,6 +321,7 @@ export type UserCreateInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -344,6 +348,7 @@ export type UserUncheckedCreateInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -370,6 +375,7 @@ export type UserUpdateInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -396,6 +402,7 @@ export type UserUncheckedUpdateInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -659,6 +666,22 @@ export type UserUpdateOneWithoutRecordedDiagnosesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecordedDiagnosesInput, Prisma.UserUpdateWithoutRecordedDiagnosesInput>, Prisma.UserUncheckedUpdateWithoutRecordedDiagnosesInput>
 }
 
+export type UserCreateNestedOneWithoutRecordedProceduresInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecordedProceduresInput, Prisma.UserUncheckedCreateWithoutRecordedProceduresInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecordedProceduresInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutRecordedProceduresNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecordedProceduresInput, Prisma.UserUncheckedCreateWithoutRecordedProceduresInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecordedProceduresInput
+  upsert?: Prisma.UserUpsertWithoutRecordedProceduresInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecordedProceduresInput, Prisma.UserUpdateWithoutRecordedProceduresInput>, Prisma.UserUncheckedUpdateWithoutRecordedProceduresInput>
+}
+
 export type UserCreateNestedOneWithoutDispensedByRecordsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutDispensedByRecordsInput, Prisma.UserUncheckedCreateWithoutDispensedByRecordsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutDispensedByRecordsInput
@@ -756,6 +779,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
 }
@@ -781,6 +805,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
 }
@@ -822,6 +847,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
 }
@@ -847,6 +873,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
 }
@@ -871,6 +898,7 @@ export type UserCreateWithoutPatientProfilesInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -896,6 +924,7 @@ export type UserUncheckedCreateWithoutPatientProfilesInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -937,6 +966,7 @@ export type UserUpdateWithoutPatientProfilesInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -962,6 +992,7 @@ export type UserUncheckedUpdateWithoutPatientProfilesInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -987,6 +1018,7 @@ export type UserCreateWithoutDoctorProfileInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -1012,6 +1044,7 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1053,6 +1086,7 @@ export type UserUpdateWithoutDoctorProfileInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -1078,6 +1112,7 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1103,6 +1138,7 @@ export type UserCreateWithoutAssignedDoctorPatientsInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -1128,6 +1164,7 @@ export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1158,6 +1195,7 @@ export type UserCreateWithoutUnassignedDoctorPatientsInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -1183,6 +1221,7 @@ export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1224,6 +1263,7 @@ export type UserUpdateWithoutAssignedDoctorPatientsInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -1249,6 +1289,7 @@ export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1285,6 +1326,7 @@ export type UserUpdateWithoutUnassignedDoctorPatientsInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -1310,6 +1352,7 @@ export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1335,6 +1378,7 @@ export type UserCreateWithoutDoctorPatientActivitiesInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -1360,6 +1404,7 @@ export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1401,6 +1446,7 @@ export type UserUpdateWithoutDoctorPatientActivitiesInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -1426,6 +1472,7 @@ export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1451,6 +1498,7 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -1476,6 +1524,7 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1517,6 +1566,7 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -1542,6 +1592,7 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1567,6 +1618,7 @@ export type UserCreateWithoutCreatedRegistrationsInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -1592,6 +1644,7 @@ export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1633,6 +1686,7 @@ export type UserUpdateWithoutCreatedRegistrationsInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -1658,6 +1712,7 @@ export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1683,6 +1738,7 @@ export type UserCreateWithoutCreatedEncountersInput = {
   createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -1708,6 +1764,7 @@ export type UserUncheckedCreateWithoutCreatedEncountersInput = {
   createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1749,6 +1806,7 @@ export type UserUpdateWithoutCreatedEncountersInput = {
   createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -1774,6 +1832,7 @@ export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
   createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1799,6 +1858,7 @@ export type UserCreateWithoutRecordedVitalSignsInput = {
   createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -1824,6 +1884,7 @@ export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
   createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1865,6 +1926,7 @@ export type UserUpdateWithoutRecordedVitalSignsInput = {
   createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -1890,6 +1952,7 @@ export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
   createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -1915,6 +1978,7 @@ export type UserCreateWithoutRecordedDiagnosesInput = {
   createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -1940,6 +2004,7 @@ export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
   createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -1981,6 +2046,7 @@ export type UserUpdateWithoutRecordedDiagnosesInput = {
   createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -2006,6 +2072,127 @@ export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
   createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type UserCreateWithoutRecordedProceduresInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+}
+
+export type UserUncheckedCreateWithoutRecordedProceduresInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type UserCreateOrConnectWithoutRecordedProceduresInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecordedProceduresInput, Prisma.UserUncheckedCreateWithoutRecordedProceduresInput>
+}
+
+export type UserUpsertWithoutRecordedProceduresInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRecordedProceduresInput, Prisma.UserUncheckedUpdateWithoutRecordedProceduresInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecordedProceduresInput, Prisma.UserUncheckedCreateWithoutRecordedProceduresInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRecordedProceduresInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRecordedProceduresInput, Prisma.UserUncheckedUpdateWithoutRecordedProceduresInput>
+}
+
+export type UserUpdateWithoutRecordedProceduresInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2032,6 +2219,7 @@ export type UserCreateWithoutDispensedByRecordsInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
 }
@@ -2057,6 +2245,7 @@ export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
 }
@@ -2098,6 +2287,7 @@ export type UserUpdateWithoutDispensedByRecordsInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
 }
@@ -2123,6 +2313,7 @@ export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
 }
@@ -2147,6 +2338,7 @@ export type UserCreateWithoutRolesInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -2172,6 +2364,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2202,6 +2395,7 @@ export type UserCreateWithoutAssignedRolesInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -2227,6 +2421,7 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2257,6 +2452,7 @@ export type UserCreateWithoutUnassignedRolesInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
@@ -2282,6 +2478,7 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
@@ -2323,6 +2520,7 @@ export type UserUpdateWithoutRolesInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -2348,6 +2546,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2384,6 +2583,7 @@ export type UserUpdateWithoutAssignedRolesInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -2409,6 +2609,7 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2445,6 +2646,7 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
@@ -2470,6 +2672,7 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
@@ -2496,6 +2699,7 @@ export type UserCreateWithoutAuditLogsInput = {
   createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
@@ -2521,6 +2725,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
@@ -2562,6 +2767,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
@@ -2587,6 +2793,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -2609,6 +2816,7 @@ export type UserCountOutputType = {
   createdEncounters: number
   recordedVitalSigns: number
   recordedDiagnoses: number
+  recordedProcedures: number
   dispensedByRecords: number
   refreshTokens: number
   auditLogs: number
@@ -2627,6 +2835,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   createdEncounters?: boolean | UserCountOutputTypeCountCreatedEncountersArgs
   recordedVitalSigns?: boolean | UserCountOutputTypeCountRecordedVitalSignsArgs
   recordedDiagnoses?: boolean | UserCountOutputTypeCountRecordedDiagnosesArgs
+  recordedProcedures?: boolean | UserCountOutputTypeCountRecordedProceduresArgs
   dispensedByRecords?: boolean | UserCountOutputTypeCountDispensedByRecordsArgs
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
@@ -2729,6 +2938,13 @@ export type UserCountOutputTypeCountRecordedDiagnosesArgs<ExtArgs extends runtim
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountRecordedProceduresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProcedureWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountDispensedByRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DispenseRecordWhereInput
 }
@@ -2769,6 +2985,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdEncounters?: boolean | Prisma.User$createdEncountersArgs<ExtArgs>
   recordedVitalSigns?: boolean | Prisma.User$recordedVitalSignsArgs<ExtArgs>
   recordedDiagnoses?: boolean | Prisma.User$recordedDiagnosesArgs<ExtArgs>
+  recordedProcedures?: boolean | Prisma.User$recordedProceduresArgs<ExtArgs>
   dispensedByRecords?: boolean | Prisma.User$dispensedByRecordsArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
@@ -2820,6 +3037,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdEncounters?: boolean | Prisma.User$createdEncountersArgs<ExtArgs>
   recordedVitalSigns?: boolean | Prisma.User$recordedVitalSignsArgs<ExtArgs>
   recordedDiagnoses?: boolean | Prisma.User$recordedDiagnosesArgs<ExtArgs>
+  recordedProcedures?: boolean | Prisma.User$recordedProceduresArgs<ExtArgs>
   dispensedByRecords?: boolean | Prisma.User$dispensedByRecordsArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
@@ -2844,6 +3062,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdEncounters: Prisma.$EncounterPayload<ExtArgs>[]
     recordedVitalSigns: Prisma.$VitalSignsPayload<ExtArgs>[]
     recordedDiagnoses: Prisma.$DiagnosisPayload<ExtArgs>[]
+    recordedProcedures: Prisma.$ProcedurePayload<ExtArgs>[]
     dispensedByRecords: Prisma.$DispenseRecordPayload<ExtArgs>[]
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
@@ -3263,6 +3482,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   createdEncounters<T extends Prisma.User$createdEncountersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdEncountersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recordedVitalSigns<T extends Prisma.User$recordedVitalSignsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recordedVitalSignsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VitalSignsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recordedDiagnoses<T extends Prisma.User$recordedDiagnosesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recordedDiagnosesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recordedProcedures<T extends Prisma.User$recordedProceduresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recordedProceduresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProcedurePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dispensedByRecords<T extends Prisma.User$dispensedByRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$dispensedByRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DispenseRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3999,6 +4219,30 @@ export type User$recordedDiagnosesArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.DiagnosisScalarFieldEnum | Prisma.DiagnosisScalarFieldEnum[]
+}
+
+/**
+ * User.recordedProcedures
+ */
+export type User$recordedProceduresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Procedure
+   */
+  select?: Prisma.ProcedureSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Procedure
+   */
+  omit?: Prisma.ProcedureOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProcedureInclude<ExtArgs> | null
+  where?: Prisma.ProcedureWhereInput
+  orderBy?: Prisma.ProcedureOrderByWithRelationInput | Prisma.ProcedureOrderByWithRelationInput[]
+  cursor?: Prisma.ProcedureWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProcedureScalarFieldEnum | Prisma.ProcedureScalarFieldEnum[]
 }
 
 /**

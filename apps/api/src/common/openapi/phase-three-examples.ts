@@ -72,6 +72,14 @@ const icd10Code = {
   chapter: 'X',
   isActive: true,
 };
+const icd9cmCode = {
+  id: 'ffffffff-ffff-4fff-8fff-fffffffffff9',
+  code: '93.94',
+  display: 'Respiratory medication administered by nebulizer',
+  displayIndonesian: 'Pemberian obat pernapasan melalui nebulizer',
+  category: '93',
+  isActive: true,
+};
 const specialtyId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
 const specialty = {
   id: specialtyId,
@@ -349,6 +357,7 @@ export const PHASE_THREE_EXAMPLES = {
   },
   terminology: {
     icd10Code,
+    icd9cmCode,
   },
   doctor: {
     createRequest: {

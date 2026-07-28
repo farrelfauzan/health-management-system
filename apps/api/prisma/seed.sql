@@ -82,6 +82,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('registration.update:any', 'Registration', 'update', 'ANY', 'Update all registrations'),
     ('registration.update:own', 'Registration', 'update', 'OWN', 'Update own registrations'),
     ('icd10-code.read:any', 'Icd10Code', 'read', 'ANY', 'Search the ICD-10 diagnosis code catalog'),
+    ('icd9cm-code.read:any', 'Icd9cmCode', 'read', 'ANY', 'Search the ICD-9-CM procedure code catalog'),
     ('medication.read:any', 'Medication', 'read', 'ANY', 'Read medications'),
     ('medication.create:any', 'Medication', 'create', 'ANY', 'Create medication catalog entries'),
     ('medication.update:any', 'Medication', 'update', 'ANY', 'Update medication catalog entries'),
@@ -159,6 +160,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'registration.create:any'),
     ('ADMIN', 'registration.update:any'),
     ('ADMIN', 'icd10-code.read:any'),
+    ('ADMIN', 'icd9cm-code.read:any'),
     ('ADMIN', 'medication.read:any'),
     ('ADMIN', 'medication.create:any'),
     ('ADMIN', 'medication.update:any'),
@@ -179,9 +181,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'appointment.cancel:own'),
     ('DOCTOR', 'appointment.session.read:any'),
     ('DOCTOR', 'registration.read:any'),
-    -- The doctor codes the diagnosis, so the lookup is a clinical tool, not an
-    -- admin one. Pharmacists and patients get no grant.
+    -- The doctor codes the diagnosis and the procedures, so both lookups are
+    -- clinical tools, not admin ones. Pharmacists and patients get no grant.
     ('DOCTOR', 'icd10-code.read:any'),
+    ('DOCTOR', 'icd9cm-code.read:any'),
     ('DOCTOR', 'medication.read:any'),
     ('DOCTOR', 'prescription.read:own'),
     ('DOCTOR', 'prescription.write:own'),
@@ -505,6 +508,70 @@ SET
   "display_indonesian" = EXCLUDED."display_indonesian",
   "category" = EXCLUDED."category",
   "chapter" = EXCLUDED."chapter",
+  "is_active" = true,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
+-- ICD-9-CM procedure starter catalog.
+--
+-- NOT the official list, and deliberately smaller than the ICD-10 starter set:
+-- it covers only procedures routinely performed in an Indonesian FKTP, so that
+-- the /icd9cm-codes lookup is usable in development and demos. Load the official
+-- list with `pnpm --filter @hms/api icd9cm:import <file.csv>` before go-live —
+-- BPJS prices a claim from these codes, so an approximate catalog is a billing
+-- problem, not just a display one.
+--
+-- Indonesian titles are working translations, overwritten by the import.
+-- `category` is the two-digit parent code. There is no chapter column: ICD-9-CM
+-- procedure chapters do not map to a clean lexicographic range the way ICD-10
+-- chapters do.
+WITH seed_icd9cm_codes(code, display, display_indonesian) AS (
+  VALUES
+    ('57.94', 'Insertion of indwelling urinary catheter', 'Pemasangan kateter urin menetap'),
+    ('86.04', 'Other incision with drainage of skin and subcutaneous tissue', 'Insisi dan drainase abses kulit'),
+    ('86.22', 'Excisional debridement of wound, infection or burn', 'Debridemen eksisional luka, infeksi atau luka bakar'),
+    ('86.28', 'Nonexcisional debridement of wound, infection or burn', 'Debridemen non-eksisional luka, infeksi atau luka bakar'),
+    ('86.59', 'Closure of skin and subcutaneous tissue of other sites', 'Penjahitan luka kulit dan jaringan bawah kulit'),
+    ('87.44', 'Routine chest x-ray', 'Rontgen dada rutin'),
+    ('89.52', 'Electrocardiogram', 'Elektrokardiogram (EKG)'),
+    ('89.7', 'General physical examination', 'Pemeriksaan fisik umum'),
+    ('90.59', 'Other microscopic examination of blood', 'Pemeriksaan mikroskopis darah lainnya'),
+    ('93.57', 'Application of other wound dressing', 'Perawatan dan penggantian balutan luka'),
+    ('93.94', 'Respiratory medication administered by nebulizer', 'Pemberian obat pernapasan melalui nebulizer'),
+    ('96.54', 'Dental scaling, polishing and debridement', 'Pembersihan karang gigi dan pemolesan'),
+    ('96.59', 'Other irrigation of wound', 'Irigasi luka lainnya'),
+    ('99.21', 'Injection of antibiotic', 'Injeksi antibiotik'),
+    ('99.23', 'Injection of steroid', 'Injeksi steroid'),
+    ('99.29', 'Injection or infusion of other therapeutic or prophylactic substance', 'Injeksi atau infus zat terapeutik atau profilaksis lainnya'),
+    ('99.59', 'Other vaccination and inoculation', 'Vaksinasi dan inokulasi lainnya')
+)
+INSERT INTO "icd9cm_codes" (
+  "id",
+  "code",
+  "display",
+  "display_indonesian",
+  "category",
+  "is_active",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('icd9cm:' || code)::uuid,
+  code,
+  display,
+  display_indonesian,
+  split_part(code, '.', 1),
+  true,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_icd9cm_codes
+ON CONFLICT ("code") DO UPDATE
+SET
+  "display" = EXCLUDED."display",
+  "display_indonesian" = EXCLUDED."display_indonesian",
+  "category" = EXCLUDED."category",
   "is_active" = true,
   "updated_at" = NOW(),
   "deleted_at" = NULL;

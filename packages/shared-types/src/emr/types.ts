@@ -1,6 +1,19 @@
 import type { DiagnosisTypeValue, EncounterStatusValue } from '#emr/schemas';
 
-export type EncounterRecord = {
+/**
+ * The narrative half of an encounter record. Free text by design: the coded
+ * conclusions live in `DiagnosisRecord` (ICD-10) and `ProcedureRecord`
+ * (ICD-9-CM), and forcing clinical reasoning into codes loses the detail a
+ * later reader needs.
+ */
+export type SoapNote = {
+  subjective: string | null;
+  objective: string | null;
+  assessment: string | null;
+  plan: string | null;
+};
+
+export type EncounterRecord = SoapNote & {
   id: string;
   registrationId: string;
   patientId: string;
@@ -20,7 +33,7 @@ export type CreateEncounterRecordPayload = {
   createdById: string;
 };
 
-export type UpdateEncounterRecordPayload = {
+export type UpdateEncounterRecordPayload = Partial<SoapNote> & {
   id: string;
   status?: EncounterStatusValue;
   endedAt?: Date;
@@ -86,5 +99,33 @@ export type CreateDiagnosisRecordPayload = {
   display: string;
   type: DiagnosisTypeValue;
   notes?: string;
+  recordedById: string;
+};
+
+/**
+ * A coded action performed during the encounter. `code` and `display` are the
+ * signed snapshot for the same reason they are on `DiagnosisRecord`;
+ * `icd9cmCodeId` is only provenance.
+ */
+export type ProcedureRecord = {
+  id: string;
+  encounterId: string;
+  icd9cmCodeId: string | null;
+  code: string;
+  display: string;
+  notes: string | null;
+  performedAt: Date;
+  recordedById: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CreateProcedureRecordPayload = {
+  encounterId: string;
+  icd9cmCodeId?: string;
+  code: string;
+  display: string;
+  notes?: string;
+  performedAt?: Date;
   recordedById: string;
 };

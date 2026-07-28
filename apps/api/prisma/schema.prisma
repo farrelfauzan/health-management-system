@@ -206,6 +206,7 @@ model User {
   createdEncounters        Encounter[]             @relation("EncounterCreatedBy")
   recordedVitalSigns       VitalSigns[]            @relation("VitalSignsRecordedBy")
   recordedDiagnoses        Diagnosis[]             @relation("DiagnosisRecordedBy")
+  recordedProcedures       Procedure[]             @relation("ProcedureRecordedBy")
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
   refreshTokens            RefreshToken[]
   auditLogs                AuditLog[]              @relation("AuditLogActor")
@@ -613,12 +614,28 @@ model Encounter {
   updatedAt      DateTime        @updatedAt @map("updated_at")
   deletedAt      DateTime?       @map("deleted_at")
 
+  // SOAP note — the narrative half of the PMK 24/2022 minimum record, which
+  // requires anamnesis, examination findings, diagnosis, and treatment plan.
+  // Free text on purpose: the coded parts of the record live in `diagnoses`
+  // (ICD-10) and `procedures` (ICD-9-CM), and forcing narrative reasoning into
+  // codes loses the clinical detail a later reader needs.
+  /// Anamnesis — what the patient reports.
+  subjective String?
+  /// Examination findings. Measured vitals stay in `vital_signs`; this is the
+  /// qualitative reading of them.
+  objective  String?
+  /// Clinical reasoning. The coded conclusion is a `Diagnosis` row.
+  assessment String?
+  /// Treatment plan. Prescribed items stay in `prescriptions`.
+  plan       String?
+
   registration Registration   @relation(fields: [registrationId], references: [id], onDelete: Restrict)
   patient      PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
   doctor       DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Restrict)
   createdBy    User?          @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   vitalSigns   VitalSigns[]
   diagnoses    Diagnosis[]
+  procedures   Procedure[]
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -738,6 +755,68 @@ model Diagnosis {
   @@index([code])
   @@index([deletedAt])
   @@map("diagnoses")
+}
+
+/// ICD-9-CM procedure catalog — the counterpart to `Icd10Code` for actions
+/// rather than conditions. BPJS claims price a visit from the procedures
+/// recorded against it, so an uncoded action is an unbillable one.
+///
+/// Same rules as the diagnosis catalog: reference data, retired codes are
+/// deactivated rather than deleted, and the official list is loaded by
+/// `pnpm --filter @hms/api icd9cm:import`. There is no chapter column —
+/// ICD-9-CM procedure chapters do not follow a clean lexicographic range the
+/// way ICD-10 chapters do, so only the two-digit `category` is derived.
+model Icd9cmCode {
+  id                String    @id @default(uuid()) @db.Uuid
+  code              String    @unique
+  display           String
+  displayIndonesian String?   @map("display_indonesian")
+  /// Two-digit parent code (`93` for `93.94`).
+  category          String?
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+
+  procedures Procedure[]
+
+  @@index([category])
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("icd9cm_codes")
+}
+
+/// A coded action performed during an encounter — injection, wound suture,
+/// nebulisation. Feeds BPJS claim lines and, later, SATUSEHAT `Procedure`
+/// resources.
+///
+/// `code` and `display` are a snapshot of what was signed, exactly as on
+/// `Diagnosis`: a catalog rename must never rewrite a signed record. Unlike
+/// diagnoses there is no primary/secondary split — every procedure on a visit
+/// counts equally toward the claim.
+model Procedure {
+  id           String    @id @default(uuid()) @db.Uuid
+  encounterId  String    @map("encounter_id") @db.Uuid
+  icd9cmCodeId String?   @map("icd9cm_code_id") @db.Uuid
+  code         String
+  display      String
+  notes        String?
+  /// When the action was performed, which can precede the moment it was
+  /// written down.
+  performedAt  DateTime  @default(now()) @map("performed_at")
+  recordedById String?   @map("recorded_by_id") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  encounter  Encounter   @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  icd9cmCode Icd9cmCode? @relation(fields: [icd9cmCodeId], references: [id], onDelete: SetNull)
+  recordedBy User?       @relation("ProcedureRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+
+  @@index([encounterId, performedAt])
+  @@index([code])
+  @@index([deletedAt])
+  @@map("procedures")
 }
 
 model Medication {
