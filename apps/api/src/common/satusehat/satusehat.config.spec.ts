@@ -32,7 +32,21 @@ describe('resolveSatusehatConfig', () => {
       retryBaseDelayMs: 250,
       circuitBreakerFailureThreshold: 5,
       circuitBreakerOpenDurationMs: 30_000,
+      workerEnabled: true,
+      workerPollIntervalMs: 15_000,
+      submissionMaxAttempts: 8,
+      submissionRetryBaseDelayMs: 60_000,
     });
+  });
+
+  it('parses the worker flag and rejects a non-boolean value', () => {
+    const actualConfig = resolveSatusehatConfig(
+      buildConfigService({ SATUSEHAT_WORKER_ENABLED: 'false' }),
+    );
+    expect(actualConfig.workerEnabled).toBe(false);
+    expect(() =>
+      resolveSatusehatConfig(buildConfigService({ SATUSEHAT_WORKER_ENABLED: 'yes' })),
+    ).toThrow('SATUSEHAT_WORKER_ENABLED must be "true" or "false"');
   });
 
   it('marks the adapter configured when all three credential values are present', () => {

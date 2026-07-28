@@ -87,6 +87,7 @@ export const ModelName = {
   Permission: 'Permission',
   RolePermission: 'RolePermission',
   UserRole: 'UserRole',
+  SatusehatSubmission: 'SatusehatSubmission',
   AuditLog: 'AuditLog'
 } as const
 
@@ -683,6 +684,23 @@ export const UserRoleScalarFieldEnum = {
 } as const
 
 export type UserRoleScalarFieldEnum = (typeof UserRoleScalarFieldEnum)[keyof typeof UserRoleScalarFieldEnum]
+
+
+export const SatusehatSubmissionScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  status: 'status',
+  attempts: 'attempts',
+  lastError: 'lastError',
+  nextAttemptAt: 'nextAttemptAt',
+  lastAttemptAt: 'lastAttemptAt',
+  submittedAt: 'submittedAt',
+  satusehatEncounterId: 'satusehatEncounterId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SatusehatSubmissionScalarFieldEnum = (typeof SatusehatSubmissionScalarFieldEnum)[keyof typeof SatusehatSubmissionScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {

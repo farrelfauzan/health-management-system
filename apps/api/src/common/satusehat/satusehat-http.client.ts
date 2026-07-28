@@ -135,7 +135,8 @@ export class SatusehatHttpClient {
   }
 
   private buildRequestUrl(request: SatusehatRequest): string {
-    const path = request.path.startsWith('/') ? request.path : `/${request.path}`;
+    const path =
+      request.path === '' || request.path.startsWith('/') ? request.path : `/${request.path}`;
     const queryString = request.query ? new URLSearchParams(request.query).toString() : '';
     const querySuffix = queryString === '' ? '' : `?${queryString}`;
     return `${this.satusehatConfig.fhirBaseUrl}${path}${querySuffix}`;

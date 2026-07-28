@@ -129,6 +129,15 @@ enum EncounterStatus {
   CANCELLED
 }
 
+/// Lifecycle of one SATUSEHAT outbox row. PENDING rows are due (or waiting
+/// for their next backoff slot); SUBMITTED and FAILED are settled — FAILED is
+/// re-opened only by an explicit admin retry (P10-T06), never by the worker.
+enum SatusehatSubmissionStatus {
+  PENDING
+  SUBMITTED
+  FAILED
+}
+
 /// Role of a diagnosis within one encounter. Exactly one PRIMARY is expected —
 /// it is the diagnosis that justifies the visit, and both BPJS claims and
 /// SATUSEHAT `Condition` submissions single it out.
@@ -696,11 +705,12 @@ model Encounter {
   patient       PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
   doctor        DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Restrict)
   createdBy     User?          @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  vitalSigns    VitalSigns[]
-  diagnoses     Diagnosis[]
-  procedures    Procedure[]
-  prescriptions Prescription[]
-  invoices      Invoice[]
+  vitalSigns          VitalSigns[]
+  diagnoses           Diagnosis[]
+  procedures          Procedure[]
+  prescriptions       Prescription[]
+  invoices            Invoice[]
+  satusehatSubmission SatusehatSubmission?
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -1225,6 +1235,39 @@ model UserRole {
   @@index([roleId])
   @@index([deletedAt])
   @@map("user_roles")
+}
+
+/// Outbox row for one encounter's SATUSEHAT bundle submission (P10-T04).
+/// Created in the same transaction that closes the encounter, so a closed
+/// visit can never silently miss the reporting queue, and clinical flows
+/// never wait on Kemenkes availability.
+///
+/// The row carries scheduling state only — no payload snapshot. The bundle is
+/// rebuilt from the clinical record at send time, so a diagnosis retracted
+/// between close and submission is reported as corrected, not as signed.
+/// One row per encounter: attempts increment in place, and the terminal
+/// FAILED state is re-opened only by the admin retry surface (P10-T06).
+model SatusehatSubmission {
+  id                   String                    @id @default(uuid()) @db.Uuid
+  encounterId          String                    @unique @map("encounter_id") @db.Uuid
+  status               SatusehatSubmissionStatus @default(PENDING)
+  attempts             Int                       @default(0)
+  lastError            String?                   @map("last_error")
+  /// Earliest instant the worker may (re)try; pushed forward exponentially on
+  /// transient failures.
+  nextAttemptAt        DateTime                  @default(now()) @map("next_attempt_at")
+  lastAttemptAt        DateTime?                 @map("last_attempt_at")
+  submittedAt          DateTime?                 @map("submitted_at")
+  /// IHS Encounter id returned by the platform on success — the provenance
+  /// link between the local record and the national one.
+  satusehatEncounterId String?                   @map("satusehat_encounter_id")
+  createdAt            DateTime                  @default(now()) @map("created_at")
+  updatedAt            DateTime                  @updatedAt @map("updated_at")
+
+  encounter Encounter @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+
+  @@index([status, nextAttemptAt])
+  @@map("satusehat_submissions")
 }
 
 model AuditLog {
