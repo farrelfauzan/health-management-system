@@ -9698,6 +9698,256 @@ paths:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
       tags: *a15
+  /api/v1/satusehat/submissions:
+    get:
+      operationId: SatusehatSubmissionController_listSubmissions_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - SUBMITTED
+              - FAILED
+        - name: encounterId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: A paginated view of the submission outbox, newest first, filterable
+            by status and encounter. Rows carry scheduling state only — no
+            clinical payload is stored in the outbox.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        encounterId:
+                          type: string
+                        status:
+                          type: string
+                        attempts:
+                          type: integer
+                        lastError:
+                          type: string
+                        nextAttemptAt:
+                          type: string
+                        lastAttemptAt:
+                          type: string
+                        submittedAt:
+                          nullable: true
+                        satusehatEncounterId:
+                          nullable: true
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - encounterId
+                        - status
+                        - attempts
+                        - lastError
+                        - nextAttemptAt
+                        - lastAttemptAt
+                        - submittedAt
+                        - satusehatEncounterId
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d
+                      encounterId: 2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e
+                      status: FAILED
+                      attempts: 8
+                      lastError: SATUSEHAT is unreachable (HTTP 503)
+                      nextAttemptAt: 2026-07-28T09:00:00.000Z
+                      lastAttemptAt: 2026-07-28T08:00:00.000Z
+                      submittedAt: null
+                      satusehatEncounterId: null
+                      createdAt: 2026-07-27T10:15:00.000Z
+                      updatedAt: 2026-07-28T08:00:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List SATUSEHAT submission outbox entries
+      tags: &a16
+        - SATUSEHAT
+  /api/v1/satusehat/submissions/{id}/retry:
+    post:
+      operationId: SatusehatSubmissionController_retrySubmission_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The FAILED row was re-opened with a fresh attempt budget and
+            processed immediately; the returned row shows the real outcome
+            (SUBMITTED, PENDING with a scheduled retry, or FAILED again with a
+            new lastError). Rows that are SUBMITTED or already queued return
+            409.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      encounterId:
+                        type: string
+                      status:
+                        type: string
+                      attempts:
+                        type: integer
+                      lastError:
+                        nullable: true
+                      nextAttemptAt:
+                        type: string
+                      lastAttemptAt:
+                        type: string
+                      submittedAt:
+                        type: string
+                      satusehatEncounterId:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - encounterId
+                      - status
+                      - attempts
+                      - lastError
+                      - nextAttemptAt
+                      - lastAttemptAt
+                      - submittedAt
+                      - satusehatEncounterId
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d
+                    encounterId: 2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e
+                    status: SUBMITTED
+                    attempts: 1
+                    lastError: null
+                    nextAttemptAt: 2026-07-28T09:05:00.000Z
+                    lastAttemptAt: 2026-07-28T09:05:01.000Z
+                    submittedAt: 2026-07-28T09:05:01.000Z
+                    satusehatEncounterId: a1b2c3d4-0000-4000-8000-9f8e7d6c5b4a
+                    createdAt: 2026-07-27T10:15:00.000Z
+                    updatedAt: 2026-07-28T09:05:01.000Z
+                  message: Submission retry processed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: SATUSEHAT submission not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: SATUSEHAT submission not found.
+      security:
+        - bearer: []
+      summary: Retry a failed SATUSEHAT submission
+      tags: *a16
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -9753,7 +10003,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a16
+      tags: &a17
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -9846,7 +10096,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a16
+      tags: *a17
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -9938,7 +10188,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a16
+      tags: *a17
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1

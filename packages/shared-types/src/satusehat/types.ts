@@ -1,3 +1,5 @@
+import type { SatusehatSubmissionStatusValue } from '#satusehat/schemas';
+
 /**
  * Repository projections and payloads for SATUSEHAT linkage. The `nik` fields
  * are decrypted by the repository (the only layer allowed to touch identifier
@@ -25,8 +27,6 @@ export type SaveDoctorIhsNumberPayload = {
   doctorId: string;
   ihsNumber: string;
 };
-
-export type SatusehatSubmissionStatusValue = 'PENDING' | 'SUBMITTED' | 'FAILED';
 
 export type SatusehatSubmissionRecord = {
   id: string;
@@ -128,4 +128,16 @@ export type MarkSubmissionFailedPayload = {
   id: string;
   attempts: number;
   lastError: string;
+};
+
+export type ListSatusehatSubmissionsParams = {
+  status?: SatusehatSubmissionStatusValue;
+  encounterId?: string;
+  skip: number;
+  take: number;
+};
+
+export type SatusehatSubmissionPage = {
+  items: SatusehatSubmissionRecord[];
+  total: number;
 };
