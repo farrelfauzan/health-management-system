@@ -1785,6 +1785,110 @@ paths:
       summary: List specialties
       tags:
         - Specialty
+  /api/v1/icd10-codes:
+    get:
+      operationId: Icd10CodeController_searchIcd10Codes_v1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            type: string
+        - name: category
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            type: string
+        - name: isActive
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: Matching ICD-10 codes ordered by code. Matches against the code
+            prefix and both the English and Indonesian titles.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        display:
+                          type: string
+                        displayIndonesian:
+                          type: string
+                        category:
+                          type: string
+                        chapter:
+                          type: string
+                        isActive:
+                          type: boolean
+                      required:
+                        - id
+                        - code
+                        - display
+                        - displayIndonesian
+                        - category
+                        - chapter
+                        - isActive
+                required:
+                  - data
+                example:
+                  data:
+                    - id: ffffffff-ffff-4fff-8fff-ffffffffffff
+                      code: J06.9
+                      display: Acute upper respiratory infection, unspecified
+                      displayIndonesian: Infeksi saluran napas atas akut, tidak dijelaskan
+                      category: J06
+                      chapter: X
+                      isActive: true
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Search ICD-10 codes
+      tags:
+        - Terminology
   /api/v1/doctors:
     get:
       operationId: DoctorManagementController_listDoctors_v1

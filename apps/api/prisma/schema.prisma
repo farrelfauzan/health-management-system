@@ -126,6 +126,14 @@ enum EncounterStatus {
   CANCELLED
 }
 
+/// Role of a diagnosis within one encounter. Exactly one PRIMARY is expected —
+/// it is the diagnosis that justifies the visit, and both BPJS claims and
+/// SATUSEHAT `Condition` submissions single it out.
+enum DiagnosisType {
+  PRIMARY
+  SECONDARY
+}
+
 enum PrescriptionStatus {
   DRAFT
   ISSUED
@@ -197,6 +205,7 @@ model User {
   createdRegistrations     Registration[]          @relation("RegistrationCreatedBy")
   createdEncounters        Encounter[]             @relation("EncounterCreatedBy")
   recordedVitalSigns       VitalSigns[]            @relation("VitalSignsRecordedBy")
+  recordedDiagnoses        Diagnosis[]             @relation("DiagnosisRecordedBy")
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
   refreshTokens            RefreshToken[]
   auditLogs                AuditLog[]              @relation("AuditLogActor")
@@ -609,6 +618,7 @@ model Encounter {
   doctor       DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Restrict)
   createdBy    User?          @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   vitalSigns   VitalSigns[]
+  diagnoses    Diagnosis[]
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -661,6 +671,73 @@ model VitalSigns {
   @@index([encounterId, recordedAt])
   @@index([deletedAt])
   @@map("vital_signs")
+}
+
+/// ICD-10 catalog used to code diagnoses. Reference data, not clinical data:
+/// rows are maintained by an administrator or replaced wholesale by the
+/// official Kemenkes list, and nothing here belongs to a patient.
+///
+/// Retired codes are deactivated (`isActive = false`), never deleted — historic
+/// encounters must keep resolving the code they were coded with.
+///
+/// `displayIndonesian` holds the Kemenkes Bahasa Indonesia title where one
+/// exists. Clinicians search in Indonesian, so it is matched alongside the WHO
+/// English title rather than being display-only.
+model Icd10Code {
+  id                String    @id @default(uuid()) @db.Uuid
+  code              String    @unique
+  display           String
+  displayIndonesian String?   @map("display_indonesian")
+  /// Three-character parent code (`J06` for `J06.9`), for grouping and for
+  /// falling back to the category when a payer rejects a subdivision.
+  category          String?
+  /// ICD-10 chapter in Roman numerals, e.g. `X` for respiratory diseases.
+  chapter           String?
+  isActive          Boolean   @default(true) @map("is_active")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+
+  diagnoses Diagnosis[]
+
+  @@index([category])
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("icd10_codes")
+}
+
+/// A coded diagnosis recorded on an encounter — the "diagnosis" line PMK
+/// 24/2022 requires, and the input to both BPJS claims and SATUSEHAT
+/// `Condition` resources.
+///
+/// `code` and `display` are stored as a snapshot of what the clinician
+/// actually recorded, alongside the optional `icd10CodeId` link. A medical
+/// record must not change retroactively: if the catalog row is later renamed,
+/// re-categorised, or retired, the signed record keeps the wording it was
+/// signed with. The FK is `SetNull` for the same reason — losing the catalog
+/// row must never take the diagnosis with it.
+model Diagnosis {
+  id           String        @id @default(uuid()) @db.Uuid
+  encounterId  String        @map("encounter_id") @db.Uuid
+  icd10CodeId  String?       @map("icd10_code_id") @db.Uuid
+  code         String
+  display      String
+  type         DiagnosisType @default(SECONDARY)
+  notes        String?
+  recordedAt   DateTime      @default(now()) @map("recorded_at")
+  recordedById String?       @map("recorded_by_id") @db.Uuid
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  deletedAt    DateTime?     @map("deleted_at")
+
+  encounter  Encounter  @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  icd10Code  Icd10Code? @relation(fields: [icd10CodeId], references: [id], onDelete: SetNull)
+  recordedBy User?      @relation("DiagnosisRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+
+  @@index([encounterId, type])
+  @@index([code])
+  @@index([deletedAt])
+  @@map("diagnoses")
 }
 
 model Medication {

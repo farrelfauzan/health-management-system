@@ -63,6 +63,15 @@ const doctorScheduleEntry = {
   endTime: '16:00',
   isAvailable: true,
 };
+const icd10Code = {
+  id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+  code: 'J06.9',
+  display: 'Acute upper respiratory infection, unspecified',
+  displayIndonesian: 'Infeksi saluran napas atas akut, tidak dijelaskan',
+  category: 'J06',
+  chapter: 'X',
+  isActive: true,
+};
 const specialtyId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
 const specialty = {
   id: specialtyId,
@@ -337,6 +346,9 @@ export const PHASE_THREE_EXAMPLES = {
   },
   specialty: {
     item: specialty,
+  },
+  terminology: {
+    icd10Code,
   },
   doctor: {
     createRequest: {

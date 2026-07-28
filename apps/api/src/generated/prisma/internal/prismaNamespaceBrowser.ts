@@ -68,6 +68,8 @@ export const ModelName = {
   Registration: 'Registration',
   Encounter: 'Encounter',
   VitalSigns: 'VitalSigns',
+  Icd10Code: 'Icd10Code',
+  Diagnosis: 'Diagnosis',
   Medication: 'Medication',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
@@ -383,6 +385,40 @@ export const VitalSignsScalarFieldEnum = {
 } as const
 
 export type VitalSignsScalarFieldEnum = (typeof VitalSignsScalarFieldEnum)[keyof typeof VitalSignsScalarFieldEnum]
+
+
+export const Icd10CodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  display: 'display',
+  displayIndonesian: 'displayIndonesian',
+  category: 'category',
+  chapter: 'chapter',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type Icd10CodeScalarFieldEnum = (typeof Icd10CodeScalarFieldEnum)[keyof typeof Icd10CodeScalarFieldEnum]
+
+
+export const DiagnosisScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  icd10CodeId: 'icd10CodeId',
+  code: 'code',
+  display: 'display',
+  type: 'type',
+  notes: 'notes',
+  recordedAt: 'recordedAt',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DiagnosisScalarFieldEnum = (typeof DiagnosisScalarFieldEnum)[keyof typeof DiagnosisScalarFieldEnum]
 
 
 export const MedicationScalarFieldEnum = {
