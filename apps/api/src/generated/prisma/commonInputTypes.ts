@@ -548,6 +548,23 @@ export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
 }
 
+export type EnumDiagnosisTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiagnosisType | Prisma.EnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DiagnosisType[] | Prisma.ListEnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiagnosisType[] | Prisma.ListEnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel> | $Enums.DiagnosisType
+}
+
+export type EnumDiagnosisTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiagnosisType | Prisma.EnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DiagnosisType[] | Prisma.ListEnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiagnosisType[] | Prisma.ListEnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiagnosisTypeWithAggregatesFilter<$PrismaModel> | $Enums.DiagnosisType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel>
+}
+
 export type EnumMedicationUnitNullableFilter<$PrismaModel = never> = {
   equals?: $Enums.MedicationUnit | Prisma.EnumMedicationUnitFieldRefInput<$PrismaModel> | null
   in?: $Enums.MedicationUnit[] | Prisma.ListEnumMedicationUnitFieldRefInput<$PrismaModel> | null
@@ -1242,6 +1259,23 @@ export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumDiagnosisTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiagnosisType | Prisma.EnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DiagnosisType[] | Prisma.ListEnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiagnosisType[] | Prisma.ListEnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel> | $Enums.DiagnosisType
+}
+
+export type NestedEnumDiagnosisTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DiagnosisType | Prisma.EnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DiagnosisType[] | Prisma.ListEnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DiagnosisType[] | Prisma.ListEnumDiagnosisTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDiagnosisTypeWithAggregatesFilter<$PrismaModel> | $Enums.DiagnosisType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel>
 }
 
 export type NestedEnumMedicationUnitNullableFilter<$PrismaModel = never> = {

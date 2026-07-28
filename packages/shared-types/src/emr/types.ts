@@ -1,4 +1,4 @@
-import type { EncounterStatusValue } from '#emr/schemas';
+import type { DiagnosisTypeValue, EncounterStatusValue } from '#emr/schemas';
 
 export type EncounterRecord = {
   id: string;
@@ -57,5 +57,34 @@ export type CreateVitalSignsRecordPayload = Partial<VitalSignsMeasurements> & {
   encounterId: string;
   notes?: string;
   recordedAt?: Date;
+  recordedById: string;
+};
+
+/**
+ * `code` and `display` are the snapshot the clinician signed, not a join onto
+ * the catalog: renaming or retiring an `Icd10Code` row must never rewrite a
+ * signed record, so `icd10CodeId` is only the (nullable) provenance link.
+ */
+export type DiagnosisRecord = {
+  id: string;
+  encounterId: string;
+  icd10CodeId: string | null;
+  code: string;
+  display: string;
+  type: DiagnosisTypeValue;
+  notes: string | null;
+  recordedAt: Date;
+  recordedById: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CreateDiagnosisRecordPayload = {
+  encounterId: string;
+  icd10CodeId?: string;
+  code: string;
+  display: string;
+  type: DiagnosisTypeValue;
+  notes?: string;
   recordedById: string;
 };

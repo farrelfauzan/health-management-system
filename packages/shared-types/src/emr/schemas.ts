@@ -20,6 +20,12 @@ export const ENCOUNTER_STATUS_TRANSITIONS: Record<
   CANCELLED: [],
 } as const;
 
+export const DIAGNOSIS_TYPES = ['PRIMARY', 'SECONDARY'] as const;
+
+export const diagnosisTypeSchema = z.enum(DIAGNOSIS_TYPES);
+
+export type DiagnosisTypeValue = z.infer<typeof diagnosisTypeSchema>;
+
 /**
  * Inclusive plausibility bounds for each vital sign, in the unit fixed by its
  * column (cm, kg, mmHg, beats/min, breaths/min, °C, %).

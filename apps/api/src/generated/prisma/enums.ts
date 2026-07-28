@@ -166,6 +166,14 @@ export const EncounterStatus = {
 export type EncounterStatus = (typeof EncounterStatus)[keyof typeof EncounterStatus]
 
 
+export const DiagnosisType = {
+  PRIMARY: 'PRIMARY',
+  SECONDARY: 'SECONDARY'
+} as const
+
+export type DiagnosisType = (typeof DiagnosisType)[keyof typeof DiagnosisType]
+
+
 export const PrescriptionStatus = {
   DRAFT: 'DRAFT',
   ISSUED: 'ISSUED',

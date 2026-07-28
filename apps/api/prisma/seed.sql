@@ -81,6 +81,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('registration.create:own', 'Registration', 'create', 'OWN', 'Create own registrations'),
     ('registration.update:any', 'Registration', 'update', 'ANY', 'Update all registrations'),
     ('registration.update:own', 'Registration', 'update', 'OWN', 'Update own registrations'),
+    ('icd10-code.read:any', 'Icd10Code', 'read', 'ANY', 'Search the ICD-10 diagnosis code catalog'),
     ('medication.read:any', 'Medication', 'read', 'ANY', 'Read medications'),
     ('medication.create:any', 'Medication', 'create', 'ANY', 'Create medication catalog entries'),
     ('medication.update:any', 'Medication', 'update', 'ANY', 'Update medication catalog entries'),
@@ -157,6 +158,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'registration.read:any'),
     ('ADMIN', 'registration.create:any'),
     ('ADMIN', 'registration.update:any'),
+    ('ADMIN', 'icd10-code.read:any'),
     ('ADMIN', 'medication.read:any'),
     ('ADMIN', 'medication.create:any'),
     ('ADMIN', 'medication.update:any'),
@@ -177,6 +179,9 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'appointment.cancel:own'),
     ('DOCTOR', 'appointment.session.read:any'),
     ('DOCTOR', 'registration.read:any'),
+    -- The doctor codes the diagnosis, so the lookup is a clinical tool, not an
+    -- admin one. Pharmacists and patients get no grant.
+    ('DOCTOR', 'icd10-code.read:any'),
     ('DOCTOR', 'medication.read:any'),
     ('DOCTOR', 'prescription.read:own'),
     ('DOCTOR', 'prescription.write:own'),
@@ -359,6 +364,147 @@ SELECT
 FROM seed_specialties
 ON CONFLICT ("name") DO UPDATE
 SET
+  "is_active" = true,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
+-- ICD-10 starter catalog.
+--
+-- NOT the official list. This is a small set of high-frequency FKTP primary-care
+-- diagnoses so that development, demos, and the /icd10-codes lookup work out of
+-- the box. Before go-live, load the official Kemenkes list with
+-- `pnpm --filter @hms/api icd10:import <file.csv>` — it upserts by code and
+-- deactivates anything absent from the file, so it converges this baseline onto
+-- the official catalog without orphaning historic diagnoses.
+--
+-- The Indonesian titles below are working translations for search and display,
+-- not official Kemenkes wording; the import overwrites them.
+--
+-- `category` is the three-character parent code and `chapter` is derived from
+-- it. The importer applies the identical mapping in TypeScript
+-- (deriveIcd10Chapter in @hms/shared-types) — keep the two in step.
+WITH seed_icd10_codes(code, display, display_indonesian) AS (
+  VALUES
+    ('A01.0', 'Typhoid fever', 'Demam tifoid'),
+    ('A09', 'Diarrhoea and gastroenteritis of presumed infectious origin', 'Diare dan gastroenteritis diduga infeksi'),
+    ('A15.0', 'Tuberculosis of lung, confirmed by sputum microscopy with or without culture', 'Tuberkulosis paru, terkonfirmasi mikroskopis sputum'),
+    ('A90', 'Dengue fever [classical dengue]', 'Demam dengue'),
+    ('A91', 'Dengue haemorrhagic fever', 'Demam berdarah dengue'),
+    ('B34.9', 'Viral infection, unspecified', 'Infeksi virus, tidak dijelaskan'),
+    ('B35.4', 'Tinea corporis', 'Tinea korporis'),
+    ('B86', 'Scabies', 'Skabies'),
+    ('D50.9', 'Iron deficiency anaemia, unspecified', 'Anemia defisiensi besi, tidak dijelaskan'),
+    ('E11.9', 'Type 2 diabetes mellitus without complications', 'Diabetes melitus tipe 2 tanpa komplikasi'),
+    ('E66.9', 'Obesity, unspecified', 'Obesitas, tidak dijelaskan'),
+    ('E78.5', 'Hyperlipidaemia, unspecified', 'Hiperlipidemia, tidak dijelaskan'),
+    ('E86', 'Volume depletion', 'Deplesi volume (dehidrasi)'),
+    ('G43.9', 'Migraine, unspecified', 'Migren, tidak dijelaskan'),
+    ('G44.2', 'Tension-type headache', 'Nyeri kepala tipe tegang'),
+    ('H10.9', 'Conjunctivitis, unspecified', 'Konjungtivitis, tidak dijelaskan'),
+    ('H60.9', 'Otitis externa, unspecified', 'Otitis eksterna, tidak dijelaskan'),
+    ('H66.9', 'Otitis media, unspecified', 'Otitis media, tidak dijelaskan'),
+    ('I10', 'Essential (primary) hypertension', 'Hipertensi esensial (primer)'),
+    ('I11.9', 'Hypertensive heart disease without (congestive) heart failure', 'Penyakit jantung hipertensi tanpa gagal jantung'),
+    ('J00', 'Acute nasopharyngitis [common cold]', 'Nasofaringitis akut (selesma)'),
+    ('J01.9', 'Acute sinusitis, unspecified', 'Sinusitis akut, tidak dijelaskan'),
+    ('J02.9', 'Acute pharyngitis, unspecified', 'Faringitis akut, tidak dijelaskan'),
+    ('J03.9', 'Acute tonsillitis, unspecified', 'Tonsilitis akut, tidak dijelaskan'),
+    ('J06.9', 'Acute upper respiratory infection, unspecified', 'Infeksi saluran napas atas akut, tidak dijelaskan'),
+    ('J18.9', 'Pneumonia, unspecified', 'Pneumonia, tidak dijelaskan'),
+    ('J20.9', 'Acute bronchitis, unspecified', 'Bronkitis akut, tidak dijelaskan'),
+    ('J30.4', 'Allergic rhinitis, unspecified', 'Rinitis alergi, tidak dijelaskan'),
+    ('J31.0', 'Chronic rhinitis', 'Rinitis kronik'),
+    ('J44.9', 'Chronic obstructive pulmonary disease, unspecified', 'Penyakit paru obstruktif kronik, tidak dijelaskan'),
+    ('J45.9', 'Asthma, unspecified', 'Asma, tidak dijelaskan'),
+    ('K02.9', 'Dental caries, unspecified', 'Karies gigi, tidak dijelaskan'),
+    ('K21.9', 'Gastro-oesophageal reflux disease without oesophagitis', 'Penyakit refluks gastroesofageal tanpa esofagitis'),
+    ('K29.7', 'Gastritis, unspecified', 'Gastritis, tidak dijelaskan'),
+    ('K30', 'Dyspepsia', 'Dispepsia'),
+    ('K59.0', 'Constipation', 'Konstipasi'),
+    ('L02.9', 'Cutaneous abscess, furuncle and carbuncle, unspecified', 'Abses kulit, furunkel dan karbunkel, tidak dijelaskan'),
+    ('L20.9', 'Atopic dermatitis, unspecified', 'Dermatitis atopik, tidak dijelaskan'),
+    ('L23.9', 'Allergic contact dermatitis, unspecified cause', 'Dermatitis kontak alergi, penyebab tidak dijelaskan'),
+    ('L30.9', 'Dermatitis, unspecified', 'Dermatitis, tidak dijelaskan'),
+    ('L50.9', 'Urticaria, unspecified', 'Urtikaria, tidak dijelaskan'),
+    ('M06.9', 'Rheumatoid arthritis, unspecified', 'Artritis reumatoid, tidak dijelaskan'),
+    ('M10.9', 'Gout, unspecified', 'Gout, tidak dijelaskan'),
+    ('M13.9', 'Arthritis, unspecified', 'Artritis, tidak dijelaskan'),
+    ('M54.2', 'Cervicalgia', 'Servikalgia (nyeri leher)'),
+    ('M54.5', 'Low back pain', 'Nyeri punggung bawah'),
+    ('M79.1', 'Myalgia', 'Mialgia'),
+    ('N30.0', 'Acute cystitis', 'Sistitis akut'),
+    ('N39.0', 'Urinary tract infection, site not specified', 'Infeksi saluran kemih, lokasi tidak dijelaskan'),
+    ('N76.0', 'Acute vaginitis', 'Vaginitis akut'),
+    ('R05', 'Cough', 'Batuk'),
+    ('R10.4', 'Other and unspecified abdominal pain', 'Nyeri perut lain dan tidak dijelaskan'),
+    ('R11', 'Nausea and vomiting', 'Mual dan muntah'),
+    ('R42', 'Dizziness and giddiness', 'Pusing berputar'),
+    ('R50.9', 'Fever, unspecified', 'Demam, tidak dijelaskan'),
+    ('R51', 'Headache', 'Nyeri kepala'),
+    ('Z00.0', 'General medical examination', 'Pemeriksaan kesehatan umum'),
+    ('Z34.9', 'Supervision of normal pregnancy, unspecified', 'Pengawasan kehamilan normal, tidak dijelaskan')
+),
+seed_icd10_codes_with_category AS (
+  SELECT
+    code,
+    display,
+    display_indonesian,
+    split_part(code, '.', 1) AS category
+  FROM seed_icd10_codes
+)
+INSERT INTO "icd10_codes" (
+  "id",
+  "code",
+  "display",
+  "display_indonesian",
+  "category",
+  "chapter",
+  "is_active",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('icd10:' || code)::uuid,
+  code,
+  display,
+  display_indonesian,
+  category,
+  CASE
+    WHEN category BETWEEN 'A00' AND 'B99' THEN 'I'
+    WHEN category BETWEEN 'C00' AND 'D48' THEN 'II'
+    WHEN category BETWEEN 'D50' AND 'D89' THEN 'III'
+    WHEN category BETWEEN 'E00' AND 'E90' THEN 'IV'
+    WHEN category BETWEEN 'F00' AND 'F99' THEN 'V'
+    WHEN category BETWEEN 'G00' AND 'G99' THEN 'VI'
+    WHEN category BETWEEN 'H00' AND 'H59' THEN 'VII'
+    WHEN category BETWEEN 'H60' AND 'H95' THEN 'VIII'
+    WHEN category BETWEEN 'I00' AND 'I99' THEN 'IX'
+    WHEN category BETWEEN 'J00' AND 'J99' THEN 'X'
+    WHEN category BETWEEN 'K00' AND 'K93' THEN 'XI'
+    WHEN category BETWEEN 'L00' AND 'L99' THEN 'XII'
+    WHEN category BETWEEN 'M00' AND 'M99' THEN 'XIII'
+    WHEN category BETWEEN 'N00' AND 'N99' THEN 'XIV'
+    WHEN category BETWEEN 'O00' AND 'O99' THEN 'XV'
+    WHEN category BETWEEN 'P00' AND 'P96' THEN 'XVI'
+    WHEN category BETWEEN 'Q00' AND 'Q99' THEN 'XVII'
+    WHEN category BETWEEN 'R00' AND 'R99' THEN 'XVIII'
+    WHEN category BETWEEN 'S00' AND 'T98' THEN 'XIX'
+    WHEN category BETWEEN 'V01' AND 'Y98' THEN 'XX'
+    WHEN category BETWEEN 'Z00' AND 'Z99' THEN 'XXI'
+    ELSE NULL
+  END,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_icd10_codes_with_category
+ON CONFLICT ("code") DO UPDATE
+SET
+  "display" = EXCLUDED."display",
+  "display_indonesian" = EXCLUDED."display_indonesian",
+  "category" = EXCLUDED."category",
+  "chapter" = EXCLUDED."chapter",
   "is_active" = true,
   "updated_at" = NOW(),
   "deleted_at" = NULL;

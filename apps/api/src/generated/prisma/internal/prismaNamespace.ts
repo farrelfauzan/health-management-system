@@ -401,6 +401,8 @@ export const ModelName = {
   Registration: 'Registration',
   Encounter: 'Encounter',
   VitalSigns: 'VitalSigns',
+  Icd10Code: 'Icd10Code',
+  Diagnosis: 'Diagnosis',
   Medication: 'Medication',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
@@ -426,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "encounter" | "vitalSigns" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1688,6 +1690,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Icd10Code: {
+      payload: Prisma.$Icd10CodePayload<ExtArgs>
+      fields: Prisma.Icd10CodeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.Icd10CodeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.Icd10CodeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload>
+        }
+        findFirst: {
+          args: Prisma.Icd10CodeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.Icd10CodeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload>
+        }
+        findMany: {
+          args: Prisma.Icd10CodeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload>[]
+        }
+        create: {
+          args: Prisma.Icd10CodeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload>
+        }
+        createMany: {
+          args: Prisma.Icd10CodeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.Icd10CodeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload>[]
+        }
+        delete: {
+          args: Prisma.Icd10CodeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload>
+        }
+        update: {
+          args: Prisma.Icd10CodeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload>
+        }
+        deleteMany: {
+          args: Prisma.Icd10CodeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.Icd10CodeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.Icd10CodeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload>[]
+        }
+        upsert: {
+          args: Prisma.Icd10CodeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Icd10CodePayload>
+        }
+        aggregate: {
+          args: Prisma.Icd10CodeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateIcd10Code>
+        }
+        groupBy: {
+          args: Prisma.Icd10CodeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Icd10CodeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.Icd10CodeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Icd10CodeCountAggregateOutputType> | number
+        }
+      }
+    }
+    Diagnosis: {
+      payload: Prisma.$DiagnosisPayload<ExtArgs>
+      fields: Prisma.DiagnosisFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DiagnosisFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DiagnosisFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload>
+        }
+        findFirst: {
+          args: Prisma.DiagnosisFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DiagnosisFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload>
+        }
+        findMany: {
+          args: Prisma.DiagnosisFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload>[]
+        }
+        create: {
+          args: Prisma.DiagnosisCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload>
+        }
+        createMany: {
+          args: Prisma.DiagnosisCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DiagnosisCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload>[]
+        }
+        delete: {
+          args: Prisma.DiagnosisDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload>
+        }
+        update: {
+          args: Prisma.DiagnosisUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload>
+        }
+        deleteMany: {
+          args: Prisma.DiagnosisDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DiagnosisUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DiagnosisUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload>[]
+        }
+        upsert: {
+          args: Prisma.DiagnosisUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DiagnosisPayload>
+        }
+        aggregate: {
+          args: Prisma.DiagnosisAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDiagnosis>
+        }
+        groupBy: {
+          args: Prisma.DiagnosisGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiagnosisGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DiagnosisCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DiagnosisCountAggregateOutputType> | number
+        }
+      }
+    }
     Medication: {
       payload: Prisma.$MedicationPayload<ExtArgs>
       fields: Prisma.MedicationFieldRefs
@@ -2756,6 +2906,40 @@ export const VitalSignsScalarFieldEnum = {
 export type VitalSignsScalarFieldEnum = (typeof VitalSignsScalarFieldEnum)[keyof typeof VitalSignsScalarFieldEnum]
 
 
+export const Icd10CodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  display: 'display',
+  displayIndonesian: 'displayIndonesian',
+  category: 'category',
+  chapter: 'chapter',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type Icd10CodeScalarFieldEnum = (typeof Icd10CodeScalarFieldEnum)[keyof typeof Icd10CodeScalarFieldEnum]
+
+
+export const DiagnosisScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  icd10CodeId: 'icd10CodeId',
+  code: 'code',
+  display: 'display',
+  type: 'type',
+  notes: 'notes',
+  recordedAt: 'recordedAt',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DiagnosisScalarFieldEnum = (typeof DiagnosisScalarFieldEnum)[keyof typeof DiagnosisScalarFieldEnum]
+
+
 export const MedicationScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -3220,6 +3404,20 @@ export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
 
 
 /**
+ * Reference to a field of type 'DiagnosisType'
+ */
+export type EnumDiagnosisTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiagnosisType'>
+    
+
+
+/**
+ * Reference to a field of type 'DiagnosisType[]'
+ */
+export type ListEnumDiagnosisTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiagnosisType[]'>
+    
+
+
+/**
  * Reference to a field of type 'MedicationUnit'
  */
 export type EnumMedicationUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MedicationUnit'>
@@ -3457,6 +3655,8 @@ export type GlobalOmitConfig = {
   registration?: Prisma.RegistrationOmit
   encounter?: Prisma.EncounterOmit
   vitalSigns?: Prisma.VitalSignsOmit
+  icd10Code?: Prisma.Icd10CodeOmit
+  diagnosis?: Prisma.DiagnosisOmit
   medication?: Prisma.MedicationOmit
   prescription?: Prisma.PrescriptionOmit
   prescriptionMedication?: Prisma.PrescriptionMedicationOmit

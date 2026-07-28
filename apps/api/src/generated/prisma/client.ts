@@ -170,6 +170,34 @@ export type Encounter = Prisma.EncounterModel
  */
 export type VitalSigns = Prisma.VitalSignsModel
 /**
+ * Model Icd10Code
+ * ICD-10 catalog used to code diagnoses. Reference data, not clinical data:
+ * rows are maintained by an administrator or replaced wholesale by the
+ * official Kemenkes list, and nothing here belongs to a patient.
+ * 
+ * Retired codes are deactivated (`isActive = false`), never deleted — historic
+ * encounters must keep resolving the code they were coded with.
+ * 
+ * `displayIndonesian` holds the Kemenkes Bahasa Indonesia title where one
+ * exists. Clinicians search in Indonesian, so it is matched alongside the WHO
+ * English title rather than being display-only.
+ */
+export type Icd10Code = Prisma.Icd10CodeModel
+/**
+ * Model Diagnosis
+ * A coded diagnosis recorded on an encounter — the "diagnosis" line PMK
+ * 24/2022 requires, and the input to both BPJS claims and SATUSEHAT
+ * `Condition` resources.
+ * 
+ * `code` and `display` are stored as a snapshot of what the clinician
+ * actually recorded, alongside the optional `icd10CodeId` link. A medical
+ * record must not change retroactively: if the catalog row is later renamed,
+ * re-categorised, or retired, the signed record keeps the wording it was
+ * signed with. The FK is `SetNull` for the same reason — losing the catalog
+ * row must never take the diagnosis with it.
+ */
+export type Diagnosis = Prisma.DiagnosisModel
+/**
  * Model Medication
  * 
  */

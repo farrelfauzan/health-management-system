@@ -20,6 +20,7 @@ import { PharmacyFlowModule } from './modules/pharmacy-flow/pharmacy-flow.module
 import { RbacModule } from './modules/rbac/rbac.module';
 import { RegistrationFlowModule } from './modules/registration-flow/registration-flow.module';
 import { SpecialtyModule } from './modules/specialty/specialty.module';
+import { TerminologyModule } from './modules/terminology/terminology.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { SpecialtyModule } from './modules/specialty/specialty.module';
     AdminManagementModule,
     PatientManagementModule,
     SpecialtyModule,
+    TerminologyModule,
     DoctorManagementModule,
     DoctorPatientModule,
     AppointmentManagementModule,

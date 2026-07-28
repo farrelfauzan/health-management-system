@@ -246,6 +246,7 @@ export type EncounterWhereInput = {
   doctor?: Prisma.XOR<Prisma.DoctorProfileScalarRelationFilter, Prisma.DoctorProfileWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   vitalSigns?: Prisma.VitalSignsListRelationFilter
+  diagnoses?: Prisma.DiagnosisListRelationFilter
 }
 
 export type EncounterOrderByWithRelationInput = {
@@ -265,6 +266,7 @@ export type EncounterOrderByWithRelationInput = {
   doctor?: Prisma.DoctorProfileOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   vitalSigns?: Prisma.VitalSignsOrderByRelationAggregateInput
+  diagnoses?: Prisma.DiagnosisOrderByRelationAggregateInput
 }
 
 export type EncounterWhereUniqueInput = Prisma.AtLeast<{
@@ -287,6 +289,7 @@ export type EncounterWhereUniqueInput = Prisma.AtLeast<{
   doctor?: Prisma.XOR<Prisma.DoctorProfileScalarRelationFilter, Prisma.DoctorProfileWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   vitalSigns?: Prisma.VitalSignsListRelationFilter
+  diagnoses?: Prisma.DiagnosisListRelationFilter
 }, "id" | "registrationId">
 
 export type EncounterOrderByWithAggregationInput = {
@@ -336,6 +339,7 @@ export type EncounterCreateInput = {
   doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateInput = {
@@ -351,6 +355,7 @@ export type EncounterUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUpdateInput = {
@@ -366,6 +371,7 @@ export type EncounterUpdateInput = {
   doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateInput = {
@@ -381,6 +387,7 @@ export type EncounterUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateManyInput = {
@@ -659,6 +666,20 @@ export type EncounterUpdateOneRequiredWithoutVitalSignsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutVitalSignsInput, Prisma.EncounterUpdateWithoutVitalSignsInput>, Prisma.EncounterUncheckedUpdateWithoutVitalSignsInput>
 }
 
+export type EncounterCreateNestedOneWithoutDiagnosesInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutDiagnosesInput, Prisma.EncounterUncheckedCreateWithoutDiagnosesInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutDiagnosesInput
+  connect?: Prisma.EncounterWhereUniqueInput
+}
+
+export type EncounterUpdateOneRequiredWithoutDiagnosesNestedInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutDiagnosesInput, Prisma.EncounterUncheckedCreateWithoutDiagnosesInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutDiagnosesInput
+  upsert?: Prisma.EncounterUpsertWithoutDiagnosesInput
+  connect?: Prisma.EncounterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutDiagnosesInput, Prisma.EncounterUpdateWithoutDiagnosesInput>, Prisma.EncounterUncheckedUpdateWithoutDiagnosesInput>
+}
+
 export type EncounterCreateWithoutCreatedByInput = {
   id?: string
   status?: $Enums.EncounterStatus
@@ -671,6 +692,7 @@ export type EncounterCreateWithoutCreatedByInput = {
   patient: Prisma.PatientProfileCreateNestedOneWithoutEncountersInput
   doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutCreatedByInput = {
@@ -685,6 +707,7 @@ export type EncounterUncheckedCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutCreatedByInput = {
@@ -742,6 +765,7 @@ export type EncounterCreateWithoutPatientInput = {
   doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutPatientInput = {
@@ -756,6 +780,7 @@ export type EncounterUncheckedCreateWithoutPatientInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutPatientInput = {
@@ -796,6 +821,7 @@ export type EncounterCreateWithoutDoctorInput = {
   patient: Prisma.PatientProfileCreateNestedOneWithoutEncountersInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutDoctorInput = {
@@ -810,6 +836,7 @@ export type EncounterUncheckedCreateWithoutDoctorInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutDoctorInput = {
@@ -850,6 +877,7 @@ export type EncounterCreateWithoutRegistrationInput = {
   doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutRegistrationInput = {
@@ -864,6 +892,7 @@ export type EncounterUncheckedCreateWithoutRegistrationInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutRegistrationInput = {
@@ -894,6 +923,7 @@ export type EncounterUpdateWithoutRegistrationInput = {
   doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutRegistrationInput = {
@@ -908,6 +938,7 @@ export type EncounterUncheckedUpdateWithoutRegistrationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutVitalSignsInput = {
@@ -922,6 +953,7 @@ export type EncounterCreateWithoutVitalSignsInput = {
   patient: Prisma.PatientProfileCreateNestedOneWithoutEncountersInput
   doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutVitalSignsInput = {
@@ -936,6 +968,7 @@ export type EncounterUncheckedCreateWithoutVitalSignsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutVitalSignsInput = {
@@ -966,6 +999,7 @@ export type EncounterUpdateWithoutVitalSignsInput = {
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutEncountersNestedInput
   doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutVitalSignsInput = {
@@ -980,6 +1014,83 @@ export type EncounterUncheckedUpdateWithoutVitalSignsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
+}
+
+export type EncounterCreateWithoutDiagnosesInput = {
+  id?: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  registration: Prisma.RegistrationCreateNestedOneWithoutEncounterInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutEncountersInput
+  doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
+  vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+}
+
+export type EncounterUncheckedCreateWithoutDiagnosesInput = {
+  id?: string
+  registrationId: string
+  patientId: string
+  doctorId: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+}
+
+export type EncounterCreateOrConnectWithoutDiagnosesInput = {
+  where: Prisma.EncounterWhereUniqueInput
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutDiagnosesInput, Prisma.EncounterUncheckedCreateWithoutDiagnosesInput>
+}
+
+export type EncounterUpsertWithoutDiagnosesInput = {
+  update: Prisma.XOR<Prisma.EncounterUpdateWithoutDiagnosesInput, Prisma.EncounterUncheckedUpdateWithoutDiagnosesInput>
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutDiagnosesInput, Prisma.EncounterUncheckedCreateWithoutDiagnosesInput>
+  where?: Prisma.EncounterWhereInput
+}
+
+export type EncounterUpdateToOneWithWhereWithoutDiagnosesInput = {
+  where?: Prisma.EncounterWhereInput
+  data: Prisma.XOR<Prisma.EncounterUpdateWithoutDiagnosesInput, Prisma.EncounterUncheckedUpdateWithoutDiagnosesInput>
+}
+
+export type EncounterUpdateWithoutDiagnosesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutEncounterNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutEncountersNestedInput
+  doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
+  vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+}
+
+export type EncounterUncheckedUpdateWithoutDiagnosesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateManyCreatedByInput = {
@@ -1007,6 +1118,7 @@ export type EncounterUpdateWithoutCreatedByInput = {
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutEncountersNestedInput
   doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutCreatedByInput = {
@@ -1021,6 +1133,7 @@ export type EncounterUncheckedUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1061,6 +1174,7 @@ export type EncounterUpdateWithoutPatientInput = {
   doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutPatientInput = {
@@ -1075,6 +1189,7 @@ export type EncounterUncheckedUpdateWithoutPatientInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateManyWithoutPatientInput = {
@@ -1115,6 +1230,7 @@ export type EncounterUpdateWithoutDoctorInput = {
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutEncountersNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutDoctorInput = {
@@ -1129,6 +1245,7 @@ export type EncounterUncheckedUpdateWithoutDoctorInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateManyWithoutDoctorInput = {
@@ -1151,10 +1268,12 @@ export type EncounterUncheckedUpdateManyWithoutDoctorInput = {
 
 export type EncounterCountOutputType = {
   vitalSigns: number
+  diagnoses: number
 }
 
 export type EncounterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   vitalSigns?: boolean | EncounterCountOutputTypeCountVitalSignsArgs
+  diagnoses?: boolean | EncounterCountOutputTypeCountDiagnosesArgs
 }
 
 /**
@@ -1172,6 +1291,13 @@ export type EncounterCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
  */
 export type EncounterCountOutputTypeCountVitalSignsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.VitalSignsWhereInput
+}
+
+/**
+ * EncounterCountOutputType without action
+ */
+export type EncounterCountOutputTypeCountDiagnosesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DiagnosisWhereInput
 }
 
 
@@ -1192,6 +1318,7 @@ export type EncounterSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   doctor?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.Encounter$createdByArgs<ExtArgs>
   vitalSigns?: boolean | Prisma.Encounter$vitalSignsArgs<ExtArgs>
+  diagnoses?: boolean | Prisma.Encounter$diagnosesArgs<ExtArgs>
   _count?: boolean | Prisma.EncounterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["encounter"]>
 
@@ -1252,6 +1379,7 @@ export type EncounterInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   doctor?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.Encounter$createdByArgs<ExtArgs>
   vitalSigns?: boolean | Prisma.Encounter$vitalSignsArgs<ExtArgs>
+  diagnoses?: boolean | Prisma.Encounter$diagnosesArgs<ExtArgs>
   _count?: boolean | Prisma.EncounterCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EncounterIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1275,6 +1403,7 @@ export type $EncounterPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     doctor: Prisma.$DoctorProfilePayload<ExtArgs>
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     vitalSigns: Prisma.$VitalSignsPayload<ExtArgs>[]
+    diagnoses: Prisma.$DiagnosisPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1687,6 +1816,7 @@ export interface Prisma__EncounterClient<T, Null = never, ExtArgs extends runtim
   doctor<T extends Prisma.DoctorProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__DoctorProfileClient<runtime.Types.Result.GetResult<Prisma.$DoctorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.Encounter$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   vitalSigns<T extends Prisma.Encounter$vitalSignsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$vitalSignsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VitalSignsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  diagnoses<T extends Prisma.Encounter$diagnosesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$diagnosesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2168,6 +2298,30 @@ export type Encounter$vitalSignsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.VitalSignsScalarFieldEnum | Prisma.VitalSignsScalarFieldEnum[]
+}
+
+/**
+ * Encounter.diagnoses
+ */
+export type Encounter$diagnosesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Diagnosis
+   */
+  select?: Prisma.DiagnosisSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Diagnosis
+   */
+  omit?: Prisma.DiagnosisOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiagnosisInclude<ExtArgs> | null
+  where?: Prisma.DiagnosisWhereInput
+  orderBy?: Prisma.DiagnosisOrderByWithRelationInput | Prisma.DiagnosisOrderByWithRelationInput[]
+  cursor?: Prisma.DiagnosisWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DiagnosisScalarFieldEnum | Prisma.DiagnosisScalarFieldEnum[]
 }
 
 /**
