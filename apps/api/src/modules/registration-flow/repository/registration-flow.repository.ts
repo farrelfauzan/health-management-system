@@ -1,6 +1,7 @@
 import {
   CreateRegistrationRecordPayload,
   FindOpenRegistrationParams,
+  ListQueueBoardParams,
   ListRegistrationsParams,
   UpdateRegistrationRecordPayload,
 } from '@hms/shared-types';
@@ -9,6 +10,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma, RegistrationStatus } from '../../../generated/prisma/client';
+import { QueueNumberAllocatorRepository } from './queue-number-allocator.repository';
 
 const OPEN_REGISTRATION_STATUSES: RegistrationStatus[] = ['PENDING', 'CHECKED_IN'];
 const ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
@@ -47,7 +49,10 @@ const REGISTRATION_RELATIONS_INCLUDE = {
 
 @Injectable()
 export class RegistrationFlowRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly queueNumberAllocator: QueueNumberAllocatorRepository,
+  ) {}
 
   async listRegistrations(params: ListRegistrationsParams) {
     const {
@@ -213,14 +218,32 @@ export class RegistrationFlowRepository {
 
   async createRegistration(payload: CreateRegistrationRecordPayload) {
     return this.prisma.executeTransaction(async (tx) => {
+      const queueNumber = await this.queueNumberAllocator.allocateQueueNumber(
+        tx,
+        payload.queueDate,
+      );
       return tx.registration.create({
         data: {
           patientId: payload.patientId,
           appointmentId: payload.appointmentId,
           createdById: payload.createdById,
+          queueNumber,
+          queueDate: payload.queueDate,
         },
         include: REGISTRATION_RELATIONS_INCLUDE,
       });
+    });
+  }
+
+  async listQueueBoard(params: ListQueueBoardParams) {
+    return this.prisma.findManyActive(this.prisma.registration, {
+      where: {
+        queueDate: params.queueDate,
+      },
+      orderBy: {
+        queueNumber: 'asc',
+      },
+      include: REGISTRATION_RELATIONS_INCLUDE,
     });
   }
 

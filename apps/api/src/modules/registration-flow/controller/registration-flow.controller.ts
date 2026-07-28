@@ -19,6 +19,7 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
 import { CreateRegistrationDto } from '../dto/create-registration.dto';
 import { ListRegistrationsQueryDto } from '../dto/list-registrations-query.dto';
+import { QueueBoardQueryDto } from '../dto/queue-board-query.dto';
 import { UpdateRegistrationDto } from '../dto/update-registration.dto';
 import { RegistrationFlowService } from '../service/registration-flow.service';
 
@@ -53,6 +54,31 @@ export class RegistrationFlowController {
     return {
       data: result.items,
       meta: result.meta,
+    };
+  }
+
+  // Declared before `:id` so the static segment is matched ahead of the UUID
+  // route param.
+  @Get('queue-board')
+  @Auth([{ action: 'read', subject: 'Registration' }])
+  @ApiEndpoint({
+    summary: "Get a day's queue board",
+    responseDescription:
+      "The day's antrian in queue-number order with per-status counts; defaults to today in the clinic time zone.",
+    responseExample: { data: PHASE_THREE_EXAMPLES.registration.queueBoard },
+  })
+  async getQueueBoard(
+    @Query() query: QueueBoardQueryDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const queueBoard = await this.registrationFlowService.getQueueBoard(query, currentUser);
+
+    return {
+      data: queueBoard,
     };
   }
 

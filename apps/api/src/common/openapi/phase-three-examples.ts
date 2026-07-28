@@ -240,6 +240,9 @@ const registration = {
   patientId,
   appointmentId,
   status: 'REGISTERED',
+  // Server-allocated daily antrian ticket, never client-supplied.
+  queueNumber: 1,
+  queueDate: '2026-07-20',
   registeredAt: timestamp,
   createdById: userId,
   createdAt: timestamp,
@@ -573,6 +576,21 @@ export const PHASE_THREE_EXAMPLES = {
         status: appointment.status,
         doctor: { id: doctorId, fullName: doctor.fullName, specialty: doctor.specialty },
       },
+    },
+    queueBoard: {
+      date: '2026-07-20',
+      counts: { pending: 0, checkedIn: 1, completed: 0, cancelled: 0 },
+      entries: [
+        {
+          registrationId,
+          queueNumber: 1,
+          status: 'CHECKED_IN',
+          registeredAt: timestamp,
+          checkedInAt: timestamp,
+          patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
+          doctor: { id: doctorId, fullName: doctor.fullName, specialty: doctor.specialty },
+        },
+      ],
     },
   },
   encounter: {

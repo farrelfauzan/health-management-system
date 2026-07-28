@@ -103,6 +103,17 @@ export type DoctorPatientActivity = Prisma.DoctorPatientActivityModel
  */
 export type Appointment = Prisma.AppointmentModel
 /**
+ * Model QueueCounter
+ * Allocates the daily antrian sequence, one row per clinic-local calendar
+ * day, consumed with a single atomic upsert (`INSERT … ON CONFLICT … UPDATE
+ * … RETURNING`) inside the registration-create transaction — the same
+ * reasoning as `MrnCounter`: concurrent front-desk and self-service
+ * registrations race, and `MAX(queue_number) + 1` hands two patients the
+ * same ticket. The queue is clinic-wide, mirroring the single-facility MRN
+ * decision; a per-poli split arrives with the BPJS poli mapping (P11-T03).
+ */
+export type QueueCounter = Prisma.QueueCounterModel
+/**
  * Model Registration
  * 
  */
