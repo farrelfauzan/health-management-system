@@ -259,6 +259,58 @@ export type DispenseRecord = Prisma.DispenseRecordModel
  */
 export type DispenseItem = Prisma.DispenseItemModel
 /**
+ * Model ServiceTariff
+ * Price-list row for services the clinic charges — consultation fees and
+ * clinical actions (tindakan). Reference data like the terminology catalogs:
+ * rows are deactivated, never deleted, because invoice items snapshot the
+ * price they were billed at and only need the row for provenance.
+ * 
+ * `icd9cmCode` optionally maps a coded `Procedure` to its tariff so invoice
+ * generation can auto-collect procedure charges; actions the clinic bills
+ * without coding stay reachable by tariff `code` alone.
+ */
+export type ServiceTariff = Prisma.ServiceTariffModel
+/**
+ * Model InvoiceCounter
+ * Sequence source for per-day invoice numbers — the `QueueCounter` reasoning
+ * applied to the cashier: allocation is one atomic
+ * `INSERT … ON CONFLICT … RETURNING` inside the invoice-create transaction,
+ * never `MAX + 1`, which races. A rolled-back create returns its number; a
+ * committed one is never reissued, so a voided invoice leaves a gap exactly
+ * like a torn paper receipt.
+ */
+export type InvoiceCounter = Prisma.InvoiceCounterModel
+/**
+ * Model Invoice
+ * The cashier's bill for one visit, auto-collected from the finished
+ * encounter (consultation fee, procedures, dispensed medications) in P9-T03.
+ * 
+ * `encounterId` is deliberately NOT `@unique`: a wrongly issued invoice is
+ * corrected by voiding it (with reason and audit) and issuing a replacement
+ * for the same encounter. A hand-written partial unique index
+ * (`WHERE status <> 'VOID' AND deleted_at IS NULL`) enforces at most one
+ * live invoice per encounter while letting voided ones accumulate.
+ * 
+ * `totalAmount` is stored, unlike derived clinical values: an invoice is a
+ * financial document, and the total is part of what was issued — it must not
+ * silently change if a tariff or item row is touched later. The service
+ * recomputes it from items on every write while the invoice is DRAFT.
+ */
+export type Invoice = Prisma.InvoiceModel
+/**
+ * Model InvoiceItem
+ * One line on an invoice. `description`, `unitPrice`, and `amount` are a
+ * snapshot of what was billed — the `Diagnosis` snapshot rule applied to
+ * money: repricing a tariff or renaming a medication must never rewrite an
+ * issued invoice. `serviceTariffId` / `medicationId` are provenance only,
+ * `SetNull` so losing a catalog row never takes the billed line with it.
+ * 
+ * Items live and die with their invoice (`Cascade`): a DRAFT regenerate
+ * replaces them wholesale, and a voided invoice keeps its lines because the
+ * invoice row itself is never deleted.
+ */
+export type InvoiceItem = Prisma.InvoiceItemModel
+/**
  * Model Role
  * 
  */

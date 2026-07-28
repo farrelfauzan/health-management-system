@@ -34,6 +34,8 @@ export * from '#terminology/types';
 export * from '#registration-flow/schemas';
 export * from '#registration-flow/contracts';
 export * from '#registration-flow/types';
+export * from '#billing/schemas';
+export * from '#billing/types';
 export * from '#pharmacy-flow/schemas';
 export * from '#pharmacy-flow/contracts';
 export * from '#pharmacy-flow/types';

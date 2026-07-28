@@ -78,6 +78,10 @@ export const ModelName = {
   PrescriptionMedication: 'PrescriptionMedication',
   DispenseRecord: 'DispenseRecord',
   DispenseItem: 'DispenseItem',
+  ServiceTariff: 'ServiceTariff',
+  InvoiceCounter: 'InvoiceCounter',
+  Invoice: 'Invoice',
+  InvoiceItem: 'InvoiceItem',
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
@@ -481,6 +485,7 @@ export const MedicationScalarFieldEnum = {
   unit: 'unit',
   category: 'category',
   stockQty: 'stockQty',
+  unitPrice: 'unitPrice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -545,6 +550,68 @@ export const DispenseItemScalarFieldEnum = {
 } as const
 
 export type DispenseItemScalarFieldEnum = (typeof DispenseItemScalarFieldEnum)[keyof typeof DispenseItemScalarFieldEnum]
+
+
+export const ServiceTariffScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  category: 'category',
+  icd9cmCode: 'icd9cmCode',
+  price: 'price',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ServiceTariffScalarFieldEnum = (typeof ServiceTariffScalarFieldEnum)[keyof typeof ServiceTariffScalarFieldEnum]
+
+
+export const InvoiceCounterScalarFieldEnum = {
+  invoiceDate: 'invoiceDate',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceCounterScalarFieldEnum = (typeof InvoiceCounterScalarFieldEnum)[keyof typeof InvoiceCounterScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  invoiceNumber: 'invoiceNumber',
+  encounterId: 'encounterId',
+  patientId: 'patientId',
+  status: 'status',
+  totalAmount: 'totalAmount',
+  issuedAt: 'issuedAt',
+  voidedAt: 'voidedAt',
+  voidReason: 'voidReason',
+  voidedById: 'voidedById',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const InvoiceItemScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  itemType: 'itemType',
+  serviceTariffId: 'serviceTariffId',
+  medicationId: 'medicationId',
+  description: 'description',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  amount: 'amount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceItemScalarFieldEnum = (typeof InvoiceItemScalarFieldEnum)[keyof typeof InvoiceItemScalarFieldEnum]
 
 
 export const RoleScalarFieldEnum = {
