@@ -101,3 +101,30 @@ export type InvoiceGenerationGap = {
   description: string;
   code?: string;
 };
+
+export type CashierReportTotals = {
+  count: number;
+  totalAmount: number;
+};
+
+export type CashierReportMethodLine = CashierReportTotals & {
+  method: PaymentMethodValue;
+};
+
+export type CashierReportDoctorLine = CashierReportTotals & {
+  doctorId: string;
+  doctorName: string;
+};
+
+/**
+ * One clinic day at the cash drawer: what was settled, split the two ways a
+ * clinic owner actually asks for — by payment method (does the drawer
+ * reconcile?) and by doctor (who produced the revenue?). Built from payments,
+ * so voided and unpaid invoices never appear in it.
+ */
+export type CashierDailyReport = {
+  date: string;
+  totals: CashierReportTotals;
+  byMethod: CashierReportMethodLine[];
+  byDoctor: CashierReportDoctorLine[];
+};

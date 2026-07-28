@@ -201,3 +201,20 @@ export type VoidInvoiceRecordPayload = {
 export type InvoiceNumberAllocationRow = {
   allocated: number;
 };
+
+/**
+ * One settled payment as the daily report consumes it: the amount, how it was
+ * paid, and the doctor whose encounter produced it (absent when the invoice's
+ * encounter was hard-detached, which `RESTRICT` FKs make unreachable in
+ * practice but the type stays honest about the join).
+ */
+export type CashierReportPaymentRecord = {
+  method: PaymentMethodValue;
+  amount: number;
+  doctor: { id: string; fullName: string } | null;
+};
+
+export type CashierReportDayRange = {
+  startInclusive: Date;
+  endExclusive: Date;
+};

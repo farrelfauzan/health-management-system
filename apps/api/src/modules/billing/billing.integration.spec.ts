@@ -31,6 +31,7 @@ describe('Billing integration', () => {
     issueInvoice: jest.fn(),
     recordPayment: jest.fn(),
     voidInvoice: jest.fn(),
+    findPaymentsForCashierReport: jest.fn(),
   };
 
   const serviceTariffRepositoryMock = {
@@ -385,6 +386,52 @@ describe('Billing integration', () => {
       });
 
     expect(response.status).toBe(400);
+  });
+
+  it('returns the daily cashier report for a permitted user', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Invoice', scope: 'ANY' }]);
+    billingRepositoryMock.findPaymentsForCashierReport.mockResolvedValue([
+      {
+        method: 'CASH',
+        amount: 50000,
+        doctor: { id: 'doctor-1', fullName: 'Dr. Budi Santoso' },
+      },
+    ]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/reports/cashier-daily?date=2026-07-28')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.date).toBe('2026-07-28');
+    expect(response.body.data.totals).toEqual({ count: 1, totalAmount: 50000 });
+    expect(response.body.data.byMethod).toEqual([
+      { method: 'CASH', count: 1, totalAmount: 50000 },
+    ]);
+  });
+
+  it('returns 403 for the report without invoice.read permission', async () => {
+    const token = await buildToken('no-read-user', 'no-read@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'Payment', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/reports/cashier-daily')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(403);
+  });
+
+  it('rejects a report date that is not a real calendar date', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Invoice', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/reports/cashier-daily?date=2026-02-31')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(billingRepositoryMock.findPaymentsForCashierReport).not.toHaveBeenCalled();
   });
 
   it('returns 403 for a tariff write without the write grant', async () => {

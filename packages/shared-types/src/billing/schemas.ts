@@ -186,6 +186,11 @@ export const listInvoicesQuerySchema = z
     { message: 'createdFrom must be earlier than or equal to createdTo' },
   );
 
+export const cashierDailyReportQuerySchema = z.object({
+  /** Clinic-local calendar day to report on; the clinic's today when omitted. */
+  date: billingCalendarDateSchema.optional(),
+});
+
 export type CreateServiceTariffInput = z.infer<typeof createServiceTariffSchema>;
 export type UpdateServiceTariffInput = z.infer<typeof updateServiceTariffSchema>;
 export type ListServiceTariffsQueryInput = z.infer<typeof listServiceTariffsQuerySchema>;
@@ -193,3 +198,4 @@ export type GenerateInvoiceInput = z.infer<typeof generateInvoiceSchema>;
 export type RecordPaymentInput = z.infer<typeof recordPaymentSchema>;
 export type VoidInvoiceInput = z.infer<typeof voidInvoiceSchema>;
 export type ListInvoicesQueryInput = z.infer<typeof listInvoicesQuerySchema>;
+export type CashierDailyReportQueryInput = z.infer<typeof cashierDailyReportQuerySchema>;

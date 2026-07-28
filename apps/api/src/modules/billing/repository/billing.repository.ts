@@ -1,6 +1,8 @@
 import {
   BillingDispensedItemRecord,
   BillingSourceEncounterRecord,
+  CashierReportDayRange,
+  CashierReportPaymentRecord,
   CreateInvoiceRecordPayload,
   InvoiceDetailRecord,
   InvoiceItemRecord,
@@ -245,6 +247,37 @@ export class BillingRepository {
       include: INVOICE_DETAIL_INCLUDE,
     });
     return this.toInvoiceDetailRecord(updated);
+  }
+
+  /**
+   * The day's settled payments with the doctor whose encounter produced each,
+   * bounded by UTC instants the service derives from the clinic-local day.
+   * Voided invoices never reach here: PAID is terminal, so a payment row's
+   * invoice can not have been voided afterwards.
+   */
+  async findPaymentsForCashierReport(
+    range: CashierReportDayRange,
+  ): Promise<CashierReportPaymentRecord[]> {
+    const rows = await this.prisma.payment.findMany({
+      where: {
+        paidAt: { gte: range.startInclusive, lt: range.endExclusive },
+      },
+      select: {
+        method: true,
+        amount: true,
+        invoice: {
+          select: {
+            encounter: { select: { doctor: { select: { id: true, fullName: true } } } },
+          },
+        },
+      },
+      orderBy: { paidAt: 'asc' },
+    });
+    return rows.map((row) => ({
+      method: row.method,
+      amount: Number(row.amount),
+      doctor: row.invoice.encounter?.doctor ?? null,
+    }));
   }
 
   private buildCreatedAtFilter(params: ListInvoicesParams) {
