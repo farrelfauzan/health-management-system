@@ -216,6 +216,13 @@ export class EncounterRepository {
    * two rows describe the same visit from the clinical and the front-desk side;
    * committing one without the other leaves a finished patient sitting in the
    * queue, or a completed registration with an encounter still open.
+   *
+   * A FINISHED close also enqueues the SATUSEHAT outbox row (P10-T04) inside
+   * the same transaction — writing another module's table here is deliberate:
+   * the outbox guarantee is exactly that a closed visit and its reporting
+   * queue entry commit or roll back together, and an after-commit enqueue
+   * would reintroduce the silent-miss window the outbox exists to remove.
+   * Cancelled encounters report nothing.
    */
   async closeEncounter(payload: CloseEncounterRecordPayload): Promise<EncounterWithRelationsRecord> {
     return this.prisma.executeTransaction(async (tx) => {
@@ -226,6 +233,9 @@ export class EncounterRepository {
           completedAt: payload.registrationStatus === 'COMPLETED' ? payload.endedAt : undefined,
         },
       });
+      if (payload.status === 'FINISHED') {
+        await tx.satusehatSubmission.create({ data: { encounterId: payload.id } });
+      }
       return tx.encounter.update({
         where: { id: payload.id },
         data: {

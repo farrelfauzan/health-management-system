@@ -125,6 +125,33 @@ export type SatusehatVitalSignsMapInput = {
   oxygenSaturation: number | null;
 };
 
+export type SatusehatFhirBundleEntry = {
+  fullUrl: string;
+  resource: SatusehatFhirEncounter | SatusehatFhirCondition | SatusehatFhirObservation;
+  request: { method: 'POST'; url: string };
+};
+
+export type SatusehatFhirTransactionBundle = {
+  resourceType: 'Bundle';
+  type: 'transaction';
+  entry: SatusehatFhirBundleEntry[];
+};
+
+export type SatusehatTransactionResponseEntry = {
+  readonly response?: {
+    readonly status?: unknown;
+    readonly location?: unknown;
+  };
+  readonly resource?: {
+    readonly resourceType?: unknown;
+    readonly id?: unknown;
+  };
+};
+
+export type SatusehatTransactionResponse = {
+  readonly entry?: readonly SatusehatTransactionResponseEntry[];
+};
+
 export type SatusehatVitalSignField = keyof Pick<
   SatusehatVitalSignsMapInput,
   | 'heightCm'

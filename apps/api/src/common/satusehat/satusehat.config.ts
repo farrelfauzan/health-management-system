@@ -9,6 +9,9 @@ const DEFAULT_MAX_RETRY_ATTEMPTS = 2;
 const DEFAULT_RETRY_BASE_DELAY_MS = 250;
 const DEFAULT_CIRCUIT_BREAKER_FAILURE_THRESHOLD = 5;
 const DEFAULT_CIRCUIT_BREAKER_OPEN_DURATION_MS = 30_000;
+const DEFAULT_WORKER_POLL_INTERVAL_MS = 15_000;
+const DEFAULT_SUBMISSION_MAX_ATTEMPTS = 8;
+const DEFAULT_SUBMISSION_RETRY_BASE_DELAY_MS = 60_000;
 
 function readOptionalValue(configService: ConfigService, key: string): string | undefined {
   const rawValue = configService.get<string>(key)?.trim();
@@ -47,6 +50,17 @@ function readPositiveInteger(configService: ConfigService, key: string, fallback
     throw new Error(`SATUSEHAT configuration error: ${key} must be a positive integer`);
   }
   return parsed;
+}
+
+function readBooleanFlag(configService: ConfigService, key: string, fallback: boolean): boolean {
+  const rawValue = readOptionalValue(configService, key);
+  if (rawValue === undefined) {
+    return fallback;
+  }
+  if (rawValue !== 'true' && rawValue !== 'false') {
+    throw new Error(`SATUSEHAT configuration error: ${key} must be "true" or "false"`);
+  }
+  return rawValue === 'true';
 }
 
 function readCredentials(configService: ConfigService): {
@@ -113,6 +127,22 @@ export function resolveSatusehatConfig(configService: ConfigService): SatusehatC
       configService,
       'SATUSEHAT_CIRCUIT_BREAKER_OPEN_DURATION_MS',
       DEFAULT_CIRCUIT_BREAKER_OPEN_DURATION_MS,
+    ),
+    workerEnabled: readBooleanFlag(configService, 'SATUSEHAT_WORKER_ENABLED', true),
+    workerPollIntervalMs: readPositiveInteger(
+      configService,
+      'SATUSEHAT_WORKER_POLL_INTERVAL_MS',
+      DEFAULT_WORKER_POLL_INTERVAL_MS,
+    ),
+    submissionMaxAttempts: readPositiveInteger(
+      configService,
+      'SATUSEHAT_SUBMISSION_MAX_ATTEMPTS',
+      DEFAULT_SUBMISSION_MAX_ATTEMPTS,
+    ),
+    submissionRetryBaseDelayMs: readPositiveInteger(
+      configService,
+      'SATUSEHAT_SUBMISSION_RETRY_BASE_DELAY_MS',
+      DEFAULT_SUBMISSION_RETRY_BASE_DELAY_MS,
     ),
   };
 }

@@ -324,6 +324,20 @@ export type RolePermission = Prisma.RolePermissionModel
  */
 export type UserRole = Prisma.UserRoleModel
 /**
+ * Model SatusehatSubmission
+ * Outbox row for one encounter's SATUSEHAT bundle submission (P10-T04).
+ * Created in the same transaction that closes the encounter, so a closed
+ * visit can never silently miss the reporting queue, and clinical flows
+ * never wait on Kemenkes availability.
+ * 
+ * The row carries scheduling state only — no payload snapshot. The bundle is
+ * rebuilt from the clinical record at send time, so a diagnosis retracted
+ * between close and submission is reported as corrected, not as signed.
+ * One row per encounter: attempts increment in place, and the terminal
+ * FAILED state is re-opened only by the admin retry surface (P10-T06).
+ */
+export type SatusehatSubmission = Prisma.SatusehatSubmissionModel
+/**
  * Model AuditLog
  * 
  */

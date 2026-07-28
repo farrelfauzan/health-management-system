@@ -169,6 +169,15 @@ export const EncounterStatus = {
 export type EncounterStatus = (typeof EncounterStatus)[keyof typeof EncounterStatus]
 
 
+export const SatusehatSubmissionStatus = {
+  PENDING: 'PENDING',
+  SUBMITTED: 'SUBMITTED',
+  FAILED: 'FAILED'
+} as const
+
+export type SatusehatSubmissionStatus = (typeof SatusehatSubmissionStatus)[keyof typeof SatusehatSubmissionStatus]
+
+
 export const DiagnosisType = {
   PRIMARY: 'PRIMARY',
   SECONDARY: 'SECONDARY'

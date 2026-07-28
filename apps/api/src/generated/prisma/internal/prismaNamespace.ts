@@ -420,6 +420,7 @@ export const ModelName = {
   Permission: 'Permission',
   RolePermission: 'RolePermission',
   UserRole: 'UserRole',
+  SatusehatSubmission: 'SatusehatSubmission',
   AuditLog: 'AuditLog'
 } as const
 
@@ -436,7 +437,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "auditLog"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3104,6 +3105,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SatusehatSubmission: {
+      payload: Prisma.$SatusehatSubmissionPayload<ExtArgs>
+      fields: Prisma.SatusehatSubmissionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SatusehatSubmissionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SatusehatSubmissionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload>
+        }
+        findFirst: {
+          args: Prisma.SatusehatSubmissionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SatusehatSubmissionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload>
+        }
+        findMany: {
+          args: Prisma.SatusehatSubmissionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload>[]
+        }
+        create: {
+          args: Prisma.SatusehatSubmissionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload>
+        }
+        createMany: {
+          args: Prisma.SatusehatSubmissionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SatusehatSubmissionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload>[]
+        }
+        delete: {
+          args: Prisma.SatusehatSubmissionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload>
+        }
+        update: {
+          args: Prisma.SatusehatSubmissionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload>
+        }
+        deleteMany: {
+          args: Prisma.SatusehatSubmissionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SatusehatSubmissionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SatusehatSubmissionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload>[]
+        }
+        upsert: {
+          args: Prisma.SatusehatSubmissionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionPayload>
+        }
+        aggregate: {
+          args: Prisma.SatusehatSubmissionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSatusehatSubmission>
+        }
+        groupBy: {
+          args: Prisma.SatusehatSubmissionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SatusehatSubmissionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SatusehatSubmissionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SatusehatSubmissionCountAggregateOutputType> | number
+        }
+      }
+    }
     AuditLog: {
       payload: Prisma.$AuditLogPayload<ExtArgs>
       fields: Prisma.AuditLogFieldRefs
@@ -3796,6 +3871,23 @@ export const UserRoleScalarFieldEnum = {
 export type UserRoleScalarFieldEnum = (typeof UserRoleScalarFieldEnum)[keyof typeof UserRoleScalarFieldEnum]
 
 
+export const SatusehatSubmissionScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  status: 'status',
+  attempts: 'attempts',
+  lastError: 'lastError',
+  nextAttemptAt: 'nextAttemptAt',
+  lastAttemptAt: 'lastAttemptAt',
+  submittedAt: 'submittedAt',
+  satusehatEncounterId: 'satusehatEncounterId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SatusehatSubmissionScalarFieldEnum = (typeof SatusehatSubmissionScalarFieldEnum)[keyof typeof SatusehatSubmissionScalarFieldEnum]
+
+
 export const AuditLogScalarFieldEnum = {
   id: 'id',
   actorUserId: 'actorUserId',
@@ -4271,6 +4363,20 @@ export type ListEnumPermissionScopeFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'SatusehatSubmissionStatus'
+ */
+export type EnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatSubmissionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SatusehatSubmissionStatus[]'
+ */
+export type ListEnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatSubmissionStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'AuditAction'
  */
 export type EnumAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditAction'>
@@ -4457,6 +4563,7 @@ export type GlobalOmitConfig = {
   permission?: Prisma.PermissionOmit
   rolePermission?: Prisma.RolePermissionOmit
   userRole?: Prisma.UserRoleOmit
+  satusehatSubmission?: Prisma.SatusehatSubmissionOmit
   auditLog?: Prisma.AuditLogOmit
 }
 
