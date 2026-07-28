@@ -82,6 +82,7 @@ export const ModelName = {
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
   InvoiceItem: 'InvoiceItem',
+  Payment: 'Payment',
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
@@ -612,6 +613,22 @@ export const InvoiceItemScalarFieldEnum = {
 } as const
 
 export type InvoiceItemScalarFieldEnum = (typeof InvoiceItemScalarFieldEnum)[keyof typeof InvoiceItemScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  method: 'method',
+  amount: 'amount',
+  referenceNumber: 'referenceNumber',
+  notes: 'notes',
+  paidAt: 'paidAt',
+  cashierId: 'cashierId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const RoleScalarFieldEnum = {

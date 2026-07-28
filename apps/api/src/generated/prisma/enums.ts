@@ -258,3 +258,13 @@ export const InvoiceItemType = {
 } as const
 
 export type InvoiceItemType = (typeof InvoiceItemType)[keyof typeof InvoiceItemType]
+
+
+export const PaymentMethod = {
+  CASH: 'CASH',
+  TRANSFER: 'TRANSFER',
+  QRIS: 'QRIS',
+  INSURANCE: 'INSURANCE'
+} as const
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
