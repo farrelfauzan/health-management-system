@@ -1,9 +1,11 @@
 import {
+  ListSatusehatSubmissionsParams,
   MarkSubmissionFailedPayload,
   MarkSubmissionRetryPayload,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionDispenseItem,
   SatusehatSubmissionMedication,
+  SatusehatSubmissionPage,
   SatusehatSubmissionPrescription,
   SatusehatSubmissionRecord,
 } from '@hms/shared-types';
@@ -63,6 +65,40 @@ export class SatusehatSubmissionRepository {
       },
       orderBy: { nextAttemptAt: 'asc' },
       take: limit,
+    });
+  }
+
+  async findSubmissionById(id: string): Promise<SatusehatSubmissionRecord | null> {
+    return this.prisma.satusehatSubmission.findUnique({ where: { id } });
+  }
+
+  async findSubmissionPage(params: ListSatusehatSubmissionsParams): Promise<SatusehatSubmissionPage> {
+    const where = {
+      ...(params.status ? { status: params.status } : {}),
+      ...(params.encounterId ? { encounterId: params.encounterId } : {}),
+    };
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.satusehatSubmission.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: params.skip,
+        take: params.take,
+      }),
+      this.prisma.satusehatSubmission.count({ where }),
+    ]);
+    return { items, total };
+  }
+
+  /**
+   * Re-opens a settled row for the admin retry surface: back to PENDING, due
+   * immediately, with the attempt budget reset so a fixed root cause gets the
+   * full backoff schedule again. The previous lastError is kept until the next
+   * attempt overwrites it, so the retry decision stays explainable.
+   */
+  async requeueSubmission(id: string): Promise<SatusehatSubmissionRecord> {
+    return this.prisma.satusehatSubmission.update({
+      where: { id },
+      data: { status: 'PENDING', attempts: 0, nextAttemptAt: new Date() },
     });
   }
 

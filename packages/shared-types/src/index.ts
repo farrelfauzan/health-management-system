@@ -37,6 +37,7 @@ export * from '#registration-flow/types';
 export * from '#billing/schemas';
 export * from '#billing/contracts';
 export * from '#billing/types';
+export * from '#satusehat/schemas';
 export * from '#satusehat/contracts';
 export * from '#satusehat/types';
 export * from '#pharmacy-flow/schemas';

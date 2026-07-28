@@ -101,6 +101,8 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('invoice.write:any', 'Invoice', 'write', 'ANY', 'Generate, issue, and void invoices'),
     ('payment.write:any', 'Payment', 'write', 'ANY', 'Record invoice payments'),
     ('satusehat.link:any', 'Satusehat', 'link', 'ANY', 'Link patients and practitioners to SATUSEHAT IHS records'),
+    ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
+    ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
     ('chat.session.create:own', 'ChatSession', 'create', 'OWN', 'Create own chat sessions'),
     ('chat.message.create:own', 'ChatMessage', 'create', 'OWN', 'Create own chat messages'),
     ('chat.message.read:any', 'ChatMessage', 'read', 'ANY', 'Read all chat messages'),
@@ -196,6 +198,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- SATUSEHAT linkage is a national-identifier operation performed at the
     -- front desk / back office, never by doctors or patients themselves.
     ('ADMIN', 'satusehat.link:any'),
+    ('ADMIN', 'satusehat.submission.read:any'),
+    ('ADMIN', 'satusehat.submission.retry:any'),
     ('ADMIN', 'chat.session.create:own'),
     ('ADMIN', 'chat.message.create:own'),
     ('ADMIN', 'chat.message.read:any'),
