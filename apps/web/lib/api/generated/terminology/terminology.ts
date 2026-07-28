@@ -22,7 +22,9 @@ import type {
 
 import type {
   Icd10CodeControllerSearchIcd10CodesV1200,
-  Icd10CodeControllerSearchIcd10CodesV1Params
+  Icd10CodeControllerSearchIcd10CodesV1Params,
+  Icd9cmCodeControllerSearchIcd9cmCodesV1200,
+  Icd9cmCodeControllerSearchIcd9cmCodesV1Params
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -127,6 +129,99 @@ export function useIcd10CodeControllerSearchIcd10CodesV1<TData = Awaited<ReturnT
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getIcd10CodeControllerSearchIcd10CodesV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Search ICD-9-CM procedure codes
+ */
+export const icd9cmCodeControllerSearchIcd9cmCodesV1 = (
+    params?: Icd9cmCodeControllerSearchIcd9cmCodesV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<Icd9cmCodeControllerSearchIcd9cmCodesV1200>(
+      {url: `/api/v1/icd9cm-codes`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getIcd9cmCodeControllerSearchIcd9cmCodesV1QueryKey = (params?: Icd9cmCodeControllerSearchIcd9cmCodesV1Params,) => {
+    return [
+    `/api/v1/icd9cm-codes`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getIcd9cmCodeControllerSearchIcd9cmCodesV1QueryOptions = <TData = Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError = unknown>(params?: Icd9cmCodeControllerSearchIcd9cmCodesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getIcd9cmCodeControllerSearchIcd9cmCodesV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>> = ({ signal }) => icd9cmCodeControllerSearchIcd9cmCodesV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type Icd9cmCodeControllerSearchIcd9cmCodesV1QueryResult = NonNullable<Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>>
+export type Icd9cmCodeControllerSearchIcd9cmCodesV1QueryError = unknown
+
+
+export function useIcd9cmCodeControllerSearchIcd9cmCodesV1<TData = Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError = unknown>(
+ params: undefined |  Icd9cmCodeControllerSearchIcd9cmCodesV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>,
+          TError,
+          Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIcd9cmCodeControllerSearchIcd9cmCodesV1<TData = Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError = unknown>(
+ params?: Icd9cmCodeControllerSearchIcd9cmCodesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>,
+          TError,
+          Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useIcd9cmCodeControllerSearchIcd9cmCodesV1<TData = Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError = unknown>(
+ params?: Icd9cmCodeControllerSearchIcd9cmCodesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Search ICD-9-CM procedure codes
+ */
+
+export function useIcd9cmCodeControllerSearchIcd9cmCodesV1<TData = Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError = unknown>(
+ params?: Icd9cmCodeControllerSearchIcd9cmCodesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof icd9cmCodeControllerSearchIcd9cmCodesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getIcd9cmCodeControllerSearchIcd9cmCodesV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

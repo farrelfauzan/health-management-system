@@ -18,7 +18,8 @@
     "prisma:seed": "prisma db seed",
     "prisma:migrate:reset": "prisma migrate reset",
     "backfill:doctor-nik": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/backfill-doctor-nik.js",
-    "icd10:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-icd10-codes.js",
+    "icd10:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-terminology-codes.js icd10",
+    "icd9cm:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-terminology-codes.js icd9cm",
     "openapi:export": "curl -fsS \"${OPENAPI_URL:-http://localhost:3001/api/openapi.yaml}\" -o ./openapi.yaml"
   },
   "dependencies": {

@@ -70,6 +70,8 @@ export const ModelName = {
   VitalSigns: 'VitalSigns',
   Icd10Code: 'Icd10Code',
   Diagnosis: 'Diagnosis',
+  Icd9cmCode: 'Icd9cmCode',
+  Procedure: 'Procedure',
   Medication: 'Medication',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
@@ -359,7 +361,11 @@ export const EncounterScalarFieldEnum = {
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  subjective: 'subjective',
+  objective: 'objective',
+  assessment: 'assessment',
+  plan: 'plan'
 } as const
 
 export type EncounterScalarFieldEnum = (typeof EncounterScalarFieldEnum)[keyof typeof EncounterScalarFieldEnum]
@@ -419,6 +425,38 @@ export const DiagnosisScalarFieldEnum = {
 } as const
 
 export type DiagnosisScalarFieldEnum = (typeof DiagnosisScalarFieldEnum)[keyof typeof DiagnosisScalarFieldEnum]
+
+
+export const Icd9cmCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  display: 'display',
+  displayIndonesian: 'displayIndonesian',
+  category: 'category',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type Icd9cmCodeScalarFieldEnum = (typeof Icd9cmCodeScalarFieldEnum)[keyof typeof Icd9cmCodeScalarFieldEnum]
+
+
+export const ProcedureScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  icd9cmCodeId: 'icd9cmCodeId',
+  code: 'code',
+  display: 'display',
+  notes: 'notes',
+  performedAt: 'performedAt',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ProcedureScalarFieldEnum = (typeof ProcedureScalarFieldEnum)[keyof typeof ProcedureScalarFieldEnum]
 
 
 export const MedicationScalarFieldEnum = {

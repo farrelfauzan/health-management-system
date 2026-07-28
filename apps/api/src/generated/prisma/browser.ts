@@ -176,6 +176,31 @@ export type Icd10Code = Prisma.Icd10CodeModel
  */
 export type Diagnosis = Prisma.DiagnosisModel
 /**
+ * Model Icd9cmCode
+ * ICD-9-CM procedure catalog — the counterpart to `Icd10Code` for actions
+ * rather than conditions. BPJS claims price a visit from the procedures
+ * recorded against it, so an uncoded action is an unbillable one.
+ * 
+ * Same rules as the diagnosis catalog: reference data, retired codes are
+ * deactivated rather than deleted, and the official list is loaded by
+ * `pnpm --filter @hms/api icd9cm:import`. There is no chapter column —
+ * ICD-9-CM procedure chapters do not follow a clean lexicographic range the
+ * way ICD-10 chapters do, so only the two-digit `category` is derived.
+ */
+export type Icd9cmCode = Prisma.Icd9cmCodeModel
+/**
+ * Model Procedure
+ * A coded action performed during an encounter — injection, wound suture,
+ * nebulisation. Feeds BPJS claim lines and, later, SATUSEHAT `Procedure`
+ * resources.
+ * 
+ * `code` and `display` are a snapshot of what was signed, exactly as on
+ * `Diagnosis`: a catalog rename must never rewrite a signed record. Unlike
+ * diagnoses there is no primary/secondary split — every procedure on a visit
+ * counts equally toward the claim.
+ */
+export type Procedure = Prisma.ProcedureModel
+/**
  * Model Medication
  * 
  */
