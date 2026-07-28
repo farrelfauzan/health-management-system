@@ -41,3 +41,13 @@ export type CachedSatusehatToken = {
   readonly accessToken: string;
   readonly expiresAtEpochMs: number;
 };
+
+export type SatusehatSearchBundleEntry = {
+  readonly resource?: {
+    readonly id?: unknown;
+  };
+};
+
+export type SatusehatSearchBundle = {
+  readonly entry?: readonly SatusehatSearchBundleEntry[];
+};

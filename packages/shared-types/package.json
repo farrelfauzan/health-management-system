@@ -29,6 +29,8 @@
     "#billing/schemas": "./src/billing/schemas.ts",
     "#billing/contracts": "./src/billing/contracts.ts",
     "#billing/types": "./src/billing/types.ts",
+    "#satusehat/contracts": "./src/satusehat/contracts.ts",
+    "#satusehat/types": "./src/satusehat/types.ts",
     "#pharmacy-flow/schemas": "./src/pharmacy-flow/schemas.ts",
     "#pharmacy-flow/contracts": "./src/pharmacy-flow/contracts.ts",
     "#pharmacy-flow/types": "./src/pharmacy-flow/types.ts",

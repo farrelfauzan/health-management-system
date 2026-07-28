@@ -1,16 +1,18 @@
 import { Module } from '@nestjs/common';
 
 import { SatusehatHttpClient } from './satusehat-http.client';
+import { SatusehatMasterDataClient } from './satusehat-master-data.client';
 import { SatusehatTokenClient } from './satusehat-token.client';
 
 /**
- * SATUSEHAT platform adapter foundation (P10-T01): OAuth2 token client plus
- * the resilient authenticated HTTP client. Feature modules inject
- * {@link SatusehatHttpClient} only — FHIR resource types and mappers arrive in
- * later Phase 10 tasks and must never leak into domain services.
+ * SATUSEHAT platform adapter (P10-T01/T02): OAuth2 token client, the
+ * resilient authenticated HTTP client, and master-data lookups. Feature
+ * modules inject {@link SatusehatMasterDataClient} (or the HTTP client for
+ * later Phase 10 tasks) — FHIR resource shapes must never leak into domain
+ * services.
  */
 @Module({
-  providers: [SatusehatTokenClient, SatusehatHttpClient],
-  exports: [SatusehatHttpClient],
+  providers: [SatusehatTokenClient, SatusehatHttpClient, SatusehatMasterDataClient],
+  exports: [SatusehatHttpClient, SatusehatMasterDataClient],
 })
 export class SatusehatModule {}
