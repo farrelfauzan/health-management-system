@@ -1,6 +1,10 @@
 import { randomUUID } from 'node:crypto';
 
-import { SatusehatSubmissionBundleData, SatusehatSubmissionRecord } from '@hms/shared-types';
+import {
+  SatusehatSubmissionBundleData,
+  SatusehatSubmissionMedication,
+  SatusehatSubmissionRecord,
+} from '@hms/shared-types';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -126,6 +130,12 @@ export class SatusehatSubmissionService {
             request: { method: 'POST', url: 'Observation' },
           }))
       : [];
+    const medicationEntries = this.buildMedicationEntries(
+      bundleData,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+    );
     const encounterResource = this.fhirMapper.mapEncounter({
       encounterId: bundleData.encounterId,
       patientIhsNumber,
@@ -147,8 +157,125 @@ export class SatusehatSubmissionService {
         { fullUrl: encounterFullUrl, resource: encounterResource, request: { method: 'POST', url: 'Encounter' } },
         ...conditionEntries,
         ...observationEntries,
+        ...medicationEntries,
       ],
     };
+  }
+
+  /**
+   * Builds Medication, MedicationRequest, and MedicationDispense entries for
+   * every KFA-coded item on the visit's prescriptions and dispense records.
+   * Items whose catalog row has no `kfaCode` are skipped — the platform only
+   * accepts KFA-coded products — and reported as a gap log so the catalog gap
+   * is fixable instead of silently shrinking the submission (P10-T05).
+   */
+  private buildMedicationEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+  ): SatusehatFhirBundleEntry[] {
+    const medicationFullUrls = new Map<string, string>();
+    const medicationEntries: SatusehatFhirBundleEntry[] = [];
+    const skippedMedications = new Map<string, SatusehatSubmissionMedication>();
+    const registerMedication = (medication: SatusehatSubmissionMedication): string | null => {
+      if (medication.kfaCode === null) {
+        skippedMedications.set(medication.medicationId, medication);
+        return null;
+      }
+      const existingFullUrl = medicationFullUrls.get(medication.medicationId);
+      if (existingFullUrl) {
+        return existingFullUrl;
+      }
+      const fullUrl = `urn:uuid:${randomUUID()}`;
+      medicationFullUrls.set(medication.medicationId, fullUrl);
+      medicationEntries.push({
+        fullUrl,
+        resource: this.fhirMapper.mapMedicationToResource({
+          medicationCode: medication.code,
+          kfaCode: medication.kfaCode,
+          name: medication.name,
+        }),
+        request: { method: 'POST', url: 'Medication' },
+      });
+      return fullUrl;
+    };
+    const requestFullUrls = new Map<string, string>();
+    const requestEntries: SatusehatFhirBundleEntry[] = [];
+    for (const prescription of bundleData.prescriptions) {
+      for (const item of prescription.items) {
+        const medicationFullUrl = registerMedication(item.medication);
+        if (medicationFullUrl === null) {
+          continue;
+        }
+        const requestFullUrl = `urn:uuid:${randomUUID()}`;
+        requestFullUrls.set(`${item.prescriptionId}:${item.medication.medicationId}`, requestFullUrl);
+        requestEntries.push({
+          fullUrl: requestFullUrl,
+          resource: this.fhirMapper.mapPrescriptionItemToMedicationRequest({
+            prescriptionId: item.prescriptionId,
+            prescriptionItemId: item.prescriptionItemId,
+            medicationReference: medicationFullUrl,
+            medicationDisplay: item.medication.name,
+            patientIhsNumber,
+            patientName: bundleData.patientName,
+            practitionerIhsNumber,
+            practitionerName: bundleData.doctorName,
+            encounterReference: encounterFullUrl,
+            dosage: item.dosage,
+            frequency: item.frequency,
+            instructions: item.instructions ?? undefined,
+            quantity: item.quantity,
+            unit: item.medication.unit ?? undefined,
+            authoredOn: prescription.issuedAt ?? undefined,
+          }),
+          request: { method: 'POST', url: 'MedicationRequest' },
+        });
+      }
+    }
+    const dispenseEntries: SatusehatFhirBundleEntry[] = [];
+    for (const dispenseItem of bundleData.dispenseItems) {
+      const medicationFullUrl = registerMedication(dispenseItem.medication);
+      if (medicationFullUrl === null) {
+        continue;
+      }
+      dispenseEntries.push({
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: this.fhirMapper.mapDispenseItemToMedicationDispense({
+          dispenseRecordId: dispenseItem.dispenseRecordId,
+          dispenseItemId: dispenseItem.dispenseItemId,
+          medicationReference: medicationFullUrl,
+          medicationDisplay: dispenseItem.medication.name,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          encounterReference: encounterFullUrl,
+          medicationRequestReference: requestFullUrls.get(
+            `${dispenseItem.prescriptionId}:${dispenseItem.medication.medicationId}`,
+          ),
+          quantity: dispenseItem.quantity,
+          unit: dispenseItem.medication.unit ?? undefined,
+          dispensedAt: dispenseItem.dispensedAt,
+        }),
+        request: { method: 'POST', url: 'MedicationDispense' },
+      });
+    }
+    this.reportMedicationGaps(bundleData.encounterId, skippedMedications);
+    return [...medicationEntries, ...requestEntries, ...dispenseEntries];
+  }
+
+  private reportMedicationGaps(
+    encounterId: string,
+    skippedMedications: ReadonlyMap<string, SatusehatSubmissionMedication>,
+  ): void {
+    if (skippedMedications.size === 0) {
+      return;
+    }
+    const gapList = [...skippedMedications.values()]
+      .map((medication) => `${medication.code} (${medication.name})`)
+      .join(', ');
+    this.logger.warn(
+      `SATUSEHAT medication gap report for encounter ${encounterId}: ${skippedMedications.size} catalog item(s) without a KFA code were skipped: ${gapList}`,
+    );
   }
 
   /** PRIMARY first (rank 1), then secondaries in the order they were recorded. */

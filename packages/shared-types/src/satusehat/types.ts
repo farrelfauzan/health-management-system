@@ -61,6 +61,39 @@ export type SatusehatSubmissionVitalSigns = {
   oxygenSaturation: number | null;
 };
 
+export type SatusehatSubmissionMedication = {
+  medicationId: string;
+  code: string;
+  kfaCode: string | null;
+  name: string;
+  unit: string | null;
+};
+
+export type SatusehatSubmissionPrescriptionItem = {
+  prescriptionItemId: string;
+  prescriptionId: string;
+  medication: SatusehatSubmissionMedication;
+  dosage: string;
+  frequency: string;
+  instructions: string | null;
+  quantity: number;
+};
+
+export type SatusehatSubmissionPrescription = {
+  prescriptionId: string;
+  issuedAt: Date | null;
+  items: readonly SatusehatSubmissionPrescriptionItem[];
+};
+
+export type SatusehatSubmissionDispenseItem = {
+  dispenseItemId: string;
+  dispenseRecordId: string;
+  prescriptionId: string;
+  medication: SatusehatSubmissionMedication;
+  quantity: number;
+  dispensedAt: Date;
+};
+
 /**
  * Everything the submission worker needs to rebuild one encounter bundle at
  * send time. IHS numbers are null when the profile is not linked yet — the
@@ -80,6 +113,8 @@ export type SatusehatSubmissionBundleData = {
   endedAt: Date | null;
   diagnoses: readonly SatusehatSubmissionDiagnosis[];
   latestVitalSigns: SatusehatSubmissionVitalSigns | null;
+  prescriptions: readonly SatusehatSubmissionPrescription[];
+  dispenseItems: readonly SatusehatSubmissionDispenseItem[];
 };
 
 export type MarkSubmissionRetryPayload = {

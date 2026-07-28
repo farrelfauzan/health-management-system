@@ -9,8 +9,14 @@ import {
   SatusehatEncounterStatusHistoryEntry,
   SatusehatFhirCondition,
   SatusehatFhirEncounter,
+  SatusehatFhirMedication,
+  SatusehatFhirMedicationDispense,
+  SatusehatFhirMedicationRequest,
   SatusehatFhirObservation,
   SatusehatFhirReference,
+  SatusehatMedicationDispenseMapInput,
+  SatusehatMedicationMapInput,
+  SatusehatMedicationRequestMapInput,
   SatusehatVitalSignField,
   SatusehatVitalSignsMapInput,
 } from './satusehat-fhir.types';
@@ -26,6 +32,15 @@ const CONDITION_CLINICAL_SYSTEM = 'http://terminology.hl7.org/CodeSystem/conditi
 const CONDITION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/condition-category';
 const DIAGNOSIS_ROLE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/diagnosis-role';
 const OBSERVATION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/observation-category';
+const KFA_SYSTEM = 'http://sys-ids.kemkes.go.id/kfa';
+const MEDICATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/medication';
+const PRESCRIPTION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/prescription';
+const PRESCRIPTION_ITEM_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/prescription-item';
+const MEDICATION_DISPENSE_IDENTIFIER_SYSTEM_PREFIX =
+  'http://sys-ids.kemkes.go.id/medicationdispense';
+const MEDICATION_TYPE_EXTENSION_URL =
+  'https://fhir.kemkes.go.id/r4/StructureDefinition/MedicationType';
+const MEDICATION_TYPE_SYSTEM = 'https://terminology.kemkes.go.id/CodeSystem/medication-type';
 
 type VitalSignDefinition = {
   field: SatusehatVitalSignField;
@@ -166,6 +181,130 @@ export class SatusehatFhirMapper {
       }
       return [this.buildObservation(input, definition, measuredValue)];
     });
+  }
+
+  /**
+   * Maps one KFA-coded catalog medication to a SATUSEHAT Medication. Callers
+   * must skip catalog rows without a `kfaCode` — the platform only accepts
+   * KFA-coded products — and report the gap.
+   */
+  mapMedicationToResource(input: SatusehatMedicationMapInput): SatusehatFhirMedication {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'Medication',
+      identifier: [
+        {
+          system: `${MEDICATION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.medicationCode,
+        },
+      ],
+      status: 'active',
+      code: { coding: [{ system: KFA_SYSTEM, code: input.kfaCode, display: input.name }] },
+      extension: [
+        {
+          url: MEDICATION_TYPE_EXTENSION_URL,
+          valueCodeableConcept: {
+            coding: [{ system: MEDICATION_TYPE_SYSTEM, code: 'NC', display: 'Non-compound' }],
+          },
+        },
+      ],
+    };
+  }
+
+  /**
+   * Maps one prescription line to a MedicationRequest. Dosage stays textual —
+   * the record stores free-text dosage/frequency, and inventing structured
+   * timing from prose would assert precision the record does not carry.
+   */
+  mapPrescriptionItemToMedicationRequest(
+    input: SatusehatMedicationRequestMapInput,
+  ): SatusehatFhirMedicationRequest {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'MedicationRequest',
+      identifier: [
+        {
+          system: `${PRESCRIPTION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.prescriptionId,
+        },
+        {
+          system: `${PRESCRIPTION_ITEM_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.prescriptionItemId,
+        },
+      ],
+      status: 'completed',
+      intent: 'order',
+      medicationReference: this.buildReference(input.medicationReference, input.medicationDisplay),
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      requester: this.buildReference(
+        `Practitioner/${input.practitionerIhsNumber}`,
+        input.practitionerName,
+      ),
+      ...(input.authoredOn ? { authoredOn: this.toFhirInstant(input.authoredOn) } : {}),
+      dosageInstruction: [{ sequence: 1, text: this.buildDosageText(input) }],
+      dispenseRequest: {
+        quantity: { value: input.quantity, ...(input.unit ? { unit: input.unit } : {}) },
+      },
+      substitution: { allowedBoolean: false },
+    };
+  }
+
+  /**
+   * Maps one dispensed line to a MedicationDispense. The performer is the
+   * clinic Organization, not a Practitioner: the dispensing pharmacist is a
+   * system user without an IHS practitioner number, and naming the attending
+   * doctor instead would falsify who handed the medication over.
+   */
+  mapDispenseItemToMedicationDispense(
+    input: SatusehatMedicationDispenseMapInput,
+  ): SatusehatFhirMedicationDispense {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'MedicationDispense',
+      identifier: [
+        {
+          system: `${MEDICATION_DISPENSE_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.dispenseRecordId,
+        },
+        {
+          system: `${PRESCRIPTION_ITEM_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.dispenseItemId,
+        },
+      ],
+      status: 'completed',
+      medicationReference: this.buildReference(input.medicationReference, input.medicationDisplay),
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      context: { reference: input.encounterReference },
+      performer: [{ actor: { reference: `Organization/${organizationId}` } }],
+      ...(input.medicationRequestReference
+        ? { authorizingPrescription: [{ reference: input.medicationRequestReference }] }
+        : {}),
+      quantity: { value: input.quantity, ...(input.unit ? { unit: input.unit } : {}) },
+      whenHandedOver: this.toFhirInstant(input.dispensedAt),
+      substitution: { wasSubstituted: false },
+    };
+  }
+
+  private buildDosageText(input: SatusehatMedicationRequestMapInput): string {
+    const parts = [input.dosage, input.frequency, input.instructions].filter(
+      (part): part is string => part !== undefined && part !== null && part.trim() !== '',
+    );
+    return parts.join(', ');
   }
 
   private buildObservation(
