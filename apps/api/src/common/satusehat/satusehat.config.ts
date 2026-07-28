@@ -73,7 +73,10 @@ function readCredentials(configService: ConfigService): {
  * values at startup. Credentials are optional so deployments without a
  * Kemenkes registration still boot; the adapter then refuses calls with
  * `SATUSEHAT_NOT_CONFIGURED` instead of failing at import time. Defaults point
- * at the public staging sandbox, never production.
+ * at the public staging sandbox, never production. The location pair is
+ * independent of the credential trio because the Location resource is
+ * registered on the platform after credentials exist — Encounter mapping
+ * enforces its presence at map time instead.
  */
 export function resolveSatusehatConfig(configService: ConfigService): SatusehatConfig {
   const credentials = readCredentials(configService);
@@ -84,6 +87,8 @@ export function resolveSatusehatConfig(configService: ConfigService): SatusehatC
     organizationId: credentials.organizationId,
     clientId: credentials.clientId,
     clientSecret: credentials.clientSecret,
+    locationId: readOptionalValue(configService, 'SATUSEHAT_LOCATION_ID'),
+    locationName: readOptionalValue(configService, 'SATUSEHAT_LOCATION_NAME'),
     requestTimeoutMs: readPositiveInteger(
       configService,
       'SATUSEHAT_REQUEST_TIMEOUT_MS',

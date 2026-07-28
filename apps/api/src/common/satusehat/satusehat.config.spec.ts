@@ -25,6 +25,8 @@ describe('resolveSatusehatConfig', () => {
       organizationId: undefined,
       clientId: undefined,
       clientSecret: undefined,
+      locationId: undefined,
+      locationName: undefined,
       requestTimeoutMs: 30_000,
       maxRetryAttempts: 2,
       retryBaseDelayMs: 250,
@@ -40,6 +42,19 @@ describe('resolveSatusehatConfig', () => {
     expect(actualConfig.organizationId).toBe('org-uuid');
     expect(actualConfig.clientId).toBe('client-id');
     expect(actualConfig.clientSecret).toBe('client-secret');
+  });
+
+  it('resolves the optional location pair independently of the credential trio', () => {
+    const actualConfig = resolveSatusehatConfig(
+      buildConfigService({
+        SATUSEHAT_LOCATION_ID: 'location-uuid',
+        SATUSEHAT_LOCATION_NAME: 'Ruang Periksa Umum',
+      }),
+    );
+
+    expect(actualConfig.locationId).toBe('location-uuid');
+    expect(actualConfig.locationName).toBe('Ruang Periksa Umum');
+    expect(actualConfig.isConfigured).toBe(false);
   });
 
   it('throws when only part of the credential set is provided', () => {

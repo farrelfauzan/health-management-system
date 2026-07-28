@@ -5,6 +5,8 @@ export type SatusehatConfig = {
   readonly organizationId?: string;
   readonly clientId?: string;
   readonly clientSecret?: string;
+  readonly locationId?: string;
+  readonly locationName?: string;
   readonly requestTimeoutMs: number;
   readonly maxRetryAttempts: number;
   readonly retryBaseDelayMs: number;
