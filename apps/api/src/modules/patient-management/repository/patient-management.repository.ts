@@ -180,9 +180,20 @@ export class PatientManagementRepository {
   ) {}
 
   async listPatients(params: ListPatientsParams, currentUser: CurrentUser, hasAnyScope: boolean) {
-    const { page, limit, search, nik, bpjsNumber, doctorId, status, createdFrom, createdTo } =
-      params;
+    const {
+      page,
+      limit,
+      search,
+      nik,
+      bpjsNumber,
+      doctorId,
+      status,
+      hasAppointment,
+      createdFrom,
+      createdTo,
+    } = params;
     const skip = (page - 1) * limit;
+    const activeAppointmentFilter = { deletedAt: null };
 
     const where = {
       ...(status ? { status } : {}),
@@ -206,6 +217,20 @@ export class PatientManagementRepository {
                 doctorId,
                 unassignedAt: null,
               },
+            },
+          }
+        : {}),
+      ...(hasAppointment === true
+        ? {
+            appointments: {
+              some: activeAppointmentFilter,
+            },
+          }
+        : {}),
+      ...(hasAppointment === false
+        ? {
+            appointments: {
+              none: activeAppointmentFilter,
             },
           }
         : {}),

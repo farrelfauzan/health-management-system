@@ -226,6 +226,9 @@ export const listPatientsQuerySchema = z
     bpjsNumber: bpjsNumberSchema.optional(),
     doctorId: z.string().uuid().optional(),
     status: patientStatusSchema.optional(),
+    // Query strings are always text; keep the wire form as an enum so OpenAPI
+    // and ZodValidationPipe agree, then coerce to boolean in the service.
+    hasAppointment: z.enum(['true', 'false']).optional(),
     createdFrom: patientDateSchema
       .refine(isValidDateValue, 'Created-from must be a valid calendar date')
       .optional(),

@@ -32,7 +32,7 @@ import { useRegistrableAppointments } from '#lib/registrations/use-registrable-a
 
 const CREATE_ERROR_FALLBACK = 'Unable to create the registration. Please try again.';
 const NO_APPOINTMENT_VALUE = 'NONE';
-const PICKER_PAGE = { page: 1, limit: 100 };
+const PICKER_PAGE = { page: 1, limit: 100, hasAppointment: true as const };
 
 type RegistrationCreateDialogProps = {
   open: boolean;
@@ -140,7 +140,7 @@ export function RegistrationCreateDialog({
                   value={field.state.value}
                   placeholder="Select a patient"
                   searchPlaceholder="Search by name or MRN..."
-                  emptyMessage="No patient found."
+                  emptyMessage="No patients with appointments found."
                   isLoading={patientsQuery.isPending}
                   disabled={variant === 'patient'}
                   onChange={(nextValue) => {

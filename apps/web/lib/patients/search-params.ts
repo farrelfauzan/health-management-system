@@ -5,6 +5,7 @@ export type PatientsSearchParams = {
   limit: number;
   search?: string;
   status?: PatientStatusValue;
+  hasAppointment?: boolean;
   createdFrom?: string;
   createdTo?: string;
 };

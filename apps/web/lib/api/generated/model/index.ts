@@ -201,6 +201,7 @@ export * from './patientManagementControllerGetPatientIdentifiersV1200Data';
 export * from './patientManagementControllerImportPatientV1201';
 export * from './patientManagementControllerImportPatientV1201Data';
 export * from './patientManagementControllerImportPatientV1201Meta';
+export * from './patientManagementControllerListPatientsV1HasAppointment';
 export * from './patientManagementControllerListPatientsV1Params';
 export * from './patientManagementControllerListPatientsV1Status';
 export * from './patientManagementControllerListPatientsV1200';

@@ -93,6 +93,8 @@ export class PatientManagementService {
         bpjsNumber: query.bpjsNumber,
         doctorId: query.doctorId,
         status: query.status,
+        hasAppointment:
+          query.hasAppointment === undefined ? undefined : query.hasAppointment === 'true',
         createdFrom: query.createdFrom ? parseDateOnly(query.createdFrom) : undefined,
         createdTo: query.createdTo ? parseDateOnly(query.createdTo) : undefined,
       },

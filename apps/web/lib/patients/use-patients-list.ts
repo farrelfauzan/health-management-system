@@ -14,6 +14,12 @@ export function usePatientsList(params: PatientsSearchParams) {
     limit: params.limit,
     search: params.search,
     status: params.status,
+    hasAppointment:
+      params.hasAppointment === undefined
+        ? undefined
+        : params.hasAppointment
+          ? 'true'
+          : 'false',
     createdFrom: params.createdFrom,
     createdTo: params.createdTo,
   };

@@ -128,6 +128,7 @@ describe('PatientManagementService', () => {
         page: 1,
         limit: 10,
         status: 'IN_PATIENT',
+        hasAppointment: undefined,
         createdFrom: new Date('2026-01-01T00:00:00.000Z'),
       },
       currentUser,

@@ -620,6 +620,14 @@ paths:
               - IN_PATIENT
               - OUT_PATIENT
               - DISCHARGED
+        - name: hasAppointment
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
         - name: createdFrom
           required: false
           in: query
