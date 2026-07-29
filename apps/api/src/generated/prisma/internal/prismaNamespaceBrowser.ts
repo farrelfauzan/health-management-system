@@ -88,7 +88,8 @@ export const ModelName = {
   RolePermission: 'RolePermission',
   UserRole: 'UserRole',
   SatusehatSubmission: 'SatusehatSubmission',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  BpjsPcareConfig: 'BpjsPcareConfig'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -715,6 +716,29 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const BpjsPcareConfigScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  environment: 'environment',
+  consId: 'consId',
+  kdProviderPpk: 'kdProviderPpk',
+  pcareUsername: 'pcareUsername',
+  secretKeyCiphertext: 'secretKeyCiphertext',
+  secretKeyLast4: 'secretKeyLast4',
+  userKeyCiphertext: 'userKeyCiphertext',
+  userKeyLast4: 'userKeyLast4',
+  pcarePasswordCiphertext: 'pcarePasswordCiphertext',
+  credentialKeyVersion: 'credentialKeyVersion',
+  isActive: 'isActive',
+  lastTestedAt: 'lastTestedAt',
+  lastTestResult: 'lastTestResult',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsPcareConfigScalarFieldEnum = (typeof BpjsPcareConfigScalarFieldEnum)[keyof typeof BpjsPcareConfigScalarFieldEnum]
 
 
 export const SortOrder = {

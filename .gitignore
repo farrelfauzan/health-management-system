@@ -39,6 +39,7 @@ packages/**/src/**/*.d.ts
 
 # AI Assistant
 .cursor/
-AGENTS.md
 .claude/
 CLAUDE.md
+.agents/
+AGENTS.md

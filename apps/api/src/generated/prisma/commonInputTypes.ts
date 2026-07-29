@@ -830,6 +830,23 @@ export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonNullableFilter<$PrismaModel>
 }
 
+export type EnumBpjsPcareEnvironmentFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsPcareEnvironment | Prisma.EnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsPcareEnvironment[] | Prisma.ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsPcareEnvironment[] | Prisma.ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel> | $Enums.BpjsPcareEnvironment
+}
+
+export type EnumBpjsPcareEnvironmentWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsPcareEnvironment | Prisma.EnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsPcareEnvironment[] | Prisma.ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsPcareEnvironment[] | Prisma.ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsPcareEnvironmentWithAggregatesFilter<$PrismaModel> | $Enums.BpjsPcareEnvironment
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1626,6 +1643,23 @@ export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
   gt?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   gte?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
+}
+
+export type NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsPcareEnvironment | Prisma.EnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsPcareEnvironment[] | Prisma.ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsPcareEnvironment[] | Prisma.ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel> | $Enums.BpjsPcareEnvironment
+}
+
+export type NestedEnumBpjsPcareEnvironmentWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsPcareEnvironment | Prisma.EnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsPcareEnvironment[] | Prisma.ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsPcareEnvironment[] | Prisma.ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsPcareEnvironmentWithAggregatesFilter<$PrismaModel> | $Enums.BpjsPcareEnvironment
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel>
 }
 
 

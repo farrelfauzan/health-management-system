@@ -364,3 +364,13 @@ export type SatusehatSubmission = Prisma.SatusehatSubmissionModel
  * 
  */
 export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model BpjsPcareConfig
+ * BPJS PCare bridging credentials for one facility (P11-T02). Non-secret
+ * identifiers are plaintext; the three secrets are sealed with AES-256-GCM
+ * under BPJS_CREDENTIAL_ENCRYPTION_KEY and surface only as last-4 display
+ * columns. `facilityId` is null on the single-tenant deployment — Postgres
+ * unique indexes treat NULLs as distinct, so a hand-written partial unique
+ * index in the migration is what actually keeps that row a singleton.
+ */
+export type BpjsPcareConfig = Prisma.BpjsPcareConfigModel

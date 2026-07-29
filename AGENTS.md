@@ -1,6 +1,17 @@
 # AGENTS.md
 
-This repository is currently empty. Treat this file as the implementation contract for all future AI coding sessions.
+Treat this file as the implementation contract for all AI coding sessions. The repository is active; inspect the current implementation before planning or changing code.
+
+## 0) Codex Workspace Guidance
+
+- This root `AGENTS.md` is the canonical repository-wide instruction source.
+- Before editing `apps/api`, read and follow `apps/api/AGENTS.md`.
+- Before editing `apps/web`, read and follow `apps/web/AGENTS.md`.
+- Before editing `packages/ui`, read and follow `packages/ui/AGENTS.md`.
+- Reusable Codex workflows live in `.agents/skills/` and may be invoked explicitly with `$<skill-name>`.
+- Existing modules may use the current `controller/`, `service/`, `repository/`, and `dto/` layout. Preserve the local layout unless the task explicitly includes an architecture migration, while maintaining the dependency rules in this file.
+- Use pnpm from the repository root. Common verification commands are `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm integration:test`, and `pnpm build`; scope them with `pnpm --filter <package> <script>` when appropriate.
+- Inspect `git status` before editing and preserve unrelated user changes. Do not commit, push, or create a pull request unless the user explicitly asks.
 
 ## 1) Product Scope (MVP First)
 

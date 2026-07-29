@@ -33,6 +33,15 @@ enum AuditAction {
   SATUSEHAT_PATIENT_LINKED
   SATUSEHAT_DOCTOR_LINKED
   SATUSEHAT_SUBMISSION_RETRIED
+  BPJS_CONFIG_CREATED
+  BPJS_CONFIG_UPDATED
+  BPJS_CONFIG_DELETED
+  BPJS_CONNECTION_TESTED
+}
+
+enum BpjsPcareEnvironment {
+  DEVELOPMENT
+  PRODUCTION
 }
 
 enum PatientStatus {
@@ -1288,4 +1297,32 @@ model AuditLog {
   @@index([resource, resourceId])
   @@index([occurredAt])
   @@map("audit_logs")
+}
+
+/// BPJS PCare bridging credentials for one facility (P11-T02). Non-secret
+/// identifiers are plaintext; the three secrets are sealed with AES-256-GCM
+/// under BPJS_CREDENTIAL_ENCRYPTION_KEY and surface only as last-4 display
+/// columns. `facilityId` is null on the single-tenant deployment — Postgres
+/// unique indexes treat NULLs as distinct, so a hand-written partial unique
+/// index in the migration is what actually keeps that row a singleton.
+model BpjsPcareConfig {
+  id                      String               @id @default(uuid()) @db.Uuid
+  facilityId              String?              @unique @map("facility_id") @db.Uuid
+  environment             BpjsPcareEnvironment
+  consId                  String               @map("cons_id")
+  kdProviderPpk           String               @map("kd_provider_ppk")
+  pcareUsername           String               @map("pcare_username")
+  secretKeyCiphertext     String               @map("secret_key_ciphertext")
+  secretKeyLast4          String               @map("secret_key_last4")
+  userKeyCiphertext       String               @map("user_key_ciphertext")
+  userKeyLast4            String               @map("user_key_last4")
+  pcarePasswordCiphertext String               @map("pcare_password_ciphertext")
+  credentialKeyVersion    Int                  @default(1) @map("credential_key_version")
+  isActive                Boolean              @default(true) @map("is_active")
+  lastTestedAt            DateTime?            @map("last_tested_at")
+  lastTestResult          String?              @map("last_test_result")
+  createdAt               DateTime             @default(now()) @map("created_at")
+  updatedAt               DateTime             @updatedAt @map("updated_at")
+
+  @@map("bpjs_pcare_configs")
 }

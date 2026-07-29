@@ -421,7 +421,8 @@ export const ModelName = {
   RolePermission: 'RolePermission',
   UserRole: 'UserRole',
   SatusehatSubmission: 'SatusehatSubmission',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  BpjsPcareConfig: 'BpjsPcareConfig'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -437,7 +438,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3253,6 +3254,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BpjsPcareConfig: {
+      payload: Prisma.$BpjsPcareConfigPayload<ExtArgs>
+      fields: Prisma.BpjsPcareConfigFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BpjsPcareConfigFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BpjsPcareConfigFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload>
+        }
+        findFirst: {
+          args: Prisma.BpjsPcareConfigFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BpjsPcareConfigFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload>
+        }
+        findMany: {
+          args: Prisma.BpjsPcareConfigFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload>[]
+        }
+        create: {
+          args: Prisma.BpjsPcareConfigCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload>
+        }
+        createMany: {
+          args: Prisma.BpjsPcareConfigCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BpjsPcareConfigCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload>[]
+        }
+        delete: {
+          args: Prisma.BpjsPcareConfigDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload>
+        }
+        update: {
+          args: Prisma.BpjsPcareConfigUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload>
+        }
+        deleteMany: {
+          args: Prisma.BpjsPcareConfigDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BpjsPcareConfigUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BpjsPcareConfigUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload>[]
+        }
+        upsert: {
+          args: Prisma.BpjsPcareConfigUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsPcareConfigPayload>
+        }
+        aggregate: {
+          args: Prisma.BpjsPcareConfigAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBpjsPcareConfig>
+        }
+        groupBy: {
+          args: Prisma.BpjsPcareConfigGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsPcareConfigGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BpjsPcareConfigCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsPcareConfigCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3902,6 +3977,29 @@ export const AuditLogScalarFieldEnum = {
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
+export const BpjsPcareConfigScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  environment: 'environment',
+  consId: 'consId',
+  kdProviderPpk: 'kdProviderPpk',
+  pcareUsername: 'pcareUsername',
+  secretKeyCiphertext: 'secretKeyCiphertext',
+  secretKeyLast4: 'secretKeyLast4',
+  userKeyCiphertext: 'userKeyCiphertext',
+  userKeyLast4: 'userKeyLast4',
+  pcarePasswordCiphertext: 'pcarePasswordCiphertext',
+  credentialKeyVersion: 'credentialKeyVersion',
+  isActive: 'isActive',
+  lastTestedAt: 'lastTestedAt',
+  lastTestResult: 'lastTestResult',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsPcareConfigScalarFieldEnum = (typeof BpjsPcareConfigScalarFieldEnum)[keyof typeof BpjsPcareConfigScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4405,6 +4503,20 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'BpjsPcareEnvironment'
+ */
+export type EnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsPcareEnvironment'>
+    
+
+
+/**
+ * Reference to a field of type 'BpjsPcareEnvironment[]'
+ */
+export type ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsPcareEnvironment[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -4565,6 +4677,7 @@ export type GlobalOmitConfig = {
   userRole?: Prisma.UserRoleOmit
   satusehatSubmission?: Prisma.SatusehatSubmissionOmit
   auditLog?: Prisma.AuditLogOmit
+  bpjsPcareConfig?: Prisma.BpjsPcareConfigOmit
 }
 
 /* Types for Logging */
