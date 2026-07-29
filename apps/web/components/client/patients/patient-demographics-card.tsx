@@ -4,6 +4,12 @@ import type { PatientDetail } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
 
 import { StatusBadge } from '#components/shared/status-badge';
+import {
+  EMPTY_VALUE,
+  formatBloodType,
+  formatGuardian,
+  formatOptionalLabel,
+} from '#lib/patients/format-patient-fields';
 import { computePatientAge } from '#lib/patients/patient-age';
 import { formatPatientSexLabel } from '#lib/patients/patient-sex-label';
 import { formatPatientStatusLabel } from '#lib/patients/patient-status-label';
@@ -21,8 +27,21 @@ export function PatientDemographicsCard({ patient }: PatientDemographicsCardProp
       label: 'Date of Birth',
       value: `${formatMediumDate(patient.dateOfBirth)} (${computePatientAge(patient.dateOfBirth)} yrs)`,
     },
+    { label: 'Place of Birth', value: patient.placeOfBirth ?? EMPTY_VALUE },
     { label: 'Phone Number', value: patient.phoneNumber, isMono: true },
+    { label: 'Email', value: patient.email ?? EMPTY_VALUE },
     { label: 'Address', value: patient.address },
+    { label: 'Blood Type', value: formatBloodType(patient.bloodType, patient.rhesusFactor) },
+    { label: 'Marital Status', value: formatOptionalLabel(patient.maritalStatus) },
+    { label: 'Religion', value: formatOptionalLabel(patient.religion) },
+    { label: 'Occupation', value: patient.occupation ?? EMPTY_VALUE },
+    { label: 'Emergency Contact', value: patient.emergencyContactName ?? EMPTY_VALUE },
+    {
+      label: 'Emergency Phone',
+      value: patient.emergencyContactPhone ?? EMPTY_VALUE,
+      isMono: Boolean(patient.emergencyContactPhone),
+    },
+    { label: 'Guardian', value: formatGuardian(patient.guardianName, patient.guardianRelation) },
     {
       label: 'Status',
       value: (

@@ -18,6 +18,8 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'check',
   'retry',
   'link',
+  'read-identifier',
+  'import-identifier',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',

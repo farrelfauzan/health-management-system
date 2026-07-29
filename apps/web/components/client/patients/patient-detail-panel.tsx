@@ -5,7 +5,9 @@ import { Button, Can, Icon, Skeleton } from '@hms/ui';
 
 import { AssignDoctorDialog } from '#components/client/patients/assign-doctor-dialog';
 import { PatientActivityCard } from '#components/client/patients/patient-activity-card';
+import { PatientAllergiesCard } from '#components/client/patients/patient-allergies-card';
 import { PatientDemographicsCard } from '#components/client/patients/patient-demographics-card';
+import { PatientIdentifiersCard } from '#components/client/patients/patient-identifiers-card';
 import { PatientDoctorsCard } from '#components/client/patients/patient-doctors-card';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
 import { EmptyState } from '#components/shared/empty-state';
@@ -69,8 +71,12 @@ export function PatientDetailPanel({ patientId }: PatientDetailPanelProps) {
       />
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <PatientDemographicsCard patient={patient} />
         <div className="space-y-6">
+          <PatientDemographicsCard patient={patient} />
+          <PatientIdentifiersCard patient={patient} />
+        </div>
+        <div className="space-y-6">
+          <PatientAllergiesCard allergies={patient.allergies} />
           <PatientDoctorsCard
             patient={patient}
             onAssignDoctor={() => setIsAssignDialogOpen(true)}
