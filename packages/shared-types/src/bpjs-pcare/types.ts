@@ -3,7 +3,10 @@ import type {
   BpjsEligibilityOutcomeValue,
   BpjsPcareEnvironmentValue,
   BpjsReferenceCatalogValue,
+  BpjsSubmissionStatusValue,
+  BpjsSubmissionTypeValue,
 } from '#bpjs-pcare/schemas';
+import type { RegistrationStatusValue } from '#registration-flow/schemas';
 
 /**
  * Repository projection of the stored PCare configuration. Deliberately
@@ -159,4 +162,106 @@ export type SaveBpjsEligibilityCheckData = BpjsEligibilityOutcomeData & {
   checkedDate: Date;
   checkedVia: BpjsEligibilityIdentifierTypeValue;
   checkedAt: Date;
+};
+
+export type BpjsSubmissionRecord = {
+  id: string;
+  registrationId: string;
+  type: BpjsSubmissionTypeValue;
+  status: BpjsSubmissionStatusValue;
+  attempts: number;
+  lastError: string | null;
+  nextAttemptAt: Date;
+  lastAttemptAt: Date | null;
+  submittedAt: Date | null;
+  bpjsReferenceNo: string | null;
+  submittedKdPoli: string | null;
+  createdAt: Date;
+};
+
+export type MarkBpjsSubmissionSubmittedPayload = {
+  id: string;
+  bpjsReferenceNo: string | null;
+  submittedKdPoli: string | null;
+};
+
+export type MarkBpjsSubmissionRetryPayload = {
+  id: string;
+  attempts: number;
+  nextAttemptAt: Date;
+  lastError: string;
+};
+
+export type MarkBpjsSubmissionFailedPayload = {
+  id: string;
+  attempts: number;
+  lastError: string;
+};
+
+export type ListBpjsSubmissionsParams = {
+  status?: BpjsSubmissionStatusValue;
+  type?: BpjsSubmissionTypeValue;
+  registrationId?: string;
+  skip: number;
+  take: number;
+};
+
+export type BpjsSubmissionPage = {
+  items: BpjsSubmissionRecord[];
+  total: number;
+};
+
+export type BpjsSubmissionDoctorData = {
+  fullName: string;
+  bpjsDoctorCode: string | null;
+  bpjsPoliCode: string | null;
+};
+
+export type BpjsSubmissionVitalsData = {
+  systolicBloodPressure: number | null;
+  diastolicBloodPressure: number | null;
+  heightCm: number | null;
+  weightKg: number | null;
+  pulseRate: number | null;
+  respiratoryRate: number | null;
+};
+
+export type BpjsSubmissionDiagnosisData = {
+  code: string;
+  type: 'PRIMARY' | 'SECONDARY';
+};
+
+export type BpjsSubmissionEncounterData = {
+  id: string;
+  status: string;
+  endedAt: Date | null;
+  subjective: string | null;
+  doctor: BpjsSubmissionDoctorData | null;
+  vitals: BpjsSubmissionVitalsData | null;
+  diagnoses: BpjsSubmissionDiagnosisData[];
+};
+
+/**
+ * Everything the per-type submission builders need, re-read live from the
+ * clinical record at send time (no payload snapshot is stored in the
+ * outbox). The decrypted BPJS number exists only inside this repository
+ * projection and the outbound request built from it.
+ */
+export type BpjsSubmissionSourceData = {
+  registration: {
+    id: string;
+    status: RegistrationStatusValue;
+    queueDate: Date | null;
+    checkedInAt: Date | null;
+  };
+  patient: {
+    bpjsNumber: string | null;
+  };
+  appointmentDoctor: BpjsSubmissionDoctorData | null;
+  encounter: BpjsSubmissionEncounterData | null;
+  pendaftaran: {
+    status: BpjsSubmissionStatusValue;
+    bpjsReferenceNo: string | null;
+    submittedKdPoli: string | null;
+  } | null;
 };

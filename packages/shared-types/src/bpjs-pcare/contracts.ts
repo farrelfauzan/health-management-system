@@ -3,6 +3,8 @@ import type {
   BpjsEligibilityResultState,
   BpjsPcareEnvironmentValue,
   BpjsReferenceCatalogValue,
+  BpjsSubmissionStatusValue,
+  BpjsSubmissionTypeValue,
 } from '#bpjs-pcare/schemas';
 
 /**
@@ -131,4 +133,34 @@ export type BpjsEligibilityResultView = {
   checkedVia?: BpjsEligibilityIdentifierTypeValue;
   member?: BpjsEligibilityMemberView;
   message: string;
+};
+
+/**
+ * Ops view of one outbox row. Scheduling state plus PCare's returned
+ * reference number only — no payload snapshot exists, so nothing clinical
+ * can leak through the monitor.
+ */
+export type BpjsSubmissionView = {
+  id: string;
+  registrationId: string;
+  type: BpjsSubmissionTypeValue;
+  status: BpjsSubmissionStatusValue;
+  attempts: number;
+  lastError: string | null;
+  nextAttemptAt: string;
+  lastAttemptAt: string | null;
+  submittedAt: string | null;
+  bpjsReferenceNo: string | null;
+  createdAt: string;
+};
+
+export type BpjsSubmissionsListMeta = {
+  page: number;
+  limit: number;
+  total: number;
+};
+
+export type BpjsSubmissionsListResult = {
+  items: BpjsSubmissionView[];
+  meta: BpjsSubmissionsListMeta;
 };

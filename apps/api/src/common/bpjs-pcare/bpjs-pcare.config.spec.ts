@@ -18,7 +18,19 @@ describe('resolveBpjsPcareAdapterConfig', () => {
       retryBaseDelayMs: 250,
       circuitBreakerFailureThreshold: 5,
       circuitBreakerOpenDurationMs: 30_000,
+      workerEnabled: true,
+      workerPollIntervalMs: 15_000,
+      submissionMaxAttempts: 8,
+      submissionRetryBaseDelayMs: 60_000,
     });
+  });
+
+  it('turns the worker flag off only on an explicit false', () => {
+    const actualConfig = resolveBpjsPcareAdapterConfig(
+      buildConfigService({ BPJS_WORKER_ENABLED: 'false' }),
+    );
+
+    expect(actualConfig.workerEnabled).toBe(false);
   });
 
   it('accepts overrides and strips trailing slashes from base URLs', () => {

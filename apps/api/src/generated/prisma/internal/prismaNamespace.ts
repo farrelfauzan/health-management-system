@@ -424,7 +424,8 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   BpjsPcareConfig: 'BpjsPcareConfig',
   BpjsReferenceItem: 'BpjsReferenceItem',
-  BpjsEligibilityCheck: 'BpjsEligibilityCheck'
+  BpjsEligibilityCheck: 'BpjsEligibilityCheck',
+  BpjsSubmission: 'BpjsSubmission'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -440,7 +441,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3478,6 +3479,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BpjsSubmission: {
+      payload: Prisma.$BpjsSubmissionPayload<ExtArgs>
+      fields: Prisma.BpjsSubmissionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BpjsSubmissionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BpjsSubmissionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload>
+        }
+        findFirst: {
+          args: Prisma.BpjsSubmissionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BpjsSubmissionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload>
+        }
+        findMany: {
+          args: Prisma.BpjsSubmissionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload>[]
+        }
+        create: {
+          args: Prisma.BpjsSubmissionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload>
+        }
+        createMany: {
+          args: Prisma.BpjsSubmissionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BpjsSubmissionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload>[]
+        }
+        delete: {
+          args: Prisma.BpjsSubmissionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload>
+        }
+        update: {
+          args: Prisma.BpjsSubmissionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload>
+        }
+        deleteMany: {
+          args: Prisma.BpjsSubmissionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BpjsSubmissionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BpjsSubmissionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload>[]
+        }
+        upsert: {
+          args: Prisma.BpjsSubmissionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsSubmissionPayload>
+        }
+        aggregate: {
+          args: Prisma.BpjsSubmissionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBpjsSubmission>
+        }
+        groupBy: {
+          args: Prisma.BpjsSubmissionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsSubmissionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BpjsSubmissionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsSubmissionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4190,6 +4265,25 @@ export const BpjsEligibilityCheckScalarFieldEnum = {
 export type BpjsEligibilityCheckScalarFieldEnum = (typeof BpjsEligibilityCheckScalarFieldEnum)[keyof typeof BpjsEligibilityCheckScalarFieldEnum]
 
 
+export const BpjsSubmissionScalarFieldEnum = {
+  id: 'id',
+  registrationId: 'registrationId',
+  type: 'type',
+  status: 'status',
+  attempts: 'attempts',
+  lastError: 'lastError',
+  nextAttemptAt: 'nextAttemptAt',
+  lastAttemptAt: 'lastAttemptAt',
+  submittedAt: 'submittedAt',
+  bpjsReferenceNo: 'bpjsReferenceNo',
+  submittedKdPoli: 'submittedKdPoli',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsSubmissionScalarFieldEnum = (typeof BpjsSubmissionScalarFieldEnum)[keyof typeof BpjsSubmissionScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4749,6 +4843,34 @@ export type ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel> = F
 
 
 /**
+ * Reference to a field of type 'BpjsSubmissionType'
+ */
+export type EnumBpjsSubmissionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsSubmissionType'>
+    
+
+
+/**
+ * Reference to a field of type 'BpjsSubmissionType[]'
+ */
+export type ListEnumBpjsSubmissionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsSubmissionType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BpjsSubmissionStatus'
+ */
+export type EnumBpjsSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsSubmissionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'BpjsSubmissionStatus[]'
+ */
+export type ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsSubmissionStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -4912,6 +5034,7 @@ export type GlobalOmitConfig = {
   bpjsPcareConfig?: Prisma.BpjsPcareConfigOmit
   bpjsReferenceItem?: Prisma.BpjsReferenceItemOmit
   bpjsEligibilityCheck?: Prisma.BpjsEligibilityCheckOmit
+  bpjsSubmission?: Prisma.BpjsSubmissionOmit
 }
 
 /* Types for Logging */

@@ -40,6 +40,21 @@ enum AuditAction {
   BPJS_REFERENCE_SYNCED
   BPJS_MAPPING_UPDATED
   BPJS_ELIGIBILITY_CHECKED
+  BPJS_SUBMISSION_RETRIED
+}
+
+enum BpjsSubmissionType {
+  PENDAFTARAN
+  KUNJUNGAN
+  PENDAFTARAN_DELETE
+}
+
+/// FAILED is terminal for the worker: only an admin retry re-opens it —
+/// mirrors SatusehatSubmissionStatus (P10-T04).
+enum BpjsSubmissionStatus {
+  PENDING
+  SUBMITTED
+  FAILED
 }
 
 enum BpjsEligibilityOutcome {
@@ -698,10 +713,11 @@ model Registration {
   updatedAt     DateTime           @updatedAt @map("updated_at")
   deletedAt     DateTime?          @map("deleted_at")
 
-  patient     PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  appointment Appointment?   @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
-  createdBy   User?          @relation("RegistrationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  encounter   Encounter?
+  patient         PatientProfile   @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  appointment     Appointment?     @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  createdBy       User?            @relation("RegistrationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  encounter       Encounter?
+  bpjsSubmissions BpjsSubmission[]
 
   @@unique([queueDate, queueNumber])
   @@index([patientId, status])
@@ -1431,4 +1447,38 @@ model BpjsEligibilityCheck {
   @@unique([patientId, checkedDate])
   @@index([checkedDate])
   @@map("bpjs_eligibility_checks")
+}
+
+/// BPJS PCare submission outbox (P11-T05), mirroring SatusehatSubmission:
+/// rows are enqueued transactionally with the visit event they report
+/// (PENDAFTARAN on check-in, KUNJUNGAN on encounter close,
+/// PENDAFTARAN_DELETE when an already-submitted registration is cancelled)
+/// and drained by a polling worker. All three types key on the registration
+/// — the kunjungan reaches its encounter through the registration's 1:1
+/// relation — so unique (registrationId, type) is the idempotency guarantee.
+/// No payload snapshot is stored: builders re-read the clinical record at
+/// send time. `bpjsReferenceNo` holds PCare's returned noUrut/noKunjungan;
+/// `submittedKdPoli` pins the poli code the pendaftaran actually went out
+/// with, because the DELETE path must name that code even if the admin
+/// remaps the specialty in between.
+model BpjsSubmission {
+  id              String               @id @default(uuid()) @db.Uuid
+  registrationId  String               @map("registration_id") @db.Uuid
+  type            BpjsSubmissionType
+  status          BpjsSubmissionStatus @default(PENDING)
+  attempts        Int                  @default(0)
+  lastError       String?              @map("last_error")
+  nextAttemptAt   DateTime             @default(now()) @map("next_attempt_at")
+  lastAttemptAt   DateTime?            @map("last_attempt_at")
+  submittedAt     DateTime?            @map("submitted_at")
+  bpjsReferenceNo String?              @map("bpjs_reference_no")
+  submittedKdPoli String?              @map("submitted_kd_poli")
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @updatedAt @map("updated_at")
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Restrict)
+
+  @@unique([registrationId, type])
+  @@index([status, nextAttemptAt])
+  @@map("bpjs_submissions")
 }

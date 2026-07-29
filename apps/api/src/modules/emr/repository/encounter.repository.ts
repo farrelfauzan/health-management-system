@@ -17,6 +17,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Prisma } from '../../../generated/prisma/client';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 
 const ENCOUNTER_PATIENT_SELECT = {
   id: true,
@@ -217,12 +218,16 @@ export class EncounterRepository {
    * committing one without the other leaves a finished patient sitting in the
    * queue, or a completed registration with an encounter still open.
    *
-   * A FINISHED close also enqueues the SATUSEHAT outbox row (P10-T04) inside
-   * the same transaction — writing another module's table here is deliberate:
-   * the outbox guarantee is exactly that a closed visit and its reporting
-   * queue entry commit or roll back together, and an after-commit enqueue
-   * would reintroduce the silent-miss window the outbox exists to remove.
-   * Cancelled encounters report nothing.
+   * A FINISHED close also enqueues the SATUSEHAT outbox row (P10-T04) and,
+   * for patients with a stored BPJS number while bridging is active, the
+   * BPJS KUNJUNGAN outbox row (P11-T05) inside the same transaction —
+   * writing another module's table here is deliberate: the outbox guarantee
+   * is exactly that a closed visit and its reporting queue entry commit or
+   * roll back together, and an after-commit enqueue would reintroduce the
+   * silent-miss window the outbox exists to remove. A CANCELLED close (which
+   * also cancels the registration) instead propagates a PENDAFTARAN_DELETE
+   * when the visit's pendaftaran already reached PCare. Cancelled encounters
+   * report nothing else.
    */
   async closeEncounter(payload: CloseEncounterRecordPayload): Promise<EncounterWithRelationsRecord> {
     return this.prisma.executeTransaction(async (tx) => {
@@ -235,6 +240,10 @@ export class EncounterRepository {
       });
       if (payload.status === 'FINISHED') {
         await tx.satusehatSubmission.create({ data: { encounterId: payload.id } });
+        await this.enqueueBpjsKunjungan(tx, payload.registrationId);
+      }
+      if (payload.status === 'CANCELLED') {
+        await this.propagateBpjsCancellation(tx, payload.registrationId);
       }
       return tx.encounter.update({
         where: { id: payload.id },
@@ -244,6 +253,49 @@ export class EncounterRepository {
         },
         include: ENCOUNTER_LIST_INCLUDE,
       });
+    });
+  }
+
+  private async enqueueBpjsKunjungan(
+    tx: PrismaTransactionClient,
+    registrationId: string,
+  ): Promise<void> {
+    const registration = await tx.registration.findUnique({
+      where: { id: registrationId },
+      select: { patient: { select: { bpjsNumberCiphertext: true } } },
+    });
+    if (!registration?.patient.bpjsNumberCiphertext) {
+      return;
+    }
+    const activeConfig = await tx.bpjsPcareConfig.findFirst({
+      where: { facilityId: null, isActive: true },
+      select: { id: true },
+    });
+    if (!activeConfig) {
+      return;
+    }
+    await tx.bpjsSubmission.upsert({
+      where: { registrationId_type: { registrationId, type: 'KUNJUNGAN' } },
+      create: { registrationId, type: 'KUNJUNGAN' },
+      update: {},
+    });
+  }
+
+  private async propagateBpjsCancellation(
+    tx: PrismaTransactionClient,
+    registrationId: string,
+  ): Promise<void> {
+    const pendaftaran = await tx.bpjsSubmission.findUnique({
+      where: { registrationId_type: { registrationId, type: 'PENDAFTARAN' } },
+      select: { status: true },
+    });
+    if (pendaftaran?.status !== 'SUBMITTED') {
+      return;
+    }
+    await tx.bpjsSubmission.upsert({
+      where: { registrationId_type: { registrationId, type: 'PENDAFTARAN_DELETE' } },
+      create: { registrationId, type: 'PENDAFTARAN_DELETE' },
+      update: {},
     });
   }
 

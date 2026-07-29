@@ -47,10 +47,29 @@ export const AuditAction = {
   BPJS_CONNECTION_TESTED: 'BPJS_CONNECTION_TESTED',
   BPJS_REFERENCE_SYNCED: 'BPJS_REFERENCE_SYNCED',
   BPJS_MAPPING_UPDATED: 'BPJS_MAPPING_UPDATED',
-  BPJS_ELIGIBILITY_CHECKED: 'BPJS_ELIGIBILITY_CHECKED'
+  BPJS_ELIGIBILITY_CHECKED: 'BPJS_ELIGIBILITY_CHECKED',
+  BPJS_SUBMISSION_RETRIED: 'BPJS_SUBMISSION_RETRIED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const BpjsSubmissionType = {
+  PENDAFTARAN: 'PENDAFTARAN',
+  KUNJUNGAN: 'KUNJUNGAN',
+  PENDAFTARAN_DELETE: 'PENDAFTARAN_DELETE'
+} as const
+
+export type BpjsSubmissionType = (typeof BpjsSubmissionType)[keyof typeof BpjsSubmissionType]
+
+
+export const BpjsSubmissionStatus = {
+  PENDING: 'PENDING',
+  SUBMITTED: 'SUBMITTED',
+  FAILED: 'FAILED'
+} as const
+
+export type BpjsSubmissionStatus = (typeof BpjsSubmissionStatus)[keyof typeof BpjsSubmissionStatus]
 
 
 export const BpjsEligibilityOutcome = {

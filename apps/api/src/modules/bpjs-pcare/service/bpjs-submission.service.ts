@@ -1,0 +1,312 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+import {
+  BpjsSubmissionDoctorData,
+  BpjsSubmissionRecord,
+  BpjsSubmissionSourceData,
+} from '@hms/shared-types';
+
+import { BpjsPcareHttpClient } from '../../../common/bpjs-pcare/bpjs-pcare-http.client';
+import { BpjsPcareError } from '../../../common/bpjs-pcare/bpjs-pcare.error';
+import {
+  BpjsPcareAdapterConfig,
+  BpjsPcareConnection,
+  BpjsPcareErrorCode,
+} from '../../../common/bpjs-pcare/bpjs-pcare.types';
+import { buildBpjsKunjunganPayload } from '../../../common/bpjs-pcare/build-bpjs-kunjungan-payload';
+import { buildBpjsPendaftaranDeletePath } from '../../../common/bpjs-pcare/build-bpjs-pendaftaran-delete-path';
+import { buildBpjsPendaftaranPayload } from '../../../common/bpjs-pcare/build-bpjs-pendaftaran-payload';
+import { resolveBpjsPcareAdapterConfig } from '../../../common/bpjs-pcare/bpjs-pcare.config';
+import { parseBpjsPcareSubmissionReference } from '../../../common/bpjs-pcare/parse-bpjs-pcare-submission-reference';
+import { BpjsPcareConfigRepository } from '../repository/bpjs-pcare-config.repository';
+import { BpjsSubmissionRepository } from '../repository/bpjs-submission.repository';
+import { BpjsSubmissionDataError } from './bpjs-submission-data.error';
+
+const PERMANENT_ERROR_CODES: readonly BpjsPcareErrorCode[] = [
+  'BPJS_PCARE_NOT_CONFIGURED',
+  'BPJS_PCARE_UNAUTHORIZED',
+  'BPJS_PCARE_REQUEST_REJECTED',
+];
+const MAX_STORED_ERROR_LENGTH = 500;
+
+type BpjsSubmissionOutcome = {
+  bpjsReferenceNo: string | null;
+  submittedKdPoli: string | null;
+};
+
+/**
+ * Drains the BPJS submission outbox (P11-T05), mirroring the SATUSEHAT
+ * submission service: an attempt either settles the row SUBMITTED, schedules
+ * an exponential-backoff retry, or fails it permanently. Data errors
+ * (missing mappings, missing primary diagnosis, cancelled registrations)
+ * fail immediately with a message written for the submissions monitor —
+ * retrying cannot fix data. One deliberate difference from SATUSEHAT: a
+ * walk-in checked in without an appointment has no doctor yet, so an
+ * unresolvable poli at pendaftaran time is a *transient* error — the doctor
+ * arrives when the encounter opens, so time fixes it where the retry budget
+ * allows. {@link processSubmission} never throws: the worker and the ops
+ * retry endpoint both rely on that.
+ */
+@Injectable()
+export class BpjsSubmissionService {
+  private readonly logger = new Logger(BpjsSubmissionService.name);
+  private readonly adapterConfig: BpjsPcareAdapterConfig;
+  constructor(
+    private readonly submissionRepository: BpjsSubmissionRepository,
+    private readonly configRepository: BpjsPcareConfigRepository,
+    private readonly httpClient: BpjsPcareHttpClient,
+    configService: ConfigService,
+  ) {
+    this.adapterConfig = resolveBpjsPcareAdapterConfig(configService);
+  }
+
+  async processSubmission(submission: BpjsSubmissionRecord): Promise<void> {
+    const attemptNumber = submission.attempts + 1;
+    try {
+      const outcome = await this.submitByType(submission);
+      await this.submissionRepository.markSubmitted({ id: submission.id, ...outcome });
+      if (submission.type === 'PENDAFTARAN') {
+        await this.propagateLateCancellation(submission.registrationId);
+      }
+    } catch (caughtError) {
+      await this.recordFailure(submission, attemptNumber, caughtError);
+    }
+  }
+
+  private async submitByType(submission: BpjsSubmissionRecord): Promise<BpjsSubmissionOutcome> {
+    const sourceData = await this.submissionRepository.findSubmissionSourceData(
+      submission.registrationId,
+    );
+    if (sourceData === null) {
+      throw new BpjsSubmissionDataError('Registration no longer exists');
+    }
+    if (submission.type === 'PENDAFTARAN') {
+      return this.submitPendaftaran(sourceData);
+    }
+    if (submission.type === 'KUNJUNGAN') {
+      return this.submitKunjungan(sourceData);
+    }
+    return this.submitPendaftaranDelete(sourceData);
+  }
+
+  private async submitPendaftaran(
+    sourceData: BpjsSubmissionSourceData,
+  ): Promise<BpjsSubmissionOutcome> {
+    if (sourceData.registration.status === 'CANCELLED') {
+      throw new BpjsSubmissionDataError(
+        'Registration was cancelled before the pendaftaran was sent — nothing to register',
+      );
+    }
+    const noKartu = this.requireBpjsNumber(sourceData);
+    const doctor = sourceData.appointmentDoctor ?? sourceData.encounter?.doctor ?? null;
+    if (doctor === null) {
+      throw new Error(
+        'Registration has no doctor yet (walk-in without an appointment) — retried until the encounter opens',
+      );
+    }
+    const kdPoli = this.requirePoliCode(doctor);
+    const registrationDate = this.requireRegistrationDate(sourceData);
+    const configRecord = await this.requireConfigRecord();
+    const payload = buildBpjsPendaftaranPayload({
+      kdProviderPeserta: configRecord.kdProviderPpk,
+      noKartu,
+      kdPoli,
+      registrationDate,
+      keluhan: sourceData.encounter?.subjective ?? null,
+    });
+    const connection = await this.requireConnection();
+    const envelope = await this.httpClient.sendRequest(connection, {
+      method: 'POST',
+      path: 'pendaftaran',
+      body: payload,
+    });
+    return {
+      bpjsReferenceNo: parseBpjsPcareSubmissionReference(envelope.response),
+      submittedKdPoli: kdPoli,
+    };
+  }
+
+  private async submitKunjungan(
+    sourceData: BpjsSubmissionSourceData,
+  ): Promise<BpjsSubmissionOutcome> {
+    if (sourceData.registration.status === 'CANCELLED') {
+      throw new BpjsSubmissionDataError(
+        'Registration was cancelled — the kunjungan will not be reported',
+      );
+    }
+    const encounter = sourceData.encounter;
+    if (encounter === null) {
+      throw new BpjsSubmissionDataError('Encounter no longer exists');
+    }
+    if (encounter.status !== 'FINISHED' || encounter.endedAt === null) {
+      throw new BpjsSubmissionDataError('Encounter is not finished');
+    }
+    this.assertPendaftaranSettled(sourceData);
+    const noKartu = this.requireBpjsNumber(sourceData);
+    const doctor = encounter.doctor;
+    if (doctor === null) {
+      throw new BpjsSubmissionDataError('Encounter has no doctor');
+    }
+    if (doctor.bpjsDoctorCode === null) {
+      throw new BpjsSubmissionDataError(
+        `Doctor ${doctor.fullName} has no BPJS kdDokter mapping — map the doctor in BPJS mappings first`,
+      );
+    }
+    const kdPoli = sourceData.pendaftaran?.submittedKdPoli ?? this.requirePoliCode(doctor);
+    const diagnosisCodes = encounter.diagnoses.map((diagnosis) => diagnosis.code);
+    if (encounter.diagnoses[0]?.type !== 'PRIMARY') {
+      throw new BpjsSubmissionDataError(
+        'Encounter has no primary diagnosis — record a coded primary diagnosis before the kunjungan can be reported',
+      );
+    }
+    const payload = buildBpjsKunjunganPayload({
+      noKartu,
+      kdPoli,
+      kdDokter: doctor.bpjsDoctorCode,
+      registrationDate: this.requireRegistrationDate(sourceData),
+      dischargeDate: encounter.endedAt,
+      keluhan: encounter.subjective,
+      diagnosisCodes,
+      vitals: encounter.vitals,
+    });
+    const connection = await this.requireConnection();
+    const envelope = await this.httpClient.sendRequest(connection, {
+      method: 'POST',
+      path: 'kunjungan',
+      body: payload,
+    });
+    return {
+      bpjsReferenceNo: parseBpjsPcareSubmissionReference(envelope.response),
+      submittedKdPoli: kdPoli,
+    };
+  }
+
+  private async submitPendaftaranDelete(
+    sourceData: BpjsSubmissionSourceData,
+  ): Promise<BpjsSubmissionOutcome> {
+    const pendaftaran = sourceData.pendaftaran;
+    if (pendaftaran === null || pendaftaran.status !== 'SUBMITTED') {
+      throw new BpjsSubmissionDataError(
+        'No submitted pendaftaran exists for this registration — nothing to revoke upstream',
+      );
+    }
+    if (pendaftaran.bpjsReferenceNo === null || pendaftaran.submittedKdPoli === null) {
+      throw new BpjsSubmissionDataError(
+        'The submitted pendaftaran carries no PCare reference number — revoke it manually in PCare',
+      );
+    }
+    const path = buildBpjsPendaftaranDeletePath({
+      noKartu: this.requireBpjsNumber(sourceData),
+      registrationDate: this.requireRegistrationDate(sourceData),
+      noUrut: pendaftaran.bpjsReferenceNo,
+      kdPoli: pendaftaran.submittedKdPoli,
+    });
+    const connection = await this.requireConnection();
+    await this.httpClient.sendRequest(connection, { method: 'DELETE', path });
+    return { bpjsReferenceNo: pendaftaran.bpjsReferenceNo, submittedKdPoli: null };
+  }
+
+  private assertPendaftaranSettled(sourceData: BpjsSubmissionSourceData): void {
+    const pendaftaran = sourceData.pendaftaran;
+    if (pendaftaran === null || pendaftaran.status === 'SUBMITTED') {
+      return;
+    }
+    if (pendaftaran.status === 'PENDING') {
+      throw new Error('Waiting for the visit pendaftaran to reach PCare first');
+    }
+    throw new BpjsSubmissionDataError(
+      'The visit pendaftaran failed — fix and retry it before the kunjungan can be reported',
+    );
+  }
+
+  private async propagateLateCancellation(registrationId: string): Promise<void> {
+    const registrationStatus =
+      await this.submissionRepository.findRegistrationStatus(registrationId);
+    if (registrationStatus !== 'CANCELLED') {
+      return;
+    }
+    this.logger.warn(
+      `Registration ${registrationId} was cancelled while its pendaftaran was in flight — enqueueing the delete`,
+    );
+    await this.submissionRepository.enqueuePendaftaranDelete(registrationId);
+  }
+
+  private requireBpjsNumber(sourceData: BpjsSubmissionSourceData): string {
+    if (sourceData.patient.bpjsNumber === null) {
+      throw new BpjsSubmissionDataError('Patient has no BPJS number on file');
+    }
+    return sourceData.patient.bpjsNumber;
+  }
+
+  private requirePoliCode(doctor: BpjsSubmissionDoctorData): string {
+    if (doctor.bpjsPoliCode === null) {
+      throw new BpjsSubmissionDataError(
+        `Doctor ${doctor.fullName}'s specialty has no BPJS poli mapping — map the specialty in BPJS mappings first`,
+      );
+    }
+    return doctor.bpjsPoliCode;
+  }
+
+  private requireRegistrationDate(sourceData: BpjsSubmissionSourceData): Date {
+    const registrationDate =
+      sourceData.registration.queueDate ?? sourceData.registration.checkedInAt;
+    if (registrationDate === null) {
+      throw new BpjsSubmissionDataError('Registration has no check-in date');
+    }
+    return registrationDate;
+  }
+
+  private async requireConfigRecord() {
+    const record = await this.configRepository.findConfig();
+    if (record === null) {
+      throw new BpjsPcareError('BPJS_PCARE_NOT_CONFIGURED', 'BPJS PCare is not configured');
+    }
+    return record;
+  }
+
+  private async requireConnection(): Promise<BpjsPcareConnection> {
+    const connection = await this.configRepository.getConnection();
+    if (connection === null) {
+      throw new BpjsPcareError('BPJS_PCARE_NOT_CONFIGURED', 'BPJS PCare is not configured');
+    }
+    return connection;
+  }
+
+  private async recordFailure(
+    submission: BpjsSubmissionRecord,
+    attemptNumber: number,
+    caughtError: unknown,
+  ): Promise<void> {
+    const lastError = this.describeError(caughtError);
+    const isPermanent =
+      caughtError instanceof BpjsSubmissionDataError ||
+      (caughtError instanceof BpjsPcareError && PERMANENT_ERROR_CODES.includes(caughtError.code));
+    if (isPermanent || attemptNumber >= this.adapterConfig.submissionMaxAttempts) {
+      await this.submissionRepository.markFailed({
+        id: submission.id,
+        attempts: attemptNumber,
+        lastError,
+      });
+      this.logger.warn(
+        `BPJS ${submission.type} for registration ${submission.registrationId} failed permanently after attempt ${attemptNumber}: ${lastError}`,
+      );
+      return;
+    }
+    const delayMs = this.adapterConfig.submissionRetryBaseDelayMs * 2 ** (attemptNumber - 1);
+    await this.submissionRepository.scheduleRetry({
+      id: submission.id,
+      attempts: attemptNumber,
+      nextAttemptAt: new Date(Date.now() + delayMs),
+      lastError,
+    });
+    this.logger.warn(
+      `BPJS ${submission.type} for registration ${submission.registrationId} attempt ${attemptNumber} failed, retrying in ${delayMs}ms: ${lastError}`,
+    );
+  }
+
+  private describeError(caughtError: unknown): string {
+    const message = caughtError instanceof Error ? caughtError.message : String(caughtError);
+    return message.slice(0, MAX_STORED_ERROR_LENGTH);
+  }
+}

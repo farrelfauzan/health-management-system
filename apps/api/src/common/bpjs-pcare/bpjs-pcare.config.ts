@@ -9,6 +9,9 @@ const DEFAULT_MAX_RETRY_ATTEMPTS = 2;
 const DEFAULT_RETRY_BASE_DELAY_MS = 250;
 const DEFAULT_CIRCUIT_BREAKER_FAILURE_THRESHOLD = 5;
 const DEFAULT_CIRCUIT_BREAKER_OPEN_DURATION_MS = 30_000;
+const DEFAULT_WORKER_POLL_INTERVAL_MS = 15_000;
+const DEFAULT_SUBMISSION_MAX_ATTEMPTS = 8;
+const DEFAULT_SUBMISSION_RETRY_BASE_DELAY_MS = 60_000;
 
 function readOptionalValue(configService: ConfigService, key: string): string | undefined {
   const rawValue = configService.get<string>(key)?.trim();
@@ -47,6 +50,14 @@ function readPositiveInteger(configService: ConfigService, key: string, fallback
     throw new Error(`BPJS PCare configuration error: ${key} must be a positive integer`);
   }
   return parsed;
+}
+
+function readBooleanFlag(configService: ConfigService, key: string, fallback: boolean): boolean {
+  const rawValue = readOptionalValue(configService, key);
+  if (rawValue === undefined) {
+    return fallback;
+  }
+  return rawValue.toLowerCase() !== 'false';
 }
 
 /**
@@ -96,6 +107,22 @@ export function resolveBpjsPcareAdapterConfig(
       configService,
       'BPJS_PCARE_CIRCUIT_BREAKER_OPEN_DURATION_MS',
       DEFAULT_CIRCUIT_BREAKER_OPEN_DURATION_MS,
+    ),
+    workerEnabled: readBooleanFlag(configService, 'BPJS_WORKER_ENABLED', true),
+    workerPollIntervalMs: readPositiveInteger(
+      configService,
+      'BPJS_WORKER_POLL_INTERVAL_MS',
+      DEFAULT_WORKER_POLL_INTERVAL_MS,
+    ),
+    submissionMaxAttempts: readPositiveInteger(
+      configService,
+      'BPJS_SUBMISSION_MAX_ATTEMPTS',
+      DEFAULT_SUBMISSION_MAX_ATTEMPTS,
+    ),
+    submissionRetryBaseDelayMs: readPositiveInteger(
+      configService,
+      'BPJS_SUBMISSION_RETRY_BASE_DELAY_MS',
+      DEFAULT_SUBMISSION_RETRY_BASE_DELAY_MS,
     ),
   };
 }

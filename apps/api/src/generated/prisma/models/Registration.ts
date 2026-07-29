@@ -284,6 +284,7 @@ export type RegistrationWhereInput = {
   appointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
+  bpjsSubmissions?: Prisma.BpjsSubmissionListRelationFilter
 }
 
 export type RegistrationOrderByWithRelationInput = {
@@ -304,6 +305,7 @@ export type RegistrationOrderByWithRelationInput = {
   appointment?: Prisma.AppointmentOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   encounter?: Prisma.EncounterOrderByWithRelationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionOrderByRelationAggregateInput
 }
 
 export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
@@ -328,6 +330,7 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   appointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
+  bpjsSubmissions?: Prisma.BpjsSubmissionListRelationFilter
 }, "id" | "appointmentId" | "queueDate_queueNumber">
 
 export type RegistrationOrderByWithAggregationInput = {
@@ -385,6 +388,7 @@ export type RegistrationCreateInput = {
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateInput = {
@@ -402,6 +406,7 @@ export type RegistrationUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUpdateInput = {
@@ -419,6 +424,7 @@ export type RegistrationUpdateInput = {
   appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateInput = {
@@ -436,6 +442,7 @@ export type RegistrationUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateManyInput = {
@@ -698,6 +705,20 @@ export type RegistrationUpdateOneRequiredWithoutEncounterNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutEncounterInput, Prisma.RegistrationUpdateWithoutEncounterInput>, Prisma.RegistrationUncheckedUpdateWithoutEncounterInput>
 }
 
+export type RegistrationCreateNestedOneWithoutBpjsSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutBpjsSubmissionsInput, Prisma.RegistrationUncheckedCreateWithoutBpjsSubmissionsInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutBpjsSubmissionsInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+}
+
+export type RegistrationUpdateOneRequiredWithoutBpjsSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutBpjsSubmissionsInput, Prisma.RegistrationUncheckedCreateWithoutBpjsSubmissionsInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutBpjsSubmissionsInput
+  upsert?: Prisma.RegistrationUpsertWithoutBpjsSubmissionsInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutBpjsSubmissionsInput, Prisma.RegistrationUpdateWithoutBpjsSubmissionsInput>, Prisma.RegistrationUncheckedUpdateWithoutBpjsSubmissionsInput>
+}
+
 export type RegistrationCreateWithoutCreatedByInput = {
   id?: string
   status?: $Enums.RegistrationStatus
@@ -712,6 +733,7 @@ export type RegistrationCreateWithoutCreatedByInput = {
   patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutCreatedByInput = {
@@ -728,6 +750,7 @@ export type RegistrationUncheckedCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutCreatedByInput = {
@@ -789,6 +812,7 @@ export type RegistrationCreateWithoutPatientInput = {
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutPatientInput = {
@@ -805,6 +829,7 @@ export type RegistrationUncheckedCreateWithoutPatientInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutPatientInput = {
@@ -847,6 +872,7 @@ export type RegistrationCreateWithoutAppointmentInput = {
   patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutAppointmentInput = {
@@ -863,6 +889,7 @@ export type RegistrationUncheckedCreateWithoutAppointmentInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutAppointmentInput = {
@@ -895,6 +922,7 @@ export type RegistrationUpdateWithoutAppointmentInput = {
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutAppointmentInput = {
@@ -911,6 +939,7 @@ export type RegistrationUncheckedUpdateWithoutAppointmentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateWithoutEncounterInput = {
@@ -927,6 +956,7 @@ export type RegistrationCreateWithoutEncounterInput = {
   patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutEncounterInput = {
@@ -943,6 +973,7 @@ export type RegistrationUncheckedCreateWithoutEncounterInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutEncounterInput = {
@@ -975,6 +1006,7 @@ export type RegistrationUpdateWithoutEncounterInput = {
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutEncounterInput = {
@@ -991,6 +1023,91 @@ export type RegistrationUncheckedUpdateWithoutEncounterInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+}
+
+export type RegistrationCreateWithoutBpjsSubmissionsInput = {
+  id?: string
+  status?: $Enums.RegistrationStatus
+  queueNumber?: number | null
+  queueDate?: Date | string | null
+  registeredAt?: Date | string
+  checkedInAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
+  appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
+}
+
+export type RegistrationUncheckedCreateWithoutBpjsSubmissionsInput = {
+  id?: string
+  patientId: string
+  appointmentId?: string | null
+  status?: $Enums.RegistrationStatus
+  queueNumber?: number | null
+  queueDate?: Date | string | null
+  registeredAt?: Date | string
+  checkedInAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
+}
+
+export type RegistrationCreateOrConnectWithoutBpjsSubmissionsInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutBpjsSubmissionsInput, Prisma.RegistrationUncheckedCreateWithoutBpjsSubmissionsInput>
+}
+
+export type RegistrationUpsertWithoutBpjsSubmissionsInput = {
+  update: Prisma.XOR<Prisma.RegistrationUpdateWithoutBpjsSubmissionsInput, Prisma.RegistrationUncheckedUpdateWithoutBpjsSubmissionsInput>
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutBpjsSubmissionsInput, Prisma.RegistrationUncheckedCreateWithoutBpjsSubmissionsInput>
+  where?: Prisma.RegistrationWhereInput
+}
+
+export type RegistrationUpdateToOneWithWhereWithoutBpjsSubmissionsInput = {
+  where?: Prisma.RegistrationWhereInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateWithoutBpjsSubmissionsInput, Prisma.RegistrationUncheckedUpdateWithoutBpjsSubmissionsInput>
+}
+
+export type RegistrationUpdateWithoutBpjsSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
+  appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateWithoutBpjsSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateManyCreatedByInput = {
@@ -1022,6 +1139,7 @@ export type RegistrationUpdateWithoutCreatedByInput = {
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutCreatedByInput = {
@@ -1038,6 +1156,7 @@ export type RegistrationUncheckedUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1084,6 +1203,7 @@ export type RegistrationUpdateWithoutPatientInput = {
   appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutPatientInput = {
@@ -1100,6 +1220,7 @@ export type RegistrationUncheckedUpdateWithoutPatientInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateManyWithoutPatientInput = {
@@ -1117,6 +1238,35 @@ export type RegistrationUncheckedUpdateManyWithoutPatientInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
+
+/**
+ * Count Type RegistrationCountOutputType
+ */
+
+export type RegistrationCountOutputType = {
+  bpjsSubmissions: number
+}
+
+export type RegistrationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  bpjsSubmissions?: boolean | RegistrationCountOutputTypeCountBpjsSubmissionsArgs
+}
+
+/**
+ * RegistrationCountOutputType without action
+ */
+export type RegistrationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RegistrationCountOutputType
+   */
+  select?: Prisma.RegistrationCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * RegistrationCountOutputType without action
+ */
+export type RegistrationCountOutputTypeCountBpjsSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BpjsSubmissionWhereInput
+}
 
 
 export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1137,6 +1287,8 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
   encounter?: boolean | Prisma.Registration$encounterArgs<ExtArgs>
+  bpjsSubmissions?: boolean | Prisma.Registration$bpjsSubmissionsArgs<ExtArgs>
+  _count?: boolean | Prisma.RegistrationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["registration"]>
 
 export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1199,6 +1351,8 @@ export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
   encounter?: boolean | Prisma.Registration$encounterArgs<ExtArgs>
+  bpjsSubmissions?: boolean | Prisma.Registration$bpjsSubmissionsArgs<ExtArgs>
+  _count?: boolean | Prisma.RegistrationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RegistrationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
@@ -1218,6 +1372,7 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     appointment: Prisma.$AppointmentPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     encounter: Prisma.$EncounterPayload<ExtArgs> | null
+    bpjsSubmissions: Prisma.$BpjsSubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1642,6 +1797,7 @@ export interface Prisma__RegistrationClient<T, Null = never, ExtArgs extends run
   appointment<T extends Prisma.Registration$appointmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$appointmentArgs<ExtArgs>>): Prisma.Prisma__AppointmentClient<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.Registration$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   encounter<T extends Prisma.Registration$encounterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$encounterArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  bpjsSubmissions<T extends Prisma.Registration$bpjsSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$bpjsSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BpjsSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2139,6 +2295,30 @@ export type Registration$encounterArgs<ExtArgs extends runtime.Types.Extensions.
    */
   include?: Prisma.EncounterInclude<ExtArgs> | null
   where?: Prisma.EncounterWhereInput
+}
+
+/**
+ * Registration.bpjsSubmissions
+ */
+export type Registration$bpjsSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BpjsSubmission
+   */
+  select?: Prisma.BpjsSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BpjsSubmission
+   */
+  omit?: Prisma.BpjsSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BpjsSubmissionInclude<ExtArgs> | null
+  where?: Prisma.BpjsSubmissionWhereInput
+  orderBy?: Prisma.BpjsSubmissionOrderByWithRelationInput | Prisma.BpjsSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.BpjsSubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BpjsSubmissionScalarFieldEnum | Prisma.BpjsSubmissionScalarFieldEnum[]
 }
 
 /**

@@ -50,6 +50,10 @@ export type BpjsPcareAdapterConfig = {
   readonly retryBaseDelayMs: number;
   readonly circuitBreakerFailureThreshold: number;
   readonly circuitBreakerOpenDurationMs: number;
+  readonly workerEnabled: boolean;
+  readonly workerPollIntervalMs: number;
+  readonly submissionMaxAttempts: number;
+  readonly submissionRetryBaseDelayMs: number;
 };
 
 export type BpjsPcareHttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';

@@ -398,3 +398,19 @@ export type BpjsReferenceItem = Prisma.BpjsReferenceItemModel
  * card number: the BPJS number stays sealed on the patient profile.
  */
 export type BpjsEligibilityCheck = Prisma.BpjsEligibilityCheckModel
+/**
+ * Model BpjsSubmission
+ * BPJS PCare submission outbox (P11-T05), mirroring SatusehatSubmission:
+ * rows are enqueued transactionally with the visit event they report
+ * (PENDAFTARAN on check-in, KUNJUNGAN on encounter close,
+ * PENDAFTARAN_DELETE when an already-submitted registration is cancelled)
+ * and drained by a polling worker. All three types key on the registration
+ * — the kunjungan reaches its encounter through the registration's 1:1
+ * relation — so unique (registrationId, type) is the idempotency guarantee.
+ * No payload snapshot is stored: builders re-read the clinical record at
+ * send time. `bpjsReferenceNo` holds PCare's returned noUrut/noKunjungan;
+ * `submittedKdPoli` pins the poli code the pendaftaran actually went out
+ * with, because the DELETE path must name that code even if the admin
+ * remaps the specialty in between.
+ */
+export type BpjsSubmission = Prisma.BpjsSubmissionModel

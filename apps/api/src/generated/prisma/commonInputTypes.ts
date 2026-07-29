@@ -911,6 +911,40 @@ export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
 }
 
+export type EnumBpjsSubmissionTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsSubmissionType | Prisma.EnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsSubmissionType[] | Prisma.ListEnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsSubmissionType[] | Prisma.ListEnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsSubmissionTypeFilter<$PrismaModel> | $Enums.BpjsSubmissionType
+}
+
+export type EnumBpjsSubmissionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsSubmissionStatus | Prisma.EnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsSubmissionStatus[] | Prisma.ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsSubmissionStatus[] | Prisma.ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel> | $Enums.BpjsSubmissionStatus
+}
+
+export type EnumBpjsSubmissionTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsSubmissionType | Prisma.EnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsSubmissionType[] | Prisma.ListEnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsSubmissionType[] | Prisma.ListEnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsSubmissionTypeWithAggregatesFilter<$PrismaModel> | $Enums.BpjsSubmissionType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsSubmissionTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsSubmissionTypeFilter<$PrismaModel>
+}
+
+export type EnumBpjsSubmissionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsSubmissionStatus | Prisma.EnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsSubmissionStatus[] | Prisma.ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsSubmissionStatus[] | Prisma.ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsSubmissionStatusWithAggregatesFilter<$PrismaModel> | $Enums.BpjsSubmissionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1788,6 +1822,40 @@ export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedBoolNullableFilter<$PrismaModel>
   _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumBpjsSubmissionTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsSubmissionType | Prisma.EnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsSubmissionType[] | Prisma.ListEnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsSubmissionType[] | Prisma.ListEnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsSubmissionTypeFilter<$PrismaModel> | $Enums.BpjsSubmissionType
+}
+
+export type NestedEnumBpjsSubmissionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsSubmissionStatus | Prisma.EnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsSubmissionStatus[] | Prisma.ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsSubmissionStatus[] | Prisma.ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel> | $Enums.BpjsSubmissionStatus
+}
+
+export type NestedEnumBpjsSubmissionTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsSubmissionType | Prisma.EnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsSubmissionType[] | Prisma.ListEnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsSubmissionType[] | Prisma.ListEnumBpjsSubmissionTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsSubmissionTypeWithAggregatesFilter<$PrismaModel> | $Enums.BpjsSubmissionType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsSubmissionTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsSubmissionTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumBpjsSubmissionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsSubmissionStatus | Prisma.EnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsSubmissionStatus[] | Prisma.ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsSubmissionStatus[] | Prisma.ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsSubmissionStatusWithAggregatesFilter<$PrismaModel> | $Enums.BpjsSubmissionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
 }
 
 
