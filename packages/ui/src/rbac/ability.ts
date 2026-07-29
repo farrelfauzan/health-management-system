@@ -9,7 +9,12 @@ export type AppAction =
   | 'unassign'
   | 'write'
   | 'cancel'
-  | 'approve';
+  | 'approve'
+  | 'manage'
+  | 'sync'
+  | 'check'
+  | 'retry'
+  | 'link';
 export type AppSubject =
   | 'User'
   | 'Role'
@@ -26,6 +31,13 @@ export type AppSubject =
   | 'DispenseRecord'
   | 'ChatSession'
   | 'ChatMessage'
+  | 'BpjsConfig'
+  | 'BpjsReference'
+  | 'BpjsMapping'
+  | 'BpjsEligibility'
+  | 'BpjsSubmission'
+  | 'Satusehat'
+  | 'SatusehatSubmission'
   | 'all';
 export type AppAbility = MongoAbility<[AppAction, AppSubject]>;
 export type AppRule = RawRuleOf<AppAbility>;

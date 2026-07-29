@@ -8,6 +8,7 @@ export type AdminRouteKey =
   | 'registrations'
   | 'pharmacy'
   | 'ai-assistant'
+  | 'integrations'
   | 'administration';
 
 export type AdminRouteMetadata = {
@@ -51,6 +52,11 @@ export const ADMIN_ROUTE_METADATA: Record<AdminRouteKey, AdminRouteMetadata> = {
     breadcrumbs: ['Advanced', 'AI Assistant'],
     title: 'AI Clinical Assistant',
     subtitle: 'Ask clinical questions grounded in Saling Jaga patient context.',
+  },
+  integrations: {
+    breadcrumbs: ['Advanced', 'Integrations'],
+    title: 'Integrations',
+    subtitle: 'Configure BPJS PCare and monitor external health-data submissions.',
   },
   administration: {
     breadcrumbs: ['Advanced', 'Administration'],

@@ -11,7 +11,7 @@ import { TableSkeleton } from '#components/shared/table-skeleton';
 import type { RegistrationTransitionTarget } from '#lib/registrations/registration-transition-meta';
 import type { RegistrationsViewVariant } from '#lib/registrations/registrations-view-variant';
 
-const TABLE_COLUMN_COUNT = 7;
+const TABLE_COLUMN_COUNT = 8;
 
 type RegistrationsTableProps = {
   registrations: RegistrationListItem[];
@@ -54,6 +54,7 @@ export function RegistrationsTable({
           <DataTableHeaderCell>Linked Appointment</DataTableHeaderCell>
           <DataTableHeaderCell>Doctor</DataTableHeaderCell>
           <DataTableHeaderCell>Status</DataTableHeaderCell>
+          <DataTableHeaderCell>BPJS</DataTableHeaderCell>
           <DataTableHeaderCell className="text-right">Actions</DataTableHeaderCell>
         </TableRow>
       </TableHeader>

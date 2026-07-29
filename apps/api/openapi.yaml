@@ -7105,6 +7105,275 @@ paths:
         - bearer: []
       summary: Retract a procedure
       tags: *a10
+  /api/v1/encounters/{encounterId}/bpjs-referral:
+    put:
+      operationId: EncounterClinicalDataController_saveBpjsReferral_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertBpjsReferralDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  destinationProviderCode: 1101R001
+                  subSpecialtyCode: "0101"
+                  saranaCode: "1"
+                  estimatedReferralDate: 2026-08-10
+                  notes: Kontrol kardiologi untuk evaluasi lanjutan
+      responses:
+        "200":
+          description: The recorded referral. One per encounter — PCare carries the
+            rujukan on the kunjungan payload at close, so the last decision
+            recorded before close is what gets reported. Provide
+            subSpecialtyCode (subspesialis referral) or khususCode
+            (khusus/TACC).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      encounterId:
+                        type: string
+                      destinationProviderCode:
+                        type: string
+                      subSpecialtyCode:
+                        type: string
+                      saranaCode:
+                        type: string
+                      estimatedReferralDate:
+                        type: string
+                      notes:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - encounterId
+                      - destinationProviderCode
+                      - subSpecialtyCode
+                      - saranaCode
+                      - estimatedReferralDate
+                      - notes
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e
+                    encounterId: 4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                    destinationProviderCode: 1101R001
+                    subSpecialtyCode: "0101"
+                    saranaCode: "1"
+                    estimatedReferralDate: 2026-08-10
+                    notes: Kontrol kardiologi untuk evaluasi lanjutan
+                    createdAt: 2026-08-06T03:00:00.000Z
+                    updatedAt: 2026-08-06T03:00:00.000Z
+                  message: BPJS referral recorded
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Record or replace the encounter’s BPJS rujukan
+      tags: *a10
+    get:
+      operationId: EncounterClinicalDataController_getBpjsReferral_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The referral recorded on this encounter, if any.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      encounterId:
+                        type: string
+                      destinationProviderCode:
+                        type: string
+                      subSpecialtyCode:
+                        type: string
+                      saranaCode:
+                        type: string
+                      estimatedReferralDate:
+                        type: string
+                      notes:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - encounterId
+                      - destinationProviderCode
+                      - subSpecialtyCode
+                      - saranaCode
+                      - estimatedReferralDate
+                      - notes
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e
+                    encounterId: 4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+                    destinationProviderCode: 1101R001
+                    subSpecialtyCode: "0101"
+                    saranaCode: "1"
+                    estimatedReferralDate: 2026-08-10
+                    notes: Kontrol kardiologi untuk evaluasi lanjutan
+                    createdAt: 2026-08-06T03:00:00.000Z
+                    updatedAt: 2026-08-06T03:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found, or no referral recorded.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found, or no referral recorded.
+      security:
+        - bearer: []
+      summary: Read the encounter’s recorded BPJS rujukan
+      tags: *a10
+    delete:
+      operationId: EncounterClinicalDataController_removeBpjsReferral_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The referral is soft-deleted and stays auditable; the kunjungan
+            will report a normal outpatient discharge.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: BPJS referral retracted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found, or no referral recorded.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found, or no referral recorded.
+      security:
+        - bearer: []
+      summary: Retract the encounter’s BPJS rujukan
+      tags: *a10
   /api/v1/medications:
     get:
       operationId: MedicationController_listMedications_v1
@@ -9948,6 +10217,1641 @@ paths:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
       tags: *a16
+  /api/v1/bpjs/config:
+    get:
+      operationId: BpjsPcareConfigController_getConfig_v1
+      parameters: []
+      responses:
+        "200":
+          description: "The stored configuration with masked credentials. Secrets are
+            write-only: only presence flags and last-4 display values are ever
+            returned."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      environment:
+                        type: string
+                      consId:
+                        type: string
+                      kdProviderPpk:
+                        type: string
+                      pcareUsername:
+                        type: string
+                      hasSecretKey:
+                        type: boolean
+                      secretKeyLast4:
+                        type: string
+                      hasUserKey:
+                        type: boolean
+                      userKeyLast4:
+                        type: string
+                      hasPcarePassword:
+                        type: boolean
+                      isActive:
+                        type: boolean
+                      lastTestedAt:
+                        type: string
+                      lastTestResult:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - environment
+                      - consId
+                      - kdProviderPpk
+                      - pcareUsername
+                      - hasSecretKey
+                      - secretKeyLast4
+                      - hasUserKey
+                      - userKeyLast4
+                      - hasPcarePassword
+                      - isActive
+                      - lastTestedAt
+                      - lastTestResult
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 3f2a1b0c-9d8e-4f7a-b6c5-d4e3f2a1b0c9
+                    environment: DEVELOPMENT
+                    consId: "20250001"
+                    kdProviderPpk: "01000101"
+                    pcareUsername: klinik-demo
+                    hasSecretKey: true
+                    secretKeyLast4: tKey
+                    hasUserKey: true
+                    userKeyLast4: 8f90
+                    hasPcarePassword: true
+                    isActive: true
+                    lastTestedAt: 2026-08-02T03:15:00.000Z
+                    lastTestResult: "OK: Signature accepted and response decrypted (poli reference
+                      read)"
+                    createdAt: 2026-08-01T09:00:00.000Z
+                    updatedAt: 2026-08-02T03:15:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: BPJS PCare is not configured.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: BPJS PCare is not configured.
+      security:
+        - bearer: []
+      summary: Read the BPJS PCare bridging configuration
+      tags: &a17
+        - BPJS PCare
+    put:
+      operationId: BpjsPcareConfigController_upsertConfig_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertBpjsPcareConfigDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  environment: DEVELOPMENT
+                  consId: "20250001"
+                  kdProviderPpk: "01000101"
+                  pcareUsername: klinik-demo
+                  secretKey: sample-secret-key
+                  userKey: sample-user-key
+                  pcarePassword: sample-password
+                  isActive: true
+      responses:
+        "200":
+          description: The saved configuration with masked credentials. On first save all
+            three secrets are required; afterwards an omitted secret keeps its
+            stored value. The stored PCare login is the clinic’s real web-app
+            login — HMS will use it to create and delete claims on the clinic’s
+            behalf.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      environment:
+                        type: string
+                      consId:
+                        type: string
+                      kdProviderPpk:
+                        type: string
+                      pcareUsername:
+                        type: string
+                      hasSecretKey:
+                        type: boolean
+                      secretKeyLast4:
+                        type: string
+                      hasUserKey:
+                        type: boolean
+                      userKeyLast4:
+                        type: string
+                      hasPcarePassword:
+                        type: boolean
+                      isActive:
+                        type: boolean
+                      lastTestedAt:
+                        type: string
+                      lastTestResult:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - environment
+                      - consId
+                      - kdProviderPpk
+                      - pcareUsername
+                      - hasSecretKey
+                      - secretKeyLast4
+                      - hasUserKey
+                      - userKeyLast4
+                      - hasPcarePassword
+                      - isActive
+                      - lastTestedAt
+                      - lastTestResult
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 3f2a1b0c-9d8e-4f7a-b6c5-d4e3f2a1b0c9
+                    environment: DEVELOPMENT
+                    consId: "20250001"
+                    kdProviderPpk: "01000101"
+                    pcareUsername: klinik-demo
+                    hasSecretKey: true
+                    secretKeyLast4: tKey
+                    hasUserKey: true
+                    userKeyLast4: 8f90
+                    hasPcarePassword: true
+                    isActive: true
+                    lastTestedAt: 2026-08-02T03:15:00.000Z
+                    lastTestResult: "OK: Signature accepted and response decrypted (poli reference
+                      read)"
+                    createdAt: 2026-08-01T09:00:00.000Z
+                    updatedAt: 2026-08-02T03:15:00.000Z
+                  message: BPJS PCare configuration saved
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create or replace the BPJS PCare bridging configuration
+      tags: *a17
+    delete:
+      operationId: BpjsPcareConfigController_deleteConfig_v1
+      parameters: []
+      responses:
+        "200":
+          description: The stored credentials were removed. Bridging stops until a new
+            configuration is saved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 3f2a1b0c-9d8e-4f7a-b6c5-d4e3f2a1b0c9
+                  message: BPJS PCare configuration deleted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: BPJS PCare is not configured.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: BPJS PCare is not configured.
+      security:
+        - bearer: []
+      summary: Delete the BPJS PCare bridging configuration
+      tags: *a17
+  /api/v1/bpjs/config/test-connection:
+    post:
+      operationId: BpjsPcareConfigController_testConnection_v1
+      parameters: []
+      responses:
+        "200":
+          description: Calls the harmless poli reference read and reports signature
+            validity, credential acceptance, and response decryption. A failed
+            test is a 200 with isSuccessful=false and the readable reason — the
+            outcome is also persisted on the configuration.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isSuccessful:
+                        type: boolean
+                      message:
+                        type: string
+                      testedAt:
+                        type: string
+                    required:
+                      - isSuccessful
+                      - message
+                      - testedAt
+                required:
+                  - data
+                example:
+                  data:
+                    isSuccessful: true
+                    message: Signature accepted and response decrypted (poli reference read)
+                    testedAt: 2026-08-02T03:15:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: BPJS PCare is not configured.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: BPJS PCare is not configured.
+      security:
+        - bearer: []
+      summary: Test the stored BPJS PCare credentials
+      tags: *a17
+  /api/v1/bpjs/reference/sync:
+    post:
+      operationId: BpjsReferenceController_syncCatalogs_v1
+      parameters: []
+      responses:
+        "200":
+          description: Replaces the POLI, DOKTER, KESADARAN, TINDAKAN, SPESIALIS and
+            SARANA catalogs wholesale from PCare and reports the item count per
+            catalog. DIAGNOSA and DPHO are keyword lookups upstream and are
+            populated by the per-catalog search endpoint instead.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      syncedAt:
+                        type: string
+                      catalogs:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            catalog:
+                              type: string
+                            itemCount:
+                              type: integer
+                          required:
+                            - catalog
+                            - itemCount
+                    required:
+                      - syncedAt
+                      - catalogs
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    syncedAt: 2026-08-03T02:00:00.000Z
+                    catalogs:
+                      - catalog: POLI
+                        itemCount: 12
+                      - catalog: DOKTER
+                        itemCount: 4
+                      - catalog: KESADARAN
+                        itemCount: 5
+                      - catalog: TINDAKAN
+                        itemCount: 87
+                      - catalog: SPESIALIS
+                        itemCount: 30
+                      - catalog: SARANA
+                        itemCount: 8
+                  message: BPJS reference catalogs synced
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: BPJS PCare is not configured.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: BPJS PCare is not configured.
+      security:
+        - bearer: []
+      summary: Sync the enumerable BPJS PCare reference catalogs
+      tags: &a18
+        - BPJS PCare
+  /api/v1/bpjs/reference/status:
+    get:
+      operationId: BpjsReferenceController_getStatus_v1
+      parameters: []
+      responses:
+        "200":
+          description: Item count and last sync time for each of the eight catalogs.
+            isSyncable is false for the keyword-cached DIAGNOSA and DPHO
+            catalogs, which the bulk sync does not cover.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        catalog:
+                          type: string
+                        itemCount:
+                          type: integer
+                        lastSyncedAt:
+                          type: string
+                        isSyncable:
+                          type: boolean
+                      required:
+                        - catalog
+                        - itemCount
+                        - lastSyncedAt
+                        - isSyncable
+                required:
+                  - data
+                example:
+                  data:
+                    - catalog: POLI
+                      itemCount: 12
+                      lastSyncedAt: 2026-08-03T02:00:00.000Z
+                      isSyncable: true
+                    - catalog: DPHO
+                      itemCount: 41
+                      lastSyncedAt: 2026-08-03T02:10:00.000Z
+                      isSyncable: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read per-catalog BPJS reference sync status
+      tags: *a18
+  /api/v1/bpjs/reference/{catalog}:
+    get:
+      operationId: BpjsReferenceController_searchCatalog_v1
+      parameters:
+        - name: catalog
+          required: true
+          in: path
+          schema:
+            type: string
+            enum:
+              - poli
+              - dokter
+              - kesadaran
+              - tindakan
+              - diagnosa
+              - dpho
+              - spesialis
+              - sarana
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 120
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: Entries from the local synced catalog matching the search term
+            (code prefix or display substring). Never makes a live BPJS call —
+            an empty result on DIAGNOSA/DPHO means the term has not been
+            search-cached yet.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        catalog:
+                          type: string
+                        code:
+                          type: string
+                        display:
+                          type: string
+                        syncedAt:
+                          type: string
+                      required:
+                        - catalog
+                        - code
+                        - display
+                        - syncedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - catalog: POLI
+                      code: "001"
+                      display: POLI UMUM
+                      syncedAt: 2026-08-03T02:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Search a synced BPJS reference catalog locally
+      tags: *a18
+  /api/v1/bpjs/reference/{catalog}/search:
+    post:
+      operationId: BpjsReferenceController_searchCatalogRemote_v1
+      parameters:
+        - name: catalog
+          required: true
+          in: path
+          schema:
+            type: string
+            enum:
+              - poli
+              - dokter
+              - kesadaran
+              - tindakan
+              - diagnosa
+              - dpho
+              - spesialis
+              - sarana
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchBpjsReferenceRemoteDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  query: paracetamol
+      responses:
+        "200":
+          description: Runs the keyword lookup against PCare for the non-enumerable
+            catalogs (DIAGNOSA, DPHO), upserts the results into the local
+            catalog, and returns them. Rejected for catalogs the bulk sync
+            covers.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        catalog:
+                          type: string
+                        code:
+                          type: string
+                        display:
+                          type: string
+                        syncedAt:
+                          type: string
+                      required:
+                        - catalog
+                        - code
+                        - display
+                        - syncedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - catalog: DPHO
+                      code: K0001
+                      display: PARACETAMOL TAB 500 MG
+                      syncedAt: 2026-08-03T02:10:00.000Z
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: BPJS PCare is not configured.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: BPJS PCare is not configured.
+      security:
+        - bearer: []
+      summary: Search a keyword-only BPJS catalog live and cache the results
+      tags: *a18
+  /api/v1/bpjs/mappings:
+    get:
+      operationId: BpjsMappingController_getOverview_v1
+      parameters: []
+      responses:
+        "200":
+          description: Every active doctor and specialty with its current BPJS code (null
+            when unmapped). Medication DPHO links are read off the medication
+            list instead — the catalog is pageable there.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      doctors:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            doctorId:
+                              type: string
+                            fullName:
+                              type: string
+                            specialtyName:
+                              type: string
+                            bpjsDoctorCode:
+                              type: string
+                          required:
+                            - doctorId
+                            - fullName
+                            - specialtyName
+                            - bpjsDoctorCode
+                      specialties:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            specialtyId:
+                              type: string
+                            name:
+                              type: string
+                            bpjsPoliCode:
+                              type: string
+                          required:
+                            - specialtyId
+                            - name
+                            - bpjsPoliCode
+                    required:
+                      - doctors
+                      - specialties
+                required:
+                  - data
+                example:
+                  data:
+                    doctors:
+                      - doctorId: 7c1d2e3f-4a5b-6c7d-8e9f-0a1b2c3d4e5f
+                        fullName: dr. Sinta Dewi
+                        specialtyName: Dokter Umum
+                        bpjsDoctorCode: "1234"
+                    specialties:
+                      - specialtyId: 9e8d7c6b-5a4f-3e2d-1c0b-a9f8e7d6c5b4
+                        name: Dokter Umum
+                        bpjsPoliCode: "001"
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the BPJS mapping overview
+      tags: &a19
+        - BPJS PCare
+  /api/v1/bpjs/mappings/doctors/{doctorId}:
+    put:
+      operationId: BpjsMappingController_setDoctorMapping_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBpjsDoctorMappingDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  bpjsDoctorCode: "1234"
+      responses:
+        "200":
+          description: The doctor with its updated BPJS code. A non-null code must exist
+            in the synced DOKTER catalog; null clears the mapping.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      doctorId:
+                        type: string
+                      fullName:
+                        type: string
+                      specialtyName:
+                        type: string
+                      bpjsDoctorCode:
+                        type: string
+                    required:
+                      - doctorId
+                      - fullName
+                      - specialtyName
+                      - bpjsDoctorCode
+                required:
+                  - data
+                example:
+                  data:
+                    doctorId: 7c1d2e3f-4a5b-6c7d-8e9f-0a1b2c3d4e5f
+                    fullName: dr. Sinta Dewi
+                    specialtyName: Dokter Umum
+                    bpjsDoctorCode: "1234"
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found.
+      security:
+        - bearer: []
+      summary: Set or clear a doctor’s BPJS kdDokter mapping
+      tags: *a19
+  /api/v1/bpjs/mappings/specialties/{specialtyId}:
+    put:
+      operationId: BpjsMappingController_setSpecialtyMapping_v1
+      parameters:
+        - name: specialtyId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBpjsPoliMappingDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  bpjsPoliCode: "001"
+      responses:
+        "200":
+          description: The specialty with its updated BPJS poli code. A non-null code must
+            exist in the synced POLI catalog; null clears the mapping.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      specialtyId:
+                        type: string
+                      name:
+                        type: string
+                      bpjsPoliCode:
+                        type: string
+                    required:
+                      - specialtyId
+                      - name
+                      - bpjsPoliCode
+                required:
+                  - data
+                example:
+                  data:
+                    specialtyId: 9e8d7c6b-5a4f-3e2d-1c0b-a9f8e7d6c5b4
+                    name: Dokter Umum
+                    bpjsPoliCode: "001"
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Specialty not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Specialty not found.
+      security:
+        - bearer: []
+      summary: Set or clear a specialty’s BPJS kdPoli mapping
+      tags: *a19
+  /api/v1/bpjs/mappings/medications/{medicationId}:
+    put:
+      operationId: BpjsMappingController_setMedicationMapping_v1
+      parameters:
+        - name: medicationId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBpjsDphoMappingDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  dphoCode: K0001
+      responses:
+        "200":
+          description: The medication with its updated DPHO code. A non-null code must
+            exist in the search-cached DPHO catalog and may be linked to at most
+            one medication; null unlinks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      medicationId:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      dphoCode:
+                        type: string
+                    required:
+                      - medicationId
+                      - code
+                      - name
+                      - dphoCode
+                required:
+                  - data
+                example:
+                  data:
+                    medicationId: 5b4a3c2d-1e0f-9a8b-7c6d-5e4f3a2b1c0d
+                    code: MED-0001
+                    name: Paracetamol 500 mg
+                    dphoCode: K0001
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Medication not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Medication not found.
+      security:
+        - bearer: []
+      summary: Link or unlink a medication’s DPHO code
+      tags: *a19
+  /api/v1/bpjs/eligibility/patients/{patientId}/check:
+    post:
+      operationId: BpjsEligibilityController_checkEligibility_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckBpjsEligibilityDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  force: false
+      responses:
+        "200":
+          description: "The membership state for the eligibility card: ACTIVE, INACTIVE
+            (with BPJS’s readable reason), NOT_FOUND, or UNREACHABLE when PCare
+            cannot be contacted — still a 200, because registration must never
+            block on BPJS. Results are cached per patient per clinic-local day;
+            pass force to bypass the cache after correcting patient data. Looks
+            up by the stored BPJS number, falling back to NIK."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      state:
+                        type: string
+                      isFromCache:
+                        type: boolean
+                      checkedAt:
+                        type: string
+                      checkedVia:
+                        type: string
+                      member:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          memberType:
+                            type: string
+                          memberClass:
+                            type: string
+                          providerCode:
+                            type: string
+                          providerName:
+                            type: string
+                          isRegisteredHere:
+                            type: boolean
+                          isProlanis:
+                            type: boolean
+                          isPrb:
+                            type: boolean
+                          statusReason:
+                            type: string
+                        required:
+                          - name
+                          - memberType
+                          - memberClass
+                          - providerCode
+                          - providerName
+                          - isRegisteredHere
+                          - isProlanis
+                          - isPrb
+                          - statusReason
+                      message:
+                        type: string
+                    required:
+                      - state
+                      - isFromCache
+                      - checkedAt
+                      - checkedVia
+                      - member
+                      - message
+                required:
+                  - data
+                example:
+                  data:
+                    state: ACTIVE
+                    isFromCache: false
+                    checkedAt: 2026-08-04T01:30:00.000Z
+                    checkedVia: BPJS_NUMBER
+                    member:
+                      name: BUDI SANTOSO
+                      memberType: PEKERJA PENERIMA UPAH
+                      memberClass: KELAS I
+                      providerCode: "01000101"
+                      providerName: KLINIK DEMO
+                      isRegisteredHere: true
+                      isProlanis: false
+                      isPrb: false
+                      statusReason: AKTIF
+                    message: BPJS member is active
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient not found, or BPJS PCare is not configured.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found, or BPJS PCare is not configured.
+      security:
+        - bearer: []
+      summary: Check a patient’s BPJS eligibility (peserta)
+      tags:
+        - BPJS PCare
+  /api/v1/bpjs/submissions:
+    get:
+      operationId: BpjsSubmissionController_listSubmissions_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - SUBMITTED
+              - FAILED
+        - name: type
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDAFTARAN
+              - KUNJUNGAN
+              - PENDAFTARAN_DELETE
+              - OBAT
+        - name: registrationId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Paginated outbox rows, newest first, filterable by status, type,
+            and registration. Scheduling state and the PCare reference number
+            only — no payload snapshot exists, so nothing clinical leaks through
+            the monitor. Filter by registrationId to render bridging status
+            chips on a registration or its encounter.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        registrationId:
+                          type: string
+                        type:
+                          type: string
+                        status:
+                          type: string
+                        attempts:
+                          type: integer
+                        lastError:
+                          nullable: true
+                        nextAttemptAt:
+                          type: string
+                        lastAttemptAt:
+                          type: string
+                        submittedAt:
+                          type: string
+                        bpjsReferenceNo:
+                          type: string
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - registrationId
+                        - type
+                        - status
+                        - attempts
+                        - lastError
+                        - nextAttemptAt
+                        - lastAttemptAt
+                        - submittedAt
+                        - bpjsReferenceNo
+                        - createdAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 8a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3d
+                      registrationId: 1f2e3d4c-5b6a-7980-a1b2-c3d4e5f6a7b8
+                      type: PENDAFTARAN
+                      status: SUBMITTED
+                      attempts: 1
+                      lastError: null
+                      nextAttemptAt: 2026-08-05T02:00:00.000Z
+                      lastAttemptAt: 2026-08-05T02:00:05.000Z
+                      submittedAt: 2026-08-05T02:00:05.000Z
+                      bpjsReferenceNo: A12
+                      createdAt: 2026-08-05T02:00:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List BPJS PCare submission outbox entries
+      tags: &a20
+        - BPJS PCare
+  /api/v1/bpjs/submissions/{id}/retry:
+    post:
+      operationId: BpjsSubmissionController_retrySubmission_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Requeues a FAILED row with a fresh attempt budget and processes it
+            synchronously, returning the settled outcome (SUBMITTED with the
+            PCare reference, PENDING with a scheduled retry, or FAILED again
+            with a fresh readable reason). SUBMITTED and PENDING rows return 409
+            — one is done, the other needs no help.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      registrationId:
+                        type: string
+                      type:
+                        type: string
+                      status:
+                        type: string
+                      attempts:
+                        type: integer
+                      lastError:
+                        nullable: true
+                      nextAttemptAt:
+                        type: string
+                      lastAttemptAt:
+                        type: string
+                      submittedAt:
+                        type: string
+                      bpjsReferenceNo:
+                        type: string
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - registrationId
+                      - type
+                      - status
+                      - attempts
+                      - lastError
+                      - nextAttemptAt
+                      - lastAttemptAt
+                      - submittedAt
+                      - bpjsReferenceNo
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 8a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3d
+                    registrationId: 1f2e3d4c-5b6a-7980-a1b2-c3d4e5f6a7b8
+                    type: KUNJUNGAN
+                    status: SUBMITTED
+                    attempts: 1
+                    lastError: null
+                    nextAttemptAt: 2026-08-05T03:00:00.000Z
+                    lastAttemptAt: 2026-08-05T03:00:04.000Z
+                    submittedAt: 2026-08-05T03:00:04.000Z
+                    bpjsReferenceNo: 0001R0010826K000012
+                    createdAt: 2026-08-05T02:10:00.000Z
+                  message: Submission retry processed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: BPJS submission not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: BPJS submission not found.
+      security:
+        - bearer: []
+      summary: Retry a failed BPJS PCare submission
+      tags: *a20
+  /api/v1/bpjs/reports/monthly:
+    get:
+      operationId: BpjsReportController_getMonthlyReport_v1
+      parameters:
+        - name: month
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+      responses:
+        "200":
+          description: Per-type submission counts for JKN visits in the given calendar
+            month — recorded, submitted, still pending, failed — plus the failed
+            rows (capped at 100, newest first) to chase before the BPJS claim
+            deadline closes.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      month:
+                        type: string
+                      types:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            recorded:
+                              type: integer
+                            submitted:
+                              type: integer
+                            pending:
+                              type: integer
+                            failed:
+                              type: integer
+                          required:
+                            - type
+                            - recorded
+                            - submitted
+                            - pending
+                            - failed
+                      failures:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            submissionId:
+                              type: string
+                            registrationId:
+                              type: string
+                            type:
+                              type: string
+                            attempts:
+                              type: integer
+                            lastError:
+                              type: string
+                            lastAttemptAt:
+                              type: string
+                          required:
+                            - submissionId
+                            - registrationId
+                            - type
+                            - attempts
+                            - lastError
+                            - lastAttemptAt
+                    required:
+                      - month
+                      - types
+                      - failures
+                required:
+                  - data
+                example:
+                  data:
+                    month: 2026-08
+                    types:
+                      - type: PENDAFTARAN
+                        recorded: 42
+                        submitted: 40
+                        pending: 0
+                        failed: 2
+                      - type: KUNJUNGAN
+                        recorded: 41
+                        submitted: 39
+                        pending: 1
+                        failed: 1
+                      - type: PENDAFTARAN_DELETE
+                        recorded: 1
+                        submitted: 1
+                        pending: 0
+                        failed: 0
+                      - type: OBAT
+                        recorded: 35
+                        submitted: 34
+                        pending: 0
+                        failed: 1
+                    failures:
+                      - submissionId: 8a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3d
+                        registrationId: 1f2e3d4c-5b6a-7980-a1b2-c3d4e5f6a7b8
+                        type: PENDAFTARAN
+                        attempts: 1
+                        lastError: Doctor dr. Sinta Dewi's specialty has no BPJS poli mapping — map the
+                          specialty in BPJS mappings first
+                        lastAttemptAt: 2026-08-05T02:30:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Monthly BPJS reconciliation report (tercatat vs terkirim vs gagal)
+      tags:
+        - BPJS PCare
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -10003,7 +11907,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a17
+      tags: &a21
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -10096,7 +12000,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a17
+      tags: *a21
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -10188,7 +12092,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a17
+      tags: *a21
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -11190,6 +13094,35 @@ components:
         performedAt:
           type: string
           format: date-time
+    UpsertBpjsReferralDto:
+      type: object
+      properties:
+        destinationProviderCode:
+          type: string
+          minLength: 1
+          maxLength: 32
+        subSpecialtyCode:
+          type: string
+          minLength: 1
+          maxLength: 32
+        saranaCode:
+          type: string
+          minLength: 1
+          maxLength: 32
+        khususCode:
+          type: string
+          minLength: 1
+          maxLength: 32
+        estimatedReferralDate:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - destinationProviderCode
+        - estimatedReferralDate
     CreateMedicationDto:
       type: object
       properties:
@@ -11519,6 +13452,91 @@ components:
           maxLength: 500
       required:
         - reason
+    UpsertBpjsPcareConfigDto:
+      type: object
+      properties:
+        environment:
+          type: string
+          enum:
+            - DEVELOPMENT
+            - PRODUCTION
+        consId:
+          type: string
+          minLength: 1
+          maxLength: 32
+        kdProviderPpk:
+          type: string
+          minLength: 1
+          maxLength: 32
+        pcareUsername:
+          type: string
+          minLength: 1
+          maxLength: 128
+        secretKey:
+          type: string
+          minLength: 1
+          maxLength: 256
+        userKey:
+          type: string
+          minLength: 1
+          maxLength: 256
+        pcarePassword:
+          type: string
+          minLength: 1
+          maxLength: 256
+        isActive:
+          type: boolean
+          default: true
+      required:
+        - environment
+        - consId
+        - kdProviderPpk
+        - pcareUsername
+    SearchBpjsReferenceRemoteDto:
+      type: object
+      properties:
+        query:
+          type: string
+          minLength: 2
+          maxLength: 120
+      required:
+        - query
+    UpdateBpjsDoctorMappingDto:
+      type: object
+      properties:
+        bpjsDoctorCode:
+          type: string
+          minLength: 1
+          maxLength: 32
+          nullable: true
+      required:
+        - bpjsDoctorCode
+    UpdateBpjsPoliMappingDto:
+      type: object
+      properties:
+        bpjsPoliCode:
+          type: string
+          minLength: 1
+          maxLength: 32
+          nullable: true
+      required:
+        - bpjsPoliCode
+    UpdateBpjsDphoMappingDto:
+      type: object
+      properties:
+        dphoCode:
+          type: string
+          minLength: 1
+          maxLength: 64
+          nullable: true
+      required:
+        - dphoCode
+    CheckBpjsEligibilityDto:
+      type: object
+      properties:
+        force:
+          type: boolean
+          default: false
     AssignRoleDto:
       type: object
       properties:

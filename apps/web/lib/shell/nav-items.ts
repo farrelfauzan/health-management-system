@@ -9,7 +9,7 @@ export type AdminNavItem = {
   href: string;
   label: string;
   icon: string;
-  ability: AdminNavAbility | null;
+  ability: AdminNavAbility | AdminNavAbility[] | null;
 };
 
 export type AdminNavSection = {
@@ -62,6 +62,17 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         label: 'AI Assistant',
         icon: 'psychology',
         ability: { action: 'create', subject: 'ChatSession' },
+      },
+      {
+        href: '/admin/integrations',
+        label: 'Integrations',
+        icon: 'hub',
+        ability: [
+          { action: 'read', subject: 'BpjsSubmission' },
+          { action: 'read', subject: 'SatusehatSubmission' },
+          { action: 'manage', subject: 'BpjsConfig' },
+          { action: 'manage', subject: 'BpjsMapping' },
+        ],
       },
       {
         href: '/admin/administration',

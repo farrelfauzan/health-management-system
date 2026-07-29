@@ -1,9 +1,4 @@
-import {
-  ADMIN_PORTAL_ADMIN_RULES,
-  buildAppAbility,
-  SidebarProvider,
-  type AppRule,
-} from '@hms/ui';
+import { ADMIN_PORTAL_ADMIN_RULES, buildAppAbility, SidebarProvider, type AppRule } from '@hms/ui';
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -59,6 +54,7 @@ describe('AppSidebar', () => {
       'Registration',
       'Pharmacy',
       'AI Assistant',
+      'Integrations',
       'Administration',
     ];
     expectedLabels.forEach((label) => {
@@ -74,8 +70,16 @@ describe('AppSidebar', () => {
     expect(screen.getByRole('link', { name: 'Patients' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'AI Assistant' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Integrations' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Doctors' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Pharmacy' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Administration' })).not.toBeInTheDocument();
+  });
+
+  it('shows Integrations when either provider monitor is granted', () => {
+    renderAppSidebar([{ action: 'read', subject: 'SatusehatSubmission' }]);
+
+    expect(screen.getByRole('link', { name: 'Integrations' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Administration' })).not.toBeInTheDocument();
   });
 });

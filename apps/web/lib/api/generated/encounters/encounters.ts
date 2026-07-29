@@ -25,9 +25,12 @@ import type {
   AddProcedureDto,
   EncounterClinicalDataControllerAddDiagnosisV1201,
   EncounterClinicalDataControllerAddProcedureV1201,
+  EncounterClinicalDataControllerGetBpjsReferralV1200,
   EncounterClinicalDataControllerRecordVitalSignsV1201,
+  EncounterClinicalDataControllerRemoveBpjsReferralV1200,
   EncounterClinicalDataControllerRemoveDiagnosisV1200,
   EncounterClinicalDataControllerRemoveProcedureV1200,
+  EncounterClinicalDataControllerSaveBpjsReferralV1200,
   EncounterControllerCancelEncounterV1200,
   EncounterControllerCloseEncounterV1200,
   EncounterControllerGetEncounterByIdV1200,
@@ -37,7 +40,8 @@ import type {
   EncounterControllerUpdateEncounterSoapV1200,
   OpenEncounterDto,
   RecordVitalSignsDto,
-  UpdateEncounterSoapDto
+  UpdateEncounterSoapDto,
+  UpsertBpjsReferralDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -1114,6 +1118,291 @@ export function useEncounterClinicalDataControllerRemoveProcedureV1<TData = Awai
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getEncounterClinicalDataControllerRemoveProcedureV1QueryOptions(encounterId,procedureId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record or replace the encounter’s BPJS rujukan
+ */
+export const encounterClinicalDataControllerSaveBpjsReferralV1 = (
+    encounterId: string,
+    upsertBpjsReferralDto: UpsertBpjsReferralDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<EncounterClinicalDataControllerSaveBpjsReferralV1200>(
+      {url: `/api/v1/encounters/${encounterId}/bpjs-referral`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: upsertBpjsReferralDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getEncounterClinicalDataControllerSaveBpjsReferralV1QueryKey = (encounterId: string,
+    upsertBpjsReferralDto?: UpsertBpjsReferralDto,) => {
+    return [
+    'PUT', `/api/v1/encounters/${encounterId}/bpjs-referral`, upsertBpjsReferralDto
+    ] as const;
+    }
+
+
+export const getEncounterClinicalDataControllerSaveBpjsReferralV1QueryOptions = <TData = Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError = unknown>(encounterId: string,
+    upsertBpjsReferralDto: UpsertBpjsReferralDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getEncounterClinicalDataControllerSaveBpjsReferralV1QueryKey(encounterId,upsertBpjsReferralDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>> = ({ signal }) => encounterClinicalDataControllerSaveBpjsReferralV1(encounterId,upsertBpjsReferralDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type EncounterClinicalDataControllerSaveBpjsReferralV1QueryResult = NonNullable<Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>>
+export type EncounterClinicalDataControllerSaveBpjsReferralV1QueryError = unknown
+
+
+export function useEncounterClinicalDataControllerSaveBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError = unknown>(
+ encounterId: string,
+    upsertBpjsReferralDto: UpsertBpjsReferralDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerSaveBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError = unknown>(
+ encounterId: string,
+    upsertBpjsReferralDto: UpsertBpjsReferralDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerSaveBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError = unknown>(
+ encounterId: string,
+    upsertBpjsReferralDto: UpsertBpjsReferralDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record or replace the encounter’s BPJS rujukan
+ */
+
+export function useEncounterClinicalDataControllerSaveBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError = unknown>(
+ encounterId: string,
+    upsertBpjsReferralDto: UpsertBpjsReferralDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerSaveBpjsReferralV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getEncounterClinicalDataControllerSaveBpjsReferralV1QueryOptions(encounterId,upsertBpjsReferralDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read the encounter’s recorded BPJS rujukan
+ */
+export const encounterClinicalDataControllerGetBpjsReferralV1 = (
+    encounterId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<EncounterClinicalDataControllerGetBpjsReferralV1200>(
+      {url: `/api/v1/encounters/${encounterId}/bpjs-referral`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getEncounterClinicalDataControllerGetBpjsReferralV1QueryKey = (encounterId: string,) => {
+    return [
+    `/api/v1/encounters/${encounterId}/bpjs-referral`
+    ] as const;
+    }
+
+
+export const getEncounterClinicalDataControllerGetBpjsReferralV1QueryOptions = <TData = Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError = unknown>(encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getEncounterClinicalDataControllerGetBpjsReferralV1QueryKey(encounterId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>> = ({ signal }) => encounterClinicalDataControllerGetBpjsReferralV1(encounterId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type EncounterClinicalDataControllerGetBpjsReferralV1QueryResult = NonNullable<Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>>
+export type EncounterClinicalDataControllerGetBpjsReferralV1QueryError = unknown
+
+
+export function useEncounterClinicalDataControllerGetBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError = unknown>(
+ encounterId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerGetBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerGetBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the encounter’s recorded BPJS rujukan
+ */
+
+export function useEncounterClinicalDataControllerGetBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerGetBpjsReferralV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getEncounterClinicalDataControllerGetBpjsReferralV1QueryOptions(encounterId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Retract the encounter’s BPJS rujukan
+ */
+export const encounterClinicalDataControllerRemoveBpjsReferralV1 = (
+    encounterId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<EncounterClinicalDataControllerRemoveBpjsReferralV1200>(
+      {url: `/api/v1/encounters/${encounterId}/bpjs-referral`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getEncounterClinicalDataControllerRemoveBpjsReferralV1QueryKey = (encounterId: string,) => {
+    return [
+    'DELETE', `/api/v1/encounters/${encounterId}/bpjs-referral`
+    ] as const;
+    }
+
+
+export const getEncounterClinicalDataControllerRemoveBpjsReferralV1QueryOptions = <TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError = unknown>(encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getEncounterClinicalDataControllerRemoveBpjsReferralV1QueryKey(encounterId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>> = ({ signal }) => encounterClinicalDataControllerRemoveBpjsReferralV1(encounterId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type EncounterClinicalDataControllerRemoveBpjsReferralV1QueryResult = NonNullable<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>>
+export type EncounterClinicalDataControllerRemoveBpjsReferralV1QueryError = unknown
+
+
+export function useEncounterClinicalDataControllerRemoveBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError = unknown>(
+ encounterId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerRemoveBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerRemoveBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Retract the encounter’s BPJS rujukan
+ */
+
+export function useEncounterClinicalDataControllerRemoveBpjsReferralV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveBpjsReferralV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getEncounterClinicalDataControllerRemoveBpjsReferralV1QueryOptions(encounterId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

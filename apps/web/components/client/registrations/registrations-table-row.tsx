@@ -1,12 +1,10 @@
 'use client';
 
-import {
-  REGISTRATION_STATUS_TRANSITIONS,
-  type RegistrationListItem,
-} from '@hms/shared-types';
+import { REGISTRATION_STATUS_TRANSITIONS, type RegistrationListItem } from '@hms/shared-types';
 import { Icon, TableCell, TableRow, useAbility } from '@hms/ui';
 
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
+import { BpjsRegistrationStatus } from '#components/client/registrations/bpjs-registration-status';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { DataTableMonoCell } from '#components/shared/data-table-mono-cell';
 import { StatusBadge } from '#components/shared/status-badge';
@@ -77,6 +75,13 @@ export function RegistrationsTableRow({
       </TableCell>
       <TableCell className="px-4">
         <StatusBadge status={registration.status} />
+      </TableCell>
+      <TableCell className="px-4">
+        <BpjsRegistrationStatus
+          patientId={registration.patientId}
+          patientName={registration.patient.fullName}
+          registrationId={registration.id}
+        />
       </TableCell>
       <TableCell className="px-4 text-right">
         {actions.length > 0 ? (
