@@ -26,7 +26,6 @@ export type CreateDoctorRecordPayload = {
   fullName: string;
   specialtyId: string;
   phoneNumber: string;
-  email?: string;
   title?: string;
   degrees?: string;
   nik?: string;
@@ -43,7 +42,6 @@ export type UpdateDoctorRecordPayload = {
   fullName?: string;
   specialtyId?: string;
   phoneNumber?: string;
-  email?: string | null;
   title?: string | null;
   degrees?: string | null;
   nik?: string | null;
@@ -63,7 +61,6 @@ export type DoctorRecord = {
   specialtyId: string;
   specialty: SpecialtySummary;
   phoneNumber: string | null;
-  email: string | null;
   title: string | null;
   degrees: string | null;
   /**
@@ -73,6 +70,8 @@ export type DoctorRecord = {
   nikLast4: string | null;
   satusehatPractitionerId: string | null;
   ownerUserId: string | null;
+  /** The doctor's email, read from their account — the only stored copy. */
+  ownerUser: { email: string } | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

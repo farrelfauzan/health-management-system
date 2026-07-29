@@ -112,7 +112,6 @@ export function DoctorFormDialog({
       fullName: doctor?.fullName ?? '',
       specialtyId: doctor?.specialtyId ?? '',
       phoneNumber: doctor?.phoneNumber ?? '',
-      email: doctor?.email ?? '',
       title: doctor?.title ?? '',
       degrees: doctor?.degrees ?? '',
       // Write-only, like the patient NIK: the profile carries only a mask, so
@@ -123,7 +122,6 @@ export function DoctorFormDialog({
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
-      const trimmedEmail = value.email.trim();
       const trimmedTitle = value.title.trim();
       const trimmedDegrees = value.degrees.trim();
       const trimmedNik = value.nik.trim();
@@ -132,7 +130,6 @@ export function DoctorFormDialog({
         educations: buildEducationPayload(educationRows),
       };
       const profileFields = {
-        ...(trimmedEmail.length > 0 ? { email: trimmedEmail } : {}),
         ...(trimmedTitle.length > 0 ? { title: trimmedTitle } : {}),
         ...(trimmedDegrees.length > 0 ? { degrees: trimmedDegrees } : {}),
         ...(trimmedNik.length > 0 ? { nik: trimmedNik } : {}),
@@ -360,26 +357,9 @@ export function DoctorFormDialog({
               </form.Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <form.Field name="email">
-                {(field) => (
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor={field.name}
-                      className="block font-heading text-xs font-medium text-slate-600"
-                    >
-                      Email
-                    </label>
-                    <Input
-                      id={field.name}
-                      type="email"
-                      value={field.state.value}
-                      placeholder="doctor@clinic.com"
-                      onChange={(event) => field.handleChange(event.target.value)}
-                      onBlur={field.handleBlur}
-                    />
-                  </div>
-                )}
-              </form.Field>
+              {/* Email is not here on purpose: it is the address the doctor
+                  signs in with, managed on their user account under
+                  Administration, and read back through that relation. */}
               <form.Field name="nik">
                 {(field) => (
                   <div className="space-y-1.5">
