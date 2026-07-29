@@ -19,6 +19,7 @@ type RegistrationsTableProps = {
   isPending: boolean;
   isError: boolean;
   onTransition: (registration: RegistrationListItem, target: RegistrationTransitionTarget) => void;
+  onOpenEncounter: (registration: RegistrationListItem) => void;
 };
 
 export function RegistrationsTable({
@@ -27,6 +28,7 @@ export function RegistrationsTable({
   isPending,
   isError,
   onTransition,
+  onOpenEncounter,
 }: RegistrationsTableProps) {
   const showEmptyState = !isPending && registrations.length === 0;
 
@@ -68,6 +70,7 @@ export function RegistrationsTable({
               registration={registration}
               variant={variant}
               onTransition={onTransition}
+              onOpenEncounter={onOpenEncounter}
             />
           ))
         )}

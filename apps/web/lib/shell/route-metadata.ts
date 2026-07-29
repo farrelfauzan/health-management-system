@@ -6,6 +6,7 @@ export type AdminRouteKey =
   | 'doctors'
   | 'appointments'
   | 'registrations'
+  | 'encounters'
   | 'pharmacy'
   | 'ai-assistant'
   | 'integrations'
@@ -42,6 +43,11 @@ export const ADMIN_ROUTE_METADATA: Record<AdminRouteKey, AdminRouteMetadata> = {
     breadcrumbs: ['Main Dashboard', 'Registration'],
     title: 'Registration Queue',
     subtitle: 'Track patient registrations from check-in to completion.',
+  },
+  encounters: {
+    breadcrumbs: ['Main Dashboard', 'Encounters'],
+    title: 'Clinical Encounters',
+    subtitle: 'Open, record, and close the medical record for each visit.',
   },
   pharmacy: {
     breadcrumbs: ['Main Dashboard', 'Pharmacy'],

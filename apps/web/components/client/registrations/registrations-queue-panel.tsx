@@ -5,6 +5,7 @@ import type { RegistrationListItem } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
 
+import { EncounterOpenDialog } from '#components/client/encounters/encounter-open-dialog';
 import { RegistrationCreateDialog } from '#components/client/registrations/registration-create-dialog';
 import { RegistrationTransitionDialog } from '#components/client/registrations/registration-transition-dialog';
 import {
@@ -47,6 +48,9 @@ export function RegistrationsQueuePanel({
   const registrationsQuery = useRegistrationsList(initialQuery);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState<boolean>(openCreateOnMount);
   const [pendingTransition, setPendingTransition] = useState<PendingTransition | null>(null);
+  const [encounterRegistration, setEncounterRegistration] = useState<RegistrationListItem | null>(
+    null,
+  );
 
   function navigateWithParams(next: RegistrationsSearchParams): void {
     router.replace(`${pathname}?${buildRegistrationsSearchParams(next).toString()}`);
@@ -112,6 +116,7 @@ export function RegistrationsQueuePanel({
             isPending={registrationsQuery.isPending}
             isError={registrationsQuery.isError}
             onTransition={handleTransition}
+            onOpenEncounter={setEncounterRegistration}
           />
           <NumberedPagination
             className="border-t border-slate-100 px-4 py-3"
@@ -130,6 +135,19 @@ export function RegistrationsQueuePanel({
           open={isCreateDialogOpen}
           onOpenChange={setIsCreateDialogOpen}
           variant={variant}
+        />
+      ) : null}
+
+      {encounterRegistration ? (
+        <EncounterOpenDialog
+          key={encounterRegistration.id}
+          open={Boolean(encounterRegistration)}
+          onOpenChange={(dialogOpen) => {
+            if (!dialogOpen) {
+              setEncounterRegistration(null);
+            }
+          }}
+          registration={encounterRegistration}
         />
       ) : null}
 
