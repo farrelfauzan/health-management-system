@@ -40,10 +40,22 @@ export const AuditAction = {
   INVOICE_VOIDED: 'INVOICE_VOIDED',
   SATUSEHAT_PATIENT_LINKED: 'SATUSEHAT_PATIENT_LINKED',
   SATUSEHAT_DOCTOR_LINKED: 'SATUSEHAT_DOCTOR_LINKED',
-  SATUSEHAT_SUBMISSION_RETRIED: 'SATUSEHAT_SUBMISSION_RETRIED'
+  SATUSEHAT_SUBMISSION_RETRIED: 'SATUSEHAT_SUBMISSION_RETRIED',
+  BPJS_CONFIG_CREATED: 'BPJS_CONFIG_CREATED',
+  BPJS_CONFIG_UPDATED: 'BPJS_CONFIG_UPDATED',
+  BPJS_CONFIG_DELETED: 'BPJS_CONFIG_DELETED',
+  BPJS_CONNECTION_TESTED: 'BPJS_CONNECTION_TESTED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const BpjsPcareEnvironment = {
+  DEVELOPMENT: 'DEVELOPMENT',
+  PRODUCTION: 'PRODUCTION'
+} as const
+
+export type BpjsPcareEnvironment = (typeof BpjsPcareEnvironment)[keyof typeof BpjsPcareEnvironment]
 
 
 export const PatientStatus = {

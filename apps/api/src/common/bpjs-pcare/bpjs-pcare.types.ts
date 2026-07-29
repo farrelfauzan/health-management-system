@@ -32,3 +32,49 @@ export type BpjsPcareResponseEnvelope = {
 
 export type BpjsPcareCodecErrorCode =
   'BPJS_PCARE_RESPONSE_MALFORMED' | 'BPJS_PCARE_DECRYPT_FAILED' | 'BPJS_PCARE_DECOMPRESS_FAILED';
+
+export type BpjsPcareErrorCode =
+  | 'BPJS_PCARE_NOT_CONFIGURED'
+  | 'BPJS_PCARE_UNAUTHORIZED'
+  | 'BPJS_PCARE_TIMEOUT'
+  | 'BPJS_PCARE_UNAVAILABLE'
+  | 'BPJS_PCARE_CIRCUIT_OPEN'
+  | 'BPJS_PCARE_REQUEST_REJECTED'
+  | BpjsPcareCodecErrorCode;
+
+export type BpjsPcareAdapterConfig = {
+  readonly developmentBaseUrl: string;
+  readonly productionBaseUrl: string;
+  readonly requestTimeoutMs: number;
+  readonly maxRetryAttempts: number;
+  readonly retryBaseDelayMs: number;
+  readonly circuitBreakerFailureThreshold: number;
+  readonly circuitBreakerOpenDurationMs: number;
+};
+
+export type BpjsPcareHttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
+/**
+ * One resolved facility connection: which PCare environment to call and the
+ * decrypted credential set to sign with. Assembled by the feature repository
+ * (the only layer allowed to decrypt) and handed to the HTTP client per call
+ * — unlike SATUSEHAT, credentials live in the database, not the environment.
+ */
+export type BpjsPcareConnection = {
+  readonly environment: 'DEVELOPMENT' | 'PRODUCTION';
+  readonly credentials: BpjsPcareRequestCredentials;
+};
+
+export type BpjsPcareRequest = {
+  readonly method: BpjsPcareHttpMethod;
+  readonly path: string;
+  readonly body?: unknown;
+};
+
+export type BpjsPcareCircuitBreakerState = 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+
+export type BpjsPcareCircuitBreakerOptions = {
+  readonly failureThreshold: number;
+  readonly openDurationMs: number;
+  readonly now?: () => number;
+};

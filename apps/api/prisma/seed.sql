@@ -103,6 +103,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('satusehat.link:any', 'Satusehat', 'link', 'ANY', 'Link patients and practitioners to SATUSEHAT IHS records'),
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
+    ('bpjs.config.manage:any', 'BpjsConfig', 'manage', 'ANY', 'Manage BPJS PCare bridging credentials and connection settings'),
     ('chat.session.create:own', 'ChatSession', 'create', 'OWN', 'Create own chat sessions'),
     ('chat.message.create:own', 'ChatMessage', 'create', 'OWN', 'Create own chat messages'),
     ('chat.message.read:any', 'ChatMessage', 'read', 'ANY', 'Read all chat messages'),
@@ -200,6 +201,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'satusehat.link:any'),
     ('ADMIN', 'satusehat.submission.read:any'),
     ('ADMIN', 'satusehat.submission.retry:any'),
+    -- BPJS credential custody is a back-office operation: the stored PCare
+    -- login can create and delete claims, so only ADMIN manages it. Secrets
+    -- are write-only in the API regardless of this grant.
+    ('ADMIN', 'bpjs.config.manage:any'),
     ('ADMIN', 'chat.session.create:own'),
     ('ADMIN', 'chat.message.create:own'),
     ('ADMIN', 'chat.message.read:any'),

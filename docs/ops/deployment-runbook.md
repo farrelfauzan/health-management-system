@@ -99,6 +99,16 @@ Interrupting the backfill is safe: rows are independent and `*_key_version` reco
 
 Never log a decrypted identifier, a key, or a pepper at any step. A lost `PATIENT_PII_ENCRYPTION_KEY` is unrecoverable data loss — key custody and backup are a precondition for going live, not a follow-up.
 
+### 5.3 Rotating `BPJS_CREDENTIAL_ENCRYPTION_KEY` (BPJS PCare credentials)
+
+Cheap — the key seals at most one `bpjs_pcare_configs` row per facility, and every plaintext exists outside HMS (BPJS issued it), so the worst case is re-entering credentials rather than data loss.
+
+1. Deploy the new key and bump `BPJS_CREDENTIAL_KEY_VERSION`. Keep the old key readable until step 2 completes.
+2. For each `bpjs_pcare_configs` row below the new version: decrypt with the old key, re-seal with the new, write ciphertext columns and `credential_key_version` in one update. With a single facility this is one row — an admin re-saving the credentials through Settings → Integrasi BPJS (`PUT /api/v1/bpjs/config` with all three secrets) achieves the same thing without touching the database.
+3. Remove the old key from the environment and run the **Test Connection** action to confirm the stored credentials still decrypt and sign.
+
+A lost `BPJS_CREDENTIAL_ENCRYPTION_KEY` is recoverable: delete the stored configuration and re-enter the credentials from the BPJS issuance letter. Every create/update/delete/test is audited (`BPJS_CONFIG_*`, `BPJS_CONNECTION_TESTED`) with field names only, never values.
+
 ## 6. Post-deploy verification
 
 1. `curl -s https://<api>/api/v1/health` → `{"status":"ok","service":"api"}` with an `X-Request-Id` response header.
