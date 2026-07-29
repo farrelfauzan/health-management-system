@@ -30,10 +30,16 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     <AppAbilityProvider rules={rules}>
       <SidebarProvider style={SIDEBAR_STYLE}>
         <AppSidebar sections={sections} />
-        <SidebarInset>
+        {/*
+          min-w-0 is load-bearing: the inset is a flex item, and a flex item
+          defaults to min-width:auto, so it grows to its widest content instead
+          of shrinking. Without it a wide table pushes the whole page sideways
+          and the table's own overflow-x container can never engage.
+        */}
+        <SidebarInset className="min-w-0">
           <TopBar profile={profile} />
-          <main className="flex-1 px-8 py-8">
-            <div className="mx-auto w-full max-w-page">{children}</div>
+          <main className="min-w-0 flex-1 px-4 py-8 sm:px-8">
+            <div className="mx-auto w-full min-w-0 max-w-page">{children}</div>
           </main>
         </SidebarInset>
       </SidebarProvider>
