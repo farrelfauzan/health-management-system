@@ -40,6 +40,7 @@ export type MedicationMinAggregateOutputType = {
   id: string | null
   code: string | null
   kfaCode: string | null
+  dphoCode: string | null
   name: string | null
   form: string | null
   strength: string | null
@@ -56,6 +57,7 @@ export type MedicationMaxAggregateOutputType = {
   id: string | null
   code: string | null
   kfaCode: string | null
+  dphoCode: string | null
   name: string | null
   form: string | null
   strength: string | null
@@ -72,6 +74,7 @@ export type MedicationCountAggregateOutputType = {
   id: number
   code: number
   kfaCode: number
+  dphoCode: number
   name: number
   form: number
   strength: number
@@ -100,6 +103,7 @@ export type MedicationMinAggregateInputType = {
   id?: true
   code?: true
   kfaCode?: true
+  dphoCode?: true
   name?: true
   form?: true
   strength?: true
@@ -116,6 +120,7 @@ export type MedicationMaxAggregateInputType = {
   id?: true
   code?: true
   kfaCode?: true
+  dphoCode?: true
   name?: true
   form?: true
   strength?: true
@@ -132,6 +137,7 @@ export type MedicationCountAggregateInputType = {
   id?: true
   code?: true
   kfaCode?: true
+  dphoCode?: true
   name?: true
   form?: true
   strength?: true
@@ -235,6 +241,7 @@ export type MedicationGroupByOutputType = {
   id: string
   code: string
   kfaCode: string | null
+  dphoCode: string | null
   name: string
   form: string | null
   strength: string | null
@@ -274,6 +281,7 @@ export type MedicationWhereInput = {
   id?: Prisma.UuidFilter<"Medication"> | string
   code?: Prisma.StringFilter<"Medication"> | string
   kfaCode?: Prisma.StringNullableFilter<"Medication"> | string | null
+  dphoCode?: Prisma.StringNullableFilter<"Medication"> | string | null
   name?: Prisma.StringFilter<"Medication"> | string
   form?: Prisma.StringNullableFilter<"Medication"> | string | null
   strength?: Prisma.StringNullableFilter<"Medication"> | string | null
@@ -293,6 +301,7 @@ export type MedicationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   kfaCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  dphoCode?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   form?: Prisma.SortOrderInput | Prisma.SortOrder
   strength?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -312,6 +321,7 @@ export type MedicationWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   code?: string
   kfaCode?: string
+  dphoCode?: string
   AND?: Prisma.MedicationWhereInput | Prisma.MedicationWhereInput[]
   OR?: Prisma.MedicationWhereInput[]
   NOT?: Prisma.MedicationWhereInput | Prisma.MedicationWhereInput[]
@@ -328,12 +338,13 @@ export type MedicationWhereUniqueInput = Prisma.AtLeast<{
   prescriptionItems?: Prisma.PrescriptionMedicationListRelationFilter
   dispenseItems?: Prisma.DispenseItemListRelationFilter
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
-}, "id" | "code" | "kfaCode">
+}, "id" | "code" | "kfaCode" | "dphoCode">
 
 export type MedicationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   kfaCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  dphoCode?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   form?: Prisma.SortOrderInput | Prisma.SortOrder
   strength?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -358,6 +369,7 @@ export type MedicationScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"Medication"> | string
   code?: Prisma.StringWithAggregatesFilter<"Medication"> | string
   kfaCode?: Prisma.StringNullableWithAggregatesFilter<"Medication"> | string | null
+  dphoCode?: Prisma.StringNullableWithAggregatesFilter<"Medication"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"Medication"> | string
   form?: Prisma.StringNullableWithAggregatesFilter<"Medication"> | string | null
   strength?: Prisma.StringNullableWithAggregatesFilter<"Medication"> | string | null
@@ -374,6 +386,7 @@ export type MedicationCreateInput = {
   id?: string
   code: string
   kfaCode?: string | null
+  dphoCode?: string | null
   name: string
   form?: string | null
   strength?: string | null
@@ -393,6 +406,7 @@ export type MedicationUncheckedCreateInput = {
   id?: string
   code: string
   kfaCode?: string | null
+  dphoCode?: string | null
   name: string
   form?: string | null
   strength?: string | null
@@ -412,6 +426,7 @@ export type MedicationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -431,6 +446,7 @@ export type MedicationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -450,6 +466,7 @@ export type MedicationCreateManyInput = {
   id?: string
   code: string
   kfaCode?: string | null
+  dphoCode?: string | null
   name: string
   form?: string | null
   strength?: string | null
@@ -466,6 +483,7 @@ export type MedicationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -482,6 +500,7 @@ export type MedicationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -498,6 +517,7 @@ export type MedicationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   kfaCode?: Prisma.SortOrder
+  dphoCode?: Prisma.SortOrder
   name?: Prisma.SortOrder
   form?: Prisma.SortOrder
   strength?: Prisma.SortOrder
@@ -519,6 +539,7 @@ export type MedicationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   kfaCode?: Prisma.SortOrder
+  dphoCode?: Prisma.SortOrder
   name?: Prisma.SortOrder
   form?: Prisma.SortOrder
   strength?: Prisma.SortOrder
@@ -535,6 +556,7 @@ export type MedicationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   kfaCode?: Prisma.SortOrder
+  dphoCode?: Prisma.SortOrder
   name?: Prisma.SortOrder
   form?: Prisma.SortOrder
   strength?: Prisma.SortOrder
@@ -618,6 +640,7 @@ export type MedicationCreateWithoutPrescriptionItemsInput = {
   id?: string
   code: string
   kfaCode?: string | null
+  dphoCode?: string | null
   name: string
   form?: string | null
   strength?: string | null
@@ -636,6 +659,7 @@ export type MedicationUncheckedCreateWithoutPrescriptionItemsInput = {
   id?: string
   code: string
   kfaCode?: string | null
+  dphoCode?: string | null
   name: string
   form?: string | null
   strength?: string | null
@@ -670,6 +694,7 @@ export type MedicationUpdateWithoutPrescriptionItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -688,6 +713,7 @@ export type MedicationUncheckedUpdateWithoutPrescriptionItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -706,6 +732,7 @@ export type MedicationCreateWithoutDispenseItemsInput = {
   id?: string
   code: string
   kfaCode?: string | null
+  dphoCode?: string | null
   name: string
   form?: string | null
   strength?: string | null
@@ -724,6 +751,7 @@ export type MedicationUncheckedCreateWithoutDispenseItemsInput = {
   id?: string
   code: string
   kfaCode?: string | null
+  dphoCode?: string | null
   name: string
   form?: string | null
   strength?: string | null
@@ -758,6 +786,7 @@ export type MedicationUpdateWithoutDispenseItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -776,6 +805,7 @@ export type MedicationUncheckedUpdateWithoutDispenseItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -794,6 +824,7 @@ export type MedicationCreateWithoutInvoiceItemsInput = {
   id?: string
   code: string
   kfaCode?: string | null
+  dphoCode?: string | null
   name: string
   form?: string | null
   strength?: string | null
@@ -812,6 +843,7 @@ export type MedicationUncheckedCreateWithoutInvoiceItemsInput = {
   id?: string
   code: string
   kfaCode?: string | null
+  dphoCode?: string | null
   name: string
   form?: string | null
   strength?: string | null
@@ -846,6 +878,7 @@ export type MedicationUpdateWithoutInvoiceItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -864,6 +897,7 @@ export type MedicationUncheckedUpdateWithoutInvoiceItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -931,6 +965,7 @@ export type MedicationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   code?: boolean
   kfaCode?: boolean
+  dphoCode?: boolean
   name?: boolean
   form?: boolean
   strength?: boolean
@@ -951,6 +986,7 @@ export type MedicationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   code?: boolean
   kfaCode?: boolean
+  dphoCode?: boolean
   name?: boolean
   form?: boolean
   strength?: boolean
@@ -967,6 +1003,7 @@ export type MedicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   code?: boolean
   kfaCode?: boolean
+  dphoCode?: boolean
   name?: boolean
   form?: boolean
   strength?: boolean
@@ -983,6 +1020,7 @@ export type MedicationSelectScalar = {
   id?: boolean
   code?: boolean
   kfaCode?: boolean
+  dphoCode?: boolean
   name?: boolean
   form?: boolean
   strength?: boolean
@@ -995,7 +1033,7 @@ export type MedicationSelectScalar = {
   deletedAt?: boolean
 }
 
-export type MedicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "kfaCode" | "name" | "form" | "strength" | "unit" | "category" | "stockQty" | "unitPrice" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medication"]>
+export type MedicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "kfaCode" | "dphoCode" | "name" | "form" | "strength" | "unit" | "category" | "stockQty" | "unitPrice" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medication"]>
 export type MedicationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescriptionItems?: boolean | Prisma.Medication$prescriptionItemsArgs<ExtArgs>
   dispenseItems?: boolean | Prisma.Medication$dispenseItemsArgs<ExtArgs>
@@ -1016,6 +1054,13 @@ export type $MedicationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     id: string
     code: string
     kfaCode: string | null
+    /**
+     * BPJS DPHO kdObat (P11-T03), linked by an admin from the search-and-cache
+     * DPHO catalog. Sits alongside kfaCode — two national code systems, one
+     * medication row. Unique for the same reason kfaCode is: one catalog
+     * identity maps to at most one local row.
+     */
+    dphoCode: string | null
     name: string
     form: string | null
     strength: string | null
@@ -1460,6 +1505,7 @@ export interface MedicationFieldRefs {
   readonly id: Prisma.FieldRef<"Medication", 'String'>
   readonly code: Prisma.FieldRef<"Medication", 'String'>
   readonly kfaCode: Prisma.FieldRef<"Medication", 'String'>
+  readonly dphoCode: Prisma.FieldRef<"Medication", 'String'>
   readonly name: Prisma.FieldRef<"Medication", 'String'>
   readonly form: Prisma.FieldRef<"Medication", 'String'>
   readonly strength: Prisma.FieldRef<"Medication", 'String'>

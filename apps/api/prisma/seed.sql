@@ -104,6 +104,9 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
     ('bpjs.config.manage:any', 'BpjsConfig', 'manage', 'ANY', 'Manage BPJS PCare bridging credentials and connection settings'),
+    ('bpjs.reference.sync:any', 'BpjsReference', 'sync', 'ANY', 'Sync BPJS PCare reference catalogs and run keyword search-and-cache lookups'),
+    ('bpjs.reference.read:any', 'BpjsReference', 'read', 'ANY', 'Read the synced BPJS PCare reference catalogs and their sync status'),
+    ('bpjs.mapping.manage:any', 'BpjsMapping', 'manage', 'ANY', 'Map doctors, specialties, and medications to BPJS PCare codes'),
     ('chat.session.create:own', 'ChatSession', 'create', 'OWN', 'Create own chat sessions'),
     ('chat.message.create:own', 'ChatMessage', 'create', 'OWN', 'Create own chat messages'),
     ('chat.message.read:any', 'ChatMessage', 'read', 'ANY', 'Read all chat messages'),
@@ -205,6 +208,14 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- login can create and delete claims, so only ADMIN manages it. Secrets
     -- are write-only in the API regardless of this grant.
     ('ADMIN', 'bpjs.config.manage:any'),
+    -- Reference sync and code mapping are back-office setup for the same
+    -- bridging: sync/search hit the live PCare API under the stored
+    -- credentials, and a wrong mapping mis-codes every later claim, so all
+    -- three stay ADMIN-only. Read is split from sync so the P11-T07
+    -- integrations monitor can watch catalogs without the mutating grant.
+    ('ADMIN', 'bpjs.reference.sync:any'),
+    ('ADMIN', 'bpjs.reference.read:any'),
+    ('ADMIN', 'bpjs.mapping.manage:any'),
     ('ADMIN', 'chat.session.create:own'),
     ('ADMIN', 'chat.message.create:own'),
     ('ADMIN', 'chat.message.read:any'),

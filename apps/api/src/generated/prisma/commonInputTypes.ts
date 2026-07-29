@@ -847,6 +847,23 @@ export type EnumBpjsPcareEnvironmentWithAggregatesFilter<$PrismaModel = never> =
   _max?: Prisma.NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel>
 }
 
+export type EnumBpjsReferenceCatalogFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsReferenceCatalog | Prisma.EnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsReferenceCatalog[] | Prisma.ListEnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsReferenceCatalog[] | Prisma.ListEnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsReferenceCatalogFilter<$PrismaModel> | $Enums.BpjsReferenceCatalog
+}
+
+export type EnumBpjsReferenceCatalogWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsReferenceCatalog | Prisma.EnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsReferenceCatalog[] | Prisma.ListEnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsReferenceCatalog[] | Prisma.ListEnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsReferenceCatalogWithAggregatesFilter<$PrismaModel> | $Enums.BpjsReferenceCatalog
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsReferenceCatalogFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsReferenceCatalogFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1660,6 +1677,23 @@ export type NestedEnumBpjsPcareEnvironmentWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel>
   _max?: Prisma.NestedEnumBpjsPcareEnvironmentFilter<$PrismaModel>
+}
+
+export type NestedEnumBpjsReferenceCatalogFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsReferenceCatalog | Prisma.EnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsReferenceCatalog[] | Prisma.ListEnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsReferenceCatalog[] | Prisma.ListEnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsReferenceCatalogFilter<$PrismaModel> | $Enums.BpjsReferenceCatalog
+}
+
+export type NestedEnumBpjsReferenceCatalogWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsReferenceCatalog | Prisma.EnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsReferenceCatalog[] | Prisma.ListEnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsReferenceCatalog[] | Prisma.ListEnumBpjsReferenceCatalogFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsReferenceCatalogWithAggregatesFilter<$PrismaModel> | $Enums.BpjsReferenceCatalog
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsReferenceCatalogFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsReferenceCatalogFilter<$PrismaModel>
 }
 
 

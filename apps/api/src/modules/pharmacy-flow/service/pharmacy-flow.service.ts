@@ -437,6 +437,7 @@ export class PharmacyFlowService {
       id: medication.id,
       code: medication.code,
       kfaCode: medication.kfaCode ?? undefined,
+      dphoCode: medication.dphoCode ?? undefined,
       name: medication.name,
       form: medication.form ?? undefined,
       strength: medication.strength ?? undefined,

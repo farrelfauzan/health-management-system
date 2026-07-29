@@ -9,6 +9,7 @@ export type MedicationResponse = {
   id: string;
   code: string;
   kfaCode?: string;
+  dphoCode?: string;
   name: string;
   form?: string;
   strength?: string;

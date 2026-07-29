@@ -76,6 +76,8 @@ Encryption reuses the pattern established in `P7-T07` (`apps/api/src/common/cryp
 
 `BpjsPoli`, `BpjsDoctor`, `BpjsKesadaran`, `BpjsTindakan`, `BpjsDiagnosa`, `BpjsDpho`, `BpjsSpesialis`, `BpjsSarana` — each with BPJS code, display name, `syncedAt`. Populated by an admin-triggered sync so dropdowns never make live BPJS calls.
 
+> **As implemented (`P11-T03`):** the eight catalogs share an identical shape, so they landed as one enum-keyed `BpjsReferenceItem` table (`catalog` + unique `(catalog, code)`, `groupCode` holding TINDAKAN's kdTkp bucket). Six catalogs are bulk-synced wholesale; DIAGNOSA and DPHO are keyword-only upstream and populate by search-and-cache. The poli mapping landed on `Specialty.bpjsPoliCode` — no standalone poli entity exists. See the implementation-plan entry for the full rationale.
+
 ### 3.3 Mapping
 
 - `DoctorProfile.bpjsDoctorCode` (nullable) — set by admin from the synced doctor list.
