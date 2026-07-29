@@ -1,9 +1,4 @@
-import {
-  ADMIN_PORTAL_ADMIN_RULES,
-  type AppAction,
-  type AppRule,
-  type AppSubject,
-} from '@hms/ui';
+import { ADMIN_PORTAL_ADMIN_RULES, type AppAction, type AppRule, type AppSubject } from '@hms/ui';
 
 import { hasAnyRole, type AccessTokenClaims } from '#lib/auth/access-token-claims';
 
@@ -18,6 +13,11 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'write',
   'cancel',
   'approve',
+  'manage',
+  'sync',
+  'check',
+  'retry',
+  'link',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',
@@ -35,6 +35,13 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   dispense: 'DispenseRecord',
   'chat.session': 'ChatSession',
   'chat.message': 'ChatMessage',
+  'bpjs.config': 'BpjsConfig',
+  'bpjs.reference': 'BpjsReference',
+  'bpjs.mapping': 'BpjsMapping',
+  'bpjs.eligibility': 'BpjsEligibility',
+  'bpjs.submission': 'BpjsSubmission',
+  satusehat: 'Satusehat',
+  'satusehat.submission': 'SatusehatSubmission',
 };
 
 function isSupportedAction(action: string): action is AppAction {
