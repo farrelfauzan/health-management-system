@@ -5,6 +5,9 @@ import { Button, Can, Icon, Skeleton } from '@hms/ui';
 
 import { AssignPatientDialog } from '#components/client/doctors/assign-patient-dialog';
 import { DoctorFormDialog } from '#components/client/doctors/doctor-form-dialog';
+import { DoctorEducationsCard } from '#components/client/doctors/doctor-educations-card';
+import { DoctorIdentifiersCard } from '#components/client/doctors/doctor-identifiers-card';
+import { DoctorLicensesCard } from '#components/client/doctors/doctor-licenses-card';
 import { DoctorPatientsCard } from '#components/client/doctors/doctor-patients-card';
 import { DoctorProfileCard } from '#components/client/doctors/doctor-profile-card';
 import { DoctorScheduleCard } from '#components/client/doctors/doctor-schedule-card';
@@ -67,8 +70,13 @@ export function DoctorDetailPanel({ doctorId }: DoctorDetailPanelProps) {
       />
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <DoctorProfileCard doctor={doctor} />
         <div className="space-y-6">
+          <DoctorProfileCard doctor={doctor} />
+          <DoctorIdentifiersCard doctor={doctor} />
+          <DoctorEducationsCard educations={doctor.educations} />
+        </div>
+        <div className="space-y-6">
+          <DoctorLicensesCard licenses={doctor.licenses} />
           <DoctorScheduleCard doctor={doctor} onManageSchedule={() => setIsScheduleDialogOpen(true)} />
           <DoctorPatientsCard doctor={doctor} onAssignPatient={() => setIsAssignDialogOpen(true)} />
         </div>
@@ -80,6 +88,8 @@ export function DoctorDetailPanel({ doctorId }: DoctorDetailPanelProps) {
           open={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}
           doctor={doctor}
+          licenses={doctor.licenses}
+          educations={doctor.educations}
         />
       ) : null}
 

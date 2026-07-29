@@ -4,6 +4,7 @@ import type { DoctorDetail } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
 
 import { StatusBadge } from '#components/shared/status-badge';
+import { EMPTY_VALUE } from '#lib/shared/empty-value';
 import { formatMediumDate } from '#lib/shared/format-medium-date';
 
 type DoctorProfileCardProps = {
@@ -14,7 +15,10 @@ export function DoctorProfileCard({ doctor }: DoctorProfileCardProps) {
   const fields: Array<{ label: string; value: React.ReactNode; isMono?: boolean }> = [
     { label: 'License Number', value: doctor.licenseNumber, isMono: true },
     { label: 'Specialty', value: doctor.specialty },
+    { label: 'Title', value: doctor.title ?? EMPTY_VALUE },
+    { label: 'Degrees', value: doctor.degrees ?? EMPTY_VALUE },
     { label: 'Phone Number', value: doctor.phoneNumber ?? '-', isMono: true },
+    { label: 'Email', value: doctor.email ?? EMPTY_VALUE },
     { label: 'Assigned Patients', value: doctor.patientCount, isMono: true },
     {
       label: 'Status',
