@@ -499,11 +499,13 @@ model DoctorProfile {
   // Listing/profile fields clinics expect on doctor directories (P7-T04).
   // Specialty remains the existing Specialty reference table; title/degrees
   // cover honorifics and academic credentials (e.g. "dr.", "Sp.PD").
-  // phoneNumber already existed; email is required by SATUSEHAT Practitioner
-  // ContactPoint alongside phone.
+  //
+  // There is deliberately no `email` here: it lives on the linked `User`
+  // account and is read through `ownerUser`. Two copies of one address drift
+  // the moment a doctor changes it in one place, and the account address is
+  // the one that has to be correct — it is what they sign in with.
   title   String?
   degrees String?
-  email   String?
 
   specialty           Specialty            @relation(fields: [specialtyId], references: [id])
   ownerUser           User?                @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)

@@ -7,6 +7,11 @@ export type DoctorProfile = {
   specialtyId: string;
   specialty: string;
   phoneNumber?: string;
+  /**
+   * Read from the linked user account, not stored on the profile. Absent when
+   * the doctor has no account yet — the address is the one they sign in with,
+   * so there is exactly one copy of it.
+   */
   email?: string;
   title?: string;
   degrees?: string;

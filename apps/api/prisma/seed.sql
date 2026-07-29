@@ -656,16 +656,15 @@ WITH seed_doctors(
   full_name,
   specialty_name,
   phone_number,
-  email,
   title,
   degrees
 ) AS (
   VALUES
-    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', 'andi.prasetyo@clinic.local', 'dr.', 'Sp.PD'),
-    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', 'maya.sari@clinic.local', 'dr.', 'Sp.A'),
-    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', 'hendra.gunawan@clinic.local', 'dr.', 'Sp.JP'),
-    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', 'fitri.handayani@clinic.local', 'dr.', 'Sp.OG'),
-    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', 'yusuf.hidayat@clinic.local', 'dr.', NULL)
+    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', 'dr.', 'Sp.PD'),
+    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', 'dr.', 'Sp.A'),
+    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', 'dr.', 'Sp.JP'),
+    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', 'dr.', 'Sp.OG'),
+    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', 'dr.', NULL)
 )
 INSERT INTO "doctor_profiles" (
   "id",
@@ -673,7 +672,6 @@ INSERT INTO "doctor_profiles" (
   "full_name",
   "specialty_id",
   "phone_number",
-  "email",
   "title",
   "degrees",
   "satusehat_practitioner_id",
@@ -689,7 +687,6 @@ SELECT
   full_name,
   specialties."id",
   phone_number,
-  email,
   title,
   degrees,
   NULL,
@@ -705,7 +702,6 @@ SET
   "full_name" = EXCLUDED."full_name",
   "specialty_id" = EXCLUDED."specialty_id",
   "phone_number" = EXCLUDED."phone_number",
-  "email" = EXCLUDED."email",
   "title" = EXCLUDED."title",
   "degrees" = EXCLUDED."degrees",
   "is_active" = true,
@@ -809,13 +805,22 @@ SET
   "deleted_at" = NULL;
 
 -- Development accounts. Credentials:
---   admin@salingjaga.com  / Admin123!   (SUPER_ADMIN)
---   dokter@salingjaga.com / Doctor123!  (DOCTOR, owns the dr. Yusuf Hidayat profile)
--- The hashes are bcryptjs (cost 10). Replace or remove this block for production seeds.
+--   admin@salingjaga.com   / Admin123!
+--   <doctor>@clinic.local  / Doctor123!   (one per seeded practitioner)
+--
+-- The doctor logins are the practitioners from the directory above, not a
+-- separate identity: every seeded doctor gets an account whose email is the
+-- address that used to sit on `doctor_profiles`, which is now the only copy.
+-- The hashes are bcryptjs (cost 10). Replace or remove this block for
+-- production seeds.
 WITH seed_users(email, password_hash) AS (
   VALUES
     ('admin@salingjaga.com', '$2b$10$8Xw5CHvVbJa465ypeir1ZeRyastav5gmh/cU3ztImenBGuftYUQ1O'),
-    ('dokter@salingjaga.com', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O')
+    ('andi.prasetyo@clinic.local', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O'),
+    ('maya.sari@clinic.local', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O'),
+    ('hendra.gunawan@clinic.local', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O'),
+    ('fitri.handayani@clinic.local', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O'),
+    ('yusuf.hidayat@clinic.local', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O')
 )
 INSERT INTO "users" (
   "id",
@@ -845,7 +850,11 @@ SET
 WITH seed_user_roles(email, role_code) AS (
   VALUES
     ('admin@salingjaga.com', 'SUPER_ADMIN'),
-    ('dokter@salingjaga.com', 'DOCTOR')
+    ('andi.prasetyo@clinic.local', 'DOCTOR'),
+    ('maya.sari@clinic.local', 'DOCTOR'),
+    ('hendra.gunawan@clinic.local', 'DOCTOR'),
+    ('fitri.handayani@clinic.local', 'DOCTOR'),
+    ('yusuf.hidayat@clinic.local', 'DOCTOR')
 )
 INSERT INTO "user_roles" (
   "id",
@@ -874,18 +883,28 @@ SET
   "updated_at" = NOW(),
   "deleted_at" = NULL;
 
--- Own the seeded practitioner with the doctor login. Without this link the
+-- Own each seeded practitioner with their own account. Without this link the
 -- OWN-scoped grants have nothing to resolve against: opening an encounter as a
 -- doctor looks the attending practitioner up by owner_user_id and fails with
--- "You do not have an active doctor profile" when it is null.
-UPDATE "doctor_profiles"
+-- "You do not have an active doctor profile" when it is null. It is also what
+-- gives the profile an email now that the column is gone — the address is read
+-- through this relation.
+WITH seed_doctor_accounts(license_number, email) AS (
+  VALUES
+    ('SIP-2026-0001', 'andi.prasetyo@clinic.local'),
+    ('SIP-2026-0002', 'maya.sari@clinic.local'),
+    ('SIP-2026-0003', 'hendra.gunawan@clinic.local'),
+    ('SIP-2026-0004', 'fitri.handayani@clinic.local'),
+    ('SIP-2026-0005', 'yusuf.hidayat@clinic.local')
+)
+UPDATE "doctor_profiles" AS d
 SET
-  "owner_user_id" = (SELECT "id" FROM "users" WHERE "email" = 'dokter@salingjaga.com'),
+  "owner_user_id" = u."id",
   "updated_at" = NOW()
-WHERE "license_number" = 'SIP-2026-0005'
-  AND "owner_user_id" IS DISTINCT FROM (
-    SELECT "id" FROM "users" WHERE "email" = 'dokter@salingjaga.com'
-  );
+FROM seed_doctor_accounts AS a
+JOIN "users" AS u ON u."email" = a.email
+WHERE d."license_number" = a.license_number
+  AND d."owner_user_id" IS DISTINCT FROM u."id";
 
 -- Starter service tariffs so invoice generation works out of the box in
 -- development and demos: one consultation fee plus two common tindakan mapped

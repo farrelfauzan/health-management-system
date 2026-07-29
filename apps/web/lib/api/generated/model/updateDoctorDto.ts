@@ -21,11 +21,6 @@ export interface UpdateDoctorDto {
      */
   phoneNumber?: string;
   /**
-     * @maxLength 254
-     * @nullable
-     */
-  email?: string | null;
-  /**
      * @minLength 1
      * @maxLength 32
      * @nullable
