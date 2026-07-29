@@ -5,12 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
 
 import { StatusBadge } from '#components/shared/status-badge';
 import {
-  EMPTY_VALUE,
   formatBloodType,
   formatGuardian,
   formatOptionalLabel,
 } from '#lib/patients/format-patient-fields';
 import { computePatientAge } from '#lib/patients/patient-age';
+import { EMPTY_VALUE } from '#lib/shared/empty-value';
 import { formatPatientSexLabel } from '#lib/patients/patient-sex-label';
 import { formatPatientStatusLabel } from '#lib/patients/patient-status-label';
 import { formatMediumDate } from '#lib/shared/format-medium-date';

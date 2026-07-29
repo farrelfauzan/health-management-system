@@ -1,8 +1,7 @@
 import type { BloodTypeValue, RhesusFactorValue } from '@hms/shared-types';
 
+import { EMPTY_VALUE } from '#lib/shared/empty-value';
 import { formatStatusLabel } from '#lib/shared/status-label';
-
-export const EMPTY_VALUE = '—';
 
 /**
  * Blood type and rhesus are two columns but one clinical fact, so they render

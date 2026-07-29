@@ -6,6 +6,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   createDoctorSchema,
   type CreateDoctorInput,
+  type DoctorEducation,
+  type DoctorLicense,
   type DoctorProfile,
   type UpdateDoctorInput,
 } from '@hms/shared-types';
@@ -21,9 +23,21 @@ import {
   Input,
 } from '@hms/ui';
 
+import { DoctorEducationsField } from '#components/client/doctors/doctor-educations-field';
+import { DoctorLicensesField } from '#components/client/doctors/doctor-licenses-field';
 import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-picker';
 import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
 import { FieldError } from '#components/client/shared/field-error';
+import {
+  buildEducationPayload,
+  buildEmptyEducationRow,
+  buildEmptyLicenseRow,
+  buildLicensePayload,
+  toEducationRows,
+  toLicenseRows,
+  type EducationRow,
+  type LicenseRow,
+} from '#lib/doctors/doctor-credential-rows';
 import {
   doctorManagementControllerCreateDoctorV1,
   doctorManagementControllerUpdateDoctorV1,
@@ -41,12 +55,48 @@ type DoctorFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   doctor?: DoctorProfile | null;
+  /**
+   * Credentials live on the detail response, not the profile, so the detail
+   * panel passes them in. The directory list omits them and the editors start
+   * empty — which is correct there, since the list never edits credentials.
+   */
+  licenses?: DoctorLicense[];
+  educations?: DoctorEducation[];
 };
 
-export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialogProps) {
+export function DoctorFormDialog({
+  open,
+  onOpenChange,
+  doctor,
+  licenses = [],
+  educations = [],
+}: DoctorFormDialogProps) {
   const isEditMode = Boolean(doctor);
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
+  const [licenseRows, setLicenseRows] = useState<LicenseRow[]>(() => toLicenseRows(licenses));
+  const [educationRows, setEducationRows] = useState<EducationRow[]>(() =>
+    toEducationRows(educations),
+  );
+  const [rowKeyCounter, setRowKeyCounter] = useState<number>(0);
+
+  function addLicenseRow(): void {
+    setLicenseRows((rows) => [...rows, buildEmptyLicenseRow(`new-license-${rowKeyCounter}`)]);
+    setRowKeyCounter((counter) => counter + 1);
+  }
+
+  function addEducationRow(): void {
+    setEducationRows((rows) => [...rows, buildEmptyEducationRow(`new-education-${rowKeyCounter}`)]);
+    setRowKeyCounter((counter) => counter + 1);
+  }
+
+  function updateLicenseRow(key: string, changes: Partial<LicenseRow>): void {
+    setLicenseRows((rows) => rows.map((row) => (row.key === key ? { ...row, ...changes } : row)));
+  }
+
+  function updateEducationRow(key: string, changes: Partial<EducationRow>): void {
+    setEducationRows((rows) => rows.map((row) => (row.key === key ? { ...row, ...changes } : row)));
+  }
   const patientsQuery = usePatientsList(PATIENT_PICKER_PAGE);
   const specialtiesQuery = useSpecialtiesList();
   const createMutation = useMutation({
@@ -62,11 +112,31 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
       fullName: doctor?.fullName ?? '',
       specialtyId: doctor?.specialtyId ?? '',
       phoneNumber: doctor?.phoneNumber ?? '',
+      email: doctor?.email ?? '',
+      title: doctor?.title ?? '',
+      degrees: doctor?.degrees ?? '',
+      // Write-only, like the patient NIK: the profile carries only a mask, so
+      // a blank leaves the stored value alone rather than clearing it.
+      nik: '',
       isActive: doctor?.isActive ?? true,
       patientIds: [] as string[],
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
+      const trimmedEmail = value.email.trim();
+      const trimmedTitle = value.title.trim();
+      const trimmedDegrees = value.degrees.trim();
+      const trimmedNik = value.nik.trim();
+      const credentials = {
+        licenses: buildLicensePayload(licenseRows),
+        educations: buildEducationPayload(educationRows),
+      };
+      const profileFields = {
+        ...(trimmedEmail.length > 0 ? { email: trimmedEmail } : {}),
+        ...(trimmedTitle.length > 0 ? { title: trimmedTitle } : {}),
+        ...(trimmedDegrees.length > 0 ? { degrees: trimmedDegrees } : {}),
+        ...(trimmedNik.length > 0 ? { nik: trimmedNik } : {}),
+      };
       try {
         if (isEditMode && doctor) {
           const response = await updateMutation.mutateAsync({
@@ -76,6 +146,8 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
               specialtyId: value.specialtyId,
               phoneNumber: value.phoneNumber,
               isActive: value.isActive,
+              ...profileFields,
+              ...credentials,
             },
           });
           parseApiSuccess<DoctorProfile>(response, SAVE_ERROR_FALLBACK);
@@ -87,6 +159,8 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
             phoneNumber: value.phoneNumber,
             isActive: value.isActive,
             patientIds: value.patientIds.length > 0 ? value.patientIds : undefined,
+            ...profileFields,
+            ...credentials,
           });
           parseApiSuccess<DoctorProfile>(response, SAVE_ERROR_FALLBACK);
         }
@@ -240,6 +314,122 @@ export function DoctorFormDialog({ open, onOpenChange, doctor }: DoctorFormDialo
               </label>
             )}
           </form.Field>
+
+          <div className="space-y-4 border-t border-slate-100 pt-4">
+            <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Identity & Presentation
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <form.Field name="title">
+                {(field) => (
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor={field.name}
+                      className="block font-heading text-xs font-medium text-slate-600"
+                    >
+                      Title
+                    </label>
+                    <Input
+                      id={field.name}
+                      value={field.state.value}
+                      placeholder="dr."
+                      onChange={(event) => field.handleChange(event.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                  </div>
+                )}
+              </form.Field>
+              <form.Field name="degrees">
+                {(field) => (
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor={field.name}
+                      className="block font-heading text-xs font-medium text-slate-600"
+                    >
+                      Degrees
+                    </label>
+                    <Input
+                      id={field.name}
+                      value={field.state.value}
+                      placeholder="Sp.PD"
+                      onChange={(event) => field.handleChange(event.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                  </div>
+                )}
+              </form.Field>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <form.Field name="email">
+                {(field) => (
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor={field.name}
+                      className="block font-heading text-xs font-medium text-slate-600"
+                    >
+                      Email
+                    </label>
+                    <Input
+                      id={field.name}
+                      type="email"
+                      value={field.state.value}
+                      placeholder="doctor@clinic.com"
+                      onChange={(event) => field.handleChange(event.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                  </div>
+                )}
+              </form.Field>
+              <form.Field name="nik">
+                {(field) => (
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor={field.name}
+                      className="block font-heading text-xs font-medium text-slate-600"
+                    >
+                      NIK
+                    </label>
+                    <Input
+                      id={field.name}
+                      inputMode="numeric"
+                      value={field.state.value}
+                      placeholder={isEditMode ? 'Leave blank to keep' : '16 digits'}
+                      onChange={(event) => field.handleChange(event.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                  </div>
+                )}
+              </form.Field>
+            </div>
+            {isEditMode ? (
+              <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                The stored NIK is encrypted and shown masked. Leave it blank to keep it; type a
+                value only to replace it.
+              </p>
+            ) : null}
+          </div>
+
+          <div className="space-y-4 border-t border-slate-100 pt-4">
+            <DoctorLicensesField
+              rows={licenseRows}
+              onAdd={addLicenseRow}
+              onChange={updateLicenseRow}
+              onRemove={(key) =>
+                setLicenseRows((rows) => rows.filter((row) => row.key !== key))
+              }
+            />
+          </div>
+
+          <div className="space-y-4 border-t border-slate-100 pt-4">
+            <DoctorEducationsField
+              rows={educationRows}
+              onAdd={addEducationRow}
+              onChange={updateEducationRow}
+              onRemove={(key) =>
+                setEducationRows((rows) => rows.filter((row) => row.key !== key))
+              }
+            />
+          </div>
 
           {!isEditMode ? (
             <form.Field name="patientIds">
