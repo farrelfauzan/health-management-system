@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button, Can, Icon } from '@hms/ui';
 
+import { GenerateInvoiceDialog } from '#components/client/billing/generate-invoice-dialog';
 import { EncounterDiagnosesCard } from '#components/client/encounters/encounter-diagnoses-card';
 import { EncounterPrescriptionsCard } from '#components/client/encounters/encounter-prescriptions-card';
 import { EncounterProceduresCard } from '#components/client/encounters/encounter-procedures-card';
@@ -26,6 +27,7 @@ type EncounterWorkspaceProps = {
 export function EncounterWorkspace({ encounterId }: EncounterWorkspaceProps) {
   const encounterQuery = useEncounterDetail(encounterId);
   const [pendingTransition, setPendingTransition] = useState<EncounterTransitionTarget | null>(null);
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState<boolean>(false);
   const encounter = encounterQuery.encounter;
 
   if (encounterQuery.isPending) {
@@ -56,7 +58,20 @@ export function EncounterWorkspace({ encounterId }: EncounterWorkspaceProps) {
         subtitle="The clinical record for this visit: note, measurements, coded diagnoses and procedures."
         breadcrumbs={['Main Dashboard', 'Encounters', encounter.patient.mrn]}
         actions={
-          isEditable ? (
+          !isEditable && encounter.status === 'FINISHED' ? (
+            // Billing starts where the clinical record ends: only a finished
+            // visit has the diagnoses, procedures, and dispenses to price.
+            <Can action="write" subject="Invoice">
+              <Button
+                type="button"
+                className="bg-primary-container hover:bg-primary"
+                onClick={() => setIsGeneratingInvoice(true)}
+              >
+                <Icon name="receipt_long" size={18} />
+                Generate Invoice
+              </Button>
+            </Can>
+          ) : isEditable ? (
             <Can action="write" subject="Encounter">
               <div className="flex items-center gap-2">
                 <Button
@@ -114,6 +129,15 @@ export function EncounterWorkspace({ encounterId }: EncounterWorkspaceProps) {
           <EncounterPrescriptionsCard prescriptions={encounter.prescriptions} />
         </div>
       </div>
+
+      {isGeneratingInvoice ? (
+        <GenerateInvoiceDialog
+          open={isGeneratingInvoice}
+          onOpenChange={setIsGeneratingInvoice}
+          encounterId={encounter.id}
+          patientName={encounter.patient.fullName}
+        />
+      ) : null}
 
       {pendingTransition ? (
         <EncounterTransitionDialog

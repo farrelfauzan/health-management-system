@@ -58,6 +58,15 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         icon: 'local_pharmacy',
         ability: { action: 'read', subject: 'Medication' },
       },
+      {
+        href: '/admin/billing',
+        label: 'Billing',
+        icon: 'receipt_long',
+        ability: [
+          { action: 'read', subject: 'Invoice' },
+          { action: 'read', subject: 'ServiceTariff' },
+        ],
+      },
     ],
   },
   {
