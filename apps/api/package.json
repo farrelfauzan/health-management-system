@@ -37,6 +37,7 @@
     "@prisma/client": "^7.8.0",
     "@smithy/node-http-handler": "^4.9.7",
     "bcryptjs": "^3.0.2",
+    "lz-string": "^1.5.0",
     "nestjs-zod": "^5.4.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
