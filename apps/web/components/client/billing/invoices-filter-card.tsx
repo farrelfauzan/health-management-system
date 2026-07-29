@@ -1,0 +1,124 @@
+'use client';
+
+import { useState } from 'react';
+import { INVOICE_STATUSES, type InvoiceStatusValue } from '@hms/shared-types';
+import {
+  Button,
+  DatePicker,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@hms/ui';
+
+import { FilterCard } from '#components/shared/filter-card';
+import type { InvoicesSearchParams } from '#lib/billing/search-params';
+import { formatStatusLabel } from '#lib/shared/status-label';
+
+const ALL_STATUSES_VALUE = 'ALL';
+
+export type InvoicesFilterValues = {
+  status?: InvoiceStatusValue;
+  createdFrom?: string;
+  createdTo?: string;
+};
+
+type InvoicesFilterCardProps = {
+  initialQuery: InvoicesSearchParams;
+  onApply: (filters: InvoicesFilterValues) => void;
+  onReset: () => void;
+};
+
+export function InvoicesFilterCard({ initialQuery, onApply, onReset }: InvoicesFilterCardProps) {
+  const [status, setStatus] = useState<string>(initialQuery.status ?? ALL_STATUSES_VALUE);
+  const [createdFrom, setCreatedFrom] = useState<string>(initialQuery.createdFrom ?? '');
+  const [createdTo, setCreatedTo] = useState<string>(initialQuery.createdTo ?? '');
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    event.stopPropagation();
+    onApply({
+      status: status === ALL_STATUSES_VALUE ? undefined : (status as InvoiceStatusValue),
+      createdFrom: createdFrom.length > 0 ? createdFrom : undefined,
+      createdTo: createdTo.length > 0 ? createdTo : undefined,
+    });
+  }
+
+  function handleReset(): void {
+    setStatus(ALL_STATUSES_VALUE);
+    setCreatedFrom('');
+    setCreatedTo('');
+    onReset();
+  }
+
+  function handleCreatedFromChange(value: string): void {
+    setCreatedFrom(value);
+    if (createdTo.length > 0 && (value.length === 0 || createdTo < value)) {
+      setCreatedTo('');
+    }
+  }
+
+  return (
+    <form noValidate onSubmit={handleSubmit}>
+      <FilterCard
+        actions={
+          <>
+            <Button type="submit" size="sm" className="bg-primary-container hover:bg-primary">
+              Apply Filters
+            </Button>
+            <Button type="button" size="sm" variant="outline" onClick={handleReset}>
+              Reset
+            </Button>
+          </>
+        }
+      >
+        <div className="w-44">
+          <label
+            htmlFor="invoices-status-filter"
+            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          >
+            Status
+          </label>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger id="invoices-status-filter" className="w-full">
+              <SelectValue placeholder="All Statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_STATUSES_VALUE}>All Statuses</SelectItem>
+              {INVOICE_STATUSES.map((statusValue) => (
+                <SelectItem key={statusValue} value={statusValue}>
+                  {formatStatusLabel(statusValue)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <span className="mb-1.5 block font-heading text-xs font-medium text-slate-600">
+            Created Between
+          </span>
+          <div className="flex items-center gap-2">
+            <DatePicker
+              aria-label="Created from"
+              className="w-40"
+              placeholder="From"
+              value={createdFrom}
+              onValueChange={handleCreatedFromChange}
+            />
+            <span className="text-sm text-slate-400">–</span>
+            <DatePicker
+              aria-label="Created to"
+              className="w-40"
+              placeholder="To"
+              value={createdTo}
+              disabled={createdFrom.length === 0}
+              minValue={createdFrom}
+              onValueChange={setCreatedTo}
+            />
+          </div>
+        </div>
+      </FilterCard>
+    </form>
+  );
+}
