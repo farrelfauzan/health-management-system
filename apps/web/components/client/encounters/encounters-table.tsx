@@ -15,9 +15,15 @@ type EncountersTableProps = {
   encounters: EncounterListItem[];
   isPending: boolean;
   isError: boolean;
+  basePath: string;
 };
 
-export function EncountersTable({ encounters, isPending, isError }: EncountersTableProps) {
+export function EncountersTable({
+  encounters,
+  isPending,
+  isError,
+  basePath,
+}: EncountersTableProps) {
   const showEmptyState = !isPending && encounters.length === 0;
 
   if (showEmptyState) {
@@ -53,7 +59,7 @@ export function EncountersTable({ encounters, isPending, isError }: EncountersTa
           <TableSkeleton columns={TABLE_COLUMN_COUNT} />
         ) : (
           encounters.map((encounter) => (
-            <EncountersTableRow key={encounter.id} encounter={encounter} />
+            <EncountersTableRow key={encounter.id} encounter={encounter} basePath={basePath} />
           ))
         )}
       </TableBody>

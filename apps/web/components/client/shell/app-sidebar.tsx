@@ -19,14 +19,15 @@ import { SidebarNavItem } from './sidebar-nav-item';
 
 type AppSidebarProps = {
   sections: AdminNavSection[];
+  homeHref?: string;
 };
 
-export function AppSidebar({ sections }: AppSidebarProps) {
+export function AppSidebar({ sections, homeHref }: AppSidebarProps) {
   const pathname = usePathname();
   return (
     <Sidebar>
       <SidebarHeader>
-        <SidebarBrand />
+        <SidebarBrand homeHref={homeHref} />
       </SidebarHeader>
       <SidebarContent>
         {sections.map((section) => (

@@ -44,6 +44,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       roles: this.resolveActiveRoleCodes(user.roles),
+      permissions: this.resolveActivePermissionCodes(user.roles),
     };
     const accessToken = await this.issueAccessToken(claims);
     const issuedRefreshToken = await this.issueRefreshToken({
@@ -77,6 +78,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       roles: this.resolveActiveRoleCodes(user.roles),
+      permissions: this.resolveActivePermissionCodes(user.roles),
     };
     const issuedRefreshToken = await this.issueRefreshToken({
       claims,
@@ -137,6 +139,25 @@ export class AuthService {
       .map((userRole) => userRole.role.code);
   }
 
+  /**
+   * Permission codes from every still-assigned role, de-duplicated because two
+   * roles commonly grant the same permission and the claim is read as a set.
+   */
+  private resolveActivePermissionCodes(
+    userRoles: Array<{
+      unassignedAt: Date | null;
+      role: { permissions: Array<{ permission: { permissionKey: string } }> };
+    }>,
+  ): string[] {
+    const permissionKeys = userRoles
+      .filter((userRole) => userRole.unassignedAt === null)
+      .flatMap((userRole) =>
+        userRole.role.permissions.map((entry) => entry.permission.permissionKey),
+      );
+
+    return [...new Set(permissionKeys)].sort();
+  }
+
   private async issueAccessToken(claims: JwtPayload): Promise<string> {
     return this.jwtService.signAsync(claims, {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET') ?? 'dev-access-secret',
@@ -149,9 +170,16 @@ export class AuthService {
 
   private async issueRefreshToken(input: IssueRefreshTokenInput): Promise<IssuedRefreshToken> {
     const tokenId = randomUUID();
+    // Permissions are dropped here on purpose: refresh re-reads them from the
+    // database, so carrying a copy would only bloat the token and go stale.
+    const refreshClaims: Omit<JwtPayload, 'permissions'> = {
+      sub: input.claims.sub,
+      email: input.claims.email,
+      roles: input.claims.roles,
+    };
     const token = await this.jwtService.signAsync(
       {
-        ...input.claims,
+        ...refreshClaims,
         familyId: input.familyId,
         tokenType: 'refresh',
       },

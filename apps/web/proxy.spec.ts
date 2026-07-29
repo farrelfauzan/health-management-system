@@ -50,9 +50,17 @@ describe('proxy', () => {
     expect(response.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value).toBe('');
   });
 
-  it('redirects valid sessions without an admin role to /login and clears the cookie', () => {
+  it('sends a doctor reaching for the admin shell to their own shell', () => {
     const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
     const response = proxy(buildRequest('/admin/administration', doctorToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/dashboard`);
+  });
+
+  it('clears the session of a valid token holding no known shell role', () => {
+    const strangerToken = buildToken({ exp: futureUnix(), roles: ['AUDITOR'] });
+    const response = proxy(buildRequest('/admin/administration', strangerToken));
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
@@ -119,12 +127,49 @@ describe('proxy', () => {
     expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/dashboard`);
   });
 
-  it('redirects a non-patient, non-admin session hitting /portal to /login and clears the cookie', () => {
+  it('sends a doctor hitting the patient portal to their own shell', () => {
     const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
     const response = proxy(buildRequest('/portal/registrations', doctorToken));
 
     expect(response.status).toBe(307);
-    expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
-    expect(response.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value).toBe('');
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/dashboard`);
+  });
+
+  it('lets a doctor session into the doctor shell', () => {
+    const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
+    const response = proxy(buildRequest('/doctor/encounters', doctorToken));
+
+    expect(response.status).toBe(200);
+  });
+
+  it('keeps an admin out of the doctor shell, sending them home instead', () => {
+    const adminToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'] });
+    const response = proxy(buildRequest('/doctor/encounters', adminToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/dashboard`);
+  });
+
+  it('keeps a patient out of the doctor shell', () => {
+    const patientToken = buildToken({ exp: futureUnix(), roles: ['PATIENT'] });
+    const response = proxy(buildRequest('/doctor/encounters', patientToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/portal/registrations`);
+  });
+
+  it('gives a doctor who is also an admin the admin shell, the larger of the two', () => {
+    const dualToken = buildToken({ exp: futureUnix(), roles: ['ADMIN', 'DOCTOR'] });
+    const response = proxy(buildRequest('/admin/administration', dualToken));
+
+    expect(response.status).toBe(200);
+  });
+
+  it('sends a signed-in doctor away from /login to their shell', () => {
+    const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
+    const response = proxy(buildRequest('/login', doctorToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/dashboard`);
   });
 });

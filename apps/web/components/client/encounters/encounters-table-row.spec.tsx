@@ -28,7 +28,7 @@ function renderRow(encounter: EncounterListItem): void {
   render(
     <Table>
       <TableBody>
-        <EncountersTableRow encounter={encounter} />
+        <EncountersTableRow encounter={encounter} basePath="/admin/encounters" />
       </TableBody>
     </Table>,
   );
@@ -50,6 +50,21 @@ describe('EncountersTableRow', () => {
     expect(screen.getByRole('link', { name: /Open/ })).toHaveAttribute(
       'href',
       '/admin/encounters/encounter-1',
+    );
+  });
+
+  it('links within whichever shell renders it', () => {
+    render(
+      <Table>
+        <TableBody>
+          <EncountersTableRow encounter={buildEncounter()} basePath="/doctor/encounters" />
+        </TableBody>
+      </Table>,
+    );
+
+    expect(screen.getByRole('link', { name: /Open/ })).toHaveAttribute(
+      'href',
+      '/doctor/encounters/encounter-1',
     );
   });
 

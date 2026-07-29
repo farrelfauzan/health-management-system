@@ -808,11 +808,14 @@ SET
   "updated_at" = NOW(),
   "deleted_at" = NULL;
 
--- Development admin account. Credentials: admin@salingjaga.com / Admin123!
--- The hash is bcryptjs (cost 10). Replace or remove this block for production seeds.
+-- Development accounts. Credentials:
+--   admin@salingjaga.com  / Admin123!   (SUPER_ADMIN)
+--   dokter@salingjaga.com / Doctor123!  (DOCTOR, owns the dr. Yusuf Hidayat profile)
+-- The hashes are bcryptjs (cost 10). Replace or remove this block for production seeds.
 WITH seed_users(email, password_hash) AS (
   VALUES
-    ('admin@salingjaga.com', '$2b$10$8Xw5CHvVbJa465ypeir1ZeRyastav5gmh/cU3ztImenBGuftYUQ1O')
+    ('admin@salingjaga.com', '$2b$10$8Xw5CHvVbJa465ypeir1ZeRyastav5gmh/cU3ztImenBGuftYUQ1O'),
+    ('dokter@salingjaga.com', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O')
 )
 INSERT INTO "users" (
   "id",
@@ -841,7 +844,8 @@ SET
 
 WITH seed_user_roles(email, role_code) AS (
   VALUES
-    ('admin@salingjaga.com', 'SUPER_ADMIN')
+    ('admin@salingjaga.com', 'SUPER_ADMIN'),
+    ('dokter@salingjaga.com', 'DOCTOR')
 )
 INSERT INTO "user_roles" (
   "id",
@@ -869,6 +873,19 @@ SET
   "unassigned_by_id" = NULL,
   "updated_at" = NOW(),
   "deleted_at" = NULL;
+
+-- Own the seeded practitioner with the doctor login. Without this link the
+-- OWN-scoped grants have nothing to resolve against: opening an encounter as a
+-- doctor looks the attending practitioner up by owner_user_id and fails with
+-- "You do not have an active doctor profile" when it is null.
+UPDATE "doctor_profiles"
+SET
+  "owner_user_id" = (SELECT "id" FROM "users" WHERE "email" = 'dokter@salingjaga.com'),
+  "updated_at" = NOW()
+WHERE "license_number" = 'SIP-2026-0005'
+  AND "owner_user_id" IS DISTINCT FROM (
+    SELECT "id" FROM "users" WHERE "email" = 'dokter@salingjaga.com'
+  );
 
 -- Starter service tariffs so invoice generation works out of the box in
 -- development and demos: one consultation fee plus two common tindakan mapped

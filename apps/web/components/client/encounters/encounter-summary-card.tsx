@@ -11,21 +11,29 @@ import { formatRegisteredAt } from '#lib/registrations/format-registered-at';
 
 type EncounterSummaryCardProps = {
   encounter: EncounterDetail;
+  /** Absent when the viewer has no patient directory to link into. */
+  patientHref?: string;
 };
 
-export function EncounterSummaryCard({ encounter }: EncounterSummaryCardProps) {
+export function EncounterSummaryCard({ encounter, patientHref }: EncounterSummaryCardProps) {
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4">
         <div className="flex items-center gap-3">
           <AvatarInitials name={encounter.patient.fullName} />
           <div>
-            <Link
-              href={`/admin/patients/${encounter.patientId}`}
-              className="font-heading text-sm font-semibold text-slate-900 hover:underline"
-            >
-              {encounter.patient.fullName}
-            </Link>
+            {patientHref ? (
+              <Link
+                href={patientHref}
+                className="font-heading text-sm font-semibold text-slate-900 hover:underline"
+              >
+                {encounter.patient.fullName}
+              </Link>
+            ) : (
+              <p className="font-heading text-sm font-semibold text-slate-900">
+                {encounter.patient.fullName}
+              </p>
+            )}
             <p className="font-mono text-xs text-slate-500">{encounter.patient.mrn}</p>
           </div>
         </div>

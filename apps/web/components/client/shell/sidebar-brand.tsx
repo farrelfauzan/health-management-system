@@ -6,12 +6,16 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@hms/ui';
 
 import { FACILITY_CONFIG } from '#lib/facility/facility-config';
 
-export function SidebarBrand() {
+type SidebarBrandProps = {
+  homeHref?: string;
+};
+
+export function SidebarBrand({ homeHref = '/admin/dashboard' }: SidebarBrandProps) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton asChild size="lg" className="hover:bg-transparent active:bg-transparent">
-          <Link href="/admin/dashboard">
+          <Link href={homeHref}>
             <Image
               src="/saling-jaga-mark.png"
               alt={`${FACILITY_CONFIG.name} logo`}
