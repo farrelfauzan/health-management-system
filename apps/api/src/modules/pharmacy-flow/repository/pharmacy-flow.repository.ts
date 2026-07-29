@@ -387,6 +387,13 @@ export class PharmacyFlowRepository {
    * Creates a dispense record atomically: decrements medication stock with a
    * non-negative guard, re-verifies remaining prescribed quantities inside the
    * transaction, updates the prescription status, and persists the record.
+   *
+   * An encounter-linked dispense for a BPJS patient also enqueues the OBAT
+   * outbox row (P11-T06) in the same transaction — the same deliberate
+   * cross-module write as the pendaftaran/kunjungan enqueues: a dispense and
+   * its reporting queue entry commit or roll back together. The upsert is a
+   * no-op when the visit's OBAT row already exists, so a follow-up dispense
+   * after the medications were reported does not re-open a settled row.
    */
   async createDispense(payload: CreateDispenseRecordPayload) {
     return this.prisma.executeTransaction(async (tx) => {
@@ -401,7 +408,7 @@ export class PharmacyFlowRepository {
           status: resolvePrescriptionStatusAfterDispense(hasRemainingQuantity),
         },
       });
-      return tx.dispenseRecord.create({
+      const created = await tx.dispenseRecord.create({
         data: {
           prescriptionId: payload.prescriptionId,
           pharmacistId: payload.pharmacistId,
@@ -415,6 +422,41 @@ export class PharmacyFlowRepository {
         },
         include: DISPENSE_DETAIL_INCLUDE,
       });
+      await this.enqueueBpjsObat(tx, payload.prescriptionId);
+      return created;
+    });
+  }
+
+  private async enqueueBpjsObat(
+    tx: PrismaTransactionClient,
+    prescriptionId: string,
+  ): Promise<void> {
+    const prescription = await tx.prescription.findUnique({
+      where: { id: prescriptionId },
+      select: {
+        encounter: { select: { registrationId: true } },
+        patient: { select: { bpjsNumberCiphertext: true } },
+      },
+    });
+    if (!prescription?.encounter || !prescription.patient.bpjsNumberCiphertext) {
+      return;
+    }
+    const activeConfig = await tx.bpjsPcareConfig.findFirst({
+      where: { facilityId: null, isActive: true },
+      select: { id: true },
+    });
+    if (!activeConfig) {
+      return;
+    }
+    await tx.bpjsSubmission.upsert({
+      where: {
+        registrationId_type: {
+          registrationId: prescription.encounter.registrationId,
+          type: 'OBAT',
+        },
+      },
+      create: { registrationId: prescription.encounter.registrationId, type: 'OBAT' },
+      update: {},
     });
   }
 

@@ -114,6 +114,24 @@ export const BPJS_PCARE_EXAMPLES = {
   eligibilityCheckRequest: {
     force: false,
   },
+  referralRequest: {
+    destinationProviderCode: '1101R001',
+    subSpecialtyCode: '0101',
+    saranaCode: '1',
+    estimatedReferralDate: '2026-08-10',
+    notes: 'Kontrol kardiologi untuk evaluasi lanjutan',
+  },
+  referral: {
+    id: '2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e',
+    encounterId: '4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a',
+    destinationProviderCode: '1101R001',
+    subSpecialtyCode: '0101',
+    saranaCode: '1',
+    estimatedReferralDate: '2026-08-10',
+    notes: 'Kontrol kardiologi untuk evaluasi lanjutan',
+    createdAt: '2026-08-06T03:00:00.000Z',
+    updatedAt: '2026-08-06T03:00:00.000Z',
+  },
   submission: {
     id: '8a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3d',
     registrationId: '1f2e3d4c-5b6a-7980-a1b2-c3d4e5f6a7b8',
@@ -131,6 +149,26 @@ export const BPJS_PCARE_EXAMPLES = {
     page: 1,
     limit: 10,
     total: 1,
+  },
+  monthlyReport: {
+    month: '2026-08',
+    types: [
+      { type: 'PENDAFTARAN', recorded: 42, submitted: 40, pending: 0, failed: 2 },
+      { type: 'KUNJUNGAN', recorded: 41, submitted: 39, pending: 1, failed: 1 },
+      { type: 'PENDAFTARAN_DELETE', recorded: 1, submitted: 1, pending: 0, failed: 0 },
+      { type: 'OBAT', recorded: 35, submitted: 34, pending: 0, failed: 1 },
+    ],
+    failures: [
+      {
+        submissionId: '8a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3d',
+        registrationId: '1f2e3d4c-5b6a-7980-a1b2-c3d4e5f6a7b8',
+        type: 'PENDAFTARAN',
+        attempts: 1,
+        lastError:
+          "Doctor dr. Sinta Dewi's specialty has no BPJS poli mapping — map the specialty in BPJS mappings first",
+        lastAttemptAt: '2026-08-05T02:30:00.000Z',
+      },
+    ],
   },
   submissionRetried: {
     id: '8a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3d',

@@ -1,4 +1,5 @@
 import {
+  BpjsReferralResponse,
   DiagnosisResponse,
   Icd9cmCode,
   Icd10Code,
@@ -13,6 +14,7 @@ import { Icd10CodeService } from '../../terminology/service/icd10-code.service';
 import { AddDiagnosisDto } from '../dto/add-diagnosis.dto';
 import { AddProcedureDto } from '../dto/add-procedure.dto';
 import { RecordVitalSignsDto } from '../dto/record-vital-signs.dto';
+import { UpsertBpjsReferralDto } from '../dto/upsert-bpjs-referral.dto';
 import { EncounterRepository } from '../repository/encounter.repository';
 import { EncounterAccessService } from './encounter-access.service';
 import { EncounterMapper } from './encounter.mapper';
@@ -21,6 +23,11 @@ type CodedEntry = {
   code: string;
   display: string;
 };
+
+function parseCalendarDate(value: string): Date {
+  const [yearPart = '', monthPart = '', dayPart = ''] = value.split('-');
+  return new Date(Date.UTC(Number(yearPart), Number(monthPart) - 1, Number(dayPart)));
+}
 
 /**
  * The measured and coded content of an encounter. Every write goes through the
@@ -105,6 +112,56 @@ export class EncounterClinicalDataService {
     }
 
     await this.encounterRepository.softDeleteDiagnosis(diagnosisId);
+  }
+
+  /**
+   * Records or replaces the encounter's BPJS rujukan (P11-T06). One referral
+   * per encounter — PCare carries it on the kunjungan payload, so the last
+   * decision recorded before close is what gets reported.
+   */
+  async saveBpjsReferral(
+    encounterId: string,
+    payload: UpsertBpjsReferralDto,
+    currentUser: CurrentUser,
+  ): Promise<BpjsReferralResponse> {
+    await this.assertWritableEncounter(encounterId, currentUser);
+    const saved = await this.encounterRepository.upsertBpjsReferral({
+      encounterId,
+      destinationProviderCode: payload.destinationProviderCode,
+      subSpecialtyCode: payload.subSpecialtyCode ?? null,
+      saranaCode: payload.saranaCode ?? null,
+      khususCode: payload.khususCode ?? null,
+      estimatedReferralDate: parseCalendarDate(payload.estimatedReferralDate),
+      notes: payload.notes ?? null,
+      recordedById: currentUser.sub,
+    });
+    return this.encounterMapper.toBpjsReferralResponse(saved);
+  }
+
+  async getBpjsReferral(
+    encounterId: string,
+    currentUser: CurrentUser,
+  ): Promise<BpjsReferralResponse> {
+    const scope = await this.encounterAccessService.resolveScopeOrThrow(currentUser, 'read');
+    const encounter = await this.encounterRepository.findEncounterWithRelationsById(encounterId);
+    if (!encounter) {
+      throw new NotFoundException('Encounter not found');
+    }
+    await this.encounterAccessService.assertCanReadEncounter({ encounter, scope, currentUser });
+    const referral = await this.encounterRepository.findBpjsReferralByEncounterId(encounterId);
+    if (!referral) {
+      throw new NotFoundException('No BPJS referral recorded for this encounter');
+    }
+    return this.encounterMapper.toBpjsReferralResponse(referral);
+  }
+
+  async removeBpjsReferral(encounterId: string, currentUser: CurrentUser): Promise<void> {
+    await this.assertWritableEncounter(encounterId, currentUser);
+    const referral = await this.encounterRepository.findBpjsReferralByEncounterId(encounterId);
+    if (!referral) {
+      throw new NotFoundException('No BPJS referral recorded for this encounter');
+    }
+    await this.encounterRepository.softDeleteBpjsReferral(referral.id);
   }
 
   async addProcedure(

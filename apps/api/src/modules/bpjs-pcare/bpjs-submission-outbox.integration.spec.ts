@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { EncounterRepository } from '../emr/repository/encounter.repository';
+import { PharmacyFlowRepository } from '../pharmacy-flow/repository/pharmacy-flow.repository';
 import { QueueNumberAllocatorRepository } from '../registration-flow/repository/queue-number-allocator.repository';
 import { RegistrationFlowRepository } from '../registration-flow/repository/registration-flow.repository';
 
@@ -17,11 +18,15 @@ describe('BPJS submission outbox against Postgres', () => {
   let prisma: PrismaService;
   let registrationFlowRepository: RegistrationFlowRepository;
   let encounterRepository: EncounterRepository;
+  let pharmacyFlowRepository: PharmacyFlowRepository;
 
   const createdPatientIds: string[] = [];
   const createdDoctorIds: string[] = [];
   const createdRegistrationIds: string[] = [];
   const createdEncounterIds: string[] = [];
+  const createdPrescriptionIds: string[] = [];
+  const createdMedicationIds: string[] = [];
+  let createdUserId: string | null = null;
   let specialtyId: string;
   let bpjsConfigId: string | null = null;
   let isConfigOwnedBySpec = false;
@@ -34,6 +39,7 @@ describe('BPJS submission outbox against Postgres', () => {
       new QueueNumberAllocatorRepository(),
     );
     encounterRepository = new EncounterRepository(prisma);
+    pharmacyFlowRepository = new PharmacyFlowRepository(prisma);
     const specialty = await prisma.specialty.create({
       data: { name: `BPJS Outbox Spec ${randomUUID()}` },
     });
@@ -68,11 +74,25 @@ describe('BPJS submission outbox against Postgres', () => {
     await prisma.satusehatSubmission.deleteMany({
       where: { encounterId: { in: createdEncounterIds } },
     });
+    await prisma.dispenseItem.deleteMany({
+      where: { dispenseRecord: { prescriptionId: { in: createdPrescriptionIds } } },
+    });
+    await prisma.dispenseRecord.deleteMany({
+      where: { prescriptionId: { in: createdPrescriptionIds } },
+    });
+    await prisma.prescriptionMedication.deleteMany({
+      where: { prescriptionId: { in: createdPrescriptionIds } },
+    });
+    await prisma.prescription.deleteMany({ where: { id: { in: createdPrescriptionIds } } });
+    await prisma.medication.deleteMany({ where: { id: { in: createdMedicationIds } } });
     await prisma.encounter.deleteMany({ where: { id: { in: createdEncounterIds } } });
     await prisma.registration.deleteMany({ where: { id: { in: createdRegistrationIds } } });
     await prisma.patientProfile.deleteMany({ where: { id: { in: createdPatientIds } } });
     await prisma.doctorProfile.deleteMany({ where: { id: { in: createdDoctorIds } } });
     await prisma.specialty.delete({ where: { id: specialtyId } });
+    if (createdUserId !== null) {
+      await prisma.user.delete({ where: { id: createdUserId } });
+    }
     if (isConfigOwnedBySpec && bpjsConfigId !== null) {
       await prisma.bpjsPcareConfig.delete({ where: { id: bpjsConfigId } });
     }
@@ -207,5 +227,60 @@ describe('BPJS submission outbox against Postgres', () => {
 
     const pendingCaseRows = await findSubmissions(pendingCase.registrationId);
     expect(pendingCaseRows.map((submission) => submission.type)).toEqual(['PENDAFTARAN']);
+  });
+
+  it('enqueues the OBAT row in the same transaction as an encounter-linked dispense', async () => {
+    const { registrationId, patientId } = await createPendingRegistration({ hasBpjsNumber: true });
+    const doctor = await prisma.doctorProfile.create({
+      data: {
+        licenseNumber: `BPJSOB-${randomUUID().slice(0, 18)}`,
+        fullName: 'dr. BPJS Obat Spec',
+        specialtyId,
+      },
+    });
+    createdDoctorIds.push(doctor.id);
+    const encounter = await prisma.encounter.create({
+      data: { registrationId, patientId, doctorId: doctor.id, status: 'IN_PROGRESS' },
+    });
+    createdEncounterIds.push(encounter.id);
+    const pharmacist = await prisma.user.create({
+      data: {
+        email: `bpjs-obat-spec-${randomUUID().slice(0, 8)}@example.com`,
+        passwordHash: 'spec-hash',
+      },
+    });
+    createdUserId = pharmacist.id;
+    const medication = await prisma.medication.create({
+      data: {
+        code: `BPJSOB-${randomUUID().slice(0, 12)}`,
+        name: 'Obat Spec Paracetamol',
+        stockQty: 50,
+      },
+    });
+    createdMedicationIds.push(medication.id);
+    const prescription = await prisma.prescription.create({
+      data: {
+        patientId,
+        doctorId: doctor.id,
+        encounterId: encounter.id,
+        status: 'ISSUED',
+        items: {
+          create: [
+            { medicationId: medication.id, dosage: '500 mg', frequency: '3x1', quantity: 10 },
+          ],
+        },
+      },
+    });
+    createdPrescriptionIds.push(prescription.id);
+
+    await pharmacyFlowRepository.createDispense({
+      prescriptionId: prescription.id,
+      pharmacistId: pharmacist.id,
+      items: [{ medicationId: medication.id, quantity: 10 }],
+    });
+
+    const submissions = await findSubmissions(registrationId);
+    expect(submissions.map((submission) => submission.type)).toEqual(['OBAT']);
+    expect(submissions[0]).toMatchObject({ status: 'PENDING', attempts: 0 });
   });
 });

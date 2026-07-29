@@ -24,6 +24,20 @@ export type BpjsPcarePendaftaranPayload = {
   readonly kdTkp: string;
 };
 
+export type BpjsPcareRujukLanjutPayload = {
+  readonly kdppk: string;
+  readonly tglEstRujuk: string;
+  readonly subSpesialis: {
+    readonly kdSubSpesialis1: string;
+    readonly kdSarana: string | null;
+  } | null;
+  readonly khusus: {
+    readonly kdKhusus: string;
+    readonly kdSubSpesialis: string | null;
+    readonly catatan: string | null;
+  } | null;
+};
+
 export type BpjsPcareKunjunganPayload = {
   readonly noKunjungan: null;
   readonly noKartu: string;
@@ -47,4 +61,13 @@ export type BpjsPcareKunjunganPayload = {
   readonly kdPostatus: null;
   readonly kdTkp: string;
   readonly terapi: string | null;
+  readonly rujukLanjut: BpjsPcareRujukLanjutPayload | null;
+};
+
+export type BpjsPcareObatPayload = {
+  readonly noKunjungan: string;
+  readonly kdObat: string;
+  readonly signa1: number;
+  readonly signa2: number;
+  readonly jmlObat: number;
 };

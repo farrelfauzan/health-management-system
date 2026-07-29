@@ -15,6 +15,7 @@ import {
   BpjsPcareErrorCode,
 } from '../../../common/bpjs-pcare/bpjs-pcare.types';
 import { buildBpjsKunjunganPayload } from '../../../common/bpjs-pcare/build-bpjs-kunjungan-payload';
+import { buildBpjsObatPayload } from '../../../common/bpjs-pcare/build-bpjs-obat-payload';
 import { buildBpjsPendaftaranDeletePath } from '../../../common/bpjs-pcare/build-bpjs-pendaftaran-delete-path';
 import { buildBpjsPendaftaranPayload } from '../../../common/bpjs-pcare/build-bpjs-pendaftaran-payload';
 import { resolveBpjsPcareAdapterConfig } from '../../../common/bpjs-pcare/bpjs-pcare.config';
@@ -86,6 +87,9 @@ export class BpjsSubmissionService {
     }
     if (submission.type === 'KUNJUNGAN') {
       return this.submitKunjungan(sourceData);
+    }
+    if (submission.type === 'OBAT') {
+      return this.submitObat(sourceData);
     }
     return this.submitPendaftaranDelete(sourceData);
   }
@@ -169,6 +173,7 @@ export class BpjsSubmissionService {
       keluhan: encounter.subjective,
       diagnosisCodes,
       vitals: encounter.vitals,
+      referral: encounter.referral,
     });
     const connection = await this.requireConnection();
     const envelope = await this.httpClient.sendRequest(connection, {
@@ -180,6 +185,66 @@ export class BpjsSubmissionService {
       bpjsReferenceNo: parseBpjsPcareSubmissionReference(envelope.response),
       submittedKdPoli: kdPoli,
     };
+  }
+
+  private async submitObat(sourceData: BpjsSubmissionSourceData): Promise<BpjsSubmissionOutcome> {
+    if (sourceData.registration.status === 'CANCELLED') {
+      throw new BpjsSubmissionDataError(
+        'Registration was cancelled — dispensed medications will not be reported',
+      );
+    }
+    const noKunjungan = this.requireSubmittedKunjunganReference(sourceData);
+    const mappedMedications = sourceData.dispensedMedications.filter(
+      (medication) => medication.dphoCode !== null,
+    );
+    const unmappedMedications = sourceData.dispensedMedications.filter(
+      (medication) => medication.dphoCode === null,
+    );
+    if (mappedMedications.length === 0) {
+      throw new BpjsSubmissionDataError(
+        'None of the dispensed medications have a DPHO code — link them in BPJS mappings and retry',
+      );
+    }
+    if (unmappedMedications.length > 0) {
+      this.logger.warn(
+        `Skipping ${unmappedMedications.length} dispensed medication(s) without a DPHO code on kunjungan ${noKunjungan}: ${unmappedMedications
+          .map((medication) => medication.medicationName)
+          .join(', ')}`,
+      );
+    }
+    const connection = await this.requireConnection();
+    for (const medication of mappedMedications) {
+      const payload = buildBpjsObatPayload({
+        noKunjungan,
+        kdObat: medication.dphoCode as string,
+        quantity: medication.quantity,
+        frequency: medication.frequency,
+      });
+      await this.httpClient.sendRequest(connection, {
+        method: 'POST',
+        path: 'obat/kunjungan',
+        body: payload,
+      });
+    }
+    return { bpjsReferenceNo: noKunjungan, submittedKdPoli: null };
+  }
+
+  private requireSubmittedKunjunganReference(sourceData: BpjsSubmissionSourceData): string {
+    const kunjungan = sourceData.kunjungan;
+    if (kunjungan === null || kunjungan.status === 'PENDING') {
+      throw new Error('Waiting for the visit kunjungan to reach PCare first');
+    }
+    if (kunjungan.status === 'FAILED') {
+      throw new BpjsSubmissionDataError(
+        'The visit kunjungan failed — fix and retry it before the dispensed medications can be reported',
+      );
+    }
+    if (kunjungan.bpjsReferenceNo === null) {
+      throw new BpjsSubmissionDataError(
+        'The submitted kunjungan carries no noKunjungan — dispensed medications cannot be attached',
+      );
+    }
+    return kunjungan.bpjsReferenceNo;
   }
 
   private async submitPendaftaranDelete(

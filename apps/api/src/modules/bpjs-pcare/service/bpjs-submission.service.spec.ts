@@ -52,7 +52,9 @@ describe('BpjsSubmissionService', () => {
       patient: { bpjsNumber: '0001234567890' },
       appointmentDoctor: mockMappedDoctor,
       encounter: null,
+      dispensedMedications: [],
       pendaftaran: null,
+      kunjungan: null,
       ...overrides,
     };
   }
@@ -204,6 +206,7 @@ describe('BpjsSubmissionService', () => {
         { code: 'A01.0', type: 'PRIMARY' as const },
         { code: 'E11', type: 'SECONDARY' as const },
       ],
+      referral: null,
     };
 
     it('submits the encounter with ordered diagnoses and rounded vitals', async () => {
@@ -317,6 +320,152 @@ describe('BpjsSubmissionService', () => {
       expect(submissionRepositoryMock.markFailed).toHaveBeenCalledWith(
         expect.objectContaining({
           lastError: expect.stringContaining('no BPJS kdDokter mapping'),
+        }),
+      );
+    });
+
+    it('flips the discharge status to rujuk lanjut when a referral is recorded', async () => {
+      submissionRepositoryMock.findSubmissionSourceData.mockResolvedValue(
+        buildSourceData({
+          encounter: {
+            ...finishedEncounter,
+            referral: {
+              destinationProviderCode: '1101R001',
+              subSpecialtyCode: '0101',
+              saranaCode: '1',
+              khususCode: null,
+              estimatedReferralDate: new Date('2026-08-10T00:00:00.000Z'),
+              notes: null,
+            },
+          },
+          pendaftaran: { status: 'SUBMITTED', bpjsReferenceNo: 'A12', submittedKdPoli: '001' },
+        }),
+      );
+      const service = createService();
+
+      await service.processSubmission(buildSubmission({ type: 'KUNJUNGAN' }));
+
+      expect(httpClientMock.sendRequest).toHaveBeenCalledWith(
+        mockConnection,
+        expect.objectContaining({
+          body: expect.objectContaining({
+            kdStatusPulang: '4',
+            rujukLanjut: {
+              kdppk: '1101R001',
+              tglEstRujuk: '10-08-2026',
+              subSpesialis: { kdSubSpesialis1: '0101', kdSarana: '1' },
+              khusus: null,
+            },
+          }),
+        }),
+      );
+    });
+  });
+
+  describe('obat', () => {
+    const mockDispensedMedications = [
+      { medicationName: 'Paracetamol 500 mg', dphoCode: 'K0001', quantity: 10, frequency: '3x1' },
+      { medicationName: 'Vitamin Custom', dphoCode: null, quantity: 5, frequency: '1x1' },
+      { medicationName: 'Amoxicillin 500 mg', dphoCode: 'K0002', quantity: 15, frequency: null },
+    ];
+
+    it('waits transiently until the kunjungan has reached PCare', async () => {
+      submissionRepositoryMock.findSubmissionSourceData.mockResolvedValue(
+        buildSourceData({
+          dispensedMedications: mockDispensedMedications,
+          kunjungan: { status: 'PENDING', bpjsReferenceNo: null, submittedKdPoli: null },
+        }),
+      );
+      const service = createService();
+
+      await service.processSubmission(buildSubmission({ type: 'OBAT' }));
+
+      expect(submissionRepositoryMock.scheduleRetry).toHaveBeenCalledWith(
+        expect.objectContaining({
+          lastError: expect.stringContaining('Waiting for the visit kunjungan'),
+        }),
+      );
+      expect(httpClientMock.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it('posts one obat per DPHO-mapped item and skips unmapped ones', async () => {
+      submissionRepositoryMock.findSubmissionSourceData.mockResolvedValue(
+        buildSourceData({
+          dispensedMedications: mockDispensedMedications,
+          kunjungan: {
+            status: 'SUBMITTED',
+            bpjsReferenceNo: '0001R0010826K000012',
+            submittedKdPoli: '001',
+          },
+        }),
+      );
+      const service = createService();
+
+      await service.processSubmission(buildSubmission({ type: 'OBAT' }));
+
+      expect(httpClientMock.sendRequest).toHaveBeenCalledTimes(2);
+      expect(httpClientMock.sendRequest).toHaveBeenNthCalledWith(
+        1,
+        mockConnection,
+        expect.objectContaining({
+          method: 'POST',
+          path: 'obat/kunjungan',
+          body: {
+            noKunjungan: '0001R0010826K000012',
+            kdObat: 'K0001',
+            signa1: 3,
+            signa2: 1,
+            jmlObat: 10,
+          },
+        }),
+      );
+      expect(httpClientMock.sendRequest).toHaveBeenNthCalledWith(
+        2,
+        mockConnection,
+        expect.objectContaining({
+          body: expect.objectContaining({ kdObat: 'K0002', signa1: 1, signa2: 1, jmlObat: 15 }),
+        }),
+      );
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
+        expect.objectContaining({ bpjsReferenceNo: '0001R0010826K000012' }),
+      );
+    });
+
+    it('fails permanently when no dispensed medication has a DPHO code', async () => {
+      submissionRepositoryMock.findSubmissionSourceData.mockResolvedValue(
+        buildSourceData({
+          dispensedMedications: [
+            { medicationName: 'Vitamin Custom', dphoCode: null, quantity: 5, frequency: null },
+          ],
+          kunjungan: { status: 'SUBMITTED', bpjsReferenceNo: 'K0012', submittedKdPoli: '001' },
+        }),
+      );
+      const service = createService();
+
+      await service.processSubmission(buildSubmission({ type: 'OBAT' }));
+
+      expect(submissionRepositoryMock.markFailed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          lastError: expect.stringContaining('None of the dispensed medications have a DPHO code'),
+        }),
+      );
+      expect(httpClientMock.sendRequest).not.toHaveBeenCalled();
+    });
+
+    it('fails permanently when the kunjungan itself failed', async () => {
+      submissionRepositoryMock.findSubmissionSourceData.mockResolvedValue(
+        buildSourceData({
+          dispensedMedications: mockDispensedMedications,
+          kunjungan: { status: 'FAILED', bpjsReferenceNo: null, submittedKdPoli: null },
+        }),
+      );
+      const service = createService();
+
+      await service.processSubmission(buildSubmission({ type: 'OBAT' }));
+
+      expect(submissionRepositoryMock.markFailed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          lastError: expect.stringContaining('kunjungan failed'),
         }),
       );
     });

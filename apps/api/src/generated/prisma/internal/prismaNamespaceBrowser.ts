@@ -92,7 +92,8 @@ export const ModelName = {
   BpjsPcareConfig: 'BpjsPcareConfig',
   BpjsReferenceItem: 'BpjsReferenceItem',
   BpjsEligibilityCheck: 'BpjsEligibilityCheck',
-  BpjsSubmission: 'BpjsSubmission'
+  BpjsSubmission: 'BpjsSubmission',
+  BpjsReferral: 'BpjsReferral'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -801,6 +802,24 @@ export const BpjsSubmissionScalarFieldEnum = {
 } as const
 
 export type BpjsSubmissionScalarFieldEnum = (typeof BpjsSubmissionScalarFieldEnum)[keyof typeof BpjsSubmissionScalarFieldEnum]
+
+
+export const BpjsReferralScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  destinationProviderCode: 'destinationProviderCode',
+  subSpecialtyCode: 'subSpecialtyCode',
+  saranaCode: 'saranaCode',
+  khususCode: 'khususCode',
+  estimatedReferralDate: 'estimatedReferralDate',
+  notes: 'notes',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type BpjsReferralScalarFieldEnum = (typeof BpjsReferralScalarFieldEnum)[keyof typeof BpjsReferralScalarFieldEnum]
 
 
 export const SortOrder = {

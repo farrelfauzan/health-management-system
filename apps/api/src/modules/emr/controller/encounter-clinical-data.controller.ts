@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -14,10 +16,12 @@ import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
+import { BPJS_PCARE_EXAMPLES } from '../../../common/openapi/bpjs-pcare-examples';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
 import { AddDiagnosisDto } from '../dto/add-diagnosis.dto';
 import { AddProcedureDto } from '../dto/add-procedure.dto';
 import { RecordVitalSignsDto } from '../dto/record-vital-signs.dto';
+import { UpsertBpjsReferralDto } from '../dto/upsert-bpjs-referral.dto';
 import { EncounterClinicalDataService } from '../service/encounter-clinical-data.service';
 
 /**
@@ -175,6 +179,77 @@ export class EncounterClinicalDataController {
 
     return {
       message: 'Procedure retracted',
+    };
+  }
+
+  @Put('bpjs-referral')
+  @Auth([{ action: 'write', subject: 'Encounter' }])
+  @ApiEndpoint({
+    summary: 'Record or replace the encounter’s BPJS rujukan',
+    responseDescription:
+      'The recorded referral. One per encounter — PCare carries the rujukan on the kunjungan payload at close, so the last decision recorded before close is what gets reported. Provide subSpecialtyCode (subspesialis referral) or khususCode (khusus/TACC).',
+    responseExample: {
+      data: BPJS_PCARE_EXAMPLES.referral,
+      message: 'BPJS referral recorded',
+    },
+    requestType: UpsertBpjsReferralDto,
+    requestExample: BPJS_PCARE_EXAMPLES.referralRequest,
+    notFoundDescription: 'Encounter not found.',
+  })
+  async saveBpjsReferral(
+    @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
+    @Body() payload: UpsertBpjsReferralDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const referral = await this.encounterClinicalDataService.saveBpjsReferral(
+      encounterId,
+      payload,
+      actor,
+    );
+
+    return {
+      data: referral,
+      message: 'BPJS referral recorded',
+    };
+  }
+
+  @Get('bpjs-referral')
+  @Auth([{ action: 'read', subject: 'Encounter' }])
+  @ApiEndpoint({
+    summary: 'Read the encounter’s recorded BPJS rujukan',
+    responseDescription: 'The referral recorded on this encounter, if any.',
+    responseExample: { data: BPJS_PCARE_EXAMPLES.referral },
+    notFoundDescription: 'Encounter not found, or no referral recorded.',
+  })
+  async getBpjsReferral(
+    @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const referral = await this.encounterClinicalDataService.getBpjsReferral(encounterId, actor);
+
+    return { data: referral };
+  }
+
+  @Delete('bpjs-referral')
+  @Auth([{ action: 'write', subject: 'Encounter' }])
+  @ApiEndpoint({
+    summary: 'Retract the encounter’s BPJS rujukan',
+    responseDescription:
+      'The referral is soft-deleted and stays auditable; the kunjungan will report a normal outpatient discharge.',
+    responseExample: { message: 'BPJS referral retracted' },
+    notFoundDescription: 'Encounter not found, or no referral recorded.',
+  })
+  async removeBpjsReferral(
+    @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    await this.encounterClinicalDataService.removeBpjsReferral(encounterId, actor);
+
+    return {
+      message: 'BPJS referral retracted',
     };
   }
 

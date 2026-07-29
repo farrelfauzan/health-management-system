@@ -47,6 +47,7 @@ enum BpjsSubmissionType {
   PENDAFTARAN
   KUNJUNGAN
   PENDAFTARAN_DELETE
+  OBAT
 }
 
 /// FAILED is terminal for the worker: only an admin retry re-opens it —
@@ -300,6 +301,7 @@ model User {
   recordedVitalSigns       VitalSigns[]            @relation("VitalSignsRecordedBy")
   recordedDiagnoses        Diagnosis[]             @relation("DiagnosisRecordedBy")
   recordedProcedures       Procedure[]             @relation("ProcedureRecordedBy")
+  recordedBpjsReferrals    BpjsReferral[]          @relation("BpjsReferralRecordedBy")
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
   createdInvoices          Invoice[]               @relation("InvoiceCreatedBy")
   voidedInvoices           Invoice[]               @relation("InvoiceVoidedBy")
@@ -776,6 +778,7 @@ model Encounter {
   prescriptions       Prescription[]
   invoices            Invoice[]
   satusehatSubmission SatusehatSubmission?
+  bpjsReferral        BpjsReferral?
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -1481,4 +1484,37 @@ model BpjsSubmission {
   @@unique([registrationId, type])
   @@index([status, nextAttemptAt])
   @@map("bpjs_submissions")
+}
+
+/// A BPJS PCare referral (rujukan) recorded by the attending doctor before
+/// the encounter closes (P11-T06). PCare has no standalone rujukan create —
+/// it rides the kunjungan payload (ADR D-022) — so this row only captures
+/// what the doctor decided; the submission service folds it into the
+/// kunjungan when the outbox row is sent, flipping the discharge status to
+/// rujuk lanjut. One of subSpecialtyCode (subspesialis referral) or
+/// khususCode (TACC/khusus referral) must be present; codes are sent as
+/// recorded — PCare is the validator of record for referral codes, since
+/// the subspesialis catalog is per-specialty and not fully synced locally.
+/// Soft-deleted like the other clinical rows so history survives edits.
+model BpjsReferral {
+  id                      String    @id @default(uuid()) @db.Uuid
+  encounterId             String    @unique @map("encounter_id") @db.Uuid
+  /// Destination FKRTL provider code (kdppk).
+  destinationProviderCode String    @map("destination_provider_code")
+  subSpecialtyCode        String?   @map("sub_specialty_code")
+  saranaCode              String?   @map("sarana_code")
+  khususCode              String?   @map("khusus_code")
+  /// tglEstRujuk — the planned referral date shown on the PCare letter.
+  estimatedReferralDate DateTime  @map("estimated_referral_date") @db.Date
+  notes                 String?
+  recordedById          String?   @map("recorded_by_id") @db.Uuid
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  deletedAt             DateTime? @map("deleted_at")
+
+  encounter  Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  recordedBy User?     @relation("BpjsReferralRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+
+  @@index([deletedAt])
+  @@map("bpjs_referrals")
 }

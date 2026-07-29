@@ -1,8 +1,12 @@
 import {
+  BpjsMonthlyReconciliationData,
+  BpjsSubmissionDispensedMedicationData,
   BpjsSubmissionDoctorData,
   BpjsSubmissionPage,
   BpjsSubmissionRecord,
+  BpjsSubmissionSiblingRow,
   BpjsSubmissionSourceData,
+  BpjsSubmissionStatusValue,
   ListBpjsSubmissionsParams,
   MarkBpjsSubmissionFailedPayload,
   MarkBpjsSubmissionRetryPayload,
@@ -13,6 +17,8 @@ import { Injectable } from '@nestjs/common';
 import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { BpjsSubmission } from '../../../generated/prisma/client';
+
+const MAX_REPORTED_FAILURES = 100;
 
 const DOCTOR_MAPPING_SELECT = {
   fullName: true,
@@ -116,11 +122,40 @@ export class BpjsSubmissionRepository {
               orderBy: [{ type: 'asc' }, { recordedAt: 'asc' }],
               select: { code: true, type: true },
             },
+            bpjsReferral: {
+              select: {
+                destinationProviderCode: true,
+                subSpecialtyCode: true,
+                saranaCode: true,
+                khususCode: true,
+                estimatedReferralDate: true,
+                notes: true,
+                deletedAt: true,
+              },
+            },
+            prescriptions: {
+              where: { deletedAt: null },
+              select: {
+                items: { select: { medicationId: true, frequency: true } },
+                dispenseRecords: {
+                  where: { status: 'DISPENSED' },
+                  select: {
+                    items: {
+                      select: {
+                        quantity: true,
+                        medicationId: true,
+                        medication: { select: { name: true, dphoCode: true } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
         bpjsSubmissions: {
-          where: { type: 'PENDAFTARAN' },
-          select: { status: true, bpjsReferenceNo: true, submittedKdPoli: true },
+          where: { type: { in: ['PENDAFTARAN', 'KUNJUNGAN'] } },
+          select: { type: true, status: true, bpjsReferenceNo: true, submittedKdPoli: true },
         },
       },
     });
@@ -128,7 +163,14 @@ export class BpjsSubmissionRepository {
       return null;
     }
     const latestVitals = registration.encounter?.vitalSigns[0];
-    const pendaftaranRow = registration.bpjsSubmissions[0];
+    const pendaftaranRow = registration.bpjsSubmissions.find(
+      (row) => row.type === 'PENDAFTARAN',
+    );
+    const kunjunganRow = registration.bpjsSubmissions.find((row) => row.type === 'KUNJUNGAN');
+    const activeReferral =
+      registration.encounter?.bpjsReferral?.deletedAt === null
+        ? registration.encounter.bpjsReferral
+        : null;
     return {
       registration: {
         id: registration.id,
@@ -169,8 +211,113 @@ export class BpjsSubmissionRepository {
                 code: diagnosis.code,
                 type: diagnosis.type,
               })),
+              referral:
+                activeReferral === null
+                  ? null
+                  : {
+                      destinationProviderCode: activeReferral.destinationProviderCode,
+                      subSpecialtyCode: activeReferral.subSpecialtyCode,
+                      saranaCode: activeReferral.saranaCode,
+                      khususCode: activeReferral.khususCode,
+                      estimatedReferralDate: activeReferral.estimatedReferralDate,
+                      notes: activeReferral.notes,
+                    },
             },
-      pendaftaran: pendaftaranRow === undefined ? null : { ...pendaftaranRow },
+      dispensedMedications: this.collectDispensedMedications(registration.encounter),
+      pendaftaran: this.toSiblingRow(pendaftaranRow),
+      kunjungan: this.toSiblingRow(kunjunganRow),
+    };
+  }
+
+  private toSiblingRow(
+    row:
+      | { status: BpjsSubmissionStatusValue; bpjsReferenceNo: string | null; submittedKdPoli: string | null }
+      | undefined,
+  ): BpjsSubmissionSiblingRow | null {
+    if (row === undefined) {
+      return null;
+    }
+    return {
+      status: row.status,
+      bpjsReferenceNo: row.bpjsReferenceNo,
+      submittedKdPoli: row.submittedKdPoli,
+    };
+  }
+
+  private collectDispensedMedications(
+    encounter: {
+      prescriptions: Array<{
+        items: Array<{ medicationId: string; frequency: string }>;
+        dispenseRecords: Array<{
+          items: Array<{
+            quantity: number;
+            medicationId: string;
+            medication: { name: string; dphoCode: string | null };
+          }>;
+        }>;
+      }>;
+    } | null,
+  ): BpjsSubmissionDispensedMedicationData[] {
+    if (encounter === null) {
+      return [];
+    }
+    const dispensedMedications: BpjsSubmissionDispensedMedicationData[] = [];
+    for (const prescription of encounter.prescriptions) {
+      const frequencyByMedicationId = new Map(
+        prescription.items.map((item) => [item.medicationId, item.frequency]),
+      );
+      for (const dispenseRecord of prescription.dispenseRecords) {
+        for (const item of dispenseRecord.items) {
+          dispensedMedications.push({
+            medicationName: item.medication.name,
+            dphoCode: item.medication.dphoCode,
+            quantity: item.quantity,
+            frequency: frequencyByMedicationId.get(item.medicationId) ?? null,
+          });
+        }
+      }
+    }
+    return dispensedMedications;
+  }
+
+  /**
+   * Counts submissions per type and status for visits whose clinic-local day
+   * falls in [monthStart, monthEnd), plus the failed rows to chase — the raw
+   * material of the tercatat/terkirim/gagal reconciliation. Scoped by the
+   * visit's queueDate (checkedInAt fallback for pre-queue rows), not the
+   * submission's own timestamps: the claim month is the visit month.
+   */
+  async findMonthlyReconciliation(
+    monthStart: Date,
+    monthEnd: Date,
+  ): Promise<BpjsMonthlyReconciliationData> {
+    const visitMonthFilter = {
+      registration: {
+        OR: [
+          { queueDate: { gte: monthStart, lt: monthEnd } },
+          { queueDate: null, checkedInAt: { gte: monthStart, lt: monthEnd } },
+        ],
+      },
+    };
+    const [grouped, failureRows] = await this.prismaService.$transaction([
+      this.prismaService.bpjsSubmission.groupBy({
+        by: ['type', 'status'],
+        where: visitMonthFilter,
+        _count: { _all: true },
+      }),
+      this.prismaService.bpjsSubmission.findMany({
+        where: { ...visitMonthFilter, status: 'FAILED' },
+        orderBy: { lastAttemptAt: 'desc' },
+        take: MAX_REPORTED_FAILURES,
+      }),
+    ]);
+    return {
+      counts: grouped.map((group) => ({
+        type: group.type,
+        status: group.status,
+        count: group._count._all,
+      })),
+      failures: failureRows.map((row) => this.toRecord(row)),
     };
   }
 

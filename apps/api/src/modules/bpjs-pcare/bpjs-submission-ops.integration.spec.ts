@@ -107,9 +107,12 @@ describe('BPJS PCare submission ops integration', () => {
         encounter: null,
         bpjsSubmissions: submissionRows
           .filter(
-            (row) => row.registrationId === registrationRowId && row.type === 'PENDAFTARAN',
+            (row) =>
+              row.registrationId === registrationRowId &&
+              (row.type === 'PENDAFTARAN' || row.type === 'KUNJUNGAN'),
           )
           .map((row) => ({
+            type: row.type,
             status: row.status,
             bpjsReferenceNo: row.bpjsReferenceNo,
             submittedKdPoli: row.submittedKdPoli,

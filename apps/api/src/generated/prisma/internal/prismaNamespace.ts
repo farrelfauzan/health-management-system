@@ -425,7 +425,8 @@ export const ModelName = {
   BpjsPcareConfig: 'BpjsPcareConfig',
   BpjsReferenceItem: 'BpjsReferenceItem',
   BpjsEligibilityCheck: 'BpjsEligibilityCheck',
-  BpjsSubmission: 'BpjsSubmission'
+  BpjsSubmission: 'BpjsSubmission',
+  BpjsReferral: 'BpjsReferral'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -441,7 +442,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3553,6 +3554,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BpjsReferral: {
+      payload: Prisma.$BpjsReferralPayload<ExtArgs>
+      fields: Prisma.BpjsReferralFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BpjsReferralFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BpjsReferralFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload>
+        }
+        findFirst: {
+          args: Prisma.BpjsReferralFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BpjsReferralFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload>
+        }
+        findMany: {
+          args: Prisma.BpjsReferralFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload>[]
+        }
+        create: {
+          args: Prisma.BpjsReferralCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload>
+        }
+        createMany: {
+          args: Prisma.BpjsReferralCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BpjsReferralCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload>[]
+        }
+        delete: {
+          args: Prisma.BpjsReferralDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload>
+        }
+        update: {
+          args: Prisma.BpjsReferralUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload>
+        }
+        deleteMany: {
+          args: Prisma.BpjsReferralDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BpjsReferralUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BpjsReferralUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload>[]
+        }
+        upsert: {
+          args: Prisma.BpjsReferralUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsReferralPayload>
+        }
+        aggregate: {
+          args: Prisma.BpjsReferralAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBpjsReferral>
+        }
+        groupBy: {
+          args: Prisma.BpjsReferralGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsReferralGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BpjsReferralCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsReferralCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4282,6 +4357,24 @@ export const BpjsSubmissionScalarFieldEnum = {
 } as const
 
 export type BpjsSubmissionScalarFieldEnum = (typeof BpjsSubmissionScalarFieldEnum)[keyof typeof BpjsSubmissionScalarFieldEnum]
+
+
+export const BpjsReferralScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  destinationProviderCode: 'destinationProviderCode',
+  subSpecialtyCode: 'subSpecialtyCode',
+  saranaCode: 'saranaCode',
+  khususCode: 'khususCode',
+  estimatedReferralDate: 'estimatedReferralDate',
+  notes: 'notes',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type BpjsReferralScalarFieldEnum = (typeof BpjsReferralScalarFieldEnum)[keyof typeof BpjsReferralScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -5035,6 +5128,7 @@ export type GlobalOmitConfig = {
   bpjsReferenceItem?: Prisma.BpjsReferenceItemOmit
   bpjsEligibilityCheck?: Prisma.BpjsEligibilityCheckOmit
   bpjsSubmission?: Prisma.BpjsSubmissionOmit
+  bpjsReferral?: Prisma.BpjsReferralOmit
 }
 
 /* Types for Logging */

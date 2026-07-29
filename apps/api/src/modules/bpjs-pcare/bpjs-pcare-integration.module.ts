@@ -5,6 +5,7 @@ import { BpjsEligibilityController } from './controller/bpjs-eligibility.control
 import { BpjsMappingController } from './controller/bpjs-mapping.controller';
 import { BpjsPcareConfigController } from './controller/bpjs-pcare-config.controller';
 import { BpjsReferenceController } from './controller/bpjs-reference.controller';
+import { BpjsReportController } from './controller/bpjs-report.controller';
 import { BpjsSubmissionController } from './controller/bpjs-submission.controller';
 import { BpjsEligibilityRepository } from './repository/bpjs-eligibility.repository';
 import { BpjsMappingRepository } from './repository/bpjs-mapping.repository';
@@ -15,6 +16,7 @@ import { BpjsEligibilityService } from './service/bpjs-eligibility.service';
 import { BpjsMappingService } from './service/bpjs-mapping.service';
 import { BpjsPcareConfigService } from './service/bpjs-pcare-config.service';
 import { BpjsReferenceService } from './service/bpjs-reference.service';
+import { BpjsReportService } from './service/bpjs-report.service';
 import { BpjsSubmissionOpsService } from './service/bpjs-submission-ops.service';
 import { BpjsSubmissionService } from './service/bpjs-submission.service';
 import { BpjsSubmissionWorker } from './service/bpjs-submission.worker';
@@ -35,6 +37,7 @@ import { BpjsSubmissionWorker } from './service/bpjs-submission.worker';
     BpjsMappingController,
     BpjsEligibilityController,
     BpjsSubmissionController,
+    BpjsReportController,
   ],
   providers: [
     BpjsPcareConfigRepository,
@@ -49,6 +52,7 @@ import { BpjsSubmissionWorker } from './service/bpjs-submission.worker';
     BpjsSubmissionService,
     BpjsSubmissionOpsService,
     BpjsSubmissionWorker,
+    BpjsReportService,
   ],
 })
 export class BpjsPcareIntegrationModule {}

@@ -210,3 +210,28 @@ export type EncounterSourceRegistrationRecord = {
   status: RegistrationStatusValue;
   patient: { id: string; ownerUserId: string | null; isActive: boolean };
 };
+
+export type BpjsReferralRecord = {
+  id: string;
+  encounterId: string;
+  destinationProviderCode: string;
+  subSpecialtyCode: string | null;
+  saranaCode: string | null;
+  khususCode: string | null;
+  estimatedReferralDate: Date;
+  notes: string | null;
+  recordedById: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type UpsertBpjsReferralRecordPayload = {
+  encounterId: string;
+  destinationProviderCode: string;
+  subSpecialtyCode: string | null;
+  saranaCode: string | null;
+  khususCode: string | null;
+  estimatedReferralDate: Date;
+  notes: string | null;
+  recordedById: string;
+};

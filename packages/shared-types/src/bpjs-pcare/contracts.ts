@@ -164,3 +164,35 @@ export type BpjsSubmissionsListResult = {
   items: BpjsSubmissionView[];
   meta: BpjsSubmissionsListMeta;
 };
+
+export type BpjsMonthlyReportTypeSummaryView = {
+  type: BpjsSubmissionTypeValue;
+  /** Everything enqueued for visits in the month — tercatat. */
+  recorded: number;
+  /** Accepted by PCare — terkirim. */
+  submitted: number;
+  /** Still queued or backing off. */
+  pending: number;
+  /** Terminal failures needing an admin — gagal. */
+  failed: number;
+};
+
+export type BpjsMonthlyReportFailureView = {
+  submissionId: string;
+  registrationId: string;
+  type: BpjsSubmissionTypeValue;
+  attempts: number;
+  lastError: string | null;
+  lastAttemptAt: string | null;
+};
+
+/**
+ * The monthly tercatat / terkirim / gagal reconciliation (P11-T06): counts
+ * per submission type for visits in the month, plus the failed rows to chase
+ * before the BPJS claim deadline closes.
+ */
+export type BpjsMonthlyReportView = {
+  month: string;
+  types: BpjsMonthlyReportTypeSummaryView[];
+  failures: BpjsMonthlyReportFailureView[];
+};

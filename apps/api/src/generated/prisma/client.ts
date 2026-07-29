@@ -414,3 +414,17 @@ export type BpjsEligibilityCheck = Prisma.BpjsEligibilityCheckModel
  * remaps the specialty in between.
  */
 export type BpjsSubmission = Prisma.BpjsSubmissionModel
+/**
+ * Model BpjsReferral
+ * A BPJS PCare referral (rujukan) recorded by the attending doctor before
+ * the encounter closes (P11-T06). PCare has no standalone rujukan create —
+ * it rides the kunjungan payload (ADR D-022) — so this row only captures
+ * what the doctor decided; the submission service folds it into the
+ * kunjungan when the outbox row is sent, flipping the discharge status to
+ * rujuk lanjut. One of subSpecialtyCode (subspesialis referral) or
+ * khususCode (TACC/khusus referral) must be present; codes are sent as
+ * recorded — PCare is the validator of record for referral codes, since
+ * the subspesialis catalog is per-specialty and not fully synced locally.
+ * Soft-deleted like the other clinical rows so history survives edits.
+ */
+export type BpjsReferral = Prisma.BpjsReferralModel

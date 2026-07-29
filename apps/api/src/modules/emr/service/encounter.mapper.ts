@@ -1,4 +1,6 @@
 import {
+  BpjsReferralRecord,
+  BpjsReferralResponse,
   calculateBodyMassIndex,
   DiagnosisRecord,
   DiagnosisResponse,
@@ -89,6 +91,21 @@ export class EncounterMapper {
       recordedById: vitalSigns.recordedById ?? undefined,
       createdAt: vitalSigns.createdAt.toISOString(),
       updatedAt: vitalSigns.updatedAt.toISOString(),
+    };
+  }
+
+  toBpjsReferralResponse(referral: BpjsReferralRecord): BpjsReferralResponse {
+    return {
+      id: referral.id,
+      encounterId: referral.encounterId,
+      destinationProviderCode: referral.destinationProviderCode,
+      subSpecialtyCode: referral.subSpecialtyCode ?? undefined,
+      saranaCode: referral.saranaCode ?? undefined,
+      khususCode: referral.khususCode ?? undefined,
+      estimatedReferralDate: referral.estimatedReferralDate.toISOString().slice(0, 10),
+      notes: referral.notes ?? undefined,
+      createdAt: referral.createdAt.toISOString(),
+      updatedAt: referral.updatedAt.toISOString(),
     };
   }
 
