@@ -143,6 +143,8 @@ Submissions must fail fast and legibly when a mapping is missing ("Dokter belum 
 5. **Monthly reconciliation report** — "kunjungan tercatat vs terkirim vs gagal" for the current period. Run before the claim deadline; unsubmitted visits are unpaid visits.
 6. **Antrean online (Mobile JKN)** — later; requires queue numbers from `P8-T06`.
 
+> **As evaluated (`P11-T08`, ADR D-023):** adopted, but moved out of Phase 11 into its own Phase 14. It is a second BPJS integration — separately issued Antrean-service credentials, and **bidirectional**: the facility must host six web services for BPJS to call, two of which write bookings and patient records from the public internet. It cannot be proven by fixtures (the contract is confirmed at BPJS's UAT) and it needs a publicly reachable deployment. Full analysis, model gaps, and task breakdown in [bpjs-antrean-online.md](./bpjs-antrean-online.md).
+
 ### 6.4 RBAC
 
 New permissions: `bpjs.config.manage`, `bpjs.submission.read`, `bpjs.submission.retry`, `bpjs.eligibility.check`. Seeded to `SUPER_ADMIN`/`ADMIN`; `bpjs.eligibility.check` also to front-desk roles.
