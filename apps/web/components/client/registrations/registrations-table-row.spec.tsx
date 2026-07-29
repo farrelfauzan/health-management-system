@@ -15,6 +15,8 @@ const FULL_ACCESS_RULES: AppRule[] = [
 
 const READ_ONLY_RULES: AppRule[] = [{ action: 'read', subject: 'Registration' }];
 
+const CLINICAL_RULES: AppRule[] = [...FULL_ACCESS_RULES, { action: 'write', subject: 'Encounter' }];
+
 function buildRegistration(
   status: RegistrationStatusValue,
   appointment?: RegistrationListItem['appointment'],
@@ -40,6 +42,7 @@ function renderRow(params: {
     registration: RegistrationListItem,
     target: 'CHECKED_IN' | 'COMPLETED' | 'CANCELLED',
   ) => void;
+  onOpenEncounter?: (registration: RegistrationListItem) => void;
 }): void {
   render(
     <AbilityProvider ability={buildAppAbility(params.rules)}>
@@ -49,6 +52,7 @@ function renderRow(params: {
             registration={buildRegistration(params.status, params.appointment)}
             variant={params.variant}
             onTransition={params.onTransition ?? vi.fn()}
+            onOpenEncounter={params.onOpenEncounter ?? vi.fn()}
           />
         </TableBody>
       </Table>
@@ -121,6 +125,40 @@ describe('RegistrationsTableRow', () => {
     expect(
       screen.queryByRole('button', { name: 'Actions for John Doe' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('offers opening an encounter for a checked-in registration', async () => {
+    const user = userEvent.setup();
+    const onOpenEncounter = vi.fn();
+    renderRow({
+      status: 'CHECKED_IN',
+      rules: CLINICAL_RULES,
+      variant: 'admin',
+      onOpenEncounter,
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+    await user.click(screen.getByRole('menuitem', { name: /Open Encounter/ }));
+
+    expect(onOpenEncounter).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not offer an encounter before the patient is checked in', async () => {
+    const user = userEvent.setup();
+    renderRow({ status: 'PENDING', rules: CLINICAL_RULES, variant: 'admin' });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+
+    expect(screen.queryByRole('menuitem', { name: /Open Encounter/ })).not.toBeInTheDocument();
+  });
+
+  it('hides the encounter action without the encounter write capability', async () => {
+    const user = userEvent.setup();
+    renderRow({ status: 'CHECKED_IN', rules: FULL_ACCESS_RULES, variant: 'admin' });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+
+    expect(screen.queryByRole('menuitem', { name: /Open Encounter/ })).not.toBeInTheDocument();
   });
 
   it('limits the patient variant to cancellation only', async () => {

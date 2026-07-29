@@ -47,6 +47,12 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         ability: { action: 'read', subject: 'Registration' },
       },
       {
+        href: '/admin/encounters',
+        label: 'Encounters',
+        icon: 'clinical_notes',
+        ability: { action: 'read', subject: 'Encounter' },
+      },
+      {
         href: '/admin/pharmacy',
         label: 'Pharmacy',
         icon: 'local_pharmacy',

@@ -19,12 +19,14 @@ type RegistrationsTableRowProps = {
   registration: RegistrationListItem;
   variant: RegistrationsViewVariant;
   onTransition: (registration: RegistrationListItem, target: RegistrationTransitionTarget) => void;
+  onOpenEncounter: (registration: RegistrationListItem) => void;
 };
 
 export function RegistrationsTableRow({
   registration,
   variant,
   onTransition,
+  onOpenEncounter,
 }: RegistrationsTableRowProps) {
   const ability = useAbility();
   const canUpdate = ability.can('update', 'Registration');
@@ -32,7 +34,13 @@ export function RegistrationsTableRow({
     (target): target is RegistrationTransitionTarget =>
       target !== 'PENDING' && (variant === 'admin' || target === 'CANCELLED'),
   );
-  const actions: RowAction[] = canUpdate
+  // The clinical record starts here: a checked-in patient is one the doctor
+  // can see, and this is the only path from the queue into an encounter.
+  const canOpenEncounter =
+    variant === 'admin' &&
+    registration.status === 'CHECKED_IN' &&
+    ability.can('write', 'Encounter');
+  const transitionActions: RowAction[] = canUpdate
     ? allowedTargets.map((target) => ({
         label: REGISTRATION_TRANSITION_META[target].actionLabel,
         icon: REGISTRATION_TRANSITION_META[target].icon,
@@ -40,6 +48,17 @@ export function RegistrationsTableRow({
         onSelect: () => onTransition(registration, target),
       }))
     : [];
+  const actions: RowAction[] = canOpenEncounter
+    ? [
+        {
+          label: 'Open Encounter',
+          icon: 'clinical_notes',
+          isDestructive: false,
+          onSelect: () => onOpenEncounter(registration),
+        },
+        ...transitionActions,
+      ]
+    : transitionActions;
 
   return (
     <TableRow className="transition-colors hover:bg-slate-50">

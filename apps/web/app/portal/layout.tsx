@@ -24,8 +24,8 @@ export default async function PortalLayout({ children }: PortalLayoutProps) {
     <AppAbilityProvider rules={rules}>
       <div className="flex min-h-svh flex-col bg-surface">
         <PortalTopBar profile={profile} />
-        <main className="flex-1 px-8 py-8">
-          <div className="mx-auto w-full max-w-5xl">{children}</div>
+        <main className="min-w-0 flex-1 px-4 py-8 sm:px-8">
+          <div className="mx-auto w-full min-w-0 max-w-5xl">{children}</div>
         </main>
       </div>
     </AppAbilityProvider>

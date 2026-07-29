@@ -24,6 +24,39 @@ describe('DataTable', () => {
     expect(headerCell.className).toContain('bg-slate-50');
   });
 
+  it('keeps the frame inside its column and scrolls the table instead', () => {
+    const { container } = render(
+      <DataTable>
+        <TableBody>
+          <TableRow>
+            <DataTableMonoCell>MRN-00042</DataTableMonoCell>
+          </TableRow>
+        </TableBody>
+      </DataTable>,
+    );
+
+    const frame = container.firstElementChild;
+    expect(frame?.className).toContain('max-w-full');
+    expect(frame?.className).toContain('overflow-x-auto');
+    // The table keeps a readable minimum width so a narrow viewport scrolls
+    // rather than compressing every column into wrapped text.
+    expect(screen.getByRole('table').className).toContain('min-w-[56rem]');
+  });
+
+  it('accepts a narrower scroll threshold for a table with few columns', () => {
+    render(
+      <DataTable minWidthClassName="min-w-[32rem]">
+        <TableBody>
+          <TableRow>
+            <DataTableMonoCell>MRN-00042</DataTableMonoCell>
+          </TableRow>
+        </TableBody>
+      </DataTable>,
+    );
+
+    expect(screen.getByRole('table').className).toContain('min-w-[32rem]');
+  });
+
   it('renders ID/number cells in the Geist Mono slot', () => {
     render(
       <DataTable>

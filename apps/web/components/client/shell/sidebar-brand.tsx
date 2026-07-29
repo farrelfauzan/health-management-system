@@ -1,7 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import { Icon, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@hms/ui';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@hms/ui';
+
+import { FACILITY_CONFIG } from '#lib/facility/facility-config';
 
 export function SidebarBrand() {
   return (
@@ -9,11 +12,18 @@ export function SidebarBrand() {
       <SidebarMenuItem>
         <SidebarMenuButton asChild size="lg" className="hover:bg-transparent active:bg-transparent">
           <Link href="/admin/dashboard">
-            <span className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Icon name="medical_services" size={20} />
-            </span>
+            <Image
+              src="/saling-jaga-mark.png"
+              alt={`${FACILITY_CONFIG.name} logo`}
+              width={32}
+              height={32}
+              priority
+              className="aspect-square size-8 shrink-0 object-contain"
+            />
             <span className="grid flex-1 text-left leading-tight">
-              <span className="truncate font-heading text-lg font-semibold">Saling Jaga</span>
+              <span className="truncate font-heading text-lg font-semibold">
+                {FACILITY_CONFIG.name}
+              </span>
               <span className="truncate text-xs text-muted-foreground">Medical Center</span>
             </span>
           </Link>
