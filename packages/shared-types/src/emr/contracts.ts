@@ -26,6 +26,23 @@ export type VitalSignsResponse = {
 };
 
 /**
+ * A recorded BPJS rujukan as the API returns it. `estimatedReferralDate` is a
+ * YYYY-MM-DD calendar day — PCare formats it as dd-MM-yyyy on the wire.
+ */
+export type BpjsReferralResponse = {
+  id: string;
+  encounterId: string;
+  destinationProviderCode: string;
+  subSpecialtyCode?: string;
+  saranaCode?: string;
+  khususCode?: string;
+  estimatedReferralDate: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/**
  * `code` and `display` are the snapshot the clinician signed. `icd10CodeId` is
  * provenance only: it says which catalog row the snapshot came from, and it
  * goes null if that row is ever removed.

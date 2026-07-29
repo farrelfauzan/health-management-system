@@ -1,13 +1,18 @@
-import { BpjsSubmissionVitalsData } from '@hms/shared-types';
+import { BpjsSubmissionReferralData, BpjsSubmissionVitalsData } from '@hms/shared-types';
 
-import { BpjsPcareKunjunganPayload } from './bpjs-pcare-submission.types';
+import {
+  BpjsPcareKunjunganPayload,
+  BpjsPcareRujukLanjutPayload,
+} from './bpjs-pcare-submission.types';
 import { formatBpjsPcareDate } from './format-bpjs-pcare-date';
 
 const OUTPATIENT_KD_TKP = '10';
 /** Compos mentis — no consciousness level is modelled clinically yet, and an outpatient FKTP visit that completed a normal encounter is compos mentis. */
 const DEFAULT_KD_SADAR = '01';
-/** Berobat jalan (outpatient discharge, no referral) — the P11-T06 rujukan flow overrides this. */
-const DEFAULT_KD_STATUS_PULANG = '3';
+/** Berobat jalan (outpatient discharge, no referral). */
+const DISCHARGE_KD_STATUS_PULANG = '3';
+/** Rujuk lanjut — set whenever a rujukan rides the kunjungan (P11-T06). */
+const REFERRAL_KD_STATUS_PULANG = '4';
 const MAX_KELUHAN_LENGTH = 400;
 
 type BuildBpjsKunjunganPayloadOptions = {
@@ -19,6 +24,7 @@ type BuildBpjsKunjunganPayloadOptions = {
   readonly keluhan: string | null;
   readonly diagnosisCodes: readonly string[];
   readonly vitals: BpjsSubmissionVitalsData | null;
+  readonly referral?: BpjsSubmissionReferralData | null;
   readonly terapi?: string | null;
 };
 
@@ -26,7 +32,10 @@ type BuildBpjsKunjunganPayloadOptions = {
  * Builds the kunjungan (encounter) body sent at encounter close. The first
  * diagnosis code must be the PRIMARY one (the caller orders them); PCare
  * takes at most three. Missing vitals are sent as integer zeros, matching
- * the reference implementations' convention for unmeasured values.
+ * the reference implementations' convention for unmeasured values. A
+ * recorded referral flips the discharge status to rujuk lanjut and attaches
+ * the rujukLanjut block — PCare issues the referral letter from it (ADR
+ * D-022: there is no standalone rujukan create endpoint).
  */
 export function buildBpjsKunjunganPayload(
   options: BuildBpjsKunjunganPayloadOptions,
@@ -35,6 +44,7 @@ export function buildBpjsKunjunganPayload(
   if (kdDiag1 === undefined) {
     throw new Error('BPJS kunjungan payload requires at least one diagnosis code');
   }
+  const rujukLanjut = buildRujukLanjut(options.referral ?? null);
   return {
     noKunjungan: null,
     noKartu: options.noKartu,
@@ -49,7 +59,8 @@ export function buildBpjsKunjunganPayload(
     respRate: toWholeNumber(options.vitals?.respiratoryRate),
     heartRate: toWholeNumber(options.vitals?.pulseRate),
     lingkarPerut: 0,
-    kdStatusPulang: DEFAULT_KD_STATUS_PULANG,
+    kdStatusPulang:
+      rujukLanjut === null ? DISCHARGE_KD_STATUS_PULANG : REFERRAL_KD_STATUS_PULANG,
     tglPulang: formatBpjsPcareDate(options.dischargeDate),
     kdDokter: options.kdDokter,
     kdDiag1,
@@ -58,6 +69,31 @@ export function buildBpjsKunjunganPayload(
     kdPostatus: null,
     kdTkp: OUTPATIENT_KD_TKP,
     terapi: options.terapi ?? null,
+    rujukLanjut,
+  };
+}
+
+function buildRujukLanjut(
+  referral: BpjsSubmissionReferralData | null,
+): BpjsPcareRujukLanjutPayload | null {
+  if (referral === null) {
+    return null;
+  }
+  return {
+    kdppk: referral.destinationProviderCode,
+    tglEstRujuk: formatBpjsPcareDate(referral.estimatedReferralDate),
+    subSpesialis:
+      referral.subSpecialtyCode === null
+        ? null
+        : { kdSubSpesialis1: referral.subSpecialtyCode, kdSarana: referral.saranaCode },
+    khusus:
+      referral.khususCode === null
+        ? null
+        : {
+            kdKhusus: referral.khususCode,
+            kdSubSpesialis: referral.subSpecialtyCode,
+            catatan: referral.notes,
+          },
   };
 }
 

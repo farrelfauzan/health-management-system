@@ -141,7 +141,12 @@ export const checkBpjsEligibilitySchema = z.object({
 
 export type CheckBpjsEligibilityInput = z.infer<typeof checkBpjsEligibilitySchema>;
 
-export const BPJS_SUBMISSION_TYPES = ['PENDAFTARAN', 'KUNJUNGAN', 'PENDAFTARAN_DELETE'] as const;
+export const BPJS_SUBMISSION_TYPES = [
+  'PENDAFTARAN',
+  'KUNJUNGAN',
+  'PENDAFTARAN_DELETE',
+  'OBAT',
+] as const;
 
 export const bpjsSubmissionTypeSchema = z.enum(BPJS_SUBMISSION_TYPES);
 
@@ -162,3 +167,13 @@ export const listBpjsSubmissionsQuerySchema = z.object({
 });
 
 export type ListBpjsSubmissionsQueryInput = z.infer<typeof listBpjsSubmissionsQuerySchema>;
+
+/**
+ * The reconciliation month (P11-T06): BPJS claims close per calendar month,
+ * so the report is always scoped to one YYYY-MM visit month.
+ */
+export const monthlyBpjsReportQuerySchema = z.object({
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Month must use YYYY-MM format'),
+});
+
+export type MonthlyBpjsReportQueryInput = z.infer<typeof monthlyBpjsReportQuerySchema>;

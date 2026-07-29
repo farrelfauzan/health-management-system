@@ -57,7 +57,8 @@ export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
 export const BpjsSubmissionType = {
   PENDAFTARAN: 'PENDAFTARAN',
   KUNJUNGAN: 'KUNJUNGAN',
-  PENDAFTARAN_DELETE: 'PENDAFTARAN_DELETE'
+  PENDAFTARAN_DELETE: 'PENDAFTARAN_DELETE',
+  OBAT: 'OBAT'
 } as const
 
 export type BpjsSubmissionType = (typeof BpjsSubmissionType)[keyof typeof BpjsSubmissionType]

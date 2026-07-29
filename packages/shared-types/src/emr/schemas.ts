@@ -223,9 +223,37 @@ export const listEncountersQuerySchema = z
     message: 'startedFrom must be earlier than or equal to startedTo',
   });
 
+/**
+ * A BPJS rujukan recorded on an open encounter (P11-T06). PCare offers two
+ * referral paths — subspesialis (subSpecialtyCode, optionally with a sarana
+ * facility code) and khusus/TACC (khususCode) — so at least one of the two
+ * codes is required. Codes are sent to PCare as recorded: the subspesialis
+ * catalog is per-specialty and not fully synced locally, so PCare is the
+ * validator of record.
+ */
+export const upsertBpjsReferralSchema = z
+  .object({
+    destinationProviderCode: z.string().trim().min(1).max(32),
+    subSpecialtyCode: z.string().trim().min(1).max(32).optional(),
+    saranaCode: z.string().trim().min(1).max(32).optional(),
+    khususCode: z.string().trim().min(1).max(32).optional(),
+    estimatedReferralDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD format'),
+    notes: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
+  })
+  .refine(
+    (payload) => payload.subSpecialtyCode !== undefined || payload.khususCode !== undefined,
+    {
+      message: 'Provide subSpecialtyCode (subspesialis referral) or khususCode (khusus/TACC)',
+      path: ['subSpecialtyCode'],
+    },
+  );
+
 export type OpenEncounterInput = z.infer<typeof openEncounterSchema>;
 export type UpdateEncounterSoapInput = z.infer<typeof updateEncounterSoapSchema>;
 export type RecordVitalSignsInput = z.infer<typeof recordVitalSignsSchema>;
 export type AddDiagnosisInput = z.infer<typeof addDiagnosisSchema>;
 export type AddProcedureInput = z.infer<typeof addProcedureSchema>;
 export type ListEncountersQueryInput = z.infer<typeof listEncountersQuerySchema>;
+export type UpsertBpjsReferralInput = z.infer<typeof upsertBpjsReferralSchema>;

@@ -211,6 +211,17 @@ export type BpjsSubmissionPage = {
   total: number;
 };
 
+export type BpjsMonthlyReconciliationCount = {
+  type: BpjsSubmissionTypeValue;
+  status: BpjsSubmissionStatusValue;
+  count: number;
+};
+
+export type BpjsMonthlyReconciliationData = {
+  counts: BpjsMonthlyReconciliationCount[];
+  failures: BpjsSubmissionRecord[];
+};
+
 export type BpjsSubmissionDoctorData = {
   fullName: string;
   bpjsDoctorCode: string | null;
@@ -231,6 +242,27 @@ export type BpjsSubmissionDiagnosisData = {
   type: 'PRIMARY' | 'SECONDARY';
 };
 
+export type BpjsSubmissionReferralData = {
+  destinationProviderCode: string;
+  subSpecialtyCode: string | null;
+  saranaCode: string | null;
+  khususCode: string | null;
+  estimatedReferralDate: Date;
+  notes: string | null;
+};
+
+/**
+ * One dispensed medication line aggregated for the obat submission.
+ * `frequency` is the prescription's free-text dosing ("3x1") — the builder
+ * parses it into PCare's signa pair, defaulting to 1×1 when unparseable.
+ */
+export type BpjsSubmissionDispensedMedicationData = {
+  medicationName: string;
+  dphoCode: string | null;
+  quantity: number;
+  frequency: string | null;
+};
+
 export type BpjsSubmissionEncounterData = {
   id: string;
   status: string;
@@ -239,6 +271,7 @@ export type BpjsSubmissionEncounterData = {
   doctor: BpjsSubmissionDoctorData | null;
   vitals: BpjsSubmissionVitalsData | null;
   diagnoses: BpjsSubmissionDiagnosisData[];
+  referral: BpjsSubmissionReferralData | null;
 };
 
 /**
@@ -247,6 +280,12 @@ export type BpjsSubmissionEncounterData = {
  * outbox). The decrypted BPJS number exists only inside this repository
  * projection and the outbound request built from it.
  */
+export type BpjsSubmissionSiblingRow = {
+  status: BpjsSubmissionStatusValue;
+  bpjsReferenceNo: string | null;
+  submittedKdPoli: string | null;
+};
+
 export type BpjsSubmissionSourceData = {
   registration: {
     id: string;
@@ -259,9 +298,7 @@ export type BpjsSubmissionSourceData = {
   };
   appointmentDoctor: BpjsSubmissionDoctorData | null;
   encounter: BpjsSubmissionEncounterData | null;
-  pendaftaran: {
-    status: BpjsSubmissionStatusValue;
-    bpjsReferenceNo: string | null;
-    submittedKdPoli: string | null;
-  } | null;
+  dispensedMedications: BpjsSubmissionDispensedMedicationData[];
+  pendaftaran: BpjsSubmissionSiblingRow | null;
+  kunjungan: BpjsSubmissionSiblingRow | null;
 };

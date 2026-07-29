@@ -1,4 +1,5 @@
 import {
+  BpjsReferralRecord,
   CloseEncounterRecordPayload,
   CreateDiagnosisRecordPayload,
   CreateEncounterRecordPayload,
@@ -11,6 +12,7 @@ import {
   ListEncountersParams,
   ProcedureRecord,
   UpdateEncounterRecordPayload,
+  UpsertBpjsReferralRecordPayload,
   VitalSignsRecord,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
@@ -339,6 +341,29 @@ export class EncounterRepository {
 
   async softDeleteDiagnosis(id: string): Promise<void> {
     await this.prisma.softDelete(this.prisma.diagnosis, { id });
+  }
+
+  /**
+   * One referral per encounter: a repeat save replaces the recorded decision,
+   * and reviving a soft-deleted row (which still occupies the unique
+   * encounter slot) clears its `deletedAt` instead of failing the unique
+   * constraint.
+   */
+  async upsertBpjsReferral(payload: UpsertBpjsReferralRecordPayload): Promise<BpjsReferralRecord> {
+    const { encounterId, ...referralFields } = payload;
+    return this.prisma.bpjsReferral.upsert({
+      where: { encounterId },
+      create: { encounterId, ...referralFields },
+      update: { ...referralFields, deletedAt: null },
+    });
+  }
+
+  async findBpjsReferralByEncounterId(encounterId: string): Promise<BpjsReferralRecord | null> {
+    return this.prisma.findFirstActive(this.prisma.bpjsReferral, { where: { encounterId } });
+  }
+
+  async softDeleteBpjsReferral(id: string): Promise<void> {
+    await this.prisma.softDelete(this.prisma.bpjsReferral, { id });
   }
 
   async createProcedure(payload: CreateProcedureRecordPayload): Promise<ProcedureRecord> {
