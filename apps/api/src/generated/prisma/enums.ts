@@ -46,10 +46,28 @@ export const AuditAction = {
   BPJS_CONFIG_DELETED: 'BPJS_CONFIG_DELETED',
   BPJS_CONNECTION_TESTED: 'BPJS_CONNECTION_TESTED',
   BPJS_REFERENCE_SYNCED: 'BPJS_REFERENCE_SYNCED',
-  BPJS_MAPPING_UPDATED: 'BPJS_MAPPING_UPDATED'
+  BPJS_MAPPING_UPDATED: 'BPJS_MAPPING_UPDATED',
+  BPJS_ELIGIBILITY_CHECKED: 'BPJS_ELIGIBILITY_CHECKED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const BpjsEligibilityOutcome = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  NOT_FOUND: 'NOT_FOUND'
+} as const
+
+export type BpjsEligibilityOutcome = (typeof BpjsEligibilityOutcome)[keyof typeof BpjsEligibilityOutcome]
+
+
+export const BpjsEligibilityIdentifierType = {
+  BPJS_NUMBER: 'BPJS_NUMBER',
+  NIK: 'NIK'
+} as const
+
+export type BpjsEligibilityIdentifierType = (typeof BpjsEligibilityIdentifierType)[keyof typeof BpjsEligibilityIdentifierType]
 
 
 export const BpjsReferenceCatalog = {

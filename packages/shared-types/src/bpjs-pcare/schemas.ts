@@ -107,3 +107,36 @@ export const updateBpjsDphoMappingSchema = z.object({
 });
 
 export type UpdateBpjsDphoMappingInput = z.infer<typeof updateBpjsDphoMappingSchema>;
+
+/**
+ * Definitive eligibility outcomes persisted to the per-day cache (P11-T04).
+ * A transient UNREACHABLE state exists only on the response — it is never
+ * cached, so the next attempt always retries BPJS.
+ */
+export const BPJS_ELIGIBILITY_OUTCOMES = ['ACTIVE', 'INACTIVE', 'NOT_FOUND'] as const;
+
+export const bpjsEligibilityOutcomeSchema = z.enum(BPJS_ELIGIBILITY_OUTCOMES);
+
+export type BpjsEligibilityOutcomeValue = z.infer<typeof bpjsEligibilityOutcomeSchema>;
+
+export const BPJS_ELIGIBILITY_RESULT_STATES = [...BPJS_ELIGIBILITY_OUTCOMES, 'UNREACHABLE'] as const;
+
+export type BpjsEligibilityResultState = (typeof BPJS_ELIGIBILITY_RESULT_STATES)[number];
+
+export const BPJS_ELIGIBILITY_IDENTIFIER_TYPES = ['BPJS_NUMBER', 'NIK'] as const;
+
+export const bpjsEligibilityIdentifierTypeSchema = z.enum(BPJS_ELIGIBILITY_IDENTIFIER_TYPES);
+
+export type BpjsEligibilityIdentifierTypeValue = z.infer<
+  typeof bpjsEligibilityIdentifierTypeSchema
+>;
+
+/**
+ * Check request: `force` bypasses the per-day cache after the front desk has
+ * corrected patient data and needs a fresh answer.
+ */
+export const checkBpjsEligibilitySchema = z.object({
+  force: z.boolean().default(false),
+});
+
+export type CheckBpjsEligibilityInput = z.infer<typeof checkBpjsEligibilitySchema>;

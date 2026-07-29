@@ -1,4 +1,9 @@
-import type { BpjsPcareEnvironmentValue, BpjsReferenceCatalogValue } from '#bpjs-pcare/schemas';
+import type {
+  BpjsEligibilityIdentifierTypeValue,
+  BpjsEligibilityResultState,
+  BpjsPcareEnvironmentValue,
+  BpjsReferenceCatalogValue,
+} from '#bpjs-pcare/schemas';
 
 /**
  * Admin-facing view of the facility's PCare bridging configuration. Secrets
@@ -93,4 +98,37 @@ export type BpjsMedicationMappingView = {
 export type BpjsMappingOverviewView = {
   doctors: BpjsDoctorMappingView[];
   specialties: BpjsSpecialtyMappingView[];
+};
+
+/**
+ * What the eligibility card renders for a resolved member: BPJS's registered
+ * name, member type and class, the member's registered FKTP (with a computed
+ * flag for whether that is this clinic), Prolanis/PRB program flags, and
+ * BPJS's readable reason when the member is inactive. Carries no card
+ * number — the BPJS number never leaves the patient profile.
+ */
+export type BpjsEligibilityMemberView = {
+  name: string | null;
+  memberType: string | null;
+  memberClass: string | null;
+  providerCode: string | null;
+  providerName: string | null;
+  isRegisteredHere: boolean | null;
+  isProlanis: boolean;
+  isPrb: boolean;
+  statusReason: string | null;
+};
+
+/**
+ * Outcome of an eligibility check. UNREACHABLE is a 200 response, not an
+ * error: registration must proceed while the card shows "BPJS tidak dapat
+ * dihubungi" — and it is never cached, so the next check retries upstream.
+ */
+export type BpjsEligibilityResultView = {
+  state: BpjsEligibilityResultState;
+  isFromCache: boolean;
+  checkedAt: string;
+  checkedVia?: BpjsEligibilityIdentifierTypeValue;
+  member?: BpjsEligibilityMemberView;
+  message: string;
 };
