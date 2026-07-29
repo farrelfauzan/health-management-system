@@ -111,6 +111,35 @@ export const BPJS_PCARE_EXAMPLES = {
   dphoMappingRequest: {
     dphoCode: 'K0001',
   },
+  eligibilityCheckRequest: {
+    force: false,
+  },
+  eligibilityActiveResult: {
+    state: 'ACTIVE',
+    isFromCache: false,
+    checkedAt: '2026-08-04T01:30:00.000Z',
+    checkedVia: 'BPJS_NUMBER',
+    member: {
+      name: 'BUDI SANTOSO',
+      memberType: 'PEKERJA PENERIMA UPAH',
+      memberClass: 'KELAS I',
+      providerCode: '01000101',
+      providerName: 'KLINIK DEMO',
+      isRegisteredHere: true,
+      isProlanis: false,
+      isPrb: false,
+      statusReason: 'AKTIF',
+    },
+    message: 'BPJS member is active',
+  },
+  eligibilityUnreachableResult: {
+    state: 'UNREACHABLE',
+    isFromCache: false,
+    checkedAt: '2026-08-04T01:30:00.000Z',
+    checkedVia: 'BPJS_NUMBER',
+    message:
+      'BPJS PCare is unreachable — registration can proceed without the check (BPJS_PCARE_TIMEOUT: BPJS PCare request timed out)',
+  },
   medicationMapping: {
     medicationId: '5b4a3c2d-1e0f-9a8b-7c6d-5e4f3a2b1c0d',
     code: 'MED-0001',

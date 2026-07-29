@@ -39,6 +39,18 @@ enum AuditAction {
   BPJS_CONNECTION_TESTED
   BPJS_REFERENCE_SYNCED
   BPJS_MAPPING_UPDATED
+  BPJS_ELIGIBILITY_CHECKED
+}
+
+enum BpjsEligibilityOutcome {
+  ACTIVE
+  INACTIVE
+  NOT_FOUND
+}
+
+enum BpjsEligibilityIdentifierType {
+  BPJS_NUMBER
+  NIK
 }
 
 enum BpjsReferenceCatalog {
@@ -371,14 +383,15 @@ model PatientProfile {
   satusehatPatientIdCiphertext String? @map("satusehat_patient_id_ciphertext")
   satusehatPatientIdKeyVersion Int?    @map("satusehat_patient_id_key_version") @db.SmallInt
 
-  ownerUser     User?            @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
-  doctors       DoctorPatient[]
-  appointments  Appointment[]
-  registrations Registration[]
-  prescriptions Prescription[]
-  allergies     PatientAllergy[]
-  encounters    Encounter[]
-  invoices      Invoice[]
+  ownerUser             User?                  @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  doctors               DoctorPatient[]
+  appointments          Appointment[]
+  registrations         Registration[]
+  prescriptions         Prescription[]
+  allergies             PatientAllergy[]
+  encounters            Encounter[]
+  invoices              Invoice[]
+  bpjsEligibilityChecks BpjsEligibilityCheck[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -1383,4 +1396,39 @@ model BpjsReferenceItem {
   @@unique([catalog, code])
   @@index([catalog, display])
   @@map("bpjs_reference_items")
+}
+
+/// One BPJS eligibility (peserta) check outcome per patient per clinic-local
+/// day (P11-T04). The front desk needs the answer synchronously, so the day
+/// cache keeps repeat check-ins from hammering PCare; a transient "BPJS
+/// unreachable" state is never persisted — only definitive outcomes land
+/// here. Member fields mirror what the eligibility card renders (name,
+/// class, member type, registered FKTP, Prolanis/PRB flags) and carry no
+/// card number: the BPJS number stays sealed on the patient profile.
+model BpjsEligibilityCheck {
+  id               String                        @id @default(uuid()) @db.Uuid
+  patientId        String                        @map("patient_id") @db.Uuid
+  checkedDate      DateTime                      @map("checked_date") @db.Date
+  outcome          BpjsEligibilityOutcome
+  checkedVia       BpjsEligibilityIdentifierType @map("checked_via")
+  memberName       String?                       @map("member_name")
+  memberType       String?                       @map("member_type")
+  memberClass      String?                       @map("member_class")
+  providerCode     String?                       @map("provider_code")
+  providerName     String?                       @map("provider_name")
+  isRegisteredHere Boolean?                      @map("is_registered_here")
+  isProlanis       Boolean                       @default(false) @map("is_prolanis")
+  isPrb            Boolean                       @default(false) @map("is_prb")
+  /// BPJS's own readable reason (ketAktif for inactive members, the upstream
+  /// rejection message for NOT_FOUND) — shown verbatim on the card.
+  statusReason String?  @map("status_reason")
+  checkedAt    DateTime @map("checked_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, checkedDate])
+  @@index([checkedDate])
+  @@map("bpjs_eligibility_checks")
 }

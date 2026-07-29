@@ -1,4 +1,9 @@
-import type { BpjsPcareEnvironmentValue, BpjsReferenceCatalogValue } from '#bpjs-pcare/schemas';
+import type {
+  BpjsEligibilityIdentifierTypeValue,
+  BpjsEligibilityOutcomeValue,
+  BpjsPcareEnvironmentValue,
+  BpjsReferenceCatalogValue,
+} from '#bpjs-pcare/schemas';
 
 /**
  * Repository projection of the stored PCare configuration. Deliberately
@@ -111,4 +116,47 @@ export type BpjsMedicationMappingRecord = {
   code: string;
   name: string;
   dphoCode: string | null;
+};
+
+/**
+ * Decrypted lookup identifiers for one patient, assembled inside the
+ * repository (the crypto boundary) solely to build the outbound peserta
+ * path. Never serialised into a response or log.
+ */
+export type BpjsPatientLookupIdentifiers = {
+  patientId: string;
+  bpjsNumber: string | null;
+  nik: string | null;
+};
+
+export type BpjsEligibilityMemberData = {
+  memberName: string | null;
+  memberType: string | null;
+  memberClass: string | null;
+  providerCode: string | null;
+  providerName: string | null;
+  isRegisteredHere: boolean | null;
+  isProlanis: boolean;
+  isPrb: boolean;
+  statusReason: string | null;
+};
+
+/** The settled outcome plus the member fields it carries — what a live lookup produces before the cache keys are attached. */
+export type BpjsEligibilityOutcomeData = BpjsEligibilityMemberData & {
+  outcome: BpjsEligibilityOutcomeValue;
+};
+
+export type BpjsEligibilityCheckRecord = BpjsEligibilityOutcomeData & {
+  id: string;
+  patientId: string;
+  checkedDate: Date;
+  checkedVia: BpjsEligibilityIdentifierTypeValue;
+  checkedAt: Date;
+};
+
+export type SaveBpjsEligibilityCheckData = BpjsEligibilityOutcomeData & {
+  patientId: string;
+  checkedDate: Date;
+  checkedVia: BpjsEligibilityIdentifierTypeValue;
+  checkedAt: Date;
 };

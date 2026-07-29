@@ -107,6 +107,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('bpjs.reference.sync:any', 'BpjsReference', 'sync', 'ANY', 'Sync BPJS PCare reference catalogs and run keyword search-and-cache lookups'),
     ('bpjs.reference.read:any', 'BpjsReference', 'read', 'ANY', 'Read the synced BPJS PCare reference catalogs and their sync status'),
     ('bpjs.mapping.manage:any', 'BpjsMapping', 'manage', 'ANY', 'Map doctors, specialties, and medications to BPJS PCare codes'),
+    ('bpjs.eligibility.check:any', 'BpjsEligibility', 'check', 'ANY', 'Check BPJS membership eligibility for a patient at registration check-in'),
     ('chat.session.create:own', 'ChatSession', 'create', 'OWN', 'Create own chat sessions'),
     ('chat.message.create:own', 'ChatMessage', 'create', 'OWN', 'Create own chat messages'),
     ('chat.message.read:any', 'ChatMessage', 'read', 'ANY', 'Read all chat messages'),
@@ -216,6 +217,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'bpjs.reference.sync:any'),
     ('ADMIN', 'bpjs.reference.read:any'),
     ('ADMIN', 'bpjs.mapping.manage:any'),
+    -- Eligibility checks are a front-desk operation at check-in; the front
+    -- desk operates under ADMIN. The check reveals membership PII (member
+    -- name, class, registered FKTP), so it stays off DOCTOR and PATIENT.
+    ('ADMIN', 'bpjs.eligibility.check:any'),
     ('ADMIN', 'chat.session.create:own'),
     ('ADMIN', 'chat.message.create:own'),
     ('ADMIN', 'chat.message.read:any'),

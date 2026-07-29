@@ -864,6 +864,53 @@ export type EnumBpjsReferenceCatalogWithAggregatesFilter<$PrismaModel = never> =
   _max?: Prisma.NestedEnumBpjsReferenceCatalogFilter<$PrismaModel>
 }
 
+export type EnumBpjsEligibilityOutcomeFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsEligibilityOutcome | Prisma.EnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsEligibilityOutcome[] | Prisma.ListEnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsEligibilityOutcome[] | Prisma.ListEnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsEligibilityOutcomeFilter<$PrismaModel> | $Enums.BpjsEligibilityOutcome
+}
+
+export type EnumBpjsEligibilityIdentifierTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsEligibilityIdentifierType | Prisma.EnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsEligibilityIdentifierType[] | Prisma.ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsEligibilityIdentifierType[] | Prisma.ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsEligibilityIdentifierTypeFilter<$PrismaModel> | $Enums.BpjsEligibilityIdentifierType
+}
+
+export type BoolNullableFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedBoolNullableFilter<$PrismaModel> | boolean | null
+}
+
+export type EnumBpjsEligibilityOutcomeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsEligibilityOutcome | Prisma.EnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsEligibilityOutcome[] | Prisma.ListEnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsEligibilityOutcome[] | Prisma.ListEnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsEligibilityOutcomeWithAggregatesFilter<$PrismaModel> | $Enums.BpjsEligibilityOutcome
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsEligibilityOutcomeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsEligibilityOutcomeFilter<$PrismaModel>
+}
+
+export type EnumBpjsEligibilityIdentifierTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsEligibilityIdentifierType | Prisma.EnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsEligibilityIdentifierType[] | Prisma.ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsEligibilityIdentifierType[] | Prisma.ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsEligibilityIdentifierTypeWithAggregatesFilter<$PrismaModel> | $Enums.BpjsEligibilityIdentifierType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsEligibilityIdentifierTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsEligibilityIdentifierTypeFilter<$PrismaModel>
+}
+
+export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1694,6 +1741,53 @@ export type NestedEnumBpjsReferenceCatalogWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumBpjsReferenceCatalogFilter<$PrismaModel>
   _max?: Prisma.NestedEnumBpjsReferenceCatalogFilter<$PrismaModel>
+}
+
+export type NestedEnumBpjsEligibilityOutcomeFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsEligibilityOutcome | Prisma.EnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsEligibilityOutcome[] | Prisma.ListEnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsEligibilityOutcome[] | Prisma.ListEnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsEligibilityOutcomeFilter<$PrismaModel> | $Enums.BpjsEligibilityOutcome
+}
+
+export type NestedEnumBpjsEligibilityIdentifierTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsEligibilityIdentifierType | Prisma.EnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsEligibilityIdentifierType[] | Prisma.ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsEligibilityIdentifierType[] | Prisma.ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsEligibilityIdentifierTypeFilter<$PrismaModel> | $Enums.BpjsEligibilityIdentifierType
+}
+
+export type NestedBoolNullableFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedBoolNullableFilter<$PrismaModel> | boolean | null
+}
+
+export type NestedEnumBpjsEligibilityOutcomeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsEligibilityOutcome | Prisma.EnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsEligibilityOutcome[] | Prisma.ListEnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsEligibilityOutcome[] | Prisma.ListEnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsEligibilityOutcomeWithAggregatesFilter<$PrismaModel> | $Enums.BpjsEligibilityOutcome
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsEligibilityOutcomeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsEligibilityOutcomeFilter<$PrismaModel>
+}
+
+export type NestedEnumBpjsEligibilityIdentifierTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BpjsEligibilityIdentifierType | Prisma.EnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.BpjsEligibilityIdentifierType[] | Prisma.ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BpjsEligibilityIdentifierType[] | Prisma.ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBpjsEligibilityIdentifierTypeWithAggregatesFilter<$PrismaModel> | $Enums.BpjsEligibilityIdentifierType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBpjsEligibilityIdentifierTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBpjsEligibilityIdentifierTypeFilter<$PrismaModel>
+}
+
+export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
 }
 
 

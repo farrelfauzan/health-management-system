@@ -423,7 +423,8 @@ export const ModelName = {
   SatusehatSubmission: 'SatusehatSubmission',
   AuditLog: 'AuditLog',
   BpjsPcareConfig: 'BpjsPcareConfig',
-  BpjsReferenceItem: 'BpjsReferenceItem'
+  BpjsReferenceItem: 'BpjsReferenceItem',
+  BpjsEligibilityCheck: 'BpjsEligibilityCheck'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -439,7 +440,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3403,6 +3404,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BpjsEligibilityCheck: {
+      payload: Prisma.$BpjsEligibilityCheckPayload<ExtArgs>
+      fields: Prisma.BpjsEligibilityCheckFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BpjsEligibilityCheckFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BpjsEligibilityCheckFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload>
+        }
+        findFirst: {
+          args: Prisma.BpjsEligibilityCheckFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BpjsEligibilityCheckFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload>
+        }
+        findMany: {
+          args: Prisma.BpjsEligibilityCheckFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload>[]
+        }
+        create: {
+          args: Prisma.BpjsEligibilityCheckCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload>
+        }
+        createMany: {
+          args: Prisma.BpjsEligibilityCheckCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BpjsEligibilityCheckCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload>[]
+        }
+        delete: {
+          args: Prisma.BpjsEligibilityCheckDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload>
+        }
+        update: {
+          args: Prisma.BpjsEligibilityCheckUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload>
+        }
+        deleteMany: {
+          args: Prisma.BpjsEligibilityCheckDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BpjsEligibilityCheckUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BpjsEligibilityCheckUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload>[]
+        }
+        upsert: {
+          args: Prisma.BpjsEligibilityCheckUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsEligibilityCheckPayload>
+        }
+        aggregate: {
+          args: Prisma.BpjsEligibilityCheckAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBpjsEligibilityCheck>
+        }
+        groupBy: {
+          args: Prisma.BpjsEligibilityCheckGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsEligibilityCheckGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BpjsEligibilityCheckCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsEligibilityCheckCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4092,6 +4167,29 @@ export const BpjsReferenceItemScalarFieldEnum = {
 export type BpjsReferenceItemScalarFieldEnum = (typeof BpjsReferenceItemScalarFieldEnum)[keyof typeof BpjsReferenceItemScalarFieldEnum]
 
 
+export const BpjsEligibilityCheckScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  checkedDate: 'checkedDate',
+  outcome: 'outcome',
+  checkedVia: 'checkedVia',
+  memberName: 'memberName',
+  memberType: 'memberType',
+  memberClass: 'memberClass',
+  providerCode: 'providerCode',
+  providerName: 'providerName',
+  isRegisteredHere: 'isRegisteredHere',
+  isProlanis: 'isProlanis',
+  isPrb: 'isPrb',
+  statusReason: 'statusReason',
+  checkedAt: 'checkedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsEligibilityCheckScalarFieldEnum = (typeof BpjsEligibilityCheckScalarFieldEnum)[keyof typeof BpjsEligibilityCheckScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4623,6 +4721,34 @@ export type ListEnumBpjsReferenceCatalogFieldRefInput<$PrismaModel> = FieldRefIn
 
 
 /**
+ * Reference to a field of type 'BpjsEligibilityOutcome'
+ */
+export type EnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsEligibilityOutcome'>
+    
+
+
+/**
+ * Reference to a field of type 'BpjsEligibilityOutcome[]'
+ */
+export type ListEnumBpjsEligibilityOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsEligibilityOutcome[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BpjsEligibilityIdentifierType'
+ */
+export type EnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsEligibilityIdentifierType'>
+    
+
+
+/**
+ * Reference to a field of type 'BpjsEligibilityIdentifierType[]'
+ */
+export type ListEnumBpjsEligibilityIdentifierTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsEligibilityIdentifierType[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -4785,6 +4911,7 @@ export type GlobalOmitConfig = {
   auditLog?: Prisma.AuditLogOmit
   bpjsPcareConfig?: Prisma.BpjsPcareConfigOmit
   bpjsReferenceItem?: Prisma.BpjsReferenceItemOmit
+  bpjsEligibilityCheck?: Prisma.BpjsEligibilityCheckOmit
 }
 
 /* Types for Logging */

@@ -365,3 +365,14 @@ export type BpjsPcareConfig = Prisma.BpjsPcareConfigModel
  * and mapping screens read only this table — never live BPJS calls.
  */
 export type BpjsReferenceItem = Prisma.BpjsReferenceItemModel
+/**
+ * Model BpjsEligibilityCheck
+ * One BPJS eligibility (peserta) check outcome per patient per clinic-local
+ * day (P11-T04). The front desk needs the answer synchronously, so the day
+ * cache keeps repeat check-ins from hammering PCare; a transient "BPJS
+ * unreachable" state is never persisted — only definitive outcomes land
+ * here. Member fields mirror what the eligibility card renders (name,
+ * class, member type, registered FKTP, Prolanis/PRB flags) and carry no
+ * card number: the BPJS number stays sealed on the patient profile.
+ */
+export type BpjsEligibilityCheck = Prisma.BpjsEligibilityCheckModel
