@@ -247,6 +247,17 @@ export class RegistrationFlowRepository {
     });
   }
 
+  /**
+   * Status moves also drive the BPJS PCare outbox (P11-T05) inside the same
+   * transaction — the same deliberate cross-module write as the SATUSEHAT
+   * enqueue in EncounterRepository.closeEncounter: a check-in and its
+   * pendaftaran queue entry must commit or roll back together, or a BPJS
+   * visit silently never reaches PCare. A check-in enqueues PENDAFTARAN only
+   * for patients with a stored BPJS number while bridging is active; a
+   * cancellation enqueues PENDAFTARAN_DELETE only when the pendaftaran
+   * already reached PCare (an unsent row is failed by the worker's own
+   * registration-status guard instead — nothing upstream needs revoking).
+   */
   async updateRegistration(payload: UpdateRegistrationRecordPayload) {
     return this.prisma.executeTransaction(async (tx) => {
       const updated = await tx.registration.update({
@@ -264,7 +275,57 @@ export class RegistrationFlowRepository {
       if (payload.status === 'CHECKED_IN' && updated.appointmentId) {
         await this.assignSessionQueueNumber(tx, updated.appointmentId);
       }
+      if (payload.status === 'CHECKED_IN') {
+        await this.enqueueBpjsPendaftaran(tx, updated.id, updated.patientId);
+      }
+      if (payload.status === 'CANCELLED') {
+        await this.propagateBpjsCancellation(tx, updated.id);
+      }
       return updated;
+    });
+  }
+
+  private async enqueueBpjsPendaftaran(
+    tx: PrismaTransactionClient,
+    registrationId: string,
+    patientId: string,
+  ): Promise<void> {
+    const patient = await tx.patientProfile.findFirst({
+      where: { id: patientId },
+      select: { bpjsNumberCiphertext: true },
+    });
+    if (!patient?.bpjsNumberCiphertext) {
+      return;
+    }
+    const activeConfig = await tx.bpjsPcareConfig.findFirst({
+      where: { facilityId: null, isActive: true },
+      select: { id: true },
+    });
+    if (!activeConfig) {
+      return;
+    }
+    await tx.bpjsSubmission.upsert({
+      where: { registrationId_type: { registrationId, type: 'PENDAFTARAN' } },
+      create: { registrationId, type: 'PENDAFTARAN' },
+      update: {},
+    });
+  }
+
+  private async propagateBpjsCancellation(
+    tx: PrismaTransactionClient,
+    registrationId: string,
+  ): Promise<void> {
+    const pendaftaran = await tx.bpjsSubmission.findUnique({
+      where: { registrationId_type: { registrationId, type: 'PENDAFTARAN' } },
+      select: { status: true },
+    });
+    if (pendaftaran?.status !== 'SUBMITTED') {
+      return;
+    }
+    await tx.bpjsSubmission.upsert({
+      where: { registrationId_type: { registrationId, type: 'PENDAFTARAN_DELETE' } },
+      create: { registrationId, type: 'PENDAFTARAN_DELETE' },
+      update: {},
     });
   }
 

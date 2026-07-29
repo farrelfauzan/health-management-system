@@ -108,6 +108,8 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('bpjs.reference.read:any', 'BpjsReference', 'read', 'ANY', 'Read the synced BPJS PCare reference catalogs and their sync status'),
     ('bpjs.mapping.manage:any', 'BpjsMapping', 'manage', 'ANY', 'Map doctors, specialties, and medications to BPJS PCare codes'),
     ('bpjs.eligibility.check:any', 'BpjsEligibility', 'check', 'ANY', 'Check BPJS membership eligibility for a patient at registration check-in'),
+    ('bpjs.submission.read:any', 'BpjsSubmission', 'read', 'ANY', 'Read BPJS PCare submission outbox status'),
+    ('bpjs.submission.retry:any', 'BpjsSubmission', 'retry', 'ANY', 'Retry failed BPJS PCare submissions'),
     ('chat.session.create:own', 'ChatSession', 'create', 'OWN', 'Create own chat sessions'),
     ('chat.message.create:own', 'ChatMessage', 'create', 'OWN', 'Create own chat messages'),
     ('chat.message.read:any', 'ChatMessage', 'read', 'ANY', 'Read all chat messages'),
@@ -221,6 +223,11 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- desk operates under ADMIN. The check reveals membership PII (member
     -- name, class, registered FKTP), so it stays off DOCTOR and PATIENT.
     ('ADMIN', 'bpjs.eligibility.check:any'),
+    -- Submission read and retry are split for the same reason as the
+    -- SATUSEHAT pair: watching the outbox is monitoring, retrying re-opens
+    -- work, and the P11-T07 integrations monitor needs only the former.
+    ('ADMIN', 'bpjs.submission.read:any'),
+    ('ADMIN', 'bpjs.submission.retry:any'),
     ('ADMIN', 'chat.session.create:own'),
     ('ADMIN', 'chat.message.create:own'),
     ('ADMIN', 'chat.message.read:any'),

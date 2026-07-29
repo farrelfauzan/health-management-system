@@ -5,22 +5,27 @@ import { BpjsEligibilityController } from './controller/bpjs-eligibility.control
 import { BpjsMappingController } from './controller/bpjs-mapping.controller';
 import { BpjsPcareConfigController } from './controller/bpjs-pcare-config.controller';
 import { BpjsReferenceController } from './controller/bpjs-reference.controller';
+import { BpjsSubmissionController } from './controller/bpjs-submission.controller';
 import { BpjsEligibilityRepository } from './repository/bpjs-eligibility.repository';
 import { BpjsMappingRepository } from './repository/bpjs-mapping.repository';
 import { BpjsPcareConfigRepository } from './repository/bpjs-pcare-config.repository';
 import { BpjsReferenceRepository } from './repository/bpjs-reference.repository';
+import { BpjsSubmissionRepository } from './repository/bpjs-submission.repository';
 import { BpjsEligibilityService } from './service/bpjs-eligibility.service';
 import { BpjsMappingService } from './service/bpjs-mapping.service';
 import { BpjsPcareConfigService } from './service/bpjs-pcare-config.service';
 import { BpjsReferenceService } from './service/bpjs-reference.service';
+import { BpjsSubmissionOpsService } from './service/bpjs-submission-ops.service';
+import { BpjsSubmissionService } from './service/bpjs-submission.service';
+import { BpjsSubmissionWorker } from './service/bpjs-submission.worker';
 
 /**
  * Feature module for BPJS PCare bridging (P11-T02: credential configuration
  * and connection testing; P11-T03: reference-catalog sync and the
  * doctor/poli/DPHO mapping surfaces; P11-T04: the eligibility check at
- * registration check-in; the submission pipeline of P11-T05..T06 lands
- * here). Named distinctly from the common {@link BpjsPcareModule} adapter it
- * builds on.
+ * registration check-in; P11-T05: the submission outbox, worker, and ops
+ * surface; the rujukan flow of P11-T06 lands here). Named distinctly from
+ * the common {@link BpjsPcareModule} adapter it builds on.
  */
 @Module({
   imports: [BpjsPcareModule],
@@ -29,6 +34,7 @@ import { BpjsReferenceService } from './service/bpjs-reference.service';
     BpjsReferenceController,
     BpjsMappingController,
     BpjsEligibilityController,
+    BpjsSubmissionController,
   ],
   providers: [
     BpjsPcareConfigRepository,
@@ -39,6 +45,10 @@ import { BpjsReferenceService } from './service/bpjs-reference.service';
     BpjsMappingService,
     BpjsEligibilityRepository,
     BpjsEligibilityService,
+    BpjsSubmissionRepository,
+    BpjsSubmissionService,
+    BpjsSubmissionOpsService,
+    BpjsSubmissionWorker,
   ],
 })
 export class BpjsPcareIntegrationModule {}

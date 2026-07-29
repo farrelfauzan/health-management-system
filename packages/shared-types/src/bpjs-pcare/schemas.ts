@@ -140,3 +140,25 @@ export const checkBpjsEligibilitySchema = z.object({
 });
 
 export type CheckBpjsEligibilityInput = z.infer<typeof checkBpjsEligibilitySchema>;
+
+export const BPJS_SUBMISSION_TYPES = ['PENDAFTARAN', 'KUNJUNGAN', 'PENDAFTARAN_DELETE'] as const;
+
+export const bpjsSubmissionTypeSchema = z.enum(BPJS_SUBMISSION_TYPES);
+
+export type BpjsSubmissionTypeValue = z.infer<typeof bpjsSubmissionTypeSchema>;
+
+export const BPJS_SUBMISSION_STATUSES = ['PENDING', 'SUBMITTED', 'FAILED'] as const;
+
+export const bpjsSubmissionStatusSchema = z.enum(BPJS_SUBMISSION_STATUSES);
+
+export type BpjsSubmissionStatusValue = z.infer<typeof bpjsSubmissionStatusSchema>;
+
+export const listBpjsSubmissionsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+  status: bpjsSubmissionStatusSchema.optional(),
+  type: bpjsSubmissionTypeSchema.optional(),
+  registrationId: z.string().uuid().optional(),
+});
+
+export type ListBpjsSubmissionsQueryInput = z.infer<typeof listBpjsSubmissionsQuerySchema>;
