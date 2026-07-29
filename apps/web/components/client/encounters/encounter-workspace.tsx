@@ -22,9 +22,20 @@ import { useEncounterDetail } from '#lib/encounters/use-encounter-detail';
 
 type EncounterWorkspaceProps = {
   encounterId: string;
+  /**
+   * Breadcrumb root and patient-link shell. A doctor session has no patient
+   * directory to reach, so the link is omitted rather than pointing at a route
+   * their session cannot open.
+   */
+  breadcrumbRoot?: string;
+  patientHrefPrefix?: string;
 };
 
-export function EncounterWorkspace({ encounterId }: EncounterWorkspaceProps) {
+export function EncounterWorkspace({
+  encounterId,
+  breadcrumbRoot = 'Main Dashboard',
+  patientHrefPrefix = '/admin/patients',
+}: EncounterWorkspaceProps) {
   const encounterQuery = useEncounterDetail(encounterId);
   const [pendingTransition, setPendingTransition] = useState<EncounterTransitionTarget | null>(null);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState<boolean>(false);
@@ -56,7 +67,7 @@ export function EncounterWorkspace({ encounterId }: EncounterWorkspaceProps) {
       <PageHeader
         title={`Encounter · ${encounter.patient.fullName}`}
         subtitle="The clinical record for this visit: note, measurements, coded diagnoses and procedures."
-        breadcrumbs={['Main Dashboard', 'Encounters', encounter.patient.mrn]}
+        breadcrumbs={[breadcrumbRoot, 'Encounters', encounter.patient.mrn]}
         actions={
           !isEditable && encounter.status === 'FINISHED' ? (
             // Billing starts where the clinical record ends: only a finished
@@ -96,7 +107,12 @@ export function EncounterWorkspace({ encounterId }: EncounterWorkspaceProps) {
         }
       />
 
-      <EncounterSummaryCard encounter={encounter} />
+      <EncounterSummaryCard
+        encounter={encounter}
+        patientHref={
+          patientHrefPrefix ? `${patientHrefPrefix}/${encounter.patientId}` : undefined
+        }
+      />
 
       {!isEditable ? (
         <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">

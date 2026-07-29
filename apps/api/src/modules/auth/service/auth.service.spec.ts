@@ -3,7 +3,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { RefreshTokenPayload } from '@hms/shared-types';
+import { JwtPayload, RefreshTokenPayload } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuthRepository } from '../repository/auth.repository';
@@ -38,6 +38,26 @@ describe('AuthService', () => {
         unassignedAt: null,
         role: {
           code: 'ADMIN',
+          permissions: [
+            { permission: { permissionKey: 'patient.read:any' } },
+            { permission: { permissionKey: 'encounter.write:any' } },
+          ],
+        },
+      },
+      {
+        // Still-assigned second role sharing one permission with the first,
+        // so the de-duplication in the claim is exercised.
+        unassignedAt: null,
+        role: {
+          code: 'DOCTOR',
+          permissions: [{ permission: { permissionKey: 'encounter.write:any' } }],
+        },
+      },
+      {
+        unassignedAt: new Date('2026-01-01T00:00:00.000Z'),
+        role: {
+          code: 'PHARMACIST',
+          permissions: [{ permission: { permissionKey: 'dispense.write:any' } }],
         },
       },
     ],
@@ -52,6 +72,73 @@ describe('AuthService', () => {
     (authRepositoryMock.findUserByEmail as jest.Mock).mockResolvedValue(user);
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(user);
     (authRepositoryMock.rotateRefreshToken as jest.Mock).mockResolvedValue(true);
+  });
+
+  it('carries the granted permissions on the access token, de-duplicated', async () => {
+    const actualTokens = await service.login({
+      email: user.email,
+      password: 'password123',
+    });
+    const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualTokens.accessToken, {
+      secret: 'test-access-secret',
+    });
+
+    expect(accessPayload.permissions).toEqual(['encounter.write:any', 'patient.read:any']);
+    expect(accessPayload.roles).toEqual(['ADMIN', 'DOCTOR']);
+  });
+
+  it('omits permissions granted only by an unassigned role', async () => {
+    const actualTokens = await service.login({
+      email: user.email,
+      password: 'password123',
+    });
+    const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualTokens.accessToken, {
+      secret: 'test-access-secret',
+    });
+
+    expect(accessPayload.permissions).not.toContain('dispense.write:any');
+  });
+
+  it('keeps permissions out of the refresh token, which re-reads them instead', async () => {
+    const actualTokens = await service.login({
+      email: user.email,
+      password: 'password123',
+    });
+    const refreshPayload = await jwtService.verifyAsync<Record<string, unknown>>(
+      actualTokens.refreshToken,
+      { secret: 'test-refresh-secret' },
+    );
+
+    expect(refreshPayload).not.toHaveProperty('permissions');
+    expect(refreshPayload.roles).toEqual(['ADMIN', 'DOCTOR']);
+  });
+
+  it('re-reads permissions from the database when refreshing', async () => {
+    const loginTokens = await service.login({
+      email: user.email,
+      password: 'password123',
+    });
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue({
+      ...user,
+      roles: [
+        {
+          unassignedAt: null,
+          role: {
+            code: 'DOCTOR',
+            permissions: [{ permission: { permissionKey: 'encounter.read:own' } }],
+          },
+        },
+      ],
+    });
+
+    const refreshedTokens = await service.refresh(loginTokens.refreshToken);
+    const accessPayload = await jwtService.verifyAsync<JwtPayload>(refreshedTokens.accessToken, {
+      secret: 'test-access-secret',
+    });
+
+    // A grant revoked since login is gone on the next access token, rather
+    // than surviving in a copy carried by the refresh token.
+    expect(accessPayload.permissions).toEqual(['encounter.read:own']);
   });
 
   it('persists a hashed refresh token when logging in', async () => {

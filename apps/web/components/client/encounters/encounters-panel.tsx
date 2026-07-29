@@ -19,9 +19,14 @@ import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
 
 type EncountersPanelProps = {
   initialQuery: EncountersSearchParams;
+  /** Shell this list is rendered in, so rows link within it. */
+  basePath?: string;
 };
 
-export function EncountersPanel({ initialQuery }: EncountersPanelProps) {
+export function EncountersPanel({
+  initialQuery,
+  basePath = '/admin/encounters',
+}: EncountersPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
   const metadata = ADMIN_ROUTE_METADATA.encounters;
@@ -72,6 +77,7 @@ export function EncountersPanel({ initialQuery }: EncountersPanelProps) {
             encounters={encountersQuery.encounters}
             isPending={encountersQuery.isPending}
             isError={encountersQuery.isError}
+            basePath={basePath}
           />
           <NumberedPagination
             className="border-t border-slate-100 px-4 py-3"

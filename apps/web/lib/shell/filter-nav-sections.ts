@@ -2,8 +2,11 @@ import type { AppAbility } from '@hms/ui';
 
 import { ADMIN_NAV_SECTIONS, type AdminNavSection } from '#lib/shell/nav-items';
 
-export function filterNavSections(ability: AppAbility): AdminNavSection[] {
-  return ADMIN_NAV_SECTIONS.map((section) => ({
+export function filterNavSections(
+  ability: AppAbility,
+  sections: AdminNavSection[] = ADMIN_NAV_SECTIONS,
+): AdminNavSection[] {
+  return sections.map((section) => ({
     ...section,
     items: section.items.filter((item) => {
       if (item.ability === null) {

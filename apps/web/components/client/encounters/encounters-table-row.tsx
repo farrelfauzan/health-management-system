@@ -12,9 +12,10 @@ import { formatRegisteredAt } from '#lib/registrations/format-registered-at';
 
 type EncountersTableRowProps = {
   encounter: EncounterListItem;
+  basePath: string;
 };
 
-export function EncountersTableRow({ encounter }: EncountersTableRowProps) {
+export function EncountersTableRow({ encounter, basePath }: EncountersTableRowProps) {
   const hasPrimaryRecord = encounter.diagnosisCount > 0;
 
   return (
@@ -57,7 +58,7 @@ export function EncountersTableRow({ encounter }: EncountersTableRowProps) {
       </TableCell>
       <TableCell className="px-4 text-right">
         <Link
-          href={`/admin/encounters/${encounter.id}`}
+          href={`${basePath}/${encounter.id}`}
           className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
           Open
