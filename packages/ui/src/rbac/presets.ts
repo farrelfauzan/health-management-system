@@ -14,6 +14,8 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'Patient' },
   { action: 'create', subject: 'Patient' },
   { action: 'update', subject: 'Patient' },
+  { action: 'read-identifier', subject: 'Patient' },
+  { action: 'read-identifier', subject: 'Doctor' },
   { action: 'assign', subject: 'DoctorPatient' },
   { action: 'unassign', subject: 'DoctorPatient' },
   { action: 'read', subject: 'DoctorPatientActivity' },

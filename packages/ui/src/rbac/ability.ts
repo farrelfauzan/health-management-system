@@ -14,7 +14,9 @@ export type AppAction =
   | 'sync'
   | 'check'
   | 'retry'
-  | 'link';
+  | 'link'
+  | 'read-identifier'
+  | 'import-identifier';
 export type AppSubject =
   | 'User'
   | 'Role'
