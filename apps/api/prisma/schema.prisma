@@ -37,6 +37,19 @@ enum AuditAction {
   BPJS_CONFIG_UPDATED
   BPJS_CONFIG_DELETED
   BPJS_CONNECTION_TESTED
+  BPJS_REFERENCE_SYNCED
+  BPJS_MAPPING_UPDATED
+}
+
+enum BpjsReferenceCatalog {
+  POLI
+  DOKTER
+  KESADARAN
+  TINDAKAN
+  DIAGNOSA
+  DPHO
+  SPESIALIS
+  SARANA
 }
 
 enum BpjsPcareEnvironment {
@@ -398,10 +411,17 @@ model Specialty {
   id          String    @id @default(uuid()) @db.Uuid
   name        String    @unique
   description String?
-  isActive    Boolean   @default(true) @map("is_active")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  /// BPJS PCare kdPoli this specialty registers under (P11-T03). The clinic
+  /// has no standalone poli entity — Specialty is the closest structural
+  /// equivalent (a registration reaches BPJS via its doctor's specialty), so
+  /// the poli mapping lives here rather than on a new join table. Nullable —
+  /// an unmapped specialty fails a BPJS submission fast with a readable
+  /// message.
+  bpjsPoliCode String?  @map("bpjs_poli_code")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
 
   doctors DoctorProfile[]
 
@@ -439,6 +459,12 @@ model DoctorProfile {
   // practitioner lookup. Plaintext: it is a pseudonymous Kemenkes-issued
   // identifier, read on every outbound FHIR call and never searched by value.
   satusehatPractitionerId String? @map("satusehat_practitioner_id")
+  // BPJS PCare kdDokter, set by an admin from the synced DOKTER reference
+  // catalog (P11-T03). Plaintext for the same reason as the IHS number: a
+  // pseudonymous facility-scoped code read on every pendaftaran/kunjungan
+  // submission. Nullable — an unmapped doctor fails a BPJS submission fast
+  // with a readable message instead of sending garbage.
+  bpjsDoctorCode String? @map("bpjs_doctor_code")
 
   // Listing/profile fields clinics expect on doctor directories (P7-T04).
   // Specialty remains the existing Specialty reference table; title/degrees
@@ -908,6 +934,11 @@ model Medication {
   id        String              @id @default(uuid()) @db.Uuid
   code      String              @unique
   kfaCode   String?             @unique @map("kfa_code")
+  /// BPJS DPHO kdObat (P11-T03), linked by an admin from the search-and-cache
+  /// DPHO catalog. Sits alongside kfaCode — two national code systems, one
+  /// medication row. Unique for the same reason kfaCode is: one catalog
+  /// identity maps to at most one local row.
+  dphoCode  String?             @unique @map("dpho_code")
   name      String
   form      String?
   strength  String?
@@ -1325,4 +1356,31 @@ model BpjsPcareConfig {
   updatedAt               DateTime             @updatedAt @map("updated_at")
 
   @@map("bpjs_pcare_configs")
+}
+
+/// One row of a BPJS PCare reference catalog (P11-T03). The design doc lists
+/// eight tables, but every catalog carries the identical shape (BPJS code,
+/// display name, syncedAt), so they land as one enum-keyed table — the sync,
+/// search, and mapping-validation surfaces stay generic instead of being
+/// stamped out eight times. Rows are replaced wholesale per catalog on each
+/// admin-triggered sync (POLI/DOKTER/KESADARAN/TINDAKAN/SPESIALIS/SARANA) or
+/// upserted incrementally by keyword search-and-cache (DIAGNOSA/DPHO, whose
+/// PCare endpoints are keyword lookups and cannot be enumerated). Dropdowns
+/// and mapping screens read only this table — never live BPJS calls.
+model BpjsReferenceItem {
+  id      String               @id @default(uuid()) @db.Uuid
+  catalog BpjsReferenceCatalog
+  code    String
+  display String
+  /// Catalog-specific qualifier: for TINDAKAN rows the kdTkp bucket the row
+  /// was fetched under ('10' rawat jalan, '20' rawat inap, '50' promotif);
+  /// null for every other catalog.
+  groupCode String?  @map("group_code")
+  syncedAt  DateTime @map("synced_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([catalog, code])
+  @@index([catalog, display])
+  @@map("bpjs_reference_items")
 }

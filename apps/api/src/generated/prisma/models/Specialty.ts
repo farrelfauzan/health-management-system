@@ -28,6 +28,7 @@ export type SpecialtyMinAggregateOutputType = {
   id: string | null
   name: string | null
   description: string | null
+  bpjsPoliCode: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -38,6 +39,7 @@ export type SpecialtyMaxAggregateOutputType = {
   id: string | null
   name: string | null
   description: string | null
+  bpjsPoliCode: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -48,6 +50,7 @@ export type SpecialtyCountAggregateOutputType = {
   id: number
   name: number
   description: number
+  bpjsPoliCode: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -60,6 +63,7 @@ export type SpecialtyMinAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  bpjsPoliCode?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -70,6 +74,7 @@ export type SpecialtyMaxAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  bpjsPoliCode?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -80,6 +85,7 @@ export type SpecialtyCountAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  bpjsPoliCode?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -163,6 +169,7 @@ export type SpecialtyGroupByOutputType = {
   id: string
   name: string
   description: string | null
+  bpjsPoliCode: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -194,6 +201,7 @@ export type SpecialtyWhereInput = {
   id?: Prisma.UuidFilter<"Specialty"> | string
   name?: Prisma.StringFilter<"Specialty"> | string
   description?: Prisma.StringNullableFilter<"Specialty"> | string | null
+  bpjsPoliCode?: Prisma.StringNullableFilter<"Specialty"> | string | null
   isActive?: Prisma.BoolFilter<"Specialty"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Specialty"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Specialty"> | Date | string
@@ -205,6 +213,7 @@ export type SpecialtyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  bpjsPoliCode?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -219,6 +228,7 @@ export type SpecialtyWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.SpecialtyWhereInput[]
   NOT?: Prisma.SpecialtyWhereInput | Prisma.SpecialtyWhereInput[]
   description?: Prisma.StringNullableFilter<"Specialty"> | string | null
+  bpjsPoliCode?: Prisma.StringNullableFilter<"Specialty"> | string | null
   isActive?: Prisma.BoolFilter<"Specialty"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Specialty"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Specialty"> | Date | string
@@ -230,6 +240,7 @@ export type SpecialtyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  bpjsPoliCode?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -246,6 +257,7 @@ export type SpecialtyScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"Specialty"> | string
   name?: Prisma.StringWithAggregatesFilter<"Specialty"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Specialty"> | string | null
+  bpjsPoliCode?: Prisma.StringNullableWithAggregatesFilter<"Specialty"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Specialty"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Specialty"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Specialty"> | Date | string
@@ -256,6 +268,7 @@ export type SpecialtyCreateInput = {
   id?: string
   name: string
   description?: string | null
+  bpjsPoliCode?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -267,6 +280,7 @@ export type SpecialtyUncheckedCreateInput = {
   id?: string
   name: string
   description?: string | null
+  bpjsPoliCode?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -278,6 +292,7 @@ export type SpecialtyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -289,6 +304,7 @@ export type SpecialtyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -300,6 +316,7 @@ export type SpecialtyCreateManyInput = {
   id?: string
   name: string
   description?: string | null
+  bpjsPoliCode?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -310,6 +327,7 @@ export type SpecialtyUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -320,6 +338,7 @@ export type SpecialtyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -330,6 +349,7 @@ export type SpecialtyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  bpjsPoliCode?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -340,6 +360,7 @@ export type SpecialtyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  bpjsPoliCode?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -350,6 +371,7 @@ export type SpecialtyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  bpjsPoliCode?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -379,6 +401,7 @@ export type SpecialtyCreateWithoutDoctorsInput = {
   id?: string
   name: string
   description?: string | null
+  bpjsPoliCode?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -389,6 +412,7 @@ export type SpecialtyUncheckedCreateWithoutDoctorsInput = {
   id?: string
   name: string
   description?: string | null
+  bpjsPoliCode?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -415,6 +439,7 @@ export type SpecialtyUpdateWithoutDoctorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -425,6 +450,7 @@ export type SpecialtyUncheckedUpdateWithoutDoctorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -466,6 +492,7 @@ export type SpecialtySelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   id?: boolean
   name?: boolean
   description?: boolean
+  bpjsPoliCode?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -478,6 +505,7 @@ export type SpecialtySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   name?: boolean
   description?: boolean
+  bpjsPoliCode?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -488,6 +516,7 @@ export type SpecialtySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   name?: boolean
   description?: boolean
+  bpjsPoliCode?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -498,13 +527,14 @@ export type SpecialtySelectScalar = {
   id?: boolean
   name?: boolean
   description?: boolean
+  bpjsPoliCode?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type SpecialtyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["specialty"]>
+export type SpecialtyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "bpjsPoliCode" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["specialty"]>
 export type SpecialtyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   doctors?: boolean | Prisma.Specialty$doctorsArgs<ExtArgs>
   _count?: boolean | Prisma.SpecialtyCountOutputTypeDefaultArgs<ExtArgs>
@@ -521,6 +551,15 @@ export type $SpecialtyPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     id: string
     name: string
     description: string | null
+    /**
+     * BPJS PCare kdPoli this specialty registers under (P11-T03). The clinic
+     * has no standalone poli entity — Specialty is the closest structural
+     * equivalent (a registration reaches BPJS via its doctor's specialty), so
+     * the poli mapping lives here rather than on a new join table. Nullable —
+     * an unmapped specialty fails a BPJS submission fast with a readable
+     * message.
+     */
+    bpjsPoliCode: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -952,6 +991,7 @@ export interface SpecialtyFieldRefs {
   readonly id: Prisma.FieldRef<"Specialty", 'String'>
   readonly name: Prisma.FieldRef<"Specialty", 'String'>
   readonly description: Prisma.FieldRef<"Specialty", 'String'>
+  readonly bpjsPoliCode: Prisma.FieldRef<"Specialty", 'String'>
   readonly isActive: Prisma.FieldRef<"Specialty", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Specialty", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Specialty", 'DateTime'>

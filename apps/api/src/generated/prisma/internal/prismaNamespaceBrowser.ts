@@ -89,7 +89,8 @@ export const ModelName = {
   UserRole: 'UserRole',
   SatusehatSubmission: 'SatusehatSubmission',
   AuditLog: 'AuditLog',
-  BpjsPcareConfig: 'BpjsPcareConfig'
+  BpjsPcareConfig: 'BpjsPcareConfig',
+  BpjsReferenceItem: 'BpjsReferenceItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -201,6 +202,7 @@ export const SpecialtyScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
+  bpjsPoliCode: 'bpjsPoliCode',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -226,6 +228,7 @@ export const DoctorProfileScalarFieldEnum = {
   nikLast4: 'nikLast4',
   nikKeyVersion: 'nikKeyVersion',
   satusehatPractitionerId: 'satusehatPractitionerId',
+  bpjsDoctorCode: 'bpjsDoctorCode',
   title: 'title',
   degrees: 'degrees',
   email: 'email'
@@ -482,6 +485,7 @@ export const MedicationScalarFieldEnum = {
   id: 'id',
   code: 'code',
   kfaCode: 'kfaCode',
+  dphoCode: 'dphoCode',
   name: 'name',
   form: 'form',
   strength: 'strength',
@@ -739,6 +743,20 @@ export const BpjsPcareConfigScalarFieldEnum = {
 } as const
 
 export type BpjsPcareConfigScalarFieldEnum = (typeof BpjsPcareConfigScalarFieldEnum)[keyof typeof BpjsPcareConfigScalarFieldEnum]
+
+
+export const BpjsReferenceItemScalarFieldEnum = {
+  id: 'id',
+  catalog: 'catalog',
+  code: 'code',
+  display: 'display',
+  groupCode: 'groupCode',
+  syncedAt: 'syncedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsReferenceItemScalarFieldEnum = (typeof BpjsReferenceItemScalarFieldEnum)[keyof typeof BpjsReferenceItemScalarFieldEnum]
 
 
 export const SortOrder = {

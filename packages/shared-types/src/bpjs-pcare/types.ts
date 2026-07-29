@@ -1,4 +1,4 @@
-import type { BpjsPcareEnvironmentValue } from '#bpjs-pcare/schemas';
+import type { BpjsPcareEnvironmentValue, BpjsReferenceCatalogValue } from '#bpjs-pcare/schemas';
 
 /**
  * Repository projection of the stored PCare configuration. Deliberately
@@ -50,4 +50,65 @@ export type BpjsPcareConnectionTestOutcome = {
   isSuccessful: boolean;
   message: string;
   testedAt: Date;
+};
+
+export type BpjsReferenceItemRecord = {
+  catalog: BpjsReferenceCatalogValue;
+  code: string;
+  display: string;
+  groupCode: string | null;
+  syncedAt: Date;
+};
+
+export type BpjsReferenceItemData = {
+  code: string;
+  display: string;
+  groupCode?: string | null;
+};
+
+/**
+ * Bulk-sync write: the catalog's rows are replaced wholesale in one
+ * transaction so a partial upstream page can never leave a half-old,
+ * half-new dropdown.
+ */
+export type ReplaceBpjsReferenceCatalogData = {
+  catalog: BpjsReferenceCatalogValue;
+  syncedAt: Date;
+  items: BpjsReferenceItemData[];
+};
+
+/**
+ * Keyword-cache write for the non-enumerable catalogs: results are upserted
+ * incrementally, never replacing rows cached by earlier searches.
+ */
+export type UpsertBpjsReferenceItemsData = {
+  catalog: BpjsReferenceCatalogValue;
+  syncedAt: Date;
+  items: BpjsReferenceItemData[];
+};
+
+export type BpjsReferenceCatalogStatusRecord = {
+  catalog: BpjsReferenceCatalogValue;
+  itemCount: number;
+  lastSyncedAt: Date | null;
+};
+
+export type BpjsDoctorMappingRecord = {
+  doctorId: string;
+  fullName: string;
+  specialtyName: string;
+  bpjsDoctorCode: string | null;
+};
+
+export type BpjsSpecialtyMappingRecord = {
+  specialtyId: string;
+  name: string;
+  bpjsPoliCode: string | null;
+};
+
+export type BpjsMedicationMappingRecord = {
+  medicationId: string;
+  code: string;
+  name: string;
+  dphoCode: string | null;
 };

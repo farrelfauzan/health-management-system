@@ -26,6 +26,7 @@ export type MedicationRecord = {
   id: string;
   code: string;
   kfaCode: string | null;
+  dphoCode: string | null;
   name: string;
   form: string | null;
   strength: string | null;

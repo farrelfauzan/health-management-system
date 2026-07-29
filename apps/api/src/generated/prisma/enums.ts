@@ -44,10 +44,26 @@ export const AuditAction = {
   BPJS_CONFIG_CREATED: 'BPJS_CONFIG_CREATED',
   BPJS_CONFIG_UPDATED: 'BPJS_CONFIG_UPDATED',
   BPJS_CONFIG_DELETED: 'BPJS_CONFIG_DELETED',
-  BPJS_CONNECTION_TESTED: 'BPJS_CONNECTION_TESTED'
+  BPJS_CONNECTION_TESTED: 'BPJS_CONNECTION_TESTED',
+  BPJS_REFERENCE_SYNCED: 'BPJS_REFERENCE_SYNCED',
+  BPJS_MAPPING_UPDATED: 'BPJS_MAPPING_UPDATED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const BpjsReferenceCatalog = {
+  POLI: 'POLI',
+  DOKTER: 'DOKTER',
+  KESADARAN: 'KESADARAN',
+  TINDAKAN: 'TINDAKAN',
+  DIAGNOSA: 'DIAGNOSA',
+  DPHO: 'DPHO',
+  SPESIALIS: 'SPESIALIS',
+  SARANA: 'SARANA'
+} as const
+
+export type BpjsReferenceCatalog = (typeof BpjsReferenceCatalog)[keyof typeof BpjsReferenceCatalog]
 
 
 export const BpjsPcareEnvironment = {

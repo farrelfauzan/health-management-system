@@ -374,3 +374,16 @@ export type AuditLog = Prisma.AuditLogModel
  * index in the migration is what actually keeps that row a singleton.
  */
 export type BpjsPcareConfig = Prisma.BpjsPcareConfigModel
+/**
+ * Model BpjsReferenceItem
+ * One row of a BPJS PCare reference catalog (P11-T03). The design doc lists
+ * eight tables, but every catalog carries the identical shape (BPJS code,
+ * display name, syncedAt), so they land as one enum-keyed table — the sync,
+ * search, and mapping-validation surfaces stay generic instead of being
+ * stamped out eight times. Rows are replaced wholesale per catalog on each
+ * admin-triggered sync (POLI/DOKTER/KESADARAN/TINDAKAN/SPESIALIS/SARANA) or
+ * upserted incrementally by keyword search-and-cache (DIAGNOSA/DPHO, whose
+ * PCare endpoints are keyword lookups and cannot be enumerated). Dropdowns
+ * and mapping screens read only this table — never live BPJS calls.
+ */
+export type BpjsReferenceItem = Prisma.BpjsReferenceItemModel
