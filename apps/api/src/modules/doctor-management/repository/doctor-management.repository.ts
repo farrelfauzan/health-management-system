@@ -29,12 +29,14 @@ const DOCTOR_RECORD_SELECT = {
   fullName: true,
   specialtyId: true,
   phoneNumber: true,
-  email: true,
   title: true,
   degrees: true,
   nikLast4: true,
   satusehatPractitionerId: true,
   ownerUserId: true,
+  // The doctor's email lives on their account; selecting it here keeps the
+  // response shape unchanged while there is only one stored copy.
+  ownerUser: { select: { email: true } },
   isActive: true,
   createdAt: true,
   updatedAt: true,
@@ -395,7 +397,6 @@ export class DoctorManagementRepository {
             fullName: payload.fullName,
             specialtyId: payload.specialtyId,
             phoneNumber: payload.phoneNumber,
-            email: payload.email ?? null,
             title: payload.title ?? null,
             degrees: payload.degrees ?? null,
             satusehatPractitionerId: payload.satusehatPractitionerId ?? null,
@@ -471,7 +472,6 @@ export class DoctorManagementRepository {
             ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
             ...(payload.specialtyId !== undefined ? { specialtyId: payload.specialtyId } : {}),
             ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
-            ...(payload.email !== undefined ? { email: payload.email } : {}),
             ...(payload.title !== undefined ? { title: payload.title } : {}),
             ...(payload.degrees !== undefined ? { degrees: payload.degrees } : {}),
             ...(payload.satusehatPractitionerId !== undefined

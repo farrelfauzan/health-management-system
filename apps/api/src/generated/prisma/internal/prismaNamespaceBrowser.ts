@@ -233,8 +233,7 @@ export const DoctorProfileScalarFieldEnum = {
   satusehatPractitionerId: 'satusehatPractitionerId',
   bpjsDoctorCode: 'bpjsDoctorCode',
   title: 'title',
-  degrees: 'degrees',
-  email: 'email'
+  degrees: 'degrees'
 } as const
 
 export type DoctorProfileScalarFieldEnum = (typeof DoctorProfileScalarFieldEnum)[keyof typeof DoctorProfileScalarFieldEnum]

@@ -18,7 +18,8 @@ export function DoctorProfileCard({ doctor }: DoctorProfileCardProps) {
     { label: 'Title', value: doctor.title ?? EMPTY_VALUE },
     { label: 'Degrees', value: doctor.degrees ?? EMPTY_VALUE },
     { label: 'Phone Number', value: doctor.phoneNumber ?? '-', isMono: true },
-    { label: 'Email', value: doctor.email ?? EMPTY_VALUE },
+    // Read from the linked account: a doctor with no login has no address.
+    { label: 'Email (account)', value: doctor.email ?? EMPTY_VALUE },
     { label: 'Assigned Patients', value: doctor.patientCount, isMono: true },
     {
       label: 'Status',

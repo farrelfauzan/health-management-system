@@ -53,7 +53,6 @@ export type DoctorProfileMinAggregateOutputType = {
   bpjsDoctorCode: string | null
   title: string | null
   degrees: string | null
-  email: string | null
 }
 
 export type DoctorProfileMaxAggregateOutputType = {
@@ -75,7 +74,6 @@ export type DoctorProfileMaxAggregateOutputType = {
   bpjsDoctorCode: string | null
   title: string | null
   degrees: string | null
-  email: string | null
 }
 
 export type DoctorProfileCountAggregateOutputType = {
@@ -97,7 +95,6 @@ export type DoctorProfileCountAggregateOutputType = {
   bpjsDoctorCode: number
   title: number
   degrees: number
-  email: number
   _all: number
 }
 
@@ -129,7 +126,6 @@ export type DoctorProfileMinAggregateInputType = {
   bpjsDoctorCode?: true
   title?: true
   degrees?: true
-  email?: true
 }
 
 export type DoctorProfileMaxAggregateInputType = {
@@ -151,7 +147,6 @@ export type DoctorProfileMaxAggregateInputType = {
   bpjsDoctorCode?: true
   title?: true
   degrees?: true
-  email?: true
 }
 
 export type DoctorProfileCountAggregateInputType = {
@@ -173,7 +168,6 @@ export type DoctorProfileCountAggregateInputType = {
   bpjsDoctorCode?: true
   title?: true
   degrees?: true
-  email?: true
   _all?: true
 }
 
@@ -282,7 +276,6 @@ export type DoctorProfileGroupByOutputType = {
   bpjsDoctorCode: string | null
   title: string | null
   degrees: string | null
-  email: string | null
   _count: DoctorProfileCountAggregateOutputType | null
   _avg: DoctorProfileAvgAggregateOutputType | null
   _sum: DoctorProfileSumAggregateOutputType | null
@@ -327,7 +320,6 @@ export type DoctorProfileWhereInput = {
   bpjsDoctorCode?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   title?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   degrees?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
-  email?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   specialty?: Prisma.XOR<Prisma.SpecialtyScalarRelationFilter, Prisma.SpecialtyWhereInput>
   ownerUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   patients?: Prisma.DoctorPatientListRelationFilter
@@ -359,7 +351,6 @@ export type DoctorProfileOrderByWithRelationInput = {
   bpjsDoctorCode?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
   degrees?: Prisma.SortOrderInput | Prisma.SortOrder
-  email?: Prisma.SortOrderInput | Prisma.SortOrder
   specialty?: Prisma.SpecialtyOrderByWithRelationInput
   ownerUser?: Prisma.UserOrderByWithRelationInput
   patients?: Prisma.DoctorPatientOrderByRelationAggregateInput
@@ -394,7 +385,6 @@ export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
   bpjsDoctorCode?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   title?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   degrees?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
-  email?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   specialty?: Prisma.XOR<Prisma.SpecialtyScalarRelationFilter, Prisma.SpecialtyWhereInput>
   ownerUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   patients?: Prisma.DoctorPatientListRelationFilter
@@ -426,7 +416,6 @@ export type DoctorProfileOrderByWithAggregationInput = {
   bpjsDoctorCode?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
   degrees?: Prisma.SortOrderInput | Prisma.SortOrder
-  email?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.DoctorProfileCountOrderByAggregateInput
   _avg?: Prisma.DoctorProfileAvgOrderByAggregateInput
   _max?: Prisma.DoctorProfileMaxOrderByAggregateInput
@@ -456,7 +445,6 @@ export type DoctorProfileScalarWhereWithAggregatesInput = {
   bpjsDoctorCode?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
   title?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
   degrees?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
-  email?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
 }
 
 export type DoctorProfileCreateInput = {
@@ -476,7 +464,6 @@ export type DoctorProfileCreateInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -508,7 +495,6 @@ export type DoctorProfileUncheckedCreateInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -536,7 +522,6 @@ export type DoctorProfileUpdateInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -568,7 +553,6 @@ export type DoctorProfileUncheckedUpdateInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -598,7 +582,6 @@ export type DoctorProfileCreateManyInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
 }
 
 export type DoctorProfileUpdateManyMutationInput = {
@@ -618,7 +601,6 @@ export type DoctorProfileUpdateManyMutationInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type DoctorProfileUncheckedUpdateManyInput = {
@@ -640,7 +622,6 @@ export type DoctorProfileUncheckedUpdateManyInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type DoctorProfileNullableScalarRelationFilter = {
@@ -677,7 +658,6 @@ export type DoctorProfileCountOrderByAggregateInput = {
   bpjsDoctorCode?: Prisma.SortOrder
   title?: Prisma.SortOrder
   degrees?: Prisma.SortOrder
-  email?: Prisma.SortOrder
 }
 
 export type DoctorProfileAvgOrderByAggregateInput = {
@@ -703,7 +683,6 @@ export type DoctorProfileMaxOrderByAggregateInput = {
   bpjsDoctorCode?: Prisma.SortOrder
   title?: Prisma.SortOrder
   degrees?: Prisma.SortOrder
-  email?: Prisma.SortOrder
 }
 
 export type DoctorProfileMinOrderByAggregateInput = {
@@ -725,7 +704,6 @@ export type DoctorProfileMinOrderByAggregateInput = {
   bpjsDoctorCode?: Prisma.SortOrder
   title?: Prisma.SortOrder
   degrees?: Prisma.SortOrder
-  email?: Prisma.SortOrder
 }
 
 export type DoctorProfileSumOrderByAggregateInput = {
@@ -940,7 +918,6 @@ export type DoctorProfileCreateWithoutOwnerUserInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleCreateNestedManyWithoutDoctorInput
@@ -970,7 +947,6 @@ export type DoctorProfileUncheckedCreateWithoutOwnerUserInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -1014,7 +990,6 @@ export type DoctorProfileUpdateWithoutOwnerUserInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUpdateManyWithoutDoctorNestedInput
@@ -1044,7 +1019,6 @@ export type DoctorProfileUncheckedUpdateWithoutOwnerUserInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1072,7 +1046,6 @@ export type DoctorProfileCreateWithoutSpecialtyInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleCreateNestedManyWithoutDoctorInput
@@ -1102,7 +1075,6 @@ export type DoctorProfileUncheckedCreateWithoutSpecialtyInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -1161,7 +1133,6 @@ export type DoctorProfileScalarWhereInput = {
   bpjsDoctorCode?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   title?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   degrees?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
-  email?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
 }
 
 export type DoctorProfileCreateWithoutEducationsInput = {
@@ -1181,7 +1152,6 @@ export type DoctorProfileCreateWithoutEducationsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -1212,7 +1182,6 @@ export type DoctorProfileUncheckedCreateWithoutEducationsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -1255,7 +1224,6 @@ export type DoctorProfileUpdateWithoutEducationsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -1286,7 +1254,6 @@ export type DoctorProfileUncheckedUpdateWithoutEducationsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1313,7 +1280,6 @@ export type DoctorProfileCreateWithoutLicensesInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -1344,7 +1310,6 @@ export type DoctorProfileUncheckedCreateWithoutLicensesInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -1387,7 +1352,6 @@ export type DoctorProfileUpdateWithoutLicensesInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -1418,7 +1382,6 @@ export type DoctorProfileUncheckedUpdateWithoutLicensesInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1445,7 +1408,6 @@ export type DoctorProfileCreateWithoutSchedulesInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -1476,7 +1438,6 @@ export type DoctorProfileUncheckedCreateWithoutSchedulesInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
@@ -1519,7 +1480,6 @@ export type DoctorProfileUpdateWithoutSchedulesInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -1550,7 +1510,6 @@ export type DoctorProfileUncheckedUpdateWithoutSchedulesInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1577,7 +1536,6 @@ export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -1608,7 +1566,6 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentSessionsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -1651,7 +1608,6 @@ export type DoctorProfileUpdateWithoutAppointmentSessionsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -1682,7 +1638,6 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentSessionsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1709,7 +1664,6 @@ export type DoctorProfileCreateWithoutPatientsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   schedules?: Prisma.DoctorScheduleCreateNestedManyWithoutDoctorInput
@@ -1740,7 +1694,6 @@ export type DoctorProfileUncheckedCreateWithoutPatientsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
@@ -1783,7 +1736,6 @@ export type DoctorProfileUpdateWithoutPatientsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   schedules?: Prisma.DoctorScheduleUpdateManyWithoutDoctorNestedInput
@@ -1814,7 +1766,6 @@ export type DoctorProfileUncheckedUpdateWithoutPatientsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1841,7 +1792,6 @@ export type DoctorProfileCreateWithoutAppointmentsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -1872,7 +1822,6 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
@@ -1915,7 +1864,6 @@ export type DoctorProfileUpdateWithoutAppointmentsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -1946,7 +1894,6 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
@@ -1973,7 +1920,6 @@ export type DoctorProfileCreateWithoutEncountersInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -2004,7 +1950,6 @@ export type DoctorProfileUncheckedCreateWithoutEncountersInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -2047,7 +1992,6 @@ export type DoctorProfileUpdateWithoutEncountersInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -2078,7 +2022,6 @@ export type DoctorProfileUncheckedUpdateWithoutEncountersInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -2105,7 +2048,6 @@ export type DoctorProfileCreateWithoutPrescriptionsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
   ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
   patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
@@ -2136,7 +2078,6 @@ export type DoctorProfileUncheckedCreateWithoutPrescriptionsInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
   patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
   schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -2179,7 +2120,6 @@ export type DoctorProfileUpdateWithoutPrescriptionsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
@@ -2210,7 +2150,6 @@ export type DoctorProfileUncheckedUpdateWithoutPrescriptionsInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -2238,7 +2177,6 @@ export type DoctorProfileCreateManySpecialtyInput = {
   bpjsDoctorCode?: string | null
   title?: string | null
   degrees?: string | null
-  email?: string | null
 }
 
 export type DoctorProfileUpdateWithoutSpecialtyInput = {
@@ -2258,7 +2196,6 @@ export type DoctorProfileUpdateWithoutSpecialtyInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
   patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUpdateManyWithoutDoctorNestedInput
@@ -2288,7 +2225,6 @@ export type DoctorProfileUncheckedUpdateWithoutSpecialtyInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
   schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -2317,7 +2253,6 @@ export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyInput = {
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -2433,7 +2368,6 @@ export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   bpjsDoctorCode?: boolean
   title?: boolean
   degrees?: boolean
-  email?: boolean
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
   patients?: boolean | Prisma.DoctorProfile$patientsArgs<ExtArgs>
@@ -2466,7 +2400,6 @@ export type DoctorProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   bpjsDoctorCode?: boolean
   title?: boolean
   degrees?: boolean
-  email?: boolean
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
 }, ExtArgs["result"]["doctorProfile"]>
@@ -2490,7 +2423,6 @@ export type DoctorProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   bpjsDoctorCode?: boolean
   title?: boolean
   degrees?: boolean
-  email?: boolean
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
 }, ExtArgs["result"]["doctorProfile"]>
@@ -2514,10 +2446,9 @@ export type DoctorProfileSelectScalar = {
   bpjsDoctorCode?: boolean
   title?: boolean
   degrees?: boolean
-  email?: boolean
 }
 
-export type DoctorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "licenseNumber" | "fullName" | "specialtyId" | "phoneNumber" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "satusehatPractitionerId" | "bpjsDoctorCode" | "title" | "degrees" | "email", ExtArgs["result"]["doctorProfile"]>
+export type DoctorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "licenseNumber" | "fullName" | "specialtyId" | "phoneNumber" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "satusehatPractitionerId" | "bpjsDoctorCode" | "title" | "degrees", ExtArgs["result"]["doctorProfile"]>
 export type DoctorProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
@@ -2573,7 +2504,6 @@ export type $DoctorProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     bpjsDoctorCode: string | null
     title: string | null
     degrees: string | null
-    email: string | null
   }, ExtArgs["result"]["doctorProfile"]>
   composites: {}
 }
@@ -3025,7 +2955,6 @@ export interface DoctorProfileFieldRefs {
   readonly bpjsDoctorCode: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly title: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly degrees: Prisma.FieldRef<"DoctorProfile", 'String'>
-  readonly email: Prisma.FieldRef<"DoctorProfile", 'String'>
 }
     
 

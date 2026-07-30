@@ -88,7 +88,7 @@ describe('DoctorManagementService', () => {
     specialtyId,
     specialty: { id: specialtyId, name: 'Cardiology' },
     phoneNumber: '0812345678',
-    email: null,
+    ownerUser: null,
     title: null,
     degrees: null,
     nikLast4: null,
@@ -566,7 +566,7 @@ describe('DoctorManagementService', () => {
   });
 
   describe('profile listing fields', () => {
-    it('creates a doctor with title, degrees, email, and educations', async () => {
+    it('creates a doctor with title, degrees, and educations', async () => {
       (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
         buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
       );
@@ -578,7 +578,7 @@ describe('DoctorManagementService', () => {
       });
       (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockResolvedValue({
         ...doctorRecord,
-        email: 'dr.first@clinic.local',
+        ownerUser: { email: 'dr.first@clinic.local' },
         title: 'dr.',
         degrees: 'Sp.JP',
       });
@@ -596,7 +596,6 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. First',
           specialtyId,
           phoneNumber: '0812345678',
-          email: 'dr.first@clinic.local',
           title: 'dr.',
           degrees: 'Sp.JP',
           educations: inputEducations,
@@ -606,12 +605,12 @@ describe('DoctorManagementService', () => {
       );
       expect(doctorManagementRepositoryMock.createDoctor).toHaveBeenCalledWith(
         expect.objectContaining({
-          email: 'dr.first@clinic.local',
           title: 'dr.',
           degrees: 'Sp.JP',
           educations: inputEducations,
         }),
       );
+      // Read back from the linked account, the only place it is stored.
       expect(result.email).toBe('dr.first@clinic.local');
       expect(result.title).toBe('dr.');
       expect(result.degrees).toBe('Sp.JP');
@@ -646,7 +645,7 @@ describe('DoctorManagementService', () => {
         ...doctorRecord,
         title: 'dr.',
         degrees: 'Sp.PD',
-        email: 'dr.first@clinic.local',
+        ownerUser: { email: 'dr.first@clinic.local' },
         _count: { patients: 0 },
         patients: [],
         schedules: [],

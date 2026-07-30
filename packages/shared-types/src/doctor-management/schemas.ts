@@ -70,7 +70,6 @@ export const satusehatPractitionerIdSchema = z.string().trim().min(1).max(64);
 
 export const doctorTitleSchema = z.string().trim().min(1).max(32);
 export const doctorDegreesSchema = z.string().trim().min(1).max(120);
-export const doctorEmailSchema = z.string().trim().email().max(254);
 
 export const doctorEducationInputSchema = z.object({
   institution: z.string().trim().min(2).max(160),
@@ -168,10 +167,9 @@ export const createDoctorSchema = z.object({
   licenseNumber: z.string().trim().min(3).max(64),
   fullName: z.string().trim().min(2).max(120),
   specialtyId: z.string().uuid(),
-  // SATUSEHAT Practitioner requires at least one ContactPoint; phone remains
-  // required on create while email is optional until clinics fill profiles.
+  // SATUSEHAT Practitioner requires at least one ContactPoint, and phone is
+  // the one the profile owns — the email lives on the user account.
   phoneNumber: z.string().trim().min(6).max(32),
-  email: doctorEmailSchema.optional(),
   title: doctorTitleSchema.optional(),
   degrees: doctorDegreesSchema.optional(),
   // Nullable: required for SATUSEHAT practitioner lookup, but legacy records
@@ -195,7 +193,6 @@ export const updateDoctorSchema = z
     fullName: z.string().trim().min(2).max(120).optional(),
     specialtyId: z.string().uuid().optional(),
     phoneNumber: z.string().trim().min(6).max(32).optional(),
-    email: doctorEmailSchema.nullable().optional(),
     title: doctorTitleSchema.nullable().optional(),
     degrees: doctorDegreesSchema.nullable().optional(),
     nik: nikSchema.nullable().optional(),

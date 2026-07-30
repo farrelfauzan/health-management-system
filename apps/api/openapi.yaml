@@ -12618,10 +12618,6 @@ components:
           type: string
           minLength: 6
           maxLength: 32
-        email:
-          type: string
-          format: email
-          maxLength: 254
         title:
           type: string
           minLength: 1
@@ -12719,11 +12715,6 @@ components:
           type: string
           minLength: 6
           maxLength: 32
-        email:
-          type: string
-          format: email
-          maxLength: 254
-          nullable: true
         title:
           type: string
           minLength: 1
