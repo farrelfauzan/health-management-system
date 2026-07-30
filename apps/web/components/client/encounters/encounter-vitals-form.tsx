@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { RecordVitalSignsInput, VitalSignsResponse } from '@hms/shared-types';
 import { Button, Input, Textarea } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { encounterClinicalDataControllerRecordVitalSignsV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -16,14 +17,13 @@ import {
   type VitalSignsFormValues,
 } from '#lib/encounters/vital-signs-fields';
 
-const VITALS_ERROR_FALLBACK = 'Unable to record the measurement. Please try again.';
-
 type EncounterVitalsFormProps = {
   encounterId: string;
 };
 
 export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [values, setValues] = useState<VitalSignsFormValues>({ ...EMPTY_VITAL_SIGNS_FORM });
   const [notes, setNotes] = useState<string>('');
   const [actionError, setActionError] = useState<string | null>(null);
@@ -35,7 +35,25 @@ export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setActionError(null);
-    const result = buildVitalSignsPayload(values, notes);
+    const result = buildVitalSignsPayload(values, notes, {
+      number: (field) =>
+        t('encounters.vitals.validation.number', {
+          field: t(`encounters.vitals.fields.${field.key}`),
+        }),
+      integer: (field) =>
+        t('encounters.vitals.validation.integer', {
+          field: t(`encounters.vitals.fields.${field.key}`),
+        }),
+      range: (field) =>
+        t('encounters.vitals.validation.range', {
+          field: t(`encounters.vitals.fields.${field.key}`),
+          min: field.min,
+          max: field.max,
+          unit: t(`encounters.vitals.units.${field.key}`),
+        }),
+      required: t('encounters.vitals.validation.required'),
+      bloodPressure: t('encounters.vitals.validation.bloodPressure'),
+    });
 
     if (!result.isValid) {
       setActionError(result.message);
@@ -44,12 +62,12 @@ export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
 
     try {
       const response = await recordMutation.mutateAsync(result.payload);
-      parseApiSuccess<VitalSignsResponse>(response, VITALS_ERROR_FALLBACK);
+      parseApiSuccess<VitalSignsResponse>(response, t('encounters.vitals.error'));
       await invalidateEncounterQueries(queryClient);
       setValues({ ...EMPTY_VITAL_SIGNS_FORM });
       setNotes('');
     } catch (error) {
-      setActionError(notifyApiError(error, VITALS_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.vitals.error')));
     }
   }
 
@@ -70,7 +88,8 @@ export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
               htmlFor={`vitals-${field.key}`}
               className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
             >
-              {field.label} <span className="text-slate-400">({field.unit})</span>
+              {t(`encounters.vitals.fields.${field.key}`)}{' '}
+              <span className="text-slate-400">({t(`encounters.vitals.units.${field.key}`)})</span>
             </label>
             <Input
               id={`vitals-${field.key}`}
@@ -89,12 +108,12 @@ export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
           htmlFor="vitals-notes"
           className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
         >
-          Notes
+          {t('encounters.notes')}
         </label>
         <Textarea
           id="vitals-notes"
           rows={2}
-          placeholder="Context for this measurement — position, cuff size, recheck reason."
+          placeholder={t('encounters.vitals.notesPlaceholder')}
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
         />
@@ -106,7 +125,7 @@ export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
           className="bg-primary-container hover:bg-primary"
           disabled={recordMutation.isPending}
         >
-          {recordMutation.isPending ? 'Recording...' : 'Record Measurement'}
+          {recordMutation.isPending ? t('encounters.recording') : t('encounters.vitals.record')}
         </Button>
       </div>
     </form>

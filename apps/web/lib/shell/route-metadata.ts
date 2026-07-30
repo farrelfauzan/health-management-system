@@ -1,4 +1,5 @@
 import { FACILITY_CONFIG, FACILITY_KIND_LABELS } from '#lib/facility/facility-config';
+import type { ShellNavigationKey } from '#lib/shell/nav-items';
 
 export type AdminRouteKey =
   | 'dashboard'
@@ -18,6 +19,92 @@ export type AdminRouteMetadata = {
   title: string;
   subtitle: string;
 };
+
+export type AdminRouteMessageKey =
+  | 'mainDashboard'
+  | 'overview'
+  | 'clinicOverview'
+  | 'hospitalOverview'
+  | 'dashboardSubtitle'
+  | 'patientDirectory'
+  | 'patientsSubtitle'
+  | 'doctorDirectory'
+  | 'doctorsSubtitle'
+  | 'appointmentScheduling'
+  | 'appointmentsSubtitle'
+  | 'registrationQueue'
+  | 'registrationsSubtitle'
+  | 'clinicalEncounters'
+  | 'encountersSubtitle'
+  | 'pharmacyQueue'
+  | 'pharmacySubtitle'
+  | 'billingCashier'
+  | 'billingSubtitle'
+  | 'aiClinicalAssistant'
+  | 'aiAssistantSubtitle'
+  | 'integrationsSubtitle'
+  | 'administrationSubtitle';
+
+type RouteTranslation = (key: AdminRouteMessageKey, values?: { facilityName: string }) => string;
+type NavigationTranslation = (key: ShellNavigationKey) => string;
+
+export function resolveLocalizedAdminRouteMetadata(
+  routeKey: AdminRouteKey,
+  translate: RouteTranslation,
+  translateNavigation: NavigationTranslation,
+): AdminRouteMetadata {
+  const navigationKeys = {
+    patients: 'patients',
+    doctors: 'doctors',
+    appointments: 'appointments',
+    registrations: 'registration',
+    encounters: 'encounters',
+    pharmacy: 'pharmacy',
+    billing: 'billing',
+    'ai-assistant': 'aiAssistant',
+    integrations: 'integrations',
+    administration: 'administration',
+  } as const;
+  const descriptors: Record<
+    Exclude<AdminRouteKey, 'dashboard'>,
+    [AdminRouteMessageKey, AdminRouteMessageKey]
+  > = {
+    patients: ['patientDirectory', 'patientsSubtitle'],
+    doctors: ['doctorDirectory', 'doctorsSubtitle'],
+    appointments: ['appointmentScheduling', 'appointmentsSubtitle'],
+    registrations: ['registrationQueue', 'registrationsSubtitle'],
+    encounters: ['clinicalEncounters', 'encountersSubtitle'],
+    pharmacy: ['pharmacyQueue', 'pharmacySubtitle'],
+    billing: ['billingCashier', 'billingSubtitle'],
+    'ai-assistant': ['aiClinicalAssistant', 'aiAssistantSubtitle'],
+    integrations: ['integrationsSubtitle', 'integrationsSubtitle'],
+    administration: ['administrationSubtitle', 'administrationSubtitle'],
+  } as const;
+
+  if (routeKey === 'dashboard') {
+    return {
+      breadcrumbs: [translate('mainDashboard'), translate('overview')],
+      title: translate(FACILITY_CONFIG.kind === 'clinic' ? 'clinicOverview' : 'hospitalOverview'),
+      subtitle: translate('dashboardSubtitle', { facilityName: FACILITY_CONFIG.name }),
+    };
+  }
+
+  const [titleKey, subtitleKey] = descriptors[routeKey];
+  const isAdvanced =
+    routeKey === 'ai-assistant' || routeKey === 'integrations' || routeKey === 'administration';
+  const title =
+    routeKey === 'integrations' || routeKey === 'administration'
+      ? translateNavigation(navigationKeys[routeKey])
+      : translate(titleKey);
+  return {
+    breadcrumbs: [
+      isAdvanced ? translateNavigation('advanced') : translate('mainDashboard'),
+      translateNavigation(navigationKeys[routeKey]),
+    ],
+    title,
+    subtitle: translate(subtitleKey),
+  };
+}
 
 export const ADMIN_ROUTE_METADATA: Record<AdminRouteKey, AdminRouteMetadata> = {
   dashboard: {

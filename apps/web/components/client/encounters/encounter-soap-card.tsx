@@ -4,14 +4,13 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { EncounterDetail, UpdateEncounterSoapInput } from '@hms/shared-types';
 import { Button, Card, CardContent, CardHeader, CardTitle, Textarea } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { encounterControllerUpdateEncounterSoapV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
 import { SOAP_SECTIONS } from '#lib/encounters/soap-sections';
-
-const SOAP_ERROR_FALLBACK = 'Unable to save the note. Please try again.';
 
 type SoapValues = Record<(typeof SOAP_SECTIONS)[number]['key'], string>;
 
@@ -22,6 +21,7 @@ type EncounterSoapCardProps = {
 
 export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [values, setValues] = useState<SoapValues>({
     subjective: encounter.subjective ?? '',
     objective: encounter.objective ?? '',
@@ -53,21 +53,21 @@ export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardPr
 
     try {
       const response = await saveMutation.mutateAsync(payload);
-      parseApiSuccess<EncounterDetail>(response, SOAP_ERROR_FALLBACK);
+      parseApiSuccess<EncounterDetail>(response, t('encounters.soap.error'));
       await invalidateEncounterQueries(queryClient);
       setIsSaved(true);
     } catch (error) {
-      setActionError(notifyApiError(error, SOAP_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.soap.error')));
     }
   }
 
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader className="flex flex-row items-center justify-between gap-3">
-        <CardTitle className="font-heading text-base">Clinical Note (SOAP)</CardTitle>
+        <CardTitle className="font-heading text-base">{t('encounters.soap.title')}</CardTitle>
         {isEditable ? (
           <div className="flex items-center gap-3">
-            {isSaved ? <span className="text-xs text-success">Saved</span> : null}
+            {isSaved ? <span className="text-xs text-success">{t('encounters.saved')}</span> : null}
             <Button
               type="button"
               size="sm"
@@ -75,7 +75,7 @@ export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardPr
               disabled={saveMutation.isPending}
               onClick={() => void handleSave()}
             >
-              {saveMutation.isPending ? 'Saving...' : 'Save Note'}
+              {saveMutation.isPending ? t('common.saving') : t('encounters.soap.save')}
             </Button>
           </div>
         ) : null}
@@ -95,13 +95,13 @@ export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardPr
               htmlFor={`soap-${section.key}`}
               className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
             >
-              {section.label}
+              {t(`encounters.soap.${section.key}`)}
             </label>
             {isEditable ? (
               <Textarea
                 id={`soap-${section.key}`}
                 rows={3}
-                placeholder={section.placeholder}
+                placeholder={t(`encounters.soap.${section.key}Placeholder`)}
                 value={values[section.key]}
                 onChange={(event) => handleChange(section.key, event.target.value)}
               />
@@ -110,7 +110,9 @@ export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardPr
                 id={`soap-${section.key}`}
                 className="min-h-9 whitespace-pre-wrap rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700"
               >
-                {values[section.key] || <span className="text-slate-400">Not recorded</span>}
+                {values[section.key] || (
+                  <span className="text-slate-400">{t('common.notRecorded')}</span>
+                )}
               </p>
             )}
           </div>

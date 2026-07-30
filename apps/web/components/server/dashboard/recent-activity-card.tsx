@@ -1,9 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle, Icon } from '@hms/ui';
+import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { TimelineList } from '#components/shared/timeline-list';
-import { MOCK_RECENT_ACTIVITY } from '#lib/dashboard/mock-activity';
+import { buildMockRecentActivity } from '#lib/dashboard/mock-activity';
 
-export function RecentActivityCard() {
+export async function RecentActivityCard() {
+  const t = await getTranslations('dashboard.activity');
+  const format = await getFormatter();
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader className="flex flex-row items-center gap-2">
@@ -11,11 +14,11 @@ export function RecentActivityCard() {
           <Icon name="history" size={20} />
         </span>
         <CardTitle className="font-heading text-base font-semibold text-slate-900">
-          Recent Activity
+          {t('title')}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <TimelineList entries={MOCK_RECENT_ACTIVITY} />
+        <TimelineList entries={buildMockRecentActivity(t, format)} />
       </CardContent>
     </Card>
   );

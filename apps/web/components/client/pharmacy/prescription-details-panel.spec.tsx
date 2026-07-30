@@ -4,10 +4,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AxiosError, type AxiosResponse } from 'axios';
+import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PrescriptionDetailsPanel } from './prescription-details-panel';
 import { dispenseControllerCreateDispenseV1 } from '#lib/api/generated/pharmacy-flow/pharmacy-flow';
+import messages from '../../../messages/en/operations.json';
 
 vi.mock('#lib/api/generated/pharmacy-flow/pharmacy-flow', () => ({
   dispenseControllerCreateDispenseV1: vi.fn(),
@@ -84,14 +86,16 @@ function renderPanel(params: { rules: AppRule[]; onDispensed?: (message: string)
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   render(
-    <QueryClientProvider client={queryClient}>
-      <AbilityProvider ability={buildAppAbility(params.rules)}>
-        <PrescriptionDetailsPanel
-          prescription={PRESCRIPTION}
-          onDispensed={params.onDispensed ?? vi.fn()}
-        />
-      </AbilityProvider>
-    </QueryClientProvider>,
+    <NextIntlClientProvider locale="en" messages={messages} timeZone="Asia/Jakarta">
+      <QueryClientProvider client={queryClient}>
+        <AbilityProvider ability={buildAppAbility(params.rules)}>
+          <PrescriptionDetailsPanel
+            prescription={PRESCRIPTION}
+            onDispensed={params.onDispensed ?? vi.fn()}
+          />
+        </AbilityProvider>
+      </QueryClientProvider>
+    </NextIntlClientProvider>,
   );
 }
 

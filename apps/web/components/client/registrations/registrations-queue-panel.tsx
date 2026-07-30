@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { RegistrationListItem } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { EncounterOpenDialog } from '#components/client/encounters/encounter-open-dialog';
 import { RegistrationCreateDialog } from '#components/client/registrations/registration-create-dialog';
@@ -15,7 +16,6 @@ import {
 import { RegistrationsTable } from '#components/client/registrations/registrations-table';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
-import { PATIENT_REGISTRATIONS_METADATA } from '#lib/registrations/patient-registrations-metadata';
 import type { RegistrationTransitionTarget } from '#lib/registrations/registration-transition-meta';
 import type { RegistrationsViewVariant } from '#lib/registrations/registrations-view-variant';
 import {
@@ -23,7 +23,6 @@ import {
   type RegistrationsSearchParams,
 } from '#lib/registrations/search-params';
 import { useRegistrationsList } from '#lib/registrations/use-registrations-list';
-import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
 
 type PendingTransition = {
   registration: RegistrationListItem;
@@ -41,10 +40,9 @@ export function RegistrationsQueuePanel({
   variant,
   openCreateOnMount = false,
 }: RegistrationsQueuePanelProps) {
+  const t = useTranslations('operations.registrations');
   const router = useRouter();
   const pathname = usePathname();
-  const metadata =
-    variant === 'admin' ? ADMIN_ROUTE_METADATA.registrations : PATIENT_REGISTRATIONS_METADATA;
   const registrationsQuery = useRegistrationsList(initialQuery);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState<boolean>(openCreateOnMount);
   const [pendingTransition, setPendingTransition] = useState<PendingTransition | null>(null);
@@ -78,9 +76,9 @@ export function RegistrationsQueuePanel({
   return (
     <div className="space-y-6">
       <PageHeader
-        title={metadata.title}
-        subtitle={metadata.subtitle}
-        breadcrumbs={[...metadata.breadcrumbs]}
+        title={variant === 'admin' ? t('title') : t('myTitle')}
+        subtitle={variant === 'admin' ? t('subtitle') : t('mySubtitle')}
+        breadcrumbs={[variant === 'admin' ? t('title') : t('myTitle')]}
         actions={
           <Can action="create" subject="Registration">
             <Button
@@ -89,7 +87,7 @@ export function RegistrationsQueuePanel({
               onClick={() => setIsCreateDialogOpen(true)}
             >
               <Icon name="person_add" size={18} />
-              New Registration
+              {t('new')}
             </Button>
           </Can>
         }
@@ -104,7 +102,7 @@ export function RegistrationsQueuePanel({
 
       {registrationsQuery.error && registrationsQuery.registrations.length > 0 ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {registrationsQuery.error.message}
+          {t('errorTitle')}
         </p>
       ) : null}
 

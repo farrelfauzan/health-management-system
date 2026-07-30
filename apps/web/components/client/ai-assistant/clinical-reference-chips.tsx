@@ -1,6 +1,7 @@
 'use client';
 
 import { Icon } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import type { ClinicalReference } from '#lib/ai-assistant/conversation-types';
 
@@ -9,10 +10,11 @@ type ClinicalReferenceChipsProps = {
 };
 
 export function ClinicalReferenceChips({ references }: ClinicalReferenceChipsProps) {
+  const t = useTranslations('aiAssistant.conversation');
   return (
     <div className="rounded-lg border border-slate-200 bg-surface-container-low p-3">
       <p className="mb-2 text-[11px] font-bold uppercase tracking-tight text-slate-500">
-        Clinical References
+        {t('clinicalReferences')}
       </p>
       <div className="flex flex-wrap gap-2">
         {references.map((reference) => (

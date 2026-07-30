@@ -2,9 +2,9 @@
 
 import type { PrescriptionResponse } from '@hms/shared-types';
 import { Icon, cn } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { StatusBadge } from '#components/shared/status-badge';
-import { formatElapsedTime } from '#lib/pharmacy/format-elapsed-time';
 import { formatRxNumber } from '#lib/pharmacy/format-rx-number';
 import { resolvePrescriptionPriority } from '#lib/pharmacy/mock-prescription-priority';
 
@@ -14,14 +14,23 @@ type PrescriptionQueueCardProps = {
   onSelect: (prescription: PrescriptionResponse) => void;
 };
 
-function summarizeMedications(prescription: PrescriptionResponse): string {
+function elapsedParts(value: string): { days: number; hours: number; minutes: number } {
+  const minutes = Math.max(0, Math.floor((Date.now() - new Date(value).getTime()) / 60_000));
+  return { days: Math.floor(minutes / 1440), hours: Math.floor(minutes / 60), minutes };
+}
+
+function summarizeMedications(
+  prescription: PrescriptionResponse,
+  emptyLabel: string,
+  more: (name: string, count: number) => string,
+): string {
   const [firstItem] = prescription.items;
   if (!firstItem) {
-    return 'No medication items';
+    return emptyLabel;
   }
   const remainingCount = prescription.items.length - 1;
   return remainingCount > 0
-    ? `${firstItem.medicationName} +${remainingCount} more`
+    ? more(firstItem.medicationName, remainingCount)
     : firstItem.medicationName;
 }
 
@@ -30,7 +39,17 @@ export function PrescriptionQueueCard({
   isSelected,
   onSelect,
 }: PrescriptionQueueCardProps) {
+  const t = useTranslations('operations');
   const priority = resolvePrescriptionPriority();
+  const elapsed = elapsedParts(prescription.createdAt);
+  const elapsedLabel =
+    elapsed.days > 0
+      ? t('pharmacy.elapsedDays', { count: elapsed.days })
+      : elapsed.minutes < 1
+        ? t('pharmacy.elapsedNow')
+        : elapsed.minutes < 60
+          ? t('pharmacy.elapsedMinutes', { count: elapsed.minutes })
+          : t('pharmacy.elapsedHours', { hours: elapsed.hours, minutes: elapsed.minutes % 60 });
 
   return (
     <button
@@ -49,7 +68,7 @@ export function PrescriptionQueueCard({
           <span className="font-mono text-sm font-semibold text-slate-900">
             {formatRxNumber(prescription.id)}
           </span>
-          <StatusBadge status={priority} />
+          <StatusBadge status={priority} label={t(`common.statuses.${priority}`)} />
         </span>
         <span className="block truncate text-sm text-slate-900">
           {prescription.patient.fullName}{' '}
@@ -58,11 +77,13 @@ export function PrescriptionQueueCard({
         <span className="flex items-center gap-4 text-xs text-slate-500">
           <span className="flex items-center gap-1">
             <Icon name="medication" size={14} />
-            {summarizeMedications(prescription)}
+            {summarizeMedications(prescription, t('pharmacy.noMedicationItems'), (name, count) =>
+              t('pharmacy.moreMedications', { name, count }),
+            )}
           </span>
           <span className="flex items-center gap-1">
             <Icon name="timer" size={14} />
-            {formatElapsedTime(prescription.createdAt)}
+            {elapsedLabel}
           </span>
         </span>
       </span>

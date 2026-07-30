@@ -2,6 +2,7 @@
 
 import type { InvoiceListItem } from '@hms/shared-types';
 import { TableBody, TableHeader, TableRow } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { InvoicesTableRow } from '#components/client/billing/invoices-table-row';
 import { DataTable } from '#components/shared/data-table';
@@ -19,17 +20,16 @@ type InvoicesTableProps = {
 };
 
 export function InvoicesTable({ invoices, isPending, isError, onOpen }: InvoicesTableProps) {
+  const t = useTranslations('operations');
   const showEmptyState = !isPending && invoices.length === 0;
 
   if (showEmptyState) {
     return (
       <EmptyState
         icon={isError ? 'error' : 'receipt_long'}
-        title={isError ? 'Unable to load invoices' : 'No invoices found'}
+        title={isError ? t('billing.invoiceError') : t('billing.emptyInvoices')}
         description={
-          isError
-            ? 'Something went wrong while fetching invoices. It retries automatically.'
-            : 'Invoices appear here once one is generated from a finished encounter.'
+          isError ? t('billing.invoiceErrorDescription') : t('billing.emptyInvoicesDescription')
         }
       />
     );
@@ -39,13 +39,13 @@ export function InvoicesTable({ invoices, isPending, isError, onOpen }: Invoices
     <DataTable>
       <TableHeader>
         <TableRow>
-          <DataTableHeaderCell>Invoice No.</DataTableHeaderCell>
-          <DataTableHeaderCell>Patient</DataTableHeaderCell>
-          <DataTableHeaderCell>Created</DataTableHeaderCell>
-          <DataTableHeaderCell>Items</DataTableHeaderCell>
-          <DataTableHeaderCell>Total</DataTableHeaderCell>
-          <DataTableHeaderCell>Status</DataTableHeaderCell>
-          <DataTableHeaderCell className="text-right">Actions</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.invoiceNumber')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.patient')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.created')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.items')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.total')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.status')}</DataTableHeaderCell>
+          <DataTableHeaderCell className="text-right">{t('common.actions')}</DataTableHeaderCell>
         </TableRow>
       </TableHeader>
       <TableBody>

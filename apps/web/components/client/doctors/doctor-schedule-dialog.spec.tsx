@@ -3,9 +3,11 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AxiosError, type AxiosResponse } from 'axios';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextIntlClientProvider } from 'next-intl';
 
 import { DoctorScheduleDialog } from './doctor-schedule-dialog';
 import { doctorManagementControllerUpdateDoctorScheduleV1 } from '#lib/api/generated/doctor-management/doctor-management';
+import messages from '../../../messages/id/clinical.json';
 
 vi.mock('#lib/api/generated/doctor-management/doctor-management', () => ({
   doctorManagementControllerUpdateDoctorScheduleV1: vi.fn(),
@@ -14,42 +16,71 @@ vi.mock('#lib/api/generated/doctor-management/doctor-management', () => ({
 const scheduleRequestMock = vi.mocked(doctorManagementControllerUpdateDoctorScheduleV1);
 
 const OVERLAPPING_SCHEDULES = [
-  { id: 's1', dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true, maxPatients: null },
-  { id: 's2', dayOfWeek: 1, startTime: '11:00', endTime: '15:00', isAvailable: true, maxPatients: null },
+  {
+    id: 's1',
+    dayOfWeek: 1,
+    startTime: '08:00',
+    endTime: '12:00',
+    isAvailable: true,
+    maxPatients: null,
+  },
+  {
+    id: 's2',
+    dayOfWeek: 1,
+    startTime: '11:00',
+    endTime: '15:00',
+    isAvailable: true,
+    maxPatients: null,
+  },
 ];
 
 const VALID_SCHEDULES = [
-  { id: 's1', dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true, maxPatients: null },
+  {
+    id: 's1',
+    dayOfWeek: 1,
+    startTime: '08:00',
+    endTime: '12:00',
+    isAvailable: true,
+    maxPatients: null,
+  },
 ];
 
 function buildApiOverlapError(): AxiosError {
-  return new AxiosError('Request failed with status code 400', 'ERR_BAD_REQUEST', undefined, undefined, {
-    status: 400,
-    statusText: 'Bad Request',
-    headers: {},
-    config: {},
-    data: {
-      error: {
-        code: 'BAD_REQUEST',
-        message: 'Schedule entries must not overlap on the same day',
+  return new AxiosError(
+    'Request failed with status code 400',
+    'ERR_BAD_REQUEST',
+    undefined,
+    undefined,
+    {
+      status: 400,
+      statusText: 'Bad Request',
+      headers: {},
+      config: {},
+      data: {
+        error: {
+          code: 'BAD_REQUEST',
+          message: 'Schedule entries must not overlap on the same day',
+        },
       },
-    },
-  } as AxiosResponse);
+    } as AxiosResponse,
+  );
 }
 
 function renderDialog(initialSchedules: typeof VALID_SCHEDULES): void {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   render(
-    <QueryClientProvider client={queryClient}>
-      <DoctorScheduleDialog
-        open
-        onOpenChange={vi.fn()}
-        doctorId="doctor-1"
-        doctorName="Dr. Budi Santoso"
-        initialSchedules={initialSchedules}
-      />
-    </QueryClientProvider>,
+    <NextIntlClientProvider locale="id" messages={messages}>
+      <QueryClientProvider client={queryClient}>
+        <DoctorScheduleDialog
+          open
+          onOpenChange={vi.fn()}
+          doctorId="doctor-1"
+          doctorName="Dr. Budi Santoso"
+          initialSchedules={initialSchedules}
+        />
+      </QueryClientProvider>
+    </NextIntlClientProvider>,
   );
 }
 
@@ -62,7 +93,7 @@ describe('DoctorScheduleDialog', () => {
     const user = userEvent.setup();
     renderDialog(OVERLAPPING_SCHEDULES);
 
-    await user.click(screen.getByRole('button', { name: 'Save Schedule' }));
+    await user.click(screen.getByRole('button', { name: 'Simpan Jadwal' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Schedule entries must not overlap on the same day',
@@ -75,14 +106,20 @@ describe('DoctorScheduleDialog', () => {
     scheduleRequestMock.mockRejectedValue(buildApiOverlapError());
     renderDialog(VALID_SCHEDULES);
 
-    await user.click(screen.getByRole('button', { name: 'Save Schedule' }));
+    await user.click(screen.getByRole('button', { name: 'Simpan Jadwal' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Schedule entries must not overlap on the same day',
     );
     expect(scheduleRequestMock).toHaveBeenCalledWith('doctor-1', {
       schedules: [
-        { dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true, maxPatients: null },
+        {
+          dayOfWeek: 1,
+          startTime: '08:00',
+          endTime: '12:00',
+          isAvailable: true,
+          maxPatients: null,
+        },
       ],
     });
   });

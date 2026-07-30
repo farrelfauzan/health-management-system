@@ -70,8 +70,8 @@ export function getMonthGridDays(date: Date): Date[] {
   return Array.from({ length: gridLength }, (_, index) => addDays(gridStart, index));
 }
 
-export function formatDayTitle(date: Date): string {
-  return date.toLocaleDateString('en-US', {
+export function formatDayTitle(date: Date, locale = 'id-ID'): string {
+  return date.toLocaleDateString(locale, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -79,14 +79,14 @@ export function formatDayTitle(date: Date): string {
   });
 }
 
-export function formatMonthTitle(date: Date): string {
-  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+export function formatMonthTitle(date: Date, locale = 'id-ID'): string {
+  return date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
 }
 
-export function formatWeekRangeTitle(weekStart: Date): string {
+export function formatWeekRangeTitle(weekStart: Date, locale = 'id-ID'): string {
   const weekEnd = addDays(weekStart, DAYS_PER_WEEK - 1);
-  const startMonth = weekStart.toLocaleDateString('en-US', { month: 'long' });
-  const endMonth = weekEnd.toLocaleDateString('en-US', { month: 'long' });
+  const startMonth = weekStart.toLocaleDateString(locale, { month: 'long' });
+  const endMonth = weekEnd.toLocaleDateString(locale, { month: 'long' });
   if (weekStart.getFullYear() !== weekEnd.getFullYear()) {
     return `${startMonth} ${weekStart.getDate()}, ${weekStart.getFullYear()} – ${endMonth} ${weekEnd.getDate()}, ${weekEnd.getFullYear()}`;
   }

@@ -20,6 +20,7 @@ import {
   DialogTitle,
   Input,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { AdminUserRolePicker } from '#components/client/administration/admin-user-role-picker';
 import { FieldError } from '#components/client/shared/field-error';
@@ -32,7 +33,6 @@ import { parseApiSuccess } from '#lib/api/response';
 import { invalidateAdminUserQueries } from '#lib/admin-users/invalidate-admin-user-queries';
 import { useRolesList } from '#lib/rbac/use-roles-list';
 
-const SAVE_ERROR_FALLBACK = 'Unable to save the user. Please try again.';
 const MIN_PASSWORD_LENGTH = 8;
 
 type AdminUserFormDialogProps = {
@@ -41,24 +41,8 @@ type AdminUserFormDialogProps = {
   user?: AdminUser | null;
 };
 
-function validatePassword(value: string, canBeBlank: boolean): string | undefined {
-  if (canBeBlank && value.length === 0) {
-    return undefined;
-  }
-  if (value.length < MIN_PASSWORD_LENGTH) {
-    return `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
-  }
-  return undefined;
-}
-
-function validateRoleSelection(roleCodes: string[]): string | undefined {
-  if (roleCodes.length === 0) {
-    return 'Select at least one role';
-  }
-  return undefined;
-}
-
 export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormDialogProps) {
+  const t = useTranslations('operations');
   const isEditMode = Boolean(user);
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
@@ -90,7 +74,7 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
               ...(value.password.length > 0 ? { password: value.password } : {}),
             },
           });
-          parseApiSuccess<AdminUser>(response, SAVE_ERROR_FALLBACK);
+          parseApiSuccess<AdminUser>(response, t('administration.saveError'));
         } else {
           const response = await createMutation.mutateAsync({
             email: value.email,
@@ -98,12 +82,12 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
             roleCodes: value.roleCodes,
             isActive: value.isActive,
           });
-          parseApiSuccess<AdminUser>(response, SAVE_ERROR_FALLBACK);
+          parseApiSuccess<AdminUser>(response, t('administration.saveError'));
         }
         await invalidateAdminUserQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
-        setFormError(notifyApiError(error, SAVE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, t('administration.saveError')));
       }
     },
   });
@@ -113,7 +97,7 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-heading">
-            {isEditMode ? 'Edit User' : 'Add New User'}
+            {isEditMode ? t('administration.editUser') : t('administration.addUser')}
           </DialogTitle>
           <DialogDescription>
             {isEditMode
@@ -165,7 +149,10 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
           <form.Field
             name="password"
             validators={{
-              onSubmit: ({ value }) => validatePassword(value, isEditMode),
+              onSubmit: ({ value }) =>
+                (isEditMode && value.length === 0) || value.length >= MIN_PASSWORD_LENGTH
+                  ? undefined
+                  : t('administration.passwordMinimum', { count: MIN_PASSWORD_LENGTH }),
             }}
           >
             {(field) => (
@@ -174,13 +161,15 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
                   htmlFor={field.name}
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  {isEditMode ? 'New Password (optional)' : 'Password'}
+                  {isEditMode ? t('administration.newPassword') : t('administration.password')}
                 </label>
                 <Input
                   id={field.name}
                   type="password"
                   value={field.state.value}
-                  placeholder={isEditMode ? 'Leave blank to keep current password' : 'Minimum 8 characters'}
+                  placeholder={
+                    isEditMode ? 'Leave blank to keep current password' : 'Minimum 8 characters'
+                  }
                   onChange={(event) => field.handleChange(event.target.value)}
                   onBlur={field.handleBlur}
                   aria-invalid={field.state.meta.errors.length > 0}
@@ -192,11 +181,16 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
 
           <form.Field
             name="roleCodes"
-            validators={{ onSubmit: ({ value }) => validateRoleSelection(value) }}
+            validators={{
+              onSubmit: ({ value }) =>
+                value.length > 0 ? undefined : t('administration.selectRole'),
+            }}
           >
             {(field) => (
               <div className="space-y-1.5">
-                <span className="block font-heading text-xs font-medium text-slate-600">Roles</span>
+                <span className="block font-heading text-xs font-medium text-slate-600">
+                  {t('administration.role')}
+                </span>
                 <AdminUserRolePicker
                   roles={rolesQuery.roles}
                   selectedRoleCodes={field.state.value}
@@ -222,14 +216,14 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked === true)}
                 />
-                <span className="text-sm text-slate-700">Active</span>
+                <span className="text-sm text-slate-700">{t('common.active')}</span>
               </label>
             )}
           </form.Field>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <form.Subscribe selector={(state) => state.isSubmitting}>
               {(isSubmitting) => (
@@ -238,7 +232,11 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
                   disabled={isSubmitting}
                   className="bg-primary-container hover:bg-primary"
                 >
-                  {isSubmitting ? 'Saving…' : isEditMode ? 'Save Changes' : 'Create User'}
+                  {isSubmitting
+                    ? t('administration.saving')
+                    : isEditMode
+                      ? t('administration.saveChanges')
+                      : t('administration.createUser')}
                 </Button>
               )}
             </form.Subscribe>

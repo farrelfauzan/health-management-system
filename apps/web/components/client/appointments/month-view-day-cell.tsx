@@ -2,6 +2,7 @@
 
 import type { AppointmentListItem, DoctorSessionCalendarItem } from '@hms/shared-types';
 import { cn } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { MonthViewEventChip } from '#components/client/appointments/month-view-event-chip';
 import { MonthViewSessionChip } from '#components/client/appointments/month-view-session-chip';
@@ -30,6 +31,8 @@ export function MonthViewDayCell({
   onSelectSession,
   onSelectDay,
 }: MonthViewDayCellProps) {
+  const t = useTranslations('operations.appointments');
+  const format = useFormatter();
   const visibleSessions = sessions.slice(0, MAX_VISIBLE_EVENTS);
   const remainingSlots = Math.max(0, MAX_VISIBLE_EVENTS - visibleSessions.length);
   const visibleAppointments = appointments.slice(0, remainingSlots);
@@ -46,7 +49,7 @@ export function MonthViewDayCell({
     >
       <button
         type="button"
-        aria-label={`Open ${day.toDateString()}`}
+        aria-label={t('openDay', { date: format.dateTime(day, { dateStyle: 'full' }) })}
         className={cn(
           'flex size-6 items-center justify-center rounded-full text-xs font-semibold transition-colors hover:bg-slate-100',
           isCurrentMonth ? 'text-slate-900' : 'text-slate-400',
@@ -76,7 +79,7 @@ export function MonthViewDayCell({
           className="w-full rounded px-1 py-0.5 text-left text-[10px] font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
           onClick={() => onSelectDay(day)}
         >
-          +{hiddenCount} more
+          +{hiddenCount}
         </button>
       ) : null}
     </div>

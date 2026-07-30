@@ -40,8 +40,15 @@ export const EMPTY_VITAL_SIGNS_FORM: VitalSignsFormValues = VITAL_SIGNS_FIELDS.r
 );
 
 export type VitalSignsFormResult =
-  | { isValid: true; payload: RecordVitalSignsInput }
-  | { isValid: false; message: string };
+  { isValid: true; payload: RecordVitalSignsInput } | { isValid: false; message: string };
+
+export type VitalSignsValidationMessages = {
+  number?: (field: VitalSignsField) => string;
+  integer?: (field: VitalSignsField) => string;
+  range?: (field: VitalSignsField) => string;
+  required?: string;
+  bloodPressure?: string;
+};
 
 /**
  * Turns the string-keyed form into the API payload, applying the same three
@@ -51,6 +58,7 @@ export type VitalSignsFormResult =
 export function buildVitalSignsPayload(
   values: VitalSignsFormValues,
   notes: string,
+  messages: VitalSignsValidationMessages = {},
 ): VitalSignsFormResult {
   const payload: Record<string, number | string> = {};
 
@@ -61,28 +69,39 @@ export function buildVitalSignsPayload(
     }
     const parsed = Number(raw);
     if (!Number.isFinite(parsed)) {
-      return { isValid: false, message: `${field.label} must be a number.` };
+      return {
+        isValid: false,
+        message: messages.number?.(field) ?? `${field.label} must be a number.`,
+      };
     }
     if (field.isInteger && !Number.isInteger(parsed)) {
-      return { isValid: false, message: `${field.label} must be a whole number.` };
+      return {
+        isValid: false,
+        message: messages.integer?.(field) ?? `${field.label} must be a whole number.`,
+      };
     }
     if (parsed < field.min || parsed > field.max) {
       return {
         isValid: false,
-        message: `${field.label} must be between ${field.min} and ${field.max} ${field.unit}.`,
+        message:
+          messages.range?.(field) ??
+          `${field.label} must be between ${field.min} and ${field.max} ${field.unit}.`,
       };
     }
     payload[field.key] = parsed;
   }
 
   if (Object.keys(payload).length === 0) {
-    return { isValid: false, message: 'Record at least one measurement.' };
+    return { isValid: false, message: messages.required ?? 'Record at least one measurement.' };
   }
 
   const systolic = payload.systolicBloodPressure;
   const diastolic = payload.diastolicBloodPressure;
   if (typeof systolic === 'number' && typeof diastolic === 'number' && systolic <= diastolic) {
-    return { isValid: false, message: 'Systolic blood pressure must be higher than diastolic.' };
+    return {
+      isValid: false,
+      message: messages.bloodPressure ?? 'Systolic blood pressure must be higher than diastolic.',
+    };
   }
 
   const trimmedNotes = notes.trim();

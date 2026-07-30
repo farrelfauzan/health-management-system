@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { FilterCard } from '#components/shared/filter-card';
 import type { InvoicesSearchParams } from '#lib/billing/search-params';
@@ -31,6 +32,7 @@ type InvoicesFilterCardProps = {
 };
 
 export function InvoicesFilterCard({ initialQuery, onApply, onReset }: InvoicesFilterCardProps) {
+  const t = useTranslations('operations');
   const [status, setStatus] = useState<string>(initialQuery.status ?? ALL_STATUSES_VALUE);
   const [createdFrom, setCreatedFrom] = useState<string>(initialQuery.createdFrom ?? '');
   const [createdTo, setCreatedTo] = useState<string>(initialQuery.createdTo ?? '');
@@ -65,10 +67,10 @@ export function InvoicesFilterCard({ initialQuery, onApply, onReset }: InvoicesF
         actions={
           <>
             <Button type="submit" size="sm" className="bg-primary-container hover:bg-primary">
-              Apply Filters
+              {t('common.applyFilters')}
             </Button>
             <Button type="button" size="sm" variant="outline" onClick={handleReset}>
-              Reset
+              {t('common.reset')}
             </Button>
           </>
         }
@@ -78,14 +80,14 @@ export function InvoicesFilterCard({ initialQuery, onApply, onReset }: InvoicesF
             htmlFor="invoices-status-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Status
+            {t('common.status')}
           </label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="invoices-status-filter" className="w-full">
-              <SelectValue placeholder="All Statuses" />
+              <SelectValue placeholder={t('billing.allStatuses')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL_STATUSES_VALUE}>All Statuses</SelectItem>
+              <SelectItem value={ALL_STATUSES_VALUE}>{t('billing.allStatuses')}</SelectItem>
               {INVOICE_STATUSES.map((statusValue) => (
                 <SelectItem key={statusValue} value={statusValue}>
                   {formatStatusLabel(statusValue)}
@@ -96,21 +98,21 @@ export function InvoicesFilterCard({ initialQuery, onApply, onReset }: InvoicesF
         </div>
         <div>
           <span className="mb-1.5 block font-heading text-xs font-medium text-slate-600">
-            Created Between
+            {t('billing.createdBetween')}
           </span>
           <div className="flex items-center gap-2">
             <DatePicker
-              aria-label="Created from"
+              aria-label={t('billing.createdFrom')}
               className="w-40"
-              placeholder="From"
+              placeholder={t('common.from')}
               value={createdFrom}
               onValueChange={handleCreatedFromChange}
             />
             <span className="text-sm text-slate-400">–</span>
             <DatePicker
-              aria-label="Created to"
+              aria-label={t('billing.createdTo')}
               className="w-40"
-              placeholder="To"
+              placeholder={t('common.to')}
               value={createdTo}
               disabled={createdFrom.length === 0}
               minValue={createdFrom}

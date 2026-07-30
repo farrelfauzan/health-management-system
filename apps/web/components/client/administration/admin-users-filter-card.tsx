@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { FilterCard } from '#components/shared/filter-card';
 import type { AdminUsersSearchParams } from '#lib/admin-users/search-params';
@@ -35,6 +36,7 @@ export function AdminUsersFilterCard({
   onApply,
   onReset,
 }: AdminUsersFilterCardProps) {
+  const t = useTranslations('operations');
   const [search, setSearch] = useState<string>(initialQuery.search ?? '');
   const [roleCode, setRoleCode] = useState<string>(initialQuery.roleCode ?? ALL_ROLES_VALUE);
   const [status, setStatus] = useState<string>(initialQuery.isActive ?? ALL_STATUSES_VALUE);
@@ -64,10 +66,10 @@ export function AdminUsersFilterCard({
         actions={
           <>
             <Button type="submit" size="sm" className="bg-primary-container hover:bg-primary">
-              Apply Filters
+              {t('common.applyFilters')}
             </Button>
             <Button type="button" size="sm" variant="outline" onClick={handleReset}>
-              Reset
+              {t('common.reset')}
             </Button>
           </>
         }
@@ -77,11 +79,11 @@ export function AdminUsersFilterCard({
             htmlFor="admin-users-quick-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Quick Filter
+            {t('common.quickFilter')}
           </label>
           <Input
             id="admin-users-quick-filter"
-            placeholder="Search by email..."
+            placeholder={t('administration.search')}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -91,14 +93,14 @@ export function AdminUsersFilterCard({
             htmlFor="admin-users-role-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Role
+            {t('administration.role')}
           </label>
           <Select value={roleCode} onValueChange={setRoleCode}>
             <SelectTrigger id="admin-users-role-filter" className="w-full">
-              <SelectValue placeholder="All Roles" />
+              <SelectValue placeholder={t('administration.allRoles')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL_ROLES_VALUE}>All Roles</SelectItem>
+              <SelectItem value={ALL_ROLES_VALUE}>{t('administration.allRoles')}</SelectItem>
               {rolesQuery.roles.map((role) => (
                 <SelectItem key={role.id} value={role.code}>
                   {role.name}
@@ -112,16 +114,16 @@ export function AdminUsersFilterCard({
             htmlFor="admin-users-status-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Status
+            {t('common.status')}
           </label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="admin-users-status-filter" className="w-full">
-              <SelectValue placeholder="All Statuses" />
+              <SelectValue placeholder={t('common.allStatuses')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL_STATUSES_VALUE}>All Statuses</SelectItem>
-              <SelectItem value="true">Active</SelectItem>
-              <SelectItem value="false">Inactive</SelectItem>
+              <SelectItem value={ALL_STATUSES_VALUE}>{t('common.allStatuses')}</SelectItem>
+              <SelectItem value="true">{t('common.active')}</SelectItem>
+              <SelectItem value="false">{t('common.inactive')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

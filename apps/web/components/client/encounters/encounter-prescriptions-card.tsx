@@ -2,19 +2,21 @@
 
 import type { EncounterRelatedPrescription } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { StatusBadge } from '#components/shared/status-badge';
-import { formatRegisteredAt } from '#lib/registrations/format-registered-at';
 
 type EncounterPrescriptionsCardProps = {
   prescriptions: EncounterRelatedPrescription[];
 };
 
 export function EncounterPrescriptionsCard({ prescriptions }: EncounterPrescriptionsCardProps) {
+  const t = useTranslations('clinical');
+  const format = useFormatter();
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader>
-        <CardTitle className="font-heading text-base">Prescriptions</CardTitle>
+        <CardTitle className="font-heading text-base">{t('encounters.prescriptions')}</CardTitle>
       </CardHeader>
       <CardContent>
         {prescriptions.length > 0 ? (
@@ -26,22 +28,29 @@ export function EncounterPrescriptionsCard({ prescriptions }: EncounterPrescript
               >
                 <div>
                   <p className="text-sm text-slate-700">
-                    {prescription.itemCount} item{prescription.itemCount === 1 ? '' : 's'}
+                    {t('encounters.prescriptionItems', { count: prescription.itemCount })}
                   </p>
                   {prescription.issuedAt ? (
                     <p className="text-xs text-slate-500">
-                      Issued {formatRegisteredAt(prescription.issuedAt)}
+                      {t('encounters.issuedAt', {
+                        date: format.dateTime(new Date(prescription.issuedAt), {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        }),
+                      })}
                     </p>
                   ) : null}
                 </div>
-                <StatusBadge status={prescription.status} />
+                <StatusBadge
+                  status={prescription.status}
+                  label={t(`encounters.prescriptionStatus.${prescription.status}`)}
+                />
               </li>
             ))}
           </ul>
         ) : (
           <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">
-            No prescription written during this visit. The pharmacy queue is where dispensing
-            happens.
+            {t('encounters.prescriptionsEmpty')}
           </p>
         )}
       </CardContent>

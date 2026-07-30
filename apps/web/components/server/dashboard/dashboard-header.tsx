@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { Button, Icon } from '@hms/ui';
 
 import { CurrentDateChip } from '#components/server/dashboard/current-date-chip';
@@ -7,9 +8,8 @@ import { PageHeader } from '#components/shared/page-header';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
-import { buildDashboardGreeting } from '#lib/dashboard/greeting';
+import { resolveDashboardDayPart } from '#lib/dashboard/greeting';
 import { FACILITY_CONFIG } from '#lib/facility/facility-config';
-import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
 
 export async function DashboardHeader() {
@@ -18,24 +18,24 @@ export async function DashboardHeader() {
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
   const claims = resolveSessionClaims({ accessToken, refreshToken });
   const profile = resolveShellProfile(claims);
-  const metadata = ADMIN_ROUTE_METADATA.dashboard;
-  const greeting = buildDashboardGreeting({
+  const t = await getTranslations('dashboard.header');
+  const date = new Date();
+  const greeting = t(`greeting.${resolveDashboardDayPart(date.getHours())}`, {
     displayName: profile.displayName,
     facilityName: FACILITY_CONFIG.name,
-    date: new Date(),
   });
   return (
     <PageHeader
-      title={metadata.title}
+      title={t('title')}
       subtitle={greeting}
-      breadcrumbs={metadata.breadcrumbs}
+      breadcrumbs={[t('breadcrumbs.dashboard'), t('breadcrumbs.overview')]}
       actions={
         <>
-          <CurrentDateChip date={new Date()} />
+          <CurrentDateChip date={date} />
           <Button asChild>
             <Link href="/admin/registrations?new=1">
               <Icon name="add" size={18} />
-              New Case
+              {t('newCase')}
             </Link>
           </Button>
         </>

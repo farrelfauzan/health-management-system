@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button, Can, Icon, Skeleton } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { AssignPatientDialog } from '#components/client/doctors/assign-patient-dialog';
 import { DoctorFormDialog } from '#components/client/doctors/doctor-form-dialog';
@@ -21,6 +22,7 @@ type DoctorDetailPanelProps = {
 };
 
 export function DoctorDetailPanel({ doctorId }: DoctorDetailPanelProps) {
+  const t = useTranslations('clinical');
   const detailQuery = useDoctorDetail(doctorId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState<boolean>(false);
@@ -43,11 +45,9 @@ export function DoctorDetailPanel({ doctorId }: DoctorDetailPanelProps) {
     return (
       <EmptyState
         icon="person_off"
-        title="Doctor not found"
+        title={t('doctors.notFound')}
         description={
-          detailQuery.isError
-            ? detailQuery.error?.message ?? 'Something went wrong while loading the doctor.'
-            : 'The doctor record does not exist or you do not have access to it.'
+          detailQuery.isError ? t('doctors.loadError') : t('doctors.notFoundDescription')
         }
       />
     );
@@ -58,12 +58,12 @@ export function DoctorDetailPanel({ doctorId }: DoctorDetailPanelProps) {
       <PageHeader
         title={doctor.fullName}
         subtitle={`${doctor.specialty} · ${doctor.licenseNumber}`}
-        breadcrumbs={['Main Dashboard', 'Doctors', doctor.fullName]}
+        breadcrumbs={[t('doctors.dashboard'), t('doctors.title'), doctor.fullName]}
         actions={
           <Can action="update" subject="Doctor">
             <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(true)}>
               <Icon name="edit" size={18} />
-              Edit Doctor
+              {t('common.edit')} {t('doctors.title')}
             </Button>
           </Can>
         }
@@ -77,7 +77,10 @@ export function DoctorDetailPanel({ doctorId }: DoctorDetailPanelProps) {
         </div>
         <div className="space-y-6">
           <DoctorLicensesCard licenses={doctor.licenses} />
-          <DoctorScheduleCard doctor={doctor} onManageSchedule={() => setIsScheduleDialogOpen(true)} />
+          <DoctorScheduleCard
+            doctor={doctor}
+            onManageSchedule={() => setIsScheduleDialogOpen(true)}
+          />
           <DoctorPatientsCard doctor={doctor} onAssignPatient={() => setIsAssignDialogOpen(true)} />
         </div>
       </div>

@@ -1,12 +1,7 @@
 'use client';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@hms/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { SessionQueueTable } from '#components/client/appointments/session-queue-table';
 import { useSessionQueue } from '#lib/appointments/use-session-queue';
@@ -24,21 +19,22 @@ function formatSessionCapacity(bookedCount: number, maxPatients: number | null):
 }
 
 export function SessionQueueDialog({ open, onOpenChange, sessionId }: SessionQueueDialogProps) {
+  const t = useTranslations('operations.appointments');
   const queueQuery = useSessionQueue(sessionId);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-heading">Session Queue</DialogTitle>
+          <DialogTitle className="font-heading">{t('labels.sessionQueue')}</DialogTitle>
           <DialogDescription>
             {queueQuery.session
               ? `${queueQuery.session.sessionDate} · ${queueQuery.session.startTime}–${queueQuery.session.endTime} · ${formatSessionCapacity(queueQuery.session.bookedCount, queueQuery.session.maxPatients)}`
-              : 'Loading session…'}
+              : t('loadingSession')}
           </DialogDescription>
         </DialogHeader>
         {queueQuery.isPending ? (
-          <p className="text-sm text-slate-500">Loading queue…</p>
+          <p className="text-sm text-slate-500">{t('loadingQueue')}</p>
         ) : queueQuery.isError ? (
           <p
             role="alert"
@@ -47,7 +43,7 @@ export function SessionQueueDialog({ open, onOpenChange, sessionId }: SessionQue
             Failed to load the session queue.
           </p>
         ) : queueQuery.queue.length === 0 ? (
-          <p className="text-sm text-slate-500">No patients booked into this session yet.</p>
+          <p className="text-sm text-slate-500">{t('noSessionPatients')}</p>
         ) : (
           <SessionQueueTable queue={queueQuery.queue} />
         )}

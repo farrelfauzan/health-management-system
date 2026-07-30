@@ -1,6 +1,7 @@
 'use client';
 
 import type { DoctorListItem } from '@hms/shared-types';
+import { useTranslations } from 'next-intl';
 import { MAX_INITIAL_DOCTOR_ASSIGNMENTS } from '@hms/shared-types';
 import { Checkbox, Skeleton } from '@hms/ui';
 
@@ -17,6 +18,7 @@ export function PatientDoctorPicker({
   isLoading,
   onToggleDoctor,
 }: PatientDoctorPickerProps) {
+  const t = useTranslations('clinical');
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -26,7 +28,7 @@ export function PatientDoctorPicker({
     );
   }
   if (doctors.length === 0) {
-    return <p className="text-sm text-slate-500">No active doctors available.</p>;
+    return <p className="text-sm text-slate-500">{t('patients.noActiveDoctors')}</p>;
   }
   const isAtLimit = selectedDoctorIds.length >= MAX_INITIAL_DOCTOR_ASSIGNMENTS;
   return (

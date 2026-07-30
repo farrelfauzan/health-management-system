@@ -2,6 +2,7 @@
 
 import type { DoctorListItem } from '@hms/shared-types';
 import { TableCell, TableRow, useAbility } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { AvatarInitials } from '#components/shared/avatar-initials';
@@ -25,15 +26,25 @@ export function DoctorsTableRow({
   onAssignPatient,
 }: DoctorsTableRowProps) {
   const ability = useAbility();
+  const t = useTranslations('clinical');
+  const weekdayKeys = [
+    'doctors.weekdays.0',
+    'doctors.weekdays.1',
+    'doctors.weekdays.2',
+    'doctors.weekdays.3',
+    'doctors.weekdays.4',
+    'doctors.weekdays.5',
+    'doctors.weekdays.6',
+  ] as const;
   const actions: RowAction[] = [
-    { label: 'View', icon: 'visibility', onSelect: () => onView(doctor.id) },
+    { label: t('common.view'), icon: 'visibility', onSelect: () => onView(doctor.id) },
     ...(ability.can('update', 'Doctor')
-      ? [{ label: 'Edit', icon: 'edit', onSelect: () => onEdit(doctor) }]
+      ? [{ label: t('common.edit'), icon: 'edit', onSelect: () => onEdit(doctor) }]
       : []),
     ...(ability.can('write', 'DoctorSchedule')
       ? [
           {
-            label: 'Manage Schedule',
+            label: t('doctors.manageSchedule'),
             icon: 'calendar_month',
             onSelect: () => onManageSchedule(doctor),
           },
@@ -42,7 +53,7 @@ export function DoctorsTableRow({
     ...(ability.can('assign', 'DoctorPatient')
       ? [
           {
-            label: 'Assign Patient',
+            label: t('doctors.assignPatient'),
             icon: 'person_add',
             onSelect: () => onAssignPatient(doctor),
           },
@@ -63,14 +74,24 @@ export function DoctorsTableRow({
       </TableCell>
       <DataTableMonoCell>{doctor.licenseNumber}</DataTableMonoCell>
       <TableCell className="px-4 text-sm text-slate-600">
-        {formatScheduleSummary(doctor.schedules)}
+        {formatScheduleSummary(doctor.schedules, {
+          dayLabel: (day) => t(weekdayKeys[day] ?? 'doctors.weekdays.0'),
+          noSchedule: t('doctors.scheduleNone'),
+          varies: t('doctors.scheduleVaries'),
+        })}
       </TableCell>
       <DataTableMonoCell className="text-slate-700">{doctor.patientCount}</DataTableMonoCell>
       <TableCell className="px-4">
-        <StatusBadge status={doctor.isActive ? 'active' : 'inactive'} />
+        <StatusBadge
+          status={doctor.isActive ? 'active' : 'inactive'}
+          label={t(doctor.isActive ? 'common.active' : 'common.inactive')}
+        />
       </TableCell>
       <TableCell className="px-4 text-right">
-        <RowActionsMenu actions={actions} triggerLabel={`Actions for ${doctor.fullName}`} />
+        <RowActionsMenu
+          actions={actions}
+          triggerLabel={t('common.actionsFor', { name: doctor.fullName })}
+        />
       </TableCell>
     </TableRow>
   );

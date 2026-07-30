@@ -2,6 +2,7 @@
 
 import type { PrescriptionResponse } from '@hms/shared-types';
 import { Icon, Skeleton } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { PrescriptionQueueCard } from '#components/client/pharmacy/prescription-queue-card';
 import {
@@ -43,17 +44,18 @@ export function PrescriptionQueue({
   total,
   onPageChange,
 }: PrescriptionQueueProps) {
+  const t = useTranslations('operations.pharmacy');
   const visiblePrescriptions =
     filter === 'STAT'
       ? prescriptions.filter(() => resolvePrescriptionPriority() === 'STAT')
       : prescriptions;
 
   return (
-    <section aria-label="Incoming prescription queue" className="space-y-4">
+    <section aria-label={t('incomingQueue')} className="space-y-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="flex items-center gap-2 font-heading text-base font-semibold text-slate-900">
           <Icon name="pending_actions" size={20} />
-          Incoming Prescription Queue
+          {t('incomingQueue')}
         </h2>
         <PrescriptionQueueToggle value={filter} onChange={onFilterChange} />
       </div>
@@ -69,8 +71,8 @@ export function PrescriptionQueue({
       {!isPending && isError && visiblePrescriptions.length === 0 ? (
         <EmptyState
           icon="error"
-          title="Unable to load the prescription queue"
-          description="Something went wrong while loading pending prescriptions. Please try again."
+          title={t('queueErrorTitle')}
+          description={t('queueErrorDescription')}
         />
       ) : null}
 
@@ -78,14 +80,14 @@ export function PrescriptionQueue({
         filter === 'STAT' ? (
           <EmptyState
             icon="e911_emergency"
-            title="No STAT prescriptions"
-            description="There are no STAT-priority prescriptions in the queue right now."
+            title={t('noStatTitle')}
+            description={t('noStatDescription')}
           />
         ) : (
           <EmptyState
             icon="medication"
-            title="No pending prescriptions"
-            description="New prescriptions issued by doctors will appear here for verification."
+            title={t('noPendingTitle')}
+            description={t('noPendingDescription')}
           />
         )
       ) : null}

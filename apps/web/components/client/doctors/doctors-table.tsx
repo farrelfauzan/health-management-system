@@ -2,6 +2,7 @@
 
 import type { DoctorListItem } from '@hms/shared-types';
 import { TableBody, TableHeader, TableRow } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { DoctorsTableRow } from '#components/client/doctors/doctors-table-row';
 import { DataTable } from '#components/shared/data-table';
@@ -30,18 +31,15 @@ export function DoctorsTable({
   onManageSchedule,
   onAssignPatient,
 }: DoctorsTableProps) {
+  const t = useTranslations('clinical');
   const showEmptyState = !isPending && doctors.length === 0;
 
   if (showEmptyState) {
     return (
       <EmptyState
         icon={isError ? 'error' : 'stethoscope'}
-        title={isError ? 'Unable to load doctors' : 'No doctors found'}
-        description={
-          isError
-            ? 'Something went wrong while fetching the doctor directory. It retries automatically.'
-            : 'Adjust the filters or add a new doctor to see records here.'
-        }
+        title={isError ? t('doctors.errorTitle') : t('doctors.emptyTitle')}
+        description={isError ? t('doctors.errorDescription') : t('doctors.emptyDescription')}
       />
     );
   }
@@ -50,12 +48,12 @@ export function DoctorsTable({
     <DataTable>
       <TableHeader>
         <TableRow>
-          <DataTableHeaderCell>Doctor</DataTableHeaderCell>
-          <DataTableHeaderCell>License No.</DataTableHeaderCell>
-          <DataTableHeaderCell>Schedule</DataTableHeaderCell>
-          <DataTableHeaderCell>Patients</DataTableHeaderCell>
-          <DataTableHeaderCell>Status</DataTableHeaderCell>
-          <DataTableHeaderCell className="text-right">Actions</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('doctors.columns.name')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('doctors.columns.license')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('doctors.columns.schedule')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('doctors.columns.patients')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.status')}</DataTableHeaderCell>
+          <DataTableHeaderCell className="text-right">{t('common.actions')}</DataTableHeaderCell>
         </TableRow>
       </TableHeader>
       <TableBody>

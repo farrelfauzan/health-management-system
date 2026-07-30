@@ -12,6 +12,7 @@ import {
   DialogTitle,
   useAbility,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { InvoiceItemsList } from '#components/client/billing/invoice-items-list';
 import { InvoicePaymentSummary } from '#components/client/billing/invoice-payment-summary';
@@ -24,8 +25,6 @@ import { parseApiSuccess } from '#lib/api/response';
 import { invalidateBillingQueries } from '#lib/billing/invalidate-billing-queries';
 import { useInvoiceDetail } from '#lib/billing/use-invoice-detail';
 
-const ISSUE_ERROR_FALLBACK = 'Unable to issue the invoice. Please try again.';
-
 type InvoiceDetailDialogProps = {
   invoiceId: string;
   open: boolean;
@@ -33,6 +32,7 @@ type InvoiceDetailDialogProps = {
 };
 
 export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDetailDialogProps) {
+  const t = useTranslations('operations');
   const ability = useAbility();
   const queryClient = useQueryClient();
   const invoiceQuery = useInvoiceDetail(invoiceId);
@@ -49,10 +49,10 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
     setActionError(null);
     try {
       const response = await issueMutation.mutateAsync();
-      parseApiSuccess<InvoiceDetail>(response, ISSUE_ERROR_FALLBACK);
+      parseApiSuccess<InvoiceDetail>(response, t('billing.issueError'));
       await invalidateBillingQueries(queryClient);
     } catch (error) {
-      setActionError(notifyApiError(error, ISSUE_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('billing.issueError')));
     }
   }
 
@@ -61,20 +61,24 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-heading">
-            {invoice ? `Invoice ${invoice.invoiceNumber}` : 'Invoice'}
+            {invoice
+              ? t('billing.invoiceNumber', { number: invoice.invoiceNumber })
+              : t('billing.invoice')}
           </DialogTitle>
           <DialogDescription>
             {invoice
               ? `${invoice.patient.fullName} · ${invoice.patient.mrn}`
-              : 'Loading the invoice...'}
+              : t('billing.loadingInvoice')}
           </DialogDescription>
         </DialogHeader>
 
-        {invoiceQuery.isPending ? <p className="text-sm text-slate-500">Loading...</p> : null}
+        {invoiceQuery.isPending ? (
+          <p className="text-sm text-slate-500">{t('common.loading')}</p>
+        ) : null}
 
         {!invoiceQuery.isPending && !invoice ? (
           <p role="alert" className="text-sm text-rose-700">
-            {invoiceQuery.error?.message ?? 'This invoice could not be loaded.'}
+            {t('billing.invoiceError')}
           </p>
         ) : null}
 
@@ -129,7 +133,12 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
               />
             ) : invoice.status !== 'PAID' && invoice.status !== 'VOID' && canWriteInvoice ? (
               <div className="flex justify-end">
-                <Button type="button" size="sm" variant="outline" onClick={() => setIsVoiding(true)}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsVoiding(true)}
+                >
                   Void Invoice
                 </Button>
               </div>

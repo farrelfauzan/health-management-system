@@ -2,9 +2,11 @@ import type { AdminUser } from '@hms/shared-types';
 import { AbilityProvider, buildAppAbility, Table, TableBody, type AppRule } from '@hms/ui';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi } from 'vitest';
 
 import { AdminUsersTableRow } from './admin-users-table-row';
+import messages from '../../../messages/en/operations.json';
 
 const USER: AdminUser = {
   id: 'user-1',
@@ -27,13 +29,15 @@ const READ_ONLY_RULES: AppRule[] = [{ action: 'read', subject: 'User' }];
 
 function renderRow(rules: AppRule[]): void {
   render(
-    <AbilityProvider ability={buildAppAbility(rules)}>
-      <Table>
-        <TableBody>
-          <AdminUsersTableRow user={USER} onEdit={vi.fn()} onToggleActive={vi.fn()} />
-        </TableBody>
-      </Table>
-    </AbilityProvider>,
+    <NextIntlClientProvider locale="en" messages={messages} timeZone="Asia/Jakarta">
+      <AbilityProvider ability={buildAppAbility(rules)}>
+        <Table>
+          <TableBody>
+            <AdminUsersTableRow user={USER} onEdit={vi.fn()} onToggleActive={vi.fn()} />
+          </TableBody>
+        </Table>
+      </AbilityProvider>
+    </NextIntlClientProvider>,
   );
 }
 
@@ -44,7 +48,7 @@ describe('AdminUsersTableRow', () => {
     expect(screen.getByText('admin@hms.local')).toBeInTheDocument();
     expect(screen.getByText('Admin')).toBeInTheDocument();
     expect(screen.getByText('Super Admin')).toBeInTheDocument();
-    expect(screen.getByText('ACTIVE')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
     expect(screen.getByText('Jul 10, 2026')).toBeInTheDocument();
   });
 

@@ -2,6 +2,7 @@
 
 import type { DoctorEducation } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { DoctorEducationRow } from '#components/client/doctors/doctor-education-row';
 
@@ -10,6 +11,7 @@ type DoctorEducationsCardProps = {
 };
 
 export function DoctorEducationsCard({ educations }: DoctorEducationsCardProps) {
+  const t = useTranslations('clinical');
   // Most recent first; entries without a year sink to the bottom rather than
   // being treated as year zero.
   const orderedEducations = [...educations].sort(
@@ -19,7 +21,7 @@ export function DoctorEducationsCard({ educations }: DoctorEducationsCardProps) 
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader>
-        <CardTitle className="font-heading text-base">Education</CardTitle>
+        <CardTitle className="font-heading text-base">{t('doctors.educationTitle')}</CardTitle>
       </CardHeader>
       <CardContent>
         {orderedEducations.length > 0 ? (
@@ -30,8 +32,7 @@ export function DoctorEducationsCard({ educations }: DoctorEducationsCardProps) 
           </ul>
         ) : (
           <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">
-            No education recorded. SATUSEHAT builds Practitioner qualifications from these entries
-            and the licences.
+            {t('doctors.educationEmpty')}
           </p>
         )}
       </CardContent>

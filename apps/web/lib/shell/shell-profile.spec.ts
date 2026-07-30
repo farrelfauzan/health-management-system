@@ -12,7 +12,9 @@ describe('resolveShellProfile', () => {
 
     expect(actualProfile).toEqual({
       displayName: 'Admin',
+      isFallbackName: false,
       roleLabel: 'Super Admin',
+      roleKey: 'superAdmin',
       email: 'admin@salingjaga.com',
     });
   });
@@ -25,7 +27,9 @@ describe('resolveShellProfile', () => {
 
     expect(actualProfile).toEqual({
       displayName: 'Sarah Chen',
+      isFallbackName: false,
       roleLabel: 'Admin',
+      roleKey: 'admin',
       email: 'sarah.chen@salingjaga.com',
     });
   });
@@ -33,7 +37,9 @@ describe('resolveShellProfile', () => {
   it('falls back to defaults when claims are missing', () => {
     expect(resolveShellProfile(null)).toEqual({
       displayName: 'Saling Jaga User',
+      isFallbackName: true,
       roleLabel: 'Staff',
+      roleKey: 'staff',
       email: '',
     });
   });

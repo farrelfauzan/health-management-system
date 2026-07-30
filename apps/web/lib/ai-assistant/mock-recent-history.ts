@@ -6,8 +6,13 @@ export type ConsultationHistoryEntry = {
   title: string;
 };
 
-export const MOCK_RECENT_HISTORY: ConsultationHistoryEntry[] = [
-  { id: 'history-medication-conflict', title: 'Medication conflict check - Patient #492' },
-  { id: 'history-icd-lookup', title: 'ICD-10 Code lookup: Type 2 Diabetes' },
-  { id: 'history-shift-handover', title: 'Shift handover notes (April 12)' },
-];
+export function buildMockRecentHistory(locale: AppLocale): ConsultationHistoryEntry[] {
+  const t = createAiAssistantTranslator(locale);
+  return [
+    { id: 'history-medication-conflict', title: t('history.medicationConflict') },
+    { id: 'history-icd-lookup', title: t('history.icdLookup') },
+    { id: 'history-shift-handover', title: t('history.shiftHandover') },
+  ];
+}
+import type { AppLocale } from '../../i18n/config';
+import { createAiAssistantTranslator } from '#lib/ai-assistant/localization';

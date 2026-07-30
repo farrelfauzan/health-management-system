@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import {
   encounterControllerCancelEncounterV1,
@@ -24,8 +25,6 @@ import {
   type EncounterTransitionTarget,
 } from '#lib/encounters/encounter-transition-meta';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
-
-const TRANSITION_ERROR_FALLBACK = 'Unable to update the encounter. Please try again.';
 
 type EncounterTransitionDialogProps = {
   open: boolean;
@@ -41,6 +40,7 @@ export function EncounterTransitionDialog({
   targetStatus,
 }: EncounterTransitionDialogProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [actionError, setActionError] = useState<string | null>(null);
   const meta = ENCOUNTER_TRANSITION_META[targetStatus];
   const hasPrimaryDiagnosis = encounter.diagnoses.some((diagnosis) => diagnosis.type === 'PRIMARY');
@@ -55,11 +55,11 @@ export function EncounterTransitionDialog({
     setActionError(null);
     try {
       const response = await transitionMutation.mutateAsync();
-      parseApiSuccess<EncounterDetail>(response, TRANSITION_ERROR_FALLBACK);
+      parseApiSuccess<EncounterDetail>(response, t('encounters.transition.error'));
       await invalidateEncounterQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setActionError(notifyApiError(error, TRANSITION_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.transition.error')));
     }
   }
 
@@ -67,13 +67,16 @@ export function EncounterTransitionDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-heading">{meta.title}</DialogTitle>
-          <DialogDescription>{meta.description}</DialogDescription>
+          <DialogTitle className="font-heading">
+            {t(`encounters.transition.${targetStatus}.title`)}
+          </DialogTitle>
+          <DialogDescription>
+            {t(`encounters.transition.${targetStatus}.description`)}
+          </DialogDescription>
         </DialogHeader>
         {targetStatus === 'FINISHED' && !hasPrimaryDiagnosis ? (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            This encounter has no primary diagnosis. It will close, but the BPJS kunjungan cannot be
-            submitted without one.
+            {t('encounters.transition.primaryWarning')}
           </p>
         ) : null}
         {actionError ? (
@@ -86,7 +89,7 @@ export function EncounterTransitionDialog({
         ) : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Keep Open
+            {t('encounters.transition.keepOpen')}
           </Button>
           <Button
             type="button"
@@ -95,7 +98,9 @@ export function EncounterTransitionDialog({
             className={meta.isDestructive ? undefined : 'bg-primary-container hover:bg-primary'}
             onClick={() => void handleConfirm()}
           >
-            {transitionMutation.isPending ? meta.pendingLabel : meta.confirmLabel}
+            {t(
+              `encounters.transition.${targetStatus}.${transitionMutation.isPending ? 'pending' : 'action'}`,
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

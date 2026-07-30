@@ -12,6 +12,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { AppointmentParticipantFields } from '#components/client/appointments/appointment-participant-fields';
 import { SessionBookingForm } from '#components/client/appointments/session-booking-form';
@@ -28,6 +29,7 @@ export function ScheduleAppointmentDialog({
   onOpenChange,
   initialDate,
 }: ScheduleAppointmentDialogProps) {
+  const t = useTranslations('operations.appointments');
   const [patientId, setPatientId] = useState<string>('');
   const [doctorId, setDoctorId] = useState<string>('');
 
@@ -39,7 +41,7 @@ export function ScheduleAppointmentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-heading">New Appointment</DialogTitle>
+          <DialogTitle className="font-heading">{t('labels.newAppointment')}</DialogTitle>
           <DialogDescription>
             Join a doctor&apos;s practice session, or request a specific time that the clinic must
             approve.

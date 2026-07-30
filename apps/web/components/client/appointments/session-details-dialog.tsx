@@ -1,13 +1,8 @@
 'use client';
 
 import type { DoctorSessionCalendarItem } from '@hms/shared-types';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@hms/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { SessionQueueTable } from '#components/client/appointments/session-queue-table';
 import { useSessionQueue } from '#lib/appointments/use-session-queue';
@@ -32,6 +27,7 @@ export function SessionDetailsDialog({
   session,
   onSelectAppointment,
 }: SessionDetailsDialogProps) {
+  const t = useTranslations('operations.appointments');
   const queueQuery = useSessionQueue(session.id ?? '');
 
   return (
@@ -54,9 +50,9 @@ export function SessionDetailsDialog({
             </span>
           </div>
           {session.id === null || session.bookedCount === 0 ? (
-            <p className="text-sm text-slate-500">No patients booked into this session yet.</p>
+            <p className="text-sm text-slate-500">{t('noSessionPatients')}</p>
           ) : queueQuery.isPending ? (
-            <p className="text-sm text-slate-500">Loading patients…</p>
+            <p className="text-sm text-slate-500">{t('loadingQueue')}</p>
           ) : queueQuery.isError ? (
             <p
               role="alert"

@@ -2,6 +2,7 @@
 
 import type { AppointmentListItem } from '@hms/shared-types';
 import { TableBody, TableHeader, TableRow } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { AppointmentsTableRow } from '#components/client/appointments/appointments-table-row';
 import { DataTable } from '#components/shared/data-table';
@@ -28,17 +29,16 @@ export function AppointmentsTable({
   onReschedule,
   onCancel,
 }: AppointmentsTableProps) {
+  const t = useTranslations('operations');
   const showEmptyState = !isPending && appointments.length === 0;
 
   if (showEmptyState) {
     return (
       <EmptyState
         icon={isError ? 'error' : 'event_busy'}
-        title={isError ? 'Unable to load appointments' : 'No appointments this week'}
+        title={isError ? t('appointments.errorTitle') : t('appointments.emptyTitle')}
         description={
-          isError
-            ? 'Something went wrong while fetching the schedule. It retries automatically.'
-            : 'Navigate to another week or schedule a new appointment to see records here.'
+          isError ? t('appointments.errorDescription') : t('appointments.emptyDescription')
         }
         className="rounded-none border-0"
       />
@@ -49,12 +49,12 @@ export function AppointmentsTable({
     <DataTable className="rounded-none border-0">
       <TableHeader>
         <TableRow>
-          <DataTableHeaderCell>Time</DataTableHeaderCell>
-          <DataTableHeaderCell>Patient</DataTableHeaderCell>
-          <DataTableHeaderCell>Doctor</DataTableHeaderCell>
-          <DataTableHeaderCell>Reason</DataTableHeaderCell>
-          <DataTableHeaderCell>Status</DataTableHeaderCell>
-          <DataTableHeaderCell className="text-right">Actions</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.time')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.patient')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.doctor')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.reason')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.status')}</DataTableHeaderCell>
+          <DataTableHeaderCell className="text-right">{t('common.actions')}</DataTableHeaderCell>
         </TableRow>
       </TableHeader>
       <TableBody>

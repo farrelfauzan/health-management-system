@@ -15,6 +15,7 @@ import {
   DialogTitle,
   Input,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { appointmentManagementControllerUpdateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { parseApiSuccess } from '#lib/api/response';
@@ -22,8 +23,6 @@ import { notifyApiError } from '#lib/api/notify-api-error';
 import { formatTimeInputValue } from '#lib/appointments/format-appointment-time';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
 import { formatDateParam } from '#lib/appointments/week-range';
-
-const RESCHEDULE_ERROR_FALLBACK = 'Unable to reschedule the appointment. Please try again.';
 
 type RescheduleAppointmentDialogProps = {
   open: boolean;
@@ -36,6 +35,7 @@ export function RescheduleAppointmentDialog({
   onOpenChange,
   appointment,
 }: RescheduleAppointmentDialogProps) {
+  const t = useTranslations('operations');
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const rescheduleMutation = useMutation({
@@ -50,21 +50,21 @@ export function RescheduleAppointmentDialog({
     onSubmit: async ({ value }) => {
       setFormError(null);
       if (!value.date || !value.time) {
-        setFormError('Date and time are required.');
+        setFormError(t('appointments.labels.requestedDate'));
         return;
       }
       const scheduledAtDate = new Date(`${value.date}T${value.time}`);
       if (Number.isNaN(scheduledAtDate.getTime())) {
-        setFormError('Enter a valid date and time.');
+        setFormError(t('appointments.labels.invalidDateTime'));
         return;
       }
       try {
         const response = await rescheduleMutation.mutateAsync(scheduledAtDate.toISOString());
-        parseApiSuccess<AppointmentResponse>(response, RESCHEDULE_ERROR_FALLBACK);
+        parseApiSuccess<AppointmentResponse>(response, t('appointments.rescheduleError'));
         await invalidateAppointmentQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
-        setFormError(notifyApiError(error, RESCHEDULE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, t('appointments.rescheduleError')));
       }
     },
   });
@@ -73,7 +73,7 @@ export function RescheduleAppointmentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-heading">Reschedule Appointment</DialogTitle>
+          <DialogTitle className="font-heading">{t('appointments.labels.reschedule')}</DialogTitle>
           <DialogDescription>
             Pick a new slot for {appointment.patient.fullName} with {appointment.doctor.fullName}.
           </DialogDescription>
@@ -109,7 +109,7 @@ export function RescheduleAppointmentDialog({
                   <DatePicker
                     id={`reschedule-${field.name}`}
                     value={field.state.value}
-                    placeholder="Select date"
+                    placeholder={t('appointments.selectDate')}
                     onValueChange={field.handleChange}
                     onBlur={field.handleBlur}
                   />
@@ -139,7 +139,7 @@ export function RescheduleAppointmentDialog({
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <form.Subscribe selector={(state) => state.isSubmitting}>
               {(isSubmitting) => (

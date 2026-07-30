@@ -1,6 +1,7 @@
 'use client';
 
 import { Icon, Input } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import type { EducationRow } from '#lib/doctors/doctor-credential-rows';
 
@@ -17,13 +18,16 @@ export function DoctorEducationRowFields({
   onChange,
   onRemove,
 }: DoctorEducationRowFieldsProps) {
+  const t = useTranslations('clinical');
   return (
     <div className="space-y-2 rounded-lg border border-slate-200 p-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-heading text-xs font-medium text-slate-600">Education {index + 1}</p>
+        <p className="font-heading text-xs font-medium text-slate-600">
+          {t('doctors.credentials.education', { index: index + 1 })}
+        </p>
         <button
           type="button"
-          aria-label={`Remove education ${index + 1}`}
+          aria-label={t('doctors.credentials.removeEducation', { index: index + 1 })}
           className="text-slate-400 hover:text-danger"
           onClick={() => onRemove(row.key)}
         >
@@ -36,7 +40,7 @@ export function DoctorEducationRowFields({
             htmlFor={`education-institution-${row.key}`}
             className="block font-heading text-xs font-medium text-slate-600"
           >
-            Institution
+            {t('doctors.credentials.institution')}
           </label>
           <Input
             id={`education-institution-${row.key}`}
@@ -50,7 +54,7 @@ export function DoctorEducationRowFields({
             htmlFor={`education-degree-${row.key}`}
             className="block font-heading text-xs font-medium text-slate-600"
           >
-            Degree
+            {t('doctors.credentials.degree')}
           </label>
           <Input
             id={`education-degree-${row.key}`}
@@ -66,7 +70,7 @@ export function DoctorEducationRowFields({
             htmlFor={`education-field-${row.key}`}
             className="block font-heading text-xs font-medium text-slate-600"
           >
-            Field of Study
+            {t('doctors.credentials.field')}
           </label>
           <Input
             id={`education-field-${row.key}`}
@@ -80,7 +84,7 @@ export function DoctorEducationRowFields({
             htmlFor={`education-year-${row.key}`}
             className="block font-heading text-xs font-medium text-slate-600"
           >
-            Graduation Year
+            {t('doctors.credentials.graduationYear')}
           </label>
           <Input
             id={`education-year-${row.key}`}

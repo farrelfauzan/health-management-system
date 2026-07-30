@@ -14,28 +14,18 @@ import {
   DialogTitle,
   useAbility,
 } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { StatusBadge } from '#components/shared/status-badge';
 import { appointmentManagementControllerUpdateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
-import {
-  formatAppointmentDate,
-  formatAppointmentTime,
-} from '#lib/appointments/format-appointment-time';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
 
-const STATUS_UPDATE_ERROR_FALLBACK = 'Unable to update the appointment status. Please try again.';
 const RESCHEDULABLE_STATUSES: AppointmentListItem['status'][] = ['SCHEDULED', 'CONFIRMED'];
 
 type AppointmentTransitionTarget = 'CONFIRMED' | 'COMPLETED' | 'NO_SHOW';
-
-const TRANSITION_ACTION_LABELS: Record<AppointmentTransitionTarget, string> = {
-  CONFIRMED: 'Confirm',
-  COMPLETED: 'Mark Completed',
-  NO_SHOW: 'Mark No-Show',
-};
 
 type AppointmentDetailsDialogProps = {
   open: boolean;
@@ -54,6 +44,8 @@ export function AppointmentDetailsDialog({
   onCancel,
   onViewQueue,
 }: AppointmentDetailsDialogProps) {
+  const t = useTranslations('operations');
+  const format = useFormatter();
   const ability = useAbility();
   const queryClient = useQueryClient();
   const [actionError, setActionError] = useState<string | null>(null);
@@ -63,7 +55,8 @@ export function AppointmentDetailsDialog({
   });
   const canUpdate = ability.can('update', 'Appointment');
   const allowedTargets = APPOINTMENT_STATUS_TRANSITIONS[appointment.status].filter(
-    (status): status is AppointmentTransitionTarget => status in TRANSITION_ACTION_LABELS,
+    (status): status is AppointmentTransitionTarget =>
+      status === 'CONFIRMED' || status === 'COMPLETED' || status === 'NO_SHOW',
   );
   const canReschedule =
     canUpdate &&
@@ -79,11 +72,11 @@ export function AppointmentDetailsDialog({
     setActionError(null);
     try {
       const response = await statusMutation.mutateAsync(status);
-      parseApiSuccess<AppointmentResponse>(response, STATUS_UPDATE_ERROR_FALLBACK);
+      parseApiSuccess<AppointmentResponse>(response, t('appointments.updateError'));
       await invalidateAppointmentQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setActionError(notifyApiError(error, STATUS_UPDATE_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('appointments.updateError')));
     }
   }
 
@@ -91,10 +84,12 @@ export function AppointmentDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-heading">Appointment Details</DialogTitle>
+          <DialogTitle className="font-heading">{t('appointments.details')}</DialogTitle>
           <DialogDescription>
-            {formatAppointmentDate(appointment.scheduledAt)} at{' '}
-            {formatAppointmentTime(appointment.scheduledAt)}
+            {t('appointments.atTime', {
+              date: format.dateTime(new Date(appointment.scheduledAt), { dateStyle: 'medium' }),
+              time: format.dateTime(new Date(appointment.scheduledAt), { timeStyle: 'short' }),
+            })}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -110,31 +105,30 @@ export function AppointmentDetailsDialog({
             <div className="flex items-center gap-3">
               <AvatarInitials name={appointment.patient.fullName} />
               <div>
-                <p className="text-sm font-medium text-slate-900">
-                  {appointment.patient.fullName}
-                </p>
+                <p className="text-sm font-medium text-slate-900">{appointment.patient.fullName}</p>
                 <p className="font-mono text-xs text-slate-500">{appointment.patient.mrn}</p>
               </div>
             </div>
-            <StatusBadge status={appointment.status} />
+            <StatusBadge
+              status={appointment.status}
+              label={t(`common.statuses.${appointment.status}`)}
+            />
           </div>
           <dl className="space-y-2 rounded-lg border border-slate-200 p-3 text-sm">
             <div className="flex justify-between gap-3">
-              <dt className="text-slate-500">Doctor</dt>
+              <dt className="text-slate-500">{t('common.doctor')}</dt>
               <dd className="text-right text-slate-900">
                 {appointment.doctor.fullName}
-                <span className="block text-xs text-slate-500">
-                  {appointment.doctor.specialty}
-                </span>
+                <span className="block text-xs text-slate-500">{appointment.doctor.specialty}</span>
               </dd>
             </div>
             <div className="flex justify-between gap-3">
-              <dt className="text-slate-500">Reason</dt>
+              <dt className="text-slate-500">{t('common.reason')}</dt>
               <dd className="text-right text-slate-900">{appointment.reason ?? '—'}</dd>
             </div>
             {appointment.notes ? (
               <div className="flex justify-between gap-3">
-                <dt className="text-slate-500">Notes</dt>
+                <dt className="text-slate-500">{t('common.notes')}</dt>
                 <dd className="text-right text-slate-900">{appointment.notes}</dd>
               </div>
             ) : null}
@@ -147,17 +141,17 @@ export function AppointmentDetailsDialog({
               variant="outline"
               onClick={() => onViewQueue?.(appointment.sessionId as string)}
             >
-              View Session Queue
+              {t('appointments.viewQueue')}
             </Button>
           ) : null}
           {canReschedule ? (
             <Button type="button" variant="outline" onClick={() => onReschedule(appointment)}>
-              Reschedule
+              {t('appointments.reschedule')}
             </Button>
           ) : null}
           {canCancel ? (
             <Button type="button" variant="destructive" onClick={() => onCancel(appointment)}>
-              Cancel Appointment
+              {t('appointments.cancel')}
             </Button>
           ) : null}
           {canUpdate
@@ -169,7 +163,11 @@ export function AppointmentDetailsDialog({
                   className="bg-primary-container hover:bg-primary"
                   onClick={() => void handleTransition(status)}
                 >
-                  {TRANSITION_ACTION_LABELS[status]}
+                  {status === 'CONFIRMED'
+                    ? t('appointments.confirm')
+                    : status === 'COMPLETED'
+                      ? t('appointments.markCompleted')
+                      : t('appointments.markNoShow')}
                 </Button>
               ))
             : null}

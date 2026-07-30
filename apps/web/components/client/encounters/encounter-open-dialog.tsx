@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { EncounterListItem, OpenEncounterInput, RegistrationListItem } from '@hms/shared-types';
+import type {
+  EncounterListItem,
+  OpenEncounterInput,
+  RegistrationListItem,
+} from '@hms/shared-types';
 import {
   Button,
   Dialog,
@@ -13,6 +17,7 @@ import {
   DialogTitle,
 } from '@hms/ui';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { DoctorCombobox } from '#components/client/doctors/doctor-combobox';
 import { encounterControllerOpenEncounterV1 } from '#lib/api/generated/encounters/encounters';
@@ -21,7 +26,6 @@ import { parseApiSuccess } from '#lib/api/response';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
 
-const OPEN_ERROR_FALLBACK = 'Unable to open the encounter. Please try again.';
 const DOCTOR_PICKER_QUERY = { page: 1, limit: 100, isActive: 'true' as const };
 
 type EncounterOpenDialogProps = {
@@ -36,6 +40,7 @@ export function EncounterOpenDialog({
   registration,
 }: EncounterOpenDialogProps) {
   const router = useRouter();
+  const t = useTranslations('clinical');
   const queryClient = useQueryClient();
   // A registration made from an appointment already names the practitioner;
   // a walk-in does not, and the API refuses to guess for an admin actor.
@@ -50,7 +55,7 @@ export function EncounterOpenDialog({
     setActionError(null);
 
     if (doctorId.length === 0) {
-      setActionError('Select the attending doctor for this visit.');
+      setActionError(t('encounters.doctorRequired'));
       return;
     }
 
@@ -59,12 +64,12 @@ export function EncounterOpenDialog({
         registrationId: registration.id,
         doctorId,
       });
-      const envelope = parseApiSuccess<EncounterListItem>(response, OPEN_ERROR_FALLBACK);
+      const envelope = parseApiSuccess<EncounterListItem>(response, t('encounters.openError'));
       await invalidateEncounterQueries(queryClient);
       onOpenChange(false);
       router.push(`/admin/encounters/${envelope.data.id}`);
     } catch (error) {
-      setActionError(notifyApiError(error, OPEN_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.openError')));
     }
   }
 
@@ -72,10 +77,9 @@ export function EncounterOpenDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-heading">Open Encounter</DialogTitle>
+          <DialogTitle className="font-heading">{t('encounters.openAction')}</DialogTitle>
           <DialogDescription>
-            Start the clinical record for {registration.patient.fullName}. One encounter per
-            registration — closing it completes the registration.
+            {t('encounters.openDescription', { name: registration.patient.fullName })}
           </DialogDescription>
         </DialogHeader>
         <div>
@@ -83,7 +87,7 @@ export function EncounterOpenDialog({
             htmlFor="open-encounter-doctor"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Attending Doctor
+            {t('encounters.attendingDoctor')}
           </label>
           <DoctorCombobox
             id="open-encounter-doctor"
@@ -103,7 +107,7 @@ export function EncounterOpenDialog({
         ) : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             type="button"
@@ -111,7 +115,7 @@ export function EncounterOpenDialog({
             disabled={openMutation.isPending}
             onClick={() => void handleConfirm()}
           >
-            {openMutation.isPending ? 'Opening...' : 'Open Encounter'}
+            {openMutation.isPending ? t('encounters.opening') : t('encounters.openAction')}
           </Button>
         </DialogFooter>
       </DialogContent>

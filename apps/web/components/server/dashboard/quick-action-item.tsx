@@ -29,10 +29,7 @@ export function QuickActionItem({
   );
   if (href) {
     return (
-      <Link
-        href={href}
-        className="block rounded-lg px-2 py-2 transition-colors hover:bg-slate-50"
-      >
+      <Link href={href} className="block rounded-lg px-2 py-2 transition-colors hover:bg-slate-50">
         {content}
       </Link>
     );
@@ -41,7 +38,10 @@ export function QuickActionItem({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span aria-disabled="true" className="block cursor-not-allowed rounded-lg px-2 py-2 opacity-60">
+          <span
+            aria-disabled="true"
+            className="block cursor-not-allowed rounded-lg px-2 py-2 opacity-60"
+          >
             {content}
           </span>
         </TooltipTrigger>

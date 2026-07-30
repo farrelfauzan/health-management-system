@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AdminUser } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { AdminUserFormDialog } from '#components/client/administration/admin-user-form-dialog';
 import {
@@ -23,18 +24,15 @@ import {
   type AdminUsersSearchParams,
 } from '#lib/admin-users/search-params';
 import { useAdminUsersList } from '#lib/admin-users/use-admin-users-list';
-import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
-
-const TOGGLE_ERROR_FALLBACK = 'Unable to update the user status. Please try again.';
 
 type AdminUsersPanelProps = {
   initialQuery: AdminUsersSearchParams;
 };
 
 export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
+  const t = useTranslations('operations.administration');
   const router = useRouter();
   const pathname = usePathname();
-  const metadata = ADMIN_ROUTE_METADATA.administration;
   const queryClient = useQueryClient();
   const usersQuery = useAdminUsersList(initialQuery);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
@@ -76,19 +74,19 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
         id: user.id,
         isActive: !user.isActive,
       });
-      parseApiSuccess<AdminUser>(response, TOGGLE_ERROR_FALLBACK);
+      parseApiSuccess<AdminUser>(response, t('toggleError'));
       await invalidateAdminUserQueries(queryClient);
     } catch (error) {
-      notifyApiError(error, TOGGLE_ERROR_FALLBACK);
+      notifyApiError(error, t('toggleError'));
     }
   }
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title={metadata.title}
-        subtitle={metadata.subtitle}
-        breadcrumbs={metadata.breadcrumbs}
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[t('title')]}
         actions={
           <Can action="create" subject="User">
             <Button
@@ -97,7 +95,7 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
               onClick={handleOpenCreateDialog}
             >
               <Icon name="person_add" size={18} />
-              Add New User
+              {t('addUser')}
             </Button>
           </Can>
         }
@@ -112,7 +110,7 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
 
       {usersQuery.error && usersQuery.users.length > 0 ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {usersQuery.error.message}
+          {t('errorTitle')}
         </p>
       ) : null}
 

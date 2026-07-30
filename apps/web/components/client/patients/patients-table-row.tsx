@@ -2,15 +2,13 @@
 
 import type { PatientListItem } from '@hms/shared-types';
 import { Icon, TableCell, TableRow, useAbility } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { DataTableMonoCell } from '#components/shared/data-table-mono-cell';
 import { StatusBadge } from '#components/shared/status-badge';
 import { computePatientAge } from '#lib/patients/patient-age';
-import { formatPatientSexLabel } from '#lib/patients/patient-sex-label';
-import { formatPatientStatusLabel } from '#lib/patients/patient-status-label';
-import { formatMediumDate } from '#lib/shared/format-medium-date';
 
 type PatientsTableRowProps = {
   patient: PatientListItem;
@@ -26,15 +24,23 @@ export function PatientsTableRow({
   onAssignDoctor,
 }: PatientsTableRowProps) {
   const ability = useAbility();
+  const t = useTranslations('clinical');
+  const format = useFormatter();
   const primaryDoctor = patient.doctors[0];
   const overflowDoctorCount = Math.max(0, patient.doctorCount - 1);
   const actions: RowAction[] = [
-    { label: 'View', icon: 'visibility', onSelect: () => onView(patient.id) },
+    { label: t('common.view'), icon: 'visibility', onSelect: () => onView(patient.id) },
     ...(ability.can('update', 'Patient')
-      ? [{ label: 'Edit', icon: 'edit', onSelect: () => onEdit(patient) }]
+      ? [{ label: t('common.edit'), icon: 'edit', onSelect: () => onEdit(patient) }]
       : []),
     ...(ability.can('assign', 'DoctorPatient')
-      ? [{ label: 'Assign Doctor', icon: 'stethoscope', onSelect: () => onAssignDoctor(patient) }]
+      ? [
+          {
+            label: t('patients.assignDoctor'),
+            icon: 'stethoscope',
+            onSelect: () => onAssignDoctor(patient),
+          },
+        ]
       : []),
   ];
 
@@ -46,14 +52,15 @@ export function PatientsTableRow({
           <div>
             <p className="text-sm font-medium text-slate-900">{patient.fullName}</p>
             <p className="text-xs text-slate-500">
-              {formatPatientSexLabel(patient.sex)}, {computePatientAge(patient.dateOfBirth)} yrs
+              {t(`patients.sex.${patient.sex ?? 'UNKNOWN'}`)},{' '}
+              {t('common.years', { count: computePatientAge(patient.dateOfBirth) })}
             </p>
           </div>
         </div>
       </TableCell>
       <DataTableMonoCell>{patient.mrn}</DataTableMonoCell>
       <TableCell className="px-4 text-sm text-slate-600">
-        {formatMediumDate(patient.updatedAt)}
+        {format.dateTime(new Date(patient.updatedAt), { dateStyle: 'medium' })}
       </TableCell>
       <TableCell className="px-4">
         {primaryDoctor ? (
@@ -65,14 +72,17 @@ export function PatientsTableRow({
             ) : null}
           </span>
         ) : (
-          <span className="text-sm text-slate-400">Unassigned</span>
+          <span className="text-sm text-slate-400">{t('patients.unassigned')}</span>
         )}
       </TableCell>
       <TableCell className="px-4">
-        <StatusBadge status={patient.status} label={formatPatientStatusLabel(patient.status)} />
+        <StatusBadge status={patient.status} label={t(`patients.status.${patient.status}`)} />
       </TableCell>
       <TableCell className="px-4 text-right">
-        <RowActionsMenu actions={actions} triggerLabel={`Actions for ${patient.fullName}`} />
+        <RowActionsMenu
+          actions={actions}
+          triggerLabel={t('common.actionsFor', { name: patient.fullName })}
+        />
       </TableCell>
     </TableRow>
   );

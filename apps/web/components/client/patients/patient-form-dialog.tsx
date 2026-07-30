@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -44,11 +45,7 @@ import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { buildPatientOptionalFields } from '#lib/patients/build-patient-optional-fields';
 import { invalidatePatientQueries } from '#lib/patients/invalidate-patient-queries';
-import { formatPatientSexLabel } from '#lib/patients/patient-sex-label';
-import { formatPatientStatusLabel } from '#lib/patients/patient-status-label';
 import { useActiveDoctors } from '#lib/patients/use-active-doctors';
-
-const SAVE_ERROR_FALLBACK = 'Unable to save the patient. Please try again.';
 
 type PatientFormDialogProps = {
   open: boolean;
@@ -58,6 +55,7 @@ type PatientFormDialogProps = {
 
 export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDialogProps) {
   const isEditMode = Boolean(patient);
+  const t = useTranslations('clinical');
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const [identifierWarnings, setIdentifierWarnings] = useState<string[]>([]);
@@ -113,7 +111,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
               ...buildPatientOptionalFields(value),
             },
           });
-          envelope = parseApiSuccess<PatientProfile>(response, SAVE_ERROR_FALLBACK);
+          envelope = parseApiSuccess<PatientProfile>(response, t('patients.form.saveError'));
         } else {
           const response = await createMutation.mutateAsync({
             fullName: value.fullName,
@@ -126,7 +124,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
             doctorIds: value.doctorIds.length > 0 ? value.doctorIds : undefined,
             ...buildPatientOptionalFields(value),
           });
-          envelope = parseApiSuccess<PatientProfile>(response, SAVE_ERROR_FALLBACK);
+          envelope = parseApiSuccess<PatientProfile>(response, t('patients.form.saveError'));
         }
         await invalidatePatientQueries(queryClient);
         // A NIK that disagrees with the birth date or sex is flagged, never
@@ -139,7 +137,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
         }
         onOpenChange(false);
       } catch (error) {
-        setFormError(notifyApiError(error, SAVE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, t('patients.form.saveError')));
       }
     },
   });
@@ -149,12 +147,10 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-heading">
-            {isEditMode ? 'Edit Patient' : 'Add New Patient'}
+            {t(isEditMode ? 'patients.form.edit' : 'patients.form.create')}
           </DialogTitle>
           <DialogDescription>
-            {isEditMode
-              ? 'Update the patient demographics and status.'
-              : 'Register a new patient record, optionally assigning initial doctors.'}
+            {isEditMode ? t('patients.form.editDescription') : t('patients.form.createDescription')}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -180,15 +176,13 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
               role="status"
               className="space-y-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
             >
-              <p className="font-medium">Saved, with identifier warnings:</p>
+              <p className="font-medium">{t('patients.form.warnings')}</p>
               <ul className="list-inside list-disc">
                 {identifierWarnings.map((warning) => (
                   <li key={warning}>{warning}</li>
                 ))}
               </ul>
-              <p className="text-xs">
-                Correct the value if it was a typo, or close this dialog to keep it as entered.
-              </p>
+              <p className="text-xs">{t('patients.form.warningHelp')}</p>
             </div>
           ) : null}
 
@@ -212,7 +206,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                   htmlFor={field.name}
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  Full Name
+                  {t('patients.form.fullName')}
                 </label>
                 <Input
                   id={field.name}
@@ -238,12 +232,12 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                     htmlFor={field.name}
                     className="block font-heading text-xs font-medium text-slate-600"
                   >
-                    Date of Birth
+                    {t('patients.form.birthDate')}
                   </label>
                   <DatePicker
                     id={field.name}
                     value={field.state.value}
-                    placeholder="Select date of birth"
+                    placeholder={t('patients.form.selectBirthDate')}
                     onValueChange={field.handleChange}
                     onBlur={field.handleBlur}
                     aria-invalid={field.state.meta.errors.length > 0}
@@ -255,7 +249,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
             <form.Field
               name="sex"
               validators={{
-                onSubmit: ({ value }) => (value ? undefined : 'Sex is required'),
+                onSubmit: ({ value }) => (value ? undefined : t('patients.form.sexRequired')),
               }}
             >
               {(field) => (
@@ -264,7 +258,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                     htmlFor={field.name}
                     className="block font-heading text-xs font-medium text-slate-600"
                   >
-                    Sex
+                    {t('patients.demographics.sex')}
                   </label>
                   <Select value={field.state.value} onValueChange={field.handleChange}>
                     <SelectTrigger
@@ -272,12 +266,12 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       className="w-full"
                       aria-invalid={field.state.meta.errors.length > 0}
                     >
-                      <SelectValue placeholder="Select sex" />
+                      <SelectValue placeholder={t('patients.form.selectSex')} />
                     </SelectTrigger>
                     <SelectContent>
                       {PATIENT_SEXES.map((sexValue) => (
                         <SelectItem key={sexValue} value={sexValue}>
-                          {formatPatientSexLabel(sexValue)}
+                          {t(`patients.sex.${sexValue}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -295,7 +289,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                   htmlFor={field.name}
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  Status
+                  {t('common.status')}
                 </label>
                 <Select
                   value={field.state.value}
@@ -304,12 +298,12 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                   }
                 >
                   <SelectTrigger id={field.name} className="w-full">
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder={t('patients.form.selectStatus')} />
                   </SelectTrigger>
                   <SelectContent>
                     {PATIENT_STATUSES.map((statusValue) => (
                       <SelectItem key={statusValue} value={statusValue}>
-                        {formatPatientStatusLabel(statusValue)}
+                        {t(`patients.status.${statusValue}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -328,7 +322,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                   htmlFor={field.name}
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  Phone Number
+                  {t('patients.form.phone')}
                 </label>
                 <Input
                   id={field.name}
@@ -350,7 +344,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                   htmlFor={field.name}
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  Address
+                  {t('patients.form.address')}
                 </label>
                 <Input
                   id={field.name}
@@ -367,12 +361,11 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
 
           <div className="space-y-4 border-t border-slate-100 pt-4">
             <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
-              National Identifiers
+              {t('patients.form.identifiers')}
             </p>
             {isEditMode ? (
               <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                Stored NIK and BPJS numbers are encrypted and shown masked. Leave these blank to
-                keep them; type a value only to replace one.
+                {t('patients.form.identifierHelp')}
               </p>
             ) : null}
             <div className="grid grid-cols-2 gap-3">
@@ -389,7 +382,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       id={field.name}
                       inputMode="numeric"
                       value={field.state.value}
-                      placeholder="16 digits"
+                      placeholder={t('patients.form.digits16')}
                       onChange={(event) => field.handleChange(event.target.value)}
                       onBlur={field.handleBlur}
                     />
@@ -403,13 +396,13 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      BPJS Number
+                      {t('patients.bpjsNumber')}
                     </label>
                     <Input
                       id={field.name}
                       inputMode="numeric"
                       value={field.state.value}
-                      placeholder="13 digits"
+                      placeholder={t('patients.form.digits13')}
                       onChange={(event) => field.handleChange(event.target.value)}
                       onBlur={field.handleBlur}
                     />
@@ -421,7 +414,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
 
           <div className="space-y-4 border-t border-slate-100 pt-4">
             <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Demographics
+              {t('patients.form.demographics')}
             </p>
             <div className="grid grid-cols-2 gap-3">
               <form.Field name="placeOfBirth">
@@ -431,7 +424,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Place of Birth
+                      {t('patients.form.birthPlace')}
                     </label>
                     <Input
                       id={field.name}
@@ -450,7 +443,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Email
+                      {t('patients.form.email')}
                     </label>
                     <Input
                       id={field.name}
@@ -472,11 +465,11 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Blood Type
+                      {t('patients.form.bloodType')}
                     </label>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
                       <SelectTrigger id={field.name} className="w-full">
-                        <SelectValue placeholder="Unknown" />
+                        <SelectValue placeholder={t('common.unknown')} />
                       </SelectTrigger>
                       <SelectContent>
                         {BLOOD_TYPES.map((bloodTypeValue) => (
@@ -496,16 +489,16 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Rhesus
+                      {t('patients.form.rhesus')}
                     </label>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
                       <SelectTrigger id={field.name} className="w-full">
-                        <SelectValue placeholder="Unknown" />
+                        <SelectValue placeholder={t('common.unknown')} />
                       </SelectTrigger>
                       <SelectContent>
                         {RHESUS_FACTORS.map((rhesusValue) => (
                           <SelectItem key={rhesusValue} value={rhesusValue}>
-                            {formatPatientStatusLabel(rhesusValue)}
+                            {t(`patients.rhesus.${rhesusValue}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -522,16 +515,16 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Marital Status
+                      {t('patients.form.maritalStatus')}
                     </label>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
                       <SelectTrigger id={field.name} className="w-full">
-                        <SelectValue placeholder="Not recorded" />
+                        <SelectValue placeholder={t('common.notRecorded')} />
                       </SelectTrigger>
                       <SelectContent>
                         {MARITAL_STATUSES.map((maritalValue) => (
                           <SelectItem key={maritalValue} value={maritalValue}>
-                            {formatPatientStatusLabel(maritalValue)}
+                            {t(`patients.maritalStatus.${maritalValue}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -546,16 +539,16 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Religion
+                      {t('patients.form.religion')}
                     </label>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
                       <SelectTrigger id={field.name} className="w-full">
-                        <SelectValue placeholder="Not recorded" />
+                        <SelectValue placeholder={t('common.notRecorded')} />
                       </SelectTrigger>
                       <SelectContent>
                         {RELIGIONS.map((religionValue) => (
                           <SelectItem key={religionValue} value={religionValue}>
-                            {formatPatientStatusLabel(religionValue)}
+                            {t(`patients.religion.${religionValue}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -571,7 +564,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                     htmlFor={field.name}
                     className="block font-heading text-xs font-medium text-slate-600"
                   >
-                    Occupation
+                    {t('patients.form.occupation')}
                   </label>
                   <Input
                     id={field.name}
@@ -587,7 +580,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
 
           <div className="space-y-4 border-t border-slate-100 pt-4">
             <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Emergency Contact & Guardian
+              {t('patients.form.contactGuardian')}
             </p>
             <div className="grid grid-cols-2 gap-3">
               <form.Field name="emergencyContactName">
@@ -597,7 +590,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Contact Name
+                      {t('patients.form.contactName')}
                     </label>
                     <Input
                       id={field.name}
@@ -615,7 +608,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Contact Phone
+                      {t('patients.form.contactPhone')}
                     </label>
                     <Input
                       id={field.name}
@@ -636,7 +629,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Guardian Name
+                      {t('patients.form.guardianName')}
                     </label>
                     <Input
                       id={field.name}
@@ -655,7 +648,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Relation
+                      {t('patients.form.relation')}
                     </label>
                     <Input
                       id={field.name}
@@ -675,7 +668,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
               {(field) => (
                 <div className="space-y-1.5">
                   <span className="block font-heading text-xs font-medium text-slate-600">
-                    Initial Doctors (optional)
+                    {t('patients.form.initialDoctors')}
                   </span>
                   <PatientDoctorPicker
                     doctors={doctorsQuery.doctors}
@@ -696,7 +689,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <form.Subscribe selector={(state) => state.isSubmitting}>
               {(isSubmitting) => (
@@ -705,7 +698,11 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
                   disabled={isSubmitting}
                   className="bg-primary-container hover:bg-primary"
                 >
-                  {isSubmitting ? 'Saving…' : isEditMode ? 'Save Changes' : 'Create Patient'}
+                  {isSubmitting
+                    ? t('common.saving')
+                    : isEditMode
+                      ? t('common.saveChanges')
+                      : t('patients.form.createAction')}
                 </Button>
               )}
             </form.Subscribe>

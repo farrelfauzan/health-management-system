@@ -18,6 +18,7 @@ import {
   DialogTitle,
   Icon,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { DoctorScheduleEntryRow } from '#components/client/doctors/doctor-schedule-entry-row';
 import { doctorManagementControllerUpdateDoctorScheduleV1 } from '#lib/api/generated/doctor-management/doctor-management';
@@ -25,7 +26,6 @@ import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries';
 
-const SAVE_ERROR_FALLBACK = 'Unable to save the schedule. Please try again.';
 const DEFAULT_ENTRY: DoctorScheduleEntryInput = {
   dayOfWeek: 1,
   startTime: '08:00',
@@ -49,6 +49,7 @@ export function DoctorScheduleDialog({
   initialSchedules,
 }: DoctorScheduleDialogProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [entries, setEntries] = useState<DoctorScheduleEntryInput[]>(
     initialSchedules.map((schedule) => ({
       dayOfWeek: schedule.dayOfWeek,
@@ -80,16 +81,16 @@ export function DoctorScheduleDialog({
     setScheduleError(null);
     const parsed = updateDoctorScheduleSchema.safeParse({ schedules: entries });
     if (!parsed.success) {
-      setScheduleError(parsed.error.issues[0]?.message ?? 'Invalid schedule entries');
+      setScheduleError(parsed.error.issues[0]?.message ?? t('doctors.invalidSchedule'));
       return;
     }
     try {
       const response = await scheduleMutation.mutateAsync(parsed.data);
-      parseApiSuccess<DoctorScheduleEntry[]>(response, SAVE_ERROR_FALLBACK);
+      parseApiSuccess<DoctorScheduleEntry[]>(response, t('doctors.scheduleError'));
       await invalidateDoctorQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setScheduleError(notifyApiError(error, SAVE_ERROR_FALLBACK));
+      setScheduleError(notifyApiError(error, t('doctors.scheduleError')));
     }
   }
 
@@ -97,9 +98,9 @@ export function DoctorScheduleDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-heading">Manage Schedule</DialogTitle>
+          <DialogTitle className="font-heading">{t('doctors.manageSchedule')}</DialogTitle>
           <DialogDescription>
-            Weekly availability for {doctorName}. Entries must not overlap on the same day.
+            {t('doctors.scheduleDescription', { name: doctorName })}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
@@ -112,9 +113,7 @@ export function DoctorScheduleDialog({
             </p>
           ) : null}
           {entries.length === 0 ? (
-            <p className="text-sm text-slate-500">
-              No schedule entries. The doctor has no weekly availability.
-            </p>
+            <p className="text-sm text-slate-500">{t('doctors.scheduleEmpty')}</p>
           ) : (
             entries.map((entry, index) => (
               <DoctorScheduleEntryRow
@@ -128,12 +127,12 @@ export function DoctorScheduleDialog({
           )}
           <Button type="button" variant="outline" size="sm" onClick={handleEntryAdd}>
             <Icon name="add" size={16} />
-            Add Entry
+            {t('doctors.addEntry')}
           </Button>
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             type="button"
@@ -141,7 +140,7 @@ export function DoctorScheduleDialog({
             className="bg-primary-container hover:bg-primary"
             onClick={() => void handleSave()}
           >
-            {scheduleMutation.isPending ? 'Saving…' : 'Save Schedule'}
+            {scheduleMutation.isPending ? t('common.saving') : t('doctors.saveSchedule')}
           </Button>
         </DialogFooter>
       </DialogContent>

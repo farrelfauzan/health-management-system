@@ -20,17 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { registrationFlowControllerCreateRegistrationV1 } from '#lib/api/generated/registration-flow/registration-flow';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { usePatientsList } from '#lib/patients/use-patients-list';
-import { formatRegisteredAt } from '#lib/registrations/format-registered-at';
 import { invalidateRegistrationQueries } from '#lib/registrations/invalidate-registration-queries';
 import type { RegistrationsViewVariant } from '#lib/registrations/registrations-view-variant';
 import { useRegistrableAppointments } from '#lib/registrations/use-registrable-appointments';
 
-const CREATE_ERROR_FALLBACK = 'Unable to create the registration. Please try again.';
 const NO_APPOINTMENT_VALUE = 'NONE';
 const PICKER_PAGE = { page: 1, limit: 100, hasAppointment: true as const };
 
@@ -45,6 +44,8 @@ export function RegistrationCreateDialog({
   onOpenChange,
   variant,
 }: RegistrationCreateDialogProps) {
+  const t = useTranslations('operations');
+  const format = useFormatter();
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const [selectedPatientId, setSelectedPatientId] = useState<string>('');
@@ -62,7 +63,7 @@ export function RegistrationCreateDialog({
     onSubmit: async ({ value }) => {
       setFormError(null);
       if (!value.patientId) {
-        setFormError('Select a patient to register.');
+        setFormError(t('registrations.selectPatientError'));
         return;
       }
       const parsed = createRegistrationSchema.safeParse({
@@ -71,16 +72,16 @@ export function RegistrationCreateDialog({
           value.appointmentId === NO_APPOINTMENT_VALUE ? undefined : value.appointmentId,
       });
       if (!parsed.success) {
-        setFormError(parsed.error.issues[0]?.message ?? 'Invalid registration details.');
+        setFormError(parsed.error.issues[0]?.message ?? t('registrations.createError'));
         return;
       }
       try {
         const response = await createMutation.mutateAsync(parsed.data);
-        parseApiSuccess<RegistrationListItem>(response, CREATE_ERROR_FALLBACK);
+        parseApiSuccess<RegistrationListItem>(response, t('registrations.createError'));
         await invalidateRegistrationQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
-        setFormError(notifyApiError(error, CREATE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, t('registrations.createError')));
       }
     },
   });
@@ -97,7 +98,7 @@ export function RegistrationCreateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-heading">New Registration</DialogTitle>
+          <DialogTitle className="font-heading">{t('registrations.new')}</DialogTitle>
           <DialogDescription>
             {variant === 'patient'
               ? 'Register your visit, optionally linked to an upcoming appointment.'
@@ -129,7 +130,7 @@ export function RegistrationCreateDialog({
                   htmlFor="registration-patient-select"
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  Patient
+                  {t('common.patient')}
                 </label>
                 <Combobox
                   id="registration-patient-select"
@@ -138,9 +139,9 @@ export function RegistrationCreateDialog({
                     label: `${patient.fullName} — ${patient.mrn}`,
                   }))}
                   value={field.state.value}
-                  placeholder="Select a patient"
-                  searchPlaceholder="Search by name or MRN..."
-                  emptyMessage="No patients with appointments found."
+                  placeholder={t('registrations.selectPatient')}
+                  searchPlaceholder={t('registrations.searchPatient')}
+                  emptyMessage={t('registrations.noPatients')}
                   isLoading={patientsQuery.isPending}
                   disabled={variant === 'patient'}
                   onChange={(nextValue) => {
@@ -171,17 +172,22 @@ export function RegistrationCreateDialog({
                     <SelectValue
                       placeholder={
                         appointmentsQuery.isFetching
-                          ? 'Loading appointments…'
-                          : 'No linked appointment'
+                          ? t('registrations.loadingAppointments')
+                          : t('registrations.noLinkedAppointment')
                       }
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={NO_APPOINTMENT_VALUE}>No linked appointment</SelectItem>
+                    <SelectItem value={NO_APPOINTMENT_VALUE}>
+                      {t('registrations.noLinkedAppointment')}
+                    </SelectItem>
                     {appointmentsQuery.appointments.map((appointment) => (
                       <SelectItem key={appointment.id} value={appointment.id}>
-                        {formatRegisteredAt(appointment.scheduledAt)} —{' '}
-                        {appointment.doctor.fullName}
+                        {format.dateTime(new Date(appointment.scheduledAt), {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        })}{' '}
+                        — {appointment.doctor.fullName}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -195,7 +201,7 @@ export function RegistrationCreateDialog({
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <form.Subscribe selector={(state) => state.isSubmitting}>
               {(isSubmitting) => (

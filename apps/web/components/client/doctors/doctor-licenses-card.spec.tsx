@@ -1,8 +1,18 @@
 import type { DoctorLicense } from '@hms/shared-types';
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextIntlClientProvider } from 'next-intl';
 
 import { DoctorLicensesCard } from './doctor-licenses-card';
+import messages from '../../../messages/id/clinical.json';
+
+function renderCard(licenses: DoctorLicense[]): void {
+  render(
+    <NextIntlClientProvider locale="id" messages={messages} timeZone="Asia/Jakarta">
+      <DoctorLicensesCard licenses={licenses} />
+    </NextIntlClientProvider>,
+  );
+}
 
 function buildLicense(overrides: Partial<DoctorLicense> = {}): DoctorLicense {
   return {
@@ -28,32 +38,28 @@ describe('DoctorLicensesCard', () => {
   });
 
   it('prompts for a licence when none is recorded', () => {
-    render(<DoctorLicensesCard licenses={[]} />);
+    renderCard([]);
 
-    expect(screen.getByText(/A practising doctor needs an STR/)).toBeInTheDocument();
+    expect(screen.getByText(/Dokter yang berpraktik memerlukan STR/)).toBeInTheDocument();
   });
 
   it('marks an expired SIP, which is what a licensing audit looks for', () => {
-    render(<DoctorLicensesCard licenses={[buildLicense({ expiresAt: '2026-01-01' })]} />);
+    renderCard([buildLicense({ expiresAt: '2026-01-01' })]);
 
-    expect(screen.getByText('Expired')).toBeInTheDocument();
-    expect(screen.getByText('1 need attention')).toBeInTheDocument();
+    expect(screen.getByText('Kedaluwarsa')).toBeInTheDocument();
+    expect(screen.getByText('1 perlu perhatian')).toBeInTheDocument();
   });
 
   it('warns before a SIP lapses rather than only after', () => {
-    render(<DoctorLicensesCard licenses={[buildLicense({ expiresAt: '2026-08-15' })]} />);
+    renderCard([buildLicense({ expiresAt: '2026-08-15' })]);
 
-    expect(screen.getByText('Expiring soon')).toBeInTheDocument();
+    expect(screen.getByText('Segera kedaluwarsa')).toBeInTheDocument();
   });
 
   it('does not flag an STR with no expiry as a problem', () => {
-    render(
-      <DoctorLicensesCard
-        licenses={[buildLicense({ type: 'STR', licenseNumber: 'STR-001', expiresAt: undefined })]}
-      />,
-    );
+    renderCard([buildLicense({ type: 'STR', licenseNumber: 'STR-001', expiresAt: undefined })]);
 
-    expect(screen.getByText('No expiry')).toBeInTheDocument();
+    expect(screen.getByText('Tanpa masa berlaku')).toBeInTheDocument();
     expect(screen.queryByText(/need attention/)).not.toBeInTheDocument();
   });
 });

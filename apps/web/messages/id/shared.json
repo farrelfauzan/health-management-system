@@ -1,0 +1,53 @@
+{
+  "shared": {
+    "accessibility": {
+      "breadcrumb": "Navigasi berjenjang",
+      "openRowActions": "Buka tindakan baris"
+    },
+    "pagination": {
+      "items": "item",
+      "summary": "Menampilkan {start}–{end} dari {total} {itemLabel}",
+      "previousPage": "Halaman sebelumnya",
+      "nextPage": "Halaman berikutnya",
+      "page": "Halaman {page}"
+    },
+    "statuses": {
+      "active": "AKTIF",
+      "inactive": "TIDAK AKTIF",
+      "pending": "MENUNGGU",
+      "requested": "DIAJUKAN",
+      "scheduled": "TERJADWAL",
+      "confirmed": "DIKONFIRMASI",
+      "arrived": "TIBA",
+      "checked_in": "SUDAH CHECK-IN",
+      "in_progress": "SEDANG BERLANGSUNG",
+      "finished": "SELESAI",
+      "completed": "SELESAI",
+      "cancelled": "DIBATALKAN",
+      "no_show": "TIDAK HADIR",
+      "issued": "DITERBITKAN",
+      "dispensed": "DISERAHKAN",
+      "partially_dispensed": "DISERAHKAN SEBAGIAN",
+      "draft": "DRAF",
+      "paid": "LUNAS",
+      "partially_paid": "DIBAYAR SEBAGIAN",
+      "overdue": "JATUH TEMPO",
+      "void": "DIBATALKAN",
+      "failed": "GAGAL",
+      "submitted": "DIKIRIM",
+      "open": "DIBUKA",
+      "closed": "DITUTUP",
+      "accepted": "DITERIMA",
+      "rejected": "DITOLAK",
+      "available": "TERSEDIA",
+      "unavailable": "TIDAK TERSEDIA",
+      "urgent": "MENDESAK",
+      "stat": "SEGERA",
+      "regular": "REGULER",
+      "low_stock": "STOK MENIPIS",
+      "out_patient": "RAWAT JALAN",
+      "in_patient": "RAWAT INAP",
+      "discharged": "DIPULANGKAN"
+    }
+  }
+}

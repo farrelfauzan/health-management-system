@@ -2,12 +2,9 @@
 
 import type { AppointmentListItem } from '@hms/shared-types';
 import { Button } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
-import {
-  formatAppointmentDate,
-  formatAppointmentTime,
-} from '#lib/appointments/format-appointment-time';
 
 type AppointmentRequestRowProps = {
   request: AppointmentListItem;
@@ -22,6 +19,9 @@ export function AppointmentRequestRow({
   onApprove,
   onReject,
 }: AppointmentRequestRowProps) {
+  const t = useTranslations('operations.appointments');
+  const format = useFormatter();
+  const scheduledAt = new Date(request.scheduledAt);
   return (
     <li className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 px-3 py-2">
       <div className="flex min-w-0 items-center gap-3">
@@ -34,8 +34,11 @@ export function AppointmentRequestRow({
             </span>
           </p>
           <p className="truncate text-xs text-slate-500">
-            {request.doctor.fullName} · {formatAppointmentDate(request.scheduledAt)} at{' '}
-            {formatAppointmentTime(request.scheduledAt)}
+            {request.doctor.fullName} ·{' '}
+            {t('atTime', {
+              date: format.dateTime(scheduledAt, { dateStyle: 'medium' }),
+              time: format.dateTime(scheduledAt, { timeStyle: 'short' }),
+            })}
             {request.reason ? ` · ${request.reason}` : ''}
           </p>
         </div>
@@ -48,7 +51,7 @@ export function AppointmentRequestRow({
           disabled={isBusy}
           onClick={() => onReject(request)}
         >
-          Reject
+          {t('reject')}
         </Button>
         <Button
           type="button"
@@ -57,7 +60,7 @@ export function AppointmentRequestRow({
           className="bg-primary-container hover:bg-primary"
           onClick={() => onApprove(request)}
         >
-          Approve
+          {t('approve')}
         </Button>
       </div>
     </li>

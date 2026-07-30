@@ -8,6 +8,7 @@ import {
   type PrescriptionResponse,
 } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { PrescriptionItemCard } from '#components/client/pharmacy/prescription-item-card';
 import { VerificationChecklist } from '#components/client/pharmacy/verification-checklist';
@@ -16,13 +17,10 @@ import { dispenseControllerCreateDispenseV1 } from '#lib/api/generated/pharmacy-
 import type { CreateDispenseDto } from '#lib/api/generated/model/createDispenseDto';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
-import { formatIssuedAt } from '#lib/pharmacy/format-issued-at';
 import { formatRxNumber } from '#lib/pharmacy/format-rx-number';
 import { invalidatePharmacyQueries } from '#lib/pharmacy/invalidate-pharmacy-queries';
 import { MOCK_CLINICAL_FLAGS } from '#lib/pharmacy/mock-clinical-flags';
 import { VERIFICATION_STEPS } from '#lib/pharmacy/verification-steps';
-
-const DISPENSE_ERROR_FALLBACK = 'Unable to dispense the prescription. Please try again.';
 
 type PrescriptionDetailsPanelProps = {
   prescription: PrescriptionResponse | null;
@@ -33,6 +31,8 @@ export function PrescriptionDetailsPanel({
   prescription,
   onDispensed,
 }: PrescriptionDetailsPanelProps) {
+  const t = useTranslations('operations.pharmacy');
+  const format = useFormatter();
   const queryClient = useQueryClient();
   const [checkedStepIds, setCheckedStepIds] = useState<string[]>([]);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -62,16 +62,16 @@ export function PrescriptionDetailsPanel({
       })),
     });
     if (!parsed.success) {
-      setActionError(parsed.error.issues[0]?.message ?? DISPENSE_ERROR_FALLBACK);
+      setActionError(parsed.error.issues[0]?.message ?? t('dispenseError'));
       return;
     }
     try {
       const response = await dispenseMutation.mutateAsync(parsed.data);
-      parseApiSuccess<DispenseRecordResponse>(response, DISPENSE_ERROR_FALLBACK);
+      parseApiSuccess<DispenseRecordResponse>(response, t('dispenseError'));
       await invalidatePharmacyQueries(queryClient);
-      onDispensed(`${formatRxNumber(prescription.id)} dispensed successfully.`);
+      onDispensed(t('dispensedSuccess', { rx: formatRxNumber(prescription.id) }));
     } catch (error) {
-      setActionError(resolveApiErrorMessage(error, DISPENSE_ERROR_FALLBACK));
+      setActionError(resolveApiErrorMessage(error, t('dispenseError')));
     }
   }
 
@@ -82,10 +82,8 @@ export function PrescriptionDetailsPanel({
           <span className="flex size-11 items-center justify-center rounded-full bg-slate-100 text-slate-400">
             <Icon name="prescriptions" size={22} />
           </span>
-          <p className="font-heading text-sm font-semibold text-slate-900">Select a prescription</p>
-          <p className="max-w-sm text-sm text-slate-500">
-            Choose a prescription from the queue to review its details and dispense it.
-          </p>
+          <p className="font-heading text-sm font-semibold text-slate-900">{t('selectTitle')}</p>
+          <p className="max-w-sm text-sm text-slate-500">{t('selectDescription')}</p>
         </CardContent>
       </Card>
     );
@@ -94,9 +92,7 @@ export function PrescriptionDetailsPanel({
   return (
     <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
       <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-5 py-4">
-        <h2 className="font-heading text-base font-semibold text-slate-900">
-          Prescription Details
-        </h2>
+        <h2 className="font-heading text-base font-semibold text-slate-900">{t('details')}</h2>
         <span className="font-mono text-sm font-semibold text-primary">
           {formatRxNumber(prescription.id)}
         </span>
@@ -110,10 +106,18 @@ export function PrescriptionDetailsPanel({
             </p>
             <p className="font-mono text-xs text-slate-500">MRN #{prescription.patient.mrn}</p>
             <p className="text-sm text-slate-500">
-              Prescribed by {prescription.doctor.fullName} · {formatIssuedAt(prescription.issuedAt)}
+              {t('prescribedBy', {
+                doctor: prescription.doctor.fullName,
+                date: prescription.issuedAt
+                  ? format.dateTime(new Date(prescription.issuedAt), {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    })
+                  : '-',
+              })}
             </p>
             <p className="text-sm text-slate-500">
-              Allergies:{' '}
+              {t('allergies')}{' '}
               <span className="font-semibold text-danger">
                 {MOCK_CLINICAL_FLAGS.allergies.join(', ')}
               </span>
@@ -144,7 +148,15 @@ export function PrescriptionDetailsPanel({
         ) : null}
 
         <VerificationChecklist
-          steps={VERIFICATION_STEPS}
+          steps={VERIFICATION_STEPS.map((step) => ({
+            ...step,
+            label:
+              step.id === 'identity'
+                ? t('verifyIdentity')
+                : step.id === 'dosage'
+                  ? t('verifyDosage')
+                  : t('verifyLabel'),
+          }))}
           checkedStepIds={checkedStepIds}
           onToggleStep={handleToggleStep}
           isDisabled={dispenseMutation.isPending}
@@ -167,7 +179,7 @@ export function PrescriptionDetailsPanel({
             onClick={() => window.print()}
           >
             <Icon name="print" size={20} />
-            Print Label
+            {t('printLabel')}
           </Button>
           <Can action="write" subject="DispenseRecord">
             <Button
@@ -177,7 +189,7 @@ export function PrescriptionDetailsPanel({
               onClick={() => void handleDispense()}
             >
               <Icon name="check_circle" size={20} />
-              {dispenseMutation.isPending ? 'Dispensing…' : 'Dispense Now'}
+              {dispenseMutation.isPending ? t('dispensing') : t('dispenseNow')}
             </Button>
           </Can>
         </div>

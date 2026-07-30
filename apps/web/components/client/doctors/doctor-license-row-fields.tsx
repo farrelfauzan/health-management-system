@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import type { LicenseRow } from '#lib/doctors/doctor-credential-rows';
 
@@ -27,13 +28,16 @@ export function DoctorLicenseRowFields({
   onChange,
   onRemove,
 }: DoctorLicenseRowFieldsProps) {
+  const t = useTranslations('clinical');
   return (
     <div className="space-y-2 rounded-lg border border-slate-200 p-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-heading text-xs font-medium text-slate-600">Licence {index + 1}</p>
+        <p className="font-heading text-xs font-medium text-slate-600">
+          {t('doctors.credentials.license', { index: index + 1 })}
+        </p>
         <button
           type="button"
-          aria-label={`Remove licence ${index + 1}`}
+          aria-label={t('doctors.credentials.removeLicense', { index: index + 1 })}
           className="text-slate-400 hover:text-danger"
           onClick={() => onRemove(row.key)}
         >
@@ -46,13 +50,11 @@ export function DoctorLicenseRowFields({
             htmlFor={`license-type-${row.key}`}
             className="block font-heading text-xs font-medium text-slate-600"
           >
-            Type
+            {t('doctors.credentials.type')}
           </label>
           <Select
             value={row.type}
-            onValueChange={(value) =>
-              onChange(row.key, { type: value as DoctorLicenseTypeValue })
-            }
+            onValueChange={(value) => onChange(row.key, { type: value as DoctorLicenseTypeValue })}
           >
             <SelectTrigger id={`license-type-${row.key}`} className="w-full">
               <SelectValue />
@@ -71,7 +73,7 @@ export function DoctorLicenseRowFields({
             htmlFor={`license-number-${row.key}`}
             className="block font-heading text-xs font-medium text-slate-600"
           >
-            Number
+            {t('doctors.credentials.number')}
           </label>
           <Input
             id={`license-number-${row.key}`}
@@ -82,21 +84,27 @@ export function DoctorLicenseRowFields({
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <span className="block font-heading text-xs font-medium text-slate-600">Issued</span>
+          <span className="block font-heading text-xs font-medium text-slate-600">
+            {t('doctors.credentials.issued')}
+          </span>
           <DatePicker
-            aria-label={`Licence ${index + 1} issued date`}
+            aria-label={t('doctors.credentials.issuedDate', { index: index + 1 })}
             className="w-full"
-            placeholder="Issued"
+            placeholder={t('doctors.credentials.issued')}
             value={row.issuedAt}
             onValueChange={(value) => onChange(row.key, { issuedAt: value })}
           />
         </div>
         <div className="space-y-1.5">
-          <span className="block font-heading text-xs font-medium text-slate-600">Expires</span>
+          <span className="block font-heading text-xs font-medium text-slate-600">
+            {t('doctors.credentials.expires')}
+          </span>
           <DatePicker
-            aria-label={`Licence ${index + 1} expiry date`}
+            aria-label={t('doctors.credentials.expiryDate', { index: index + 1 })}
             className="w-full"
-            placeholder={row.type === 'STR' ? 'No expiry' : 'Expires'}
+            placeholder={t(
+              row.type === 'STR' ? 'doctors.credentials.noExpiry' : 'doctors.credentials.expires',
+            )}
             value={row.expiresAt}
             minValue={row.issuedAt}
             onValueChange={(value) => onChange(row.key, { expiresAt: value })}
@@ -104,10 +112,7 @@ export function DoctorLicenseRowFields({
         </div>
       </div>
       {row.type === 'STR' ? (
-        <p className="text-xs text-slate-500">
-          STR is lifetime under UU Kesehatan 17/2023 — leave the expiry blank unless the record
-          predates it.
-        </p>
+        <p className="text-xs text-slate-500">{t('doctors.credentials.strLifetime')}</p>
       ) : null}
     </div>
   );

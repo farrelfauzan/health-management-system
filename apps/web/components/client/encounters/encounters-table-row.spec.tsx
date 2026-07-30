@@ -2,8 +2,10 @@ import type { EncounterListItem, EncounterStatusValue } from '@hms/shared-types'
 import { Table, TableBody } from '@hms/ui';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { NextIntlClientProvider } from 'next-intl';
 
 import { EncountersTableRow } from './encounters-table-row';
+import messages from '../../../messages/id/clinical.json';
 
 function buildEncounter(overrides: Partial<EncounterListItem> = {}): EncounterListItem {
   return {
@@ -26,11 +28,13 @@ function buildEncounter(overrides: Partial<EncounterListItem> = {}): EncounterLi
 
 function renderRow(encounter: EncounterListItem): void {
   render(
-    <Table>
-      <TableBody>
-        <EncountersTableRow encounter={encounter} basePath="/admin/encounters" />
-      </TableBody>
-    </Table>,
+    <NextIntlClientProvider locale="id" messages={messages} timeZone="Asia/Jakarta">
+      <Table>
+        <TableBody>
+          <EncountersTableRow encounter={encounter} basePath="/admin/encounters" />
+        </TableBody>
+      </Table>
+    </NextIntlClientProvider>,
   );
 }
 
@@ -41,13 +45,13 @@ describe('EncountersTableRow', () => {
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('MRN-0001')).toBeInTheDocument();
     expect(screen.getByText('Dr. Budi Santoso')).toBeInTheDocument();
-    expect(screen.getByText('IN PROGRESS')).toBeInTheDocument();
+    expect(screen.getByText('Berlangsung')).toBeInTheDocument();
   });
 
   it('links to the encounter workspace', () => {
     renderRow(buildEncounter());
 
-    expect(screen.getByRole('link', { name: /Open/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Buka/ })).toHaveAttribute(
       'href',
       '/admin/encounters/encounter-1',
     );
@@ -55,14 +59,16 @@ describe('EncountersTableRow', () => {
 
   it('links within whichever shell renders it', () => {
     render(
-      <Table>
-        <TableBody>
-          <EncountersTableRow encounter={buildEncounter()} basePath="/doctor/encounters" />
-        </TableBody>
-      </Table>,
+      <NextIntlClientProvider locale="id" messages={messages} timeZone="Asia/Jakarta">
+        <Table>
+          <TableBody>
+            <EncountersTableRow encounter={buildEncounter()} basePath="/doctor/encounters" />
+          </TableBody>
+        </Table>
+      </NextIntlClientProvider>,
     );
 
-    expect(screen.getByRole('link', { name: /Open/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Buka/ })).toHaveAttribute(
       'href',
       '/doctor/encounters/encounter-1',
     );
@@ -71,9 +77,9 @@ describe('EncountersTableRow', () => {
   it('shows the coded record counts', () => {
     renderRow(buildEncounter({ vitalSignsCount: 3, diagnosisCount: 2, procedureCount: 1 }));
 
-    expect(screen.getByTitle('Vital-sign sets recorded')).toHaveTextContent('3');
-    expect(screen.getByTitle('Diagnoses coded')).toHaveTextContent('2');
-    expect(screen.getByTitle('Procedures coded')).toHaveTextContent('1');
+    expect(screen.getByTitle('Set tanda vital yang dicatat')).toHaveTextContent('3');
+    expect(screen.getByTitle('Diagnosis yang dikodekan')).toHaveTextContent('2');
+    expect(screen.getByTitle('Tindakan yang dikodekan')).toHaveTextContent('1');
   });
 
   it('reports the elapsed time of a closed encounter, not the time since now', () => {
@@ -84,6 +90,6 @@ describe('EncountersTableRow', () => {
       }),
     );
 
-    expect(screen.getByText('1h 12m')).toBeInTheDocument();
+    expect(screen.getByText('1 jam 12 mnt')).toBeInTheDocument();
   });
 });

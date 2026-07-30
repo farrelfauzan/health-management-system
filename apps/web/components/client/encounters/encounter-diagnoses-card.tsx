@@ -2,6 +2,7 @@
 
 import type { DiagnosisResponse } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { EncounterDiagnosisForm } from '#components/client/encounters/encounter-diagnosis-form';
 import { EncounterDiagnosisRow } from '#components/client/encounters/encounter-diagnosis-row';
@@ -17,6 +18,7 @@ export function EncounterDiagnosesCard({
   diagnoses,
   isEditable,
 }: EncounterDiagnosesCardProps) {
+  const t = useTranslations('clinical');
   const hasPrimaryDiagnosis = diagnoses.some((diagnosis) => diagnosis.type === 'PRIMARY');
   // PRIMARY first: it is the diagnosis that justifies the visit, and both the
   // BPJS kunjungan and the SATUSEHAT Condition single it out.
@@ -27,7 +29,7 @@ export function EncounterDiagnosesCard({
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader>
-        <CardTitle className="font-heading text-base">Diagnoses (ICD-10)</CardTitle>
+        <CardTitle className="font-heading text-base">{t('encounters.diagnosis.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {isEditable ? (
@@ -38,8 +40,7 @@ export function EncounterDiagnosesCard({
         ) : null}
         {!hasPrimaryDiagnosis ? (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            No primary diagnosis yet. BPJS and SATUSEHAT submissions both need one — the visit
-            cannot be claimed without it.
+            {t('encounters.diagnosis.primaryRequired')}
           </p>
         ) : null}
         {orderedDiagnoses.length > 0 ? (
@@ -55,7 +56,7 @@ export function EncounterDiagnosesCard({
           </ul>
         ) : (
           <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">
-            No diagnosis coded for this visit.
+            {t('encounters.diagnosis.empty')}
           </p>
         )}
       </CardContent>

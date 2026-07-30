@@ -2,12 +2,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
+import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { LoginForm } from './login-form';
 import { authControllerLoginV1 } from '#lib/api/generated/auth/auth';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
+import messages from '../../../messages/id/auth-shell.json';
 
 const { replaceMock } = vi.hoisted(() => ({
   replaceMock: vi.fn(),
@@ -34,7 +36,9 @@ function renderLoginForm(): ReactElement | void {
 
   render(
     <QueryClientProvider client={queryClient}>
-      <LoginForm />
+      <NextIntlClientProvider locale="id" messages={messages}>
+        <LoginForm />
+      </NextIntlClientProvider>
     </QueryClientProvider>,
   );
 }
@@ -59,11 +63,13 @@ describe('LoginForm', () => {
     renderLoginForm();
 
     await user.type(screen.getByLabelText('Email'), 'not-an-email');
-    await user.type(screen.getByLabelText('Password'), 'short');
-    await user.click(screen.getByRole('button', { name: 'Sign in' }));
+    await user.type(screen.getByLabelText('Kata sandi'), 'short');
+    await user.click(screen.getByRole('button', { name: 'Masuk' }));
 
-    expect(await screen.findByText(/invalid email/i)).toBeInTheDocument();
-    expect(screen.getByText(/at least 8/i)).toBeInTheDocument();
+    expect(await screen.findByText('Masukkan alamat email yang valid.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Kata sandi harus terdiri dari minimal 8 karakter.'),
+    ).toBeInTheDocument();
     expect(loginRequestMock).not.toHaveBeenCalled();
   });
 
@@ -81,10 +87,12 @@ describe('LoginForm', () => {
     renderLoginForm();
 
     await user.type(screen.getByLabelText('Email'), 'doctor@salingjaga.com');
-    await user.type(screen.getByLabelText('Password'), 'password-123');
-    await user.click(screen.getByRole('button', { name: 'Sign in' }));
+    await user.type(screen.getByLabelText('Kata sandi'), 'password-123');
+    await user.click(screen.getByRole('button', { name: 'Masuk' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password.');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Email atau kata sandi tidak valid.',
+    );
     expect(replaceMock).not.toHaveBeenCalled();
   });
 
@@ -106,10 +114,10 @@ describe('LoginForm', () => {
     renderLoginForm();
 
     await user.type(screen.getByLabelText('Email'), 'admin@salingjaga.com');
-    await user.type(screen.getByLabelText('Password'), 'password-123');
-    await user.click(screen.getByRole('button', { name: 'Sign in' }));
+    await user.type(screen.getByLabelText('Kata sandi'), 'password-123');
+    await user.click(screen.getByRole('button', { name: 'Masuk' }));
 
-    expect(await screen.findByRole('button', { name: 'Sign in' })).toBeEnabled();
+    expect(await screen.findByRole('button', { name: 'Masuk' })).toBeEnabled();
     expect(document.cookie).toContain(`${ACCESS_TOKEN_COOKIE_NAME}=header.payload.signature`);
     expect(document.cookie).toContain(`${REFRESH_TOKEN_COOKIE_NAME}=refresh.payload.signature`);
     expect(replaceMock).toHaveBeenCalledWith('/admin/dashboard');

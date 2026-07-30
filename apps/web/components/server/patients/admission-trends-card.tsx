@@ -1,16 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle, Icon } from '@hms/ui';
+import { getTranslations } from 'next-intl/server';
 
-import {
-  MOCK_ADMISSION_TRENDS,
-  MOCK_ADMISSION_TRENDS_SUMMARY,
-} from '#lib/patients/mock-admission-trends';
+import { MOCK_ADMISSION_TRENDS } from '#lib/patients/mock-admission-trends';
 
 const CHART_WIDTH = 240;
 const CHART_HEIGHT = 64;
 const BAR_GAP = 6;
 const MAX_TREND_VALUE = 100;
 
-export function AdmissionTrendsCard() {
+export async function AdmissionTrendsCard() {
+  const t = await getTranslations('clinical');
   const barWidth =
     (CHART_WIDTH - BAR_GAP * (MOCK_ADMISSION_TRENDS.length - 1)) / MOCK_ADMISSION_TRENDS.length;
 
@@ -19,15 +18,17 @@ export function AdmissionTrendsCard() {
       <CardHeader>
         <Icon name="analytics" size={22} className="text-primary" />
         <CardTitle className="font-heading text-base font-semibold text-slate-900">
-          Admission Trends
+          {t('patients.admissionTrends')}
         </CardTitle>
-        <p className="text-xs text-slate-500">{MOCK_ADMISSION_TRENDS_SUMMARY} (sample data)</p>
+        <p className="text-xs text-slate-500">
+          {t('patients.admissionSummary')} ({t('patients.sampleData')})
+        </p>
       </CardHeader>
       <CardContent>
         <svg
           viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
           role="img"
-          aria-label="Sample admission trend chart"
+          aria-label={t('patients.admissionChartLabel')}
           className="h-16 w-full"
         >
           {MOCK_ADMISSION_TRENDS.map((point, index) => {

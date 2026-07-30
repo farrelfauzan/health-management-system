@@ -1,8 +1,18 @@
 import type { PatientAllergy } from '@hms/shared-types';
 import { render, screen, within } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it } from 'vitest';
 
 import { PatientAllergiesCard } from './patient-allergies-card';
+import messages from '../../../messages/id/clinical.json';
+
+function renderCard(allergies: PatientAllergy[]): void {
+  render(
+    <NextIntlClientProvider locale="id" messages={messages}>
+      <PatientAllergiesCard allergies={allergies} />
+    </NextIntlClientProvider>,
+  );
+}
 
 function buildAllergy(overrides: Partial<PatientAllergy> = {}): PatientAllergy {
   return {
@@ -18,23 +28,17 @@ function buildAllergy(overrides: Partial<PatientAllergy> = {}): PatientAllergy {
 
 describe('PatientAllergiesCard', () => {
   it('does not claim the patient has no allergies when none are recorded', () => {
-    render(<PatientAllergiesCard allergies={[]} />);
+    renderCard([]);
 
-    expect(
-      screen.getByText(/Absence of a record is not the same as none reported/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Tidak adanya catatan bukan berarti/)).toBeInTheDocument();
   });
 
   it('lists the most severe allergy first', () => {
-    render(
-      <PatientAllergiesCard
-        allergies={[
-          buildAllergy({ id: 'a', substance: 'Dust', severity: 'MILD' }),
-          buildAllergy({ id: 'b', substance: 'Peanut', severity: 'SEVERE' }),
-          buildAllergy({ id: 'c', substance: 'Pollen', severity: 'MODERATE' }),
-        ]}
-      />,
-    );
+    renderCard([
+      buildAllergy({ id: 'a', substance: 'Dust', severity: 'MILD' }),
+      buildAllergy({ id: 'b', substance: 'Peanut', severity: 'SEVERE' }),
+      buildAllergy({ id: 'c', substance: 'Pollen', severity: 'MODERATE' }),
+    ]);
 
     const items = screen.getAllByRole('listitem');
 
@@ -44,10 +48,10 @@ describe('PatientAllergiesCard', () => {
   });
 
   it('shows the substance, reaction, and severity', () => {
-    render(<PatientAllergiesCard allergies={[buildAllergy({ severity: 'SEVERE' })]} />);
+    renderCard([buildAllergy({ severity: 'SEVERE' })]);
 
     expect(screen.getByText('Penicillin')).toBeInTheDocument();
     expect(screen.getByText('Rash')).toBeInTheDocument();
-    expect(screen.getByText('SEVERE')).toBeInTheDocument();
+    expect(screen.getByText('Berat')).toBeInTheDocument();
   });
 });

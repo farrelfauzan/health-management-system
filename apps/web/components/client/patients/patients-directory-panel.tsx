@@ -4,21 +4,22 @@ import { useState } from 'react';
 import type { PatientListItem } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useFormatter } from 'next-intl';
 
 import { AssignDoctorDialog } from '#components/client/patients/assign-doctor-dialog';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
-import { PatientsFilterCard, type PatientsFilterValues } from '#components/client/patients/patients-filter-card';
+import {
+  PatientsFilterCard,
+  type PatientsFilterValues,
+} from '#components/client/patients/patients-filter-card';
 import { PatientsTable } from '#components/client/patients/patients-table';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
 import { buildPatientsCsv } from '#lib/patients/build-patients-csv';
-import {
-  buildPatientsSearchParams,
-  type PatientsSearchParams,
-} from '#lib/patients/search-params';
+import { buildPatientsSearchParams, type PatientsSearchParams } from '#lib/patients/search-params';
 import { usePatientsList } from '#lib/patients/use-patients-list';
 import { downloadTextFile } from '#lib/shared/download-text-file';
-import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
 
 const CSV_FILE_NAME = 'patients-export.csv';
 const CSV_MIME_TYPE = 'text/csv;charset=utf-8';
@@ -30,7 +31,8 @@ type PatientsDirectoryPanelProps = {
 export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const metadata = ADMIN_ROUTE_METADATA.patients;
+  const t = useTranslations('clinical');
+  const format = useFormatter();
   const patientsQuery = usePatientsList(initialQuery);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
   const [editingPatient, setEditingPatient] = useState<PatientListItem | null>(null);
@@ -55,7 +57,24 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
   function handleExport(): void {
     downloadTextFile({
       fileName: CSV_FILE_NAME,
-      content: buildPatientsCsv(patientsQuery.patients),
+      content: buildPatientsCsv(patientsQuery.patients, {
+        headers: [
+          t('patients.csv.patientId'),
+          t('patients.csv.fullName'),
+          t('patients.csv.sex'),
+          t('patients.csv.birthDate'),
+          t('patients.csv.status'),
+          t('patients.csv.phone'),
+          t('patients.csv.address'),
+          t('patients.csv.doctors'),
+          t('patients.csv.registered'),
+        ],
+        sex: (sex) => t(`patients.sex.${sex ?? 'UNKNOWN'}`),
+        status: (status) => t(`patients.status.${status}`),
+        date: (value) => format.dateTime(new Date(value), { dateStyle: 'medium' }),
+        dateTime: (value) =>
+          format.dateTime(new Date(value), { dateStyle: 'medium', timeStyle: 'short' }),
+      }),
       mimeType: CSV_MIME_TYPE,
     });
   }
@@ -77,9 +96,9 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
   return (
     <div className="space-y-6">
       <PageHeader
-        title={metadata.title}
-        subtitle={metadata.subtitle}
-        breadcrumbs={metadata.breadcrumbs}
+        title={t('patients.title')}
+        subtitle={t('patients.subtitle')}
+        breadcrumbs={[t('patients.dashboard'), t('patients.title')]}
         actions={
           <Can action="create" subject="Patient">
             <Button
@@ -88,7 +107,7 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
               onClick={handleOpenCreateDialog}
             >
               <Icon name="person_add" size={18} />
-              Add New Patient
+              {t('patients.add')}
             </Button>
           </Can>
         }
@@ -105,7 +124,7 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
 
       {patientsQuery.error && patientsQuery.patients.length > 0 ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {patientsQuery.error.message}
+          {t('patients.errorDescription')}
         </p>
       ) : null}
 
@@ -124,7 +143,7 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
             page={initialQuery.page}
             pageSize={initialQuery.limit}
             total={patientsQuery.meta?.total ?? 0}
-            itemLabel="patients"
+            itemLabel={t('patients.itemLabel')}
             isDisabled={patientsQuery.isFetching}
             onPageChange={(nextPage) => navigateWithParams({ ...initialQuery, page: nextPage })}
           />

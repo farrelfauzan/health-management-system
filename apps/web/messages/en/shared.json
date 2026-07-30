@@ -1,0 +1,53 @@
+{
+  "shared": {
+    "accessibility": {
+      "breadcrumb": "Breadcrumb",
+      "openRowActions": "Open row actions"
+    },
+    "pagination": {
+      "items": "items",
+      "summary": "Showing {start}–{end} of {total} {itemLabel}",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "page": "Page {page}"
+    },
+    "statuses": {
+      "active": "ACTIVE",
+      "inactive": "INACTIVE",
+      "pending": "PENDING",
+      "requested": "REQUESTED",
+      "scheduled": "SCHEDULED",
+      "confirmed": "CONFIRMED",
+      "arrived": "ARRIVED",
+      "checked_in": "CHECKED IN",
+      "in_progress": "IN PROGRESS",
+      "finished": "FINISHED",
+      "completed": "COMPLETED",
+      "cancelled": "CANCELLED",
+      "no_show": "NO SHOW",
+      "issued": "ISSUED",
+      "dispensed": "DISPENSED",
+      "partially_dispensed": "PARTIALLY DISPENSED",
+      "draft": "DRAFT",
+      "paid": "PAID",
+      "partially_paid": "PARTIALLY PAID",
+      "overdue": "OVERDUE",
+      "void": "VOID",
+      "failed": "FAILED",
+      "submitted": "SUBMITTED",
+      "open": "OPEN",
+      "closed": "CLOSED",
+      "accepted": "ACCEPTED",
+      "rejected": "REJECTED",
+      "available": "AVAILABLE",
+      "unavailable": "UNAVAILABLE",
+      "urgent": "URGENT",
+      "stat": "STAT",
+      "regular": "REGULAR",
+      "low_stock": "LOW STOCK",
+      "out_patient": "OUT-PATIENT",
+      "in_patient": "IN-PATIENT",
+      "discharged": "DISCHARGED"
+    }
+  }
+}

@@ -2,6 +2,7 @@
 
 import type { Specialty } from '@hms/shared-types';
 import { Combobox } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 type SpecialtyComboboxProps = {
   id?: string;
@@ -22,14 +23,15 @@ export function SpecialtyCombobox({
   emptyOptionLabel,
   onChange,
 }: SpecialtyComboboxProps) {
+  const t = useTranslations('clinical');
   return (
     <Combobox
       id={id}
       options={specialties.map((specialty) => ({ value: specialty.id, label: specialty.name }))}
       value={value}
-      placeholder="Select specialty"
-      searchPlaceholder="Search specialty..."
-      emptyMessage="No specialty found."
+      placeholder={t('doctors.selectSpecialty')}
+      searchPlaceholder={t('doctors.searchSpecialty')}
+      emptyMessage={t('doctors.noSpecialty')}
       emptyOptionLabel={emptyOptionLabel}
       isLoading={isLoading}
       hasError={hasError}

@@ -4,13 +4,12 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { InvoiceDetail, VoidInvoiceInput } from '@hms/shared-types';
 import { Button, Textarea } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { invoiceControllerVoidInvoiceV1 } from '#lib/api/generated/invoices/invoices';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateBillingQueries } from '#lib/billing/invalidate-billing-queries';
-
-const VOID_ERROR_FALLBACK = 'Unable to void the invoice. Please try again.';
 
 type VoidInvoiceFormProps = {
   invoiceId: string;
@@ -19,6 +18,7 @@ type VoidInvoiceFormProps = {
 };
 
 export function VoidInvoiceForm({ invoiceId, onVoided, onCancel }: VoidInvoiceFormProps) {
+  const t = useTranslations('operations.billing');
   const queryClient = useQueryClient();
   const [reason, setReason] = useState<string>('');
   const [actionError, setActionError] = useState<string | null>(null);
@@ -38,11 +38,11 @@ export function VoidInvoiceForm({ invoiceId, onVoided, onCancel }: VoidInvoiceFo
 
     try {
       const response = await voidMutation.mutateAsync({ reason: trimmedReason });
-      parseApiSuccess<InvoiceDetail>(response, VOID_ERROR_FALLBACK);
+      parseApiSuccess<InvoiceDetail>(response, t('voidError'));
       await invalidateBillingQueries(queryClient);
       onVoided();
     } catch (error) {
-      setActionError(notifyApiError(error, VOID_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('voidError')));
     }
   }
 
@@ -71,7 +71,7 @@ export function VoidInvoiceForm({ invoiceId, onVoided, onCancel }: VoidInvoiceFo
         <Textarea
           id="void-reason"
           rows={2}
-          placeholder="Why this invoice is being voided"
+          placeholder={t('labels.voidPlaceholder')}
           value={reason}
           onChange={(event) => setReason(event.target.value)}
         />

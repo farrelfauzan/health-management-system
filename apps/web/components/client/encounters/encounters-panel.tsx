@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import {
   EncountersFilterCard,
@@ -15,7 +16,6 @@ import {
   type EncountersSearchParams,
 } from '#lib/encounters/search-params';
 import { useEncountersList } from '#lib/encounters/use-encounters-list';
-import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
 
 type EncountersPanelProps = {
   initialQuery: EncountersSearchParams;
@@ -29,7 +29,7 @@ export function EncountersPanel({
 }: EncountersPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const metadata = ADMIN_ROUTE_METADATA.encounters;
+  const t = useTranslations('clinical');
   const encountersQuery = useEncountersList(initialQuery);
 
   function navigateWithParams(next: EncountersSearchParams): void {
@@ -53,9 +53,9 @@ export function EncountersPanel({
   return (
     <div className="space-y-6">
       <PageHeader
-        title={metadata.title}
-        subtitle={metadata.subtitle}
-        breadcrumbs={[...metadata.breadcrumbs]}
+        title={t('encounters.title')}
+        subtitle={t('encounters.subtitle')}
+        breadcrumbs={[t('patients.dashboard'), t('encounters.title')]}
       />
 
       <EncountersFilterCard
@@ -67,7 +67,7 @@ export function EncountersPanel({
 
       {encountersQuery.error && encountersQuery.encounters.length > 0 ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {encountersQuery.error.message}
+          {t('encounters.errorDescription')}
         </p>
       ) : null}
 
@@ -84,7 +84,7 @@ export function EncountersPanel({
             page={initialQuery.page}
             pageSize={initialQuery.limit}
             total={encountersQuery.meta?.total ?? 0}
-            itemLabel="encounters"
+            itemLabel={t('encounters.itemLabel')}
             isDisabled={encountersQuery.isFetching}
             onPageChange={(nextPage) => navigateWithParams({ ...initialQuery, page: nextPage })}
           />

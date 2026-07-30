@@ -1,12 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { NextIntlClientProvider } from 'next-intl';
 
 import { DashboardStatCards } from './dashboard-stat-cards';
 import { appointmentManagementControllerListAppointmentsV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { doctorManagementControllerListDoctorsV1 } from '#lib/api/generated/doctor-management/doctor-management';
 import { prescriptionControllerListPrescriptionsV1 } from '#lib/api/generated/pharmacy-flow/pharmacy-flow';
 import { registrationFlowControllerListRegistrationsV1 } from '#lib/api/generated/registration-flow/registration-flow';
+import { getDashboardAiMessages } from '#lib/dashboard/localization';
 
 vi.mock('#lib/api/generated/registration-flow/registration-flow', () => ({
   registrationFlowControllerListRegistrationsV1: vi.fn(),
@@ -68,9 +70,11 @@ function renderDashboardStatCards(): void {
   });
 
   render(
-    <QueryClientProvider client={queryClient}>
-      <DashboardStatCards />
-    </QueryClientProvider>,
+    <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
+      <QueryClientProvider client={queryClient}>
+        <DashboardStatCards />
+      </QueryClientProvider>
+    </NextIntlClientProvider>,
   );
 }
 
@@ -111,8 +115,8 @@ describe('DashboardStatCards', () => {
     expect(screen.getByText('12')).toBeInTheDocument();
     expect(screen.getByText('8')).toBeInTheDocument();
     expect(screen.getByText('5')).toBeInTheDocument();
-    expect(screen.getByText('1 upcoming in the next hour')).toBeInTheDocument();
-    expect(screen.getByText('Awaiting pharmacist verification')).toBeInTheDocument();
+    expect(screen.getByText('1 jadwal dalam satu jam ke depan')).toBeInTheDocument();
+    expect(screen.getByText('Menunggu verifikasi apoteker')).toBeInTheDocument();
   });
 
   it('renders a fallback value when a stat query fails', async () => {
@@ -124,6 +128,6 @@ describe('DashboardStatCards', () => {
     renderDashboardStatCards();
 
     expect(await screen.findByText('—')).toBeInTheDocument();
-    expect(screen.getByText('Unable to load')).toBeInTheDocument();
+    expect(screen.getByText('Tidak dapat dimuat')).toBeInTheDocument();
   });
 });

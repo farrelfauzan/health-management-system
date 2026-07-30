@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AddProcedureInput, ProcedureResponse } from '@hms/shared-types';
 import { Button, Input } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { CodeSearchPicker } from '#components/client/encounters/code-search-picker';
 import { encounterClinicalDataControllerAddProcedureV1 } from '#lib/api/generated/encounters/encounters';
@@ -13,14 +14,13 @@ import type { CodeSearchOption } from '#lib/encounters/code-search-option';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
 import { useIcd9cmSearch } from '#lib/encounters/use-icd9cm-search';
 
-const PROCEDURE_ERROR_FALLBACK = 'Unable to record the procedure. Please try again.';
-
 type EncounterProcedureFormProps = {
   encounterId: string;
 };
 
 export function EncounterProcedureForm({ encounterId }: EncounterProcedureFormProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [search, setSearch] = useState<string>('');
   const [selected, setSelected] = useState<CodeSearchOption | null>(null);
   const [notes, setNotes] = useState<string>('');
@@ -36,7 +36,7 @@ export function EncounterProcedureForm({ encounterId }: EncounterProcedureFormPr
     setActionError(null);
 
     if (!selected) {
-      setActionError('Search the catalog and pick an ICD-9-CM code first.');
+      setActionError(t('encounters.procedure.pick'));
       return;
     }
 
@@ -48,13 +48,13 @@ export function EncounterProcedureForm({ encounterId }: EncounterProcedureFormPr
 
     try {
       const response = await addMutation.mutateAsync(payload);
-      parseApiSuccess<ProcedureResponse>(response, PROCEDURE_ERROR_FALLBACK);
+      parseApiSuccess<ProcedureResponse>(response, t('encounters.procedure.error'));
       await invalidateEncounterQueries(queryClient);
       setSelected(null);
       setSearch('');
       setNotes('');
     } catch (error) {
-      setActionError(notifyApiError(error, PROCEDURE_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.procedure.error')));
     }
   }
 
@@ -70,8 +70,8 @@ export function EncounterProcedureForm({ encounterId }: EncounterProcedureFormPr
       ) : null}
       <CodeSearchPicker
         id="procedure-code-search"
-        label="ICD-9-CM Procedure"
-        placeholder="Search by code or term, e.g. 93.57 or wound dressing"
+        label={t('encounters.procedure.label')}
+        placeholder={t('encounters.procedure.search')}
         search={search}
         codes={icd9cmQuery.codes}
         isPending={icd9cmQuery.isPending}
@@ -86,11 +86,11 @@ export function EncounterProcedureForm({ encounterId }: EncounterProcedureFormPr
             htmlFor="procedure-notes"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Notes
+            {t('encounters.notes')}
           </label>
           <Input
             id="procedure-notes"
-            placeholder="Optional detail — site, quantity, findings"
+            placeholder={t('encounters.procedure.notes')}
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
           />
@@ -101,7 +101,7 @@ export function EncounterProcedureForm({ encounterId }: EncounterProcedureFormPr
           className="bg-primary-container hover:bg-primary"
           disabled={addMutation.isPending}
         >
-          {addMutation.isPending ? 'Adding...' : 'Add Procedure'}
+          {addMutation.isPending ? t('encounters.adding') : t('encounters.procedure.add')}
         </Button>
       </div>
     </form>

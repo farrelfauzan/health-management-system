@@ -1,9 +1,9 @@
 'use client';
 
 import { Skeleton } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { StatCard } from '#components/shared/stat-card';
-import { MOCK_DOCTOR_SPECIALTY_BREAKDOWN } from '#lib/dashboard/mock-doctor-specialty-breakdown';
 import { useDashboardStats } from '#lib/dashboard/use-dashboard-stats';
 
 type DashboardStatCardViewModel = {
@@ -18,46 +18,48 @@ type DashboardStatCardViewModel = {
 };
 
 export function DashboardStatCards() {
+  const t = useTranslations('dashboard.stats');
+  const format = useFormatter();
   const stats = useDashboardStats();
   const cards: DashboardStatCardViewModel[] = [
     {
       key: 'today-patients',
       icon: 'personal_injury',
-      label: "Today's Patients",
+      label: t('todayPatients'),
       isPending: stats.todayRegistrationsQuery.isPending,
       isError: stats.todayRegistrationsQuery.isError,
       total: stats.todayRegistrationsMeta?.total,
-      helper: 'New registrations today',
+      helper: t('newRegistrations'),
       variant: 'default',
     },
     {
       key: 'appointments',
       icon: 'calendar_month',
-      label: 'Appointments',
+      label: t('appointments'),
       isPending: stats.todayAppointmentsQuery.isPending,
       isError: stats.todayAppointmentsQuery.isError,
       total: stats.todayAppointmentsQuery.meta?.total,
-      helper: `${stats.upcomingWithinHour} upcoming in the next hour`,
+      helper: t('upcomingWithinHour', { count: stats.upcomingWithinHour }),
       variant: 'default',
     },
     {
       key: 'doctors-on-duty',
       icon: 'medical_services',
-      label: 'Doctors on Duty',
+      label: t('doctorsOnDuty'),
       isPending: stats.activeDoctorsQuery.isPending,
       isError: stats.activeDoctorsQuery.isError,
       total: stats.activeDoctorsMeta?.total,
-      helper: MOCK_DOCTOR_SPECIALTY_BREAKDOWN,
+      helper: t('specialtyBreakdown', { surgeons: 3, generalPractitioners: 5 }),
       variant: 'default',
     },
     {
       key: 'pending-rx',
       icon: 'prescriptions',
-      label: 'Pending RX',
+      label: t('pendingRx'),
       isPending: stats.pendingPrescriptionsQuery.isPending,
       isError: stats.pendingPrescriptionsQuery.isError,
       total: stats.pendingPrescriptionsMeta?.total,
-      helper: 'Awaiting pharmacist verification',
+      helper: t('awaitingVerification'),
       variant: 'danger',
     },
   ];
@@ -78,8 +80,8 @@ export function DashboardStatCards() {
             key={card.key}
             icon={card.icon}
             label={card.label}
-            value={card.isError ? '—' : String(card.total ?? 0)}
-            helper={card.isError ? 'Unable to load' : card.helper}
+            value={card.isError ? '—' : format.number(card.total ?? 0)}
+            helper={card.isError ? t('unableToLoad') : card.helper}
             variant={card.variant}
           />
         );

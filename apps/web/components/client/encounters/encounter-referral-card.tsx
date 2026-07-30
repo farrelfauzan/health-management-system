@@ -3,15 +3,13 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { EncounterReferralForm } from '#components/client/encounters/encounter-referral-form';
 import { encounterClinicalDataControllerRemoveBpjsReferralV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
 import { useBpjsReferral } from '#lib/encounters/use-bpjs-referral';
-import { formatMediumDate } from '#lib/shared/format-medium-date';
-
-const RETRACT_ERROR_FALLBACK = 'Unable to retract the referral. Please try again.';
 
 type EncounterReferralCardProps = {
   encounterId: string;
@@ -20,6 +18,8 @@ type EncounterReferralCardProps = {
 
 export function EncounterReferralCard({ encounterId, isEditable }: EncounterReferralCardProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
+  const format = useFormatter();
   const referralQuery = useBpjsReferral(encounterId, true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -34,17 +34,17 @@ export function EncounterReferralCard({ encounterId, isEditable }: EncounterRefe
       await removeMutation.mutateAsync();
       await invalidateEncounterQueries(queryClient);
     } catch (error) {
-      setActionError(notifyApiError(error, RETRACT_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.retractReferralError')));
     }
   }
 
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader className="flex flex-row items-center justify-between gap-3">
-        <CardTitle className="font-heading text-base">BPJS Referral (Rujukan)</CardTitle>
+        <CardTitle className="font-heading text-base">{t('encounters.referralTitle')}</CardTitle>
         {isEditable && !isEditing ? (
           <Button type="button" size="sm" variant="outline" onClick={() => setIsEditing(true)}>
-            {referral ? 'Edit Referral' : 'Record Referral'}
+            {t(referral ? 'encounters.editReferral' : 'encounters.recordReferral')}
           </Button>
         ) : null}
       </CardHeader>
@@ -65,12 +65,16 @@ export function EncounterReferralCard({ encounterId, isEditable }: EncounterRefe
             onCancel={() => setIsEditing(false)}
           />
         ) : referralQuery.isPending ? (
-          <p className="text-sm text-slate-500">Loading referral...</p>
+          <p className="text-sm text-slate-500">{t('encounters.loadingReferral')}</p>
         ) : referral ? (
           <div className="space-y-1.5">
             <p className="text-sm text-slate-700">
-              To <span className="font-mono font-medium">{referral.destinationProviderCode}</span> on{' '}
-              {formatMediumDate(referral.estimatedReferralDate)}
+              {t('encounters.referralDestination', {
+                provider: referral.destinationProviderCode,
+                date: format.dateTime(new Date(referral.estimatedReferralDate), {
+                  dateStyle: 'medium',
+                }),
+              })}
             </p>
             <p className="text-sm text-slate-600">
               {referral.subSpecialtyCode ? `Subspesialis ${referral.subSpecialtyCode}` : null}
@@ -79,9 +83,7 @@ export function EncounterReferralCard({ encounterId, isEditable }: EncounterRefe
               {referral.saranaCode ? ` · Sarana ${referral.saranaCode}` : null}
             </p>
             {referral.notes ? <p className="text-xs text-slate-500">{referral.notes}</p> : null}
-            <p className="text-xs text-slate-400">
-              The kunjungan will report rujuk lanjut instead of a normal outpatient discharge.
-            </p>
+            <p className="text-xs text-slate-400">{t('encounters.referralNotice')}</p>
             {isEditable ? (
               <Button
                 type="button"
@@ -90,13 +92,17 @@ export function EncounterReferralCard({ encounterId, isEditable }: EncounterRefe
                 disabled={removeMutation.isPending}
                 onClick={() => void handleRemove()}
               >
-                {removeMutation.isPending ? 'Retracting...' : 'Retract Referral'}
+                {t(
+                  removeMutation.isPending
+                    ? 'encounters.retractingReferral'
+                    : 'encounters.retractReferral',
+                )}
               </Button>
             ) : null}
           </div>
         ) : (
           <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">
-            No referral recorded. The visit reports as a normal outpatient discharge.
+            {t('encounters.referralEmpty')}
           </p>
         )}
       </CardContent>

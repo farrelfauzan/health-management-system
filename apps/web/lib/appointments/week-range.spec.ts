@@ -36,12 +36,14 @@ describe('week-range', () => {
   });
 
   it('formats the range title within a single month', () => {
-    expect(formatWeekRangeTitle(new Date(2024, 9, 21))).toBe('October 21 – 27, 2024');
+    expect(formatWeekRangeTitle(new Date(2024, 9, 21), 'en-US')).toBe('October 21 – 27, 2024');
   });
 
   it('formats the range title across months and years', () => {
-    expect(formatWeekRangeTitle(new Date(2024, 9, 28))).toBe('October 28 – November 3, 2024');
-    expect(formatWeekRangeTitle(new Date(2025, 11, 29))).toBe(
+    expect(formatWeekRangeTitle(new Date(2024, 9, 28), 'en-US')).toBe(
+      'October 28 – November 3, 2024',
+    );
+    expect(formatWeekRangeTitle(new Date(2025, 11, 29), 'en-US')).toBe(
       'December 29, 2025 – January 4, 2026',
     );
   });
@@ -71,8 +73,8 @@ describe('week-range', () => {
   });
 
   it('formats day and month titles', () => {
-    expect(formatDayTitle(new Date(2026, 6, 21))).toBe('Tuesday, July 21, 2026');
-    expect(formatMonthTitle(new Date(2026, 6, 21))).toBe('July 2026');
+    expect(formatDayTitle(new Date(2026, 6, 21), 'en-US')).toBe('Tuesday, July 21, 2026');
+    expect(formatMonthTitle(new Date(2026, 6, 21), 'en-US')).toBe('July 2026');
   });
 
   it('adds days without mutating the input date', () => {

@@ -2,6 +2,7 @@
 
 import type { VitalSignsResponse } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { EncounterVitalsForm } from '#components/client/encounters/encounter-vitals-form';
 import { EncounterVitalsRow } from '#components/client/encounters/encounter-vitals-row';
@@ -17,6 +18,8 @@ export function EncounterVitalsCard({
   vitalSigns,
   isEditable,
 }: EncounterVitalsCardProps) {
+  const t = useTranslations('clinical');
+  const format = useFormatter();
   // Newest first: a recheck is what the clinician is looking for, and the
   // reading that prompted it stays underneath rather than being overwritten.
   const orderedVitalSigns = [...vitalSigns].sort(
@@ -27,9 +30,9 @@ export function EncounterVitalsCard({
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader>
         <CardTitle className="font-heading text-base">
-          Vital Signs
+          {t('encounters.vitals.title')}
           <span className="ml-2 text-xs font-normal text-slate-400">
-            {vitalSigns.length} recorded
+            {t('encounters.vitals.recorded', { count: format.number(vitalSigns.length) })}
           </span>
         </CardTitle>
       </CardHeader>
@@ -43,7 +46,7 @@ export function EncounterVitalsCard({
           </ul>
         ) : (
           <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">
-            No measurements recorded for this visit.
+            {t('encounters.vitals.empty')}
           </p>
         )}
       </CardContent>

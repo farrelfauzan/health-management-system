@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Icon, cn } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { buildPaginationWindow } from '#lib/shared/pagination-window';
 
@@ -19,10 +20,11 @@ export function NumberedPagination({
   pageSize,
   total,
   onPageChange,
-  itemLabel = 'items',
+  itemLabel,
   isDisabled = false,
   className,
 }: NumberedPaginationProps) {
+  const t = useTranslations('shared.pagination');
   const totalPages = Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
   const currentPage = Math.min(Math.max(page, 1), totalPages);
   const rangeStart = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
@@ -32,14 +34,19 @@ export function NumberedPagination({
   return (
     <div className={cn('flex flex-wrap items-center justify-between gap-3', className)}>
       <p className="text-sm text-slate-500">
-        Showing {rangeStart}–{rangeEnd} of {total} {itemLabel}
+        {t('summary', {
+          start: rangeStart,
+          end: rangeEnd,
+          total,
+          itemLabel: itemLabel ?? t('items'),
+        })}
       </p>
       <div className="flex items-center gap-1">
         <Button
           type="button"
           variant="outline"
           size="icon-sm"
-          aria-label="Previous page"
+          aria-label={t('previousPage')}
           disabled={isDisabled || currentPage <= 1}
           onClick={() => onPageChange(currentPage - 1)}
         >
@@ -56,7 +63,7 @@ export function NumberedPagination({
               type="button"
               variant={item === currentPage ? 'default' : 'outline'}
               size="icon-sm"
-              aria-label={`Page ${item}`}
+              aria-label={t('page', { page: item })}
               aria-current={item === currentPage ? 'page' : undefined}
               disabled={isDisabled}
               className={cn(item === currentPage && 'bg-primary-container hover:bg-primary')}
@@ -70,7 +77,7 @@ export function NumberedPagination({
           type="button"
           variant="outline"
           size="icon-sm"
-          aria-label="Next page"
+          aria-label={t('nextPage')}
           disabled={isDisabled || currentPage >= totalPages}
           onClick={() => onPageChange(currentPage + 1)}
         >

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AppointmentResponse, DoctorSessionListItem } from '@hms/shared-types';
 import { Button, DatePicker, DialogFooter, Textarea } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { SessionOptionCard } from '#components/client/appointments/session-option-card';
 import { appointmentManagementControllerCreateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
@@ -11,8 +12,6 @@ import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
 import { useDoctorSessions } from '#lib/appointments/use-doctor-sessions';
-
-const BOOKING_ERROR_FALLBACK = 'Unable to join the session. Please try again.';
 
 type SessionBookingFormProps = {
   patientId: string;
@@ -29,6 +28,7 @@ export function SessionBookingForm({
   onSuccess,
   onCancel,
 }: SessionBookingFormProps) {
+  const t = useTranslations('operations');
   const queryClient = useQueryClient();
   const [sessionDate, setSessionDate] = useState<string>(initialDate);
   const [selectedScheduleId, setSelectedScheduleId] = useState<string>('');
@@ -58,20 +58,20 @@ export function SessionBookingForm({
   async function handleSubmit(): Promise<void> {
     setFormError(null);
     if (!patientId || !doctorId) {
-      setFormError('Select a patient and a doctor first.');
+      setFormError(t('appointments.selectParticipants'));
       return;
     }
     if (!sessionDate || !selectedScheduleId) {
-      setFormError('Pick a date and a session to join.');
+      setFormError(t('appointments.labels.pickSession'));
       return;
     }
     try {
       const response = await bookingMutation.mutateAsync();
-      parseApiSuccess<AppointmentResponse>(response, BOOKING_ERROR_FALLBACK);
+      parseApiSuccess<AppointmentResponse>(response, t('appointments.bookingError'));
       await invalidateAppointmentQueries(queryClient);
       onSuccess();
     } catch (error) {
-      setFormError(notifyApiError(error, BOOKING_ERROR_FALLBACK));
+      setFormError(notifyApiError(error, t('appointments.bookingError')));
     }
   }
 
@@ -96,7 +96,7 @@ export function SessionBookingForm({
         <DatePicker
           id="session-date-picker"
           value={sessionDate}
-          placeholder="Select date"
+          placeholder={t('appointments.selectDate')}
           onValueChange={(value) => {
             setSessionDate(value);
             setSelectedScheduleId('');
@@ -105,11 +105,13 @@ export function SessionBookingForm({
       </div>
 
       <div className="space-y-1.5">
-        <p className="font-heading text-xs font-medium text-slate-600">Available sessions</p>
+        <p className="font-heading text-xs font-medium text-slate-600">
+          {t('appointments.labels.availableSessions')}
+        </p>
         {!doctorId ? (
-          <p className="text-sm text-slate-500">Select a doctor to see their sessions.</p>
+          <p className="text-sm text-slate-500">{t('appointments.labels.selectDoctorSessions')}</p>
         ) : sessionsQuery.isPending ? (
-          <p className="text-sm text-slate-500">Loading sessions…</p>
+          <p className="text-sm text-slate-500">{t('appointments.labels.loadingSessions')}</p>
         ) : sessionsQuery.sessions.length === 0 ? (
           <p className="text-sm text-slate-500">
             No practice sessions on this date. Pick another day or file a special request.
@@ -143,14 +145,14 @@ export function SessionBookingForm({
           id="session-reason"
           rows={2}
           value={reason}
-          placeholder="Reason for the visit…"
+          placeholder={t('appointments.reasonPlaceholder')}
           onChange={(event) => setReason(event.target.value)}
         />
       </div>
 
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {t('common.cancel')}
         </Button>
         <Button
           type="button"

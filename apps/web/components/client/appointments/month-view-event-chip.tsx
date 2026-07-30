@@ -2,9 +2,9 @@
 
 import type { AppointmentListItem } from '@hms/shared-types';
 import { cn } from '@hms/ui';
+import { useFormatter } from 'next-intl';
 
 import { APPOINTMENT_STATUS_META } from '#lib/appointments/appointment-status-meta';
-import { formatAppointmentTime } from '#lib/appointments/format-appointment-time';
 
 type MonthViewEventChipProps = {
   appointment: AppointmentListItem;
@@ -12,6 +12,7 @@ type MonthViewEventChipProps = {
 };
 
 export function MonthViewEventChip({ appointment, onSelect }: MonthViewEventChipProps) {
+  const format = useFormatter();
   const meta = APPOINTMENT_STATUS_META[appointment.status];
   return (
     <button
@@ -23,7 +24,9 @@ export function MonthViewEventChip({ appointment, onSelect }: MonthViewEventChip
       onClick={() => onSelect(appointment)}
     >
       <span className={cn('size-1.5 shrink-0 rounded-full', meta.dotClassName)} />
-      <span className="shrink-0 font-mono">{formatAppointmentTime(appointment.scheduledAt)}</span>
+      <span className="shrink-0 font-mono">
+        {format.dateTime(new Date(appointment.scheduledAt), { timeStyle: 'short' })}
+      </span>
       <span className="truncate">{appointment.patient.fullName}</span>
     </button>
   );

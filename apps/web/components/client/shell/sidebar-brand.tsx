@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@hms/ui';
 
 import { FACILITY_CONFIG } from '#lib/facility/facility-config';
@@ -11,6 +12,7 @@ type SidebarBrandProps = {
 };
 
 export function SidebarBrand({ homeHref = '/admin/dashboard' }: SidebarBrandProps) {
+  const t = useTranslations('authShell.shell.brand');
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -18,7 +20,7 @@ export function SidebarBrand({ homeHref = '/admin/dashboard' }: SidebarBrandProp
           <Link href={homeHref}>
             <Image
               src="/saling-jaga-mark.png"
-              alt={`${FACILITY_CONFIG.name} logo`}
+              alt={t('logoAlt', { facilityName: FACILITY_CONFIG.name })}
               width={32}
               height={32}
               priority
@@ -28,7 +30,7 @@ export function SidebarBrand({ homeHref = '/admin/dashboard' }: SidebarBrandProp
               <span className="truncate font-heading text-lg font-semibold">
                 {FACILITY_CONFIG.name}
               </span>
-              <span className="truncate text-xs text-muted-foreground">Medical Center</span>
+              <span className="truncate text-xs text-muted-foreground">{t('facilityType')}</span>
             </span>
           </Link>
         </SidebarMenuButton>

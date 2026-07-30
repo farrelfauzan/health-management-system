@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Icon } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { DoctorEducationRowFields } from '#components/client/doctors/doctor-education-row-fields';
 import type { EducationRow } from '#lib/doctors/doctor-credential-rows';
@@ -18,15 +19,16 @@ export function DoctorEducationsField({
   onChange,
   onRemove,
 }: DoctorEducationsFieldProps) {
+  const t = useTranslations('clinical');
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Education
+          {t('doctors.educationTitle')}
         </p>
         <Button type="button" size="sm" variant="outline" onClick={onAdd}>
           <Icon name="add" size={16} />
-          Add Education
+          {t('doctors.addEducation')}
         </Button>
       </div>
       {rows.length > 0 ? (
@@ -43,7 +45,7 @@ export function DoctorEducationsField({
         </div>
       ) : (
         <p className="rounded-lg bg-slate-50 px-3 py-3 text-sm text-slate-500">
-          No education recorded. SATUSEHAT builds Practitioner qualifications from these entries.
+          {t('doctors.educationEmpty')}
         </p>
       )}
     </div>

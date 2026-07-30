@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { EncountersTable } from '#components/client/encounters/encounters-table';
 import { PageHeader } from '#components/shared/page-header';
@@ -13,6 +14,8 @@ type DoctorTodayPanelProps = {
 };
 
 export function DoctorTodayPanel({ today }: DoctorTodayPanelProps) {
+  const t = useTranslations('clinical');
+  const format = useFormatter();
   const openQuery = useEncountersList({
     page: 1,
     limit: INVOICES_PAGE_SIZE,
@@ -28,16 +31,16 @@ export function DoctorTodayPanel({ today }: DoctorTodayPanelProps) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Today"
-        subtitle="Visits you have open right now, and everything you have seen today."
-        breadcrumbs={['Doctor', 'Today']}
+        title={t('encounters.today')}
+        subtitle={t('encounters.todaySubtitle')}
+        breadcrumbs={[t('encounters.doctor'), t('encounters.today')]}
       />
 
       <section className="space-y-3">
         <h2 className="font-heading text-sm font-semibold text-slate-700">
-          Open encounters
+          {t('encounters.openEncounters')}
           <span className="ml-2 text-xs font-normal text-slate-400">
-            {openQuery.encounters.length}
+            {format.number(openQuery.encounters.length)}
           </span>
         </h2>
         <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
@@ -53,7 +56,9 @@ export function DoctorTodayPanel({ today }: DoctorTodayPanelProps) {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-heading text-sm font-semibold text-slate-700">Seen today</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate-700">
+          {t('encounters.seenToday')}
+        </h2>
         <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
           <CardContent className="p-0">
             <EncountersTable

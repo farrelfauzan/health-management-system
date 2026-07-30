@@ -4,13 +4,12 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { BpjsReferralResponse, UpsertBpjsReferralInput } from '@hms/shared-types';
 import { Button, DatePicker, Input, Textarea } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { encounterClinicalDataControllerSaveBpjsReferralV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
-
-const REFERRAL_ERROR_FALLBACK = 'Unable to record the referral. Please try again.';
 
 type EncounterReferralFormProps = {
   encounterId: string;
@@ -26,10 +25,13 @@ export function EncounterReferralForm({
   onCancel,
 }: EncounterReferralFormProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [destinationProviderCode, setDestinationProviderCode] = useState<string>(
     referral?.destinationProviderCode ?? '',
   );
-  const [subSpecialtyCode, setSubSpecialtyCode] = useState<string>(referral?.subSpecialtyCode ?? '');
+  const [subSpecialtyCode, setSubSpecialtyCode] = useState<string>(
+    referral?.subSpecialtyCode ?? '',
+  );
   const [saranaCode, setSaranaCode] = useState<string>(referral?.saranaCode ?? '');
   const [khususCode, setKhususCode] = useState<string>(referral?.khususCode ?? '');
   const [estimatedReferralDate, setEstimatedReferralDate] = useState<string>(
@@ -53,15 +55,15 @@ export function EncounterReferralForm({
     const trimmedNotes = notes.trim();
 
     if (destination.length === 0) {
-      setActionError('Enter the destination FKRTL provider code (kdppk).');
+      setActionError(t('encounters.referralForm.destinationRequired'));
       return;
     }
     if (subSpecialty.length === 0 && khusus.length === 0) {
-      setActionError('Enter a subspesialis code or a khusus/TACC code.');
+      setActionError(t('encounters.referralForm.typeRequired'));
       return;
     }
     if (estimatedReferralDate.length === 0) {
-      setActionError('Pick the planned referral date.');
+      setActionError(t('encounters.referralForm.dateRequired'));
       return;
     }
 
@@ -76,11 +78,11 @@ export function EncounterReferralForm({
 
     try {
       const response = await saveMutation.mutateAsync(payload);
-      parseApiSuccess<BpjsReferralResponse>(response, REFERRAL_ERROR_FALLBACK);
+      parseApiSuccess<BpjsReferralResponse>(response, t('encounters.referralForm.error'));
       await invalidateEncounterQueries(queryClient);
       onSaved();
     } catch (error) {
-      setActionError(notifyApiError(error, REFERRAL_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.referralForm.error')));
     }
   }
 
@@ -100,7 +102,7 @@ export function EncounterReferralForm({
             htmlFor="referral-destination"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Destination FKRTL (kdppk)
+            {t('encounters.referralForm.destination')}
           </label>
           <Input
             id="referral-destination"
@@ -114,12 +116,12 @@ export function EncounterReferralForm({
             htmlFor="referral-date"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Planned Referral Date
+            {t('encounters.referralForm.date')}
           </label>
           <DatePicker
             id="referral-date"
             className="w-full"
-            placeholder="Select date"
+            placeholder={t('encounters.referralForm.selectDate')}
             value={estimatedReferralDate}
             onValueChange={setEstimatedReferralDate}
           />
@@ -129,11 +131,11 @@ export function EncounterReferralForm({
             htmlFor="referral-subspecialty"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Subspesialis Code
+            {t('encounters.referralForm.subspecialty')}
           </label>
           <Input
             id="referral-subspecialty"
-            placeholder="Leave blank for a khusus/TACC referral"
+            placeholder={t('encounters.referralForm.subspecialtyPlaceholder')}
             value={subSpecialtyCode}
             onChange={(event) => setSubSpecialtyCode(event.target.value)}
           />
@@ -143,11 +145,11 @@ export function EncounterReferralForm({
             htmlFor="referral-sarana"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Sarana Code
+            {t('encounters.referralForm.facility')}
           </label>
           <Input
             id="referral-sarana"
-            placeholder="Optional"
+            placeholder={t('encounters.referralForm.optional')}
             value={saranaCode}
             onChange={(event) => setSaranaCode(event.target.value)}
           />
@@ -157,11 +159,11 @@ export function EncounterReferralForm({
             htmlFor="referral-khusus"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Khusus / TACC Code
+            {t('encounters.referralForm.specific')}
           </label>
           <Input
             id="referral-khusus"
-            placeholder="Leave blank for a subspesialis referral"
+            placeholder={t('encounters.referralForm.specificPlaceholder')}
             value={khususCode}
             onChange={(event) => setKhususCode(event.target.value)}
           />
@@ -172,23 +174,20 @@ export function EncounterReferralForm({
           htmlFor="referral-notes"
           className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
         >
-          Notes
+          {t('encounters.notes')}
         </label>
         <Textarea
           id="referral-notes"
           rows={2}
-          placeholder="Reason for referral, as it should read on the letter."
+          placeholder={t('encounters.referralForm.notes')}
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
         />
       </div>
-      <p className="text-xs text-slate-500">
-        Codes are sent to PCare exactly as recorded — the subspesialis catalog is per-specialty and
-        not synced locally, so BPJS validates them when the kunjungan is submitted.
-      </p>
+      <p className="text-xs text-slate-500">{t('encounters.referralForm.codeNotice')}</p>
       <div className="flex justify-end gap-2">
         <Button type="button" size="sm" variant="outline" onClick={onCancel}>
-          Cancel
+          {t('common.cancel')}
         </Button>
         <Button
           type="submit"
@@ -196,7 +195,7 @@ export function EncounterReferralForm({
           className="bg-primary-container hover:bg-primary"
           disabled={saveMutation.isPending}
         >
-          {saveMutation.isPending ? 'Saving...' : 'Save Referral'}
+          {saveMutation.isPending ? t('common.saving') : t('encounters.referralForm.save')}
         </Button>
       </div>
     </form>

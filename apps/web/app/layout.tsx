@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { ReactQueryProvider } from '#components/client/react-query-provider';
@@ -24,12 +26,17 @@ type RootLayoutProps = {
   children: ReactNode;
 };
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className={`${inter.variable} ${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
-        <AppToaster />
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
+          <AppToaster />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

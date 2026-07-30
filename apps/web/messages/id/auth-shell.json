@@ -1,0 +1,125 @@
+{
+  "authShell": {
+    "auth": {
+      "metadata": {
+        "title": "Masuk | Saling Jaga",
+        "description": "Masuk ke portal manajemen kesehatan Saling Jaga"
+      },
+      "brand": {
+        "logoAlt": "Logo {facilityName}",
+        "systemName": "Sistem Manajemen Kesehatan",
+        "visualAlt": "{facilityName} - Sistem Manajemen Kesehatan"
+      },
+      "visualDescription": "Satu rekam untuk setiap kunjungan, mulai dari pendaftaran, pemeriksaan, farmasi, hingga penagihan, dengan pelaporan BPJS dan SATUSEHAT yang diproses di latar belakang.",
+      "title": "Masuk",
+      "subtitle": "Gunakan akun staf Anda untuk mengakses portal.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "anda@salingjaga.com",
+      "passwordLabel": "Kata sandi",
+      "passwordPlaceholder": "Masukkan kata sandi Anda",
+      "submit": "Masuk",
+      "submitting": "Sedang masuk...",
+      "authorizedOnly": "Hanya untuk personel yang berwenang. Hubungi administrator Anda untuk mendapatkan akses.",
+      "validation": {
+        "email": "Masukkan alamat email yang valid.",
+        "password": "Kata sandi harus terdiri dari minimal 8 karakter."
+      },
+      "errors": {
+        "invalidCredentials": "Email atau kata sandi tidak valid.",
+        "loginFailed": "Tidak dapat masuk saat ini. Silakan coba lagi."
+      }
+    },
+    "shell": {
+      "brand": {
+        "logoAlt": "Logo {facilityName}",
+        "facilityType": "Pusat Medis"
+      },
+      "navigation": {
+        "dashboard": "Dasbor",
+        "patients": "Pasien",
+        "doctors": "Dokter",
+        "appointments": "Janji temu",
+        "registration": "Pendaftaran",
+        "encounters": "Pemeriksaan",
+        "pharmacy": "Farmasi",
+        "billing": "Penagihan",
+        "advanced": "Lanjutan",
+        "aiAssistant": "Asisten AI",
+        "integrations": "Integrasi",
+        "administration": "Administrasi",
+        "today": "Hari ini"
+      },
+      "search": {
+        "label": "Cari pasien",
+        "placeholder": "Cari pasien berdasarkan nama atau ID..."
+      },
+      "topBar": {
+        "openAiAssistant": "Buka asisten AI"
+      },
+      "notifications": {
+        "open": "Buka notifikasi",
+        "title": "Notifikasi",
+        "labResults": {
+          "title": "Hasil laboratorium tersedia",
+          "description": "Panel darah lengkap untuk pasien MRN-2041 siap ditinjau.",
+          "time": "5 menit lalu"
+        },
+        "appointmentCheckin": {
+          "title": "Kedatangan pasien janji temu",
+          "description": "Pasien konsultasi pukul 10.30 telah tiba di meja pendaftaran.",
+          "time": "18 menit lalu"
+        },
+        "lowStock": {
+          "title": "Peringatan stok menipis",
+          "description": "Amoksisilin 500 mg telah berada di bawah batas stok.",
+          "time": "1 jam lalu"
+        }
+      },
+      "profile": {
+        "openMenu": "Buka menu profil",
+        "logout": "Keluar",
+        "fallbackName": "Pengguna Saling Jaga",
+        "roles": {
+          "superAdmin": "Super Admin",
+          "admin": "Admin",
+          "doctor": "Dokter",
+          "pharmacist": "Apoteker",
+          "patient": "Pasien",
+          "staff": "Staf"
+        }
+      },
+      "portal": {
+        "name": "Portal Pasien"
+      },
+      "placeholder": {
+        "title": "{title} segera hadir",
+        "description": "Layar ini akan tersedia pada tugas Fase 4 mendatang. Navigasi dan tata letaknya telah siap."
+      },
+      "routes": {
+        "mainDashboard": "Dasbor Utama",
+        "overview": "Ringkasan",
+        "clinicOverview": "Ringkasan Klinik",
+        "hospitalOverview": "Ringkasan Rumah Sakit",
+        "dashboardSubtitle": "Metrik utama dan aktivitas di {facilityName} hari ini.",
+        "patientDirectory": "Direktori Pasien",
+        "patientsSubtitle": "Kelola dan pantau rekam pasien saat ini dan sebelumnya di seluruh departemen.",
+        "doctorDirectory": "Direktori Dokter",
+        "doctorsSubtitle": "Kelola profil, spesialisasi, dan jadwal mingguan dokter.",
+        "appointmentScheduling": "Penjadwalan Janji Temu",
+        "appointmentsSubtitle": "Koordinasikan kunjungan berdasarkan dokter dan slot waktu.",
+        "registrationQueue": "Antrean Pendaftaran",
+        "registrationsSubtitle": "Pantau pendaftaran pasien sejak kedatangan hingga selesai.",
+        "clinicalEncounters": "Pemeriksaan Klinis",
+        "encountersSubtitle": "Buka, catat, dan tutup rekam medis untuk setiap kunjungan.",
+        "pharmacyQueue": "Antrean Farmasi",
+        "pharmacySubtitle": "Verifikasi dan serahkan resep yang masuk.",
+        "billingCashier": "Penagihan & Kasir",
+        "billingSubtitle": "Buat tagihan dari kunjungan yang selesai, lakukan pembayaran, dan rekonsiliasi kas.",
+        "aiClinicalAssistant": "Asisten Klinis AI",
+        "aiAssistantSubtitle": "Ajukan pertanyaan klinis berdasarkan konteks pasien Saling Jaga.",
+        "integrationsSubtitle": "Konfigurasikan BPJS PCare dan pantau pengiriman data kesehatan eksternal.",
+        "administrationSubtitle": "Kelola pengguna sistem, peran, dan izin."
+      }
+    }
+  }
+}

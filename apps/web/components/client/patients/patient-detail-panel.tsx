@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button, Can, Icon, Skeleton } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { AssignDoctorDialog } from '#components/client/patients/assign-doctor-dialog';
 import { PatientActivityCard } from '#components/client/patients/patient-activity-card';
@@ -19,6 +20,7 @@ type PatientDetailPanelProps = {
 };
 
 export function PatientDetailPanel({ patientId }: PatientDetailPanelProps) {
+  const t = useTranslations('clinical');
   const detailQuery = usePatientDetail(patientId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState<boolean>(false);
@@ -40,11 +42,9 @@ export function PatientDetailPanel({ patientId }: PatientDetailPanelProps) {
     return (
       <EmptyState
         icon="person_off"
-        title="Patient not found"
+        title={t('patients.notFound')}
         description={
-          detailQuery.isError
-            ? detailQuery.error?.message ?? 'Something went wrong while loading the patient.'
-            : 'The patient record does not exist or you do not have access to it.'
+          detailQuery.isError ? t('patients.loadError') : t('patients.notFoundDescription')
         }
       />
     );
@@ -54,17 +54,13 @@ export function PatientDetailPanel({ patientId }: PatientDetailPanelProps) {
     <div className="space-y-6">
       <PageHeader
         title={patient.fullName}
-        subtitle={`Patient record ${patient.mrn}`}
-        breadcrumbs={['Main Dashboard', 'Patients', patient.fullName]}
+        subtitle={t('patients.record', { mrn: patient.mrn })}
+        breadcrumbs={[t('patients.dashboard'), t('patients.title'), patient.fullName]}
         actions={
           <Can action="update" subject="Patient">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsEditDialogOpen(true)}
-            >
+            <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(true)}>
               <Icon name="edit" size={18} />
-              Edit Patient
+              {t('common.edit')} {t('patients.title')}
             </Button>
           </Can>
         }

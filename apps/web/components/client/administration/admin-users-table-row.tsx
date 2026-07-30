@@ -2,11 +2,11 @@
 
 import type { AdminUser } from '@hms/shared-types';
 import { Badge, TableCell, TableRow, useAbility } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { StatusBadge } from '#components/shared/status-badge';
-import { formatMediumDate } from '#lib/shared/format-medium-date';
 
 type AdminUsersTableRowProps = {
   user: AdminUser;
@@ -15,19 +15,21 @@ type AdminUsersTableRowProps = {
 };
 
 export function AdminUsersTableRow({ user, onEdit, onToggleActive }: AdminUsersTableRowProps) {
+  const t = useTranslations('operations');
+  const format = useFormatter();
   const ability = useAbility();
   const actions: RowAction[] = ability.can('update', 'User')
     ? [
-        { label: 'Edit', icon: 'edit', onSelect: () => onEdit(user) },
+        { label: t('administration.edit'), icon: 'edit', onSelect: () => onEdit(user) },
         user.isActive
           ? {
-              label: 'Deactivate',
+              label: t('administration.deactivate'),
               icon: 'block',
               isDestructive: true,
               onSelect: () => onToggleActive(user),
             }
           : {
-              label: 'Activate',
+              label: t('administration.activate'),
               icon: 'check_circle',
               onSelect: () => onToggleActive(user),
             },
@@ -41,14 +43,18 @@ export function AdminUsersTableRow({ user, onEdit, onToggleActive }: AdminUsersT
           <AvatarInitials name={user.email} />
           <div>
             <p className="text-sm font-medium text-slate-900">{user.email}</p>
-            <p className="text-xs text-slate-500">Joined {formatMediumDate(user.createdAt)}</p>
+            <p className="text-xs text-slate-500">
+              {t('administration.joined', {
+                date: format.dateTime(new Date(user.createdAt), { dateStyle: 'medium' }),
+              })}
+            </p>
           </div>
         </div>
       </TableCell>
       <TableCell className="px-4">
         <div className="flex flex-wrap gap-1.5">
           {user.roles.length === 0 ? (
-            <span className="text-sm text-slate-500">No roles</span>
+            <span className="text-sm text-slate-500">{t('administration.noRoles')}</span>
           ) : (
             user.roles.map((role) => (
               <Badge
@@ -63,14 +69,20 @@ export function AdminUsersTableRow({ user, onEdit, onToggleActive }: AdminUsersT
         </div>
       </TableCell>
       <TableCell className="px-4">
-        <StatusBadge status={user.isActive ? 'active' : 'inactive'} />
+        <StatusBadge
+          status={user.isActive ? 'active' : 'inactive'}
+          label={user.isActive ? t('common.active') : t('common.inactive')}
+        />
       </TableCell>
       <TableCell className="px-4 text-sm text-slate-600">
-        {formatMediumDate(user.updatedAt)}
+        {format.dateTime(new Date(user.updatedAt), { dateStyle: 'medium' })}
       </TableCell>
       <TableCell className="px-4 text-right">
         {actions.length > 0 ? (
-          <RowActionsMenu actions={actions} triggerLabel={`Actions for ${user.email}`} />
+          <RowActionsMenu
+            actions={actions}
+            triggerLabel={t('common.actionsFor', { name: user.email })}
+          />
         ) : null}
       </TableCell>
     </TableRow>

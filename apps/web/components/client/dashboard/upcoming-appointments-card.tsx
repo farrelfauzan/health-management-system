@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@hms/ui';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import { RefreshCountdown } from '#components/client/dashboard/refresh-countdown';
 import { UpcomingAppointmentsRow } from '#components/client/dashboard/upcoming-appointments-row';
@@ -22,6 +23,7 @@ import { TableSkeleton } from '#components/shared/table-skeleton';
 import { useTodayAppointments } from '#lib/dashboard/use-today-appointments';
 
 export function UpcomingAppointmentsCard() {
+  const t = useTranslations('dashboard.appointments');
   const appointmentsQuery = useTodayAppointments();
   const hasRows = appointmentsQuery.appointments.length > 0;
   const showEmptyState = !appointmentsQuery.isPending && !hasRows;
@@ -29,31 +31,25 @@ export function UpcomingAppointmentsCard() {
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader className="flex flex-row flex-wrap items-center gap-3">
         <CardTitle className="font-heading text-base font-semibold text-slate-900">
-          Upcoming Appointments
+          {t('title')}
         </CardTitle>
         <Badge className="rounded-full bg-info-tint font-mono text-[11px] text-primary">
-          {appointmentsQuery.meta?.total ?? 0} Total
+          {t('total', { count: appointmentsQuery.meta?.total ?? 0 })}
         </Badge>
         <Link
           href="/admin/appointments"
           className="ml-auto text-sm font-medium text-primary hover:underline"
         >
-          View Full Schedule →
+          {t('viewFullSchedule')}
         </Link>
       </CardHeader>
       <CardContent>
         {showEmptyState ? (
           <EmptyState
             icon="event_busy"
-            title={
-              appointmentsQuery.isError
-                ? 'Unable to load appointments'
-                : 'No appointments scheduled today'
-            }
+            title={appointmentsQuery.isError ? t('loadErrorTitle') : t('emptyTitle')}
             description={
-              appointmentsQuery.isError
-                ? 'Something went wrong while fetching the schedule. It retries automatically.'
-                : 'Newly scheduled appointments for today will show up here.'
+              appointmentsQuery.isError ? t('loadErrorDescription') : t('emptyDescription')
             }
             className="border-0"
           />
@@ -61,11 +57,13 @@ export function UpcomingAppointmentsCard() {
           <DataTable className="rounded-lg">
             <TableHeader>
               <TableRow>
-                <DataTableHeaderCell>Patient</DataTableHeaderCell>
-                <DataTableHeaderCell>Reason / Doctor</DataTableHeaderCell>
-                <DataTableHeaderCell>Time</DataTableHeaderCell>
-                <DataTableHeaderCell>Status</DataTableHeaderCell>
-                <DataTableHeaderCell className="text-right">Actions</DataTableHeaderCell>
+                <DataTableHeaderCell>{t('columns.patient')}</DataTableHeaderCell>
+                <DataTableHeaderCell>{t('columns.reasonDoctor')}</DataTableHeaderCell>
+                <DataTableHeaderCell>{t('columns.time')}</DataTableHeaderCell>
+                <DataTableHeaderCell>{t('columns.status')}</DataTableHeaderCell>
+                <DataTableHeaderCell className="text-right">
+                  {t('columns.actions')}
+                </DataTableHeaderCell>
               </TableRow>
             </TableHeader>
             <TableBody>

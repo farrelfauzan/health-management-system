@@ -18,15 +18,13 @@ import {
   SelectValue,
   Textarea,
 } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { invoiceControllerRecordPaymentV1 } from '#lib/api/generated/invoices/invoices';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
-import { formatRupiah } from '#lib/billing/format-rupiah';
 import { invalidateBillingQueries } from '#lib/billing/invalidate-billing-queries';
 import { formatStatusLabel } from '#lib/shared/status-label';
-
-const PAYMENT_ERROR_FALLBACK = 'Unable to record the payment. Please try again.';
 
 type RecordPaymentFormProps = {
   invoice: InvoiceDetail;
@@ -34,6 +32,8 @@ type RecordPaymentFormProps = {
 };
 
 export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProps) {
+  const t = useTranslations('operations.billing');
+  const format = useFormatter();
   const queryClient = useQueryClient();
   const [method, setMethod] = useState<PaymentMethodValue>('CASH');
   // Pre-filled but editable: the API requires the amount to equal the invoice
@@ -68,11 +68,11 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
 
     try {
       const response = await recordMutation.mutateAsync(payload);
-      parseApiSuccess<InvoiceDetail>(response, PAYMENT_ERROR_FALLBACK);
+      parseApiSuccess<InvoiceDetail>(response, t('paymentError'));
       await invalidateBillingQueries(queryClient);
       onRecorded();
     } catch (error) {
-      setActionError(notifyApiError(error, PAYMENT_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('paymentError')));
     }
   }
 
@@ -121,7 +121,11 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
             onChange={(event) => setAmount(event.target.value)}
           />
           <p className="mt-1 text-xs text-slate-500">
-            Invoice total {formatRupiah(invoice.totalAmount)}
+            {format.number(invoice.totalAmount, {
+              style: 'currency',
+              currency: 'IDR',
+              maximumFractionDigits: 2,
+            })}
           </p>
         </div>
       </div>
@@ -134,7 +138,7 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
         </label>
         <Input
           id="payment-reference"
-          placeholder="Transfer or QRIS reference, if any"
+          placeholder={t('labels.referencePlaceholder')}
           value={referenceNumber}
           onChange={(event) => setReferenceNumber(event.target.value)}
         />

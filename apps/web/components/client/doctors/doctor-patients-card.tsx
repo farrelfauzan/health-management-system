@@ -4,14 +4,13 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { DoctorDetail, DoctorPatientAssignment } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, CardHeader, CardTitle, Icon } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { doctorPatientControllerUnassignDoctorFromPatientV1 } from '#lib/api/generated/doctor-patient/doctor-patient';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries';
-
-const UNASSIGN_ERROR_FALLBACK = 'Unable to unassign the patient. Please try again.';
 
 type DoctorPatientsCardProps = {
   doctor: DoctorDetail;
@@ -20,6 +19,7 @@ type DoctorPatientsCardProps = {
 
 export function DoctorPatientsCard({ doctor, onAssignPatient }: DoctorPatientsCardProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [unassignError, setUnassignError] = useState<string | null>(null);
   const unassignMutation = useMutation({
     mutationFn: (assignmentId: string) =>
@@ -30,10 +30,10 @@ export function DoctorPatientsCard({ doctor, onAssignPatient }: DoctorPatientsCa
     setUnassignError(null);
     try {
       const response = await unassignMutation.mutateAsync(assignmentId);
-      parseApiSuccess<DoctorPatientAssignment>(response, UNASSIGN_ERROR_FALLBACK);
+      parseApiSuccess<DoctorPatientAssignment>(response, t('doctors.unassignPatientError'));
       await invalidateDoctorQueries(queryClient);
     } catch (error) {
-      setUnassignError(notifyApiError(error, UNASSIGN_ERROR_FALLBACK));
+      setUnassignError(notifyApiError(error, t('doctors.unassignPatientError')));
     }
   }
 
@@ -41,12 +41,12 @@ export function DoctorPatientsCard({ doctor, onAssignPatient }: DoctorPatientsCa
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="font-heading text-base font-semibold text-slate-900">
-          Assigned Patients
+          {t('doctors.patientsAssigned')}
         </CardTitle>
         <Can action="assign" subject="DoctorPatient">
           <Button type="button" size="sm" variant="outline" onClick={onAssignPatient}>
             <Icon name="person_add" size={16} />
-            Assign
+            {t('doctors.assignPatient')}
           </Button>
         </Can>
       </CardHeader>
@@ -60,11 +60,9 @@ export function DoctorPatientsCard({ doctor, onAssignPatient }: DoctorPatientsCa
           </p>
         ) : null}
         {!doctor.patients ? (
-          <p className="text-sm text-slate-500">
-            You do not have permission to view this doctor&apos;s patients.
-          </p>
+          <p className="text-sm text-slate-500">{t('doctors.patientsPermission')}</p>
         ) : doctor.patients.length === 0 ? (
-          <p className="text-sm text-slate-500">No patients assigned yet.</p>
+          <p className="text-sm text-slate-500">{t('doctors.noAssignedPatients')}</p>
         ) : (
           doctor.patients.map((patient) => (
             <div key={patient.assignmentId} className="flex items-center gap-3">
@@ -80,7 +78,7 @@ export function DoctorPatientsCard({ doctor, onAssignPatient }: DoctorPatientsCa
                   variant="ghost"
                   className="text-danger hover:text-danger"
                   disabled={unassignMutation.isPending}
-                  aria-label={`Unassign ${patient.fullName}`}
+                  aria-label={t('doctors.unassignPatient', { name: patient.fullName })}
                   onClick={() => void handleUnassign(patient.assignmentId)}
                 >
                   <Icon name="person_remove" size={16} />

@@ -2,6 +2,7 @@
 
 import { useState, type KeyboardEvent } from 'react';
 import { Button, Icon, Textarea } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 type ChatComposerProps = {
   isBusy: boolean;
@@ -9,6 +10,7 @@ type ChatComposerProps = {
 };
 
 export function ChatComposer({ isBusy, onSend }: ChatComposerProps) {
+  const t = useTranslations('aiAssistant.composer');
   const [draft, setDraft] = useState('');
   const canSend = draft.trim().length > 0 && !isBusy;
   function submitDraft(): void {
@@ -30,8 +32,8 @@ export function ChatComposer({ isBusy, onSend }: ChatComposerProps) {
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Ask about patients, lab results, or hospital protocol..."
-        aria-label="Message the AI Clinical Assistant"
+        placeholder={t('placeholder')}
+        aria-label={t('messageLabel')}
         className="min-h-24 resize-none border-none shadow-none focus-visible:border-transparent focus-visible:ring-0"
       />
       <div className="flex items-center justify-end gap-1 px-3 pb-3">
@@ -40,8 +42,8 @@ export function ChatComposer({ isBusy, onSend }: ChatComposerProps) {
           variant="ghost"
           size="icon-sm"
           disabled
-          title="Attachments are not available in the preview"
-          aria-label="Attach file"
+          title={t('attachmentsUnavailable')}
+          aria-label={t('attachFile')}
         >
           <Icon name="attach_file" size={20} className="text-current" />
         </Button>
@@ -50,8 +52,8 @@ export function ChatComposer({ isBusy, onSend }: ChatComposerProps) {
           variant="ghost"
           size="icon-sm"
           disabled
-          title="Voice input is not available in the preview"
-          aria-label="Record voice message"
+          title={t('voiceUnavailable')}
+          aria-label={t('recordVoice')}
         >
           <Icon name="mic" size={20} className="text-current" />
         </Button>
@@ -60,7 +62,7 @@ export function ChatComposer({ isBusy, onSend }: ChatComposerProps) {
           size="icon"
           onClick={submitDraft}
           disabled={!canSend}
-          aria-label="Send message"
+          aria-label={t('send')}
         >
           <Icon name="send" size={20} className="text-current" />
         </Button>

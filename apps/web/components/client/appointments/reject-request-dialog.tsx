@@ -13,13 +13,12 @@ import {
   DialogTitle,
   Textarea,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { appointmentManagementControllerRejectAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
-
-const REJECT_ERROR_FALLBACK = 'Unable to reject the appointment request. Please try again.';
 
 type RejectRequestDialogProps = {
   open: boolean;
@@ -28,6 +27,7 @@ type RejectRequestDialogProps = {
 };
 
 export function RejectRequestDialog({ open, onOpenChange, request }: RejectRequestDialogProps) {
+  const t = useTranslations('operations');
   const queryClient = useQueryClient();
   const [reason, setReason] = useState<string>('');
   const [formError, setFormError] = useState<string | null>(null);
@@ -39,16 +39,16 @@ export function RejectRequestDialog({ open, onOpenChange, request }: RejectReque
   async function handleReject(): Promise<void> {
     setFormError(null);
     if (reason.trim().length < 2) {
-      setFormError('A rejection reason is required.');
+      setFormError(t('appointments.labels.rejectionRequired'));
       return;
     }
     try {
       const response = await rejectMutation.mutateAsync();
-      parseApiSuccess<AppointmentResponse>(response, REJECT_ERROR_FALLBACK);
+      parseApiSuccess<AppointmentResponse>(response, t('appointments.rejectError'));
       await invalidateAppointmentQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setFormError(notifyApiError(error, REJECT_ERROR_FALLBACK));
+      setFormError(notifyApiError(error, t('appointments.rejectError')));
     }
   }
 
@@ -56,7 +56,7 @@ export function RejectRequestDialog({ open, onOpenChange, request }: RejectReque
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-heading">Reject Appointment Request</DialogTitle>
+          <DialogTitle className="font-heading">{t('appointments.labels.rejectTitle')}</DialogTitle>
           <DialogDescription>
             {request.patient.fullName} with {request.doctor.fullName} — the patient will see the
             rejection reason.
@@ -82,14 +82,14 @@ export function RejectRequestDialog({ open, onOpenChange, request }: RejectReque
               id="reject-request-reason"
               rows={3}
               value={reason}
-              placeholder="Why is this request rejected?"
+              placeholder={t('appointments.labels.rejectPlaceholder')}
               onChange={(event) => setReason(event.target.value)}
             />
           </div>
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             type="button"

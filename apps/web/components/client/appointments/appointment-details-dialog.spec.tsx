@@ -4,10 +4,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AxiosError, type AxiosResponse } from 'axios';
+import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppointmentDetailsDialog } from './appointment-details-dialog';
 import { appointmentManagementControllerUpdateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
+import messages from '../../../messages/en/operations.json';
 
 vi.mock('#lib/api/generated/appointment-management/appointment-management', () => ({
   appointmentManagementControllerUpdateAppointmentV1: vi.fn(),
@@ -40,18 +42,24 @@ function buildAppointment(status: AppointmentStatusValue): AppointmentListItem {
 }
 
 function buildRejectedTransitionError(): AxiosError {
-  return new AxiosError('Request failed with status code 409', 'ERR_BAD_REQUEST', undefined, undefined, {
-    status: 409,
-    statusText: 'Conflict',
-    headers: {},
-    config: {},
-    data: {
-      error: {
-        code: 'CONFLICT',
-        message: 'Appointment status can not change from SCHEDULED to CONFIRMED',
+  return new AxiosError(
+    'Request failed with status code 409',
+    'ERR_BAD_REQUEST',
+    undefined,
+    undefined,
+    {
+      status: 409,
+      statusText: 'Conflict',
+      headers: {},
+      config: {},
+      data: {
+        error: {
+          code: 'CONFLICT',
+          message: 'Appointment status can not change from SCHEDULED to CONFIRMED',
+        },
       },
-    },
-  } as AxiosResponse);
+    } as AxiosResponse,
+  );
 }
 
 function renderDialog(params: {
@@ -62,17 +70,19 @@ function renderDialog(params: {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   render(
-    <AbilityProvider ability={buildAppAbility(params.rules)}>
-      <QueryClientProvider client={queryClient}>
-        <AppointmentDetailsDialog
-          open
-          onOpenChange={params.onOpenChange ?? vi.fn()}
-          appointment={buildAppointment(params.status)}
-          onReschedule={vi.fn()}
-          onCancel={vi.fn()}
-        />
-      </QueryClientProvider>
-    </AbilityProvider>,
+    <NextIntlClientProvider locale="en" messages={messages} timeZone="Asia/Jakarta">
+      <AbilityProvider ability={buildAppAbility(params.rules)}>
+        <QueryClientProvider client={queryClient}>
+          <AppointmentDetailsDialog
+            open
+            onOpenChange={params.onOpenChange ?? vi.fn()}
+            appointment={buildAppointment(params.status)}
+            onReschedule={vi.fn()}
+            onCancel={vi.fn()}
+          />
+        </QueryClientProvider>
+      </AbilityProvider>
+    </NextIntlClientProvider>,
   );
 }
 

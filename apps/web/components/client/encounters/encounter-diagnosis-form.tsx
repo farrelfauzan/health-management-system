@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { CodeSearchPicker } from '#components/client/encounters/code-search-picker';
 import { encounterClinicalDataControllerAddDiagnosisV1 } from '#lib/api/generated/encounters/encounters';
@@ -20,9 +21,6 @@ import { parseApiSuccess } from '#lib/api/response';
 import type { CodeSearchOption } from '#lib/encounters/code-search-option';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
 import { useIcd10Search } from '#lib/encounters/use-icd10-search';
-import { formatStatusLabel } from '#lib/shared/status-label';
-
-const DIAGNOSIS_ERROR_FALLBACK = 'Unable to record the diagnosis. Please try again.';
 
 type EncounterDiagnosisFormProps = {
   encounterId: string;
@@ -34,6 +32,7 @@ export function EncounterDiagnosisForm({
   hasPrimaryDiagnosis,
 }: EncounterDiagnosisFormProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [search, setSearch] = useState<string>('');
   const [selected, setSelected] = useState<CodeSearchOption | null>(null);
   const [type, setType] = useState<string>(hasPrimaryDiagnosis ? 'SECONDARY' : 'PRIMARY');
@@ -50,7 +49,7 @@ export function EncounterDiagnosisForm({
     setActionError(null);
 
     if (!selected) {
-      setActionError('Search the catalog and pick an ICD-10 code first.');
+      setActionError(t('encounters.diagnosis.pick'));
       return;
     }
 
@@ -66,14 +65,14 @@ export function EncounterDiagnosisForm({
 
     try {
       const response = await addMutation.mutateAsync(payload);
-      parseApiSuccess<DiagnosisResponse>(response, DIAGNOSIS_ERROR_FALLBACK);
+      parseApiSuccess<DiagnosisResponse>(response, t('encounters.diagnosis.error'));
       await invalidateEncounterQueries(queryClient);
       setSelected(null);
       setSearch('');
       setNotes('');
       setType('SECONDARY');
     } catch (error) {
-      setActionError(notifyApiError(error, DIAGNOSIS_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.diagnosis.error')));
     }
   }
 
@@ -89,8 +88,8 @@ export function EncounterDiagnosisForm({
       ) : null}
       <CodeSearchPicker
         id="diagnosis-code-search"
-        label="ICD-10 Diagnosis"
-        placeholder="Search by code or term, e.g. J06 or common cold"
+        label={t('encounters.diagnosis.label')}
+        placeholder={t('encounters.diagnosis.search')}
         search={search}
         codes={icd10Query.codes}
         isPending={icd10Query.isPending}
@@ -105,7 +104,7 @@ export function EncounterDiagnosisForm({
             htmlFor="diagnosis-type"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Type
+            {t('encounters.type')}
           </label>
           <Select value={type} onValueChange={setType}>
             <SelectTrigger id="diagnosis-type" className="w-full">
@@ -114,7 +113,7 @@ export function EncounterDiagnosisForm({
             <SelectContent>
               {DIAGNOSIS_TYPES.map((typeValue) => (
                 <SelectItem key={typeValue} value={typeValue}>
-                  {formatStatusLabel(typeValue)}
+                  {t(`encounters.diagnosis.types.${typeValue}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -125,11 +124,11 @@ export function EncounterDiagnosisForm({
             htmlFor="diagnosis-notes"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Notes
+            {t('encounters.notes')}
           </label>
           <Input
             id="diagnosis-notes"
-            placeholder="Optional clinical qualifier"
+            placeholder={t('encounters.diagnosis.notes')}
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
           />
@@ -140,7 +139,7 @@ export function EncounterDiagnosisForm({
           className="bg-primary-container hover:bg-primary"
           disabled={addMutation.isPending}
         >
-          {addMutation.isPending ? 'Adding...' : 'Add Diagnosis'}
+          {addMutation.isPending ? t('encounters.adding') : t('encounters.diagnosis.add')}
         </Button>
       </div>
     </form>

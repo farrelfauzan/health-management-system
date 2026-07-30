@@ -1,11 +1,13 @@
 import { Icon } from '@hms/ui';
+import { getFormatter } from 'next-intl/server';
 
 type CurrentDateChipProps = {
   date: Date;
 };
 
-export function CurrentDateChip({ date }: CurrentDateChipProps) {
-  const dateLabel = date.toLocaleDateString('en-US', {
+export async function CurrentDateChip({ date }: CurrentDateChipProps) {
+  const format = await getFormatter();
+  const dateLabel = format.dateTime(date, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

@@ -34,6 +34,7 @@ import {
   toast,
   useAbility,
 } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import {
   bpjsSubmissionControllerRetrySubmissionV1,
@@ -80,16 +81,6 @@ function currentMonth(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function formatDate(value: string | null): string {
-  if (!value) {
-    return '—';
-  }
-  return new Intl.DateTimeFormat('en-ID', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value));
-}
-
 function statusClass(status: MonitorRow['status']): string {
   if (status === 'SUBMITTED') {
     return 'border-emerald-200 bg-emerald-50 text-emerald-700';
@@ -101,6 +92,10 @@ function statusClass(status: MonitorRow['status']): string {
 }
 
 export function IntegrationSubmissionMonitor() {
+  const t = useTranslations('operations.integrations');
+  const format = useFormatter();
+  const formatDate = (value: string | null) =>
+    value ? format.dateTime(new Date(value), { dateStyle: 'medium', timeStyle: 'short' }) : '—';
   const ability = useAbility();
   const queryClient = useQueryClient();
   const canReadBpjs = ability.can('read', 'BpjsSubmission');
@@ -170,7 +165,7 @@ export function IntegrationSubmissionMonitor() {
       await queryClient.invalidateQueries({ queryKey: [queryKey[0]] });
       toast.success('Submission queued for retry.');
     },
-    onError: (error) => notifyApiError(error, 'Unable to retry this submission.'),
+    onError: (error) => notifyApiError(error, t('retryError')),
   });
 
   const activeQuery = provider === 'bpjs' ? bpjsQuery : satusehatQuery;
@@ -184,7 +179,7 @@ export function IntegrationSubmissionMonitor() {
       <Card>
         <CardHeader className="gap-4">
           <div>
-            <CardTitle>Submission monitor</CardTitle>
+            <CardTitle>{t('labels.monitor')}</CardTitle>
             <CardDescription>
               Inspect delivery state and retry terminal failures without exposing clinical payloads.
             </CardDescription>
@@ -213,13 +208,13 @@ export function IntegrationSubmissionMonitor() {
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-3">
             <Select value={status} onValueChange={(value) => setStatus(value as StatusFilter)}>
-              <SelectTrigger className="w-44" aria-label="Submission status">
+              <SelectTrigger className="w-44" aria-label={t('submissionStatus')}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {STATUS_OPTIONS.map((option) => (
                   <SelectItem key={option} value={option}>
-                    {option === 'ALL' ? 'All statuses' : formatStatusLabel(option)}
+                    {option === 'ALL' ? t('allStatuses') : formatStatusLabel(option)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -229,13 +224,13 @@ export function IntegrationSubmissionMonitor() {
                 value={type}
                 onValueChange={(value) => setType(value as 'ALL' | BpjsSubmissionTypeValue)}
               >
-                <SelectTrigger className="w-52" aria-label="BPJS submission type">
+                <SelectTrigger className="w-52" aria-label={t('submissionType')}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {TYPE_OPTIONS.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option === 'ALL' ? 'All submission types' : formatStatusLabel(option)}
+                      {option === 'ALL' ? t('allTypes') : formatStatusLabel(option)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -254,27 +249,27 @@ export function IntegrationSubmissionMonitor() {
 
           {activeQuery.isError ? (
             <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
-              {activeQuery.error.message}
+              {t('noSubmissions')}
             </p>
           ) : (
             <div className="overflow-x-auto rounded-lg border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Local reference</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Attempts</TableHead>
-                    <TableHead>Last attempt</TableHead>
-                    <TableHead>External reference / error</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
+                    <TableHead>{t('labels.localReference')}</TableHead>
+                    <TableHead>{t('labels.type')}</TableHead>
+                    <TableHead>{t('submissionStatus')}</TableHead>
+                    <TableHead>{t('labels.attempts')}</TableHead>
+                    <TableHead>{t('labels.lastAttempt')}</TableHead>
+                    <TableHead>{t('labels.externalReference')}</TableHead>
+                    <TableHead className="text-right">{t('labels.action')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {rows.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="h-24 text-center text-slate-500">
-                        {activeQuery.isPending ? 'Loading submissions…' : 'No submissions found.'}
+                        {activeQuery.isPending ? t('loadingSubmissions') : t('noSubmissions')}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -326,7 +321,7 @@ export function IntegrationSubmissionMonitor() {
       {provider === 'bpjs' && canReadBpjs ? (
         <Card>
           <CardHeader>
-            <CardTitle>Monthly BPJS reconciliation</CardTitle>
+            <CardTitle>{t('labels.monthly')}</CardTitle>
             <CardDescription>
               Recorded, submitted, pending, and failed rows by type.
             </CardDescription>
@@ -335,7 +330,7 @@ export function IntegrationSubmissionMonitor() {
             <Input
               className="w-48"
               type="month"
-              aria-label="Reconciliation month"
+              aria-label={t('reconciliationMonth')}
               value={month}
               onChange={(event) => setMonth(event.target.value)}
             />
@@ -354,7 +349,7 @@ export function IntegrationSubmissionMonitor() {
                 </div>
               ))}
               {!reportQuery.isPending && (reportQuery.data?.types.length ?? 0) === 0 ? (
-                <p className="text-sm text-slate-500">No BPJS activity for this month.</p>
+                <p className="text-sm text-slate-500">{t('labels.noActivity')}</p>
               ) : null}
             </div>
           </CardContent>

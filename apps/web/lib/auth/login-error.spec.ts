@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import { resolveLoginErrorMessage } from './login-error';
 
+const messages = {
+  invalidCredentials: 'Email atau kata sandi tidak valid.',
+  loginFailed: 'Tidak dapat masuk saat ini. Silakan coba lagi.',
+};
+
 function buildAxiosError(status: number, data: unknown): Error {
   return Object.assign(new Error('Request failed'), {
     isAxiosError: true,
@@ -15,20 +20,20 @@ describe('resolveLoginErrorMessage', () => {
       error: { code: 'UNAUTHORIZED', message: 'Invalid credentials' },
     });
 
-    expect(resolveLoginErrorMessage(inputError)).toBe('Invalid email or password.');
+    expect(resolveLoginErrorMessage(inputError, messages)).toBe(messages.invalidCredentials);
   });
 
-  it('surfaces the API error envelope message for non-401 failures', () => {
+  it('uses localized safe copy for non-401 failures', () => {
     const inputError = buildAxiosError(429, {
       error: { code: 'RATE_LIMITED', message: 'Too many login attempts' },
     });
 
-    expect(resolveLoginErrorMessage(inputError)).toBe('Too many login attempts');
+    expect(resolveLoginErrorMessage(inputError, messages)).toBe(messages.loginFailed);
   });
 
   it('falls back to the generic message for network errors', () => {
-    expect(resolveLoginErrorMessage(new Error('Network Error'))).toBe(
-      'Unable to sign in right now. Please try again.',
+    expect(resolveLoginErrorMessage(new Error('Network Error'), messages)).toBe(
+      messages.loginFailed,
     );
   });
 });

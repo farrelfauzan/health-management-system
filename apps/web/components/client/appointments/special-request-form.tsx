@@ -5,13 +5,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AppointmentResponse } from '@hms/shared-types';
 import { SPECIAL_REQUEST_MIN_LEAD_DAYS } from '@hms/shared-types';
 import { Button, DatePicker, DialogFooter, Input, Textarea, useAbility } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { appointmentManagementControllerCreateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
 
-const REQUEST_ERROR_FALLBACK = 'Unable to submit the appointment request. Please try again.';
 const DEFAULT_TIME = '09:00';
 
 type SpecialRequestFormProps = {
@@ -29,6 +29,7 @@ export function SpecialRequestForm({
   onSuccess,
   onCancel,
 }: SpecialRequestFormProps) {
+  const t = useTranslations('operations');
   const ability = useAbility();
   const queryClient = useQueryClient();
   const [date, setDate] = useState<string>(initialDate);
@@ -52,29 +53,29 @@ export function SpecialRequestForm({
   async function handleSubmit(): Promise<void> {
     setFormError(null);
     if (!patientId || !doctorId) {
-      setFormError('Select a patient and a doctor first.');
+      setFormError(t('appointments.selectParticipants'));
       return;
     }
     if (!date || !time) {
-      setFormError('Pick the requested date and time.');
+      setFormError(t('appointments.labels.requestedDate'));
       return;
     }
     if (reason.trim().length < 2) {
-      setFormError('A reason is required for a special request.');
+      setFormError(t('appointments.labels.reasonRequired'));
       return;
     }
     const requestedAtDate = new Date(`${date}T${time}`);
     if (Number.isNaN(requestedAtDate.getTime())) {
-      setFormError('Enter a valid date and time.');
+      setFormError(t('appointments.labels.invalidDateTime'));
       return;
     }
     try {
       const response = await requestMutation.mutateAsync(requestedAtDate.toISOString());
-      parseApiSuccess<AppointmentResponse>(response, REQUEST_ERROR_FALLBACK);
+      parseApiSuccess<AppointmentResponse>(response, t('appointments.requestError'));
       await invalidateAppointmentQueries(queryClient);
       onSuccess();
     } catch (error) {
-      setFormError(notifyApiError(error, REQUEST_ERROR_FALLBACK));
+      setFormError(notifyApiError(error, t('appointments.requestError')));
     }
   }
 
@@ -100,7 +101,7 @@ export function SpecialRequestForm({
           <DatePicker
             id="special-request-date"
             value={date}
-            placeholder="Select date"
+            placeholder={t('appointments.selectDate')}
             onValueChange={setDate}
           />
         </div>
@@ -131,7 +132,7 @@ export function SpecialRequestForm({
           id="special-request-reason"
           rows={2}
           value={reason}
-          placeholder="Why is a specific time needed?"
+          placeholder={t('appointments.labels.specialReason')}
           onChange={(event) => setReason(event.target.value)}
         />
       </div>
@@ -147,7 +148,7 @@ export function SpecialRequestForm({
           id="special-request-notes"
           rows={3}
           value={notes}
-          placeholder="Internal notes for the care team…"
+          placeholder={t('appointments.labels.internalNotes')}
           onChange={(event) => setNotes(event.target.value)}
         />
       </div>
@@ -160,7 +161,7 @@ export function SpecialRequestForm({
 
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {t('common.cancel')}
         </Button>
         <Button
           type="button"

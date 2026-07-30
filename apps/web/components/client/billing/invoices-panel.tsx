@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { InvoiceListItem } from '@hms/shared-types';
 import { Card, CardContent } from '@hms/ui';
 
@@ -15,6 +16,7 @@ import { INVOICES_PAGE_SIZE, type InvoicesSearchParams } from '#lib/billing/sear
 import { useInvoicesList } from '#lib/billing/use-invoices-list';
 
 export function InvoicesPanel() {
+  const t = useTranslations('operations.billing');
   const [query, setQuery] = useState<InvoicesSearchParams>({
     page: 1,
     limit: INVOICES_PAGE_SIZE,
@@ -40,7 +42,7 @@ export function InvoicesPanel() {
 
       {invoicesQuery.error && invoicesQuery.invoices.length > 0 ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {invoicesQuery.error.message}
+          {t('invoiceError')}
         </p>
       ) : null}
 
