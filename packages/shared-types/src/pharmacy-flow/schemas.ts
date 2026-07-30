@@ -83,6 +83,10 @@ export const listMedicationsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(10),
   search: z.string().trim().min(1).max(100).optional(),
   category: medicationCategorySchema.optional(),
+  reorderOnly: z
+    .enum(['true', 'false'])
+    .transform((value) => value === 'true')
+    .optional(),
 });
 
 export const medicationCodeSchema = z
@@ -105,7 +109,7 @@ export const kfaCodeSchema = z
 export const medicationNameSchema = z.string().trim().min(2).max(200);
 export const medicationFormSchema = z.string().trim().min(1).max(100);
 export const medicationStrengthSchema = z.string().trim().min(1).max(100);
-export const medicationStockQtySchema = z.number().int().min(0).max(1000000);
+export const medicationReorderLevelSchema = z.number().int().min(0).max(1000000);
 
 export const createMedicationSchema = z.object({
   code: medicationCodeSchema,
@@ -115,8 +119,8 @@ export const createMedicationSchema = z.object({
   strength: medicationStrengthSchema.optional(),
   unit: medicationUnitSchema.optional(),
   category: medicationCategorySchema.optional(),
-  stockQty: medicationStockQtySchema.optional().default(0),
-});
+  reorderLevel: medicationReorderLevelSchema.optional().default(0),
+}).strict();
 
 export const updateMedicationSchema = z
   .object({
@@ -127,10 +131,9 @@ export const updateMedicationSchema = z
     strength: medicationStrengthSchema.nullable().optional(),
     unit: medicationUnitSchema.nullable().optional(),
     category: medicationCategorySchema.nullable().optional(),
-    // Absolute stock correction. Dispensing decrements stock transactionally in
-    // the pharmacy flow; this path exists for catalog receipts and stock takes.
-    stockQty: medicationStockQtySchema.optional(),
+    reorderLevel: medicationReorderLevelSchema.optional(),
   })
+  .strict()
   .refine((payload) => Object.values(payload).some((value) => value !== undefined), {
     message: 'At least one field is required',
   });
@@ -187,6 +190,33 @@ export const createDispenseSchema = z
     path: ['items'],
   });
 
+const inventoryDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD')
+  .refine(
+    (value) => new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value,
+    'Date is invalid',
+  );
+
+export const createStockReceiptSchema = z.object({
+  medicationId: z.string().uuid(),
+  batchNumber: z.string().trim().min(1).max(100),
+  expiryDate: inventoryDateSchema,
+  quantity: z.number().int().min(1).max(1000000),
+  receivedAt: z.string().datetime({ offset: true }).optional(),
+  notes: z.string().trim().min(1).max(1000).optional(),
+});
+
+export const listStockReceiptsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+  medicationId: z.string().uuid().optional(),
+});
+
+export const expiryReportQuerySchema = z.object({
+  days: z.coerce.number().int().min(0).max(3650).default(90),
+});
+
 export type ListMedicationsQueryInput = z.infer<typeof listMedicationsQuerySchema>;
 export type CreateMedicationInput = z.infer<typeof createMedicationSchema>;
 export type UpdateMedicationInput = z.infer<typeof updateMedicationSchema>;
@@ -195,3 +225,6 @@ export type PrescriptionItemInput = z.infer<typeof prescriptionItemSchema>;
 export type CreatePrescriptionInput = z.infer<typeof createPrescriptionSchema>;
 export type DispenseItemInput = z.infer<typeof dispenseItemInputSchema>;
 export type CreateDispenseInput = z.infer<typeof createDispenseSchema>;
+export type CreateStockReceiptInput = z.infer<typeof createStockReceiptSchema>;
+export type ListStockReceiptsQueryInput = z.infer<typeof listStockReceiptsQuerySchema>;
+export type ExpiryReportQueryInput = z.infer<typeof expiryReportQuerySchema>;

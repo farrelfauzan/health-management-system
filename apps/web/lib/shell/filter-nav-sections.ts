@@ -5,10 +5,16 @@ import { ADMIN_NAV_SECTIONS, type AdminNavSection } from '#lib/shell/nav-items';
 export function filterNavSections(
   ability: AppAbility,
   sections: AdminNavSection[] = ADMIN_NAV_SECTIONS,
+  excludedHrefs: readonly string[] = [],
 ): AdminNavSection[] {
+  const excludedRoutes = new Set(excludedHrefs);
+
   return sections.map((section) => ({
     ...section,
     items: section.items.filter((item) => {
+      if (excludedRoutes.has(item.href)) {
+        return false;
+      }
       if (item.ability === null) {
         return true;
       }

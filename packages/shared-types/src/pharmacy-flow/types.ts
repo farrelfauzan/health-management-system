@@ -10,6 +10,8 @@ export type ListMedicationsParams = {
   limit: number;
   search?: string;
   category?: MedicationCategoryValue;
+  reorderOnly?: boolean;
+  inventoryDate: Date;
 };
 
 export type ListPrescriptionsParams = {
@@ -33,6 +35,7 @@ export type MedicationRecord = {
   unit: MedicationUnitValue | null;
   category: MedicationCategoryValue | null;
   stockQty: number;
+  reorderLevel: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -45,7 +48,7 @@ export type CreateMedicationRecordPayload = {
   strength?: string;
   unit?: MedicationUnitValue;
   category?: MedicationCategoryValue;
-  stockQty: number;
+  reorderLevel: number;
 };
 
 export type UpdateMedicationRecordPayload = {
@@ -56,7 +59,7 @@ export type UpdateMedicationRecordPayload = {
   strength?: string | null;
   unit?: MedicationUnitValue | null;
   category?: MedicationCategoryValue | null;
-  stockQty?: number;
+  reorderLevel?: number;
 };
 
 export type MedicationStockRecord = {
@@ -64,6 +67,22 @@ export type MedicationStockRecord = {
   code: string;
   name: string;
   stockQty: number;
+};
+
+export type CreateStockReceiptRecordPayload = {
+  medicationId: string;
+  batchNumber: string;
+  expiryDate: Date;
+  quantity: number;
+  receivedAt?: Date;
+  receivedById: string;
+  notes?: string;
+};
+
+export type ListStockReceiptsParams = {
+  page: number;
+  limit: number;
+  medicationId?: string;
 };
 
 export type PrescriptionPatientProjection = {
@@ -151,6 +170,7 @@ export type CreateDispenseRecordPayload = {
   pharmacistId: string;
   notes?: string;
   items: CreateDispenseItemPayload[];
+  inventoryDate: Date;
 };
 
 export type DispenseItemWithMedicationRecord = {
@@ -158,6 +178,10 @@ export type DispenseItemWithMedicationRecord = {
   medicationId: string;
   quantity: number;
   medication: PrescriptionItemMedicationProjection;
+  stockAllocations: Array<{
+    quantity: number;
+    stockReceipt: { id: string; batchNumber: string; expiryDate: Date | null };
+  }>;
 };
 
 export type DispenseRecordDetailRecord = {

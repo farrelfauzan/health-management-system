@@ -32,6 +32,7 @@ export type AppSubject =
   | 'Icd10Code'
   | 'Icd9cmCode'
   | 'Medication'
+  | 'Inventory'
   | 'Prescription'
   | 'DispenseRecord'
   | 'ServiceTariff'

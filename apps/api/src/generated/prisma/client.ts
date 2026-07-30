@@ -259,6 +259,16 @@ export type DispenseRecord = Prisma.DispenseRecordModel
  */
 export type DispenseItem = Prisma.DispenseItemModel
 /**
+ * Model MedicationStockReceipt
+ * 
+ */
+export type MedicationStockReceipt = Prisma.MedicationStockReceiptModel
+/**
+ * Model DispenseItemStockAllocation
+ * 
+ */
+export type DispenseItemStockAllocation = Prisma.DispenseItemStockAllocationModel
+/**
  * Model ServiceTariff
  * Price-list row for services the clinic charges — consultation fees and
  * clinical actions (tindakan). Reference data like the terminology catalogs:

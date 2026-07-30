@@ -78,6 +78,8 @@ export const ModelName = {
   PrescriptionMedication: 'PrescriptionMedication',
   DispenseRecord: 'DispenseRecord',
   DispenseItem: 'DispenseItem',
+  MedicationStockReceipt: 'MedicationStockReceipt',
+  DispenseItemStockAllocation: 'DispenseItemStockAllocation',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -493,7 +495,7 @@ export const MedicationScalarFieldEnum = {
   strength: 'strength',
   unit: 'unit',
   category: 'category',
-  stockQty: 'stockQty',
+  reorderLevel: 'reorderLevel',
   unitPrice: 'unitPrice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -559,6 +561,34 @@ export const DispenseItemScalarFieldEnum = {
 } as const
 
 export type DispenseItemScalarFieldEnum = (typeof DispenseItemScalarFieldEnum)[keyof typeof DispenseItemScalarFieldEnum]
+
+
+export const MedicationStockReceiptScalarFieldEnum = {
+  id: 'id',
+  medicationId: 'medicationId',
+  batchNumber: 'batchNumber',
+  expiryDate: 'expiryDate',
+  quantity: 'quantity',
+  remainingQuantity: 'remainingQuantity',
+  receivedAt: 'receivedAt',
+  receivedById: 'receivedById',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MedicationStockReceiptScalarFieldEnum = (typeof MedicationStockReceiptScalarFieldEnum)[keyof typeof MedicationStockReceiptScalarFieldEnum]
+
+
+export const DispenseItemStockAllocationScalarFieldEnum = {
+  id: 'id',
+  dispenseItemId: 'dispenseItemId',
+  stockReceiptId: 'stockReceiptId',
+  quantity: 'quantity',
+  createdAt: 'createdAt'
+} as const
+
+export type DispenseItemStockAllocationScalarFieldEnum = (typeof DispenseItemStockAllocationScalarFieldEnum)[keyof typeof DispenseItemStockAllocationScalarFieldEnum]
 
 
 export const ServiceTariffScalarFieldEnum = {
