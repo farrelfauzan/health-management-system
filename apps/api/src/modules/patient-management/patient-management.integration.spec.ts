@@ -9,6 +9,20 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { PatientManagementRepository } from './repository/patient-management.repository';
 
+/**
+ * Every create and import payload carries privacy-notice evidence since
+ * P12-T04 made it required. The repository is mocked in this suite, so this
+ * only has to satisfy the schema; the version id is the one the privacy-notice
+ * migration inserts.
+ */
+const SPEC_PRIVACY_NOTICE = {
+  privacyNoticeVersionId: 'c2a3ecb0-a352-4d49-a47c-39d1b67904c9',
+  locale: 'id',
+  outcome: 'ACKNOWLEDGED',
+  subjectType: 'SELF',
+  provenance: 'FRONT_DESK',
+} as const;
+
 describe('PatientManagement integration', () => {
   let app: INestApplication;
   let jwtService: JwtService;
@@ -303,6 +317,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '123456',
           address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
         });
 
       expect(response.status).toBe(201);
@@ -329,6 +344,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '123456',
           address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
         });
 
       expect(response.status).toBe(403);
@@ -349,6 +365,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '123456',
           address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
         });
 
       expect(response.status).toBe(201);
@@ -374,6 +391,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '123456',
           address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
         });
 
       expect(response.status).toBe(409);
@@ -447,6 +465,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '123456',
           address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '3201010101900001',
         });
 
@@ -468,6 +487,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '123456',
           address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '12345',
         });
 
@@ -488,6 +508,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '123456',
           address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '3201 0101 0190 0001',
         });
 
@@ -511,6 +532,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '123456',
           address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '3201010101900001',
         });
 
@@ -531,6 +553,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '123456',
           address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '3201014101900001',
         });
 
@@ -571,6 +594,7 @@ describe('PatientManagement integration', () => {
         sex: 'MALE',
         phoneNumber: '123456',
         address: 'Main Street',
+        privacyNotice: SPEC_PRIVACY_NOTICE,
         ...overrides,
       };
     }

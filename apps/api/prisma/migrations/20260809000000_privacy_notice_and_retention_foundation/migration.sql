@@ -69,7 +69,9 @@ CREATE UNIQUE INDEX "privacy_notice_versions_effective_at_key"
   ON "privacy_notice_versions"("effective_at");
 CREATE INDEX "patient_privacy_notice_records_patient_id_recorded_at_idx"
   ON "patient_privacy_notice_records"("patient_id", "recorded_at");
-CREATE INDEX "patient_privacy_notice_records_patient_version_outcome_idx"
+-- Prisma derives this name by truncating the column list and keeping `_idx`;
+-- a hand-shortened name drifts from the schema and fails CI's `migrate diff`.
+CREATE INDEX "patient_privacy_notice_records_patient_id_privacy_notice_ve_idx"
   ON "patient_privacy_notice_records"("patient_id", "privacy_notice_version_id", "outcome");
 CREATE INDEX "patient_privacy_notice_records_actor_user_id_recorded_at_idx"
   ON "patient_privacy_notice_records"("actor_user_id", "recorded_at");
