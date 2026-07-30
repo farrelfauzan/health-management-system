@@ -11,6 +11,7 @@ import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma, RegistrationStatus } from '../../../generated/prisma/client';
 import { QueueNumberAllocatorRepository } from './queue-number-allocator.repository';
+import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 
 const OPEN_REGISTRATION_STATUSES: RegistrationStatus[] = ['PENDING', 'CHECKED_IN'];
 const ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
@@ -52,6 +53,7 @@ export class RegistrationFlowRepository {
   constructor(
     private readonly prisma: PrismaService,
     private readonly queueNumberAllocator: QueueNumberAllocatorRepository,
+    private readonly privacyNoticeRepository: PrivacyNoticeRepository,
   ) {}
 
   async listRegistrations(params: ListRegistrationsParams) {
@@ -222,6 +224,12 @@ export class RegistrationFlowRepository {
         tx,
         payload.queueDate,
       );
+      await this.privacyNoticeRepository.assertCurrentEvidenceOrCapture(
+        tx,
+        payload.patientId,
+        payload.actorUserId,
+        payload.privacyNotice,
+      );
       return tx.registration.create({
         data: {
           patientId: payload.patientId,
@@ -276,6 +284,15 @@ export class RegistrationFlowRepository {
         await this.assignSessionQueueNumber(tx, updated.appointmentId);
       }
       if (payload.status === 'CHECKED_IN') {
+        if (!updated.checkedInAt) {
+          throw new Error('CHECKED_IN registration must have checkedInAt');
+        }
+        await tx.$executeRaw`
+          UPDATE "patient_profiles"
+          SET "last_visit_at" = GREATEST(COALESCE("last_visit_at", ${updated.checkedInAt}), ${updated.checkedInAt}),
+              "updated_at" = CURRENT_TIMESTAMP
+          WHERE "id" = ${updated.patientId}::uuid
+        `;
         await this.enqueueBpjsPendaftaran(tx, updated.id, updated.patientId);
       }
       if (payload.status === 'CANCELLED') {

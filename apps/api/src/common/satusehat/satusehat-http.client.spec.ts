@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@nestjs/common';
 
 import { SatusehatHttpClient } from './satusehat-http.client';
 import { SatusehatTokenClient } from './satusehat-token.client';
@@ -166,15 +167,19 @@ describe('SatusehatHttpClient', () => {
   });
 
   it('recovers when a retry succeeds after a transport failure', async () => {
+    const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
     mockFetch
       .mockRejectedValueOnce(new TypeError('fetch failed'))
       .mockResolvedValueOnce(buildJsonResponse(200, { resourceType: 'Bundle' }));
     const client = buildClient(buildTokenClient());
 
-    await expect(client.sendRequest({ method: 'GET', path: '/Patient' })).resolves.toEqual({
+    await expect(
+      client.sendRequest({ method: 'GET', path: '/Patient/PII-SENTINEL' }),
+    ).resolves.toEqual({
       resourceType: 'Bundle',
     });
     expect(mockFetch).toHaveBeenCalledTimes(2);
+    expect(JSON.stringify(warnSpy.mock.calls)).not.toContain('PII-SENTINEL');
   });
 
   it('never retries a non-idempotent request', async () => {

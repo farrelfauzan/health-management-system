@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { PrivacyNoticeRepository } from '../../common/privacy-notice/privacy-notice.repository';
 import { EncounterRepository } from '../emr/repository/encounter.repository';
 import { PharmacyFlowRepository } from '../pharmacy-flow/repository/pharmacy-flow.repository';
 import { QueueNumberAllocatorRepository } from '../registration-flow/repository/queue-number-allocator.repository';
@@ -37,6 +38,7 @@ describe('BPJS submission outbox against Postgres', () => {
     registrationFlowRepository = new RegistrationFlowRepository(
       prisma,
       new QueueNumberAllocatorRepository(),
+      new PrivacyNoticeRepository(prisma),
     );
     encounterRepository = new EncounterRepository(prisma);
     pharmacyFlowRepository = new PharmacyFlowRepository(prisma);
@@ -84,6 +86,12 @@ describe('BPJS submission outbox against Postgres', () => {
       where: { prescriptionId: { in: createdPrescriptionIds } },
     });
     await prisma.prescription.deleteMany({ where: { id: { in: createdPrescriptionIds } } });
+    // Receipts hold `medication_id` under RESTRICT, so stock has to be cleared
+    // before the catalog rows. Allocations are already gone with their dispense
+    // items, which own them under CASCADE.
+    await prisma.medicationStockReceipt.deleteMany({
+      where: { medicationId: { in: createdMedicationIds } },
+    });
     await prisma.medication.deleteMany({ where: { id: { in: createdMedicationIds } } });
     await prisma.encounter.deleteMany({ where: { id: { in: createdEncounterIds } } });
     await prisma.registration.deleteMany({ where: { id: { in: createdRegistrationIds } } });
@@ -254,10 +262,18 @@ describe('BPJS submission outbox against Postgres', () => {
       data: {
         code: `BPJSOB-${randomUUID().slice(0, 12)}`,
         name: 'Obat Spec Paracetamol',
-        stockQty: 50,
       },
     });
     createdMedicationIds.push(medication.id);
+    await prisma.medicationStockReceipt.create({
+      data: {
+        medicationId: medication.id,
+        batchNumber: 'BPJS-OBAT-SPEC',
+        expiryDate: new Date('2099-12-31T00:00:00.000Z'),
+        quantity: 50,
+        remainingQuantity: 50,
+      },
+    });
     const prescription = await prisma.prescription.create({
       data: {
         patientId,
@@ -277,6 +293,7 @@ describe('BPJS submission outbox against Postgres', () => {
       prescriptionId: prescription.id,
       pharmacistId: pharmacist.id,
       items: [{ medicationId: medication.id, quantity: 10 }],
+      inventoryDate: new Date('2026-07-30T00:00:00.000Z'),
     });
 
     const submissions = await findSubmissions(registrationId);

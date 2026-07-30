@@ -74,6 +74,21 @@ describe('proxy', () => {
     expect(response.headers.get('x-middleware-next')).toBe('1');
   });
 
+  it('allows a pharmacist into the pharmacy workspace', () => {
+    const pharmacistToken = buildToken({ exp: futureUnix(), roles: ['PHARMACIST'] });
+    const response = proxy(buildRequest('/admin/pharmacy', pharmacistToken));
+
+    expect(response.headers.get('x-middleware-next')).toBe('1');
+  });
+
+  it('keeps a pharmacist out of unrelated admin routes', () => {
+    const pharmacistToken = buildToken({ exp: futureUnix(), roles: ['PHARMACIST'] });
+    const response = proxy(buildRequest('/admin/administration', pharmacistToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/pharmacy`);
+  });
+
   it('allows an expired access session while its refresh token remains valid', () => {
     const expiredAccessToken = buildToken({ exp: pastUnix(), roles: ['ADMIN'] });
     const refreshToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'], tokenType: 'refresh' });
@@ -102,6 +117,14 @@ describe('proxy', () => {
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe(`${BASE_URL}/portal/registrations`);
+  });
+
+  it('redirects an authenticated pharmacist visiting /login to pharmacy', () => {
+    const pharmacistToken = buildToken({ exp: futureUnix(), roles: ['PHARMACIST'] });
+    const response = proxy(buildRequest('/login', pharmacistToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/pharmacy`);
   });
 
   it('redirects a patient session hitting /admin to the portal', () => {

@@ -5,7 +5,6 @@ import type { PatientListItem } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useFormatter } from 'next-intl';
 
 import { AssignDoctorDialog } from '#components/client/patients/assign-doctor-dialog';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
@@ -32,10 +31,8 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('clinical');
-  const format = useFormatter();
   const patientsQuery = usePatientsList(initialQuery);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
-  const [editingPatient, setEditingPatient] = useState<PatientListItem | null>(null);
   const [assigningPatient, setAssigningPatient] = useState<PatientListItem | null>(null);
 
   function navigateWithParams(next: PatientsSearchParams): void {
@@ -59,33 +56,17 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
       fileName: CSV_FILE_NAME,
       content: buildPatientsCsv(patientsQuery.patients, {
         headers: [
-          t('patients.csv.patientId'),
           t('patients.csv.fullName'),
-          t('patients.csv.sex'),
-          t('patients.csv.birthDate'),
           t('patients.csv.status'),
-          t('patients.csv.phone'),
-          t('patients.csv.address'),
           t('patients.csv.doctors'),
-          t('patients.csv.registered'),
         ],
-        sex: (sex) => t(`patients.sex.${sex ?? 'UNKNOWN'}`),
         status: (status) => t(`patients.status.${status}`),
-        date: (value) => format.dateTime(new Date(value), { dateStyle: 'medium' }),
-        dateTime: (value) =>
-          format.dateTime(new Date(value), { dateStyle: 'medium', timeStyle: 'short' }),
       }),
       mimeType: CSV_MIME_TYPE,
     });
   }
 
   function handleOpenCreateDialog(): void {
-    setEditingPatient(null);
-    setIsFormDialogOpen(true);
-  }
-
-  function handleOpenEditDialog(patient: PatientListItem): void {
-    setEditingPatient(patient);
     setIsFormDialogOpen(true);
   }
 
@@ -135,7 +116,6 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
             isPending={patientsQuery.isPending}
             isError={patientsQuery.isError}
             onView={handleViewPatient}
-            onEdit={handleOpenEditDialog}
             onAssignDoctor={setAssigningPatient}
           />
           <NumberedPagination
@@ -152,15 +132,9 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
 
       {isFormDialogOpen ? (
         <PatientFormDialog
-          key={editingPatient?.id ?? 'create'}
+          key="create"
           open={isFormDialogOpen}
-          onOpenChange={(open) => {
-            setIsFormDialogOpen(open);
-            if (!open) {
-              setEditingPatient(null);
-            }
-          }}
-          patient={editingPatient}
+          onOpenChange={setIsFormDialogOpen}
         />
       ) : null}
 

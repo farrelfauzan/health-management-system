@@ -21,7 +21,7 @@ describe('AllExceptionsFilter', () => {
     const request = {
       requestId: 'req-123',
       method: 'GET',
-      originalUrl: '/api/v1/patients/unknown',
+      originalUrl: '/api/v1/patients/unknown?nik=PII-SENTINEL',
       header: jest.fn(),
     };
     const host = {
@@ -68,7 +68,7 @@ describe('AllExceptionsFilter', () => {
   it('masks unexpected errors as internal server error and logs them', () => {
     const errorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
     const { host, response } = buildHost();
-    filter.catch(new Error('database exploded'), host);
+    filter.catch(new Error('database exploded PII-SENTINEL'), host);
     expect(response.status).toHaveBeenCalledWith(500);
     expect(response.json).toHaveBeenCalledWith({
       error: {
@@ -83,7 +83,10 @@ describe('AllExceptionsFilter', () => {
     expect(actualLog).toMatchObject({
       requestId: 'req-123',
       statusCode: 500,
-      message: 'database exploded',
+      path: '/api/v1/patients/unknown',
+      event: 'unhandled_http_exception',
     });
+    expect(JSON.stringify(errorSpy.mock.calls)).not.toContain('PII-SENTINEL');
+    expect(JSON.stringify(errorSpy.mock.calls)).not.toContain('database exploded');
   });
 });

@@ -1,5 +1,6 @@
 import type { AppointmentStatusValue } from '#appointment-management/schemas';
 import type { RegistrationStatusValue } from '#registration-flow/schemas';
+import type { PrivacyNoticeEvidenceInput } from '#patient-management/schemas';
 
 export type ListRegistrationsParams = {
   page: number;
@@ -18,6 +19,8 @@ export type CreateRegistrationRecordPayload = {
   appointmentId?: string;
   createdById: string;
   queueDate: Date;
+  privacyNotice?: PrivacyNoticeEvidenceInput;
+  actorUserId: string;
 };
 
 export type QueueNumberAllocationRow = {

@@ -7,6 +7,7 @@ import {
   normaliseIdentifierDigits,
   patientAllergiesSchema,
   updatePatientSchema,
+  privacyNoticeEvidenceSchema,
 } from '@hms/shared-types';
 
 const inputBasePatient = {
@@ -16,6 +17,13 @@ const inputBasePatient = {
   sex: 'FEMALE' as const,
   phoneNumber: '+628123456789',
   address: 'Jakarta',
+  privacyNotice: {
+    privacyNoticeVersionId: 'c2a3ecb0-a352-4d49-a47c-39d1b67904c9',
+    locale: 'id' as const,
+    outcome: 'ACKNOWLEDGED' as const,
+    subjectType: 'SELF' as const,
+    provenance: 'FRONT_DESK' as const,
+  },
 };
 
 describe('normaliseIdentifierDigits', () => {
@@ -27,6 +35,31 @@ describe('normaliseIdentifierDigits', () => {
   it('is idempotent', () => {
     const actualOnce = normaliseIdentifierDigits('3201 0112 3456 7890');
     expect(normaliseIdentifierDigits(actualOnce)).toBe(actualOnce);
+  });
+});
+
+describe('privacyNoticeEvidenceSchema', () => {
+  it('accepts an acknowledgement outcome without treating it as treatment consent', () => {
+    expect(privacyNoticeEvidenceSchema.safeParse(inputBasePatient.privacyNotice).success).toBe(true);
+  });
+
+  it('requires representative provenance details together', () => {
+    expect(
+      privacyNoticeEvidenceSchema.safeParse({
+        ...inputBasePatient.privacyNotice,
+        subjectType: 'REPRESENTATIVE',
+        representativeName: 'Parent Name',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('requires emergency provenance for emergency deferral', () => {
+    expect(
+      privacyNoticeEvidenceSchema.safeParse({
+        ...inputBasePatient.privacyNotice,
+        outcome: 'DEFERRED_EMERGENCY',
+      }).success,
+    ).toBe(false);
   });
 });
 

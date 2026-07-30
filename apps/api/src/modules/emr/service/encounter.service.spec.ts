@@ -133,6 +133,11 @@ describe('EncounterService', () => {
       );
       expect(actual.items[0]?.id).toBe(encounterId);
       expect(actual.meta.total).toBe(1);
+      expect(actual.items[0]).not.toHaveProperty('registrationId');
+      expect(actual.items[0]).not.toHaveProperty('patientId');
+      expect(actual.items[0]).not.toHaveProperty('subjective');
+      expect(actual.items[0]?.patient).not.toHaveProperty('mrn');
+      expect(actual.items[0]?.doctor).not.toHaveProperty('licenseNumber');
     });
 
     it('leaves the query unscoped for an actor holding ANY', async () => {

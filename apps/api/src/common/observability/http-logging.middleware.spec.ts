@@ -10,7 +10,7 @@ describe('HttpLoggingMiddleware', () => {
     return {
       requestId: 'req-123',
       method: 'GET',
-      originalUrl: '/api/v1/patients',
+      originalUrl: '/api/v1/patients?nik=PII-SENTINEL&search=PRIVATE',
       user: { sub: 'user-1', email: 'admin@example.com' },
       header: jest.fn(),
     } as unknown as ObservedRequest;
@@ -56,6 +56,8 @@ describe('HttpLoggingMiddleware', () => {
       userId: 'user-1',
     });
     expect(typeof actualEntry.durationMs).toBe('number');
+    expect(JSON.stringify(actualEntry)).not.toContain('PII-SENTINEL');
+    expect(JSON.stringify(actualEntry)).not.toContain('PRIVATE');
   });
 
   it('logs 4xx responses at warn level and 5xx at error level', () => {

@@ -71,6 +71,18 @@ export type MrnCounter = Prisma.MrnCounterModel
  */
 export type PatientProfile = Prisma.PatientProfileModel
 /**
+ * Model PrivacyNoticeVersion
+ * Published privacy notices are immutable legal evidence. A correction is a
+ * new version, never an update to a version patients have already received.
+ */
+export type PrivacyNoticeVersion = Prisma.PrivacyNoticeVersionModel
+/**
+ * Model PatientPrivacyNoticeRecord
+ * Append-only proof that a specific notice was provided. This is privacy
+ * notice evidence, not treatment consent or permission to process all data.
+ */
+export type PatientPrivacyNoticeRecord = Prisma.PatientPrivacyNoticeRecordModel
+/**
  * Model PatientAllergy
  * Free-text substance plus a severity grade. Deliberately uncoded for now —
  * allergen and reaction move to coded terminology in the EMR phase.
@@ -258,6 +270,16 @@ export type DispenseRecord = Prisma.DispenseRecordModel
  * 
  */
 export type DispenseItem = Prisma.DispenseItemModel
+/**
+ * Model MedicationStockReceipt
+ * 
+ */
+export type MedicationStockReceipt = Prisma.MedicationStockReceiptModel
+/**
+ * Model DispenseItemStockAllocation
+ * 
+ */
+export type DispenseItemStockAllocation = Prisma.DispenseItemStockAllocationModel
 /**
  * Model ServiceTariff
  * Price-list row for services the clinic charges — consultation fees and

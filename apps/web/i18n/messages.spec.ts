@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import enMessages from '../messages/en.json';
+import enPharmacyInventoryMessages from '../messages/en/pharmacy-inventory.json';
 import idMessages from '../messages/id.json';
+import idPharmacyInventoryMessages from '../messages/id/pharmacy-inventory.json';
 
 function collectLeafKeys(value: unknown, prefix = ''): string[] {
   if (typeof value !== 'object' || value === null) {
@@ -16,6 +18,12 @@ function collectLeafKeys(value: unknown, prefix = ''): string[] {
 describe('translation catalogs', () => {
   it('keeps Indonesian and English message keys in parity', () => {
     expect(collectLeafKeys(enMessages).sort()).toEqual(collectLeafKeys(idMessages).sort());
+  });
+
+  it('keeps pharmacy inventory catalogs in parity', () => {
+    expect(collectLeafKeys(enPharmacyInventoryMessages).sort()).toEqual(
+      collectLeafKeys(idPharmacyInventoryMessages).sort(),
+    );
   });
 
   it.each([

@@ -86,6 +86,10 @@ export type EncounterRelatedDoctor = {
   fullName: string;
 };
 
+export type EncounterListRelatedPatient = Pick<EncounterRelatedPatient, 'id' | 'fullName'>;
+
+export type EncounterListRelatedDoctor = Pick<EncounterRelatedDoctor, 'id' | 'fullName'>;
+
 /**
  * A prescription written during the visit, summarised rather than expanded:
  * the full medication list stays behind `/prescriptions`, which is where the
@@ -120,9 +124,12 @@ export type EncounterResponse = {
  * shows dozens of encounters, and expanding every vitals row and diagnosis
  * into that response would move megabytes to render a table.
  */
-export type EncounterListItem = EncounterResponse & {
-  patient: EncounterRelatedPatient;
-  doctor: EncounterRelatedDoctor;
+export type EncounterListItem = Pick<
+  EncounterResponse,
+  'id' | 'status' | 'startedAt' | 'endedAt'
+> & {
+  patient: EncounterListRelatedPatient;
+  doctor: EncounterListRelatedDoctor;
   vitalSignsCount: number;
   diagnosisCount: number;
   procedureCount: number;

@@ -184,7 +184,35 @@
       "assignedDoctors": "Dokter yang Ditetapkan",
       "noAssignedDoctors": "Belum ada dokter yang ditetapkan.",
       "unassignDoctor": "Batalkan penetapan {name}",
-      "unassignDoctorError": "Penetapan dokter gagal dibatalkan. Silakan coba lagi."
+      "unassignDoctorError": "Penetapan dokter gagal dibatalkan. Silakan coba lagi.",
+      "compactRecord": "Buka detail untuk identitas dan demografi lengkap."
+    },
+    "privacyNotice": {
+      "title": "Pemberitahuan Privasi Pasien",
+      "notConsent": "Pencatatan ini hanya membuktikan pemberitahuan telah diberikan. Ini bukan persetujuan menyeluruh untuk pemrosesan data atau persetujuan tindakan medis/perawatan.",
+      "loading": "Memuat pemberitahuan privasi saat ini...",
+      "loadError": "Pemberitahuan privasi saat ini tidak dapat dimuat. Pembuatan data tidak dapat dilanjutkan.",
+      "counselPending": "Status tinjauan penasihat hukum: belum disetujui. Sampaikan status ini kepada pasien atau perwakilan.",
+      "version": "Versi {version}",
+      "outcomeLabel": "Hasil penyampaian",
+      "selectOutcome": "Pilih hasil penyampaian",
+      "outcomes": {
+        "ACKNOWLEDGED": "Pemberitahuan diberikan dan diterima",
+        "PROVIDED_ACKNOWLEDGEMENT_DECLINED": "Pemberitahuan diberikan, pasien menolak mengakui",
+        "DEFERRED_EMERGENCY": "Ditunda karena keadaan darurat"
+      },
+      "subjectLabel": "Penerima pemberitahuan",
+      "self": "Pasien",
+      "representative": "Perwakilan pasien",
+      "representativeName": "Nama perwakilan",
+      "representativeRelation": "Hubungan dengan pasien",
+      "outcomeRequired": "Pilih hasil penyampaian pemberitahuan privasi.",
+      "representativeRequired": "Nama dan hubungan perwakilan wajib diisi.",
+      "historyTitle": "Riwayat Privasi",
+      "historyError": "Riwayat pemberitahuan privasi tidak dapat dimuat.",
+      "captureRequired": "Pemberitahuan versi saat ini perlu diberikan dan dicatat.",
+      "currentRecorded": "Pemberitahuan versi saat ini telah dicatat.",
+      "historyCount": "{count, plural, =0 {Belum ada catatan} one {# catatan historis} other {# catatan historis}}"
     },
     "doctors": {
       "title": "Dokter",

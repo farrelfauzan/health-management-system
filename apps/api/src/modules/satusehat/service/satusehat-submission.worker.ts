@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { resolveSatusehatConfig } from '../../../common/satusehat/satusehat.config';
 import { SatusehatConfig } from '../../../common/satusehat/satusehat.types';
+import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { SatusehatSubmissionRepository } from '../repository/satusehat-submission.repository';
 import { SatusehatSubmissionService } from './satusehat-submission.service';
 
@@ -69,12 +70,8 @@ export class SatusehatSubmissionWorker implements OnApplicationBootstrap, OnAppl
         await this.submissionService.processSubmission(submission);
       }
       return dueSubmissions.length;
-    } catch (caughtError) {
-      this.logger.error(
-        `SATUSEHAT submission poll cycle failed: ${
-          caughtError instanceof Error ? caughtError.message : String(caughtError)
-        }`,
-      );
+    } catch {
+      this.logger.error(buildSafeErrorLog('satusehat_submission_poll_failed'));
       return 0;
     } finally {
       this.isPolling = false;

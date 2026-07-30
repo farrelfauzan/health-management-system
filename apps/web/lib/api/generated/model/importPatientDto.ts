@@ -8,6 +8,7 @@
 import type { ImportPatientDtoAllergiesItem } from './importPatientDtoAllergiesItem';
 import type { ImportPatientDtoBloodType } from './importPatientDtoBloodType';
 import type { ImportPatientDtoMaritalStatus } from './importPatientDtoMaritalStatus';
+import type { ImportPatientDtoPrivacyNotice } from './importPatientDtoPrivacyNotice';
 import type { ImportPatientDtoReligion } from './importPatientDtoReligion';
 import type { ImportPatientDtoRhesusFactor } from './importPatientDtoRhesusFactor';
 import type { ImportPatientDtoSex } from './importPatientDtoSex';
@@ -80,6 +81,7 @@ export interface ImportPatientDto {
      * @maxItems 20
      */
   doctorIds?: string[];
+  privacyNotice: ImportPatientDtoPrivacyNotice;
   /**
      * @minLength 3
      * @maxLength 64

@@ -55,6 +55,8 @@ export const ModelName = {
   RefreshToken: 'RefreshToken',
   MrnCounter: 'MrnCounter',
   PatientProfile: 'PatientProfile',
+  PrivacyNoticeVersion: 'PrivacyNoticeVersion',
+  PatientPrivacyNoticeRecord: 'PatientPrivacyNoticeRecord',
   PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
@@ -78,6 +80,8 @@ export const ModelName = {
   PrescriptionMedication: 'PrescriptionMedication',
   DispenseRecord: 'DispenseRecord',
   DispenseItem: 'DispenseItem',
+  MedicationStockReceipt: 'MedicationStockReceipt',
+  DispenseItemStockAllocation: 'DispenseItemStockAllocation',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -162,6 +166,7 @@ export const PatientProfileScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt',
+  lastVisitAt: 'lastVisitAt',
   email: 'email',
   bloodType: 'bloodType',
   rhesusFactor: 'rhesusFactor',
@@ -185,6 +190,39 @@ export const PatientProfileScalarFieldEnum = {
 } as const
 
 export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]
+
+
+export const PrivacyNoticeVersionScalarFieldEnum = {
+  id: 'id',
+  version: 'version',
+  effectiveAt: 'effectiveAt',
+  contentId: 'contentId',
+  contentEn: 'contentEn',
+  contentHashId: 'contentHashId',
+  contentHashEn: 'contentHashEn',
+  counselApproved: 'counselApproved',
+  createdAt: 'createdAt'
+} as const
+
+export type PrivacyNoticeVersionScalarFieldEnum = (typeof PrivacyNoticeVersionScalarFieldEnum)[keyof typeof PrivacyNoticeVersionScalarFieldEnum]
+
+
+export const PatientPrivacyNoticeRecordScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  privacyNoticeVersionId: 'privacyNoticeVersionId',
+  outcome: 'outcome',
+  locale: 'locale',
+  contentHash: 'contentHash',
+  subjectType: 'subjectType',
+  representativeName: 'representativeName',
+  representativeRelation: 'representativeRelation',
+  actorUserId: 'actorUserId',
+  provenance: 'provenance',
+  recordedAt: 'recordedAt'
+} as const
+
+export type PatientPrivacyNoticeRecordScalarFieldEnum = (typeof PatientPrivacyNoticeRecordScalarFieldEnum)[keyof typeof PatientPrivacyNoticeRecordScalarFieldEnum]
 
 
 export const PatientAllergyScalarFieldEnum = {
@@ -493,7 +531,7 @@ export const MedicationScalarFieldEnum = {
   strength: 'strength',
   unit: 'unit',
   category: 'category',
-  stockQty: 'stockQty',
+  reorderLevel: 'reorderLevel',
   unitPrice: 'unitPrice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -559,6 +597,34 @@ export const DispenseItemScalarFieldEnum = {
 } as const
 
 export type DispenseItemScalarFieldEnum = (typeof DispenseItemScalarFieldEnum)[keyof typeof DispenseItemScalarFieldEnum]
+
+
+export const MedicationStockReceiptScalarFieldEnum = {
+  id: 'id',
+  medicationId: 'medicationId',
+  batchNumber: 'batchNumber',
+  expiryDate: 'expiryDate',
+  quantity: 'quantity',
+  remainingQuantity: 'remainingQuantity',
+  receivedAt: 'receivedAt',
+  receivedById: 'receivedById',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MedicationStockReceiptScalarFieldEnum = (typeof MedicationStockReceiptScalarFieldEnum)[keyof typeof MedicationStockReceiptScalarFieldEnum]
+
+
+export const DispenseItemStockAllocationScalarFieldEnum = {
+  id: 'id',
+  dispenseItemId: 'dispenseItemId',
+  stockReceiptId: 'stockReceiptId',
+  quantity: 'quantity',
+  createdAt: 'createdAt'
+} as const
+
+export type DispenseItemStockAllocationScalarFieldEnum = (typeof DispenseItemStockAllocationScalarFieldEnum)[keyof typeof DispenseItemStockAllocationScalarFieldEnum]
 
 
 export const ServiceTariffScalarFieldEnum = {

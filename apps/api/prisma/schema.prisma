@@ -169,6 +169,29 @@ enum RegistrationStatus {
   CANCELLED
 }
 
+enum PrivacyNoticeOutcome {
+  ACKNOWLEDGED
+  PROVIDED_ACKNOWLEDGEMENT_DECLINED
+  DEFERRED_EMERGENCY
+}
+
+enum PrivacyNoticeLocale {
+  id
+  en
+}
+
+enum PrivacyNoticeSubjectType {
+  SELF
+  REPRESENTATIVE
+}
+
+enum PrivacyNoticeProvenance {
+  FRONT_DESK
+  PATIENT_PORTAL
+  LEGACY_IMPORT
+  EMERGENCY
+}
+
 /// Lifecycle of a clinical encounter (the PMK 24/2022 medical record for one
 /// visit). An encounter opens when the doctor starts seeing a checked-in
 /// patient and is terminal once closed: FINISHED when the visit was delivered,
@@ -303,11 +326,13 @@ model User {
   recordedProcedures       Procedure[]             @relation("ProcedureRecordedBy")
   recordedBpjsReferrals    BpjsReferral[]          @relation("BpjsReferralRecordedBy")
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
+  medicationStockReceipts MedicationStockReceipt[] @relation("MedicationStockReceiptReceivedBy")
   createdInvoices          Invoice[]               @relation("InvoiceCreatedBy")
   voidedInvoices           Invoice[]               @relation("InvoiceVoidedBy")
   receivedPayments         Payment[]               @relation("PaymentCashier")
   refreshTokens            RefreshToken[]
   auditLogs                AuditLog[]              @relation("AuditLogActor")
+  privacyNoticeRecords     PatientPrivacyNoticeRecord[] @relation("PrivacyNoticeActor")
 
   @@map("users")
 }
@@ -365,6 +390,7 @@ model PatientProfile {
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
   deletedAt    DateTime?     @map("deleted_at")
+  lastVisitAt  DateTime?     @map("last_visit_at")
 
   // Demographic and clinical-safety identity fields required by PMK 24/2022
   // and expected on Indonesian registration forms. All optional so existing
@@ -409,13 +435,59 @@ model PatientProfile {
   encounters            Encounter[]
   invoices              Invoice[]
   bpjsEligibilityChecks BpjsEligibilityCheck[]
+  privacyNoticeRecords   PatientPrivacyNoticeRecord[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
   @@index([isActive])
   @@index([fullName])
   @@index([status])
+  @@index([lastVisitAt])
   @@map("patient_profiles")
+}
+
+/// Published privacy notices are immutable legal evidence. A correction is a
+/// new version, never an update to a version patients have already received.
+model PrivacyNoticeVersion {
+  id              String   @id @default(uuid()) @db.Uuid
+  version         String   @unique
+  effectiveAt     DateTime @unique @map("effective_at")
+  contentId       String   @map("content_id")
+  contentEn       String   @map("content_en")
+  contentHashId   String   @map("content_hash_id")
+  contentHashEn   String   @map("content_hash_en")
+  counselApproved Boolean  @default(false) @map("counsel_approved")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  records PatientPrivacyNoticeRecord[]
+
+  @@map("privacy_notice_versions")
+}
+
+/// Append-only proof that a specific notice was provided. This is privacy
+/// notice evidence, not treatment consent or permission to process all data.
+model PatientPrivacyNoticeRecord {
+  id                     String                   @id @default(uuid()) @db.Uuid
+  patientId              String                   @map("patient_id") @db.Uuid
+  privacyNoticeVersionId String                   @map("privacy_notice_version_id") @db.Uuid
+  outcome                PrivacyNoticeOutcome
+  locale                 PrivacyNoticeLocale
+  contentHash            String                   @map("content_hash")
+  subjectType            PrivacyNoticeSubjectType @map("subject_type")
+  representativeName     String?                  @map("representative_name")
+  representativeRelation String?                  @map("representative_relation")
+  actorUserId            String                   @map("actor_user_id") @db.Uuid
+  provenance             PrivacyNoticeProvenance
+  recordedAt             DateTime                 @default(now()) @map("recorded_at")
+
+  patient PatientProfile       @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  version PrivacyNoticeVersion @relation(fields: [privacyNoticeVersionId], references: [id], onDelete: Restrict)
+  actor   User                 @relation("PrivacyNoticeActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([patientId, recordedAt])
+  @@index([patientId, privacyNoticeVersionId, outcome])
+  @@index([actorUserId, recordedAt])
+  @@map("patient_privacy_notice_records")
 }
 
 /// Free-text substance plus a severity grade. Deliberately uncoded for now —
@@ -430,7 +502,7 @@ model PatientAllergy {
   updatedAt DateTime        @updatedAt @map("updated_at")
   deletedAt DateTime?       @map("deleted_at")
 
-  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
 
   @@index([patientId])
   @@index([deletedAt])
@@ -978,7 +1050,7 @@ model Medication {
   strength  String?
   unit      MedicationUnit?
   category  MedicationCategory?
-  stockQty  Int                 @default(0) @map("stock_qty")
+  reorderLevel Int              @default(0) @map("reorder_level")
   /// Selling price per `unit`, in rupiah. Nullable because the MVP catalog
   /// predates billing; invoice generation treats an unpriced dispensed
   /// medication as a gap to surface, not a free item.
@@ -989,10 +1061,12 @@ model Medication {
 
   prescriptionItems PrescriptionMedication[]
   dispenseItems     DispenseItem[]
+  stockReceipts     MedicationStockReceipt[]
   invoiceItems      InvoiceItem[]
 
   @@index([name])
   @@index([category])
+  @@index([reorderLevel])
   @@index([deletedAt])
   @@map("medications")
 }
@@ -1077,10 +1151,50 @@ model DispenseItem {
 
   dispenseRecord DispenseRecord @relation(fields: [dispenseRecordId], references: [id], onDelete: Cascade)
   medication     Medication     @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  stockAllocations DispenseItemStockAllocation[]
 
   @@unique([dispenseRecordId, medicationId])
   @@index([medicationId])
   @@map("dispense_items")
+}
+
+model MedicationStockReceipt {
+  id           String    @id @default(uuid()) @db.Uuid
+  medicationId String    @map("medication_id") @db.Uuid
+  batchNumber  String    @map("batch_number")
+  expiryDate   DateTime? @map("expiry_date") @db.Date
+  quantity     Int
+  remainingQuantity Int  @map("remaining_quantity")
+  receivedAt   DateTime  @default(now()) @map("received_at")
+  receivedById String?   @map("received_by_id") @db.Uuid
+  notes        String?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  medication  Medication @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  receivedBy  User?      @relation("MedicationStockReceiptReceivedBy", fields: [receivedById], references: [id], onDelete: SetNull)
+  allocations DispenseItemStockAllocation[]
+
+  @@index([medicationId, expiryDate, receivedAt])
+  @@index([medicationId, remainingQuantity, expiryDate])
+  @@index([expiryDate])
+  @@index([receivedById])
+  @@map("medication_stock_receipts")
+}
+
+model DispenseItemStockAllocation {
+  id             String   @id @default(uuid()) @db.Uuid
+  dispenseItemId String   @map("dispense_item_id") @db.Uuid
+  stockReceiptId String   @map("stock_receipt_id") @db.Uuid
+  quantity       Int
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  dispenseItem DispenseItem           @relation(fields: [dispenseItemId], references: [id], onDelete: Cascade)
+  stockReceipt MedicationStockReceipt @relation(fields: [stockReceiptId], references: [id], onDelete: Restrict)
+
+  @@unique([dispenseItemId, stockReceiptId])
+  @@index([stockReceiptId])
+  @@map("dispense_item_stock_allocations")
 }
 
 /// Price-list row for services the clinic charges — consultation fees and
@@ -1447,7 +1561,7 @@ model BpjsEligibilityCheck {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
 
   @@unique([patientId, checkedDate])
   @@index([checkedDate])

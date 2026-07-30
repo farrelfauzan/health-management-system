@@ -12,6 +12,7 @@ import { Injectable } from '@nestjs/common';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
 import { MrnAllocatorRepository } from '../../../common/mrn/mrn-allocator.repository';
+import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PatientIdentifierConflictError } from './patient-identifier-conflict.error';
 
@@ -53,6 +54,7 @@ const PATIENT_RECORD_SELECT = {
   isActive: true,
   createdAt: true,
   updatedAt: true,
+  lastVisitAt: true,
 } as const;
 
 const PATIENT_ALLERGY_SELECT = {
@@ -177,6 +179,7 @@ export class PatientManagementRepository {
     private readonly prisma: PrismaService,
     private readonly identifierCrypto: NationalIdentifierCryptoService,
     private readonly mrnAllocator: MrnAllocatorRepository,
+    private readonly privacyNoticeRepository: PrivacyNoticeRepository,
   ) {}
 
   async listPatients(params: ListPatientsParams, currentUser: CurrentUser, hasAnyScope: boolean) {
@@ -538,6 +541,13 @@ export class PatientManagementRepository {
           },
           select: PATIENT_RECORD_SELECT,
         });
+
+        await this.privacyNoticeRepository.captureCurrent(
+          tx,
+          created.id,
+          payload.actorUserId,
+          payload.privacyNotice,
+        );
 
         for (const doctorId of payload.doctorIds ?? []) {
           const assignment = await tx.doctorPatient.create({

@@ -24,8 +24,10 @@ import type {
   CreatePatientDto,
   ImportPatientDto,
   PatientManagementControllerCreatePatientV1201,
+  PatientManagementControllerGetCurrentPrivacyNoticeV1200,
   PatientManagementControllerGetPatientByIdV1200,
   PatientManagementControllerGetPatientIdentifiersV1200,
+  PatientManagementControllerGetPatientPrivacyNoticeHistoryV1200,
   PatientManagementControllerImportPatientV1201,
   PatientManagementControllerListPatientsV1200,
   PatientManagementControllerListPatientsV1Params,
@@ -52,6 +54,98 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+/**
+ * @summary Get the current patient privacy notice
+ */
+export const patientManagementControllerGetCurrentPrivacyNoticeV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientManagementControllerGetCurrentPrivacyNoticeV1200>(
+      {url: `/api/v1/patients/privacy-notice/current`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientManagementControllerGetCurrentPrivacyNoticeV1QueryKey = () => {
+    return [
+    `/api/v1/patients/privacy-notice/current`
+    ] as const;
+    }
+
+
+export const getPatientManagementControllerGetCurrentPrivacyNoticeV1QueryOptions = <TData = Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientManagementControllerGetCurrentPrivacyNoticeV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>> = ({ signal }) => patientManagementControllerGetCurrentPrivacyNoticeV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientManagementControllerGetCurrentPrivacyNoticeV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>>
+export type PatientManagementControllerGetCurrentPrivacyNoticeV1QueryError = unknown
+
+
+export function usePatientManagementControllerGetCurrentPrivacyNoticeV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerGetCurrentPrivacyNoticeV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerGetCurrentPrivacyNoticeV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get the current patient privacy notice
+ */
+
+export function usePatientManagementControllerGetCurrentPrivacyNoticeV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetCurrentPrivacyNoticeV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientManagementControllerGetCurrentPrivacyNoticeV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
 
 /**
  * @summary List patients
@@ -608,6 +702,98 @@ export function usePatientManagementControllerGetPatientIdentifiersV1<TData = Aw
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getPatientManagementControllerGetPatientIdentifiersV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Get patient privacy notice evidence history
+ */
+export const patientManagementControllerGetPatientPrivacyNoticeHistoryV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientManagementControllerGetPatientPrivacyNoticeHistoryV1200>(
+      {url: `/api/v1/patients/${id}/privacy-notices`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientManagementControllerGetPatientPrivacyNoticeHistoryV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/patients/${id}/privacy-notices`
+    ] as const;
+    }
+
+
+export const getPatientManagementControllerGetPatientPrivacyNoticeHistoryV1QueryOptions = <TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientManagementControllerGetPatientPrivacyNoticeHistoryV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>> = ({ signal }) => patientManagementControllerGetPatientPrivacyNoticeHistoryV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientManagementControllerGetPatientPrivacyNoticeHistoryV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>>
+export type PatientManagementControllerGetPatientPrivacyNoticeHistoryV1QueryError = unknown
+
+
+export function usePatientManagementControllerGetPatientPrivacyNoticeHistoryV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerGetPatientPrivacyNoticeHistoryV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerGetPatientPrivacyNoticeHistoryV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get patient privacy notice evidence history
+ */
+
+export function usePatientManagementControllerGetPatientPrivacyNoticeHistoryV1<TData = Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerGetPatientPrivacyNoticeHistoryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientManagementControllerGetPatientPrivacyNoticeHistoryV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

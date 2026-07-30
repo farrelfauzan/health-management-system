@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
-import { DataTableMonoCell } from '#components/shared/data-table-mono-cell';
 import { StatusBadge } from '#components/shared/status-badge';
 import { formatEncounterDuration } from '#lib/encounters/format-encounter-duration';
 
@@ -28,7 +27,6 @@ export function EncountersTableRow({ encounter, basePath }: EncountersTableRowPr
           <p className="text-sm font-medium text-slate-900">{encounter.patient.fullName}</p>
         </div>
       </TableCell>
-      <DataTableMonoCell>{encounter.patient.mrn}</DataTableMonoCell>
       <TableCell className="px-4 text-sm text-slate-600">
         {format.dateTime(new Date(encounter.startedAt), {
           dateStyle: 'medium',

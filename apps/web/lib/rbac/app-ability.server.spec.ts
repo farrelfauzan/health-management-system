@@ -4,6 +4,25 @@ import { describe, expect, it } from 'vitest';
 import { resolveAppAbilityRules } from './app-ability.server';
 
 describe('resolveAppAbilityRules integration permissions', () => {
+  it('maps pharmacy inventory permissions independently from medication catalog permissions', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: [
+          'medication.read:any',
+          'medication.update:any',
+          'inventory.read:any',
+          'inventory.write:any',
+        ],
+      }),
+    );
+
+    expect(ability.can('read', 'Medication')).toBe(true);
+    expect(ability.can('update', 'Medication')).toBe(true);
+    expect(ability.can('create', 'Medication')).toBe(false);
+    expect(ability.can('read', 'Inventory')).toBe(true);
+    expect(ability.can('write', 'Inventory')).toBe(true);
+  });
+
   it('maps each BPJS permission to its frontend capability', () => {
     const ability = buildAppAbility(
       resolveAppAbilityRules({

@@ -53,6 +53,7 @@ export type PatientProfileMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
+  lastVisitAt: Date | null
   email: string | null
   bloodType: $Enums.BloodType | null
   rhesusFactor: $Enums.RhesusFactor | null
@@ -90,6 +91,7 @@ export type PatientProfileMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
+  lastVisitAt: Date | null
   email: string | null
   bloodType: $Enums.BloodType | null
   rhesusFactor: $Enums.RhesusFactor | null
@@ -127,6 +129,7 @@ export type PatientProfileCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   deletedAt: number
+  lastVisitAt: number
   email: number
   bloodType: number
   rhesusFactor: number
@@ -178,6 +181,7 @@ export type PatientProfileMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
+  lastVisitAt?: true
   email?: true
   bloodType?: true
   rhesusFactor?: true
@@ -215,6 +219,7 @@ export type PatientProfileMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
+  lastVisitAt?: true
   email?: true
   bloodType?: true
   rhesusFactor?: true
@@ -252,6 +257,7 @@ export type PatientProfileCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
+  lastVisitAt?: true
   email?: true
   bloodType?: true
   rhesusFactor?: true
@@ -376,6 +382,7 @@ export type PatientProfileGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
+  lastVisitAt: Date | null
   email: string | null
   bloodType: $Enums.BloodType | null
   rhesusFactor: $Enums.RhesusFactor | null
@@ -436,6 +443,7 @@ export type PatientProfileWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"PatientProfile"> | Date | string | null
+  lastVisitAt?: Prisma.DateTimeNullableFilter<"PatientProfile"> | Date | string | null
   email?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   bloodType?: Prisma.EnumBloodTypeNullableFilter<"PatientProfile"> | $Enums.BloodType | null
   rhesusFactor?: Prisma.EnumRhesusFactorNullableFilter<"PatientProfile"> | $Enums.RhesusFactor | null
@@ -465,6 +473,7 @@ export type PatientProfileWhereInput = {
   encounters?: Prisma.EncounterListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckListRelationFilter
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
 }
 
 export type PatientProfileOrderByWithRelationInput = {
@@ -482,6 +491,7 @@ export type PatientProfileOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastVisitAt?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   bloodType?: Prisma.SortOrderInput | Prisma.SortOrder
   rhesusFactor?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -511,6 +521,7 @@ export type PatientProfileOrderByWithRelationInput = {
   encounters?: Prisma.EncounterOrderByRelationAggregateInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckOrderByRelationAggregateInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordOrderByRelationAggregateInput
 }
 
 export type PatientProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -533,6 +544,7 @@ export type PatientProfileWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"PatientProfile"> | Date | string | null
+  lastVisitAt?: Prisma.DateTimeNullableFilter<"PatientProfile"> | Date | string | null
   email?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   bloodType?: Prisma.EnumBloodTypeNullableFilter<"PatientProfile"> | $Enums.BloodType | null
   rhesusFactor?: Prisma.EnumRhesusFactorNullableFilter<"PatientProfile"> | $Enums.RhesusFactor | null
@@ -560,6 +572,7 @@ export type PatientProfileWhereUniqueInput = Prisma.AtLeast<{
   encounters?: Prisma.EncounterListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckListRelationFilter
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
 }, "id" | "mrn" | "nikIndex" | "bpjsNumberIndex">
 
 export type PatientProfileOrderByWithAggregationInput = {
@@ -577,6 +590,7 @@ export type PatientProfileOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastVisitAt?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   bloodType?: Prisma.SortOrderInput | Prisma.SortOrder
   rhesusFactor?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -622,6 +636,7 @@ export type PatientProfileScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PatientProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PatientProfile"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PatientProfile"> | Date | string | null
+  lastVisitAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PatientProfile"> | Date | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"PatientProfile"> | string | null
   bloodType?: Prisma.EnumBloodTypeNullableWithAggregatesFilter<"PatientProfile"> | $Enums.BloodType | null
   rhesusFactor?: Prisma.EnumRhesusFactorNullableWithAggregatesFilter<"PatientProfile"> | $Enums.RhesusFactor | null
@@ -658,6 +673,7 @@ export type PatientProfileCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -687,6 +703,7 @@ export type PatientProfileCreateInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateInput = {
@@ -704,6 +721,7 @@ export type PatientProfileUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -732,6 +750,7 @@ export type PatientProfileUncheckedCreateInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUpdateInput = {
@@ -748,6 +767,7 @@ export type PatientProfileUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -777,6 +797,7 @@ export type PatientProfileUpdateInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateInput = {
@@ -794,6 +815,7 @@ export type PatientProfileUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -822,6 +844,7 @@ export type PatientProfileUncheckedUpdateInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateManyInput = {
@@ -839,6 +862,7 @@ export type PatientProfileCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -875,6 +899,7 @@ export type PatientProfileUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -912,6 +937,7 @@ export type PatientProfileUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -959,6 +985,7 @@ export type PatientProfileCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+  lastVisitAt?: Prisma.SortOrder
   email?: Prisma.SortOrder
   bloodType?: Prisma.SortOrder
   rhesusFactor?: Prisma.SortOrder
@@ -1002,6 +1029,7 @@ export type PatientProfileMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+  lastVisitAt?: Prisma.SortOrder
   email?: Prisma.SortOrder
   bloodType?: Prisma.SortOrder
   rhesusFactor?: Prisma.SortOrder
@@ -1039,6 +1067,7 @@ export type PatientProfileMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+  lastVisitAt?: Prisma.SortOrder
   email?: Prisma.SortOrder
   bloodType?: Prisma.SortOrder
   rhesusFactor?: Prisma.SortOrder
@@ -1148,6 +1177,20 @@ export type NullableIntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type PatientProfileCreateNestedOneWithoutPrivacyNoticeRecordsInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutPrivacyNoticeRecordsInput, Prisma.PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutPrivacyNoticeRecordsInput
+  connect?: Prisma.PatientProfileWhereUniqueInput
+}
+
+export type PatientProfileUpdateOneRequiredWithoutPrivacyNoticeRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutPrivacyNoticeRecordsInput, Prisma.PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutPrivacyNoticeRecordsInput
+  upsert?: Prisma.PatientProfileUpsertWithoutPrivacyNoticeRecordsInput
+  connect?: Prisma.PatientProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientProfileUpdateToOneWithWhereWithoutPrivacyNoticeRecordsInput, Prisma.PatientProfileUpdateWithoutPrivacyNoticeRecordsInput>, Prisma.PatientProfileUncheckedUpdateWithoutPrivacyNoticeRecordsInput>
 }
 
 export type PatientProfileCreateNestedOneWithoutAllergiesInput = {
@@ -1276,6 +1319,7 @@ export type PatientProfileCreateWithoutOwnerUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -1304,6 +1348,7 @@ export type PatientProfileCreateWithoutOwnerUserInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutOwnerUserInput = {
@@ -1320,6 +1365,7 @@ export type PatientProfileUncheckedCreateWithoutOwnerUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -1348,6 +1394,7 @@ export type PatientProfileUncheckedCreateWithoutOwnerUserInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutOwnerUserInput = {
@@ -1394,6 +1441,7 @@ export type PatientProfileScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"PatientProfile"> | Date | string | null
+  lastVisitAt?: Prisma.DateTimeNullableFilter<"PatientProfile"> | Date | string | null
   email?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   bloodType?: Prisma.EnumBloodTypeNullableFilter<"PatientProfile"> | $Enums.BloodType | null
   rhesusFactor?: Prisma.EnumRhesusFactorNullableFilter<"PatientProfile"> | $Enums.RhesusFactor | null
@@ -1416,6 +1464,206 @@ export type PatientProfileScalarWhereInput = {
   satusehatPatientIdKeyVersion?: Prisma.IntNullableFilter<"PatientProfile"> | number | null
 }
 
+export type PatientProfileCreateWithoutPrivacyNoticeRecordsInput = {
+  id?: string
+  mrn: string
+  fullName: string
+  dateOfBirth: Date | string
+  placeOfBirth?: string | null
+  sex?: $Enums.PatientSex | null
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
+  doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+}
+
+export type PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
+  id?: string
+  mrn: string
+  fullName: string
+  dateOfBirth: Date | string
+  placeOfBirth?: string | null
+  sex?: $Enums.PatientSex | null
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address: string
+  ownerUserId?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type PatientProfileCreateOrConnectWithoutPrivacyNoticeRecordsInput = {
+  where: Prisma.PatientProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutPrivacyNoticeRecordsInput, Prisma.PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput>
+}
+
+export type PatientProfileUpsertWithoutPrivacyNoticeRecordsInput = {
+  update: Prisma.XOR<Prisma.PatientProfileUpdateWithoutPrivacyNoticeRecordsInput, Prisma.PatientProfileUncheckedUpdateWithoutPrivacyNoticeRecordsInput>
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutPrivacyNoticeRecordsInput, Prisma.PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput>
+  where?: Prisma.PatientProfileWhereInput
+}
+
+export type PatientProfileUpdateToOneWithWhereWithoutPrivacyNoticeRecordsInput = {
+  where?: Prisma.PatientProfileWhereInput
+  data: Prisma.XOR<Prisma.PatientProfileUpdateWithoutPrivacyNoticeRecordsInput, Prisma.PatientProfileUncheckedUpdateWithoutPrivacyNoticeRecordsInput>
+}
+
+export type PatientProfileUpdateWithoutPrivacyNoticeRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
+  doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientProfileUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+}
+
 export type PatientProfileCreateWithoutAllergiesInput = {
   id?: string
   mrn: string
@@ -1430,6 +1678,7 @@ export type PatientProfileCreateWithoutAllergiesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -1458,6 +1707,7 @@ export type PatientProfileCreateWithoutAllergiesInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutAllergiesInput = {
@@ -1475,6 +1725,7 @@ export type PatientProfileUncheckedCreateWithoutAllergiesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -1502,6 +1753,7 @@ export type PatientProfileUncheckedCreateWithoutAllergiesInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutAllergiesInput = {
@@ -1534,6 +1786,7 @@ export type PatientProfileUpdateWithoutAllergiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -1562,6 +1815,7 @@ export type PatientProfileUpdateWithoutAllergiesInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutAllergiesInput = {
@@ -1579,6 +1833,7 @@ export type PatientProfileUncheckedUpdateWithoutAllergiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -1606,6 +1861,7 @@ export type PatientProfileUncheckedUpdateWithoutAllergiesInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutDoctorsInput = {
@@ -1622,6 +1878,7 @@ export type PatientProfileCreateWithoutDoctorsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -1650,6 +1907,7 @@ export type PatientProfileCreateWithoutDoctorsInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutDoctorsInput = {
@@ -1667,6 +1925,7 @@ export type PatientProfileUncheckedCreateWithoutDoctorsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -1694,6 +1953,7 @@ export type PatientProfileUncheckedCreateWithoutDoctorsInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutDoctorsInput = {
@@ -1726,6 +1986,7 @@ export type PatientProfileUpdateWithoutDoctorsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -1754,6 +2015,7 @@ export type PatientProfileUpdateWithoutDoctorsInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutDoctorsInput = {
@@ -1771,6 +2033,7 @@ export type PatientProfileUncheckedUpdateWithoutDoctorsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -1798,6 +2061,7 @@ export type PatientProfileUncheckedUpdateWithoutDoctorsInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutAppointmentsInput = {
@@ -1814,6 +2078,7 @@ export type PatientProfileCreateWithoutAppointmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -1842,6 +2107,7 @@ export type PatientProfileCreateWithoutAppointmentsInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutAppointmentsInput = {
@@ -1859,6 +2125,7 @@ export type PatientProfileUncheckedCreateWithoutAppointmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -1886,6 +2153,7 @@ export type PatientProfileUncheckedCreateWithoutAppointmentsInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutAppointmentsInput = {
@@ -1918,6 +2186,7 @@ export type PatientProfileUpdateWithoutAppointmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -1946,6 +2215,7 @@ export type PatientProfileUpdateWithoutAppointmentsInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutAppointmentsInput = {
@@ -1963,6 +2233,7 @@ export type PatientProfileUncheckedUpdateWithoutAppointmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -1990,6 +2261,7 @@ export type PatientProfileUncheckedUpdateWithoutAppointmentsInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutRegistrationsInput = {
@@ -2006,6 +2278,7 @@ export type PatientProfileCreateWithoutRegistrationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2034,6 +2307,7 @@ export type PatientProfileCreateWithoutRegistrationsInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutRegistrationsInput = {
@@ -2051,6 +2325,7 @@ export type PatientProfileUncheckedCreateWithoutRegistrationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2078,6 +2353,7 @@ export type PatientProfileUncheckedCreateWithoutRegistrationsInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutRegistrationsInput = {
@@ -2110,6 +2386,7 @@ export type PatientProfileUpdateWithoutRegistrationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2138,6 +2415,7 @@ export type PatientProfileUpdateWithoutRegistrationsInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutRegistrationsInput = {
@@ -2155,6 +2433,7 @@ export type PatientProfileUncheckedUpdateWithoutRegistrationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2182,6 +2461,7 @@ export type PatientProfileUncheckedUpdateWithoutRegistrationsInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutEncountersInput = {
@@ -2198,6 +2478,7 @@ export type PatientProfileCreateWithoutEncountersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2226,6 +2507,7 @@ export type PatientProfileCreateWithoutEncountersInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutEncountersInput = {
@@ -2243,6 +2525,7 @@ export type PatientProfileUncheckedCreateWithoutEncountersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2270,6 +2553,7 @@ export type PatientProfileUncheckedCreateWithoutEncountersInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutEncountersInput = {
@@ -2302,6 +2586,7 @@ export type PatientProfileUpdateWithoutEncountersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2330,6 +2615,7 @@ export type PatientProfileUpdateWithoutEncountersInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutEncountersInput = {
@@ -2347,6 +2633,7 @@ export type PatientProfileUncheckedUpdateWithoutEncountersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2374,6 +2661,7 @@ export type PatientProfileUncheckedUpdateWithoutEncountersInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutPrescriptionsInput = {
@@ -2390,6 +2678,7 @@ export type PatientProfileCreateWithoutPrescriptionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2418,6 +2707,7 @@ export type PatientProfileCreateWithoutPrescriptionsInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutPrescriptionsInput = {
@@ -2435,6 +2725,7 @@ export type PatientProfileUncheckedCreateWithoutPrescriptionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2462,6 +2753,7 @@ export type PatientProfileUncheckedCreateWithoutPrescriptionsInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutPrescriptionsInput = {
@@ -2494,6 +2786,7 @@ export type PatientProfileUpdateWithoutPrescriptionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2522,6 +2815,7 @@ export type PatientProfileUpdateWithoutPrescriptionsInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutPrescriptionsInput = {
@@ -2539,6 +2833,7 @@ export type PatientProfileUncheckedUpdateWithoutPrescriptionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2566,6 +2861,7 @@ export type PatientProfileUncheckedUpdateWithoutPrescriptionsInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutInvoicesInput = {
@@ -2582,6 +2878,7 @@ export type PatientProfileCreateWithoutInvoicesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2610,6 +2907,7 @@ export type PatientProfileCreateWithoutInvoicesInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutInvoicesInput = {
@@ -2627,6 +2925,7 @@ export type PatientProfileUncheckedCreateWithoutInvoicesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2654,6 +2953,7 @@ export type PatientProfileUncheckedCreateWithoutInvoicesInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutInvoicesInput = {
@@ -2686,6 +2986,7 @@ export type PatientProfileUpdateWithoutInvoicesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2714,6 +3015,7 @@ export type PatientProfileUpdateWithoutInvoicesInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutInvoicesInput = {
@@ -2731,6 +3033,7 @@ export type PatientProfileUncheckedUpdateWithoutInvoicesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2758,6 +3061,7 @@ export type PatientProfileUncheckedUpdateWithoutInvoicesInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutBpjsEligibilityChecksInput = {
@@ -2774,6 +3078,7 @@ export type PatientProfileCreateWithoutBpjsEligibilityChecksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2802,6 +3107,7 @@ export type PatientProfileCreateWithoutBpjsEligibilityChecksInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutBpjsEligibilityChecksInput = {
@@ -2819,6 +3125,7 @@ export type PatientProfileUncheckedCreateWithoutBpjsEligibilityChecksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -2846,6 +3153,7 @@ export type PatientProfileUncheckedCreateWithoutBpjsEligibilityChecksInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutBpjsEligibilityChecksInput = {
@@ -2878,6 +3186,7 @@ export type PatientProfileUpdateWithoutBpjsEligibilityChecksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2906,6 +3215,7 @@ export type PatientProfileUpdateWithoutBpjsEligibilityChecksInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutBpjsEligibilityChecksInput = {
@@ -2923,6 +3233,7 @@ export type PatientProfileUncheckedUpdateWithoutBpjsEligibilityChecksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -2950,6 +3261,7 @@ export type PatientProfileUncheckedUpdateWithoutBpjsEligibilityChecksInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateManyOwnerUserInput = {
@@ -2966,6 +3278,7 @@ export type PatientProfileCreateManyOwnerUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
   email?: string | null
   bloodType?: $Enums.BloodType | null
   rhesusFactor?: $Enums.RhesusFactor | null
@@ -3002,6 +3315,7 @@ export type PatientProfileUpdateWithoutOwnerUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -3030,6 +3344,7 @@ export type PatientProfileUpdateWithoutOwnerUserInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutOwnerUserInput = {
@@ -3046,6 +3361,7 @@ export type PatientProfileUncheckedUpdateWithoutOwnerUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -3074,6 +3390,7 @@ export type PatientProfileUncheckedUpdateWithoutOwnerUserInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateManyWithoutOwnerUserInput = {
@@ -3090,6 +3407,7 @@ export type PatientProfileUncheckedUpdateManyWithoutOwnerUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
   rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
@@ -3126,6 +3444,7 @@ export type PatientProfileCountOutputType = {
   encounters: number
   invoices: number
   bpjsEligibilityChecks: number
+  privacyNoticeRecords: number
 }
 
 export type PatientProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3137,6 +3456,7 @@ export type PatientProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Ex
   encounters?: boolean | PatientProfileCountOutputTypeCountEncountersArgs
   invoices?: boolean | PatientProfileCountOutputTypeCountInvoicesArgs
   bpjsEligibilityChecks?: boolean | PatientProfileCountOutputTypeCountBpjsEligibilityChecksArgs
+  privacyNoticeRecords?: boolean | PatientProfileCountOutputTypeCountPrivacyNoticeRecordsArgs
 }
 
 /**
@@ -3205,6 +3525,13 @@ export type PatientProfileCountOutputTypeCountBpjsEligibilityChecksArgs<ExtArgs 
   where?: Prisma.BpjsEligibilityCheckWhereInput
 }
 
+/**
+ * PatientProfileCountOutputType without action
+ */
+export type PatientProfileCountOutputTypeCountPrivacyNoticeRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PatientPrivacyNoticeRecordWhereInput
+}
+
 
 export type PatientProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3221,6 +3548,7 @@ export type PatientProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
+  lastVisitAt?: boolean
   email?: boolean
   bloodType?: boolean
   rhesusFactor?: boolean
@@ -3250,6 +3578,7 @@ export type PatientProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   encounters?: boolean | Prisma.PatientProfile$encountersArgs<ExtArgs>
   invoices?: boolean | Prisma.PatientProfile$invoicesArgs<ExtArgs>
   bpjsEligibilityChecks?: boolean | Prisma.PatientProfile$bpjsEligibilityChecksArgs<ExtArgs>
+  privacyNoticeRecords?: boolean | Prisma.PatientProfile$privacyNoticeRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.PatientProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["patientProfile"]>
 
@@ -3268,6 +3597,7 @@ export type PatientProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
+  lastVisitAt?: boolean
   email?: boolean
   bloodType?: boolean
   rhesusFactor?: boolean
@@ -3306,6 +3636,7 @@ export type PatientProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
+  lastVisitAt?: boolean
   email?: boolean
   bloodType?: boolean
   rhesusFactor?: boolean
@@ -3344,6 +3675,7 @@ export type PatientProfileSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
+  lastVisitAt?: boolean
   email?: boolean
   bloodType?: boolean
   rhesusFactor?: boolean
@@ -3366,7 +3698,7 @@ export type PatientProfileSelectScalar = {
   satusehatPatientIdKeyVersion?: boolean
 }
 
-export type PatientProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mrn" | "fullName" | "dateOfBirth" | "placeOfBirth" | "sex" | "status" | "phoneNumber" | "address" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "email" | "bloodType" | "rhesusFactor" | "maritalStatus" | "occupation" | "religion" | "emergencyContactName" | "emergencyContactPhone" | "guardianName" | "guardianRelation" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "bpjsNumberCiphertext" | "bpjsNumberIndex" | "bpjsNumberLast4" | "bpjsNumberKeyVersion" | "satusehatPatientIdCiphertext" | "satusehatPatientIdKeyVersion", ExtArgs["result"]["patientProfile"]>
+export type PatientProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mrn" | "fullName" | "dateOfBirth" | "placeOfBirth" | "sex" | "status" | "phoneNumber" | "address" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "lastVisitAt" | "email" | "bloodType" | "rhesusFactor" | "maritalStatus" | "occupation" | "religion" | "emergencyContactName" | "emergencyContactPhone" | "guardianName" | "guardianRelation" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "bpjsNumberCiphertext" | "bpjsNumberIndex" | "bpjsNumberLast4" | "bpjsNumberKeyVersion" | "satusehatPatientIdCiphertext" | "satusehatPatientIdKeyVersion", ExtArgs["result"]["patientProfile"]>
 export type PatientProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownerUser?: boolean | Prisma.PatientProfile$ownerUserArgs<ExtArgs>
   doctors?: boolean | Prisma.PatientProfile$doctorsArgs<ExtArgs>
@@ -3377,6 +3709,7 @@ export type PatientProfileInclude<ExtArgs extends runtime.Types.Extensions.Inter
   encounters?: boolean | Prisma.PatientProfile$encountersArgs<ExtArgs>
   invoices?: boolean | Prisma.PatientProfile$invoicesArgs<ExtArgs>
   bpjsEligibilityChecks?: boolean | Prisma.PatientProfile$bpjsEligibilityChecksArgs<ExtArgs>
+  privacyNoticeRecords?: boolean | Prisma.PatientProfile$privacyNoticeRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.PatientProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PatientProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3398,6 +3731,7 @@ export type $PatientProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     encounters: Prisma.$EncounterPayload<ExtArgs>[]
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
     bpjsEligibilityChecks: Prisma.$BpjsEligibilityCheckPayload<ExtArgs>[]
+    privacyNoticeRecords: Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3414,6 +3748,7 @@ export type $PatientProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
+    lastVisitAt: Date | null
     email: string | null
     bloodType: $Enums.BloodType | null
     rhesusFactor: $Enums.RhesusFactor | null
@@ -3837,6 +4172,7 @@ export interface Prisma__PatientProfileClient<T, Null = never, ExtArgs extends r
   encounters<T extends Prisma.PatientProfile$encountersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$encountersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoices<T extends Prisma.PatientProfile$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bpjsEligibilityChecks<T extends Prisma.PatientProfile$bpjsEligibilityChecksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$bpjsEligibilityChecksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BpjsEligibilityCheckPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  privacyNoticeRecords<T extends Prisma.PatientProfile$privacyNoticeRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$privacyNoticeRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3880,6 +4216,7 @@ export interface PatientProfileFieldRefs {
   readonly createdAt: Prisma.FieldRef<"PatientProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PatientProfile", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"PatientProfile", 'DateTime'>
+  readonly lastVisitAt: Prisma.FieldRef<"PatientProfile", 'DateTime'>
   readonly email: Prisma.FieldRef<"PatientProfile", 'String'>
   readonly bloodType: Prisma.FieldRef<"PatientProfile", 'BloodType'>
   readonly rhesusFactor: Prisma.FieldRef<"PatientProfile", 'RhesusFactor'>
@@ -4509,6 +4846,30 @@ export type PatientProfile$bpjsEligibilityChecksArgs<ExtArgs extends runtime.Typ
   take?: number
   skip?: number
   distinct?: Prisma.BpjsEligibilityCheckScalarFieldEnum | Prisma.BpjsEligibilityCheckScalarFieldEnum[]
+}
+
+/**
+ * PatientProfile.privacyNoticeRecords
+ */
+export type PatientProfile$privacyNoticeRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PatientPrivacyNoticeRecord
+   */
+  select?: Prisma.PatientPrivacyNoticeRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PatientPrivacyNoticeRecord
+   */
+  omit?: Prisma.PatientPrivacyNoticeRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PatientPrivacyNoticeRecordInclude<ExtArgs> | null
+  where?: Prisma.PatientPrivacyNoticeRecordWhereInput
+  orderBy?: Prisma.PatientPrivacyNoticeRecordOrderByWithRelationInput | Prisma.PatientPrivacyNoticeRecordOrderByWithRelationInput[]
+  cursor?: Prisma.PatientPrivacyNoticeRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PatientPrivacyNoticeRecordScalarFieldEnum | Prisma.PatientPrivacyNoticeRecordScalarFieldEnum[]
 }
 
 /**

@@ -63,7 +63,7 @@ export class BpjsPcareHttpClient {
         }
         lastError = caughtError as BpjsPcareError;
         this.logger.warn(
-          `BPJS PCare ${request.method} ${request.path} attempt ${attempt}/${maxAttempts} failed with ${lastError.code}`,
+          `BPJS PCare ${request.method} attempt ${attempt}/${maxAttempts} failed with ${lastError.code}`,
         );
       }
     }

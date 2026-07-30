@@ -9,6 +9,7 @@ import { PatientActivityCard } from '#components/client/patients/patient-activit
 import { PatientAllergiesCard } from '#components/client/patients/patient-allergies-card';
 import { PatientDemographicsCard } from '#components/client/patients/patient-demographics-card';
 import { PatientIdentifiersCard } from '#components/client/patients/patient-identifiers-card';
+import { PatientPrivacyHistoryCard } from '#components/client/patients/patient-privacy-history-card';
 import { PatientDoctorsCard } from '#components/client/patients/patient-doctors-card';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
 import { EmptyState } from '#components/shared/empty-state';
@@ -73,6 +74,7 @@ export function PatientDetailPanel({ patientId }: PatientDetailPanelProps) {
         </div>
         <div className="space-y-6">
           <PatientAllergiesCard allergies={patient.allergies} />
+          <PatientPrivacyHistoryCard patientId={patient.id} />
           <PatientDoctorsCard
             patient={patient}
             onAssignDoctor={() => setIsAssignDialogOpen(true)}

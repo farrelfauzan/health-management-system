@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { privacyNoticeEvidenceSchema } from '#patient-management/schemas';
 
 export const registrationDateSchema = z
   .string()
@@ -50,6 +51,7 @@ export function canTransitionRegistrationStatus(
 export const createRegistrationSchema = z.object({
   patientId: z.string().uuid(),
   appointmentId: z.string().uuid().optional(),
+  privacyNotice: privacyNoticeEvidenceSchema.optional(),
 });
 
 export const listRegistrationsQuerySchema = z

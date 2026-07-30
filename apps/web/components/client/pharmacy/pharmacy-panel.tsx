@@ -1,18 +1,14 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import type { PrescriptionResponse } from '@hms/shared-types';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-import { PharmacyStatCards } from '#components/client/pharmacy/pharmacy-stat-cards';
 import { PrescriptionDetailsPanel } from '#components/client/pharmacy/prescription-details-panel';
 import { PrescriptionQueue } from '#components/client/pharmacy/prescription-queue';
 import type { PrescriptionQueueFilter } from '#components/client/pharmacy/prescription-queue-toggle';
-import { PageHeader } from '#components/shared/page-header';
-import { countLowStockMedications } from '#lib/pharmacy/low-stock';
 import { buildPharmacySearchParams, type PharmacySearchParams } from '#lib/pharmacy/search-params';
-import { useMedicationStock } from '#lib/pharmacy/use-medication-stock';
 import { usePendingPrescriptions } from '#lib/pharmacy/use-pending-prescriptions';
 
 type PharmacyPanelProps = {
@@ -24,8 +20,6 @@ export function PharmacyPanel({ initialQuery }: PharmacyPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
   const prescriptionsQuery = usePendingPrescriptions(initialQuery);
-  const stockQuery = useMedicationStock();
-  const queueRef = useRef<HTMLDivElement | null>(null);
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string | null>(null);
   const [queueFilter, setQueueFilter] = useState<PrescriptionQueueFilter>('ALL');
   const [dispenseMessage, setDispenseMessage] = useState<string | null>(null);
@@ -48,25 +42,8 @@ export function PharmacyPanel({ initialQuery }: PharmacyPanelProps) {
     setDispenseMessage(message);
   }
 
-  function handleViewFullQueue(): void {
-    queueRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
   return (
     <div className="space-y-6">
-      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
-
-      <PharmacyStatCards
-        pendingTotal={prescriptionsQuery.meta?.total}
-        isPendingLoading={prescriptionsQuery.isPending}
-        isPendingError={prescriptionsQuery.isError}
-        lowStockCount={countLowStockMedications(stockQuery.medications)}
-        medicationsTotal={stockQuery.medications.length}
-        isStockLoading={stockQuery.isPending}
-        isStockError={stockQuery.isError}
-        onViewFullQueue={handleViewFullQueue}
-      />
-
       {dispenseMessage ? (
         <p
           role="status"
@@ -83,7 +60,7 @@ export function PharmacyPanel({ initialQuery }: PharmacyPanelProps) {
       ) : null}
 
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
-        <div ref={queueRef} className="min-w-0 flex-1 scroll-mt-24">
+        <div className="min-w-0 flex-1">
           <PrescriptionQueue
             prescriptions={prescriptionsQuery.prescriptions}
             isPending={prescriptionsQuery.isPending}

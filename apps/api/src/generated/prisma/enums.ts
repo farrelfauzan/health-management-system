@@ -227,6 +227,41 @@ export const RegistrationStatus = {
 export type RegistrationStatus = (typeof RegistrationStatus)[keyof typeof RegistrationStatus]
 
 
+export const PrivacyNoticeOutcome = {
+  ACKNOWLEDGED: 'ACKNOWLEDGED',
+  PROVIDED_ACKNOWLEDGEMENT_DECLINED: 'PROVIDED_ACKNOWLEDGEMENT_DECLINED',
+  DEFERRED_EMERGENCY: 'DEFERRED_EMERGENCY'
+} as const
+
+export type PrivacyNoticeOutcome = (typeof PrivacyNoticeOutcome)[keyof typeof PrivacyNoticeOutcome]
+
+
+export const PrivacyNoticeLocale = {
+  id: 'id',
+  en: 'en'
+} as const
+
+export type PrivacyNoticeLocale = (typeof PrivacyNoticeLocale)[keyof typeof PrivacyNoticeLocale]
+
+
+export const PrivacyNoticeSubjectType = {
+  SELF: 'SELF',
+  REPRESENTATIVE: 'REPRESENTATIVE'
+} as const
+
+export type PrivacyNoticeSubjectType = (typeof PrivacyNoticeSubjectType)[keyof typeof PrivacyNoticeSubjectType]
+
+
+export const PrivacyNoticeProvenance = {
+  FRONT_DESK: 'FRONT_DESK',
+  PATIENT_PORTAL: 'PATIENT_PORTAL',
+  LEGACY_IMPORT: 'LEGACY_IMPORT',
+  EMERGENCY: 'EMERGENCY'
+} as const
+
+export type PrivacyNoticeProvenance = (typeof PrivacyNoticeProvenance)[keyof typeof PrivacyNoticeProvenance]
+
+
 export const EncounterStatus = {
   IN_PROGRESS: 'IN_PROGRESS',
   FINISHED: 'FINISHED',

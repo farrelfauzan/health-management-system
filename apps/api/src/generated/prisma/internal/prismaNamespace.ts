@@ -388,6 +388,8 @@ export const ModelName = {
   RefreshToken: 'RefreshToken',
   MrnCounter: 'MrnCounter',
   PatientProfile: 'PatientProfile',
+  PrivacyNoticeVersion: 'PrivacyNoticeVersion',
+  PatientPrivacyNoticeRecord: 'PatientPrivacyNoticeRecord',
   PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
@@ -411,6 +413,8 @@ export const ModelName = {
   PrescriptionMedication: 'PrescriptionMedication',
   DispenseRecord: 'DispenseRecord',
   DispenseItem: 'DispenseItem',
+  MedicationStockReceipt: 'MedicationStockReceipt',
+  DispenseItemStockAllocation: 'DispenseItemStockAllocation',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -442,7 +446,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -739,6 +743,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PatientProfileCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PatientProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrivacyNoticeVersion: {
+      payload: Prisma.$PrivacyNoticeVersionPayload<ExtArgs>
+      fields: Prisma.PrivacyNoticeVersionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrivacyNoticeVersionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrivacyNoticeVersionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload>
+        }
+        findFirst: {
+          args: Prisma.PrivacyNoticeVersionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrivacyNoticeVersionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload>
+        }
+        findMany: {
+          args: Prisma.PrivacyNoticeVersionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload>[]
+        }
+        create: {
+          args: Prisma.PrivacyNoticeVersionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload>
+        }
+        createMany: {
+          args: Prisma.PrivacyNoticeVersionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrivacyNoticeVersionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload>[]
+        }
+        delete: {
+          args: Prisma.PrivacyNoticeVersionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload>
+        }
+        update: {
+          args: Prisma.PrivacyNoticeVersionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrivacyNoticeVersionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrivacyNoticeVersionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrivacyNoticeVersionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrivacyNoticeVersionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrivacyNoticeVersionPayload>
+        }
+        aggregate: {
+          args: Prisma.PrivacyNoticeVersionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrivacyNoticeVersion>
+        }
+        groupBy: {
+          args: Prisma.PrivacyNoticeVersionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacyNoticeVersionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrivacyNoticeVersionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrivacyNoticeVersionCountAggregateOutputType> | number
+        }
+      }
+    }
+    PatientPrivacyNoticeRecord: {
+      payload: Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>
+      fields: Prisma.PatientPrivacyNoticeRecordFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PatientPrivacyNoticeRecordFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PatientPrivacyNoticeRecordFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload>
+        }
+        findFirst: {
+          args: Prisma.PatientPrivacyNoticeRecordFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PatientPrivacyNoticeRecordFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload>
+        }
+        findMany: {
+          args: Prisma.PatientPrivacyNoticeRecordFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload>[]
+        }
+        create: {
+          args: Prisma.PatientPrivacyNoticeRecordCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload>
+        }
+        createMany: {
+          args: Prisma.PatientPrivacyNoticeRecordCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PatientPrivacyNoticeRecordCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload>[]
+        }
+        delete: {
+          args: Prisma.PatientPrivacyNoticeRecordDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload>
+        }
+        update: {
+          args: Prisma.PatientPrivacyNoticeRecordUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload>
+        }
+        deleteMany: {
+          args: Prisma.PatientPrivacyNoticeRecordDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PatientPrivacyNoticeRecordUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PatientPrivacyNoticeRecordUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload>[]
+        }
+        upsert: {
+          args: Prisma.PatientPrivacyNoticeRecordUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientPrivacyNoticeRecordPayload>
+        }
+        aggregate: {
+          args: Prisma.PatientPrivacyNoticeRecordAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePatientPrivacyNoticeRecord>
+        }
+        groupBy: {
+          args: Prisma.PatientPrivacyNoticeRecordGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatientPrivacyNoticeRecordGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PatientPrivacyNoticeRecordCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatientPrivacyNoticeRecordCountAggregateOutputType> | number
         }
       }
     }
@@ -2444,6 +2596,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MedicationStockReceipt: {
+      payload: Prisma.$MedicationStockReceiptPayload<ExtArgs>
+      fields: Prisma.MedicationStockReceiptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MedicationStockReceiptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MedicationStockReceiptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        findFirst: {
+          args: Prisma.MedicationStockReceiptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MedicationStockReceiptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        findMany: {
+          args: Prisma.MedicationStockReceiptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>[]
+        }
+        create: {
+          args: Prisma.MedicationStockReceiptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        createMany: {
+          args: Prisma.MedicationStockReceiptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MedicationStockReceiptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>[]
+        }
+        delete: {
+          args: Prisma.MedicationStockReceiptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        update: {
+          args: Prisma.MedicationStockReceiptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        deleteMany: {
+          args: Prisma.MedicationStockReceiptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MedicationStockReceiptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MedicationStockReceiptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>[]
+        }
+        upsert: {
+          args: Prisma.MedicationStockReceiptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        aggregate: {
+          args: Prisma.MedicationStockReceiptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMedicationStockReceipt>
+        }
+        groupBy: {
+          args: Prisma.MedicationStockReceiptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MedicationStockReceiptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MedicationStockReceiptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MedicationStockReceiptCountAggregateOutputType> | number
+        }
+      }
+    }
+    DispenseItemStockAllocation: {
+      payload: Prisma.$DispenseItemStockAllocationPayload<ExtArgs>
+      fields: Prisma.DispenseItemStockAllocationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DispenseItemStockAllocationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DispenseItemStockAllocationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        findFirst: {
+          args: Prisma.DispenseItemStockAllocationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DispenseItemStockAllocationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        findMany: {
+          args: Prisma.DispenseItemStockAllocationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>[]
+        }
+        create: {
+          args: Prisma.DispenseItemStockAllocationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        createMany: {
+          args: Prisma.DispenseItemStockAllocationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DispenseItemStockAllocationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>[]
+        }
+        delete: {
+          args: Prisma.DispenseItemStockAllocationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        update: {
+          args: Prisma.DispenseItemStockAllocationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        deleteMany: {
+          args: Prisma.DispenseItemStockAllocationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DispenseItemStockAllocationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DispenseItemStockAllocationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>[]
+        }
+        upsert: {
+          args: Prisma.DispenseItemStockAllocationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        aggregate: {
+          args: Prisma.DispenseItemStockAllocationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDispenseItemStockAllocation>
+        }
+        groupBy: {
+          args: Prisma.DispenseItemStockAllocationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DispenseItemStockAllocationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DispenseItemStockAllocationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DispenseItemStockAllocationCountAggregateOutputType> | number
+        }
+      }
+    }
     ServiceTariff: {
       payload: Prisma.$ServiceTariffPayload<ExtArgs>
       fields: Prisma.ServiceTariffFieldRefs
@@ -3717,6 +4017,7 @@ export const PatientProfileScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt',
+  lastVisitAt: 'lastVisitAt',
   email: 'email',
   bloodType: 'bloodType',
   rhesusFactor: 'rhesusFactor',
@@ -3740,6 +4041,39 @@ export const PatientProfileScalarFieldEnum = {
 } as const
 
 export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]
+
+
+export const PrivacyNoticeVersionScalarFieldEnum = {
+  id: 'id',
+  version: 'version',
+  effectiveAt: 'effectiveAt',
+  contentId: 'contentId',
+  contentEn: 'contentEn',
+  contentHashId: 'contentHashId',
+  contentHashEn: 'contentHashEn',
+  counselApproved: 'counselApproved',
+  createdAt: 'createdAt'
+} as const
+
+export type PrivacyNoticeVersionScalarFieldEnum = (typeof PrivacyNoticeVersionScalarFieldEnum)[keyof typeof PrivacyNoticeVersionScalarFieldEnum]
+
+
+export const PatientPrivacyNoticeRecordScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  privacyNoticeVersionId: 'privacyNoticeVersionId',
+  outcome: 'outcome',
+  locale: 'locale',
+  contentHash: 'contentHash',
+  subjectType: 'subjectType',
+  representativeName: 'representativeName',
+  representativeRelation: 'representativeRelation',
+  actorUserId: 'actorUserId',
+  provenance: 'provenance',
+  recordedAt: 'recordedAt'
+} as const
+
+export type PatientPrivacyNoticeRecordScalarFieldEnum = (typeof PatientPrivacyNoticeRecordScalarFieldEnum)[keyof typeof PatientPrivacyNoticeRecordScalarFieldEnum]
 
 
 export const PatientAllergyScalarFieldEnum = {
@@ -4048,7 +4382,7 @@ export const MedicationScalarFieldEnum = {
   strength: 'strength',
   unit: 'unit',
   category: 'category',
-  stockQty: 'stockQty',
+  reorderLevel: 'reorderLevel',
   unitPrice: 'unitPrice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -4114,6 +4448,34 @@ export const DispenseItemScalarFieldEnum = {
 } as const
 
 export type DispenseItemScalarFieldEnum = (typeof DispenseItemScalarFieldEnum)[keyof typeof DispenseItemScalarFieldEnum]
+
+
+export const MedicationStockReceiptScalarFieldEnum = {
+  id: 'id',
+  medicationId: 'medicationId',
+  batchNumber: 'batchNumber',
+  expiryDate: 'expiryDate',
+  quantity: 'quantity',
+  remainingQuantity: 'remainingQuantity',
+  receivedAt: 'receivedAt',
+  receivedById: 'receivedById',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MedicationStockReceiptScalarFieldEnum = (typeof MedicationStockReceiptScalarFieldEnum)[keyof typeof MedicationStockReceiptScalarFieldEnum]
+
+
+export const DispenseItemStockAllocationScalarFieldEnum = {
+  id: 'id',
+  dispenseItemId: 'dispenseItemId',
+  stockReceiptId: 'stockReceiptId',
+  quantity: 'quantity',
+  createdAt: 'createdAt'
+} as const
+
+export type DispenseItemStockAllocationScalarFieldEnum = (typeof DispenseItemStockAllocationScalarFieldEnum)[keyof typeof DispenseItemStockAllocationScalarFieldEnum]
 
 
 export const ServiceTariffScalarFieldEnum = {
@@ -4567,6 +4929,62 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PrivacyNoticeOutcome'
+ */
+export type EnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivacyNoticeOutcome'>
+    
+
+
+/**
+ * Reference to a field of type 'PrivacyNoticeOutcome[]'
+ */
+export type ListEnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivacyNoticeOutcome[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PrivacyNoticeLocale'
+ */
+export type EnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivacyNoticeLocale'>
+    
+
+
+/**
+ * Reference to a field of type 'PrivacyNoticeLocale[]'
+ */
+export type ListEnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivacyNoticeLocale[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PrivacyNoticeSubjectType'
+ */
+export type EnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivacyNoticeSubjectType'>
+    
+
+
+/**
+ * Reference to a field of type 'PrivacyNoticeSubjectType[]'
+ */
+export type ListEnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivacyNoticeSubjectType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PrivacyNoticeProvenance'
+ */
+export type EnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivacyNoticeProvenance'>
+    
+
+
+/**
+ * Reference to a field of type 'PrivacyNoticeProvenance[]'
+ */
+export type ListEnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrivacyNoticeProvenance[]'>
     
 
 
@@ -5089,6 +5507,8 @@ export type GlobalOmitConfig = {
   refreshToken?: Prisma.RefreshTokenOmit
   mrnCounter?: Prisma.MrnCounterOmit
   patientProfile?: Prisma.PatientProfileOmit
+  privacyNoticeVersion?: Prisma.PrivacyNoticeVersionOmit
+  patientPrivacyNoticeRecord?: Prisma.PatientPrivacyNoticeRecordOmit
   patientAllergy?: Prisma.PatientAllergyOmit
   specialty?: Prisma.SpecialtyOmit
   doctorProfile?: Prisma.DoctorProfileOmit
@@ -5112,6 +5532,8 @@ export type GlobalOmitConfig = {
   prescriptionMedication?: Prisma.PrescriptionMedicationOmit
   dispenseRecord?: Prisma.DispenseRecordOmit
   dispenseItem?: Prisma.DispenseItemOmit
+  medicationStockReceipt?: Prisma.MedicationStockReceiptOmit
+  dispenseItemStockAllocation?: Prisma.DispenseItemStockAllocationOmit
   serviceTariff?: Prisma.ServiceTariffOmit
   invoiceCounter?: Prisma.InvoiceCounterOmit
   invoice?: Prisma.InvoiceOmit

@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ObservedRequest, ObservedResponse } from './observability.types';
+import { buildSafeErrorLog, stripQueryString } from './safe-logging';
 
 const ERROR_CODE_BY_STATUS: Readonly<Record<number, string>> = {
   [HttpStatus.BAD_REQUEST]: 'BAD_REQUEST',
@@ -48,16 +49,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
     const { message, details } = resolveErrorContent(exception);
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
-      const stack = exception instanceof Error ? exception.stack : undefined;
       this.logger.error(
-        JSON.stringify({
+        buildSafeErrorLog('unhandled_http_exception', {
           requestId: request.requestId,
           method: request.method,
-          path: request.originalUrl,
+          path: stripQueryString(request.originalUrl),
           statusCode: status,
-          message: exception instanceof Error ? exception.message : String(exception),
         }),
-        stack,
       );
     }
     response.status(status).json({

@@ -1,6 +1,7 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 
 import { NextHandler, ObservedRequest, ObservedResponse } from './observability.types';
+import { stripQueryString } from './safe-logging';
 
 const NANOSECONDS_PER_MILLISECOND = 1_000_000;
 
@@ -20,7 +21,7 @@ export class HttpLoggingMiddleware implements NestMiddleware {
       const line = JSON.stringify({
         requestId: request.requestId,
         method: request.method,
-        path: request.originalUrl,
+        path: stripQueryString(request.originalUrl),
         statusCode: response.statusCode,
         durationMs: Math.round(durationNs / NANOSECONDS_PER_MILLISECOND),
         userId: request.user?.sub,

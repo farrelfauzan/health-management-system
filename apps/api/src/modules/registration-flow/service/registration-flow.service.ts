@@ -27,6 +27,7 @@ import { ListRegistrationsQueryDto } from '../dto/list-registrations-query.dto';
 import { QueueBoardQueryDto } from '../dto/queue-board-query.dto';
 import { UpdateRegistrationDto } from '../dto/update-registration.dto';
 import { RegistrationFlowRepository } from '../repository/registration-flow.repository';
+import { CurrentPrivacyNoticeEvidenceRequiredError } from '../../../common/privacy-notice/privacy-notice.repository';
 
 const REGISTRABLE_APPOINTMENT_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
@@ -123,6 +124,13 @@ export class RegistrationFlowService {
       throw new ForbiddenException('You can only create registrations for your own profile');
     }
 
+    if (!createScope.hasAny && payload.privacyNotice?.subjectType === 'REPRESENTATIVE') {
+      throw new ForbiddenException('Patients cannot act as their own representative');
+    }
+    if (!createScope.hasAny && payload.privacyNotice?.outcome === 'DEFERRED_EMERGENCY') {
+      throw new ForbiddenException('Emergency privacy notice deferral is staff-only');
+    }
+
     if (payload.appointmentId) {
       await this.assertAppointmentRegistrable({
         appointmentId: payload.appointmentId,
@@ -138,12 +146,22 @@ export class RegistrationFlowService {
       throw new ConflictException('Patient already has an open registration');
     }
 
-    const created = await this.registrationFlowRepository.createRegistration({
-      patientId: payload.patientId,
-      appointmentId: payload.appointmentId,
-      createdById: currentUser.sub,
-      queueDate: this.resolveClinicToday(),
-    });
+    let created: RegistrationWithRelationsRecord;
+    try {
+      created = await this.registrationFlowRepository.createRegistration({
+        patientId: payload.patientId,
+        appointmentId: payload.appointmentId,
+        createdById: currentUser.sub,
+        actorUserId: currentUser.sub,
+        queueDate: this.resolveClinicToday(),
+        privacyNotice: payload.privacyNotice,
+      });
+    } catch (error) {
+      if (error instanceof CurrentPrivacyNoticeEvidenceRequiredError) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
 
     return this.toRegistrationListItem(created);
   }

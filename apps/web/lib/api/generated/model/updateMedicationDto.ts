@@ -45,5 +45,5 @@ export interface UpdateMedicationDto {
      * @minimum 0
      * @maximum 1000000
      */
-  stockQty?: number;
+  reorderLevel?: number;
 }

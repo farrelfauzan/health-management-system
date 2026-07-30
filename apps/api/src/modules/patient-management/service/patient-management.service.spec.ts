@@ -1,12 +1,21 @@
 import { BadRequestException, ConflictException, ForbiddenException } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
 import { PatientManagementService } from './patient-management.service';
 
 type PermissionScope = 'ANY' | 'OWN';
+
+const privacyNotice = {
+  privacyNoticeVersionId: 'c2a3ecb0-a352-4d49-a47c-39d1b67904c9',
+  locale: 'id' as const,
+  outcome: 'ACKNOWLEDGED' as const,
+  subjectType: 'SELF' as const,
+  provenance: 'FRONT_DESK' as const,
+};
 
 function buildActor(
   permissions: Array<{ action: string; resource: string; scope: PermissionScope }>,
@@ -60,10 +69,17 @@ describe('PatientManagementService', () => {
     record: jest.fn(),
   } as unknown as AuditService;
 
+  const privacyNoticeRepositoryMock = {
+    findCurrentVersion: jest.fn(),
+    findPatientHistory: jest.fn(),
+    findCurrentPatientRecord: jest.fn(),
+  } as unknown as PrivacyNoticeRepository;
+
   const service = new PatientManagementService(
     patientManagementRepositoryMock,
     authRepositoryMock,
     auditServiceMock,
+    privacyNoticeRepositoryMock,
   );
 
   const currentUser = {
@@ -95,6 +111,7 @@ describe('PatientManagementService', () => {
           address: 'Main Street',
           ownerUserId: currentUser.sub,
           isActive: true,
+          privacyNotice,
           createdAt: new Date('2026-01-01T00:00:00.000Z'),
           updatedAt: new Date('2026-01-02T00:00:00.000Z'),
           _count: {
@@ -135,8 +152,6 @@ describe('PatientManagementService', () => {
       true,
     );
     expect(result.meta.total).toBe(1);
-    expect(result.items[0]?.dateOfBirth).toBe('1990-01-01');
-    expect(result.items[0]?.sex).toBe('MALE');
     expect(result.items[0]?.status).toBe('IN_PATIENT');
     expect(result.items[0]?.doctorCount).toBe(2);
     expect(result.items[0]?.doctors).toEqual([
@@ -147,6 +162,11 @@ describe('PatientManagementService', () => {
         specialty: 'Cardiology',
       },
     ]);
+    expect(result.items[0]).not.toHaveProperty('mrn');
+    expect(result.items[0]).not.toHaveProperty('dateOfBirth');
+    expect(result.items[0]).not.toHaveProperty('phoneNumber');
+    expect(result.items[0]).not.toHaveProperty('address');
+    expect(JSON.stringify(result.items[0])).not.toContain('MRN-0001');
   });
 
   it('denies reading patient detail when only own scope and no ownership or active assignment', async () => {
@@ -259,6 +279,7 @@ describe('PatientManagementService', () => {
           phoneNumber: '12345',
           address: 'Main Street',
           isActive: true,
+          privacyNotice,
         },
         currentUser,
       ),
@@ -282,6 +303,7 @@ describe('PatientManagementService', () => {
           phoneNumber: '12345',
           address: 'Main Street',
           isActive: true,
+          privacyNotice,
         },
         currentUser,
       ),
@@ -316,6 +338,7 @@ describe('PatientManagementService', () => {
         phoneNumber: '12345',
         address: 'Main Street',
         isActive: true,
+        privacyNotice,
       },
       currentUser,
     );
@@ -381,6 +404,7 @@ describe('PatientManagementService', () => {
             '58e9a316-40b2-4f4c-9207-2a58028babc4',
             '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8',
           ],
+          privacyNotice,
         },
         currentUser,
       ),
@@ -423,6 +447,7 @@ describe('PatientManagementService', () => {
         address: 'Main Street',
         isActive: true,
         doctorIds: ['58e9a316-40b2-4f4c-9207-2a58028babc4', '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8'],
+        privacyNotice,
       },
       currentUser,
     );
@@ -456,6 +481,7 @@ describe('PatientManagementService', () => {
           phoneNumber: '12345',
           address: 'Main Street',
           isActive: true,
+          privacyNotice,
         },
         currentUser,
       ),
@@ -472,6 +498,7 @@ describe('PatientManagementService', () => {
       address: 'Main Street',
       isActive: true,
       nik: '3201015205900001',
+      privacyNotice,
     };
 
     const mockCreatedPatient = {
@@ -658,6 +685,7 @@ describe('PatientManagementService', () => {
       rhesusFactor: 'POSITIVE' as const,
       religion: 'ISLAM' as const,
       allergies: [{ substance: 'Penicillin', severity: 'SEVERE' as const }],
+      privacyNotice,
     };
 
     beforeEach(() => {
