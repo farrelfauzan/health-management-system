@@ -61,9 +61,7 @@ export class SatusehatSubmissionService {
     try {
       const satusehatEncounterId = await this.submitEncounterBundle(submission.encounterId);
       await this.submissionRepository.markSubmitted(submission.id, satusehatEncounterId);
-      this.logger.log(
-        `Submitted encounter ${submission.encounterId} to SATUSEHAT as ${satusehatEncounterId ?? 'unknown id'}`,
-      );
+      this.logger.log('SATUSEHAT encounter submission succeeded');
     } catch (caughtError) {
       await this.recordFailure(submission, attemptNumber, caughtError);
     }
@@ -259,22 +257,18 @@ export class SatusehatSubmissionService {
         request: { method: 'POST', url: 'MedicationDispense' },
       });
     }
-    this.reportMedicationGaps(bundleData.encounterId, skippedMedications);
+    this.reportMedicationGaps(skippedMedications);
     return [...medicationEntries, ...requestEntries, ...dispenseEntries];
   }
 
   private reportMedicationGaps(
-    encounterId: string,
     skippedMedications: ReadonlyMap<string, SatusehatSubmissionMedication>,
   ): void {
     if (skippedMedications.size === 0) {
       return;
     }
-    const gapList = [...skippedMedications.values()]
-      .map((medication) => `${medication.code} (${medication.name})`)
-      .join(', ');
     this.logger.warn(
-      `SATUSEHAT medication gap report for encounter ${encounterId}: ${skippedMedications.size} catalog item(s) without a KFA code were skipped: ${gapList}`,
+      `SATUSEHAT medication mapping gap: skipped ${skippedMedications.size} item(s) without a KFA code`,
     );
   }
 
@@ -382,7 +376,7 @@ export class SatusehatSubmissionService {
         lastError: message,
       });
       this.logger.warn(
-        `SATUSEHAT submission for encounter ${submission.encounterId} failed permanently after attempt ${attemptNumber}: ${message}`,
+        `SATUSEHAT submission failed permanently after attempt ${attemptNumber}`,
       );
       return;
     }
@@ -394,7 +388,7 @@ export class SatusehatSubmissionService {
       lastError: message,
     });
     this.logger.warn(
-      `SATUSEHAT submission for encounter ${submission.encounterId} attempt ${attemptNumber} failed transiently: ${message}`,
+      `SATUSEHAT submission attempt ${attemptNumber} failed transiently`,
     );
   }
 

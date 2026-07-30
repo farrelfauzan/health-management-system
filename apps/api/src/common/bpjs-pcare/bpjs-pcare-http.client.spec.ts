@@ -1,6 +1,7 @@
 import { createCipheriv, createHash } from 'node:crypto';
 
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@nestjs/common';
 
 import LZString from 'lz-string';
 
@@ -114,6 +115,7 @@ describe('BpjsPcareHttpClient', () => {
   });
 
   it('retries an idempotent request after an upstream failure', async () => {
+    const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
     fetchMock
       .mockResolvedValueOnce(new Response('bad gateway', { status: 502 }))
       .mockImplementationOnce(respondWithEncryptedPayload({ ok: true }));
@@ -126,6 +128,7 @@ describe('BpjsPcareHttpClient', () => {
 
     expect(actualEnvelope.response).toEqual({ ok: true });
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(JSON.stringify(warnSpy.mock.calls)).not.toContain('poli/fktp/0/1');
   });
 
   it('never retries a POST', async () => {

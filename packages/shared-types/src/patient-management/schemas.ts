@@ -214,6 +214,59 @@ export const patientAllergiesSchema = z
 
 export type PatientAllergyInput = z.infer<typeof patientAllergyInputSchema>;
 
+export const PRIVACY_NOTICE_OUTCOMES = [
+  'ACKNOWLEDGED',
+  'PROVIDED_ACKNOWLEDGEMENT_DECLINED',
+  'DEFERRED_EMERGENCY',
+] as const;
+export const privacyNoticeOutcomeSchema = z.enum(PRIVACY_NOTICE_OUTCOMES);
+export type PrivacyNoticeOutcomeValue = z.infer<typeof privacyNoticeOutcomeSchema>;
+
+export const privacyNoticeEvidenceSchema = z
+  .object({
+    privacyNoticeVersionId: z.string().uuid(),
+    locale: z.enum(['id', 'en']),
+    outcome: privacyNoticeOutcomeSchema,
+    subjectType: z.enum(['SELF', 'REPRESENTATIVE']),
+    representativeName: z.string().trim().min(2).max(120).optional(),
+    representativeRelation: z.string().trim().min(2).max(60).optional(),
+    provenance: z.enum(['FRONT_DESK', 'PATIENT_PORTAL', 'LEGACY_IMPORT', 'EMERGENCY']),
+  })
+  .superRefine((value, context) => {
+    const hasRepresentative =
+      value.representativeName !== undefined || value.representativeRelation !== undefined;
+    if (value.subjectType === 'REPRESENTATIVE' && !value.representativeName) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Representative name and relation are required',
+        path: ['representativeName'],
+      });
+    }
+    if (value.subjectType === 'REPRESENTATIVE' && !value.representativeRelation) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Representative relation is required',
+        path: ['representativeRelation'],
+      });
+    }
+    if (value.subjectType === 'SELF' && hasRepresentative) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Self acknowledgement cannot include representative details',
+        path: ['subjectType'],
+      });
+    }
+    if (value.outcome === 'DEFERRED_EMERGENCY' && value.provenance !== 'EMERGENCY') {
+      context.addIssue({
+        code: 'custom',
+        message: 'Emergency deferral must use EMERGENCY provenance',
+        path: ['provenance'],
+      });
+    }
+  });
+
+export type PrivacyNoticeEvidenceInput = z.infer<typeof privacyNoticeEvidenceSchema>;
+
 export const listPatientsQuerySchema = z
   .object({
     page: z.coerce.number().int().min(1).default(1),
@@ -281,6 +334,7 @@ export const createPatientSchema = z.object({
     .max(MAX_INITIAL_DOCTOR_ASSIGNMENTS)
     .refine((ids) => new Set(ids).size === ids.length, 'Doctor IDs must be unique')
     .optional(),
+  privacyNotice: privacyNoticeEvidenceSchema,
 });
 
 /**

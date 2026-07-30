@@ -57,7 +57,7 @@ export class SatusehatHttpClient {
         }
         lastError = caughtError as SatusehatError;
         this.logger.warn(
-          `SATUSEHAT ${request.method} ${request.path} attempt ${attempt}/${maxAttempts} failed with ${lastError.code}`,
+          `SATUSEHAT ${request.method} attempt ${attempt}/${maxAttempts} failed with ${lastError.code}`,
         );
       }
     }

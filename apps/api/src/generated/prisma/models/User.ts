@@ -220,6 +220,7 @@ export type UserWhereInput = {
   receivedPayments?: Prisma.PaymentListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -252,6 +253,7 @@ export type UserOrderByWithRelationInput = {
   receivedPayments?: Prisma.PaymentOrderByRelationAggregateInput
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -287,6 +289,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   receivedPayments?: Prisma.PaymentListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -345,6 +348,7 @@ export type UserCreateInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -377,6 +381,7 @@ export type UserUncheckedCreateInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserUpdateInput = {
@@ -409,6 +414,7 @@ export type UserUpdateInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -441,6 +447,7 @@ export type UserUncheckedUpdateInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -557,6 +564,20 @@ export type UserUpdateOneWithoutPatientProfilesNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPatientProfilesInput, Prisma.UserUpdateWithoutPatientProfilesInput>, Prisma.UserUncheckedUpdateWithoutPatientProfilesInput>
+}
+
+export type UserCreateNestedOneWithoutPrivacyNoticeRecordsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPrivacyNoticeRecordsInput, Prisma.UserUncheckedCreateWithoutPrivacyNoticeRecordsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPrivacyNoticeRecordsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPrivacyNoticeRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPrivacyNoticeRecordsInput, Prisma.UserUncheckedCreateWithoutPrivacyNoticeRecordsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPrivacyNoticeRecordsInput
+  upsert?: Prisma.UserUpsertWithoutPrivacyNoticeRecordsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPrivacyNoticeRecordsInput, Prisma.UserUpdateWithoutPrivacyNoticeRecordsInput>, Prisma.UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput>
 }
 
 export type UserCreateNestedOneWithoutDoctorProfileInput = {
@@ -900,6 +921,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -931,6 +953,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -978,6 +1001,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -1009,6 +1033,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutPatientProfilesInput = {
@@ -1040,6 +1065,7 @@ export type UserCreateWithoutPatientProfilesInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutPatientProfilesInput = {
@@ -1071,6 +1097,7 @@ export type UserUncheckedCreateWithoutPatientProfilesInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutPatientProfilesInput = {
@@ -1118,6 +1145,7 @@ export type UserUpdateWithoutPatientProfilesInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientProfilesInput = {
@@ -1131,6 +1159,151 @@ export type UserUncheckedUpdateWithoutPatientProfilesInput = {
   roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+}
+
+export type UserCreateWithoutPrivacyNoticeRecordsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+}
+
+export type UserUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+}
+
+export type UserCreateOrConnectWithoutPrivacyNoticeRecordsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPrivacyNoticeRecordsInput, Prisma.UserUncheckedCreateWithoutPrivacyNoticeRecordsInput>
+}
+
+export type UserUpsertWithoutPrivacyNoticeRecordsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPrivacyNoticeRecordsInput, Prisma.UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPrivacyNoticeRecordsInput, Prisma.UserUncheckedCreateWithoutPrivacyNoticeRecordsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPrivacyNoticeRecordsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPrivacyNoticeRecordsInput, Prisma.UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput>
+}
+
+export type UserUpdateWithoutPrivacyNoticeRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
   doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
   assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
   unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
@@ -1180,6 +1353,7 @@ export type UserCreateWithoutDoctorProfileInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutDoctorProfileInput = {
@@ -1211,6 +1385,7 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutDoctorProfileInput = {
@@ -1258,6 +1433,7 @@ export type UserUpdateWithoutDoctorProfileInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorProfileInput = {
@@ -1289,6 +1465,7 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutAssignedDoctorPatientsInput = {
@@ -1320,6 +1497,7 @@ export type UserCreateWithoutAssignedDoctorPatientsInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
@@ -1351,6 +1529,7 @@ export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutAssignedDoctorPatientsInput = {
@@ -1387,6 +1566,7 @@ export type UserCreateWithoutUnassignedDoctorPatientsInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
@@ -1418,6 +1598,7 @@ export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutUnassignedDoctorPatientsInput = {
@@ -1465,6 +1646,7 @@ export type UserUpdateWithoutAssignedDoctorPatientsInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
@@ -1496,6 +1678,7 @@ export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserUpsertWithoutUnassignedDoctorPatientsInput = {
@@ -1538,6 +1721,7 @@ export type UserUpdateWithoutUnassignedDoctorPatientsInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
@@ -1569,6 +1753,7 @@ export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutDoctorPatientActivitiesInput = {
@@ -1600,6 +1785,7 @@ export type UserCreateWithoutDoctorPatientActivitiesInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
@@ -1631,6 +1817,7 @@ export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutDoctorPatientActivitiesInput = {
@@ -1678,6 +1865,7 @@ export type UserUpdateWithoutDoctorPatientActivitiesInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
@@ -1709,6 +1897,7 @@ export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutCreatedAppointmentsInput = {
@@ -1740,6 +1929,7 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
@@ -1771,6 +1961,7 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutCreatedAppointmentsInput = {
@@ -1818,6 +2009,7 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
@@ -1849,6 +2041,7 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutCreatedRegistrationsInput = {
@@ -1880,6 +2073,7 @@ export type UserCreateWithoutCreatedRegistrationsInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
@@ -1911,6 +2105,7 @@ export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutCreatedRegistrationsInput = {
@@ -1958,6 +2153,7 @@ export type UserUpdateWithoutCreatedRegistrationsInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
@@ -1989,6 +2185,7 @@ export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutCreatedEncountersInput = {
@@ -2020,6 +2217,7 @@ export type UserCreateWithoutCreatedEncountersInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutCreatedEncountersInput = {
@@ -2051,6 +2249,7 @@ export type UserUncheckedCreateWithoutCreatedEncountersInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutCreatedEncountersInput = {
@@ -2098,6 +2297,7 @@ export type UserUpdateWithoutCreatedEncountersInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
@@ -2129,6 +2329,7 @@ export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutRecordedVitalSignsInput = {
@@ -2160,6 +2361,7 @@ export type UserCreateWithoutRecordedVitalSignsInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
@@ -2191,6 +2393,7 @@ export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutRecordedVitalSignsInput = {
@@ -2238,6 +2441,7 @@ export type UserUpdateWithoutRecordedVitalSignsInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
@@ -2269,6 +2473,7 @@ export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutRecordedDiagnosesInput = {
@@ -2300,6 +2505,7 @@ export type UserCreateWithoutRecordedDiagnosesInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
@@ -2331,6 +2537,7 @@ export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutRecordedDiagnosesInput = {
@@ -2378,6 +2585,7 @@ export type UserUpdateWithoutRecordedDiagnosesInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
@@ -2409,6 +2617,7 @@ export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutRecordedProceduresInput = {
@@ -2440,6 +2649,7 @@ export type UserCreateWithoutRecordedProceduresInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutRecordedProceduresInput = {
@@ -2471,6 +2681,7 @@ export type UserUncheckedCreateWithoutRecordedProceduresInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutRecordedProceduresInput = {
@@ -2518,6 +2729,7 @@ export type UserUpdateWithoutRecordedProceduresInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
@@ -2549,6 +2761,7 @@ export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutDispensedByRecordsInput = {
@@ -2580,6 +2793,7 @@ export type UserCreateWithoutDispensedByRecordsInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
@@ -2611,6 +2825,7 @@ export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutDispensedByRecordsInput = {
@@ -2658,6 +2873,7 @@ export type UserUpdateWithoutDispensedByRecordsInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
@@ -2689,6 +2905,7 @@ export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutMedicationStockReceiptsInput = {
@@ -2720,6 +2937,7 @@ export type UserCreateWithoutMedicationStockReceiptsInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
@@ -2751,6 +2969,7 @@ export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutMedicationStockReceiptsInput = {
@@ -2798,6 +3017,7 @@ export type UserUpdateWithoutMedicationStockReceiptsInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
@@ -2829,6 +3049,7 @@ export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutVoidedInvoicesInput = {
@@ -2860,6 +3081,7 @@ export type UserCreateWithoutVoidedInvoicesInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
@@ -2891,6 +3113,7 @@ export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutVoidedInvoicesInput = {
@@ -2927,6 +3150,7 @@ export type UserCreateWithoutCreatedInvoicesInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
@@ -2958,6 +3182,7 @@ export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutCreatedInvoicesInput = {
@@ -3005,6 +3230,7 @@ export type UserUpdateWithoutVoidedInvoicesInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
@@ -3036,6 +3262,7 @@ export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserUpsertWithoutCreatedInvoicesInput = {
@@ -3078,6 +3305,7 @@ export type UserUpdateWithoutCreatedInvoicesInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
@@ -3109,6 +3337,7 @@ export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutReceivedPaymentsInput = {
@@ -3140,6 +3369,7 @@ export type UserCreateWithoutReceivedPaymentsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
@@ -3171,6 +3401,7 @@ export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutReceivedPaymentsInput = {
@@ -3218,6 +3449,7 @@ export type UserUpdateWithoutReceivedPaymentsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
@@ -3249,6 +3481,7 @@ export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutRolesInput = {
@@ -3280,6 +3513,7 @@ export type UserCreateWithoutRolesInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutRolesInput = {
@@ -3311,6 +3545,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutRolesInput = {
@@ -3347,6 +3582,7 @@ export type UserCreateWithoutAssignedRolesInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutAssignedRolesInput = {
@@ -3378,6 +3614,7 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutAssignedRolesInput = {
@@ -3414,6 +3651,7 @@ export type UserCreateWithoutUnassignedRolesInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutUnassignedRolesInput = {
@@ -3445,6 +3683,7 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutUnassignedRolesInput = {
@@ -3492,6 +3731,7 @@ export type UserUpdateWithoutRolesInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRolesInput = {
@@ -3523,6 +3763,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserUpsertWithoutAssignedRolesInput = {
@@ -3565,6 +3806,7 @@ export type UserUpdateWithoutAssignedRolesInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedRolesInput = {
@@ -3596,6 +3838,7 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserUpsertWithoutUnassignedRolesInput = {
@@ -3638,6 +3881,7 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
@@ -3669,6 +3913,7 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -3700,6 +3945,7 @@ export type UserCreateWithoutAuditLogsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -3731,6 +3977,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -3778,6 +4025,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -3809,6 +4057,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 export type UserCreateWithoutRecordedBpjsReferralsInput = {
@@ -3840,6 +4089,7 @@ export type UserCreateWithoutRecordedBpjsReferralsInput = {
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
 }
 
 export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
@@ -3871,6 +4121,7 @@ export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
 }
 
 export type UserCreateOrConnectWithoutRecordedBpjsReferralsInput = {
@@ -3918,6 +4169,7 @@ export type UserUpdateWithoutRecordedBpjsReferralsInput = {
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
@@ -3949,6 +4201,7 @@ export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
 }
 
 
@@ -3978,6 +4231,7 @@ export type UserCountOutputType = {
   receivedPayments: number
   refreshTokens: number
   auditLogs: number
+  privacyNoticeRecords: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4002,6 +4256,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   receivedPayments?: boolean | UserCountOutputTypeCountReceivedPaymentsArgs
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
+  privacyNoticeRecords?: boolean | UserCountOutputTypeCountPrivacyNoticeRecordsArgs
 }
 
 /**
@@ -4161,6 +4416,13 @@ export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.AuditLogWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPrivacyNoticeRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PatientPrivacyNoticeRecordWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -4192,6 +4454,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   receivedPayments?: boolean | Prisma.User$receivedPaymentsArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  privacyNoticeRecords?: boolean | Prisma.User$privacyNoticeRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -4249,6 +4512,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   receivedPayments?: boolean | Prisma.User$receivedPaymentsArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  privacyNoticeRecords?: boolean | Prisma.User$privacyNoticeRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -4279,6 +4543,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     receivedPayments: Prisma.$PaymentPayload<ExtArgs>[]
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+    privacyNoticeRecords: Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4704,6 +4969,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   receivedPayments<T extends Prisma.User$receivedPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$receivedPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  privacyNoticeRecords<T extends Prisma.User$privacyNoticeRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$privacyNoticeRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5653,6 +5919,30 @@ export type User$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+}
+
+/**
+ * User.privacyNoticeRecords
+ */
+export type User$privacyNoticeRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PatientPrivacyNoticeRecord
+   */
+  select?: Prisma.PatientPrivacyNoticeRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PatientPrivacyNoticeRecord
+   */
+  omit?: Prisma.PatientPrivacyNoticeRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PatientPrivacyNoticeRecordInclude<ExtArgs> | null
+  where?: Prisma.PatientPrivacyNoticeRecordWhereInput
+  orderBy?: Prisma.PatientPrivacyNoticeRecordOrderByWithRelationInput | Prisma.PatientPrivacyNoticeRecordOrderByWithRelationInput[]
+  cursor?: Prisma.PatientPrivacyNoticeRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PatientPrivacyNoticeRecordScalarFieldEnum | Prisma.PatientPrivacyNoticeRecordScalarFieldEnum[]
 }
 
 /**

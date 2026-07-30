@@ -1,5 +1,20 @@
 BEGIN;
 
+-- Immutable v1.0 notice is inserted by migration. Seed only verifies it exists;
+-- changing legal text requires a new version and migration, never an upsert.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM "privacy_notice_versions"
+    WHERE "id" = 'c2a3ecb0-a352-4d49-a47c-39d1b67904c9'::uuid
+      AND "version" = '1.0'
+      AND "content_hash_id" = '604bbdce1ce3c208b7c66ac3e0f7def249f632a24d61dcd184fa0eb9fb5e5636'
+      AND "content_hash_en" = 'b5660f0e1901ca9f45767c86b1c8589156c82100e35b97c64bd5ecfd45072b52'
+  ) THEN
+    RAISE EXCEPTION 'immutable privacy notice v1.0 is missing or does not match approved placeholder documents';
+  END IF;
+END $$;
+
 WITH seed_roles(code, name, description) AS (
   VALUES
     ('SUPER_ADMIN', 'Super Admin', 'System-level administrator with full access'),

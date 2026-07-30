@@ -83,7 +83,7 @@ export class AdminManagementService {
       resource: 'user',
       actorUserId: currentUserId,
       resourceId: createdUser.id,
-      metadata: { email: createdUser.email, roleCodes: payload.roleCodes },
+      metadata: { roleCodes: payload.roleCodes },
     });
 
     return {

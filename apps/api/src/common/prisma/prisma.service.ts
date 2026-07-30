@@ -1,5 +1,5 @@
 import { PrismaPg } from '@prisma/adapter-pg';
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import { Prisma, PrismaClient } from '../../generated/prisma/client';
@@ -16,7 +16,6 @@ import {
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  private readonly logger = new Logger(PrismaService.name);
   private readonly disableConnectOnBoot: boolean;
 
   constructor(private readonly configService: ConfigService) {
@@ -27,18 +26,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
 
-    super({
-      adapter,
-      log: [{ emit: 'event', level: 'query' }],
-    });
+    super({ adapter });
 
     this.disableConnectOnBoot = disableConnectOnBoot;
-
-    this.$on('query' as never, (event: Prisma.QueryEvent) => {
-      this.logger.debug(
-        `Query: ${event.query} | Params: ${event.params} | Duration: ${event.duration}ms`,
-      );
-    });
   }
 
   async onModuleInit(): Promise<void> {

@@ -26,15 +26,16 @@ import { Injectable } from '@nestjs/common';
 export class EncounterMapper {
   toEncounterListItem(encounter: EncounterWithRelationsRecord): EncounterListItem {
     return {
-      ...this.toEncounterResponse(encounter),
+      id: encounter.id,
+      status: encounter.status,
+      startedAt: encounter.startedAt.toISOString(),
+      endedAt: encounter.endedAt?.toISOString(),
       patient: {
         id: encounter.patient.id,
-        mrn: encounter.patient.mrn,
         fullName: encounter.patient.fullName,
       },
       doctor: {
         id: encounter.doctor.id,
-        licenseNumber: encounter.doctor.licenseNumber,
         fullName: encounter.doctor.fullName,
       },
       vitalSignsCount: encounter._count.vitalSigns,

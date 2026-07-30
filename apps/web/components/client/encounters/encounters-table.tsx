@@ -10,7 +10,7 @@ import { DataTableHeaderCell } from '#components/shared/data-table-header-cell';
 import { EmptyState } from '#components/shared/empty-state';
 import { TableSkeleton } from '#components/shared/table-skeleton';
 
-const TABLE_COLUMN_COUNT = 8;
+const TABLE_COLUMN_COUNT = 7;
 
 type EncountersTableProps = {
   encounters: EncounterListItem[];
@@ -43,7 +43,6 @@ export function EncountersTable({
       <TableHeader>
         <TableRow>
           <DataTableHeaderCell>{t('encounters.columns.patient')}</DataTableHeaderCell>
-          <DataTableHeaderCell>{t('encounters.columns.mrn')}</DataTableHeaderCell>
           <DataTableHeaderCell>{t('encounters.columns.started')}</DataTableHeaderCell>
           <DataTableHeaderCell>{t('encounters.columns.duration')}</DataTableHeaderCell>
           <DataTableHeaderCell>{t('encounters.columns.doctor')}</DataTableHeaderCell>

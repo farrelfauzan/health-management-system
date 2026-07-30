@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { CreateRegistrationInput, RegistrationListItem } from '@hms/shared-types';
+import type { RegistrationListItem } from '@hms/shared-types';
 import { createRegistrationSchema } from '@hms/shared-types';
 import {
   Button,
@@ -22,6 +22,9 @@ import {
 } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice-capture';
+import type { CreateRegistrationDto } from '#lib/api/generated/model/createRegistrationDto';
+import type { CreateRegistrationDtoPrivacyNotice } from '#lib/api/generated/model/createRegistrationDtoPrivacyNotice';
 import { registrationFlowControllerCreateRegistrationV1 } from '#lib/api/generated/registration-flow/registration-flow';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -45,6 +48,7 @@ export function RegistrationCreateDialog({
   variant,
 }: RegistrationCreateDialogProps) {
   const t = useTranslations('operations');
+  const privacyT = useTranslations('clinical.privacyNotice');
   const format = useFormatter();
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
@@ -52,13 +56,14 @@ export function RegistrationCreateDialog({
   const patientsQuery = usePatientsList(PICKER_PAGE);
   const appointmentsQuery = useRegistrableAppointments(selectedPatientId);
   const createMutation = useMutation({
-    mutationFn: (input: CreateRegistrationInput) =>
+    mutationFn: (input: CreateRegistrationDto) =>
       registrationFlowControllerCreateRegistrationV1(input),
   });
   const form = useForm({
     defaultValues: {
       patientId: '',
       appointmentId: NO_APPOINTMENT_VALUE,
+      privacyNotice: undefined as CreateRegistrationDtoPrivacyNotice | undefined,
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
@@ -66,10 +71,23 @@ export function RegistrationCreateDialog({
         setFormError(t('registrations.selectPatientError'));
         return;
       }
+      if (!value.privacyNotice) {
+        setFormError(privacyT('outcomeRequired'));
+        return;
+      }
+      if (
+        value.privacyNotice.subjectType === 'REPRESENTATIVE' &&
+        (!value.privacyNotice.representativeName?.trim() ||
+          !value.privacyNotice.representativeRelation?.trim())
+      ) {
+        setFormError(privacyT('representativeRequired'));
+        return;
+      }
       const parsed = createRegistrationSchema.safeParse({
         patientId: value.patientId,
         appointmentId:
           value.appointmentId === NO_APPOINTMENT_VALUE ? undefined : value.appointmentId,
+        privacyNotice: value.privacyNotice,
       });
       if (!parsed.success) {
         setFormError(parsed.error.issues[0]?.message ?? t('registrations.createError'));
@@ -100,9 +118,11 @@ export function RegistrationCreateDialog({
         <DialogHeader>
           <DialogTitle className="font-heading">{t('registrations.new')}</DialogTitle>
           <DialogDescription>
-            {variant === 'patient'
-              ? 'Register your visit, optionally linked to an upcoming appointment.'
-              : 'Register a patient visit, optionally linked to an upcoming appointment.'}
+            {t(
+              variant === 'patient'
+                ? 'registrations.createOwnDescription'
+                : 'registrations.createStaffDescription',
+            )}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -136,7 +156,7 @@ export function RegistrationCreateDialog({
                   id="registration-patient-select"
                   options={patientsQuery.patients.map((patient) => ({
                     value: patient.id,
-                    label: `${patient.fullName} — ${patient.mrn}`,
+                    label: patient.fullName,
                   }))}
                   value={field.state.value}
                   placeholder={t('registrations.selectPatient')}
@@ -161,7 +181,7 @@ export function RegistrationCreateDialog({
                   htmlFor="registration-appointment-select"
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  Linked Appointment (optional)
+                  {t('registrations.linkedAppointmentOptional')}
                 </label>
                 <Select
                   value={field.state.value}
@@ -193,9 +213,20 @@ export function RegistrationCreateDialog({
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-slate-500">
-                  Only scheduled or confirmed appointments can be linked.
+                  {t('registrations.appointmentHelp')}
                 </p>
               </div>
+            )}
+          </form.Field>
+
+          <form.Field name="privacyNotice">
+            {(field) => (
+              <PrivacyNoticeCapture
+                isEnabled={open}
+                isPatientOwnVariant={variant === 'patient'}
+                value={field.state.value}
+                onChange={field.handleChange}
+              />
             )}
           </form.Field>
 
@@ -210,7 +241,9 @@ export function RegistrationCreateDialog({
                   disabled={isSubmitting}
                   className="bg-primary-container hover:bg-primary"
                 >
-                  {isSubmitting ? 'Registering…' : 'Create Registration'}
+                  {isSubmitting
+                    ? t('registrations.creating')
+                    : t('registrations.createAction')}
                 </Button>
               )}
             </form.Subscribe>

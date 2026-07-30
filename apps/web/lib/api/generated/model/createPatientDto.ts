@@ -8,6 +8,7 @@
 import type { CreatePatientDtoAllergiesItem } from './createPatientDtoAllergiesItem';
 import type { CreatePatientDtoBloodType } from './createPatientDtoBloodType';
 import type { CreatePatientDtoMaritalStatus } from './createPatientDtoMaritalStatus';
+import type { CreatePatientDtoPrivacyNotice } from './createPatientDtoPrivacyNotice';
 import type { CreatePatientDtoReligion } from './createPatientDtoReligion';
 import type { CreatePatientDtoRhesusFactor } from './createPatientDtoRhesusFactor';
 import type { CreatePatientDtoSex } from './createPatientDtoSex';
@@ -80,4 +81,5 @@ export interface CreatePatientDto {
      * @maxItems 20
      */
   doctorIds?: string[];
+  privacyNotice: CreatePatientDtoPrivacyNotice;
 }

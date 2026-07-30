@@ -10,18 +10,9 @@ import messages from '../../../messages/id/clinical.json';
 
 const PATIENT: PatientListItem = {
   id: 'patient-1',
-  mrn: 'MRN-2026-0001',
   fullName: 'Aisha Rahman',
-  dateOfBirth: '1990-05-12',
-  sex: 'FEMALE',
   status: 'IN_PATIENT',
-  phoneNumber: '+628123456789',
-  address: 'Jakarta',
-  nikMasked: '••••••••0001',
-  hasSatusehatPatientId: false,
   isActive: true,
-  createdAt: '2026-07-01T00:00:00.000Z',
-  updatedAt: '2026-07-10T00:00:00.000Z',
   allergyCount: 1,
   doctorCount: 3,
   doctors: [
@@ -46,7 +37,6 @@ function renderRow(rules: AppRule[]): void {
             <PatientsTableRow
               patient={PATIENT}
               onView={vi.fn()}
-              onEdit={vi.fn()}
               onAssignDoctor={vi.fn()}
             />
           </TableBody>
@@ -61,21 +51,19 @@ describe('PatientsTableRow', () => {
     renderRow(READ_ONLY_RULES);
 
     expect(screen.getByText('Aisha Rahman')).toBeInTheDocument();
-    expect(screen.getByText(/Perempuan, \d+ tahun/)).toBeInTheDocument();
-    expect(screen.getByText('MRN-2026-0001')).toBeInTheDocument();
+    expect(screen.getByText('Buka detail untuk identitas dan demografi lengkap.')).toBeInTheDocument();
     expect(screen.getByText('Dr. Budi')).toBeInTheDocument();
     expect(screen.getByText('+2')).toBeInTheDocument();
     expect(screen.getByText('Rawat inap')).toBeInTheDocument();
   });
 
-  it('shows edit and assign actions when the ability allows them', async () => {
+  it('shows detail and assign actions when the ability allows them', async () => {
     const user = userEvent.setup();
     renderRow(FULL_ACCESS_RULES);
 
     await user.click(screen.getByRole('button', { name: 'Tindakan untuk Aisha Rahman' }));
 
     expect(await screen.findByText('Lihat')).toBeInTheDocument();
-    expect(screen.getByText('Ubah')).toBeInTheDocument();
     expect(screen.getByText('Tetapkan Dokter')).toBeInTheDocument();
   });
 

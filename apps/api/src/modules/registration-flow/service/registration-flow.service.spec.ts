@@ -353,8 +353,52 @@ describe('RegistrationFlowService', () => {
         patientId,
         appointmentId,
         createdById: currentUser.sub,
+        actorUserId: currentUser.sub,
+        privacyNotice: undefined,
         queueDate: expect.any(Date),
       });
+    });
+
+    it('forbids an own patient from recording representative evidence', async () => {
+      mockPermissions([{ action: 'create', resource: 'Registration', scope: 'OWN' }]);
+
+      await expect(
+        service.createRegistration(
+          {
+            ...createPayload,
+            privacyNotice: {
+              privacyNoticeVersionId: 'c2a3ecb0-a352-4d49-a47c-39d1b67904c9',
+              locale: 'id',
+              outcome: 'ACKNOWLEDGED',
+              subjectType: 'REPRESENTATIVE',
+              representativeName: 'Representative',
+              representativeRelation: 'Parent',
+              provenance: 'PATIENT_PORTAL',
+            },
+          },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('forbids an own patient from emergency deferral', async () => {
+      mockPermissions([{ action: 'create', resource: 'Registration', scope: 'OWN' }]);
+
+      await expect(
+        service.createRegistration(
+          {
+            ...createPayload,
+            privacyNotice: {
+              privacyNoticeVersionId: 'c2a3ecb0-a352-4d49-a47c-39d1b67904c9',
+              locale: 'id',
+              outcome: 'DEFERRED_EMERGENCY',
+              subjectType: 'SELF',
+              provenance: 'EMERGENCY',
+            },
+          },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
     });
 
     it('stamps the clinic-local calendar day as the queue date', async () => {

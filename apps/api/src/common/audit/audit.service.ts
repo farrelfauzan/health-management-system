@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { AuditRepository } from './audit.repository';
 import { RecordAuditEventInput } from './audit.types';
+import { buildSafeErrorLog } from '../observability/safe-logging';
 
 /**
  * Persists audit events for sensitive mutations. Recording is best-effort:
@@ -16,13 +17,11 @@ export class AuditService {
   async record(input: RecordAuditEventInput): Promise<void> {
     try {
       await this.auditRepository.createAuditLog(input);
-    } catch (err) {
+    } catch {
       this.logger.error(
-        JSON.stringify({
-          message: 'Failed to record audit event',
+        buildSafeErrorLog('audit_record_failed', {
           action: input.action,
           resource: input.resource,
-          error: err instanceof Error ? err.message : String(err),
         }),
       );
     }

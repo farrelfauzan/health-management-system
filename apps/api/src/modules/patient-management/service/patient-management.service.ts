@@ -26,6 +26,10 @@ import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
 import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
+import {
+  CurrentPrivacyNoticeEvidenceRequiredError,
+  PrivacyNoticeRepository,
+} from '../../../common/privacy-notice/privacy-notice.repository';
 
 const PATIENT_AUDIT_RESOURCE = 'PatientProfile';
 
@@ -74,6 +78,7 @@ export class PatientManagementService {
     private readonly patientManagementRepository: PatientManagementRepository,
     private readonly authRepository: AuthRepository,
     private readonly auditService: AuditService,
+    private readonly privacyNoticeRepository: PrivacyNoticeRepository,
   ) {}
 
   async listPatients(query: ListPatientsQueryDto, currentUser: CurrentUser) {
@@ -104,7 +109,10 @@ export class PatientManagementService {
 
     return {
       items: result.items.map((patient) => ({
-        ...this.toPatientResponse(patient),
+        id: patient.id,
+        fullName: patient.fullName,
+        status: patient.status,
+        isActive: patient.isActive,
         doctorCount: patient._count.doctors,
         allergyCount: patient._count.allergies,
         doctors: patient.doctors.map((assignment) => ({
@@ -167,6 +175,8 @@ export class PatientManagementService {
       throw new ForbiddenException('You are not allowed to create patients');
     }
 
+    this.assertPrivacyNoticeActorRules(payload.privacyNotice, false);
+
     if (payload.ownerUserId) {
       const ownerUser = await this.patientManagementRepository.findActiveUserById(payload.ownerUserId);
 
@@ -206,6 +216,8 @@ export class PatientManagementService {
       throw new ForbiddenException('You are not allowed to import patient identifiers');
     }
 
+    this.assertPrivacyNoticeActorRules(payload.privacyNotice, false);
+
     const existingPatient = await this.patientManagementRepository.findPatientByMrn(payload.mrn);
 
     if (existingPatient) {
@@ -230,7 +242,6 @@ export class PatientManagementService {
       resource: PATIENT_AUDIT_RESOURCE,
       resourceId: created.id,
       actorUserId: currentUser.sub,
-      metadata: { mrn: created.mrn },
     });
 
     return {
@@ -346,6 +357,65 @@ export class PatientManagementService {
     };
   }
 
+  async getCurrentPrivacyNotice(currentUser: CurrentUser) {
+    await this.getActorOrThrow(currentUser);
+    const notice = await this.privacyNoticeRepository.findCurrentVersion();
+    if (!notice) {
+      throw new NotFoundException('Current privacy notice not found');
+    }
+    return {
+      id: notice.id,
+      version: notice.version,
+      effectiveAt: notice.effectiveAt.toISOString(),
+      content: { id: notice.contentId, en: notice.contentEn },
+      contentHash: { id: notice.contentHashId, en: notice.contentHashEn },
+      counselApproved: notice.counselApproved,
+    };
+  }
+
+  async getPatientPrivacyNoticeHistory(id: string, currentUser: CurrentUser) {
+    const actor = await this.getActorOrThrow(currentUser);
+    const readScope = this.resolveScope(actor, 'Patient', 'read');
+    const patient = await this.patientManagementRepository.findPatientById(id);
+    if (!patient) {
+      throw new NotFoundException('Patient not found');
+    }
+    if (!readScope.hasAny && (!readScope.hasOwn || patient.ownerUserId !== currentUser.sub)) {
+      throw new ForbiddenException('You are not allowed to read this privacy notice history');
+    }
+    const [current, history, currentRecord] = await Promise.all([
+      this.privacyNoticeRepository.findCurrentVersion(),
+      this.privacyNoticeRepository.findPatientHistory(id),
+      this.privacyNoticeRepository.findCurrentPatientRecord(id),
+    ]);
+    if (!current) {
+      throw new NotFoundException('Current privacy notice not found');
+    }
+    return {
+      status: {
+        currentNoticeVersionId: current.id,
+        currentVersion: current.version,
+        outcome: currentRecord?.outcome,
+        recordedAt: currentRecord?.recordedAt.toISOString(),
+        requiresCapture: currentRecord === null,
+      },
+      history: history.map((record) => ({
+        id: record.id,
+        privacyNoticeVersionId: record.privacyNoticeVersionId,
+        version: record.version,
+        outcome: record.outcome,
+        locale: record.locale,
+        contentHash: record.contentHash,
+        subjectType: record.subjectType,
+        representativeName: record.representativeName ?? undefined,
+        representativeRelation: record.representativeRelation ?? undefined,
+        actorUserId: record.actorUserId,
+        provenance: record.provenance,
+        recordedAt: record.recordedAt.toISOString(),
+      })),
+    };
+  }
+
   private async createPatientRecord(
     payload: CreatePatientDto & { mrn?: string },
     currentUser: CurrentUser,
@@ -379,8 +449,12 @@ export class PatientManagementService {
         isActive: payload.isActive,
         doctorIds: payload.doctorIds,
         actorUserId: currentUser.sub,
+        privacyNotice: payload.privacyNotice,
       });
     } catch (err) {
+      if (err instanceof CurrentPrivacyNoticeEvidenceRequiredError) {
+        throw new BadRequestException(err.message);
+      }
       throw this.toIdentifierConflictException(err);
     }
   }
@@ -575,8 +649,21 @@ export class PatientManagementService {
       guardianRelation: patient.guardianRelation ?? undefined,
       ownerUserId: patient.ownerUserId ?? undefined,
       isActive: patient.isActive,
+      lastVisitAt: patient.lastVisitAt?.toISOString(),
       createdAt: patient.createdAt.toISOString(),
       updatedAt: patient.updatedAt.toISOString(),
     };
+  }
+
+  private assertPrivacyNoticeActorRules(
+    evidence: CreatePatientDto['privacyNotice'],
+    isOwnPatient: boolean,
+  ): void {
+    if (isOwnPatient && evidence.subjectType === 'REPRESENTATIVE') {
+      throw new ForbiddenException('Patients cannot act as their own representative');
+    }
+    if (isOwnPatient && evidence.outcome === 'DEFERRED_EMERGENCY') {
+      throw new ForbiddenException('Emergency privacy notice deferral is staff-only');
+    }
   }
 }

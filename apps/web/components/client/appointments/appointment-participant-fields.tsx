@@ -39,7 +39,7 @@ export function AppointmentParticipantFields({
           id="appointment-patient-select"
           options={patientsQuery.patients.map((patient) => ({
             value: patient.id,
-            label: `${patient.fullName} — ${patient.mrn}`,
+            label: patient.fullName,
           }))}
           value={patientId}
           placeholder={t('appointments.selectPatient')}

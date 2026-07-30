@@ -36,7 +36,10 @@ import {
 } from '@hms/ui';
 
 import { PatientDoctorPicker } from '#components/client/patients/patient-doctor-picker';
+import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice-capture';
 import { FieldError } from '#components/client/shared/field-error';
+import type { CreatePatientDto } from '#lib/api/generated/model/createPatientDto';
+import type { CreatePatientDtoPrivacyNotice } from '#lib/api/generated/model/createPatientDtoPrivacyNotice';
 import {
   patientManagementControllerCreatePatientV1,
   patientManagementControllerUpdatePatientV1,
@@ -61,7 +64,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
   const [identifierWarnings, setIdentifierWarnings] = useState<string[]>([]);
   const doctorsQuery = useActiveDoctors(open && !isEditMode);
   const createMutation = useMutation({
-    mutationFn: (input: CreatePatientInput) => patientManagementControllerCreatePatientV1(input),
+    mutationFn: (input: CreatePatientDto) => patientManagementControllerCreatePatientV1(input),
   });
   const updateMutation = useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdatePatientInput }) =>
@@ -92,6 +95,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
       guardianName: patient?.guardianName ?? '',
       guardianRelation: patient?.guardianRelation ?? '',
       doctorIds: [] as string[],
+      privacyNotice: undefined as CreatePatientDtoPrivacyNotice | undefined,
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
@@ -113,6 +117,18 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
           });
           envelope = parseApiSuccess<PatientProfile>(response, t('patients.form.saveError'));
         } else {
+          if (!value.privacyNotice) {
+            setFormError(t('privacyNotice.outcomeRequired'));
+            return;
+          }
+          if (
+            value.privacyNotice.subjectType === 'REPRESENTATIVE' &&
+            (!value.privacyNotice.representativeName?.trim() ||
+              !value.privacyNotice.representativeRelation?.trim())
+          ) {
+            setFormError(t('privacyNotice.representativeRequired'));
+            return;
+          }
           const response = await createMutation.mutateAsync({
             fullName: value.fullName,
             dateOfBirth: value.dateOfBirth,
@@ -122,6 +138,7 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
             address: value.address,
             isActive: true,
             doctorIds: value.doctorIds.length > 0 ? value.doctorIds : undefined,
+            privacyNotice: value.privacyNotice,
             ...buildPatientOptionalFields(value),
           });
           envelope = parseApiSuccess<PatientProfile>(response, t('patients.form.saveError'));
@@ -664,27 +681,39 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
           </div>
 
           {!isEditMode ? (
-            <form.Field name="doctorIds">
-              {(field) => (
-                <div className="space-y-1.5">
-                  <span className="block font-heading text-xs font-medium text-slate-600">
-                    {t('patients.form.initialDoctors')}
-                  </span>
-                  <PatientDoctorPicker
-                    doctors={doctorsQuery.doctors}
-                    selectedDoctorIds={field.state.value}
-                    isLoading={doctorsQuery.isPending}
-                    onToggleDoctor={(doctorId) =>
-                      field.handleChange(
-                        field.state.value.includes(doctorId)
-                          ? field.state.value.filter((id) => id !== doctorId)
-                          : [...field.state.value, doctorId],
-                      )
-                    }
+            <>
+              <form.Field name="doctorIds">
+                {(field) => (
+                  <div className="space-y-1.5">
+                    <span className="block font-heading text-xs font-medium text-slate-600">
+                      {t('patients.form.initialDoctors')}
+                    </span>
+                    <PatientDoctorPicker
+                      doctors={doctorsQuery.doctors}
+                      selectedDoctorIds={field.state.value}
+                      isLoading={doctorsQuery.isPending}
+                      onToggleDoctor={(doctorId) =>
+                        field.handleChange(
+                          field.state.value.includes(doctorId)
+                            ? field.state.value.filter((id) => id !== doctorId)
+                            : [...field.state.value, doctorId],
+                        )
+                      }
+                    />
+                  </div>
+                )}
+              </form.Field>
+              <form.Field name="privacyNotice">
+                {(field) => (
+                  <PrivacyNoticeCapture
+                    isEnabled={open}
+                    isPatientOwnVariant={false}
+                    value={field.state.value}
+                    onChange={field.handleChange}
                   />
-                </div>
-              )}
-            </form.Field>
+                )}
+              </form.Field>
+            </>
           ) : null}
 
           <DialogFooter>
