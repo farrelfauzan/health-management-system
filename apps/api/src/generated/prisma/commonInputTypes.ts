@@ -358,6 +358,74 @@ export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
 }
 
+export type EnumPrivacyNoticeOutcomeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeOutcome | Prisma.EnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeOutcome[] | Prisma.ListEnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeOutcome[] | Prisma.ListEnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeOutcomeFilter<$PrismaModel> | $Enums.PrivacyNoticeOutcome
+}
+
+export type EnumPrivacyNoticeLocaleFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeLocale | Prisma.EnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeLocale[] | Prisma.ListEnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeLocale[] | Prisma.ListEnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeLocaleFilter<$PrismaModel> | $Enums.PrivacyNoticeLocale
+}
+
+export type EnumPrivacyNoticeSubjectTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeSubjectType | Prisma.EnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeSubjectType[] | Prisma.ListEnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeSubjectType[] | Prisma.ListEnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeSubjectTypeFilter<$PrismaModel> | $Enums.PrivacyNoticeSubjectType
+}
+
+export type EnumPrivacyNoticeProvenanceFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeProvenance | Prisma.EnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeProvenance[] | Prisma.ListEnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeProvenance[] | Prisma.ListEnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeProvenanceFilter<$PrismaModel> | $Enums.PrivacyNoticeProvenance
+}
+
+export type EnumPrivacyNoticeOutcomeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeOutcome | Prisma.EnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeOutcome[] | Prisma.ListEnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeOutcome[] | Prisma.ListEnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeOutcomeWithAggregatesFilter<$PrismaModel> | $Enums.PrivacyNoticeOutcome
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivacyNoticeOutcomeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivacyNoticeOutcomeFilter<$PrismaModel>
+}
+
+export type EnumPrivacyNoticeLocaleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeLocale | Prisma.EnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeLocale[] | Prisma.ListEnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeLocale[] | Prisma.ListEnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeLocaleWithAggregatesFilter<$PrismaModel> | $Enums.PrivacyNoticeLocale
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivacyNoticeLocaleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivacyNoticeLocaleFilter<$PrismaModel>
+}
+
+export type EnumPrivacyNoticeSubjectTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeSubjectType | Prisma.EnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeSubjectType[] | Prisma.ListEnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeSubjectType[] | Prisma.ListEnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeSubjectTypeWithAggregatesFilter<$PrismaModel> | $Enums.PrivacyNoticeSubjectType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivacyNoticeSubjectTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivacyNoticeSubjectTypeFilter<$PrismaModel>
+}
+
+export type EnumPrivacyNoticeProvenanceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeProvenance | Prisma.EnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeProvenance[] | Prisma.ListEnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeProvenance[] | Prisma.ListEnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeProvenanceWithAggregatesFilter<$PrismaModel> | $Enums.PrivacyNoticeProvenance
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivacyNoticeProvenanceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivacyNoticeProvenanceFilter<$PrismaModel>
+}
+
 export type EnumAllergySeverityFilter<$PrismaModel = never> = {
   equals?: $Enums.AllergySeverity | Prisma.EnumAllergySeverityFieldRefInput<$PrismaModel>
   in?: $Enums.AllergySeverity[] | Prisma.ListEnumAllergySeverityFieldRefInput<$PrismaModel>
@@ -1307,6 +1375,74 @@ export type NestedFloatNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
+}
+
+export type NestedEnumPrivacyNoticeOutcomeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeOutcome | Prisma.EnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeOutcome[] | Prisma.ListEnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeOutcome[] | Prisma.ListEnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeOutcomeFilter<$PrismaModel> | $Enums.PrivacyNoticeOutcome
+}
+
+export type NestedEnumPrivacyNoticeLocaleFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeLocale | Prisma.EnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeLocale[] | Prisma.ListEnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeLocale[] | Prisma.ListEnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeLocaleFilter<$PrismaModel> | $Enums.PrivacyNoticeLocale
+}
+
+export type NestedEnumPrivacyNoticeSubjectTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeSubjectType | Prisma.EnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeSubjectType[] | Prisma.ListEnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeSubjectType[] | Prisma.ListEnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeSubjectTypeFilter<$PrismaModel> | $Enums.PrivacyNoticeSubjectType
+}
+
+export type NestedEnumPrivacyNoticeProvenanceFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeProvenance | Prisma.EnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeProvenance[] | Prisma.ListEnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeProvenance[] | Prisma.ListEnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeProvenanceFilter<$PrismaModel> | $Enums.PrivacyNoticeProvenance
+}
+
+export type NestedEnumPrivacyNoticeOutcomeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeOutcome | Prisma.EnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeOutcome[] | Prisma.ListEnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeOutcome[] | Prisma.ListEnumPrivacyNoticeOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeOutcomeWithAggregatesFilter<$PrismaModel> | $Enums.PrivacyNoticeOutcome
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivacyNoticeOutcomeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivacyNoticeOutcomeFilter<$PrismaModel>
+}
+
+export type NestedEnumPrivacyNoticeLocaleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeLocale | Prisma.EnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeLocale[] | Prisma.ListEnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeLocale[] | Prisma.ListEnumPrivacyNoticeLocaleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeLocaleWithAggregatesFilter<$PrismaModel> | $Enums.PrivacyNoticeLocale
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivacyNoticeLocaleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivacyNoticeLocaleFilter<$PrismaModel>
+}
+
+export type NestedEnumPrivacyNoticeSubjectTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeSubjectType | Prisma.EnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeSubjectType[] | Prisma.ListEnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeSubjectType[] | Prisma.ListEnumPrivacyNoticeSubjectTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeSubjectTypeWithAggregatesFilter<$PrismaModel> | $Enums.PrivacyNoticeSubjectType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivacyNoticeSubjectTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivacyNoticeSubjectTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumPrivacyNoticeProvenanceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PrivacyNoticeProvenance | Prisma.EnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  in?: $Enums.PrivacyNoticeProvenance[] | Prisma.ListEnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PrivacyNoticeProvenance[] | Prisma.ListEnumPrivacyNoticeProvenanceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPrivacyNoticeProvenanceWithAggregatesFilter<$PrismaModel> | $Enums.PrivacyNoticeProvenance
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPrivacyNoticeProvenanceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPrivacyNoticeProvenanceFilter<$PrismaModel>
 }
 
 export type NestedEnumAllergySeverityFilter<$PrismaModel = never> = {

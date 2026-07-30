@@ -194,9 +194,7 @@ export class BillingService {
       resourceId: invoice.id,
       actorUserId: currentUser.sub,
       metadata: {
-        invoiceNumber: invoice.invoiceNumber,
         previousStatus: invoice.status,
-        reason: payload.reason,
       },
     });
 

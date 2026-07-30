@@ -10,6 +10,7 @@ import { CryptoModule } from './common/crypto/crypto.module';
 import { MrnModule } from './common/mrn/mrn.module';
 import { ObservabilityModule } from './common/observability/observability.module';
 import { SatusehatModule } from './common/satusehat/satusehat.module';
+import { RetentionModule } from './common/retention/retention.module';
 import { StorageModule } from './common/storage/storage.module';
 import { AdminManagementModule } from './modules/admin-management/admin-management.module';
 import { AppointmentManagementModule } from './modules/appointment-management/appointment-management.module';
@@ -44,6 +45,7 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     AuditModule,
     CryptoModule,
     MrnModule,
+    RetentionModule,
     AuthorizationModule,
     StorageModule,
     SatusehatModule,

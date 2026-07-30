@@ -2,37 +2,29 @@
 
 import type { PatientListItem } from '@hms/shared-types';
 import { Icon, TableCell, TableRow, useAbility } from '@hms/ui';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { AvatarInitials } from '#components/shared/avatar-initials';
-import { DataTableMonoCell } from '#components/shared/data-table-mono-cell';
 import { StatusBadge } from '#components/shared/status-badge';
-import { computePatientAge } from '#lib/patients/patient-age';
 
 type PatientsTableRowProps = {
   patient: PatientListItem;
   onView: (patientId: string) => void;
-  onEdit: (patient: PatientListItem) => void;
   onAssignDoctor: (patient: PatientListItem) => void;
 };
 
 export function PatientsTableRow({
   patient,
   onView,
-  onEdit,
   onAssignDoctor,
 }: PatientsTableRowProps) {
   const ability = useAbility();
   const t = useTranslations('clinical');
-  const format = useFormatter();
   const primaryDoctor = patient.doctors[0];
   const overflowDoctorCount = Math.max(0, patient.doctorCount - 1);
   const actions: RowAction[] = [
     { label: t('common.view'), icon: 'visibility', onSelect: () => onView(patient.id) },
-    ...(ability.can('update', 'Patient')
-      ? [{ label: t('common.edit'), icon: 'edit', onSelect: () => onEdit(patient) }]
-      : []),
     ...(ability.can('assign', 'DoctorPatient')
       ? [
           {
@@ -51,16 +43,9 @@ export function PatientsTableRow({
           <AvatarInitials name={patient.fullName} />
           <div>
             <p className="text-sm font-medium text-slate-900">{patient.fullName}</p>
-            <p className="text-xs text-slate-500">
-              {t(`patients.sex.${patient.sex ?? 'UNKNOWN'}`)},{' '}
-              {t('common.years', { count: computePatientAge(patient.dateOfBirth) })}
-            </p>
+            <p className="text-xs text-slate-500">{t('patients.compactRecord')}</p>
           </div>
         </div>
-      </TableCell>
-      <DataTableMonoCell>{patient.mrn}</DataTableMonoCell>
-      <TableCell className="px-4 text-sm text-slate-600">
-        {format.dateTime(new Date(patient.updatedAt), { dateStyle: 'medium' })}
       </TableCell>
       <TableCell className="px-4">
         {primaryDoctor ? (

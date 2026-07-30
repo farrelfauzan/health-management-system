@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { resolveBpjsPcareAdapterConfig } from '../../../common/bpjs-pcare/bpjs-pcare.config';
 import { BpjsPcareAdapterConfig } from '../../../common/bpjs-pcare/bpjs-pcare.types';
+import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { BpjsSubmissionRepository } from '../repository/bpjs-submission.repository';
 import { BpjsSubmissionService } from './bpjs-submission.service';
 
@@ -66,10 +67,8 @@ export class BpjsSubmissionWorker implements OnApplicationBootstrap, OnApplicati
         await this.submissionService.processSubmission(submission);
       }
       return dueSubmissions.length;
-    } catch (caughtError) {
-      this.logger.error(
-        `BPJS submission poll cycle failed: ${caughtError instanceof Error ? caughtError.message : String(caughtError)}`,
-      );
+    } catch {
+      this.logger.error(buildSafeErrorLog('bpjs_submission_poll_failed'));
       return 0;
     } finally {
       this.isPolling = false;

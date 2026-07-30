@@ -223,7 +223,7 @@ async function importTerminologyCodes(): Promise<void> {
   }
 }
 
-importTerminologyCodes().catch((err: unknown) => {
-  console.error('Terminology import failed:', err instanceof Error ? err.message : err);
+importTerminologyCodes().catch(() => {
+  console.error('Terminology import failed');
   process.exit(1);
 });

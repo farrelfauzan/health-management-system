@@ -353,12 +353,13 @@ describe('BillingService', () => {
           resource: 'Invoice',
           resourceId: invoiceId,
           actorUserId: cashierUser.sub,
-          metadata: expect.objectContaining({
-            previousStatus: 'ISSUED',
-            reason: inputPayload.reason,
-          }),
+          metadata: { previousStatus: 'ISSUED' },
         }),
       );
+      expect(JSON.stringify(auditServiceMock.record.mock.calls)).not.toContain(
+        invoiceWithRelationsRecord.invoiceNumber,
+      );
+      expect(JSON.stringify(auditServiceMock.record.mock.calls)).not.toContain(inputPayload.reason);
     });
 
     it('rejects voiding a PAID invoice — refunds are out of scope in v1', async () => {

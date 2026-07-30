@@ -32,12 +32,12 @@ export class AuthService {
   async login(payload: LoginDto): Promise<AuthTokens> {
     const user = await this.authRepository.findUserByEmail(payload.email);
     if (!user) {
-      await this.recordFailedLogin(payload.email);
+      await this.recordFailedLogin();
       throw new UnauthorizedException('Invalid credentials');
     }
     const isValidPassword = await compare(payload.password, user.passwordHash);
     if (!isValidPassword) {
-      await this.recordFailedLogin(payload.email);
+      await this.recordFailedLogin();
       throw new UnauthorizedException('Invalid credentials');
     }
     const claims: JwtPayload = {
@@ -57,7 +57,6 @@ export class AuthService {
       resource: 'auth',
       actorUserId: user.id,
       resourceId: user.id,
-      metadata: { email: user.email },
     });
     return {
       accessToken,
@@ -123,11 +122,10 @@ export class AuthService {
     };
   }
 
-  private async recordFailedLogin(email: string): Promise<void> {
+  private async recordFailedLogin(): Promise<void> {
     await this.auditService.record({
       action: AuditAction.USER_LOGIN_FAILED,
       resource: 'auth',
-      metadata: { email },
     });
   }
 

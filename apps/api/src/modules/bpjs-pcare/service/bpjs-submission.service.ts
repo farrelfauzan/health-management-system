@@ -207,9 +207,7 @@ export class BpjsSubmissionService {
     }
     if (unmappedMedications.length > 0) {
       this.logger.warn(
-        `Skipping ${unmappedMedications.length} dispensed medication(s) without a DPHO code on kunjungan ${noKunjungan}: ${unmappedMedications
-          .map((medication) => medication.medicationName)
-          .join(', ')}`,
+        `BPJS medication mapping gap: skipped ${unmappedMedications.length} item(s) without a DPHO code`,
       );
     }
     const connection = await this.requireConnection();
@@ -292,7 +290,7 @@ export class BpjsSubmissionService {
       return;
     }
     this.logger.warn(
-      `Registration ${registrationId} was cancelled while its pendaftaran was in flight — enqueueing the delete`,
+      'BPJS pendaftaran cancelled in flight; enqueueing delete',
     );
     await this.submissionRepository.enqueuePendaftaranDelete(registrationId);
   }
@@ -354,7 +352,7 @@ export class BpjsSubmissionService {
         lastError,
       });
       this.logger.warn(
-        `BPJS ${submission.type} for registration ${submission.registrationId} failed permanently after attempt ${attemptNumber}: ${lastError}`,
+        `BPJS ${submission.type} failed permanently after attempt ${attemptNumber}`,
       );
       return;
     }
@@ -366,7 +364,7 @@ export class BpjsSubmissionService {
       lastError,
     });
     this.logger.warn(
-      `BPJS ${submission.type} for registration ${submission.registrationId} attempt ${attemptNumber} failed, retrying in ${delayMs}ms: ${lastError}`,
+      `BPJS ${submission.type} attempt ${attemptNumber} failed; retrying in ${delayMs}ms`,
     );
   }
 

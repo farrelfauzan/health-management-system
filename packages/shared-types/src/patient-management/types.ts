@@ -5,6 +5,8 @@ import type {
   PatientAllergyInput,
   PatientSexValue,
   PatientStatusValue,
+  PrivacyNoticeEvidenceInput,
+  PrivacyNoticeOutcomeValue,
   ReligionValue,
   RhesusFactorValue,
 } from '#patient-management/schemas';
@@ -69,6 +71,7 @@ export type CreatePatientRecordPayload = {
   doctorIds?: string[];
   allergies?: PatientAllergyInput[];
   actorUserId: string;
+  privacyNotice: PrivacyNoticeEvidenceInput;
 } & PatientDemographicFields;
 
 export type UpdatePatientRecordPayload = {
@@ -117,8 +120,36 @@ export type PatientRecord = {
   guardianRelation: string | null;
   ownerUserId: string | null;
   isActive: boolean;
+  lastVisitAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type PrivacyNoticeVersionRecord = {
+  id: string;
+  version: string;
+  effectiveAt: Date;
+  contentId: string;
+  contentEn: string;
+  contentHashId: string;
+  contentHashEn: string;
+  counselApproved: boolean;
+};
+
+export type PatientPrivacyNoticeRecord = {
+  id: string;
+  patientId: string;
+  privacyNoticeVersionId: string;
+  version: string;
+  outcome: PrivacyNoticeOutcomeValue;
+  locale: 'id' | 'en';
+  contentHash: string;
+  subjectType: 'SELF' | 'REPRESENTATIVE';
+  representativeName: string | null;
+  representativeRelation: string | null;
+  actorUserId: string;
+  provenance: PrivacyNoticeEvidenceInput['provenance'];
+  recordedAt: Date;
 };
 
 /**

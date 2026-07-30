@@ -43,7 +43,6 @@ export function DoctorPatientPicker({
               onCheckedChange={() => onTogglePatient(patient.id)}
             />
             <span className="text-sm text-slate-700">{patient.fullName}</span>
-            <span className="font-mono text-xs text-slate-400">{patient.mrn}</span>
           </label>
         );
       })}

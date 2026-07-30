@@ -567,6 +567,94 @@ paths:
         - bearer: []
       summary: Update an admin user
       tags: *a2
+  /api/v1/patients/privacy-notice/current:
+    get:
+      operationId: PatientManagementController_getCurrentPrivacyNotice_v1
+      parameters: []
+      responses:
+        "200":
+          description: The immutable bilingual privacy notice version and content hashes.
+            This is not treatment consent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      version:
+                        type: string
+                      effectiveAt:
+                        type: string
+                      content:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          en:
+                            type: string
+                        required:
+                          - id
+                          - en
+                      contentHash:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          en:
+                            type: string
+                        required:
+                          - id
+                          - en
+                      counselApproved:
+                        type: boolean
+                    required:
+                      - id
+                      - version
+                      - effectiveAt
+                      - content
+                      - contentHash
+                      - counselApproved
+                required:
+                  - data
+                example:
+                  data:
+                    id: c2a3ecb0-a352-4d49-a47c-39d1b67904c9
+                    version: "1.0"
+                    effectiveAt: 2026-07-30T00:00:00.000Z
+                    content:
+                      id: Pemberitahuan privasi...
+                      en: Privacy notice...
+                    contentHash:
+                      id: 604bbd...
+                      en: b5660f...
+                    counselApproved: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get the current patient privacy notice
+      tags: &a3
+        - Patient Management
   /api/v1/patients:
     get:
       operationId: PatientManagementController_listPatients_v1
@@ -833,8 +921,7 @@ paths:
       security:
         - bearer: []
       summary: List patients
-      tags: &a3
-        - Patient Management
+      tags: *a3
     post:
       operationId: PatientManagementController_createPatient_v1
       parameters: []
@@ -1713,6 +1800,93 @@ paths:
       security:
         - bearer: []
       summary: Reveal a patient national and payer identifiers
+      tags: *a3
+  /api/v1/patients/{id}/privacy-notices:
+    get:
+      operationId: PatientManagementController_getPatientPrivacyNoticeHistory_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Append-only evidence history and current-version capture status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: object
+                        properties:
+                          currentNoticeVersionId:
+                            type: string
+                          currentVersion:
+                            type: string
+                          outcome:
+                            type: string
+                          recordedAt:
+                            type: string
+                          requiresCapture:
+                            type: boolean
+                        required:
+                          - currentNoticeVersionId
+                          - currentVersion
+                          - outcome
+                          - recordedAt
+                          - requiresCapture
+                      history:
+                        type: array
+                        items: {}
+                    required:
+                      - status
+                      - history
+                required:
+                  - data
+                example:
+                  data:
+                    status:
+                      currentNoticeVersionId: c2a3ecb0-a352-4d49-a47c-39d1b67904c9
+                      currentVersion: "1.0"
+                      outcome: ACKNOWLEDGED
+                      recordedAt: 2026-07-30T08:00:00.000Z
+                      requiresCapture: false
+                    history: []
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient or current privacy notice not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient or current privacy notice not found.
+      security:
+        - bearer: []
+      summary: Get patient privacy notice evidence history
       tags: *a3
   /api/v1/specialties:
     get:
@@ -12849,12 +13023,57 @@ components:
           items:
             type: string
             format: uuid
+        privacyNotice:
+          type: object
+          properties:
+            privacyNoticeVersionId:
+              type: string
+              format: uuid
+            locale:
+              type: string
+              enum:
+                - id
+                - en
+            outcome:
+              type: string
+              enum:
+                - ACKNOWLEDGED
+                - PROVIDED_ACKNOWLEDGEMENT_DECLINED
+                - DEFERRED_EMERGENCY
+            subjectType:
+              type: string
+              enum:
+                - SELF
+                - REPRESENTATIVE
+            representativeName:
+              type: string
+              minLength: 2
+              maxLength: 120
+            representativeRelation:
+              type: string
+              minLength: 2
+              maxLength: 60
+            provenance:
+              type: string
+              enum:
+                - FRONT_DESK
+                - PATIENT_PORTAL
+                - LEGACY_IMPORT
+                - EMERGENCY
+          required:
+            - privacyNoticeVersionId
+            - locale
+            - outcome
+            - subjectType
+            - provenance
+          x-nestjs_zod-self-required: true
       required:
         - fullName
         - dateOfBirth
         - sex
         - phoneNumber
         - address
+        - privacyNotice
     ImportPatientDto:
       type: object
       properties:
@@ -12982,6 +13201,50 @@ components:
           items:
             type: string
             format: uuid
+        privacyNotice:
+          type: object
+          properties:
+            privacyNoticeVersionId:
+              type: string
+              format: uuid
+            locale:
+              type: string
+              enum:
+                - id
+                - en
+            outcome:
+              type: string
+              enum:
+                - ACKNOWLEDGED
+                - PROVIDED_ACKNOWLEDGEMENT_DECLINED
+                - DEFERRED_EMERGENCY
+            subjectType:
+              type: string
+              enum:
+                - SELF
+                - REPRESENTATIVE
+            representativeName:
+              type: string
+              minLength: 2
+              maxLength: 120
+            representativeRelation:
+              type: string
+              minLength: 2
+              maxLength: 60
+            provenance:
+              type: string
+              enum:
+                - FRONT_DESK
+                - PATIENT_PORTAL
+                - LEGACY_IMPORT
+                - EMERGENCY
+          required:
+            - privacyNoticeVersionId
+            - locale
+            - outcome
+            - subjectType
+            - provenance
+          x-nestjs_zod-self-required: true
         mrn:
           type: string
           minLength: 3
@@ -12992,6 +13255,7 @@ components:
         - sex
         - phoneNumber
         - address
+        - privacyNotice
         - mrn
     UpdatePatientDto:
       type: object
@@ -13462,6 +13726,50 @@ components:
         appointmentId:
           type: string
           format: uuid
+        privacyNotice:
+          type: object
+          properties:
+            privacyNoticeVersionId:
+              type: string
+              format: uuid
+            locale:
+              type: string
+              enum:
+                - id
+                - en
+            outcome:
+              type: string
+              enum:
+                - ACKNOWLEDGED
+                - PROVIDED_ACKNOWLEDGEMENT_DECLINED
+                - DEFERRED_EMERGENCY
+            subjectType:
+              type: string
+              enum:
+                - SELF
+                - REPRESENTATIVE
+            representativeName:
+              type: string
+              minLength: 2
+              maxLength: 120
+            representativeRelation:
+              type: string
+              minLength: 2
+              maxLength: 60
+            provenance:
+              type: string
+              enum:
+                - FRONT_DESK
+                - PATIENT_PORTAL
+                - LEGACY_IMPORT
+                - EMERGENCY
+          required:
+            - privacyNoticeVersionId
+            - locale
+            - outcome
+            - subjectType
+            - provenance
+          x-nestjs_zod-self-required: false
       required:
         - patientId
     UpdateRegistrationDto:

@@ -63,7 +63,7 @@ async function backfillDoctorNik(): Promise<void> {
   }
 }
 
-backfillDoctorNik().catch((err: unknown) => {
-  console.error('Doctor NIK backfill failed:', err instanceof Error ? err.message : err);
+backfillDoctorNik().catch(() => {
+  console.error('Doctor NIK backfill failed');
   process.exit(1);
 });

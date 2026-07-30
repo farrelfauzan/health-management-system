@@ -444,7 +444,7 @@ describe('SatusehatSubmissionService', () => {
     expect(dispenseResource.substitution.wasSubstituted).toBe(false);
   });
 
-  it('logs a gap report naming every catalog item skipped for a missing KFA code', async () => {
+  it('logs only a count for catalog items skipped for a missing KFA code', async () => {
     submissionRepositoryMock.findBundleData.mockResolvedValue(buildPharmacyBundleData());
     httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
     const service = buildService();
@@ -456,9 +456,10 @@ describe('SatusehatSubmissionService', () => {
     await service.processSubmission(buildSubmission());
 
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('1 catalog item(s) without a KFA code were skipped'),
+      expect.stringContaining('skipped 1 item(s) without a KFA code'),
     );
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('RACIK-01 (Puyer Racikan)'));
+    expect(JSON.stringify(warnSpy.mock.calls)).not.toContain('RACIK-01');
+    expect(JSON.stringify(warnSpy.mock.calls)).not.toContain('Puyer Racikan');
     warnSpy.mockRestore();
   });
 

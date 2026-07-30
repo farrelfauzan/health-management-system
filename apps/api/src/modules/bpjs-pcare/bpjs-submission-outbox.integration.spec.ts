@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { PrivacyNoticeRepository } from '../../common/privacy-notice/privacy-notice.repository';
 import { EncounterRepository } from '../emr/repository/encounter.repository';
 import { PharmacyFlowRepository } from '../pharmacy-flow/repository/pharmacy-flow.repository';
 import { QueueNumberAllocatorRepository } from '../registration-flow/repository/queue-number-allocator.repository';
@@ -37,6 +38,7 @@ describe('BPJS submission outbox against Postgres', () => {
     registrationFlowRepository = new RegistrationFlowRepository(
       prisma,
       new QueueNumberAllocatorRepository(),
+      new PrivacyNoticeRepository(prisma),
     );
     encounterRepository = new EncounterRepository(prisma);
     pharmacyFlowRepository = new PharmacyFlowRepository(prisma);

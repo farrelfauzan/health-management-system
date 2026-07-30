@@ -2,15 +2,7 @@
 
 import type { PatientListItem } from '@hms/shared-types';
 import { useTranslations } from 'next-intl';
-import {
-  TableBody,
-  TableHeader,
-  TableRow,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@hms/ui';
+import { TableBody, TableHeader, TableRow } from '@hms/ui';
 
 import { PatientsTableRow } from '#components/client/patients/patients-table-row';
 import { DataTable } from '#components/shared/data-table';
@@ -18,14 +10,13 @@ import { DataTableHeaderCell } from '#components/shared/data-table-header-cell';
 import { EmptyState } from '#components/shared/empty-state';
 import { TableSkeleton } from '#components/shared/table-skeleton';
 
-const TABLE_COLUMN_COUNT = 6;
+const TABLE_COLUMN_COUNT = 4;
 
 type PatientsTableProps = {
   patients: PatientListItem[];
   isPending: boolean;
   isError: boolean;
   onView: (patientId: string) => void;
-  onEdit: (patient: PatientListItem) => void;
   onAssignDoctor: (patient: PatientListItem) => void;
 };
 
@@ -34,7 +25,6 @@ export function PatientsTable({
   isPending,
   isError,
   onView,
-  onEdit,
   onAssignDoctor,
 }: PatientsTableProps) {
   const t = useTranslations('clinical');
@@ -55,17 +45,6 @@ export function PatientsTable({
       <TableHeader>
         <TableRow>
           <DataTableHeaderCell>{t('patients.columns.name')}</DataTableHeaderCell>
-          <DataTableHeaderCell>{t('patients.columns.id')}</DataTableHeaderCell>
-          <DataTableHeaderCell>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="cursor-help underline decoration-dotted underline-offset-4">
-                  {t('patients.columns.lastVisit')}
-                </TooltipTrigger>
-                <TooltipContent>{t('patients.columns.lastVisitHelp')}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </DataTableHeaderCell>
           <DataTableHeaderCell>{t('patients.columns.doctor')}</DataTableHeaderCell>
           <DataTableHeaderCell>{t('common.status')}</DataTableHeaderCell>
           <DataTableHeaderCell className="text-right">{t('common.actions')}</DataTableHeaderCell>
@@ -80,7 +59,6 @@ export function PatientsTable({
               key={patient.id}
               patient={patient}
               onView={onView}
-              onEdit={onEdit}
               onAssignDoctor={onAssignDoctor}
             />
           ))

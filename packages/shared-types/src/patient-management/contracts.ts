@@ -17,6 +17,38 @@ export type PatientAllergy = {
   updatedAt: string;
 };
 
+export type PrivacyNoticeVersion = {
+  id: string;
+  version: string;
+  effectiveAt: string;
+  content: { id: string; en: string };
+  contentHash: { id: string; en: string };
+  counselApproved: boolean;
+};
+
+export type PatientPrivacyNoticeHistoryItem = {
+  id: string;
+  privacyNoticeVersionId: string;
+  version: string;
+  outcome: 'ACKNOWLEDGED' | 'PROVIDED_ACKNOWLEDGEMENT_DECLINED' | 'DEFERRED_EMERGENCY';
+  locale: 'id' | 'en';
+  contentHash: string;
+  subjectType: 'SELF' | 'REPRESENTATIVE';
+  representativeName?: string;
+  representativeRelation?: string;
+  actorUserId: string;
+  provenance: 'FRONT_DESK' | 'PATIENT_PORTAL' | 'LEGACY_IMPORT' | 'EMERGENCY';
+  recordedAt: string;
+};
+
+export type PatientPrivacyNoticeStatus = {
+  currentNoticeVersionId: string;
+  currentVersion: string;
+  outcome?: PatientPrivacyNoticeHistoryItem['outcome'];
+  recordedAt?: string;
+  requiresCapture: boolean;
+};
+
 export type PatientProfile = {
   id: string;
   mrn: string;
@@ -49,6 +81,7 @@ export type PatientProfile = {
   guardianName?: string;
   guardianRelation?: string;
   ownerUserId?: string;
+  lastVisitAt?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -70,7 +103,11 @@ export type PatientRelatedDoctor = {
   specialty: string;
 };
 
-export type PatientListItem = PatientProfile & {
+export type PatientListItem = {
+  id: string;
+  fullName: string;
+  status: PatientStatusValue;
+  isActive: boolean;
   doctorCount: number;
   doctors: PatientRelatedDoctor[];
   /** Allergy count only — the full list is on the detail response. */

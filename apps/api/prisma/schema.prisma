@@ -169,6 +169,29 @@ enum RegistrationStatus {
   CANCELLED
 }
 
+enum PrivacyNoticeOutcome {
+  ACKNOWLEDGED
+  PROVIDED_ACKNOWLEDGEMENT_DECLINED
+  DEFERRED_EMERGENCY
+}
+
+enum PrivacyNoticeLocale {
+  id
+  en
+}
+
+enum PrivacyNoticeSubjectType {
+  SELF
+  REPRESENTATIVE
+}
+
+enum PrivacyNoticeProvenance {
+  FRONT_DESK
+  PATIENT_PORTAL
+  LEGACY_IMPORT
+  EMERGENCY
+}
+
 /// Lifecycle of a clinical encounter (the PMK 24/2022 medical record for one
 /// visit). An encounter opens when the doctor starts seeing a checked-in
 /// patient and is terminal once closed: FINISHED when the visit was delivered,
@@ -309,6 +332,7 @@ model User {
   receivedPayments         Payment[]               @relation("PaymentCashier")
   refreshTokens            RefreshToken[]
   auditLogs                AuditLog[]              @relation("AuditLogActor")
+  privacyNoticeRecords     PatientPrivacyNoticeRecord[] @relation("PrivacyNoticeActor")
 
   @@map("users")
 }
@@ -366,6 +390,7 @@ model PatientProfile {
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
   deletedAt    DateTime?     @map("deleted_at")
+  lastVisitAt  DateTime?     @map("last_visit_at")
 
   // Demographic and clinical-safety identity fields required by PMK 24/2022
   // and expected on Indonesian registration forms. All optional so existing
@@ -410,13 +435,59 @@ model PatientProfile {
   encounters            Encounter[]
   invoices              Invoice[]
   bpjsEligibilityChecks BpjsEligibilityCheck[]
+  privacyNoticeRecords   PatientPrivacyNoticeRecord[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
   @@index([isActive])
   @@index([fullName])
   @@index([status])
+  @@index([lastVisitAt])
   @@map("patient_profiles")
+}
+
+/// Published privacy notices are immutable legal evidence. A correction is a
+/// new version, never an update to a version patients have already received.
+model PrivacyNoticeVersion {
+  id              String   @id @default(uuid()) @db.Uuid
+  version         String   @unique
+  effectiveAt     DateTime @unique @map("effective_at")
+  contentId       String   @map("content_id")
+  contentEn       String   @map("content_en")
+  contentHashId   String   @map("content_hash_id")
+  contentHashEn   String   @map("content_hash_en")
+  counselApproved Boolean  @default(false) @map("counsel_approved")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  records PatientPrivacyNoticeRecord[]
+
+  @@map("privacy_notice_versions")
+}
+
+/// Append-only proof that a specific notice was provided. This is privacy
+/// notice evidence, not treatment consent or permission to process all data.
+model PatientPrivacyNoticeRecord {
+  id                     String                   @id @default(uuid()) @db.Uuid
+  patientId              String                   @map("patient_id") @db.Uuid
+  privacyNoticeVersionId String                   @map("privacy_notice_version_id") @db.Uuid
+  outcome                PrivacyNoticeOutcome
+  locale                 PrivacyNoticeLocale
+  contentHash            String                   @map("content_hash")
+  subjectType            PrivacyNoticeSubjectType @map("subject_type")
+  representativeName     String?                  @map("representative_name")
+  representativeRelation String?                  @map("representative_relation")
+  actorUserId            String                   @map("actor_user_id") @db.Uuid
+  provenance             PrivacyNoticeProvenance
+  recordedAt             DateTime                 @default(now()) @map("recorded_at")
+
+  patient PatientProfile       @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  version PrivacyNoticeVersion @relation(fields: [privacyNoticeVersionId], references: [id], onDelete: Restrict)
+  actor   User                 @relation("PrivacyNoticeActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([patientId, recordedAt])
+  @@index([patientId, privacyNoticeVersionId, outcome])
+  @@index([actorUserId, recordedAt])
+  @@map("patient_privacy_notice_records")
 }
 
 /// Free-text substance plus a severity grade. Deliberately uncoded for now —
@@ -431,7 +502,7 @@ model PatientAllergy {
   updatedAt DateTime        @updatedAt @map("updated_at")
   deletedAt DateTime?       @map("deleted_at")
 
-  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
 
   @@index([patientId])
   @@index([deletedAt])
@@ -1489,7 +1560,7 @@ model BpjsEligibilityCheck {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
 
   @@unique([patientId, checkedDate])
   @@index([checkedDate])

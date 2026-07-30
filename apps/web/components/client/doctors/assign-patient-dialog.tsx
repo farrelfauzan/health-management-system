@@ -109,7 +109,7 @@ export function AssignPatientDialog({
               id="assign-patient-select"
               options={selectablePatients.map((patient) => ({
                 value: patient.id,
-                label: `${patient.fullName} — ${patient.mrn}`,
+                label: patient.fullName,
               }))}
               value={selectedPatientId}
               placeholder={t('doctors.selectPatient')}

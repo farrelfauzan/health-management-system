@@ -120,6 +120,9 @@ describe('AdminManagementService', () => {
     expect(adminManagementRepositoryMock.createUserWithRoles).toHaveBeenCalledWith(
       expect.objectContaining({ roleIds: ['role-super-admin'] }),
     );
+    expect(JSON.stringify((auditServiceMock.record as jest.Mock).mock.calls)).not.toContain(
+      persistedUser.email,
+    );
   });
 
   it('does not query the actor when no privileged role is requested', async () => {

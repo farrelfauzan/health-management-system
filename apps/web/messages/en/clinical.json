@@ -179,7 +179,35 @@
       "assignedDoctors": "Assigned Doctors",
       "noAssignedDoctors": "No doctors assigned yet.",
       "unassignDoctor": "Unassign {name}",
-      "unassignDoctorError": "Unable to unassign the doctor. Please try again."
+      "unassignDoctorError": "Unable to unassign the doctor. Please try again.",
+      "compactRecord": "Open the detail view for identifiers and full demographics."
+    },
+    "privacyNotice": {
+      "title": "Patient Privacy Notice",
+      "notConsent": "This record only evidences that the notice was provided. It is not blanket consent to data processing or consent to medical treatment/care.",
+      "loading": "Loading the current privacy notice...",
+      "loadError": "The current privacy notice could not be loaded. The record cannot be created.",
+      "counselPending": "Legal counsel review status: not approved. Communicate this status to the patient or representative.",
+      "version": "Version {version}",
+      "outcomeLabel": "Delivery outcome",
+      "selectOutcome": "Select delivery outcome",
+      "outcomes": {
+        "ACKNOWLEDGED": "Notice provided and acknowledged",
+        "PROVIDED_ACKNOWLEDGEMENT_DECLINED": "Notice provided, acknowledgement declined",
+        "DEFERRED_EMERGENCY": "Deferred due to emergency"
+      },
+      "subjectLabel": "Notice recipient",
+      "self": "Patient",
+      "representative": "Patient representative",
+      "representativeName": "Representative name",
+      "representativeRelation": "Relationship to patient",
+      "outcomeRequired": "Select a privacy notice delivery outcome.",
+      "representativeRequired": "Representative name and relationship are required.",
+      "historyTitle": "Privacy History",
+      "historyError": "Unable to load privacy notice history.",
+      "captureRequired": "The current notice must be provided and recorded.",
+      "currentRecorded": "The current notice has been recorded.",
+      "historyCount": "{count, plural, =0 {No historical records} one {# historical record} other {# historical records}}"
     },
     "doctors": {
       "title": "Doctors",

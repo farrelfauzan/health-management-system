@@ -10,15 +10,10 @@ import messages from '../../../messages/id/clinical.json';
 function buildEncounter(overrides: Partial<EncounterListItem> = {}): EncounterListItem {
   return {
     id: 'encounter-1',
-    registrationId: 'registration-1',
-    patientId: 'patient-1',
-    doctorId: 'doctor-1',
     status: 'IN_PROGRESS' as EncounterStatusValue,
     startedAt: '2026-07-18T08:00:00.000Z',
-    createdAt: '2026-07-18T08:00:00.000Z',
-    updatedAt: '2026-07-18T08:00:00.000Z',
-    patient: { id: 'patient-1', mrn: 'MRN-0001', fullName: 'John Doe' },
-    doctor: { id: 'doctor-1', licenseNumber: 'STR-1', fullName: 'Dr. Budi Santoso' },
+    patient: { id: 'patient-1', fullName: 'John Doe' },
+    doctor: { id: 'doctor-1', fullName: 'Dr. Budi Santoso' },
     vitalSignsCount: 2,
     diagnosisCount: 1,
     procedureCount: 0,
@@ -43,7 +38,6 @@ describe('EncountersTableRow', () => {
     renderRow(buildEncounter());
 
     expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('MRN-0001')).toBeInTheDocument();
     expect(screen.getByText('Dr. Budi Santoso')).toBeInTheDocument();
     expect(screen.getByText('Berlangsung')).toBeInTheDocument();
   });

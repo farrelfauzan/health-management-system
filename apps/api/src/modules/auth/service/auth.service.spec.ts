@@ -85,6 +85,24 @@ describe('AuthService', () => {
 
     expect(accessPayload.permissions).toEqual(['encounter.write:any', 'patient.read:any']);
     expect(accessPayload.roles).toEqual(['ADMIN', 'DOCTOR']);
+    expect(JSON.stringify((auditServiceMock.record as jest.Mock).mock.calls)).not.toContain(
+      user.email,
+    );
+  });
+
+  it('does not audit the supplied email when login fails', async () => {
+    (authRepositoryMock.findUserByEmail as jest.Mock).mockResolvedValue(null);
+
+    await expect(
+      service.login({ email: 'pii-sentinel@example.com', password: 'wrong-password' }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'USER_LOGIN_FAILED' }),
+    );
+    expect(JSON.stringify((auditServiceMock.record as jest.Mock).mock.calls)).not.toContain(
+      'pii-sentinel@example.com',
+    );
   });
 
   it('omits permissions granted only by an unassigned role', async () => {
