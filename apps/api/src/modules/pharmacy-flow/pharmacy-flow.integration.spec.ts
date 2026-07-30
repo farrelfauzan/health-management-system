@@ -712,7 +712,10 @@ describe('PharmacyFlow integration', () => {
         .send(dispensePayload);
 
       expect(response.status).toBe(409);
-      expect(pharmacyRepositoryMock.createDispense).not.toHaveBeenCalled();
+      // Unlike the prescription-state conflicts above, a stock shortage is only
+      // visible inside the dispense transaction — the repository must be reached
+      // for the guarded balance to reject and roll the whole dispense back.
+      expect(pharmacyRepositoryMock.createDispense).toHaveBeenCalled();
     });
 
     it('returns 400 for a dispense with an invalid quantity', async () => {
