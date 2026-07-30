@@ -1,11 +1,14 @@
 import {
   Actor,
   ActorScopeResolution,
+  ExpiryReportResponse,
+  getCalendarDateInTimeZone,
   DispenseRecordDetailRecord,
   DispenseRecordResponse,
   isPrescriptionDispensable,
   MedicationRecord,
   MedicationResponse,
+  StockReceiptResponse,
   PrescriptionDetailRecord,
   PrescriptionResponse,
 } from '@hms/shared-types';
@@ -17,24 +20,33 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateDispenseDto } from '../dto/create-dispense.dto';
 import { CreateMedicationDto } from '../dto/create-medication.dto';
 import { CreatePrescriptionDto } from '../dto/create-prescription.dto';
+import { CreateStockReceiptDto } from '../dto/create-stock-receipt.dto';
+import { ExpiryReportQueryDto } from '../dto/expiry-report-query.dto';
 import { ListMedicationsQueryDto } from '../dto/list-medications-query.dto';
 import { ListPrescriptionsQueryDto } from '../dto/list-prescriptions-query.dto';
+import { ListStockReceiptsQueryDto } from '../dto/list-stock-receipts-query.dto';
 import { UpdateMedicationDto } from '../dto/update-medication.dto';
 import { MedicationIdentifierConflictError } from '../repository/medication-identifier-conflict.error';
 import { PharmacyFlowRepository } from '../repository/pharmacy-flow.repository';
 
 @Injectable()
 export class PharmacyFlowService {
+  private readonly clinicTimeZone: string;
+
   constructor(
     private readonly pharmacyFlowRepository: PharmacyFlowRepository,
     private readonly authRepository: AuthRepository,
-  ) {}
+    configService: ConfigService,
+  ) {
+    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? 'Asia/Jakarta';
+  }
 
   async listMedications(query: ListMedicationsQueryDto, currentUser: CurrentUser) {
     const actor = await this.getActorOrThrow(currentUser);
@@ -49,6 +61,8 @@ export class PharmacyFlowService {
       limit: query.limit,
       search: query.search,
       category: query.category,
+      reorderOnly: query.reorderOnly,
+      inventoryDate: this.getClinicDate(new Date()),
     });
 
     return {
@@ -87,7 +101,7 @@ export class PharmacyFlowService {
         strength: payload.strength,
         unit: payload.unit,
         category: payload.category,
-        stockQty: payload.stockQty,
+        reorderLevel: payload.reorderLevel,
       }),
     );
 
@@ -106,7 +120,8 @@ export class PharmacyFlowService {
       throw new ForbiddenException('You are not allowed to update medications');
     }
 
-    const medication = await this.pharmacyFlowRepository.findMedicationById(id);
+    const inventoryDate = this.getClinicDate(new Date());
+    const medication = await this.pharmacyFlowRepository.findMedicationById(id, inventoryDate);
 
     if (!medication) {
       throw new NotFoundException('Medication not found');
@@ -121,7 +136,7 @@ export class PharmacyFlowService {
     }
 
     const updated = await this.runWithIdentifierConflictMapping(() =>
-      this.pharmacyFlowRepository.updateMedication(id, payload),
+      this.pharmacyFlowRepository.updateMedication(id, payload, inventoryDate),
     );
 
     return this.toMedicationResponse(updated);
@@ -209,16 +224,93 @@ export class PharmacyFlowService {
 
     this.assertPrescriptionDispensable(prescription);
     this.assertDispenseWithinRemainingQuantities(prescription, payload);
-    await this.assertSufficientStock(payload);
-
     const created = await this.pharmacyFlowRepository.createDispense({
       prescriptionId: payload.prescriptionId,
       pharmacistId: currentUser.sub,
       notes: payload.notes,
       items: payload.items,
+      inventoryDate: this.getClinicDate(new Date()),
     });
 
     return this.toDispenseRecordResponse(created);
+  }
+
+  async createStockReceipt(
+    payload: CreateStockReceiptDto,
+    currentUser: CurrentUser,
+  ): Promise<StockReceiptResponse> {
+    await this.assertInventoryPermission(currentUser, 'write');
+    const medication = await this.pharmacyFlowRepository.findMedicationById(
+      payload.medicationId,
+      this.getClinicDate(new Date()),
+    );
+    if (!medication) throw new BadRequestException('Medication not found');
+    const receipt = await this.pharmacyFlowRepository.createStockReceipt({
+      medicationId: payload.medicationId,
+      batchNumber: payload.batchNumber,
+      expiryDate: new Date(`${payload.expiryDate}T00:00:00Z`),
+      quantity: payload.quantity,
+      receivedAt: payload.receivedAt ? new Date(payload.receivedAt) : undefined,
+      receivedById: currentUser.sub,
+      notes: payload.notes,
+    });
+    return this.toStockReceiptResponse(receipt);
+  }
+
+  async listStockReceipts(query: ListStockReceiptsQueryDto, currentUser: CurrentUser) {
+    await this.assertInventoryPermission(currentUser, 'read');
+    const result = await this.pharmacyFlowRepository.listStockReceipts(query);
+    return {
+      items: result.items.map((receipt) => this.toStockReceiptResponse(receipt)),
+      meta: { page: result.page, limit: result.limit, total: result.total },
+    };
+  }
+
+  async getInventorySummary(currentUser: CurrentUser) {
+    await this.assertInventoryPermission(currentUser, 'read');
+    const asOfDate = getCalendarDateInTimeZone(new Date(), this.clinicTimeZone);
+    const items = (
+      await this.pharmacyFlowRepository.getInventorySummary(new Date(`${asOfDate}T00:00:00Z`))
+    ).map((item) => ({
+      ...item,
+      needsReorder: item.stockQty <= item.reorderLevel,
+      nearestExpiryDate: item.nearestExpiryDate?.toISOString().slice(0, 10),
+    }));
+    return {
+      asOfDate,
+      medicationCount: items.length,
+      totalStockQty: items.reduce((sum, item) => sum + item.stockQty, 0),
+      reorderCount: items.filter((item) => item.needsReorder).length,
+      items,
+    };
+  }
+
+  async getExpiryReport(
+    query: ExpiryReportQueryDto,
+    currentUser: CurrentUser,
+  ): Promise<ExpiryReportResponse> {
+    await this.assertInventoryPermission(currentUser, 'read');
+    const asOfDate = getCalendarDateInTimeZone(new Date(), this.clinicTimeZone);
+    const through = new Date(`${asOfDate}T00:00:00Z`);
+    through.setUTCDate(through.getUTCDate() + query.days);
+    const throughDate = through.toISOString().slice(0, 10);
+    const rows = await this.pharmacyFlowRepository.getExpiryReport(through);
+    return {
+      asOfDate,
+      throughDate,
+      items: rows.map((row) => {
+        const receipt = this.toStockReceiptResponse(row);
+        if (!row.expiryDate) return { ...receipt, expiryStatus: 'UNKNOWN' as const };
+        const daysUntilExpiry = Math.round(
+          (row.expiryDate.getTime() - new Date(`${asOfDate}T00:00:00Z`).getTime()) / 86_400_000,
+        );
+        return {
+          ...receipt,
+          expiryStatus: daysUntilExpiry < 0 ? ('EXPIRED' as const) : ('EXPIRING' as const),
+          daysUntilExpiry,
+        };
+      }),
+    };
   }
 
   private async resolvePrescribingDoctorId(
@@ -294,7 +386,10 @@ export class PharmacyFlowService {
   }
 
   private async assertMedicationsExist(medicationIds: string[]): Promise<void> {
-    const medications = await this.pharmacyFlowRepository.findActiveMedicationsByIds(medicationIds);
+    const medications = await this.pharmacyFlowRepository.findActiveMedicationsByIds(
+      medicationIds,
+      this.getClinicDate(new Date()),
+    );
     const foundIds = new Set(medications.map((medication) => medication.id));
     const missingIds = medicationIds.filter((medicationId) => !foundIds.has(medicationId));
 
@@ -343,23 +438,6 @@ export class PharmacyFlowService {
     }
 
     return remainingByMedication;
-  }
-
-  private async assertSufficientStock(payload: CreateDispenseDto): Promise<void> {
-    const medications = await this.pharmacyFlowRepository.findActiveMedicationsByIds(
-      payload.items.map((item) => item.medicationId),
-    );
-    const stockByMedication = new Map<string, number>(
-      medications.map((medication) => [medication.id, medication.stockQty]),
-    );
-
-    for (const item of payload.items) {
-      const stockQty = stockByMedication.get(item.medicationId);
-
-      if (stockQty === undefined || stockQty < item.quantity) {
-        throw new ConflictException('Insufficient medication stock');
-      }
-    }
   }
 
   private async assertMedicationCodeAvailable(code: string, excludedId?: string): Promise<void> {
@@ -444,6 +522,8 @@ export class PharmacyFlowService {
       unit: medication.unit ?? undefined,
       category: medication.category ?? undefined,
       stockQty: medication.stockQty,
+      reorderLevel: medication.reorderLevel,
+      needsReorder: medication.stockQty <= medication.reorderLevel,
       createdAt: medication.createdAt.toISOString(),
       updatedAt: medication.updatedAt.toISOString(),
     };
@@ -501,7 +581,59 @@ export class PharmacyFlowService {
         medicationCode: item.medication.code,
         medicationName: item.medication.name,
         quantity: item.quantity,
+        allocations: item.stockAllocations.map((allocation) => ({
+          stockReceiptId: allocation.stockReceipt.id,
+          batchNumber: allocation.stockReceipt.batchNumber,
+          expiryDate: allocation.stockReceipt.expiryDate?.toISOString().slice(0, 10),
+          quantity: allocation.quantity,
+        })),
       })),
+    };
+  }
+
+  private async assertInventoryPermission(
+    currentUser: CurrentUser,
+    action: 'read' | 'write',
+  ): Promise<void> {
+    const actor = await this.getActorOrThrow(currentUser);
+    if (!this.resolveScope(actor, 'Inventory', action).hasAny) {
+      throw new ForbiddenException(`You are not allowed to ${action} inventory`);
+    }
+  }
+
+  private getClinicDate(instant: Date): Date {
+    return new Date(`${getCalendarDateInTimeZone(instant, this.clinicTimeZone)}T00:00:00Z`);
+  }
+
+  private toStockReceiptResponse(receipt: {
+    id: string;
+    medicationId: string;
+    batchNumber: string;
+    expiryDate: Date | null;
+    quantity: number;
+    remainingQuantity: number;
+    receivedAt: Date;
+    receivedById: string | null;
+    notes: string | null;
+    createdAt: Date;
+    medication: { code: string; name: string };
+    allocations: Array<{ quantity: number }>;
+  }): StockReceiptResponse {
+    const allocatedQty = receipt.quantity - receipt.remainingQuantity;
+    return {
+      id: receipt.id,
+      medicationId: receipt.medicationId,
+      medicationCode: receipt.medication.code,
+      medicationName: receipt.medication.name,
+      batchNumber: receipt.batchNumber,
+      expiryDate: receipt.expiryDate?.toISOString().slice(0, 10),
+      quantity: receipt.quantity,
+      allocatedQty,
+      remainingQty: receipt.remainingQuantity,
+      receivedAt: receipt.receivedAt.toISOString(),
+      receivedById: receipt.receivedById ?? undefined,
+      notes: receipt.notes ?? undefined,
+      createdAt: receipt.createdAt.toISOString(),
     };
   }
 }

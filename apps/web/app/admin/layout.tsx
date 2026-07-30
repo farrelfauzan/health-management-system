@@ -6,6 +6,7 @@ import { AppAbilityProvider } from '#components/client/app-ability-provider';
 import { AppSidebar } from '#components/client/shell/app-sidebar';
 import { TopBar } from '#components/server/shell/top-bar';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
+import { hasAnyRole } from '#lib/auth/access-token-claims';
 import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
@@ -24,7 +25,13 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
   const claims = resolveSessionClaims({ accessToken, refreshToken });
   const rules = resolveAppAbilityRules(claims);
-  const sections = filterNavSections(buildAppAbility(rules));
+  const isAdmin = hasAnyRole(claims, ['SUPER_ADMIN', 'ADMIN']);
+  const isPharmacistOnly = !isAdmin && hasAnyRole(claims, ['PHARMACIST']);
+  const sections = filterNavSections(
+    buildAppAbility(rules),
+    undefined,
+    isPharmacistOnly ? ['/admin/dashboard'] : [],
+  );
   const profile = resolveShellProfile(claims);
   return (
     <AppAbilityProvider rules={rules}>

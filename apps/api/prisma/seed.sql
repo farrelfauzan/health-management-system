@@ -95,6 +95,8 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('prescription.write:any', 'Prescription', 'write', 'ANY', 'Write prescriptions for any patient'),
     ('prescription.write:own', 'Prescription', 'write', 'OWN', 'Write prescriptions for owned patients'),
     ('dispense.write:any', 'DispenseRecord', 'write', 'ANY', 'Dispense medication records'),
+    ('inventory.read:any', 'Inventory', 'read', 'ANY', 'Read stock receipts and inventory reports'),
+    ('inventory.write:any', 'Inventory', 'write', 'ANY', 'Record medication stock receipts'),
     ('service-tariff.read:any', 'ServiceTariff', 'read', 'ANY', 'Read the service tariff price list'),
     ('service-tariff.write:any', 'ServiceTariff', 'write', 'ANY', 'Create and update service tariffs'),
     ('invoice.read:any', 'Invoice', 'read', 'ANY', 'Read all invoices'),
@@ -192,6 +194,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'prescription.read:any'),
     ('ADMIN', 'prescription.write:any'),
     ('ADMIN', 'dispense.write:any'),
+    ('ADMIN', 'inventory.read:any'),
+    ('ADMIN', 'inventory.write:any'),
     -- The cashier is the front desk in an Indonesian pratama clinic, so the
     -- ADMIN role carries the whole kasir surface. Doctors and patients get no
     -- billing grant: the invoice reaches the patient as paper (or later via a
@@ -264,6 +268,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PHARMACIST', 'medication.update:any'),
     ('PHARMACIST', 'prescription.read:any'),
     ('PHARMACIST', 'dispense.write:any'),
+    ('PHARMACIST', 'inventory.read:any'),
+    ('PHARMACIST', 'inventory.write:any'),
     ('PATIENT', 'auth.logout:own'),
     ('PATIENT', 'patient.read:own'),
     ('PATIENT', 'patient.update:own'),
@@ -806,6 +812,7 @@ SET
 
 -- Development accounts. Credentials:
 --   admin@salingjaga.com   / Admin123!
+--   pharmacy@salingjaga.com / Pharmacy123!
 --   <doctor>@clinic.local  / Doctor123!   (one per seeded practitioner)
 --
 -- The doctor logins are the practitioners from the directory above, not a
@@ -816,6 +823,7 @@ SET
 WITH seed_users(email, password_hash) AS (
   VALUES
     ('admin@salingjaga.com', '$2b$10$8Xw5CHvVbJa465ypeir1ZeRyastav5gmh/cU3ztImenBGuftYUQ1O'),
+    ('pharmacy@salingjaga.com', '$2b$10$pHZGH0PxmBaMPfH5pdd/XelfS0y43Sn49G3gHrRS5VZfRXy7T9jcW'),
     ('andi.prasetyo@clinic.local', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O'),
     ('maya.sari@clinic.local', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O'),
     ('hendra.gunawan@clinic.local', '$2b$10$8syYNeSA3HKA.1IICxLbPeRffmT2dNY6zIf5LgU5gonMyzp61wB1O'),
@@ -850,6 +858,7 @@ SET
 WITH seed_user_roles(email, role_code) AS (
   VALUES
     ('admin@salingjaga.com', 'SUPER_ADMIN'),
+    ('pharmacy@salingjaga.com', 'PHARMACIST'),
     ('andi.prasetyo@clinic.local', 'DOCTOR'),
     ('maya.sari@clinic.local', 'DOCTOR'),
     ('hendra.gunawan@clinic.local', 'DOCTOR'),
@@ -905,6 +914,103 @@ FROM seed_doctor_accounts AS a
 JOIN "users" AS u ON u."email" = a.email
 WHERE d."license_number" = a.license_number
   AND d."owner_user_id" IS DISTINCT FROM u."id";
+
+-- Synthetic development medication catalog. ON CONFLICT DO NOTHING preserves
+-- clinic edits, national-code mappings, and prices on every later reseed.
+WITH seed_medications(code, kfa_code, name, form, strength, unit, category, reorder_level, unit_price) AS (
+  VALUES
+    ('MED-PARA-500', '9900000000001', 'Paracetamol', 'Tablet', '500 mg', 'TABLET', 'OBAT_BEBAS', 50, 1000.00),
+    ('MED-AMOX-500', '9900000000002', 'Amoxicillin', 'Kapsul', '500 mg', 'KAPSUL', 'OBAT_KERAS', 40, 2500.00),
+    ('MED-CET-10', '9900000000003', 'Cetirizine', 'Tablet', '10 mg', 'TABLET', 'OBAT_BEBAS_TERBATAS', 30, 1500.00),
+    ('MED-ORS', '9900000000004', 'Oralit', 'Serbuk', NULL, 'SACHET', 'OBAT_BEBAS', 20, 2000.00),
+    ('MED-OMEP-20', '9900000000005', 'Omeprazole', 'Kapsul', '20 mg', 'KAPSUL', 'OBAT_KERAS', 25, 3000.00),
+    ('MED-SALB-2', '9900000000006', 'Salbutamol', 'Tablet', '2 mg', 'TABLET', 'OBAT_KERAS', 15, 1800.00),
+    ('MED-POVI-10', '9900000000007', 'Povidone Iodine', 'Larutan', '10%', 'BOTOL', 'OBAT_BEBAS', 10, 18000.00),
+    ('MED-VITC-500', '9900000000008', 'Vitamin C', 'Tablet', '500 mg', 'TABLET', 'SUPLEMEN', 25, 1200.00)
+)
+INSERT INTO "medications" (
+  "id",
+  "code",
+  "kfa_code",
+  "name",
+  "form",
+  "strength",
+  "unit",
+  "category",
+  "reorder_level",
+  "unit_price",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('medication:' || code)::uuid,
+  code,
+  kfa_code,
+  name,
+  form,
+  strength,
+  unit::"MedicationUnit",
+  category::"MedicationCategory",
+  reorder_level,
+  unit_price,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_medications
+ON CONFLICT ("code") DO NOTHING;
+
+-- Receipt IDs are deterministic and never updated on conflict. This is
+-- load-bearing: reseeding must not restore stock already consumed by a dispense.
+-- Relative expiry dates make a fresh development database immediately useful
+-- for the expiry report without inventing values for production records.
+WITH seed_receipts(
+  medication_code,
+  batch_number,
+  expiry_date,
+  quantity,
+  received_days_ago,
+  notes
+) AS (
+  VALUES
+    ('MED-PARA-500', 'PARA-DEV-001', CURRENT_DATE + 365, 200, 14, 'Synthetic healthy-stock receipt'),
+    ('MED-AMOX-500', 'AMOX-DEV-001', CURRENT_DATE + 120, 35, 10, 'Synthetic reorder-alert receipt'),
+    ('MED-AMOX-500', 'AMOX-DEV-OLD', CURRENT_DATE - 15, 8, 90, 'Synthetic expired lot for report coverage'),
+    ('MED-CET-10', 'CET-DEV-001', CURRENT_DATE + 20, 80, 7, 'Synthetic expiring-soon receipt'),
+    ('MED-ORS', 'ORS-DEV-001', CURRENT_DATE + 60, 12, 5, 'Synthetic reorder-alert receipt'),
+    ('MED-SALB-2', 'SALB-DEV-001', CURRENT_DATE + 180, 25, 21, 'Synthetic available-stock receipt'),
+    ('MED-POVI-10', 'POVI-DEV-001', CURRENT_DATE + 240, 40, 30, 'Synthetic available-stock receipt'),
+    ('MED-VITC-500', 'VITC-DEV-001', CURRENT_DATE + 15, 10, 4, 'Synthetic expiring reorder-alert receipt')
+)
+INSERT INTO "medication_stock_receipts" (
+  "id",
+  "medication_id",
+  "batch_number",
+  "expiry_date",
+  "quantity",
+  "remaining_quantity",
+  "received_at",
+  "received_by_id",
+  "notes",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('stock-receipt:' || sr.medication_code || ':' || sr.batch_number)::uuid,
+  m."id",
+  sr.batch_number,
+  sr.expiry_date,
+  sr.quantity,
+  sr.quantity,
+  NOW() - make_interval(days => sr.received_days_ago),
+  pharmacy_user."id",
+  sr.notes,
+  NOW(),
+  NOW()
+FROM seed_receipts sr
+JOIN "medications" m ON m."code" = sr.medication_code
+JOIN "users" pharmacy_user ON pharmacy_user."email" = 'pharmacy@salingjaga.com'
+ON CONFLICT ("id") DO NOTHING;
 
 -- Starter service tariffs so invoice generation works out of the box in
 -- development and demos: one consultation fee plus two common tindakan mapped

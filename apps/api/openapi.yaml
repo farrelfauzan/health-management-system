@@ -7417,6 +7417,14 @@ paths:
               - OBAT_HERBAL
               - SUPLEMEN
               - ALAT_KESEHATAN
+        - name: reorderOnly
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
       responses:
         "200":
           description: A searchable, paginated medication inventory list.
@@ -7448,6 +7456,10 @@ paths:
                           type: string
                         stockQty:
                           type: integer
+                        reorderLevel:
+                          type: integer
+                        needsReorder:
+                          type: boolean
                         createdAt:
                           type: string
                         updatedAt:
@@ -7462,6 +7474,8 @@ paths:
                         - unit
                         - category
                         - stockQty
+                        - reorderLevel
+                        - needsReorder
                         - createdAt
                         - updatedAt
                   meta:
@@ -7491,6 +7505,8 @@ paths:
                       unit: TABLET
                       category: OBAT_BEBAS
                       stockQty: 250
+                      reorderLevel: 50
+                      needsReorder: false
                       createdAt: 2026-07-20T08:00:00.000Z
                       updatedAt: 2026-07-20T08:00:00.000Z
                   meta:
@@ -7540,7 +7556,7 @@ paths:
                   strength: 500 mg
                   unit: TABLET
                   category: OBAT_BEBAS
-                  stockQty: 250
+                  reorderLevel: 50
       responses:
         "201":
           description: The medication was added to the catalog.
@@ -7570,6 +7586,10 @@ paths:
                         type: string
                       stockQty:
                         type: integer
+                      reorderLevel:
+                        type: integer
+                      needsReorder:
+                        type: boolean
                       createdAt:
                         type: string
                       updatedAt:
@@ -7584,6 +7604,8 @@ paths:
                       - unit
                       - category
                       - stockQty
+                      - reorderLevel
+                      - needsReorder
                       - createdAt
                       - updatedAt
                   message:
@@ -7602,6 +7624,8 @@ paths:
                     unit: TABLET
                     category: OBAT_BEBAS
                     stockQty: 250
+                    reorderLevel: 50
+                    needsReorder: false
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Medication created
@@ -7657,7 +7681,7 @@ paths:
                 value:
                   name: Paracetamol 500 mg
                   category: OBAT_BEBAS
-                  stockQty: 300
+                  reorderLevel: 75
       responses:
         "200":
           description: The medication catalog entry was updated.
@@ -7687,6 +7711,10 @@ paths:
                         type: string
                       stockQty:
                         type: integer
+                      reorderLevel:
+                        type: integer
+                      needsReorder:
+                        type: boolean
                       createdAt:
                         type: string
                       updatedAt:
@@ -7701,6 +7729,8 @@ paths:
                       - unit
                       - category
                       - stockQty
+                      - reorderLevel
+                      - needsReorder
                       - createdAt
                       - updatedAt
                   message:
@@ -7719,6 +7749,8 @@ paths:
                     unit: TABLET
                     category: OBAT_BEBAS
                     stockQty: 250
+                    reorderLevel: 50
+                    needsReorder: false
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Medication updated
@@ -8006,6 +8038,11 @@ paths:
                       frequency: Three times daily
                       durationDays: 3
                       quantity: 9
+                      allocations:
+                        - stockReceiptId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                          batchNumber: LOT-PARA-2026-07
+                          expiryDate: 2028-07-31
+                          quantity: 9
                       instructions: Take after meals
       responses:
         "201":
@@ -8306,6 +8343,494 @@ paths:
       summary: Dispense a prescription
       tags:
         - Pharmacy Flow
+  /api/v1/inventory/receipts:
+    get:
+      operationId: InventoryController_listReceipts_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: medicationId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Paginated receipt lots with allocated and remaining quantities.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        medicationId:
+                          type: string
+                        medicationCode:
+                          type: string
+                        medicationName:
+                          type: string
+                        batchNumber:
+                          type: string
+                        expiryDate:
+                          type: string
+                        quantity:
+                          type: integer
+                        allocatedQty:
+                          type: integer
+                        remainingQty:
+                          type: integer
+                        receivedAt:
+                          type: string
+                        receivedById:
+                          type: string
+                        notes:
+                          type: string
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - medicationId
+                        - medicationCode
+                        - medicationName
+                        - batchNumber
+                        - expiryDate
+                        - quantity
+                        - allocatedQty
+                        - remainingQty
+                        - receivedAt
+                        - receivedById
+                        - notes
+                        - createdAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                      medicationId: 66666666-6666-4666-8666-666666666666
+                      medicationCode: MED-PARA-500
+                      medicationName: Paracetamol
+                      batchNumber: LOT-PARA-2026-07
+                      expiryDate: 2028-07-31
+                      quantity: 250
+                      allocatedQty: 0
+                      remainingQty: 250
+                      receivedAt: 2026-07-20T08:00:00.000Z
+                      receivedById: 33333333-3333-4333-8333-333333333333
+                      notes: Supplier delivery note DO-2026-0719
+                      createdAt: 2026-07-20T08:00:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List stock receipts
+      tags: &a13
+        - Pharmacy Inventory
+    post:
+      operationId: InventoryController_createReceipt_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStockReceiptDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  medicationId: 66666666-6666-4666-8666-666666666666
+                  batchNumber: LOT-PARA-2026-07
+                  expiryDate: 2028-07-31
+                  quantity: 250
+                  receivedAt: 2026-07-20T08:00:00.000Z
+                  notes: Supplier delivery note DO-2026-0719
+      responses:
+        "201":
+          description: A batch with a required known expiry date was added to inventory.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      medicationId:
+                        type: string
+                      medicationCode:
+                        type: string
+                      medicationName:
+                        type: string
+                      batchNumber:
+                        type: string
+                      expiryDate:
+                        type: string
+                      quantity:
+                        type: integer
+                      allocatedQty:
+                        type: integer
+                      remainingQty:
+                        type: integer
+                      receivedAt:
+                        type: string
+                      receivedById:
+                        type: string
+                      notes:
+                        type: string
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - medicationId
+                      - medicationCode
+                      - medicationName
+                      - batchNumber
+                      - expiryDate
+                      - quantity
+                      - allocatedQty
+                      - remainingQty
+                      - receivedAt
+                      - receivedById
+                      - notes
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                    medicationId: 66666666-6666-4666-8666-666666666666
+                    medicationCode: MED-PARA-500
+                    medicationName: Paracetamol
+                    batchNumber: LOT-PARA-2026-07
+                    expiryDate: 2028-07-31
+                    quantity: 250
+                    allocatedQty: 0
+                    remainingQty: 250
+                    receivedAt: 2026-07-20T08:00:00.000Z
+                    receivedById: 33333333-3333-4333-8333-333333333333
+                    notes: Supplier delivery note DO-2026-0719
+                    createdAt: 2026-07-20T08:00:00.000Z
+                  message: Stock receipt created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Record a stock receipt
+      tags: *a13
+  /api/v1/inventory/summary:
+    get:
+      operationId: InventoryController_getSummary_v1
+      parameters: []
+      responses:
+        "200":
+          description: Receipt-derived balances and reorder alerts as of the clinic-local
+            date.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      asOfDate:
+                        type: string
+                      medicationCount:
+                        type: integer
+                      totalStockQty:
+                        type: integer
+                      reorderCount:
+                        type: integer
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            medicationId:
+                              type: string
+                            medicationCode:
+                              type: string
+                            medicationName:
+                              type: string
+                            stockQty:
+                              type: integer
+                            reorderLevel:
+                              type: integer
+                            needsReorder:
+                              type: boolean
+                            nearestExpiryDate:
+                              type: string
+                            unknownExpiryQty:
+                              type: integer
+                          required:
+                            - medicationId
+                            - medicationCode
+                            - medicationName
+                            - stockQty
+                            - reorderLevel
+                            - needsReorder
+                            - nearestExpiryDate
+                            - unknownExpiryQty
+                    required:
+                      - asOfDate
+                      - medicationCount
+                      - totalStockQty
+                      - reorderCount
+                      - items
+                required:
+                  - data
+                example:
+                  data:
+                    asOfDate: 2026-07-20
+                    medicationCount: 1
+                    totalStockQty: 250
+                    reorderCount: 0
+                    items:
+                      - medicationId: 66666666-6666-4666-8666-666666666666
+                        medicationCode: MED-PARA-500
+                        medicationName: Paracetamol
+                        stockQty: 250
+                        reorderLevel: 50
+                        needsReorder: false
+                        nearestExpiryDate: 2028-07-31
+                        unknownExpiryQty: 0
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get inventory summary
+      tags: *a13
+  /api/v1/inventory/expiry-report:
+    get:
+      operationId: InventoryController_getExpiryReport_v1
+      parameters:
+        - name: days
+          required: false
+          in: query
+          schema:
+            minimum: 0
+            maximum: 3650
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 90
+            type: integer
+      responses:
+        "200":
+          description: Expired, expiring, and legacy unknown-expiry receipt balances.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      asOfDate:
+                        type: string
+                      throughDate:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            medicationId:
+                              type: string
+                            medicationCode:
+                              type: string
+                            medicationName:
+                              type: string
+                            batchNumber:
+                              type: string
+                            expiryDate:
+                              type: string
+                            quantity:
+                              type: integer
+                            allocatedQty:
+                              type: integer
+                            remainingQty:
+                              type: integer
+                            receivedAt:
+                              type: string
+                            receivedById:
+                              type: string
+                            notes:
+                              type: string
+                            createdAt:
+                              type: string
+                            expiryStatus:
+                              type: string
+                            daysUntilExpiry:
+                              type: integer
+                          required:
+                            - id
+                            - medicationId
+                            - medicationCode
+                            - medicationName
+                            - batchNumber
+                            - expiryDate
+                            - quantity
+                            - allocatedQty
+                            - remainingQty
+                            - receivedAt
+                            - receivedById
+                            - notes
+                            - createdAt
+                            - expiryStatus
+                            - daysUntilExpiry
+                    required:
+                      - asOfDate
+                      - throughDate
+                      - items
+                required:
+                  - data
+                example:
+                  data:
+                    asOfDate: 2026-07-20
+                    throughDate: 2026-10-18
+                    items:
+                      - id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                        medicationId: 66666666-6666-4666-8666-666666666666
+                        medicationCode: MED-PARA-500
+                        medicationName: Paracetamol
+                        batchNumber: LOT-PARA-2026-07
+                        expiryDate: 2026-08-15
+                        quantity: 250
+                        allocatedQty: 25
+                        remainingQty: 225
+                        receivedAt: 2026-07-20T08:00:00.000Z
+                        receivedById: 33333333-3333-4333-8333-333333333333
+                        notes: Supplier delivery note DO-2026-0719
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        expiryStatus: EXPIRING
+                        daysUntilExpiry: 26
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get medication expiry report
+      tags: *a13
   /api/v1/service-tariffs:
     get:
       operationId: ServiceTariffController_listServiceTariffs_v1
@@ -8441,7 +8966,7 @@ paths:
       security:
         - bearer: []
       summary: List service tariffs
-      tags: &a13
+      tags: &a14
         - Service Tariffs
     post:
       operationId: ServiceTariffController_createServiceTariff_v1
@@ -8543,7 +9068,7 @@ paths:
       security:
         - bearer: []
       summary: Create a service tariff
-      tags: *a13
+      tags: *a14
   /api/v1/service-tariffs/{id}:
     patch:
       operationId: ServiceTariffController_updateServiceTariff_v1
@@ -8657,7 +9182,7 @@ paths:
       security:
         - bearer: []
       summary: Update a service tariff
-      tags: *a13
+      tags: *a14
   /api/v1/invoices:
     get:
       operationId: InvoiceController_listInvoices_v1
@@ -8829,7 +9354,7 @@ paths:
       security:
         - bearer: []
       summary: List invoices
-      tags: &a14
+      tags: &a15
         - Invoices
     post:
       operationId: InvoiceController_generateInvoice_v1
@@ -9013,7 +9538,7 @@ paths:
       security:
         - bearer: []
       summary: Generate an invoice from a finished encounter
-      tags: *a14
+      tags: *a15
   /api/v1/invoices/{id}:
     get:
       operationId: InvoiceController_getInvoiceById_v1
@@ -9163,7 +9688,7 @@ paths:
       security:
         - bearer: []
       summary: Get an invoice
-      tags: *a14
+      tags: *a15
   /api/v1/invoices/{id}/issue:
     post:
       operationId: InvoiceController_issueInvoice_v1
@@ -9318,7 +9843,7 @@ paths:
       security:
         - bearer: []
       summary: Issue a draft invoice
-      tags: *a14
+      tags: *a15
   /api/v1/invoices/{id}/payment:
     post:
       operationId: InvoiceController_recordPayment_v1
@@ -9528,7 +10053,7 @@ paths:
       security:
         - bearer: []
       summary: Record the payment for an issued invoice
-      tags: *a14
+      tags: *a15
   /api/v1/invoices/{id}/void:
     post:
       operationId: InvoiceController_voidInvoice_v1
@@ -9709,7 +10234,7 @@ paths:
       security:
         - bearer: []
       summary: Void an invoice
-      tags: *a14
+      tags: *a15
   /api/v1/reports/cashier-daily:
     get:
       operationId: CashierReportController_getDailyReport_v1
@@ -9895,7 +10420,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a15
+      tags: &a16
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -9966,7 +10491,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a15
+      tags: *a16
   /api/v1/satusehat/submissions:
     get:
       operationId: SatusehatSubmissionController_listSubmissions_v1
@@ -10107,7 +10632,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: &a16
+      tags: &a17
         - SATUSEHAT
   /api/v1/satusehat/submissions/{id}/retry:
     post:
@@ -10216,7 +10741,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a16
+      tags: *a17
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -10330,7 +10855,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a17
+      tags: &a18
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -10468,7 +10993,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a17
+      tags: *a18
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -10527,7 +11052,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a17
+      tags: *a18
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -10593,7 +11118,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a17
+      tags: *a18
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -10681,7 +11206,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a18
+      tags: &a19
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -10748,7 +11273,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a18
+      tags: *a19
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -10842,7 +11367,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a18
+      tags: *a19
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -10948,7 +11473,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a18
+      tags: *a19
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -11036,7 +11561,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a19
+      tags: &a20
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -11130,7 +11655,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a19
+      tags: *a20
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -11219,7 +11744,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a19
+      tags: *a20
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -11313,7 +11838,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a19
+      tags: *a20
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -11610,7 +12135,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a20
+      tags: &a21
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -11719,7 +12244,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a20
+      tags: *a21
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -11907,7 +12432,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a21
+      tags: &a22
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -12000,7 +12525,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a21
+      tags: *a22
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -12092,7 +12617,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a21
+      tags: *a22
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -13169,7 +13694,7 @@ components:
             - OBAT_HERBAL
             - SUPLEMEN
             - ALAT_KESEHATAN
-        stockQty:
+        reorderLevel:
           type: integer
           minimum: 0
           exclusiveMinimum: false
@@ -13239,7 +13764,7 @@ components:
             - SUPLEMEN
             - ALAT_KESEHATAN
           nullable: true
-        stockQty:
+        reorderLevel:
           type: integer
           minimum: 0
           exclusiveMinimum: false
@@ -13335,6 +13860,37 @@ components:
       required:
         - prescriptionId
         - items
+    CreateStockReceiptDto:
+      type: object
+      properties:
+        medicationId:
+          type: string
+          format: uuid
+        batchNumber:
+          type: string
+          minLength: 1
+          maxLength: 100
+        expiryDate:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        quantity:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 1000000
+          exclusiveMaximum: false
+        receivedAt:
+          type: string
+          format: date-time
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - medicationId
+        - batchNumber
+        - expiryDate
+        - quantity
     CreateServiceTariffDto:
       type: object
       properties:

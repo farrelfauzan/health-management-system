@@ -1,4 +1,4 @@
-import { INestApplication, VersioningType } from '@nestjs/common';
+import { ConflictException, INestApplication, VersioningType } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { ZodValidationPipe } from 'nestjs-zod';
@@ -17,6 +17,7 @@ describe('PharmacyFlow integration', () => {
   const patientId = '38a3f0f1-51d3-4f68-9d54-1f6a1de1a002';
   const doctorId = '7f0f4be2-6d51-4bfb-a4c8-2f6a1de1a003';
   const medicationId = '9a1f34c8-8e10-4d0e-8c31-4f6a1de1a004';
+  const stockReceiptId = 'aa1f34c8-8e10-4d0e-8c31-4f6a1de1a010';
 
   const authRepositoryMock = {
     findUserById: jest.fn(),
@@ -39,6 +40,10 @@ describe('PharmacyFlow integration', () => {
     findPrescriptionDetailById: jest.fn(),
     createPrescription: jest.fn(),
     createDispense: jest.fn(),
+    createStockReceipt: jest.fn(),
+    listStockReceipts: jest.fn(),
+    getInventorySummary: jest.fn(),
+    getExpiryReport: jest.fn(),
   };
 
   const prismaServiceMock = {
@@ -56,6 +61,7 @@ describe('PharmacyFlow integration', () => {
     unit: 'KAPSUL',
     category: 'OBAT_KERAS',
     stockQty: 100,
+    reorderLevel: 20,
     createdAt: new Date('2026-07-19T08:00:00.000Z'),
     updatedAt: new Date('2026-07-19T08:00:00.000Z'),
   };
@@ -95,6 +101,7 @@ describe('PharmacyFlow integration', () => {
           code: 'MED-0001',
           name: 'Amoxicillin',
         },
+        stockAllocations: [],
       },
     ],
     dispenseRecords: [],
@@ -119,6 +126,7 @@ describe('PharmacyFlow integration', () => {
           code: 'MED-0001',
           name: 'Amoxicillin',
         },
+        stockAllocations: [],
       },
     ],
     prescription: {
@@ -229,6 +237,25 @@ describe('PharmacyFlow integration', () => {
     pharmacyRepositoryMock.findMedicationByKfaCode.mockResolvedValue(null);
     pharmacyRepositoryMock.createMedication.mockResolvedValue(medicationRecord);
     pharmacyRepositoryMock.updateMedication.mockResolvedValue(medicationRecord);
+    pharmacyRepositoryMock.createStockReceipt.mockResolvedValue({
+      id: stockReceiptId,
+      medicationId,
+      batchNumber: 'LOT-01',
+      expiryDate: new Date('2028-01-31T00:00:00.000Z'),
+      quantity: 100,
+      remainingQuantity: 100,
+      receivedAt: new Date('2026-07-19T08:00:00.000Z'),
+      receivedById: 'pharmacist-user',
+      notes: null,
+      createdAt: new Date('2026-07-19T08:00:00.000Z'),
+      medication: { id: medicationId, code: 'MED-0001', name: 'Amoxicillin' },
+      allocations: [],
+    });
+    pharmacyRepositoryMock.listStockReceipts.mockResolvedValue({
+      items: [], total: 0, page: 1, limit: 10,
+    });
+    pharmacyRepositoryMock.getInventorySummary.mockResolvedValue([]);
+    pharmacyRepositoryMock.getExpiryReport.mockResolvedValue([]);
   });
 
   describe('GET /medications', () => {
@@ -286,7 +313,7 @@ describe('PharmacyFlow integration', () => {
       strength: '500 mg',
       unit: 'KAPSUL',
       category: 'OBAT_KERAS',
-      stockQty: 100,
+      reorderLevel: 20,
     };
 
     it('returns 401 when bearer token is missing', async () => {
@@ -335,6 +362,18 @@ describe('PharmacyFlow integration', () => {
       expect(response.status).toBe(400);
     });
 
+    it('rejects legacy stockQty writes', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/medications')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ...createPayload, stockQty: 100 });
+
+      expect(response.status).toBe(400);
+    });
+
     it('returns 409 when the KFA code is already taken', async () => {
       const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
       mockActorWithPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
@@ -359,7 +398,7 @@ describe('PharmacyFlow integration', () => {
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/v1/medications/${medicationId}`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ stockQty: 50 });
+        .send({ reorderLevel: 50 });
 
       expect(response.status).toBe(403);
     });
@@ -371,7 +410,7 @@ describe('PharmacyFlow integration', () => {
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/v1/medications/${medicationId}`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ category: 'OBAT_BEBAS', stockQty: 50 });
+        .send({ category: 'OBAT_BEBAS', reorderLevel: 50 });
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBe('Medication updated');
@@ -397,7 +436,7 @@ describe('PharmacyFlow integration', () => {
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/v1/medications/${medicationId}`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ stockQty: 50 });
+        .send({ reorderLevel: 50 });
 
       expect(response.status).toBe(404);
     });
@@ -660,17 +699,12 @@ describe('PharmacyFlow integration', () => {
       expect(pharmacyRepositoryMock.createDispense).not.toHaveBeenCalled();
     });
 
-    it('returns 409 when medication stock is insufficient', async () => {
+    it('returns 409 when transactional receipt stock is insufficient', async () => {
       const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
       mockActorWithPermissions([{ action: 'write', resource: 'DispenseRecord', scope: 'ANY' }]);
-      pharmacyRepositoryMock.findActiveMedicationsByIds.mockResolvedValue([
-        {
-          id: medicationId,
-          code: 'MED-0001',
-          name: 'Amoxicillin',
-          stockQty: 5,
-        },
-      ]);
+      pharmacyRepositoryMock.createDispense.mockRejectedValue(
+        new ConflictException('Insufficient medication stock'),
+      );
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/v1/dispenses')
@@ -678,7 +712,10 @@ describe('PharmacyFlow integration', () => {
         .send(dispensePayload);
 
       expect(response.status).toBe(409);
-      expect(pharmacyRepositoryMock.createDispense).not.toHaveBeenCalled();
+      // Unlike the prescription-state conflicts above, a stock shortage is only
+      // visible inside the dispense transaction — the repository must be reached
+      // for the guarded balance to reject and roll the whole dispense back.
+      expect(pharmacyRepositoryMock.createDispense).toHaveBeenCalled();
     });
 
     it('returns 400 for a dispense with an invalid quantity', async () => {
@@ -695,6 +732,45 @@ describe('PharmacyFlow integration', () => {
 
       expect(response.status).toBe(400);
       expect(pharmacyRepositoryMock.createDispense).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('inventory endpoints', () => {
+    it('denies medication-only actors access to inventory summary', async () => {
+      const token = await buildToken('doctor-user', 'doctor@hms.local');
+      mockActorWithPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/inventory/summary')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(403);
+    });
+
+    it('records a receipt with inventory.write:any', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'write', resource: 'Inventory', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/inventory/receipts')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ medicationId, batchNumber: 'LOT-01', expiryDate: '2028-01-31', quantity: 100 });
+
+      expect(response.status).toBe(201);
+      expect(response.body.data).toMatchObject({ batchNumber: 'LOT-01', remainingQty: 100 });
+    });
+
+    it('requires expiry date on new receipts', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'write', resource: 'Inventory', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/inventory/receipts')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ medicationId, batchNumber: 'LOT-01', quantity: 100 });
+
+      expect(response.status).toBe(400);
+      expect(pharmacyRepositoryMock.createStockReceipt).not.toHaveBeenCalled();
     });
   });
 });

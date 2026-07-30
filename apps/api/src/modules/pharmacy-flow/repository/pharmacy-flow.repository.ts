@@ -2,8 +2,10 @@ import {
   CreateDispenseRecordPayload,
   CreateMedicationRecordPayload,
   CreatePrescriptionRecordPayload,
+  CreateStockReceiptRecordPayload,
   ListMedicationsParams,
   ListPrescriptionsParams,
+  ListStockReceiptsParams,
   resolvePrescriptionStatusAfterDispense,
   UpdateMedicationRecordPayload,
 } from '@hms/shared-types';
@@ -21,6 +23,18 @@ const MEDICATION_PROJECTION_SELECT = {
   code: true,
   name: true,
 } satisfies Prisma.MedicationSelect;
+
+const STOCK_RELATION_INCLUDE = {
+  stockReceipts: {
+    where: {
+      remainingQuantity: { gt: 0 },
+    },
+    select: {
+      remainingQuantity: true,
+      expiryDate: true,
+    },
+  },
+} satisfies Prisma.MedicationInclude;
 
 const PRESCRIPTION_DETAIL_INCLUDE = {
   patient: {
@@ -68,6 +82,13 @@ const DISPENSE_DETAIL_INCLUDE = {
     include: {
       medication: {
         select: MEDICATION_PROJECTION_SELECT,
+      },
+      stockAllocations: {
+        include: {
+          stockReceipt: {
+            select: { id: true, batchNumber: true, expiryDate: true },
+          },
+        },
       },
     },
   },
@@ -118,8 +139,7 @@ export class PharmacyFlowRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listMedications(params: ListMedicationsParams) {
-    const { page, limit, search, category } = params;
-    const skip = (page - 1) * limit;
+    const { page, limit, search, category, reorderOnly, inventoryDate } = params;
 
     const where = {
       ...(category ? { category } : {}),
@@ -134,24 +154,22 @@ export class PharmacyFlowRepository {
         : {}),
     };
 
-    const [items, total] = await this.prisma.executeTransaction(async (tx) => {
-      const medications = await this.prisma.findManyActive(tx.medication, {
-        where,
-        skip,
-        take: limit,
-        orderBy: {
-          name: 'asc',
-        },
-      });
-
-      const count = await this.prisma.countActive(tx.medication, { where });
-
-      return [medications, count] as const;
+    const medications = await this.prisma.findManyActive(this.prisma.medication, {
+      where,
+      orderBy: {
+        name: 'asc',
+      },
+      include: this.availableStockInclude(inventoryDate),
     });
+    const withStock = medications.map((medication) => this.withComputedStock(medication));
+    const filtered = reorderOnly
+      ? withStock.filter((medication) => medication.stockQty <= medication.reorderLevel)
+      : withStock;
+    const skip = (page - 1) * limit;
 
     return {
-      items,
-      total,
+      items: filtered.slice(skip, skip + limit),
+      total: filtered.length,
       page,
       limit,
     };
@@ -197,12 +215,14 @@ export class PharmacyFlowRepository {
     };
   }
 
-  async findMedicationById(id: string) {
-    return this.prisma.findUniqueActive(this.prisma.medication, {
+  async findMedicationById(id: string, inventoryDate: Date) {
+    const medication = await this.prisma.findUniqueActive(this.prisma.medication, {
       where: {
         id,
       },
+      include: this.availableStockInclude(inventoryDate),
     });
+    return medication ? this.withComputedStock(medication) : null;
   }
 
   async findMedicationByCode(code: string) {
@@ -238,13 +258,15 @@ export class PharmacyFlowRepository {
           strength: payload.strength ?? null,
           unit: payload.unit ?? null,
           category: payload.category ?? null,
-          stockQty: payload.stockQty,
+          reorderLevel: payload.reorderLevel,
         },
+        include: STOCK_RELATION_INCLUDE,
       })
+      .then((medication) => this.withComputedStock(medication))
       .catch(rethrowMedicationIdentifierConflict);
   }
 
-  async updateMedication(id: string, payload: UpdateMedicationRecordPayload) {
+  async updateMedication(id: string, payload: UpdateMedicationRecordPayload, inventoryDate: Date) {
     return this.prisma.medication
       .update({
         where: {
@@ -258,26 +280,109 @@ export class PharmacyFlowRepository {
           ...(payload.strength !== undefined ? { strength: payload.strength } : {}),
           ...(payload.unit !== undefined ? { unit: payload.unit } : {}),
           ...(payload.category !== undefined ? { category: payload.category } : {}),
-          ...(payload.stockQty !== undefined ? { stockQty: payload.stockQty } : {}),
+          ...(payload.reorderLevel !== undefined ? { reorderLevel: payload.reorderLevel } : {}),
         },
+        include: this.availableStockInclude(inventoryDate),
       })
+      .then((medication) => this.withComputedStock(medication))
       .catch(rethrowMedicationIdentifierConflict);
   }
 
-  async findActiveMedicationsByIds(medicationIds: string[]) {
-    return this.prisma.findManyActive(this.prisma.medication, {
+  async findActiveMedicationsByIds(medicationIds: string[], inventoryDate: Date) {
+    const medications = await this.prisma.findManyActive(this.prisma.medication, {
       where: {
         id: {
           in: medicationIds,
         },
       },
-      select: {
-        id: true,
-        code: true,
-        name: true,
-        stockQty: true,
+      include: this.availableStockInclude(inventoryDate),
+    });
+    return medications.map((medication) => this.withComputedStock(medication));
+  }
+
+  async createStockReceipt(payload: CreateStockReceiptRecordPayload) {
+    return this.prisma.medicationStockReceipt.create({
+      data: {
+        medicationId: payload.medicationId,
+        batchNumber: payload.batchNumber,
+        expiryDate: payload.expiryDate,
+        quantity: payload.quantity,
+        remainingQuantity: payload.quantity,
+        receivedAt: payload.receivedAt,
+        receivedById: payload.receivedById,
+        notes: payload.notes,
+      },
+      include: this.stockReceiptInclude(),
+    });
+  }
+
+  async listStockReceipts(params: ListStockReceiptsParams) {
+    const where = params.medicationId ? { medicationId: params.medicationId } : {};
+    const [items, total] = await this.prisma.executeTransaction(async (tx) => {
+      const rows = await tx.medicationStockReceipt.findMany({
+        where,
+        skip: (params.page - 1) * params.limit,
+        take: params.limit,
+        orderBy: [{ receivedAt: 'desc' }, { id: 'desc' }],
+        include: this.stockReceiptInclude(),
+      });
+      return [rows, await tx.medicationStockReceipt.count({ where })] as const;
+    });
+    return { items, total, page: params.page, limit: params.limit };
+  }
+
+  async getInventorySummary(asOfDate: Date) {
+    const medications = await this.prisma.findManyActive(this.prisma.medication, {
+      orderBy: { name: 'asc' },
+      include: {
+        stockReceipts: {
+          select: {
+            expiryDate: true,
+            remainingQuantity: true,
+          },
+        },
       },
     });
+    return medications.map((medication) => {
+      const availableReceipts = medication.stockReceipts.filter(
+        (receipt) =>
+          receipt.remainingQuantity > 0 &&
+          (receipt.expiryDate === null || receipt.expiryDate >= asOfDate),
+      );
+      const stockQty = availableReceipts.reduce(
+        (sum, receipt) => sum + receipt.remainingQuantity,
+        0,
+      );
+      const knownExpiryDates = availableReceipts
+        .filter((receipt) => receipt.expiryDate)
+        .map((receipt) => receipt.expiryDate as Date);
+      return {
+        medicationId: medication.id,
+        medicationCode: medication.code,
+        medicationName: medication.name,
+        stockQty,
+        reorderLevel: medication.reorderLevel,
+        nearestExpiryDate:
+          knownExpiryDates.length > 0
+            ? new Date(Math.min(...knownExpiryDates.map((date) => date.getTime())))
+            : null,
+        unknownExpiryQty: availableReceipts
+          .filter((receipt) => receipt.expiryDate === null)
+          .reduce((sum, receipt) => sum + receipt.remainingQuantity, 0),
+      };
+    });
+  }
+
+  async getExpiryReport(throughDate: Date) {
+    const rows = await this.prisma.medicationStockReceipt.findMany({
+      where: {
+        remainingQuantity: { gt: 0 },
+        OR: [{ expiryDate: null }, { expiryDate: { lte: throughDate } }],
+      },
+      orderBy: [{ expiryDate: { sort: 'asc', nulls: 'last' } }, { receivedAt: 'asc' }],
+      include: this.stockReceiptInclude(),
+    });
+    return rows;
   }
 
   async findActivePatientById(id: string) {
@@ -399,7 +504,6 @@ export class PharmacyFlowRepository {
     return this.prisma.executeTransaction(async (tx) => {
       await this.lockPrescriptionRow(tx, payload.prescriptionId);
       const hasRemainingQuantity = await this.assertRemainingQuantitiesCoverDispense(tx, payload);
-      await this.decrementMedicationStock(tx, payload);
       await tx.prescription.update({
         where: {
           id: payload.prescriptionId,
@@ -420,10 +524,14 @@ export class PharmacyFlowRepository {
             })),
           },
         },
+        include: { items: true },
+      });
+      await this.allocateStockFefo(tx, created.items, payload.items, payload.inventoryDate);
+      await this.enqueueBpjsObat(tx, payload.prescriptionId);
+      return tx.dispenseRecord.findUniqueOrThrow({
+        where: { id: created.id },
         include: DISPENSE_DETAIL_INCLUDE,
       });
-      await this.enqueueBpjsObat(tx, payload.prescriptionId);
-      return created;
     });
   }
 
@@ -538,29 +646,82 @@ export class PharmacyFlowRepository {
     });
   }
 
-  private async decrementMedicationStock(
+  private async allocateStockFefo(
     tx: PrismaTransactionClient,
-    payload: CreateDispenseRecordPayload,
+    dispenseItems: Array<{ id: string; medicationId: string }>,
+    requestedItems: CreateDispenseRecordPayload['items'],
+    clinicToday: Date,
   ): Promise<void> {
-    for (const item of payload.items) {
-      const updateResult = await tx.medication.updateMany({
-        where: {
-          id: item.medicationId,
-          deletedAt: null,
-          stockQty: {
-            gte: item.quantity,
-          },
-        },
-        data: {
-          stockQty: {
-            decrement: item.quantity,
-          },
-        },
-      });
-
-      if (updateResult.count === 0) {
+    const sortedItems = [...requestedItems].sort((left, right) =>
+      left.medicationId.localeCompare(right.medicationId),
+    );
+    for (const requestItem of sortedItems) {
+      const dispenseItem = dispenseItems.find(
+        (candidate) => candidate.medicationId === requestItem.medicationId,
+      );
+      if (!dispenseItem) throw new ConflictException('Dispense item was not persisted');
+      const receipts = await tx.$queryRaw<
+        Array<{ id: string; remainingQuantity: number }>
+      >`
+        SELECT r.id, r."remaining_quantity" AS "remainingQuantity"
+        FROM "medication_stock_receipts" r
+        WHERE r."medication_id" = ${requestItem.medicationId}::uuid
+          AND (r."expiry_date" IS NULL OR r."expiry_date" >= ${clinicToday}::date)
+          AND r."remaining_quantity" > 0
+        ORDER BY r."expiry_date" ASC NULLS LAST, r."received_at" ASC, r.id ASC
+        FOR UPDATE OF r
+      `;
+      let unallocated = requestItem.quantity;
+      const allocations: Array<{ dispenseItemId: string; stockReceiptId: string; quantity: number }> = [];
+      for (const receipt of receipts) {
+        if (unallocated === 0) break;
+        const quantity = Math.min(unallocated, receipt.remainingQuantity);
+        const decrement = await tx.medicationStockReceipt.updateMany({
+          where: { id: receipt.id, remainingQuantity: { gte: quantity } },
+          data: { remainingQuantity: { decrement: quantity } },
+        });
+        if (decrement.count !== 1) {
+          throw new ConflictException('Medication stock changed during dispense');
+        }
+        allocations.push({ dispenseItemId: dispenseItem.id, stockReceiptId: receipt.id, quantity });
+        unallocated -= quantity;
+      }
+      if (unallocated > 0) {
         throw new ConflictException('Insufficient medication stock');
       }
+      await tx.dispenseItemStockAllocation.createMany({ data: allocations });
     }
+  }
+
+  private withComputedStock<
+    T extends {
+      stockReceipts: Array<{ remainingQuantity: number; expiryDate: Date | null }>;
+    },
+  >(medication: T): Omit<T, 'stockReceipts'> & { stockQty: number } {
+    const { stockReceipts, ...record } = medication;
+    return {
+      ...record,
+      stockQty: stockReceipts.reduce((sum, receipt) => sum + receipt.remainingQuantity, 0),
+    };
+  }
+
+  private stockReceiptInclude() {
+    return {
+      medication: { select: { id: true, code: true, name: true } },
+      allocations: { select: { quantity: true } },
+    } as const;
+  }
+
+  private availableStockInclude(inventoryDate: Date) {
+    const include = {
+      stockReceipts: {
+        where: {
+          remainingQuantity: { gt: 0 },
+          OR: [{ expiryDate: null }, { expiryDate: { gte: inventoryDate } }],
+        },
+        select: { remainingQuantity: true, expiryDate: true },
+      },
+    } satisfies Prisma.MedicationInclude;
+    return include;
   }
 }

@@ -411,6 +411,8 @@ export const ModelName = {
   PrescriptionMedication: 'PrescriptionMedication',
   DispenseRecord: 'DispenseRecord',
   DispenseItem: 'DispenseItem',
+  MedicationStockReceipt: 'MedicationStockReceipt',
+  DispenseItemStockAllocation: 'DispenseItemStockAllocation',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -442,7 +444,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2444,6 +2446,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MedicationStockReceipt: {
+      payload: Prisma.$MedicationStockReceiptPayload<ExtArgs>
+      fields: Prisma.MedicationStockReceiptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MedicationStockReceiptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MedicationStockReceiptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        findFirst: {
+          args: Prisma.MedicationStockReceiptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MedicationStockReceiptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        findMany: {
+          args: Prisma.MedicationStockReceiptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>[]
+        }
+        create: {
+          args: Prisma.MedicationStockReceiptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        createMany: {
+          args: Prisma.MedicationStockReceiptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MedicationStockReceiptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>[]
+        }
+        delete: {
+          args: Prisma.MedicationStockReceiptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        update: {
+          args: Prisma.MedicationStockReceiptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        deleteMany: {
+          args: Prisma.MedicationStockReceiptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MedicationStockReceiptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MedicationStockReceiptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>[]
+        }
+        upsert: {
+          args: Prisma.MedicationStockReceiptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MedicationStockReceiptPayload>
+        }
+        aggregate: {
+          args: Prisma.MedicationStockReceiptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMedicationStockReceipt>
+        }
+        groupBy: {
+          args: Prisma.MedicationStockReceiptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MedicationStockReceiptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MedicationStockReceiptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MedicationStockReceiptCountAggregateOutputType> | number
+        }
+      }
+    }
+    DispenseItemStockAllocation: {
+      payload: Prisma.$DispenseItemStockAllocationPayload<ExtArgs>
+      fields: Prisma.DispenseItemStockAllocationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DispenseItemStockAllocationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DispenseItemStockAllocationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        findFirst: {
+          args: Prisma.DispenseItemStockAllocationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DispenseItemStockAllocationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        findMany: {
+          args: Prisma.DispenseItemStockAllocationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>[]
+        }
+        create: {
+          args: Prisma.DispenseItemStockAllocationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        createMany: {
+          args: Prisma.DispenseItemStockAllocationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DispenseItemStockAllocationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>[]
+        }
+        delete: {
+          args: Prisma.DispenseItemStockAllocationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        update: {
+          args: Prisma.DispenseItemStockAllocationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        deleteMany: {
+          args: Prisma.DispenseItemStockAllocationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DispenseItemStockAllocationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DispenseItemStockAllocationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>[]
+        }
+        upsert: {
+          args: Prisma.DispenseItemStockAllocationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DispenseItemStockAllocationPayload>
+        }
+        aggregate: {
+          args: Prisma.DispenseItemStockAllocationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDispenseItemStockAllocation>
+        }
+        groupBy: {
+          args: Prisma.DispenseItemStockAllocationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DispenseItemStockAllocationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DispenseItemStockAllocationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DispenseItemStockAllocationCountAggregateOutputType> | number
+        }
+      }
+    }
     ServiceTariff: {
       payload: Prisma.$ServiceTariffPayload<ExtArgs>
       fields: Prisma.ServiceTariffFieldRefs
@@ -4048,7 +4198,7 @@ export const MedicationScalarFieldEnum = {
   strength: 'strength',
   unit: 'unit',
   category: 'category',
-  stockQty: 'stockQty',
+  reorderLevel: 'reorderLevel',
   unitPrice: 'unitPrice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -4114,6 +4264,34 @@ export const DispenseItemScalarFieldEnum = {
 } as const
 
 export type DispenseItemScalarFieldEnum = (typeof DispenseItemScalarFieldEnum)[keyof typeof DispenseItemScalarFieldEnum]
+
+
+export const MedicationStockReceiptScalarFieldEnum = {
+  id: 'id',
+  medicationId: 'medicationId',
+  batchNumber: 'batchNumber',
+  expiryDate: 'expiryDate',
+  quantity: 'quantity',
+  remainingQuantity: 'remainingQuantity',
+  receivedAt: 'receivedAt',
+  receivedById: 'receivedById',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MedicationStockReceiptScalarFieldEnum = (typeof MedicationStockReceiptScalarFieldEnum)[keyof typeof MedicationStockReceiptScalarFieldEnum]
+
+
+export const DispenseItemStockAllocationScalarFieldEnum = {
+  id: 'id',
+  dispenseItemId: 'dispenseItemId',
+  stockReceiptId: 'stockReceiptId',
+  quantity: 'quantity',
+  createdAt: 'createdAt'
+} as const
+
+export type DispenseItemStockAllocationScalarFieldEnum = (typeof DispenseItemStockAllocationScalarFieldEnum)[keyof typeof DispenseItemStockAllocationScalarFieldEnum]
 
 
 export const ServiceTariffScalarFieldEnum = {
@@ -5112,6 +5290,8 @@ export type GlobalOmitConfig = {
   prescriptionMedication?: Prisma.PrescriptionMedicationOmit
   dispenseRecord?: Prisma.DispenseRecordOmit
   dispenseItem?: Prisma.DispenseItemOmit
+  medicationStockReceipt?: Prisma.MedicationStockReceiptOmit
+  dispenseItemStockAllocation?: Prisma.DispenseItemStockAllocationOmit
   serviceTariff?: Prisma.ServiceTariffOmit
   invoiceCounter?: Prisma.InvoiceCounterOmit
   invoice?: Prisma.InvoiceOmit

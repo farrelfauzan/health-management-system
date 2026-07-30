@@ -36,6 +36,7 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'icd10-code': 'Icd10Code',
   'icd9cm-code': 'Icd9cmCode',
   medication: 'Medication',
+  inventory: 'Inventory',
   prescription: 'Prescription',
   dispense: 'DispenseRecord',
   'service-tariff': 'ServiceTariff',

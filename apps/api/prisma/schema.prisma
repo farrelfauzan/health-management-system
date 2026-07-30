@@ -303,6 +303,7 @@ model User {
   recordedProcedures       Procedure[]             @relation("ProcedureRecordedBy")
   recordedBpjsReferrals    BpjsReferral[]          @relation("BpjsReferralRecordedBy")
   dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
+  medicationStockReceipts MedicationStockReceipt[] @relation("MedicationStockReceiptReceivedBy")
   createdInvoices          Invoice[]               @relation("InvoiceCreatedBy")
   voidedInvoices           Invoice[]               @relation("InvoiceVoidedBy")
   receivedPayments         Payment[]               @relation("PaymentCashier")
@@ -978,7 +979,7 @@ model Medication {
   strength  String?
   unit      MedicationUnit?
   category  MedicationCategory?
-  stockQty  Int                 @default(0) @map("stock_qty")
+  reorderLevel Int              @default(0) @map("reorder_level")
   /// Selling price per `unit`, in rupiah. Nullable because the MVP catalog
   /// predates billing; invoice generation treats an unpriced dispensed
   /// medication as a gap to surface, not a free item.
@@ -989,10 +990,12 @@ model Medication {
 
   prescriptionItems PrescriptionMedication[]
   dispenseItems     DispenseItem[]
+  stockReceipts     MedicationStockReceipt[]
   invoiceItems      InvoiceItem[]
 
   @@index([name])
   @@index([category])
+  @@index([reorderLevel])
   @@index([deletedAt])
   @@map("medications")
 }
@@ -1077,10 +1080,50 @@ model DispenseItem {
 
   dispenseRecord DispenseRecord @relation(fields: [dispenseRecordId], references: [id], onDelete: Cascade)
   medication     Medication     @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  stockAllocations DispenseItemStockAllocation[]
 
   @@unique([dispenseRecordId, medicationId])
   @@index([medicationId])
   @@map("dispense_items")
+}
+
+model MedicationStockReceipt {
+  id           String    @id @default(uuid()) @db.Uuid
+  medicationId String    @map("medication_id") @db.Uuid
+  batchNumber  String    @map("batch_number")
+  expiryDate   DateTime? @map("expiry_date") @db.Date
+  quantity     Int
+  remainingQuantity Int  @map("remaining_quantity")
+  receivedAt   DateTime  @default(now()) @map("received_at")
+  receivedById String?   @map("received_by_id") @db.Uuid
+  notes        String?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  medication  Medication @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  receivedBy  User?      @relation("MedicationStockReceiptReceivedBy", fields: [receivedById], references: [id], onDelete: SetNull)
+  allocations DispenseItemStockAllocation[]
+
+  @@index([medicationId, expiryDate, receivedAt])
+  @@index([medicationId, remainingQuantity, expiryDate])
+  @@index([expiryDate])
+  @@index([receivedById])
+  @@map("medication_stock_receipts")
+}
+
+model DispenseItemStockAllocation {
+  id             String   @id @default(uuid()) @db.Uuid
+  dispenseItemId String   @map("dispense_item_id") @db.Uuid
+  stockReceiptId String   @map("stock_receipt_id") @db.Uuid
+  quantity       Int
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  dispenseItem DispenseItem           @relation(fields: [dispenseItemId], references: [id], onDelete: Cascade)
+  stockReceipt MedicationStockReceipt @relation(fields: [stockReceiptId], references: [id], onDelete: Restrict)
+
+  @@unique([dispenseItemId, stockReceiptId])
+  @@index([stockReceiptId])
+  @@map("dispense_item_stock_allocations")
 }
 
 /// Price-list row for services the clinic charges — consultation fees and

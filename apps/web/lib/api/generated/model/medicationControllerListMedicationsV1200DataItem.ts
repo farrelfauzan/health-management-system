@@ -16,6 +16,8 @@ export type MedicationControllerListMedicationsV1200DataItem = {
   unit: string;
   category: string;
   stockQty: number;
+  reorderLevel: number;
+  needsReorder: boolean;
   createdAt: string;
   updatedAt: string;
 };

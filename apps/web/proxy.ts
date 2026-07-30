@@ -7,10 +7,12 @@ import { resolveSessionClaims } from '#lib/auth/session-claims';
 
 const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN'];
 const DOCTOR_ROLES = ['DOCTOR'];
+const PHARMACIST_ROLES = ['PHARMACIST'];
 const PATIENT_ROLES = ['PATIENT'];
 const LOGIN_PATH = '/login';
 const ADMIN_HOME_PATH = '/admin/dashboard';
 const DOCTOR_HOME_PATH = '/doctor/dashboard';
+const PHARMACIST_HOME_PATH = '/admin/pharmacy';
 const PORTAL_HOME_PATH = '/portal/registrations';
 const DOCTOR_PATH_PREFIX = '/doctor';
 const PORTAL_PATH_PREFIX = '/portal';
@@ -33,6 +35,8 @@ export function proxy(request: NextRequest) {
   // surfaces they are entitled to.
   const hasDoctorSession =
     hasValidSession && !hasAdminSession && hasAnyRole(claims, DOCTOR_ROLES);
+  const hasPharmacistSession =
+    hasValidSession && !hasAdminSession && hasAnyRole(claims, PHARMACIST_ROLES);
   const hasPatientSession = hasValidSession && hasAnyRole(claims, PATIENT_ROLES);
   const pathname = request.nextUrl.pathname;
 
@@ -43,6 +47,9 @@ export function proxy(request: NextRequest) {
     if (hasDoctorSession) {
       return NextResponse.redirect(new URL(DOCTOR_HOME_PATH, request.url));
     }
+    if (hasPharmacistSession) {
+      return NextResponse.redirect(new URL(PHARMACIST_HOME_PATH, request.url));
+    }
     if (hasPatientSession) {
       return NextResponse.redirect(new URL(PORTAL_HOME_PATH, request.url));
     }
@@ -50,7 +57,7 @@ export function proxy(request: NextRequest) {
   }
 
   if (pathname === LOGIN_PATH) {
-    if (hasAdminSession || hasDoctorSession || hasPatientSession) {
+    if (hasAdminSession || hasDoctorSession || hasPharmacistSession || hasPatientSession) {
       return redirectToHome();
     }
     return NextResponse.next();
@@ -69,6 +76,10 @@ export function proxy(request: NextRequest) {
 
   if (pathname.startsWith(DOCTOR_PATH_PREFIX)) {
     return hasDoctorSession ? NextResponse.next() : redirectToHome();
+  }
+
+  if (pathname === PHARMACIST_HOME_PATH && hasPharmacistSession) {
+    return NextResponse.next();
   }
 
   // Everything else under the matcher is the admin shell.

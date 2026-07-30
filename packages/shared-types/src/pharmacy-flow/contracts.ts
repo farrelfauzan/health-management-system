@@ -16,6 +16,8 @@ export type MedicationResponse = {
   unit?: MedicationUnitValue;
   category?: MedicationCategoryValue;
   stockQty: number;
+  reorderLevel: number;
+  needsReorder: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -77,6 +79,14 @@ export type DispenseItemResponse = {
   medicationCode: string;
   medicationName: string;
   quantity: number;
+  allocations: DispenseItemStockAllocationResponse[];
+};
+
+export type DispenseItemStockAllocationResponse = {
+  stockReceiptId: string;
+  batchNumber: string;
+  expiryDate?: string;
+  quantity: number;
 };
 
 export type DispenseRecordResponse = {
@@ -90,4 +100,50 @@ export type DispenseRecordResponse = {
   createdAt: string;
   updatedAt: string;
   items: DispenseItemResponse[];
+};
+
+export type StockReceiptResponse = {
+  id: string;
+  medicationId: string;
+  medicationCode: string;
+  medicationName: string;
+  batchNumber: string;
+  expiryDate?: string;
+  quantity: number;
+  allocatedQty: number;
+  remainingQty: number;
+  receivedAt: string;
+  receivedById?: string;
+  notes?: string;
+  createdAt: string;
+};
+
+export type InventorySummaryItemResponse = {
+  medicationId: string;
+  medicationCode: string;
+  medicationName: string;
+  stockQty: number;
+  reorderLevel: number;
+  needsReorder: boolean;
+  nearestExpiryDate?: string;
+  unknownExpiryQty: number;
+};
+
+export type InventorySummaryResponse = {
+  asOfDate: string;
+  medicationCount: number;
+  totalStockQty: number;
+  reorderCount: number;
+  items: InventorySummaryItemResponse[];
+};
+
+export type ExpiryReportItemResponse = StockReceiptResponse & {
+  expiryStatus: 'EXPIRED' | 'EXPIRING' | 'UNKNOWN';
+  daysUntilExpiry?: number;
+};
+
+export type ExpiryReportResponse = {
+  asOfDate: string;
+  throughDate: string;
+  items: ExpiryReportItemResponse[];
 };

@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { MedicationIdentifierConflictError } from '../repository/medication-identifier-conflict.error';
@@ -57,13 +58,21 @@ describe('PharmacyFlowService', () => {
     findPrescriptionDetailById: jest.fn(),
     createPrescription: jest.fn(),
     createDispense: jest.fn(),
+    createStockReceipt: jest.fn(),
+    listStockReceipts: jest.fn(),
+    getInventorySummary: jest.fn(),
+    getExpiryReport: jest.fn(),
   } as unknown as PharmacyFlowRepository;
 
   const authRepositoryMock = {
     findUserById: jest.fn(),
   } as unknown as AuthRepository;
 
-  const service = new PharmacyFlowService(pharmacyFlowRepositoryMock, authRepositoryMock);
+  const service = new PharmacyFlowService(
+    pharmacyFlowRepositoryMock,
+    authRepositoryMock,
+    { get: jest.fn().mockReturnValue('Asia/Jakarta') } as unknown as ConfigService,
+  );
 
   const currentUser = {
     sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8',
@@ -75,6 +84,7 @@ describe('PharmacyFlowService', () => {
   const prescriptionId = '0d9b34a1-7c2f-4bd0-8a8e-6a3c1de1a001';
   const medicationId = '9a1f34c8-8e10-4d0e-8c31-4f6a1de1a004';
   const otherMedicationId = 'b62f10d4-2a4f-4f4e-90cf-5f6a1de1a005';
+  const stockReceiptId = 'a62f10d4-2a4f-4f4e-90cf-5f6a1de1a010';
 
   const medicationRecord = {
     id: medicationId,
@@ -86,6 +96,7 @@ describe('PharmacyFlowService', () => {
     unit: 'KAPSUL',
     category: 'OBAT_KERAS',
     stockQty: 100,
+    reorderLevel: 20,
     createdAt: new Date('2026-07-19T08:00:00.000Z'),
     updatedAt: new Date('2026-07-19T08:00:00.000Z'),
   };
@@ -125,6 +136,7 @@ describe('PharmacyFlowService', () => {
           code: 'MED-0001',
           name: 'Amoxicillin',
         },
+        stockAllocations: [],
       },
     ],
     dispenseRecords: [],
@@ -149,6 +161,7 @@ describe('PharmacyFlowService', () => {
           code: 'MED-0001',
           name: 'Amoxicillin',
         },
+        stockAllocations: [],
       },
     ],
     prescription: {
@@ -172,6 +185,10 @@ describe('PharmacyFlowService', () => {
     findPrescriptionDetailById: jest.Mock;
     createPrescription: jest.Mock;
     createDispense: jest.Mock;
+    createStockReceipt: jest.Mock;
+    listStockReceipts: jest.Mock;
+    getInventorySummary: jest.Mock;
+    getExpiryReport: jest.Mock;
   };
 
   const authMock = authRepositoryMock as unknown as { findUserById: jest.Mock };
@@ -227,6 +244,35 @@ describe('PharmacyFlowService', () => {
     repositoryMock.findPrescriptionDetailById.mockResolvedValue(prescriptionRecord);
     repositoryMock.createPrescription.mockResolvedValue(prescriptionRecord);
     repositoryMock.createDispense.mockResolvedValue(dispenseRecord);
+    repositoryMock.createStockReceipt.mockResolvedValue({
+      id: stockReceiptId,
+      medicationId,
+      batchNumber: 'LOT-01',
+      expiryDate: new Date('2028-01-31T00:00:00.000Z'),
+      quantity: 100,
+      remainingQuantity: 85,
+      receivedAt: new Date('2026-07-19T08:00:00.000Z'),
+      receivedById: currentUser.sub,
+      notes: null,
+      createdAt: new Date('2026-07-19T08:00:00.000Z'),
+      medication: { id: medicationId, code: 'MED-0001', name: 'Amoxicillin' },
+      allocations: [{ quantity: 15 }],
+    });
+    repositoryMock.listStockReceipts.mockResolvedValue({
+      items: [], total: 0, page: 1, limit: 10,
+    });
+    repositoryMock.getInventorySummary.mockResolvedValue([
+      {
+        medicationId,
+        medicationCode: 'MED-0001',
+        medicationName: 'Amoxicillin',
+        stockQty: 15,
+        reorderLevel: 20,
+        nearestExpiryDate: new Date('2028-01-31T00:00:00.000Z'),
+        unknownExpiryQty: 0,
+      },
+    ]);
+    repositoryMock.getExpiryReport.mockResolvedValue([]);
   });
 
   describe('listMedications', () => {
@@ -253,6 +299,8 @@ describe('PharmacyFlowService', () => {
         limit: 10,
         search: 'amox',
         category: undefined,
+        reorderOnly: undefined,
+        inventoryDate: expect.any(Date),
       });
     });
 
@@ -266,6 +314,8 @@ describe('PharmacyFlowService', () => {
         limit: 10,
         search: undefined,
         category: 'OBAT_KERAS',
+        reorderOnly: undefined,
+        inventoryDate: expect.any(Date),
       });
     });
 
@@ -291,7 +341,7 @@ describe('PharmacyFlowService', () => {
       strength: '500 mg',
       unit: 'KAPSUL' as const,
       category: 'OBAT_KERAS' as const,
-      stockQty: 100,
+      reorderLevel: 20,
     };
 
     it('throws forbidden when actor lacks medication.create:any permission', async () => {
@@ -349,7 +399,7 @@ describe('PharmacyFlowService', () => {
       mockPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
 
       await expect(
-        service.updateMedication(medicationId, { stockQty: 50 }, currentUser),
+        service.updateMedication(medicationId, { reorderLevel: 50 }, currentUser),
       ).rejects.toBeInstanceOf(ForbiddenException);
     });
 
@@ -358,7 +408,7 @@ describe('PharmacyFlowService', () => {
       repositoryMock.findMedicationById.mockResolvedValue(null);
 
       await expect(
-        service.updateMedication(medicationId, { stockQty: 50 }, currentUser),
+        service.updateMedication(medicationId, { reorderLevel: 50 }, currentUser),
       ).rejects.toBeInstanceOf(NotFoundException);
     });
 
@@ -367,14 +417,14 @@ describe('PharmacyFlowService', () => {
 
       const actualResult = await service.updateMedication(
         medicationId,
-        { category: 'OBAT_BEBAS', stockQty: 50 },
+        { category: 'OBAT_BEBAS', reorderLevel: 50 },
         currentUser,
       );
 
       expect(repositoryMock.updateMedication).toHaveBeenCalledWith(medicationId, {
         category: 'OBAT_BEBAS',
-        stockQty: 50,
-      });
+        reorderLevel: 50,
+      }, expect.any(Date));
       expect(actualResult.id).toBe(medicationId);
     });
 
@@ -409,7 +459,7 @@ describe('PharmacyFlowService', () => {
       expect(repositoryMock.findMedicationByKfaCode).not.toHaveBeenCalled();
       expect(repositoryMock.updateMedication).toHaveBeenCalledWith(medicationId, {
         kfaCode: null,
-      });
+      }, expect.any(Date));
     });
   });
 
@@ -668,16 +718,11 @@ describe('PharmacyFlowService', () => {
       ).rejects.toBeInstanceOf(ConflictException);
     });
 
-    it('throws conflict when medication stock is insufficient', async () => {
+    it('propagates transactional insufficient-stock conflicts', async () => {
       mockPermissions([{ action: 'write', resource: 'DispenseRecord', scope: 'ANY' }]);
-      repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
-        {
-          id: medicationId,
-          code: 'MED-0001',
-          name: 'Amoxicillin',
-          stockQty: 5,
-        },
-      ]);
+      repositoryMock.createDispense.mockRejectedValue(
+        new ConflictException('Insufficient medication stock'),
+      );
 
       await expect(service.createDispense(dispensePayload, currentUser)).rejects.toBeInstanceOf(
         ConflictException,
@@ -696,6 +741,7 @@ describe('PharmacyFlowService', () => {
         pharmacistId: currentUser.sub,
         notes: undefined,
         items: dispensePayload.items,
+        inventoryDate: expect.any(Date),
       });
     });
 
@@ -726,6 +772,45 @@ describe('PharmacyFlowService', () => {
           items: [{ medicationId, quantity: 5 }],
         }),
       );
+    });
+  });
+
+  describe('inventory', () => {
+    it('keeps inventory reads behind the dedicated permission', async () => {
+      mockPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      await expect(service.getInventorySummary(currentUser)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
+
+    it('creates a receipt and maps its remaining quantity', async () => {
+      mockPermissions([{ action: 'write', resource: 'Inventory', scope: 'ANY' }]);
+
+      const result = await service.createStockReceipt(
+        {
+          medicationId,
+          batchNumber: 'LOT-01',
+          expiryDate: '2028-01-31',
+          quantity: 100,
+        },
+        currentUser,
+      );
+
+      expect(result).toMatchObject({ allocatedQty: 15, remainingQty: 85 });
+      expect(repositoryMock.createStockReceipt).toHaveBeenCalledWith(
+        expect.objectContaining({ receivedById: currentUser.sub, quantity: 100 }),
+      );
+    });
+
+    it('marks a receipt-derived balance at its reorder level', async () => {
+      mockPermissions([{ action: 'read', resource: 'Inventory', scope: 'ANY' }]);
+
+      const result = await service.getInventorySummary(currentUser);
+
+      expect(result.reorderCount).toBe(1);
+      expect(result.items[0]).toMatchObject({ stockQty: 15, needsReorder: true });
+      expect(repositoryMock.getInventorySummary).toHaveBeenCalledWith(expect.any(Date));
     });
   });
 });
