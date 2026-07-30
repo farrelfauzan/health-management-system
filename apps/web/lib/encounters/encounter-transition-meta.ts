@@ -3,11 +3,6 @@ import type { EncounterStatusValue } from '@hms/shared-types';
 export type EncounterTransitionTarget = Extract<EncounterStatusValue, 'FINISHED' | 'CANCELLED'>;
 
 export type EncounterTransitionMeta = {
-  actionLabel: string;
-  title: string;
-  description: string;
-  confirmLabel: string;
-  pendingLabel: string;
   icon: string;
   isDestructive: boolean;
 };
@@ -21,22 +16,10 @@ export type EncounterTransitionMeta = {
 export const ENCOUNTER_TRANSITION_META: Record<EncounterTransitionTarget, EncounterTransitionMeta> =
   {
     FINISHED: {
-      actionLabel: 'Close Encounter',
-      title: 'Close this encounter?',
-      description:
-        'The clinical record is signed off and its registration is completed. Closed encounters cannot be re-opened or edited — a correction is recorded as a new encounter.',
-      confirmLabel: 'Close Encounter',
-      pendingLabel: 'Closing...',
       icon: 'task_alt',
       isDestructive: false,
     },
     CANCELLED: {
-      actionLabel: 'Cancel Encounter',
-      title: 'Cancel this encounter?',
-      description:
-        'Use this only for an encounter opened in error. The record is retracted with its registration and stays auditable; the patient re-registers to be seen.',
-      confirmLabel: 'Cancel Encounter',
-      pendingLabel: 'Cancelling...',
       icon: 'cancel',
       isDestructive: true,
     },

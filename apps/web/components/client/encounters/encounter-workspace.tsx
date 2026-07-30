@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button, Can, Icon } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { GenerateInvoiceDialog } from '#components/client/billing/generate-invoice-dialog';
 import { EncounterDiagnosesCard } from '#components/client/encounters/encounter-diagnoses-card';
@@ -37,23 +38,23 @@ export function EncounterWorkspace({
   patientHrefPrefix = '/admin/patients',
 }: EncounterWorkspaceProps) {
   const encounterQuery = useEncounterDetail(encounterId);
-  const [pendingTransition, setPendingTransition] = useState<EncounterTransitionTarget | null>(null);
+  const t = useTranslations('clinical');
+  const [pendingTransition, setPendingTransition] = useState<EncounterTransitionTarget | null>(
+    null,
+  );
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState<boolean>(false);
   const encounter = encounterQuery.encounter;
 
   if (encounterQuery.isPending) {
-    return <p className="text-sm text-slate-500">Loading encounter...</p>;
+    return <p className="text-sm text-slate-500">{t('encounters.loading')}</p>;
   }
 
   if (!encounter) {
     return (
       <EmptyState
         icon="error"
-        title="Encounter unavailable"
-        description={
-          encounterQuery.error?.message ??
-          'This encounter could not be loaded. It may have been removed, or it belongs to another clinician.'
-        }
+        title={t('encounters.unavailable')}
+        description={t('encounters.unavailableDescription')}
       />
     );
   }
@@ -65,9 +66,9 @@ export function EncounterWorkspace({
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Encounter · ${encounter.patient.fullName}`}
-        subtitle="The clinical record for this visit: note, measurements, coded diagnoses and procedures."
-        breadcrumbs={[breadcrumbRoot, 'Encounters', encounter.patient.mrn]}
+        title={t('encounters.workspaceTitle', { name: encounter.patient.fullName })}
+        subtitle={t('encounters.workspaceSubtitle')}
+        breadcrumbs={[breadcrumbRoot, t('encounters.title'), encounter.patient.mrn]}
         actions={
           !isEditable && encounter.status === 'FINISHED' ? (
             // Billing starts where the clinical record ends: only a finished
@@ -79,7 +80,7 @@ export function EncounterWorkspace({
                 onClick={() => setIsGeneratingInvoice(true)}
               >
                 <Icon name="receipt_long" size={18} />
-                Generate Invoice
+                {t('encounters.generateInvoice')}
               </Button>
             </Can>
           ) : isEditable ? (
@@ -91,7 +92,7 @@ export function EncounterWorkspace({
                   onClick={() => setPendingTransition('CANCELLED')}
                 >
                   <Icon name={ENCOUNTER_TRANSITION_META.CANCELLED.icon} size={18} />
-                  {ENCOUNTER_TRANSITION_META.CANCELLED.actionLabel}
+                  {t('encounters.transition.CANCELLED.action')}
                 </Button>
                 <Button
                   type="button"
@@ -99,7 +100,7 @@ export function EncounterWorkspace({
                   onClick={() => setPendingTransition('FINISHED')}
                 >
                   <Icon name={ENCOUNTER_TRANSITION_META.FINISHED.icon} size={18} />
-                  {ENCOUNTER_TRANSITION_META.FINISHED.actionLabel}
+                  {t('encounters.transition.FINISHED.action')}
                 </Button>
               </div>
             </Can>
@@ -109,15 +110,16 @@ export function EncounterWorkspace({
 
       <EncounterSummaryCard
         encounter={encounter}
-        patientHref={
-          patientHrefPrefix ? `${patientHrefPrefix}/${encounter.patientId}` : undefined
-        }
+        patientHref={patientHrefPrefix ? `${patientHrefPrefix}/${encounter.patientId}` : undefined}
       />
 
       {!isEditable ? (
         <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
-          This encounter is {encounter.status === 'FINISHED' ? 'closed' : 'cancelled'} and read-only.
-          Medical records are corrected by superseding them, never by re-opening.
+          {t('encounters.readOnly', {
+            status: t(
+              encounter.status === 'FINISHED' ? 'encounters.closed' : 'encounters.cancelled',
+            ),
+          })}
         </p>
       ) : null}
 

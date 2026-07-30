@@ -3,6 +3,7 @@
 import type { AppointmentListItem } from '@hms/shared-types';
 import { TableCell, TableRow } from '@hms/ui';
 import { useRouter } from 'next/navigation';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { RowActionsMenu } from '#components/client/shared/row-actions-menu';
 import { AvatarInitials } from '#components/shared/avatar-initials';
@@ -12,15 +13,10 @@ type UpcomingAppointmentsRowProps = {
   appointment: AppointmentListItem;
 };
 
-function formatAppointmentTime(scheduledAt: string): string {
-  return new Date(scheduledAt).toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
 export function UpcomingAppointmentsRow({ appointment }: UpcomingAppointmentsRowProps) {
   const router = useRouter();
+  const format = useFormatter();
+  const t = useTranslations('dashboard.appointments');
   return (
     <TableRow className="hover:bg-slate-50">
       <TableCell className="px-4 py-3">
@@ -41,7 +37,7 @@ export function UpcomingAppointmentsRow({ appointment }: UpcomingAppointmentsRow
         </span>
       </TableCell>
       <TableCell className="px-4 py-3 font-mono text-sm text-slate-600">
-        {formatAppointmentTime(appointment.scheduledAt)}
+        {format.dateTime(new Date(appointment.scheduledAt), { hour: '2-digit', minute: '2-digit' })}
       </TableCell>
       <TableCell className="px-4 py-3">
         <StatusBadge status={appointment.status} />
@@ -50,7 +46,7 @@ export function UpcomingAppointmentsRow({ appointment }: UpcomingAppointmentsRow
         <RowActionsMenu
           actions={[
             {
-              label: 'Open in schedule',
+              label: t('openInSchedule'),
               icon: 'event',
               onSelect: () => router.push('/admin/appointments'),
             },

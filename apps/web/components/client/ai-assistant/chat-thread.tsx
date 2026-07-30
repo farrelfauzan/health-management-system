@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { AssistantMessage } from '#components/client/ai-assistant/assistant-message';
 import { TypingIndicator } from '#components/client/ai-assistant/typing-indicator';
@@ -13,12 +14,13 @@ type ChatThreadProps = {
 };
 
 export function ChatThread({ messages, isReplying }: ChatThreadProps) {
+  const t = useTranslations('aiAssistant.conversation');
   const threadEndRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     threadEndRef.current?.scrollIntoView?.({ block: 'end' });
   }, [messages.length, isReplying]);
   return (
-    <div role="log" aria-label="Conversation" className="flex-1 space-y-8 overflow-y-auto px-6 py-6">
+    <div role="log" aria-label={t('label')} className="flex-1 space-y-8 overflow-y-auto px-6 py-6">
       {messages.map((message) =>
         message.role === 'assistant' ? (
           <AssistantMessage key={message.id} message={message} />

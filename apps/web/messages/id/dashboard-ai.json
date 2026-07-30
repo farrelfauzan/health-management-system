@@ -1,0 +1,147 @@
+{
+  "dashboard": {
+    "header": {
+      "breadcrumbs": { "dashboard": "Dasbor Utama", "overview": "Ringkasan" },
+      "title": "Ringkasan Klinik",
+      "newCase": "Kasus Baru",
+      "greeting": {
+        "morning": "Selamat pagi, {displayName}. Berikut aktivitas hari ini di {facilityName}.",
+        "afternoon": "Selamat siang, {displayName}. Berikut aktivitas hari ini di {facilityName}.",
+        "evening": "Selamat malam, {displayName}. Berikut aktivitas hari ini di {facilityName}."
+      }
+    },
+    "stats": {
+      "todayPatients": "Pasien Hari Ini",
+      "newRegistrations": "Pendaftaran baru hari ini",
+      "appointments": "Janji Temu",
+      "upcomingWithinHour": "{count, plural, other {# jadwal dalam satu jam ke depan}}",
+      "doctorsOnDuty": "Dokter Bertugas",
+      "specialtyBreakdown": "{surgeons, number} dokter bedah, {generalPractitioners, number} dokter umum",
+      "pendingRx": "Resep Tertunda",
+      "awaitingVerification": "Menunggu verifikasi apoteker",
+      "unableToLoad": "Tidak dapat dimuat"
+    },
+    "appointments": {
+      "title": "Janji Temu Mendatang",
+      "total": "{count, plural, other {# total}}",
+      "viewFullSchedule": "Lihat Jadwal Lengkap →",
+      "loadErrorTitle": "Tidak dapat memuat janji temu",
+      "loadErrorDescription": "Terjadi kesalahan saat mengambil jadwal. Sistem akan mencoba lagi secara otomatis.",
+      "emptyTitle": "Tidak ada janji temu hari ini",
+      "emptyDescription": "Janji temu baru yang dijadwalkan hari ini akan muncul di sini.",
+      "columns": {
+        "patient": "Pasien",
+        "reasonDoctor": "Alasan / Dokter",
+        "time": "Waktu",
+        "status": "Status",
+        "actions": "Tindakan"
+      },
+      "openInSchedule": "Buka di jadwal",
+      "nextRefresh": "Pembaruan otomatis berikutnya dalam <countdown></countdown>"
+    },
+    "quickActions": {
+      "title": "Tindakan Cepat",
+      "registerPatient": "Daftarkan Pasien",
+      "registerPatientDescription": "Tambahkan pasien baru ke sistem",
+      "scheduleAppointment": "Jadwalkan Janji Temu",
+      "scheduleAppointmentDescription": "Cari slot dokter yang tersedia",
+      "generateReport": "Buat Laporan",
+      "generateReportDescription": "Data kinerja klinis harian",
+      "reportUnavailable": "Fitur laporan akan tersedia pada fase berikutnya."
+    },
+    "activity": {
+      "title": "Aktivitas Terbaru",
+      "emergencyAdmission": "Penerimaan pasien gawat darurat",
+      "emergencyAdmissionDescription": "Pasien Sarah Connor (Unit Jantung)",
+      "prescriptionVerified": "Resep telah diverifikasi",
+      "prescriptionVerifiedDescription": "Farmasi menyerahkan pesanan #RX-772",
+      "shiftHandover": "Serah terima sif selesai",
+      "shiftHandoverDescription": "Sif pagi mengambil alih operasional"
+    }
+  },
+  "aiAssistant": {
+    "header": {
+      "breadcrumbs": { "advanced": "Lanjutan", "assistant": "Asisten AI" },
+      "title": "Asisten Klinis AI",
+      "subtitle": "Ajukan pertanyaan klinis berdasarkan konteks pasien Saling Jaga."
+    },
+    "preview": {
+      "label": "Pratinjau — respons simulasi",
+      "description": "Layar ini adalah pratinjau. Respons disimulasikan hingga backend AI tersedia."
+    },
+    "sidebar": {
+      "newConsultation": "Konsultasi Baru",
+      "suggestedAnalysis": "Analisis yang Disarankan",
+      "recentHistory": "Riwayat Terbaru",
+      "historyUnavailable": "Riwayat konsultasi belum tersedia dalam pratinjau"
+    },
+    "composer": {
+      "placeholder": "Tanyakan tentang pasien, hasil lab, atau protokol rumah sakit...",
+      "messageLabel": "Kirim pesan ke Asisten Klinis AI",
+      "attachmentsUnavailable": "Lampiran belum tersedia dalam pratinjau",
+      "attachFile": "Lampirkan berkas",
+      "voiceUnavailable": "Input suara belum tersedia dalam pratinjau",
+      "recordVoice": "Rekam pesan suara",
+      "send": "Kirim pesan"
+    },
+    "conversation": {
+      "label": "Percakapan",
+      "assistantName": "Asisten Klinis AI",
+      "justNow": "Baru saja",
+      "preparingResponse": "Asisten Klinis AI sedang menyiapkan respons",
+      "clinicalReferences": "Referensi Klinis"
+    },
+    "disclaimer": {
+      "label": "DATA PASIEN RAHASIA:",
+      "body": "Asisten ini merupakan pratinjau yang menggunakan data simulasi. Semua keputusan klinis harus ditinjau dan disetujui oleh tenaga medis berlisensi. AI dapat menghasilkan informasi keliru; selalu verifikasi dengan sumber lab asli."
+    },
+    "prompts": {
+      "patientLoad": {
+        "title": "Ringkas beban pasien hari ini",
+        "description": "Lihat rincian tingkat kegawatan dan waktu tunggu.",
+        "message": "Ringkas beban pasien hari ini."
+      },
+      "cardiologySlot": {
+        "title": "Cari slot berikutnya: Kardiologi",
+        "description": "Periksa ketersediaan dr. Aris.",
+        "message": "Cari slot kardiologi berikutnya yang tersedia."
+      },
+      "dischargeDraft": {
+        "title": "Buat draf pemulangan Kamar 402",
+        "description": "Berdasarkan hasil lab terbaru.",
+        "message": "Buat draf ringkasan pemulangan untuk Kamar 402."
+      }
+    },
+    "history": {
+      "medicationConflict": "Pemeriksaan konflik obat - Pasien #492",
+      "icdLookup": "Pencarian kode ICD-10: Diabetes Tipe 2",
+      "shiftHandover": "Catatan serah terima sif (12 April)"
+    },
+    "mock": {
+      "suggestionNote": "Catatan: Ini adalah saran AI. Verifikasi dengan protokol rumah sakit dan tanda vital pasien terkini sebelum melakukan instruksi.",
+      "patientLoadSummary": "Berikut ringkasan beban pasien hari ini: 14 pasien dijadwalkan, 3 di antaranya ditandai dengan kegawatan tinggi, dan waktu tunggu rata-rata 24 menit.",
+      "patientLoadHigh": "Kegawatan tinggi: 3 pasien (2 kardiologi, 1 penyakit dalam).",
+      "patientLoadModerate": "Kegawatan sedang: 6 pasien, waktu tunggu terlama saat ini 41 menit.",
+      "patientLoadRoutine": "Kontrol rutin: 5 pasien, semuanya sesuai jadwal.",
+      "queueReference": "Cuplikan Antrean Pendaftaran (data pratinjau)",
+      "cardiologyIntro": "dr. Aris memiliki jadwal konsultasi kardiologi berikut minggu ini:",
+      "cardiologyThursday": "Kamis 14.30 — slot konsultasi 30 menit.",
+      "cardiologyFridayMorning": "Jumat 09.00 — slot panjang 45 menit.",
+      "cardiologyFridayAfternoon": "Jumat 15.15 — slot konsultasi 30 menit.",
+      "cardiologyNote": "Catatan: Ini adalah saran AI. Konfirmasikan ketersediaan di jadwal Janji Temu sebelum memesan.",
+      "dischargeSummary": "Draf ringkasan pemulangan Kamar 402: hasil lab terbaru menunjukkan elektrolit kembali dalam rentang normal dan tanda vital stabil selama 12 jam terakhir.",
+      "dischargeCondition": "Kondisi saat pemulangan: stabil, dapat berjalan mandiri.",
+      "dischargeMedication": "Obat saat pemulangan: lanjutkan regimen saat ini, tanpa perubahan.",
+      "dischargeFollowUp": "Tindak lanjut: kontrol rawat jalan dalam 7 hari dengan pemeriksaan elektrolit ulang.",
+      "roomReference": "Laporan Lab: Kamar 402 (data pratinjau)",
+      "fallbackIntro": "Untuk hipokalemia ringan (3,2 mEq/L), suplementasi kalium oral umumnya menjadi pilihan pertama. Saran saya:",
+      "fallbackDose": "Kalium Klorida 40 mEq oral satu kali.",
+      "fallbackRecheck": "Periksa ulang panel elektrolit dalam 4 jam.",
+      "fallbackMonitor": "Pantau EKG untuk kemunculan gelombang U atau pemanjangan QT.",
+      "greetingSummary": "Halo {displayName}. Saya telah menganalisis dasbor hari ini. Ada 14 pasien terjadwal, dengan 3 pasien ditandai memiliki kegawatan tinggi.",
+      "greetingLab": "Berdasarkan hasil lab terbaru Pasien #821 (Maria Garcia), saya menyarankan pemeriksaan kadar kalium sebelum konsultasi pukul 10.00. Kadarnya saat ini 3,2 mEq/L, sedikit di bawah rentang normal.",
+      "labReference": "Laporan Lab: 2024-04-14_Garcia.pdf",
+      "journalReference": "Jurnal Kimia Klinis (Vol. 42)"
+    }
+  }
+}

@@ -1,16 +1,24 @@
 import type { ReactNode } from 'react';
+import { getTranslations } from 'next-intl/server';
 
 import { EmptyState } from '#components/shared/empty-state';
 import { PageHeader } from '#components/shared/page-header';
-import { ADMIN_ROUTE_METADATA, type AdminRouteKey } from '#lib/shell/route-metadata';
+import { resolveLocalizedAdminRouteMetadata, type AdminRouteKey } from '#lib/shell/route-metadata';
 
 type AdminPlaceholderPageProps = {
   routeKey: AdminRouteKey;
   action?: ReactNode;
 };
 
-export function AdminPlaceholderPage({ routeKey, action }: AdminPlaceholderPageProps) {
-  const metadata = ADMIN_ROUTE_METADATA[routeKey];
+export async function AdminPlaceholderPage({ routeKey, action }: AdminPlaceholderPageProps) {
+  const t = await getTranslations('authShell.shell.placeholder');
+  const routes = await getTranslations('authShell.shell.routes');
+  const navigation = await getTranslations('authShell.shell.navigation');
+  const metadata = resolveLocalizedAdminRouteMetadata(
+    routeKey,
+    (key, values) => routes(key, values),
+    (key) => navigation(key),
+  );
   return (
     <div className="space-y-6">
       <PageHeader
@@ -20,8 +28,8 @@ export function AdminPlaceholderPage({ routeKey, action }: AdminPlaceholderPageP
       />
       <EmptyState
         icon="construction"
-        title={`${metadata.title} is on its way`}
-        description="This screen ships in an upcoming Phase 4 task. The navigation and layout are ready for it."
+        title={t('title', { title: metadata.title })}
+        description={t('description')}
         action={action}
       />
     </div>

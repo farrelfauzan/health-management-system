@@ -2,6 +2,7 @@
 
 import type { DoctorListItem } from '@hms/shared-types';
 import { Combobox } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 type DoctorComboboxProps = {
   id?: string;
@@ -22,6 +23,7 @@ export function DoctorCombobox({
   emptyOptionLabel,
   onChange,
 }: DoctorComboboxProps) {
+  const t = useTranslations('clinical');
   return (
     <Combobox
       id={id}
@@ -30,9 +32,9 @@ export function DoctorCombobox({
         label: `${doctor.fullName} (${doctor.specialty})`,
       }))}
       value={value}
-      placeholder="Select doctor"
-      searchPlaceholder="Search by name or specialty..."
-      emptyMessage="No doctor found."
+      placeholder={t('doctors.selectDoctor')}
+      searchPlaceholder={t('doctors.searchDoctor')}
+      emptyMessage={t('doctors.noDoctor')}
       emptyOptionLabel={emptyOptionLabel}
       isLoading={isLoading}
       hasError={hasError}

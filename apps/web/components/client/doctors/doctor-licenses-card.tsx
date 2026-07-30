@@ -2,6 +2,7 @@
 
 import type { DoctorLicense } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle, Icon } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { DoctorLicenseRow } from '#components/client/doctors/doctor-license-row';
 import { resolveLicenseExpiryStatus } from '#lib/doctors/license-expiry';
@@ -11,6 +12,8 @@ type DoctorLicensesCardProps = {
 };
 
 export function DoctorLicensesCard({ licenses }: DoctorLicensesCardProps) {
+  const t = useTranslations('clinical');
+  const format = useFormatter();
   // Read the clock once per render so every row is judged against the same
   // instant — rows evaluated at different moments could disagree.
   const today = new Date();
@@ -23,11 +26,11 @@ export function DoctorLicensesCard({ licenses }: DoctorLicensesCardProps) {
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading text-base">
-          Licences (STR / SIP)
+          {t('doctors.licensesTitle')} (STR / SIP)
           {attentionCount > 0 ? (
             <span className="flex items-center gap-1 rounded-full bg-warning-tint px-2 py-0.5 text-xs font-medium text-warning">
               <Icon name="warning" size={14} />
-              {attentionCount} need attention
+              {t('doctors.attention', { count: format.number(attentionCount) })}
             </span>
           ) : null}
         </CardTitle>
@@ -41,7 +44,7 @@ export function DoctorLicensesCard({ licenses }: DoctorLicensesCardProps) {
           </ul>
         ) : (
           <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">
-            No licence recorded. A practising doctor needs an STR, and a SIP per practice location.
+            {t('doctors.licenseRequired')}
           </p>
         )}
       </CardContent>

@@ -4,7 +4,9 @@ export type DashboardGreetingParams = {
   date: Date;
 };
 
-function resolveDayPartLabel(hour: number): string {
+export type DashboardDayPart = 'morning' | 'afternoon' | 'evening';
+
+export function resolveDashboardDayPart(hour: number): DashboardDayPart {
   if (hour < 12) {
     return 'morning';
   }
@@ -12,13 +14,4 @@ function resolveDayPartLabel(hour: number): string {
     return 'afternoon';
   }
   return 'evening';
-}
-
-export function buildDashboardGreeting({
-  displayName,
-  facilityName,
-  date,
-}: DashboardGreetingParams): string {
-  const dayPartLabel = resolveDayPartLabel(date.getHours());
-  return `Good ${dayPartLabel}, ${displayName}. Here's what's happening today at ${facilityName}.`;
 }

@@ -2,9 +2,9 @@
 
 import type { AppointmentListItem } from '@hms/shared-types';
 import { cn } from '@hms/ui';
+import { useFormatter } from 'next-intl';
 
 import { APPOINTMENT_STATUS_META } from '#lib/appointments/appointment-status-meta';
-import { formatAppointmentTime } from '#lib/appointments/format-appointment-time';
 
 type WeekViewEventProps = {
   appointment: AppointmentListItem;
@@ -12,6 +12,7 @@ type WeekViewEventProps = {
 };
 
 export function WeekViewEvent({ appointment, onSelect }: WeekViewEventProps) {
+  const format = useFormatter();
   const meta = APPOINTMENT_STATUS_META[appointment.status];
   return (
     <button
@@ -29,7 +30,7 @@ export function WeekViewEvent({ appointment, onSelect }: WeekViewEventProps) {
         {appointment.patient.fullName} • {appointment.doctor.fullName}
       </span>
       <span className="w-full truncate text-[10px] text-slate-500">
-        {formatAppointmentTime(appointment.scheduledAt)}
+        {format.dateTime(new Date(appointment.scheduledAt), { timeStyle: 'short' })}
       </span>
     </button>
   );

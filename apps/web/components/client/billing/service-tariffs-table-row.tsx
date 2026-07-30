@@ -2,10 +2,10 @@
 
 import type { ServiceTariffResponse } from '@hms/shared-types';
 import { Button, TableCell, TableRow } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { DataTableMonoCell } from '#components/shared/data-table-mono-cell';
 import { StatusBadge } from '#components/shared/status-badge';
-import { formatRupiah } from '#lib/billing/format-rupiah';
 import { formatStatusLabel } from '#lib/shared/status-label';
 
 type ServiceTariffsTableRowProps = {
@@ -14,11 +14,9 @@ type ServiceTariffsTableRowProps = {
   onEdit: (tariff: ServiceTariffResponse) => void;
 };
 
-export function ServiceTariffsTableRow({
-  tariff,
-  canManage,
-  onEdit,
-}: ServiceTariffsTableRowProps) {
+export function ServiceTariffsTableRow({ tariff, canManage, onEdit }: ServiceTariffsTableRowProps) {
+  const t = useTranslations('operations.common');
+  const format = useFormatter();
   return (
     <TableRow className="transition-colors hover:bg-slate-50">
       <DataTableMonoCell>{tariff.code}</DataTableMonoCell>
@@ -30,7 +28,11 @@ export function ServiceTariffsTableRow({
         {tariff.icd9cmCode ?? '—'}
       </TableCell>
       <TableCell className="px-4 text-sm font-medium text-slate-900">
-        {formatRupiah(tariff.price)}
+        {format.number(tariff.price, {
+          style: 'currency',
+          currency: 'IDR',
+          maximumFractionDigits: 2,
+        })}
       </TableCell>
       <TableCell className="px-4">
         <StatusBadge status={tariff.isActive ? 'ACTIVE' : 'INACTIVE'} />
@@ -38,7 +40,7 @@ export function ServiceTariffsTableRow({
       <TableCell className="px-4 text-right">
         {canManage ? (
           <Button type="button" size="sm" variant="outline" onClick={() => onEdit(tariff)}>
-            Edit
+            {t('edit')}
           </Button>
         ) : (
           <span className="text-sm text-slate-400">—</span>

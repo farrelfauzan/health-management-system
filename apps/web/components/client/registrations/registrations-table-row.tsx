@@ -2,13 +2,13 @@
 
 import { REGISTRATION_STATUS_TRANSITIONS, type RegistrationListItem } from '@hms/shared-types';
 import { Icon, TableCell, TableRow, useAbility } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { BpjsRegistrationStatus } from '#components/client/registrations/bpjs-registration-status';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { DataTableMonoCell } from '#components/shared/data-table-mono-cell';
 import { StatusBadge } from '#components/shared/status-badge';
-import { formatRegisteredAt } from '#lib/registrations/format-registered-at';
 import {
   REGISTRATION_TRANSITION_META,
   type RegistrationTransitionTarget,
@@ -28,6 +28,8 @@ export function RegistrationsTableRow({
   onTransition,
   onOpenEncounter,
 }: RegistrationsTableRowProps) {
+  const t = useTranslations('operations');
+  const format = useFormatter();
   const ability = useAbility();
   const canUpdate = ability.can('update', 'Registration');
   const allowedTargets = REGISTRATION_STATUS_TRANSITIONS[registration.status].filter(
@@ -42,7 +44,12 @@ export function RegistrationsTableRow({
     ability.can('write', 'Encounter');
   const transitionActions: RowAction[] = canUpdate
     ? allowedTargets.map((target) => ({
-        label: REGISTRATION_TRANSITION_META[target].actionLabel,
+        label:
+          target === 'CHECKED_IN'
+            ? t('registrations.checkIn')
+            : target === 'COMPLETED'
+              ? t('registrations.complete')
+              : t('registrations.cancel'),
         icon: REGISTRATION_TRANSITION_META[target].icon,
         isDestructive: REGISTRATION_TRANSITION_META[target].isDestructive,
         onSelect: () => onTransition(registration, target),
@@ -51,7 +58,7 @@ export function RegistrationsTableRow({
   const actions: RowAction[] = canOpenEncounter
     ? [
         {
-          label: 'Open Encounter',
+          label: t('registrations.openEncounter'),
           icon: 'clinical_notes',
           isDestructive: false,
           onSelect: () => onOpenEncounter(registration),
@@ -70,16 +77,22 @@ export function RegistrationsTableRow({
       </TableCell>
       <DataTableMonoCell>{registration.patient.mrn}</DataTableMonoCell>
       <TableCell className="px-4 text-sm text-slate-600">
-        {formatRegisteredAt(registration.registeredAt)}
+        {format.dateTime(new Date(registration.registeredAt), {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        })}
       </TableCell>
       <TableCell className="px-4">
         {registration.appointment ? (
           <span className="flex items-center gap-1.5 text-sm text-slate-700">
             <Icon name="event" size={16} className="text-primary" />
-            {formatRegisteredAt(registration.appointment.scheduledAt)}
+            {format.dateTime(new Date(registration.appointment.scheduledAt), {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            })}
           </span>
         ) : (
-          <span className="text-sm text-slate-400">Walk-in</span>
+          <span className="text-sm text-slate-400">{t('registrations.walkIn')}</span>
         )}
       </TableCell>
       <TableCell className="px-4">
@@ -89,11 +102,14 @@ export function RegistrationsTableRow({
             <p className="text-xs text-slate-400">{registration.appointment.doctor.specialty}</p>
           </div>
         ) : (
-          <span className="text-sm text-slate-400">Unassigned</span>
+          <span className="text-sm text-slate-400">{t('common.unassigned')}</span>
         )}
       </TableCell>
       <TableCell className="px-4">
-        <StatusBadge status={registration.status} />
+        <StatusBadge
+          status={registration.status}
+          label={t(`common.statuses.${registration.status}`)}
+        />
       </TableCell>
       <TableCell className="px-4">
         <BpjsRegistrationStatus
@@ -106,7 +122,7 @@ export function RegistrationsTableRow({
         {actions.length > 0 ? (
           <RowActionsMenu
             actions={actions}
-            triggerLabel={`Actions for ${registration.patient.fullName}`}
+            triggerLabel={t('common.actionsFor', { name: registration.patient.fullName })}
           />
         ) : (
           <span className="text-sm text-slate-400">—</span>

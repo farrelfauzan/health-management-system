@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 
 import { FACILITY_CONFIG } from '#lib/facility/facility-config';
 
@@ -6,7 +7,8 @@ import { FACILITY_CONFIG } from '#lib/facility/facility-config';
  * The branded half of the login screen. Deliberately light: the lockup's
  * wordmark is dark navy and teal, so a dark panel would swallow it.
  */
-export function LoginVisualPanel() {
+export async function LoginVisualPanel() {
+  const t = await getTranslations('authShell.auth');
   return (
     <section className="relative hidden overflow-hidden bg-surface lg:flex lg:items-center lg:justify-center">
       <div
@@ -20,7 +22,7 @@ export function LoginVisualPanel() {
       <div className="relative flex w-full max-w-lg flex-col items-center gap-8 px-12">
         <Image
           src="/saling-jaga-lockup.png"
-          alt={`${FACILITY_CONFIG.name} — Health Management System`}
+          alt={t('brand.visualAlt', { facilityName: FACILITY_CONFIG.name })}
           width={1100}
           height={1021}
           priority
@@ -28,8 +30,7 @@ export function LoginVisualPanel() {
           className="h-auto w-full max-w-md object-contain"
         />
         <p className="max-w-sm text-center text-sm leading-relaxed text-on-surface-variant">
-          One record per visit — registration, encounter, pharmacy, and billing, with BPJS and
-          SATUSEHAT reporting handled in the background.
+          {t('visualDescription')}
         </p>
       </div>
     </section>

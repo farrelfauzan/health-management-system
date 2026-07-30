@@ -1,13 +1,11 @@
 import { useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import type {
   AssistantMessageBody,
   ConversationMessage,
   ConversationService,
 } from '#lib/ai-assistant/conversation-types';
-
-const ASSISTANT_NAME = 'AI Clinical Assistant';
-const SENT_AT_LABEL = 'Just now';
 
 export type SendConversationMessageInput = {
   text: string;
@@ -26,7 +24,11 @@ type UseConversationResult = {
   resetConversation: () => void;
 };
 
-export function useConversation({ service, displayName }: UseConversationInput): UseConversationResult {
+export function useConversation({
+  service,
+  displayName,
+}: UseConversationInput): UseConversationResult {
+  const t = useTranslations('aiAssistant.conversation');
   const messageCountRef = useRef(0);
   const conversationEpochRef = useRef(0);
   const [messages, setMessages] = useState<ConversationMessage[]>(() => [
@@ -41,8 +43,8 @@ export function useConversation({ service, displayName }: UseConversationInput):
     return {
       id: buildMessageId(),
       role: 'assistant',
-      authorName: ASSISTANT_NAME,
-      sentAtLabel: SENT_AT_LABEL,
+      authorName: t('assistantName'),
+      sentAtLabel: t('justNow'),
       body,
     };
   }
@@ -58,7 +60,7 @@ export function useConversation({ service, displayName }: UseConversationInput):
         id: buildMessageId(),
         role: 'user',
         authorName: displayName,
-        sentAtLabel: SENT_AT_LABEL,
+        sentAtLabel: t('justNow'),
         text: trimmedText,
       },
     ]);

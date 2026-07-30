@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render as testingRender, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AxiosError, type AxiosResponse } from 'axios';
+import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AdminUserFormDialog } from './admin-user-form-dialog';
@@ -10,6 +12,15 @@ import {
   adminManagementControllerUpdateAdminUserV1,
 } from '#lib/api/generated/admin-management/admin-management';
 import { rbacControllerGetRolesV1 } from '#lib/api/generated/rbac/rbac';
+import messages from '../../../messages/en/operations.json';
+
+function render(node: ReactNode) {
+  return testingRender(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      {node}
+    </NextIntlClientProvider>,
+  );
+}
 
 vi.mock('#lib/api/generated/admin-management/admin-management', () => ({
   adminManagementControllerCreateAdminUserV1: vi.fn(),

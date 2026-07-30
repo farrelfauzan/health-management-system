@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import {
   serviceTariffControllerCreateServiceTariffV1,
@@ -34,8 +35,6 @@ import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateBillingQueries } from '#lib/billing/invalidate-billing-queries';
 import { formatStatusLabel } from '#lib/shared/status-label';
-
-const TARIFF_ERROR_FALLBACK = 'Unable to save the tariff. Please try again.';
 
 type ServiceTariffFormDialogProps = {
   open: boolean;
@@ -48,6 +47,7 @@ export function ServiceTariffFormDialog({
   onOpenChange,
   tariff,
 }: ServiceTariffFormDialogProps) {
+  const t = useTranslations('operations');
   const queryClient = useQueryClient();
   const isEditing = tariff !== null;
   const [code, setCode] = useState<string>(tariff?.code ?? '');
@@ -107,11 +107,11 @@ export function ServiceTariffFormDialog({
 
     try {
       const response = await saveMutation.mutateAsync(payload);
-      parseApiSuccess<ServiceTariffResponse>(response, TARIFF_ERROR_FALLBACK);
+      parseApiSuccess<ServiceTariffResponse>(response, t('billing.tariffSaveError'));
       await invalidateBillingQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setActionError(notifyApiError(error, TARIFF_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('billing.tariffSaveError')));
     }
   }
 
@@ -121,7 +121,7 @@ export function ServiceTariffFormDialog({
         <form noValidate onSubmit={(event) => void handleSubmit(event)}>
           <DialogHeader>
             <DialogTitle className="font-heading">
-              {isEditing ? 'Edit Tariff' : 'New Tariff'}
+              {isEditing ? t('billing.editTariff') : t('billing.newTariff')}
             </DialogTitle>
             <DialogDescription>
               Tariffs price what the invoice generator collects from an encounter. A procedure
@@ -153,7 +153,7 @@ export function ServiceTariffFormDialog({
                   onChange={(event) => setCode(event.target.value)}
                 />
                 {isEditing ? (
-                  <p className="mt-1 text-xs text-slate-400">Code cannot be changed.</p>
+                  <p className="mt-1 text-xs text-slate-400">{t('billing.labels.immutableCode')}</p>
                 ) : null}
               </div>
               <div>
@@ -217,7 +217,7 @@ export function ServiceTariffFormDialog({
                 </label>
                 <Input
                   id="tariff-icd9cm"
-                  placeholder="Links the tariff to a procedure"
+                  placeholder={t('billing.labels.procedureLink')}
                   value={icd9cmCode}
                   onChange={(event) => setIcd9cmCode(event.target.value)}
                 />
@@ -233,14 +233,14 @@ export function ServiceTariffFormDialog({
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               type="submit"
               className="bg-primary-container hover:bg-primary"
               disabled={saveMutation.isPending}
             >
-              {saveMutation.isPending ? 'Saving...' : 'Save Tariff'}
+              {saveMutation.isPending ? t('common.saving') : t('billing.saveTariff')}
             </Button>
           </DialogFooter>
         </form>

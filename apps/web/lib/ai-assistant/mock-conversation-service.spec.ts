@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createMockConversationService } from './mock-conversation-service';
 
 describe('createMockConversationService', () => {
-  const service = createMockConversationService({ replyDelayMs: 0 });
+  const service = createMockConversationService({ replyDelayMs: 0, locale: 'en' });
 
   it('builds a greeting addressed to the given display name', () => {
     const actualGreeting = service.buildGreeting({ displayName: 'Dr. Sarah' });
@@ -19,7 +19,9 @@ describe('createMockConversationService', () => {
     });
 
     expect(actualReply.paragraphs[0]).toContain('14 patients are scheduled');
-    expect(actualReply.bullets).toContain('High acuity: 3 patients (2 cardiology, 1 internal medicine).');
+    expect(actualReply.bullets).toContain(
+      'High acuity: 3 patients (2 cardiology, 1 internal medicine).',
+    );
   });
 
   it('falls back to the default reply for free-text messages', async () => {

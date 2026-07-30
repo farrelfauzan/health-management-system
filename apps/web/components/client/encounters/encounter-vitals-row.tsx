@@ -1,8 +1,8 @@
 'use client';
 
 import type { VitalSignsResponse } from '@hms/shared-types';
+import { useFormatter, useTranslations } from 'next-intl';
 
-import { formatRegisteredAt } from '#lib/registrations/format-registered-at';
 import { VITAL_SIGNS_FIELDS } from '#lib/encounters/vital-signs-fields';
 
 type EncounterVitalsRowProps = {
@@ -10,17 +10,25 @@ type EncounterVitalsRowProps = {
 };
 
 export function EncounterVitalsRow({ vitalSigns }: EncounterVitalsRowProps) {
+  const t = useTranslations('clinical');
+  const format = useFormatter();
   const measured = VITAL_SIGNS_FIELDS.filter((field) => vitalSigns[field.key] !== undefined);
 
   return (
     <li className="rounded-lg border border-slate-200 p-3">
       <div className="mb-2 flex items-center justify-between gap-3">
         <p className="text-xs font-medium text-slate-500">
-          {formatRegisteredAt(vitalSigns.recordedAt)}
+          {format.dateTime(new Date(vitalSigns.recordedAt), {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          })}
         </p>
         {vitalSigns.bodyMassIndex !== undefined ? (
           <p className="text-xs text-slate-500">
-            BMI <span className="font-medium text-slate-700">{vitalSigns.bodyMassIndex}</span>
+            {t('encounters.bmi')}{' '}
+            <span className="font-medium text-slate-700">
+              {format.number(vitalSigns.bodyMassIndex)}
+            </span>
           </p>
         ) : null}
       </div>
@@ -28,14 +36,12 @@ export function EncounterVitalsRow({ vitalSigns }: EncounterVitalsRowProps) {
         {measured.map((field) => (
           <p key={field.key} className="text-sm text-slate-700">
             <span className="text-xs text-slate-500">{field.label}</span>{' '}
-            <span className="font-medium">{vitalSigns[field.key]}</span>{' '}
+            <span className="font-medium">{format.number(vitalSigns[field.key] as number)}</span>{' '}
             <span className="text-xs text-slate-400">{field.unit}</span>
           </p>
         ))}
       </div>
-      {vitalSigns.notes ? (
-        <p className="mt-2 text-xs text-slate-500">{vitalSigns.notes}</p>
-      ) : null}
+      {vitalSigns.notes ? <p className="mt-2 text-xs text-slate-500">{vitalSigns.notes}</p> : null}
     </li>
   );
 }

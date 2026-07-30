@@ -2,9 +2,11 @@ import type { DoctorListItem } from '@hms/shared-types';
 import { AbilityProvider, buildAppAbility, Table, TableBody, type AppRule } from '@hms/ui';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DoctorsTableRow } from './doctors-table-row';
+import messages from '../../../messages/id/clinical.json';
 
 const DOCTOR: DoctorListItem = {
   id: 'doctor-1',
@@ -18,8 +20,22 @@ const DOCTOR: DoctorListItem = {
   updatedAt: '2026-07-10T00:00:00.000Z',
   patientCount: 4,
   schedules: [
-    { id: 's1', dayOfWeek: 1, startTime: '08:00', endTime: '16:00', isAvailable: true, maxPatients: null },
-    { id: 's2', dayOfWeek: 2, startTime: '08:00', endTime: '16:00', isAvailable: true, maxPatients: null },
+    {
+      id: 's1',
+      dayOfWeek: 1,
+      startTime: '08:00',
+      endTime: '16:00',
+      isAvailable: true,
+      maxPatients: null,
+    },
+    {
+      id: 's2',
+      dayOfWeek: 2,
+      startTime: '08:00',
+      endTime: '16:00',
+      isAvailable: true,
+      maxPatients: null,
+    },
   ],
 };
 
@@ -34,19 +50,21 @@ const READ_ONLY_RULES: AppRule[] = [{ action: 'read', subject: 'Doctor' }];
 
 function renderRow(rules: AppRule[]): void {
   render(
-    <AbilityProvider ability={buildAppAbility(rules)}>
-      <Table>
-        <TableBody>
-          <DoctorsTableRow
-            doctor={DOCTOR}
-            onView={vi.fn()}
-            onEdit={vi.fn()}
-            onManageSchedule={vi.fn()}
-            onAssignPatient={vi.fn()}
-          />
-        </TableBody>
-      </Table>
-    </AbilityProvider>,
+    <NextIntlClientProvider locale="id" messages={messages}>
+      <AbilityProvider ability={buildAppAbility(rules)}>
+        <Table>
+          <TableBody>
+            <DoctorsTableRow
+              doctor={DOCTOR}
+              onView={vi.fn()}
+              onEdit={vi.fn()}
+              onManageSchedule={vi.fn()}
+              onAssignPatient={vi.fn()}
+            />
+          </TableBody>
+        </Table>
+      </AbilityProvider>
+    </NextIntlClientProvider>,
   );
 }
 
@@ -57,32 +75,32 @@ describe('DoctorsTableRow', () => {
     expect(screen.getByText('Dr. Budi Santoso')).toBeInTheDocument();
     expect(screen.getByText('Cardiology')).toBeInTheDocument();
     expect(screen.getByText('SIP-2026-0001')).toBeInTheDocument();
-    expect(screen.getByText('Mon–Tue · 08:00–16:00')).toBeInTheDocument();
+    expect(screen.getByText('Sen–Sel · 08:00–16:00')).toBeInTheDocument();
     expect(screen.getByText('4')).toBeInTheDocument();
-    expect(screen.getByText('ACTIVE')).toBeInTheDocument();
+    expect(screen.getByText('Aktif')).toBeInTheDocument();
   });
 
   it('shows edit, schedule, and assign actions when the ability allows them', async () => {
     const user = userEvent.setup();
     renderRow(FULL_ACCESS_RULES);
 
-    await user.click(screen.getByRole('button', { name: 'Actions for Dr. Budi Santoso' }));
+    await user.click(screen.getByRole('button', { name: 'Tindakan untuk Dr. Budi Santoso' }));
 
-    expect(await screen.findByText('View')).toBeInTheDocument();
-    expect(screen.getByText('Edit')).toBeInTheDocument();
-    expect(screen.getByText('Manage Schedule')).toBeInTheDocument();
-    expect(screen.getByText('Assign Patient')).toBeInTheDocument();
+    expect(await screen.findByText('Lihat')).toBeInTheDocument();
+    expect(screen.getByText('Ubah')).toBeInTheDocument();
+    expect(screen.getByText('Kelola Jadwal')).toBeInTheDocument();
+    expect(screen.getByText('Tetapkan Pasien')).toBeInTheDocument();
   });
 
   it('hides privileged actions for read-only abilities', async () => {
     const user = userEvent.setup();
     renderRow(READ_ONLY_RULES);
 
-    await user.click(screen.getByRole('button', { name: 'Actions for Dr. Budi Santoso' }));
+    await user.click(screen.getByRole('button', { name: 'Tindakan untuk Dr. Budi Santoso' }));
 
-    expect(await screen.findByText('View')).toBeInTheDocument();
-    expect(screen.queryByText('Edit')).not.toBeInTheDocument();
-    expect(screen.queryByText('Manage Schedule')).not.toBeInTheDocument();
-    expect(screen.queryByText('Assign Patient')).not.toBeInTheDocument();
+    expect(await screen.findByText('Lihat')).toBeInTheDocument();
+    expect(screen.queryByText('Ubah')).not.toBeInTheDocument();
+    expect(screen.queryByText('Kelola Jadwal')).not.toBeInTheDocument();
+    expect(screen.queryByText('Tetapkan Pasien')).not.toBeInTheDocument();
   });
 });

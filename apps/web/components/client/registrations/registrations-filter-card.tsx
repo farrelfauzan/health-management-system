@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { DoctorCombobox } from '#components/client/doctors/doctor-combobox';
 import { FilterCard } from '#components/shared/filter-card';
@@ -41,6 +42,7 @@ export function RegistrationsFilterCard({
   onApply,
   onReset,
 }: RegistrationsFilterCardProps) {
+  const t = useTranslations('operations');
   const [search, setSearch] = useState<string>(initialQuery.search ?? '');
   const [status, setStatus] = useState<string>(initialQuery.status ?? ALL_STATUSES_VALUE);
   const [doctorId, setDoctorId] = useState<string>(initialQuery.doctorId ?? '');
@@ -83,10 +85,10 @@ export function RegistrationsFilterCard({
         actions={
           <>
             <Button type="submit" size="sm" className="bg-primary-container hover:bg-primary">
-              Apply Filters
+              {t('common.applyFilters')}
             </Button>
             <Button type="button" size="sm" variant="outline" onClick={handleReset}>
-              Reset
+              {t('common.reset')}
             </Button>
           </>
         }
@@ -96,11 +98,11 @@ export function RegistrationsFilterCard({
             htmlFor="registrations-quick-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Quick Filter
+            {t('common.quickFilter')}
           </label>
           <Input
             id="registrations-quick-filter"
-            placeholder="Patient name or ID..."
+            placeholder={t('registrations.search')}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -110,14 +112,14 @@ export function RegistrationsFilterCard({
             htmlFor="registrations-status-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Status
+            {t('common.status')}
           </label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="registrations-status-filter" className="w-full">
-              <SelectValue placeholder="All Statuses" />
+              <SelectValue placeholder={t('common.allStatuses')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL_STATUSES_VALUE}>All Statuses</SelectItem>
+              <SelectItem value={ALL_STATUSES_VALUE}>{t('common.allStatuses')}</SelectItem>
               {REGISTRATION_STATUSES.map((statusValue) => (
                 <SelectItem key={statusValue} value={statusValue}>
                   {formatStatusLabel(statusValue)}
@@ -131,34 +133,34 @@ export function RegistrationsFilterCard({
             htmlFor="registrations-doctor-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Doctor
+            {t('common.doctor')}
           </label>
           <DoctorCombobox
             id="registrations-doctor-filter"
             doctors={doctorsQuery.doctors}
             value={doctorId}
             isLoading={doctorsQuery.isPending}
-            emptyOptionLabel="All Doctors"
+            emptyOptionLabel={t('registrations.allDoctors')}
             onChange={setDoctorId}
           />
         </div>
         <div>
           <span className="mb-1.5 block font-heading text-xs font-medium text-slate-600">
-            Registered Between
+            {t('registrations.registeredBetween')}
           </span>
           <div className="flex items-center gap-2">
             <DatePicker
-              aria-label="Registered from"
+              aria-label={t('registrations.registeredFrom')}
               className="w-40"
-              placeholder="From"
+              placeholder={t('common.from')}
               value={registeredFrom}
               onValueChange={handleRegisteredFromChange}
             />
             <span className="text-sm text-slate-400">–</span>
             <DatePicker
-              aria-label="Registered to"
+              aria-label={t('registrations.registeredTo')}
               className="w-40"
-              placeholder="To"
+              placeholder={t('common.to')}
               value={registeredTo}
               disabled={registeredFrom.length === 0}
               minValue={registeredFrom}

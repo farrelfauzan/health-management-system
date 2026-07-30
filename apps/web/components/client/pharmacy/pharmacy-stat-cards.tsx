@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Skeleton } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { StatCard } from '#components/shared/stat-card';
 import { LOW_STOCK_THRESHOLD } from '#lib/pharmacy/low-stock';
@@ -27,6 +28,7 @@ export function PharmacyStatCards({
   isStockError,
   onViewFullQueue,
 }: PharmacyStatCardsProps) {
+  const t = useTranslations('operations.pharmacy');
   const lowStockProgress =
     medicationsTotal && medicationsTotal > 0 ? ((lowStockCount ?? 0) / medicationsTotal) * 100 : 0;
 
@@ -34,40 +36,38 @@ export function PharmacyStatCards({
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <StatCard
         icon="inventory_2"
-        label="Total Inventory Value"
+        label={t('inventoryValue')}
         value={MOCK_INVENTORY_STATS.totalInventoryValue}
-        helper={MOCK_INVENTORY_STATS.inventoryTrend}
+        helper={t('inventoryTrend')}
       />
       {isStockLoading ? (
         <Skeleton data-testid="stat-skeleton-low-stock" className="h-36 rounded-xl" />
       ) : (
         <StatCard
           icon="priority_high"
-          label="Low Stock Alerts"
-          value={isStockError ? '—' : `${lowStockCount ?? 0} Medications`}
-          helper={
-            isStockError ? 'Unable to load' : `At or below ${LOW_STOCK_THRESHOLD} units in stock`
-          }
+          label={t('lowStock')}
+          value={isStockError ? '—' : t('medications', { count: lowStockCount ?? 0 })}
+          helper={isStockError ? t('unable') : t('stockUnits', { count: LOW_STOCK_THRESHOLD })}
           progress={isStockError ? undefined : lowStockProgress}
           variant="danger"
         />
       )}
       <StatCard
         icon="history"
-        label="Expiring Soon (<30d)"
-        value={`${MOCK_INVENTORY_STATS.expiringSoonCount} Items`}
-        helper={MOCK_INVENTORY_STATS.lastAuditLabel}
+        label={t('expiring')}
+        value={t('items', { count: MOCK_INVENTORY_STATS.expiringSoonCount })}
+        helper={t('lastAudit', { time: t('elapsedHours', { hours: 2, minutes: 0 }) })}
       />
       {isPendingLoading ? (
         <Skeleton data-testid="stat-skeleton-pending-orders" className="h-36 rounded-xl" />
       ) : (
         <StatCard
           icon="local_pharmacy"
-          label="Pending Orders"
+          label={t('pendingOrders')}
           value={isPendingError ? '—' : String(pendingTotal ?? 0)}
           helper={
             isPendingError ? (
-              'Unable to load'
+              t('unable')
             ) : (
               <Button
                 type="button"
@@ -75,7 +75,7 @@ export function PharmacyStatCards({
                 className="bg-white/20 text-white hover:bg-white/30"
                 onClick={onViewFullQueue}
               >
-                View Full Queue
+                {t('viewQueue')}
               </Button>
             )
           }

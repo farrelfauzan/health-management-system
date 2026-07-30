@@ -8,23 +8,28 @@ export type SuggestedPrompt = {
   messageText: string;
 };
 
-export const MOCK_SUGGESTED_PROMPTS: SuggestedPrompt[] = [
-  {
-    id: 'patient-load',
-    title: "Summarize today's patient load",
-    description: 'Get a breakdown of acuity and wait times.',
-    messageText: "Summarize today's patient load.",
-  },
-  {
-    id: 'cardiology-slot',
-    title: 'Find next slot: Cardiology',
-    description: "Check Dr. Aris's availability.",
-    messageText: 'Find the next available cardiology slot.',
-  },
-  {
-    id: 'discharge-draft',
-    title: 'Draft discharge for Room 402',
-    description: 'Based on recent lab results.',
-    messageText: 'Draft a discharge summary for Room 402.',
-  },
-];
+export function buildMockSuggestedPrompts(locale: AppLocale): SuggestedPrompt[] {
+  const t = createAiAssistantTranslator(locale);
+  return [
+    {
+      id: 'patient-load',
+      title: t('prompts.patientLoad.title'),
+      description: t('prompts.patientLoad.description'),
+      messageText: t('prompts.patientLoad.message'),
+    },
+    {
+      id: 'cardiology-slot',
+      title: t('prompts.cardiologySlot.title'),
+      description: t('prompts.cardiologySlot.description'),
+      messageText: t('prompts.cardiologySlot.message'),
+    },
+    {
+      id: 'discharge-draft',
+      title: t('prompts.dischargeDraft.title'),
+      description: t('prompts.dischargeDraft.description'),
+      messageText: t('prompts.dischargeDraft.message'),
+    },
+  ];
+}
+import type { AppLocale } from '../../i18n/config';
+import { createAiAssistantTranslator } from '#lib/ai-assistant/localization';

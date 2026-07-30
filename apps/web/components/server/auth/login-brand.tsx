@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 
 import { FACILITY_CONFIG } from '#lib/facility/facility-config';
 
@@ -7,12 +8,13 @@ import { FACILITY_CONFIG } from '#lib/facility/facility-config';
  * where the visual panel is hidden, and stays as a quiet mark beside the form
  * on large ones.
  */
-export function LoginBrand() {
+export async function LoginBrand() {
+  const t = await getTranslations('authShell.auth.brand');
   return (
     <div className="flex items-center gap-3">
       <Image
         src="/saling-jaga-mark.png"
-        alt={`${FACILITY_CONFIG.name} logo`}
+        alt={t('logoAlt', { facilityName: FACILITY_CONFIG.name })}
         width={44}
         height={44}
         priority
@@ -22,7 +24,7 @@ export function LoginBrand() {
         <span className="font-heading text-lg font-semibold tracking-tight text-slate-900">
           {FACILITY_CONFIG.name}
         </span>
-        <span className="text-xs text-slate-500">Health Management System</span>
+        <span className="text-xs text-slate-500">{t('systemName')}</span>
       </span>
     </div>
   );

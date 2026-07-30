@@ -1,5 +1,5 @@
-export function formatAppointmentTime(scheduledAt: string): string {
-  return new Date(scheduledAt).toLocaleTimeString('en-US', {
+export function formatAppointmentTime(scheduledAt: string, locale = 'id-ID'): string {
+  return new Date(scheduledAt).toLocaleTimeString(locale, {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
@@ -13,8 +13,8 @@ export function formatTimeInputValue(scheduledAt: string): string {
   return `${hours}:${minutes}`;
 }
 
-export function formatAppointmentDate(scheduledAt: string): string {
-  return new Date(scheduledAt).toLocaleDateString('en-US', {
+export function formatAppointmentDate(scheduledAt: string, locale = 'id-ID'): string {
+  return new Date(scheduledAt).toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',

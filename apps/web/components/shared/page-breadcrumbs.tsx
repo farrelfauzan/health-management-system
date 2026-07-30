@@ -1,17 +1,20 @@
 import { Fragment } from 'react';
 import { Icon, cn } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 type PageBreadcrumbsProps = {
   breadcrumbs: string[];
 };
 
 export function PageBreadcrumbs({ breadcrumbs }: PageBreadcrumbsProps) {
+  const t = useTranslations('shared.accessibility');
+
   if (breadcrumbs.length === 0) {
     return null;
   }
   return (
     <nav
-      aria-label="Breadcrumb"
+      aria-label={t('breadcrumb')}
       className="flex items-center gap-2 font-heading text-sm font-medium text-outline"
     >
       {breadcrumbs.map((crumb, index) => (

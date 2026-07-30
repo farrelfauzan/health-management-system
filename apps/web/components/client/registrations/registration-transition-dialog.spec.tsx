@@ -1,13 +1,24 @@
+import type { ReactNode } from 'react';
 import type { RegistrationListItem } from '@hms/shared-types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render as testingRender, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AxiosError, type AxiosResponse } from 'axios';
+import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { RegistrationTransitionDialog } from './registration-transition-dialog';
 import { registrationFlowControllerUpdateRegistrationV1 } from '#lib/api/generated/registration-flow/registration-flow';
 import type { RegistrationTransitionTarget } from '#lib/registrations/registration-transition-meta';
+import messages from '../../../messages/en/operations.json';
+
+function render(node: ReactNode) {
+  return testingRender(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      {node}
+    </NextIntlClientProvider>,
+  );
+}
 
 vi.mock('#lib/api/generated/registration-flow/registration-flow', () => ({
   registrationFlowControllerUpdateRegistrationV1: vi.fn(),
@@ -82,7 +93,7 @@ describe('RegistrationTransitionDialog', () => {
     } as never);
     renderDialog({ targetStatus: 'CHECKED_IN', onOpenChange });
 
-    await user.click(screen.getByRole('button', { name: 'Confirm Check-In' }));
+    await user.click(screen.getByRole('button', { name: 'Check In' }));
 
     await waitFor(() => {
       expect(updateRequestMock).toHaveBeenCalledWith('registration-1', { status: 'CHECKED_IN' });
@@ -96,7 +107,7 @@ describe('RegistrationTransitionDialog', () => {
     updateRequestMock.mockRejectedValue(buildRejectedTransitionError());
     renderDialog({ targetStatus: 'COMPLETED', onOpenChange });
 
-    await user.click(screen.getByRole('button', { name: 'Confirm Completion' }));
+    await user.click(screen.getByRole('button', { name: 'Complete' }));
 
     expect(
       await screen.findByText('Registration status can not change from PENDING to COMPLETED'),

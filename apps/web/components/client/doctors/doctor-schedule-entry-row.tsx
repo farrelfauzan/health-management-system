@@ -12,9 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { DoctorScheduleCapacityField } from '#components/client/doctors/doctor-schedule-capacity-field';
-import { formatDayOfWeekLabel } from '#lib/doctors/day-of-week-label';
 
 const DAYS_OF_WEEK = [0, 1, 2, 3, 4, 5, 6] as const;
 
@@ -31,19 +31,32 @@ export function DoctorScheduleEntryRow({
   onChange,
   onRemove,
 }: DoctorScheduleEntryRowProps) {
+  const t = useTranslations('clinical');
+  const weekdayKeys = [
+    'doctors.weekdays.0',
+    'doctors.weekdays.1',
+    'doctors.weekdays.2',
+    'doctors.weekdays.3',
+    'doctors.weekdays.4',
+    'doctors.weekdays.5',
+    'doctors.weekdays.6',
+  ] as const;
   return (
     <div className="flex items-center gap-2">
       <Select
         value={String(entry.dayOfWeek)}
         onValueChange={(value) => onChange(index, { ...entry, dayOfWeek: Number(value) })}
       >
-        <SelectTrigger className="w-24" aria-label={`Day for entry ${index + 1}`}>
+        <SelectTrigger
+          className="w-24"
+          aria-label={t('doctors.scheduleFields.day', { index: index + 1 })}
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {DAYS_OF_WEEK.map((day) => (
             <SelectItem key={day} value={String(day)}>
-              {formatDayOfWeekLabel(day)}
+              {t(weekdayKeys[day])}
             </SelectItem>
           ))}
         </SelectContent>
@@ -51,7 +64,7 @@ export function DoctorScheduleEntryRow({
       <Input
         type="time"
         className="w-28"
-        aria-label={`Start time for entry ${index + 1}`}
+        aria-label={t('doctors.scheduleFields.start', { index: index + 1 })}
         value={entry.startTime}
         onChange={(event) => onChange(index, { ...entry, startTime: event.target.value })}
       />
@@ -59,7 +72,7 @@ export function DoctorScheduleEntryRow({
       <Input
         type="time"
         className="w-28"
-        aria-label={`End time for entry ${index + 1}`}
+        aria-label={t('doctors.scheduleFields.end', { index: index + 1 })}
         value={entry.endTime}
         onChange={(event) => onChange(index, { ...entry, endTime: event.target.value })}
       />
@@ -71,16 +84,18 @@ export function DoctorScheduleEntryRow({
       <label className="flex cursor-pointer items-center gap-1.5 text-xs text-slate-600">
         <Checkbox
           checked={entry.isAvailable}
-          aria-label={`Availability for entry ${index + 1}`}
-          onCheckedChange={(checked) => onChange(index, { ...entry, isAvailable: checked === true })}
+          aria-label={t('doctors.scheduleFields.availability', { index: index + 1 })}
+          onCheckedChange={(checked) =>
+            onChange(index, { ...entry, isAvailable: checked === true })
+          }
         />
-        Available
+        {t('doctors.scheduleFields.available')}
       </label>
       <Button
         type="button"
         variant="ghost"
         size="icon-sm"
-        aria-label={`Remove entry ${index + 1}`}
+        aria-label={t('doctors.scheduleFields.remove', { index: index + 1 })}
         onClick={() => onRemove(index)}
       >
         <Icon name="delete" size={16} className="text-slate-500" />

@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import type { PrescriptionResponse } from '@hms/shared-types';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { PharmacyStatCards } from '#components/client/pharmacy/pharmacy-stat-cards';
 import { PrescriptionDetailsPanel } from '#components/client/pharmacy/prescription-details-panel';
@@ -13,16 +14,15 @@ import { countLowStockMedications } from '#lib/pharmacy/low-stock';
 import { buildPharmacySearchParams, type PharmacySearchParams } from '#lib/pharmacy/search-params';
 import { useMedicationStock } from '#lib/pharmacy/use-medication-stock';
 import { usePendingPrescriptions } from '#lib/pharmacy/use-pending-prescriptions';
-import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
 
 type PharmacyPanelProps = {
   initialQuery: PharmacySearchParams;
 };
 
 export function PharmacyPanel({ initialQuery }: PharmacyPanelProps) {
+  const t = useTranslations('operations.pharmacy');
   const router = useRouter();
   const pathname = usePathname();
-  const metadata = ADMIN_ROUTE_METADATA.pharmacy;
   const prescriptionsQuery = usePendingPrescriptions(initialQuery);
   const stockQuery = useMedicationStock();
   const queueRef = useRef<HTMLDivElement | null>(null);
@@ -54,11 +54,7 @@ export function PharmacyPanel({ initialQuery }: PharmacyPanelProps) {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={metadata.title}
-        subtitle={metadata.subtitle}
-        breadcrumbs={[...metadata.breadcrumbs]}
-      />
+      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
 
       <PharmacyStatCards
         pendingTotal={prescriptionsQuery.meta?.total}
@@ -82,7 +78,7 @@ export function PharmacyPanel({ initialQuery }: PharmacyPanelProps) {
 
       {prescriptionsQuery.error && prescriptionsQuery.prescriptions.length > 0 ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {prescriptionsQuery.error.message}
+          {t('queueErrorTitle')}
         </p>
       ) : null}
 

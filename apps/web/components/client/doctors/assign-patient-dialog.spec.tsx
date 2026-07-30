@@ -3,10 +3,12 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AxiosError, type AxiosResponse } from 'axios';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextIntlClientProvider } from 'next-intl';
 
 import { AssignPatientDialog } from './assign-patient-dialog';
 import { doctorPatientControllerAssignDoctorToPatientV1 } from '#lib/api/generated/doctor-patient/doctor-patient';
 import { patientManagementControllerListPatientsV1 } from '#lib/api/generated/patient-management/patient-management';
+import messages from '../../../messages/id/clinical.json';
 
 vi.mock('#lib/api/generated/doctor-patient/doctor-patient', () => ({
   doctorPatientControllerAssignDoctorToPatientV1: vi.fn(),
@@ -21,29 +23,37 @@ const assignRequestMock = vi.mocked(doctorPatientControllerAssignDoctorToPatient
 const patientsRequestMock = vi.mocked(patientManagementControllerListPatientsV1);
 
 function buildConflictError(): AxiosError {
-  return new AxiosError('Request failed with status code 409', 'ERR_BAD_REQUEST', undefined, undefined, {
-    status: 409,
-    statusText: 'Conflict',
-    headers: {},
-    config: {},
-    data: {
-      error: { code: 'CONFLICT', message: 'Patient is already assigned to this doctor' },
-    },
-  } as AxiosResponse);
+  return new AxiosError(
+    'Request failed with status code 409',
+    'ERR_BAD_REQUEST',
+    undefined,
+    undefined,
+    {
+      status: 409,
+      statusText: 'Conflict',
+      headers: {},
+      config: {},
+      data: {
+        error: { code: 'CONFLICT', message: 'Patient is already assigned to this doctor' },
+      },
+    } as AxiosResponse,
+  );
 }
 
 function renderDialog(): void {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   render(
-    <QueryClientProvider client={queryClient}>
-      <AssignPatientDialog
-        open
-        onOpenChange={vi.fn()}
-        doctorId="doctor-1"
-        doctorName="Dr. Budi Santoso"
-      />
-    </QueryClientProvider>,
+    <NextIntlClientProvider locale="id" messages={messages}>
+      <QueryClientProvider client={queryClient}>
+        <AssignPatientDialog
+          open
+          onOpenChange={vi.fn()}
+          doctorId="doctor-1"
+          doctorName="Dr. Budi Santoso"
+        />
+      </QueryClientProvider>
+    </NextIntlClientProvider>,
   );
 }
 
@@ -90,7 +100,7 @@ describe('AssignPatientDialog', () => {
 
     await user.click(screen.getByRole('combobox'));
     await user.click(await screen.findByRole('option', { name: /Aisha Rahman/ }));
-    await user.click(screen.getByRole('button', { name: 'Assign Patient' }));
+    await user.click(screen.getByRole('button', { name: 'Tetapkan Pasien' }));
 
     expect(assignRequestMock).toHaveBeenCalledWith({
       doctorId: 'doctor-1',
@@ -105,10 +115,10 @@ describe('AssignPatientDialog', () => {
 
     await user.click(screen.getByRole('combobox'));
     await user.click(await screen.findByRole('option', { name: /Aisha Rahman/ }));
-    await user.click(screen.getByRole('button', { name: 'Assign Patient' }));
+    await user.click(screen.getByRole('button', { name: 'Tetapkan Pasien' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'This patient is already assigned to the doctor.',
+      'Pasien ini sudah ditetapkan kepada dokter.',
     );
   });
 });

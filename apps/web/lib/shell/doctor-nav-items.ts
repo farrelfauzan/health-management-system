@@ -10,16 +10,24 @@ export const DOCTOR_NAV_SECTIONS: AdminNavSection[] = [
   {
     label: null,
     items: [
-      { href: '/doctor/dashboard', label: 'Today', icon: 'dashboard', ability: null },
+      {
+        href: '/doctor/dashboard',
+        label: 'Today',
+        labelKey: 'today',
+        icon: 'dashboard',
+        ability: null,
+      },
       {
         href: '/doctor/encounters',
         label: 'Encounters',
+        labelKey: 'encounters',
         icon: 'clinical_notes',
         ability: { action: 'read', subject: 'Encounter' },
       },
       {
         href: '/doctor/appointments',
         label: 'Appointments',
+        labelKey: 'appointments',
         icon: 'event',
         ability: { action: 'read', subject: 'Appointment' },
       },

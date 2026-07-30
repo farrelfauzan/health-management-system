@@ -1,0 +1,125 @@
+{
+  "authShell": {
+    "auth": {
+      "metadata": {
+        "title": "Sign in | Saling Jaga",
+        "description": "Sign in to the Saling Jaga health management portal"
+      },
+      "brand": {
+        "logoAlt": "{facilityName} logo",
+        "systemName": "Health Management System",
+        "visualAlt": "{facilityName} - Health Management System"
+      },
+      "visualDescription": "One record per visit, from registration, encounter, and pharmacy through billing, with BPJS and SATUSEHAT reporting handled in the background.",
+      "title": "Sign in",
+      "subtitle": "Use your staff account to access the portal.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@salingjaga.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "authorizedOnly": "Authorized personnel only. Contact your administrator for access.",
+      "validation": {
+        "email": "Enter a valid email address.",
+        "password": "Password must contain at least 8 characters."
+      },
+      "errors": {
+        "invalidCredentials": "Invalid email or password.",
+        "loginFailed": "Unable to sign in right now. Please try again."
+      }
+    },
+    "shell": {
+      "brand": {
+        "logoAlt": "{facilityName} logo",
+        "facilityType": "Medical Center"
+      },
+      "navigation": {
+        "dashboard": "Dashboard",
+        "patients": "Patients",
+        "doctors": "Doctors",
+        "appointments": "Appointments",
+        "registration": "Registration",
+        "encounters": "Encounters",
+        "pharmacy": "Pharmacy",
+        "billing": "Billing",
+        "advanced": "Advanced",
+        "aiAssistant": "AI Assistant",
+        "integrations": "Integrations",
+        "administration": "Administration",
+        "today": "Today"
+      },
+      "search": {
+        "label": "Search patients",
+        "placeholder": "Search patients by name or ID..."
+      },
+      "topBar": {
+        "openAiAssistant": "Open AI assistant"
+      },
+      "notifications": {
+        "open": "Open notifications",
+        "title": "Notifications",
+        "labResults": {
+          "title": "Lab results ready",
+          "description": "CBC panel for patient MRN-2041 is ready for review.",
+          "time": "5 min ago"
+        },
+        "appointmentCheckin": {
+          "title": "Appointment check-in",
+          "description": "A 10:30 consultation patient has arrived at the front desk.",
+          "time": "18 min ago"
+        },
+        "lowStock": {
+          "title": "Low stock alert",
+          "description": "Amoxicillin 500 mg dropped below its stock threshold.",
+          "time": "1 hr ago"
+        }
+      },
+      "profile": {
+        "openMenu": "Open profile menu",
+        "logout": "Log out",
+        "fallbackName": "Saling Jaga User",
+        "roles": {
+          "superAdmin": "Super Admin",
+          "admin": "Admin",
+          "doctor": "Doctor",
+          "pharmacist": "Pharmacist",
+          "patient": "Patient",
+          "staff": "Staff"
+        }
+      },
+      "portal": {
+        "name": "Patient Portal"
+      },
+      "placeholder": {
+        "title": "{title} is on its way",
+        "description": "This screen ships in an upcoming Phase 4 task. The navigation and layout are ready for it."
+      },
+      "routes": {
+        "mainDashboard": "Main Dashboard",
+        "overview": "Overview",
+        "clinicOverview": "Clinic Overview",
+        "hospitalOverview": "Hospital Overview",
+        "dashboardSubtitle": "Key metrics and activity across {facilityName} today.",
+        "patientDirectory": "Patient Directory",
+        "patientsSubtitle": "Manage and monitor current and past patient records across all departments.",
+        "doctorDirectory": "Doctor Directory",
+        "doctorsSubtitle": "Manage doctor profiles, specialties, and weekly schedules.",
+        "appointmentScheduling": "Appointment Scheduling",
+        "appointmentsSubtitle": "Coordinate visits across doctors and time slots.",
+        "registrationQueue": "Registration Queue",
+        "registrationsSubtitle": "Track patient registrations from check-in to completion.",
+        "clinicalEncounters": "Clinical Encounters",
+        "encountersSubtitle": "Open, record, and close the medical record for each visit.",
+        "pharmacyQueue": "Pharmacy Queue",
+        "pharmacySubtitle": "Verify and dispense incoming prescriptions.",
+        "billingCashier": "Billing & Cashier",
+        "billingSubtitle": "Generate invoices from finished visits, settle them, and reconcile the drawer.",
+        "aiClinicalAssistant": "AI Clinical Assistant",
+        "aiAssistantSubtitle": "Ask clinical questions grounded in Saling Jaga patient context.",
+        "integrationsSubtitle": "Configure BPJS PCare and monitor external health-data submissions.",
+        "administrationSubtitle": "Manage system users, roles, and permissions."
+      }
+    }
+  }
+}

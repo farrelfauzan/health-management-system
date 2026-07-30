@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { DoctorListItem } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { AssignPatientDialog } from '#components/client/doctors/assign-patient-dialog';
 import { DoctorFormDialog } from '#components/client/doctors/doctor-form-dialog';
@@ -15,12 +16,8 @@ import {
 import { DoctorsTable } from '#components/client/doctors/doctors-table';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
-import {
-  buildDoctorsSearchParams,
-  type DoctorsSearchParams,
-} from '#lib/doctors/search-params';
+import { buildDoctorsSearchParams, type DoctorsSearchParams } from '#lib/doctors/search-params';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
-import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
 
 type DoctorsDirectoryPanelProps = {
   initialQuery: DoctorsSearchParams;
@@ -29,7 +26,7 @@ type DoctorsDirectoryPanelProps = {
 export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const metadata = ADMIN_ROUTE_METADATA.doctors;
+  const t = useTranslations('clinical');
   const doctorsQuery = useDoctorsList(initialQuery);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
   const [editingDoctor, setEditingDoctor] = useState<DoctorListItem | null>(null);
@@ -69,9 +66,9 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
   return (
     <div className="space-y-6">
       <PageHeader
-        title={metadata.title}
-        subtitle={metadata.subtitle}
-        breadcrumbs={metadata.breadcrumbs}
+        title={t('doctors.title')}
+        subtitle={t('doctors.subtitle')}
+        breadcrumbs={[t('doctors.dashboard'), t('doctors.title')]}
         actions={
           <Can action="create" subject="Doctor">
             <Button
@@ -80,7 +77,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
               onClick={handleOpenCreateDialog}
             >
               <Icon name="person_add" size={18} />
-              Add New Doctor
+              {t('doctors.add')}
             </Button>
           </Can>
         }
@@ -95,7 +92,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
 
       {doctorsQuery.error && doctorsQuery.doctors.length > 0 ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {doctorsQuery.error.message}
+          {t('doctors.errorDescription')}
         </p>
       ) : null}
 
@@ -115,7 +112,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
             page={initialQuery.page}
             pageSize={initialQuery.limit}
             total={doctorsQuery.meta?.total ?? 0}
-            itemLabel="doctors"
+            itemLabel={t('doctors.itemLabel')}
             isDisabled={doctorsQuery.isFetching}
             onPageChange={(nextPage) => navigateWithParams({ ...initialQuery, page: nextPage })}
           />

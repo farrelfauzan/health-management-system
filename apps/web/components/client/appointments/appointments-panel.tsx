@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { AppointmentListItem, DoctorSessionCalendarItem } from '@hms/shared-types';
 import { Card, CardContent } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { AppointmentDetailsDialog } from '#components/client/appointments/appointment-details-dialog';
 import { AppointmentRequestsPanel } from '#components/client/appointments/appointment-requests-panel';
@@ -35,16 +36,12 @@ import {
   addDays,
   addMonths,
   formatDateParam,
-  formatDayTitle,
-  formatMonthTitle,
-  formatWeekRangeTitle,
   getMonthGridDays,
   getWeekDays,
   getWeekStart,
   parseDateParam,
 } from '#lib/appointments/week-range';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
-import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
 
 const CALENDAR_PAGE = 1;
 const CALENDAR_LIMIT = 100;
@@ -55,9 +52,10 @@ type AppointmentsPanelProps = {
 };
 
 export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
+  const t = useTranslations('operations.appointments');
+  const format = useFormatter();
   const router = useRouter();
   const pathname = usePathname();
-  const metadata = ADMIN_ROUTE_METADATA.appointments;
   const anchorDate = parseDateParam(initialQuery.date) ?? new Date();
   const weekStart = getWeekStart(anchorDate);
   const weekDays = getWeekDays(weekStart);
@@ -73,10 +71,10 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
     initialQuery.view === 'day' ? 1 : initialQuery.view === 'month' ? monthGridDays.length : 7;
   const title =
     initialQuery.view === 'day'
-      ? formatDayTitle(anchorDate)
+      ? format.dateTime(anchorDate, { dateStyle: 'full' })
       : initialQuery.view === 'month'
-        ? formatMonthTitle(anchorDate)
-        : formatWeekRangeTitle(weekStart);
+        ? format.dateTime(anchorDate, { month: 'long', year: 'numeric' })
+        : format.dateTimeRange(weekStart, addDays(weekStart, 6), { dateStyle: 'medium' });
   const appointmentsQuery = useAppointmentsList({
     page: initialQuery.view === 'table' ? initialQuery.page : CALENDAR_PAGE,
     limit: initialQuery.view === 'table' ? initialQuery.limit : CALENDAR_LIMIT,
@@ -145,9 +143,7 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
   function handleToggleDoctor(doctorId: string): void {
     setSelectedDoctorIds((current) => {
       const base = current ?? doctorsQuery.doctors.map((doctor) => doctor.id);
-      return base.includes(doctorId)
-        ? base.filter((id) => id !== doctorId)
-        : [...base, doctorId];
+      return base.includes(doctorId) ? base.filter((id) => id !== doctorId) : [...base, doctorId];
     });
   }
 
@@ -172,27 +168,20 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
     }
     try {
       const response = await appointmentManagementControllerGetAppointmentByIdV1(appointmentId);
-      const envelope = parseApiSuccess<AppointmentListItem>(
-        response,
-        'Unable to load the appointment.',
-      );
+      const envelope = parseApiSuccess<AppointmentListItem>(response, t('loadError'));
       setViewingAppointment(envelope.data);
     } catch (error) {
-      notifyApiError(error, 'Unable to load the appointment.');
+      notifyApiError(error, t('loadError'));
     }
   }
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={metadata.title}
-        subtitle={metadata.subtitle}
-        breadcrumbs={metadata.breadcrumbs}
-      />
+      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
 
       {appointmentsQuery.error && appointmentsQuery.appointments.length > 0 ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {appointmentsQuery.error.message}
+          {t('errorTitle')}
         </p>
       ) : null}
 

@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@hms/ui';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { InvoiceItemsList } from '#components/client/billing/invoice-items-list';
 import { InvoiceGenerationGapList } from '#components/client/billing/invoice-generation-gap-list';
@@ -20,8 +21,6 @@ import { invoiceControllerGenerateInvoiceV1 } from '#lib/api/generated/invoices/
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateBillingQueries } from '#lib/billing/invalidate-billing-queries';
-
-const GENERATE_ERROR_FALLBACK = 'Unable to generate the invoice. Please try again.';
 
 type GenerateInvoiceDialogProps = {
   open: boolean;
@@ -36,6 +35,7 @@ export function GenerateInvoiceDialog({
   encounterId,
   patientName,
 }: GenerateInvoiceDialogProps) {
+  const t = useTranslations('operations');
   const router = useRouter();
   const queryClient = useQueryClient();
   const [invoice, setInvoice] = useState<InvoiceDetail | null>(null);
@@ -49,13 +49,13 @@ export function GenerateInvoiceDialog({
     setActionError(null);
     try {
       const response = await generateMutation.mutateAsync({ encounterId });
-      const envelope = parseApiSuccess<InvoiceDetail>(response, GENERATE_ERROR_FALLBACK);
+      const envelope = parseApiSuccess<InvoiceDetail>(response, t('billing.generateError'));
       const meta = envelope.meta as { gaps?: InvoiceGenerationGap[] } | undefined;
       setInvoice(envelope.data);
       setGaps(meta?.gaps ?? []);
       await invalidateBillingQueries(queryClient);
     } catch (error) {
-      setActionError(notifyApiError(error, GENERATE_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('billing.generateError')));
     }
   }
 
@@ -63,7 +63,7 @@ export function GenerateInvoiceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-heading">Generate Invoice</DialogTitle>
+          <DialogTitle className="font-heading">{t('billing.labels.generateInvoice')}</DialogTitle>
           <DialogDescription>
             Collects the consultation fee, tariffed procedures, and dispensed medications from this
             visit into a draft invoice for {patientName}.
@@ -91,7 +91,7 @@ export function GenerateInvoiceDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            {invoice ? 'Close' : 'Cancel'}
+            {invoice ? t('common.close') : t('common.cancel')}
           </Button>
           {invoice ? (
             <Button

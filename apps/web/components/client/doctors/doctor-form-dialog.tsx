@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -48,7 +49,6 @@ import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries'
 import { usePatientsList } from '#lib/patients/use-patients-list';
 import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 
-const SAVE_ERROR_FALLBACK = 'Unable to save the doctor. Please try again.';
 const PATIENT_PICKER_PAGE = { page: 1, limit: 100 };
 
 type DoctorFormDialogProps = {
@@ -72,6 +72,7 @@ export function DoctorFormDialog({
   educations = [],
 }: DoctorFormDialogProps) {
   const isEditMode = Boolean(doctor);
+  const t = useTranslations('clinical');
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const [licenseRows, setLicenseRows] = useState<LicenseRow[]>(() => toLicenseRows(licenses));
@@ -147,7 +148,7 @@ export function DoctorFormDialog({
               ...credentials,
             },
           });
-          parseApiSuccess<DoctorProfile>(response, SAVE_ERROR_FALLBACK);
+          parseApiSuccess<DoctorProfile>(response, t('doctors.form.saveError'));
         } else {
           const response = await createMutation.mutateAsync({
             licenseNumber: value.licenseNumber,
@@ -159,12 +160,12 @@ export function DoctorFormDialog({
             ...profileFields,
             ...credentials,
           });
-          parseApiSuccess<DoctorProfile>(response, SAVE_ERROR_FALLBACK);
+          parseApiSuccess<DoctorProfile>(response, t('doctors.form.saveError'));
         }
         await invalidateDoctorQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
-        setFormError(notifyApiError(error, SAVE_ERROR_FALLBACK));
+        setFormError(notifyApiError(error, t('doctors.form.saveError')));
       }
     },
   });
@@ -174,12 +175,10 @@ export function DoctorFormDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-heading">
-            {isEditMode ? 'Edit Doctor' : 'Add New Doctor'}
+            {t(isEditMode ? 'doctors.form.edit' : 'doctors.form.create')}
           </DialogTitle>
           <DialogDescription>
-            {isEditMode
-              ? 'Update the doctor profile.'
-              : 'Register a new doctor profile, optionally assigning initial patients.'}
+            {isEditMode ? t('doctors.form.editDescription') : t('doctors.form.createDescription')}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -211,7 +210,7 @@ export function DoctorFormDialog({
                     htmlFor={field.name}
                     className="block font-heading text-xs font-medium text-slate-600"
                   >
-                    License Number
+                    {t('doctors.form.license')}
                   </label>
                   <Input
                     id={field.name}
@@ -234,7 +233,7 @@ export function DoctorFormDialog({
                   htmlFor={field.name}
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  Full Name
+                  {t('doctors.form.fullName')}
                 </label>
                 <Input
                   id={field.name}
@@ -260,7 +259,7 @@ export function DoctorFormDialog({
                     htmlFor={field.name}
                     className="block font-heading text-xs font-medium text-slate-600"
                   >
-                    Specialty
+                    {t('doctors.form.specialty')}
                   </label>
                   <SpecialtyCombobox
                     id={field.name}
@@ -284,7 +283,7 @@ export function DoctorFormDialog({
                     htmlFor={field.name}
                     className="block font-heading text-xs font-medium text-slate-600"
                   >
-                    Phone Number
+                    {t('doctors.form.phone')}
                   </label>
                   <Input
                     id={field.name}
@@ -307,14 +306,14 @@ export function DoctorFormDialog({
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked === true)}
                 />
-                <span className="text-sm text-slate-700">Active</span>
+                <span className="text-sm text-slate-700">{t('doctors.form.active')}</span>
               </label>
             )}
           </form.Field>
 
           <div className="space-y-4 border-t border-slate-100 pt-4">
             <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Identity & Presentation
+              {t('doctors.form.identity')}
             </p>
             <div className="grid grid-cols-2 gap-3">
               <form.Field name="title">
@@ -324,7 +323,7 @@ export function DoctorFormDialog({
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Title
+                      {t('doctors.form.title')}
                     </label>
                     <Input
                       id={field.name}
@@ -343,7 +342,7 @@ export function DoctorFormDialog({
                       htmlFor={field.name}
                       className="block font-heading text-xs font-medium text-slate-600"
                     >
-                      Degrees
+                      {t('doctors.form.degrees')}
                     </label>
                     <Input
                       id={field.name}
@@ -373,7 +372,9 @@ export function DoctorFormDialog({
                       id={field.name}
                       inputMode="numeric"
                       value={field.state.value}
-                      placeholder={isEditMode ? 'Leave blank to keep' : '16 digits'}
+                      placeholder={t(
+                        isEditMode ? 'doctors.form.keepBlank' : 'doctors.form.digits16',
+                      )}
                       onChange={(event) => field.handleChange(event.target.value)}
                       onBlur={field.handleBlur}
                     />
@@ -383,8 +384,7 @@ export function DoctorFormDialog({
             </div>
             {isEditMode ? (
               <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                The stored NIK is encrypted and shown masked. Leave it blank to keep it; type a
-                value only to replace it.
+                {t('doctors.form.nikHelp')}
               </p>
             ) : null}
           </div>
@@ -394,9 +394,7 @@ export function DoctorFormDialog({
               rows={licenseRows}
               onAdd={addLicenseRow}
               onChange={updateLicenseRow}
-              onRemove={(key) =>
-                setLicenseRows((rows) => rows.filter((row) => row.key !== key))
-              }
+              onRemove={(key) => setLicenseRows((rows) => rows.filter((row) => row.key !== key))}
             />
           </div>
 
@@ -405,9 +403,7 @@ export function DoctorFormDialog({
               rows={educationRows}
               onAdd={addEducationRow}
               onChange={updateEducationRow}
-              onRemove={(key) =>
-                setEducationRows((rows) => rows.filter((row) => row.key !== key))
-              }
+              onRemove={(key) => setEducationRows((rows) => rows.filter((row) => row.key !== key))}
             />
           </div>
 
@@ -416,7 +412,7 @@ export function DoctorFormDialog({
               {(field) => (
                 <div className="space-y-1.5">
                   <span className="block font-heading text-xs font-medium text-slate-600">
-                    Initial Patients (optional)
+                    {t('doctors.form.initialPatients')}
                   </span>
                   <DoctorPatientPicker
                     patients={patientsQuery.patients}
@@ -437,7 +433,7 @@ export function DoctorFormDialog({
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <form.Subscribe selector={(state) => state.isSubmitting}>
               {(isSubmitting) => (
@@ -446,7 +442,11 @@ export function DoctorFormDialog({
                   disabled={isSubmitting}
                   className="bg-primary-container hover:bg-primary"
                 >
-                  {isSubmitting ? 'Saving…' : isEditMode ? 'Save Changes' : 'Create Doctor'}
+                  {isSubmitting
+                    ? t('common.saving')
+                    : isEditMode
+                      ? t('common.saveChanges')
+                      : t('doctors.form.createAction')}
                 </Button>
               )}
             </form.Subscribe>

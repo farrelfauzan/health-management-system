@@ -4,12 +4,11 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ProcedureResponse } from '@hms/shared-types';
 import { Icon } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { encounterClinicalDataControllerRemoveProcedureV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
-
-const RETRACT_ERROR_FALLBACK = 'Unable to retract the procedure. Please try again.';
 
 type EncounterProcedureRowProps = {
   encounterId: string;
@@ -23,6 +22,7 @@ export function EncounterProcedureRow({
   isEditable,
 }: EncounterProcedureRowProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [actionError, setActionError] = useState<string | null>(null);
   const removeMutation = useMutation({
     mutationFn: () => encounterClinicalDataControllerRemoveProcedureV1(encounterId, procedure.id),
@@ -34,7 +34,7 @@ export function EncounterProcedureRow({
       await removeMutation.mutateAsync();
       await invalidateEncounterQueries(queryClient);
     } catch (error) {
-      setActionError(notifyApiError(error, RETRACT_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.procedure.retractError')));
     }
   }
 
@@ -53,7 +53,7 @@ export function EncounterProcedureRow({
       {isEditable ? (
         <button
           type="button"
-          aria-label={`Retract procedure ${procedure.code}`}
+          aria-label={t('encounters.procedure.retract', { code: procedure.code })}
           className="text-slate-400 hover:text-danger disabled:opacity-50"
           disabled={removeMutation.isPending}
           onClick={() => void handleRemove()}

@@ -17,6 +17,7 @@ import {
   Icon,
   useAbility,
 } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { bpjsEligibilityControllerCheckEligibilityV1 } from '#lib/api/generated/bpjs-pcare/bpjs-pcare';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -76,6 +77,8 @@ function BpjsRegistrationStatusContent({
   canCheck,
   canReadSubmission,
 }: BpjsRegistrationStatusContentProps) {
+  const t = useTranslations('operations.registrations');
+  const format = useFormatter();
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState<BpjsEligibilityResultView | null>(null);
   const [checkError, setCheckError] = useState<string | null>(null);
@@ -88,16 +91,13 @@ function BpjsRegistrationStatusContent({
   const checkMutation = useMutation({
     mutationFn: async (force: boolean) => {
       const response = await bpjsEligibilityControllerCheckEligibilityV1(patientId, { force });
-      return parseApiSuccess<BpjsEligibilityResultView>(
-        response,
-        'Unable to check BPJS eligibility.',
-      ).data;
+      return parseApiSuccess<BpjsEligibilityResultView>(response, t('eligibilityError')).data;
     },
     onSuccess: (eligibility) => {
       setResult(eligibility);
       setCheckError(null);
     },
-    onError: (error) => setCheckError(notifyApiError(error, 'Unable to check BPJS eligibility.')),
+    onError: (error) => setCheckError(notifyApiError(error, t('eligibilityError'))),
   });
 
   function openEligibility(): void {
@@ -138,7 +138,7 @@ function BpjsRegistrationStatusContent({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>BPJS eligibility</DialogTitle>
+            <DialogTitle>{t('labels.eligibility')}</DialogTitle>
             <DialogDescription>
               Current PCare membership status for {patientName}. No card number is displayed.
             </DialogDescription>
@@ -160,7 +160,9 @@ function BpjsRegistrationStatusContent({
               <CardContent className="space-y-4 pt-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide">Membership</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide">
+                      {t('labels.membership')}
+                    </p>
                     <p className="mt-1 text-xl font-semibold">{formatStatusLabel(result.state)}</p>
                   </div>
                   <Badge variant="outline" className={eligibilityStyle(result.state)}>
@@ -171,11 +173,11 @@ function BpjsRegistrationStatusContent({
                 {result.member ? (
                   <dl className="grid gap-3 text-sm sm:grid-cols-2">
                     <div>
-                      <dt className="text-xs opacity-70">Registered name</dt>
+                      <dt className="text-xs opacity-70">{t('labels.registeredName')}</dt>
                       <dd className="font-medium">{result.member.name ?? '—'}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs opacity-70">Class / member type</dt>
+                      <dt className="text-xs opacity-70">{t('labels.memberClass')}</dt>
                       <dd className="font-medium">
                         {[result.member.memberClass, result.member.memberType]
                           .filter(Boolean)
@@ -183,21 +185,21 @@ function BpjsRegistrationStatusContent({
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs opacity-70">Registered provider</dt>
+                      <dt className="text-xs opacity-70">{t('labels.provider')}</dt>
                       <dd className="font-medium">{result.member.providerName ?? '—'}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs opacity-70">Facility match</dt>
+                      <dt className="text-xs opacity-70">{t('labels.facilityMatch')}</dt>
                       <dd className="font-medium">
                         {result.member.isRegisteredHere === null
-                          ? 'Unknown'
+                          ? t('unknown')
                           : result.member.isRegisteredHere
                             ? 'Registered here'
                             : 'Different FKTP'}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs opacity-70">Programs</dt>
+                      <dt className="text-xs opacity-70">{t('labels.programs')}</dt>
                       <dd className="font-medium">
                         {[
                           result.member.isProlanis ? 'Prolanis' : null,
@@ -208,13 +210,18 @@ function BpjsRegistrationStatusContent({
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs opacity-70">Status reason</dt>
+                      <dt className="text-xs opacity-70">{t('labels.statusReason')}</dt>
                       <dd className="font-medium">{result.member.statusReason ?? '—'}</dd>
                     </div>
                   </dl>
                 ) : null}
                 <p className="text-xs opacity-70">
-                  Checked {new Date(result.checkedAt).toLocaleString('en-ID')}
+                  {t('checkedAt', {
+                    date: format.dateTime(new Date(result.checkedAt), {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    }),
+                  })}
                   {result.checkedVia ? ` via ${formatStatusLabel(result.checkedVia)}` : ''}
                 </p>
               </CardContent>

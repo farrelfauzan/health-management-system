@@ -1,9 +1,20 @@
+import type { ReactNode } from 'react';
 import type { AppointmentListItem } from '@hms/shared-types';
-import { render, screen } from '@testing-library/react';
+import { render as testingRender, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MonthViewDayCell } from './month-view-day-cell';
+import messages from '../../../messages/en/operations.json';
+
+function render(node: ReactNode) {
+  return testingRender(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      {node}
+    </NextIntlClientProvider>,
+  );
+}
 
 function buildAppointment(id: string, fullName: string): AppointmentListItem {
   return {
@@ -67,7 +78,7 @@ describe('MonthViewDayCell', () => {
     expect(screen.getByText('Patient a3')).toBeInTheDocument();
     expect(screen.queryByText('Patient a4')).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: '+2 more' }));
+    await user.click(screen.getByRole('button', { name: '+2' }));
 
     expect(handleSelectDay).toHaveBeenCalledWith(DAY);
   });
@@ -88,7 +99,7 @@ describe('MonthViewDayCell', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: `Open ${DAY.toDateString()}` }));
+    await user.click(screen.getByRole('button', { name: 'Open Tuesday, July 21, 2026' }));
 
     expect(handleSelectDay).toHaveBeenCalledWith(DAY);
   });

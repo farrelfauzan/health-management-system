@@ -4,12 +4,11 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { DiagnosisResponse } from '@hms/shared-types';
 import { Badge, Icon } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { encounterClinicalDataControllerRemoveDiagnosisV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
-
-const RETRACT_ERROR_FALLBACK = 'Unable to retract the diagnosis. Please try again.';
 
 type EncounterDiagnosisRowProps = {
   encounterId: string;
@@ -23,6 +22,7 @@ export function EncounterDiagnosisRow({
   isEditable,
 }: EncounterDiagnosisRowProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [actionError, setActionError] = useState<string | null>(null);
   const isPrimary = diagnosis.type === 'PRIMARY';
   const removeMutation = useMutation({
@@ -35,7 +35,7 @@ export function EncounterDiagnosisRow({
       await removeMutation.mutateAsync();
       await invalidateEncounterQueries(queryClient);
     } catch (error) {
-      setActionError(notifyApiError(error, RETRACT_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('encounters.diagnosis.retractError')));
     }
   }
 
@@ -51,7 +51,7 @@ export function EncounterDiagnosisRow({
                 : 'rounded-full border-transparent bg-slate-100 text-[11px] text-slate-600'
             }
           >
-            {isPrimary ? 'PRIMARY' : 'SECONDARY'}
+            {t(`encounters.diagnosis.types.${diagnosis.type}`)}
           </Badge>
         </div>
         <p className="text-sm text-slate-700">{diagnosis.display}</p>
@@ -65,7 +65,7 @@ export function EncounterDiagnosisRow({
       {isEditable ? (
         <button
           type="button"
-          aria-label={`Retract diagnosis ${diagnosis.code}`}
+          aria-label={t('encounters.diagnosis.retract', { code: diagnosis.code })}
           className="text-slate-400 hover:text-danger disabled:opacity-50"
           disabled={removeMutation.isPending}
           onClick={() => void handleRemove()}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { PATIENT_STATUSES, type PatientStatusValue } from '@hms/shared-types';
 import {
   Button,
@@ -15,7 +16,6 @@ import {
 } from '@hms/ui';
 
 import { FilterCard } from '#components/shared/filter-card';
-import { formatPatientStatusLabel } from '#lib/patients/patient-status-label';
 import type { PatientsSearchParams } from '#lib/patients/search-params';
 
 const ALL_STATUSES_VALUE = 'ALL';
@@ -42,6 +42,7 @@ export function PatientsFilterCard({
   onExport,
   isExportDisabled,
 }: PatientsFilterCardProps) {
+  const t = useTranslations('clinical');
   const [search, setSearch] = useState<string>(initialQuery.search ?? '');
   const [status, setStatus] = useState<string>(initialQuery.status ?? ALL_STATUSES_VALUE);
   const [createdFrom, setCreatedFrom] = useState<string>(initialQuery.createdFrom ?? '');
@@ -80,10 +81,10 @@ export function PatientsFilterCard({
         actions={
           <>
             <Button type="submit" size="sm" className="bg-primary-container hover:bg-primary">
-              Apply Filters
+              {t('common.apply')}
             </Button>
             <Button type="button" size="sm" variant="outline" onClick={handleReset}>
-              Reset
+              {t('common.reset')}
             </Button>
             <Button
               type="button"
@@ -93,7 +94,7 @@ export function PatientsFilterCard({
               onClick={onExport}
             >
               <Icon name="lab_profile" size={16} />
-              Export
+              {t('common.export')}
             </Button>
           </>
         }
@@ -103,11 +104,11 @@ export function PatientsFilterCard({
             htmlFor="patients-quick-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Quick Filter
+            {t('patients.quickFilter')}
           </label>
           <Input
             id="patients-quick-filter"
-            placeholder="Name or ID..."
+            placeholder={t('patients.searchPlaceholder')}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -117,17 +118,17 @@ export function PatientsFilterCard({
             htmlFor="patients-status-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Status
+            {t('common.status')}
           </label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="patients-status-filter" className="w-full">
-              <SelectValue placeholder="All Statuses" />
+              <SelectValue placeholder={t('common.allStatuses')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL_STATUSES_VALUE}>All Statuses</SelectItem>
+              <SelectItem value={ALL_STATUSES_VALUE}>{t('common.allStatuses')}</SelectItem>
               {PATIENT_STATUSES.map((statusValue) => (
                 <SelectItem key={statusValue} value={statusValue}>
-                  {formatPatientStatusLabel(statusValue)}
+                  {t(`patients.status.${statusValue}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -151,21 +152,21 @@ export function PatientsFilterCard({
         </div> */}
         <div>
           <span className="mb-1.5 block font-heading text-xs font-medium text-slate-600">
-            Date Range
+            {t('patients.dateRange')}
           </span>
           <div className="flex items-center gap-2">
             <DatePicker
-              aria-label="Registered from"
+              aria-label={t('patients.registeredFrom')}
               className="w-40"
-              placeholder="From"
+              placeholder={t('common.from')}
               value={createdFrom}
               onValueChange={handleCreatedFromChange}
             />
             <span className="text-sm text-slate-400">–</span>
             <DatePicker
-              aria-label="Registered to"
+              aria-label={t('patients.registeredTo')}
               className="w-40"
-              placeholder="To"
+              placeholder={t('common.to')}
               value={createdTo}
               disabled={createdFrom.length === 0}
               minValue={createdFrom}

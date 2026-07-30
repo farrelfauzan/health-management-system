@@ -25,6 +25,7 @@ import {
   SelectValue,
   toast,
 } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import {
   bpjsPcareConfigControllerDeleteConfigV1,
@@ -73,6 +74,8 @@ function configToForm(config: BpjsPcareConfigView): FormState {
 }
 
 export function BpjsSettingsPanel() {
+  const t = useTranslations('operations.integrations');
+  const format = useFormatter();
   const queryClient = useQueryClient();
   const configQuery = useBpjsConfig();
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
@@ -89,10 +92,7 @@ export function BpjsSettingsPanel() {
   const saveMutation = useMutation({
     mutationFn: async (payload: UpsertBpjsPcareConfigInput) => {
       const response = await bpjsPcareConfigControllerUpsertConfigV1(payload);
-      return parseApiSuccess<BpjsPcareConfigView>(
-        response,
-        'Unable to save the BPJS PCare configuration.',
-      ).data;
+      return parseApiSuccess<BpjsPcareConfigView>(response, t('labels.saveError')).data;
     },
     onSuccess: async (saved) => {
       setForm(configToForm(saved));
@@ -101,17 +101,13 @@ export function BpjsSettingsPanel() {
       });
       toast.success('BPJS PCare settings saved.');
     },
-    onError: (error) =>
-      setFormError(notifyApiError(error, 'Unable to save the BPJS PCare configuration.')),
+    onError: (error) => setFormError(notifyApiError(error, t('labels.saveError'))),
   });
 
   const testMutation = useMutation({
     mutationFn: async () => {
       const response = await bpjsPcareConfigControllerTestConnectionV1();
-      return parseApiSuccess<BpjsPcareConnectionTestResult>(
-        response,
-        'Unable to test the BPJS PCare connection.',
-      ).data;
+      return parseApiSuccess<BpjsPcareConnectionTestResult>(response, t('labels.testError')).data;
     },
     onSuccess: (result) => {
       if (result.isSuccessful) {
@@ -123,7 +119,7 @@ export function BpjsSettingsPanel() {
         queryKey: getBpjsPcareConfigControllerGetConfigV1QueryKey(),
       });
     },
-    onError: (error) => notifyApiError(error, 'Unable to test the BPJS PCare connection.'),
+    onError: (error) => notifyApiError(error, t('labels.testError')),
   });
 
   const deleteMutation = useMutation({
@@ -135,7 +131,7 @@ export function BpjsSettingsPanel() {
       });
       toast.success('BPJS PCare configuration removed.');
     },
-    onError: (error) => notifyApiError(error, 'Unable to remove the BPJS PCare configuration.'),
+    onError: (error) => notifyApiError(error, t('labels.removeError')),
   });
 
   function updateField<Key extends keyof FormState>(key: Key, value: FormState[Key]): void {
@@ -159,13 +155,13 @@ export function BpjsSettingsPanel() {
   }
 
   if (configQuery.isPending) {
-    return <p className="text-sm text-slate-500">Loading BPJS PCare settings…</p>;
+    return <p className="text-sm text-slate-500">{t('labels.loadingSettings')}</p>;
   }
 
   if (configQuery.isError && !isUnconfigured) {
     return (
       <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
-        Unable to load the BPJS PCare configuration.
+        {t('labels.configError')}
       </p>
     );
   }
@@ -173,7 +169,7 @@ export function BpjsSettingsPanel() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>BPJS PCare credentials</CardTitle>
+        <CardTitle>{t('labels.credentials')}</CardTitle>
         <CardDescription>
           Configure the facility account. Stored secrets are never returned by the API.
         </CardDescription>
@@ -182,12 +178,12 @@ export function BpjsSettingsPanel() {
         <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)}>
           {isUnconfigured ? (
             <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-              No configuration exists yet. All three credential secrets are required on first save.
+              {t('labels.credentials')}
             </div>
           ) : null}
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="bpjs-environment">Environment</Label>
+              <Label htmlFor="bpjs-environment">{t('labels.environment')}</Label>
               <Select
                 value={form.environment}
                 onValueChange={(value) =>
@@ -198,13 +194,13 @@ export function BpjsSettingsPanel() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="DEVELOPMENT">Development</SelectItem>
-                  <SelectItem value="PRODUCTION">Production</SelectItem>
+                  <SelectItem value="DEVELOPMENT">{t('development')}</SelectItem>
+                  <SelectItem value="PRODUCTION">{t('production')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bpjs-cons-id">Consumer ID</Label>
+              <Label htmlFor="bpjs-cons-id">{t('labels.consumerId')}</Label>
               <Input
                 id="bpjs-cons-id"
                 required
@@ -214,7 +210,7 @@ export function BpjsSettingsPanel() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bpjs-provider-code">Provider code (PPK)</Label>
+              <Label htmlFor="bpjs-provider-code">{t('labels.providerCode')}</Label>
               <Input
                 id="bpjs-provider-code"
                 required
@@ -224,7 +220,7 @@ export function BpjsSettingsPanel() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bpjs-username">PCare username</Label>
+              <Label htmlFor="bpjs-username">{t('labels.username')}</Label>
               <Input
                 id="bpjs-username"
                 required
@@ -243,7 +239,7 @@ export function BpjsSettingsPanel() {
                 type="password"
                 required={!config?.hasSecretKey}
                 autoComplete="new-password"
-                placeholder={config?.hasSecretKey ? 'Leave blank to keep current value' : undefined}
+                placeholder={config?.hasSecretKey ? t('keepSecret') : undefined}
                 value={form.secretKey}
                 onChange={(event) => updateField('secretKey', event.target.value)}
               />
@@ -257,7 +253,7 @@ export function BpjsSettingsPanel() {
                 type="password"
                 required={!config?.hasUserKey}
                 autoComplete="new-password"
-                placeholder={config?.hasUserKey ? 'Leave blank to keep current value' : undefined}
+                placeholder={config?.hasUserKey ? t('keepSecret') : undefined}
                 value={form.userKey}
                 onChange={(event) => updateField('userKey', event.target.value)}
               />
@@ -271,9 +267,7 @@ export function BpjsSettingsPanel() {
                 type="password"
                 required={!config?.hasPcarePassword}
                 autoComplete="new-password"
-                placeholder={
-                  config?.hasPcarePassword ? 'Leave blank to keep current value' : undefined
-                }
+                placeholder={config?.hasPcarePassword ? t('keepSecret') : undefined}
                 value={form.pcarePassword}
                 onChange={(event) => updateField('pcarePassword', event.target.value)}
               />
@@ -289,8 +283,13 @@ export function BpjsSettingsPanel() {
 
           {config?.lastTestedAt ? (
             <p className="text-xs text-slate-500">
-              Last connection test: {new Date(config.lastTestedAt).toLocaleString('en-ID')} ·{' '}
-              {config.lastTestResult ?? 'No result'}
+              {t('lastTest', {
+                date: format.dateTime(new Date(config.lastTestedAt), {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                }),
+                result: config.lastTestResult ?? t('noResult'),
+              })}
             </p>
           ) : null}
           {formError ? (
@@ -302,7 +301,7 @@ export function BpjsSettingsPanel() {
           <div className="flex flex-wrap gap-3">
             <Button type="submit" disabled={saveMutation.isPending}>
               <Icon name="save" size={17} />
-              {saveMutation.isPending ? 'Saving…' : 'Save settings'}
+              {saveMutation.isPending ? t('synchronizing') : t('saveSettings')}
             </Button>
             {config ? (
               <>
@@ -313,7 +312,7 @@ export function BpjsSettingsPanel() {
                   onClick={() => testMutation.mutate()}
                 >
                   <Icon name="wifi_tethering" size={17} />
-                  {testMutation.isPending ? 'Testing…' : 'Test connection'}
+                  {testMutation.isPending ? t('testing') : t('testConnection')}
                 </Button>
                 <Button
                   type="button"

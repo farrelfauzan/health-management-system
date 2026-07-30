@@ -1,6 +1,7 @@
 'use client';
 
 import type { PatientListItem } from '@hms/shared-types';
+import { useTranslations } from 'next-intl';
 import {
   TableBody,
   TableHeader,
@@ -36,18 +37,15 @@ export function PatientsTable({
   onEdit,
   onAssignDoctor,
 }: PatientsTableProps) {
+  const t = useTranslations('clinical');
   const showEmptyState = !isPending && patients.length === 0;
 
   if (showEmptyState) {
     return (
       <EmptyState
         icon={isError ? 'error' : 'group_off'}
-        title={isError ? 'Unable to load patients' : 'No patients found'}
-        description={
-          isError
-            ? 'Something went wrong while fetching the patient directory. It retries automatically.'
-            : 'Adjust the filters or register a new patient to see records here.'
-        }
+        title={isError ? t('patients.errorTitle') : t('patients.emptyTitle')}
+        description={isError ? t('patients.errorDescription') : t('patients.emptyDescription')}
       />
     );
   }
@@ -56,23 +54,21 @@ export function PatientsTable({
     <DataTable>
       <TableHeader>
         <TableRow>
-          <DataTableHeaderCell>Patient Name</DataTableHeaderCell>
-          <DataTableHeaderCell>Patient ID</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('patients.columns.name')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('patients.columns.id')}</DataTableHeaderCell>
           <DataTableHeaderCell>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="cursor-help underline decoration-dotted underline-offset-4">
-                  Last Visit
+                  {t('patients.columns.lastVisit')}
                 </TooltipTrigger>
-                <TooltipContent>
-                  Shows the latest record update until encounter data exists.
-                </TooltipContent>
+                <TooltipContent>{t('patients.columns.lastVisitHelp')}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </DataTableHeaderCell>
-          <DataTableHeaderCell>Assigned Doctor</DataTableHeaderCell>
-          <DataTableHeaderCell>Status</DataTableHeaderCell>
-          <DataTableHeaderCell className="text-right">Actions</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('patients.columns.doctor')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.status')}</DataTableHeaderCell>
+          <DataTableHeaderCell className="text-right">{t('common.actions')}</DataTableHeaderCell>
         </TableRow>
       </TableHeader>
       <TableBody>

@@ -1,9 +1,20 @@
+import type { ReactNode } from 'react';
 import type { SessionQueueEntry } from '@hms/shared-types';
-import { render, screen } from '@testing-library/react';
+import { render as testingRender, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi } from 'vitest';
 
 import { SessionQueueTable } from './session-queue-table';
+import messages from '../../../messages/en/operations.json';
+
+function render(node: ReactNode) {
+  return testingRender(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      {node}
+    </NextIntlClientProvider>,
+  );
+}
 
 const QUEUE_ENTRY: SessionQueueEntry = {
   appointmentId: 'appointment-1',

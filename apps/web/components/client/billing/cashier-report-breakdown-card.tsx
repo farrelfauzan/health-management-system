@@ -1,8 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
-
-import { formatRupiah } from '#lib/billing/format-rupiah';
+import { useFormatter } from 'next-intl';
 
 export type CashierBreakdownLine = {
   key: string;
@@ -22,6 +21,7 @@ export function CashierReportBreakdownCard({
   emptyMessage,
   lines,
 }: CashierReportBreakdownCardProps) {
+  const format = useFormatter();
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader>
@@ -39,7 +39,11 @@ export function CashierReportBreakdownCard({
                   </p>
                 </div>
                 <p className="text-sm font-medium text-slate-900">
-                  {formatRupiah(line.totalAmount)}
+                  {format.number(line.totalAmount, {
+                    style: 'currency',
+                    currency: 'IDR',
+                    maximumFractionDigits: 2,
+                  })}
                 </p>
               </li>
             ))}

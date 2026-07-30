@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import {
   Button,
   DropdownMenu,
@@ -15,6 +17,7 @@ import {
 import { MOCK_NOTIFICATIONS } from '#lib/shell/mock-notifications';
 
 export function NotificationsMenu() {
+  const t = useTranslations('authShell.shell.notifications');
   const hasUnread = MOCK_NOTIFICATIONS.some((notification) => notification.isUnread);
   return (
     <DropdownMenu>
@@ -23,7 +26,7 @@ export function NotificationsMenu() {
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Open notifications"
+          aria-label={t('open')}
           className="relative rounded-full text-muted-foreground"
         >
           <Icon name="notifications" size={22} />
@@ -33,7 +36,7 @@ export function NotificationsMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
-        <DropdownMenuLabel className="font-heading">Notifications</DropdownMenuLabel>
+        <DropdownMenuLabel className="font-heading">{t('title')}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {MOCK_NOTIFICATIONS.map((notification) => (
           <DropdownMenuItem key={notification.id} className="items-start gap-3 py-2.5">
@@ -47,10 +50,14 @@ export function NotificationsMenu() {
             </span>
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="font-heading text-sm font-medium text-foreground">
-                {notification.title}
+                {t(`${notification.messageKey}.title`)}
               </span>
-              <span className="text-xs text-muted-foreground">{notification.description}</span>
-              <span className="text-[11px] text-muted-foreground/70">{notification.timeLabel}</span>
+              <span className="text-xs text-muted-foreground">
+                {t(`${notification.messageKey}.description`)}
+              </span>
+              <span className="text-[11px] text-muted-foreground/70">
+                {t(`${notification.messageKey}.time`)}
+              </span>
             </span>
           </DropdownMenuItem>
         ))}

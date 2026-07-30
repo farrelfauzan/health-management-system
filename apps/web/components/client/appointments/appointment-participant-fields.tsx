@@ -1,6 +1,7 @@
 'use client';
 
 import { Combobox } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
 import { usePatientsList } from '#lib/patients/use-patients-list';
@@ -21,6 +22,7 @@ export function AppointmentParticipantFields({
   onPatientChange,
   onDoctorChange,
 }: AppointmentParticipantFieldsProps) {
+  const t = useTranslations('operations');
   const patientsQuery = usePatientsList(PICKER_PAGE);
   const doctorsQuery = useDoctorsList(DOCTOR_PICKER_QUERY);
 
@@ -31,7 +33,7 @@ export function AppointmentParticipantFields({
           htmlFor="appointment-patient-select"
           className="block font-heading text-xs font-medium text-slate-600"
         >
-          Patient
+          {t('common.patient')}
         </label>
         <Combobox
           id="appointment-patient-select"
@@ -40,9 +42,9 @@ export function AppointmentParticipantFields({
             label: `${patient.fullName} — ${patient.mrn}`,
           }))}
           value={patientId}
-          placeholder="Select a patient"
-          searchPlaceholder="Search by name or MRN..."
-          emptyMessage="No patient found."
+          placeholder={t('appointments.selectPatient')}
+          searchPlaceholder={t('appointments.searchPatient')}
+          emptyMessage={t('appointments.noPatient')}
           isLoading={patientsQuery.isPending}
           onChange={onPatientChange}
         />
@@ -52,7 +54,7 @@ export function AppointmentParticipantFields({
           htmlFor="appointment-doctor-select"
           className="block font-heading text-xs font-medium text-slate-600"
         >
-          Doctor
+          {t('common.doctor')}
         </label>
         <Combobox
           id="appointment-doctor-select"
@@ -61,9 +63,9 @@ export function AppointmentParticipantFields({
             label: `${doctor.fullName} (${doctor.specialty})`,
           }))}
           value={doctorId}
-          placeholder="Select a doctor"
-          searchPlaceholder="Search by name or specialty..."
-          emptyMessage="No doctor found."
+          placeholder={t('appointments.selectDoctor')}
+          searchPlaceholder={t('appointments.searchDoctor')}
+          emptyMessage={t('appointments.noDoctor')}
           isLoading={doctorsQuery.isPending}
           onChange={onDoctorChange}
         />

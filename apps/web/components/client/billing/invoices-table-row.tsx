@@ -2,12 +2,11 @@
 
 import type { InvoiceListItem } from '@hms/shared-types';
 import { Button, TableCell, TableRow } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { DataTableMonoCell } from '#components/shared/data-table-mono-cell';
 import { StatusBadge } from '#components/shared/status-badge';
-import { formatRupiah } from '#lib/billing/format-rupiah';
-import { formatRegisteredAt } from '#lib/registrations/format-registered-at';
 
 type InvoicesTableRowProps = {
   invoice: InvoiceListItem;
@@ -15,6 +14,8 @@ type InvoicesTableRowProps = {
 };
 
 export function InvoicesTableRow({ invoice, onOpen }: InvoicesTableRowProps) {
+  const t = useTranslations('operations');
+  const format = useFormatter();
   return (
     <TableRow className="transition-colors hover:bg-slate-50">
       <DataTableMonoCell>{invoice.invoiceNumber}</DataTableMonoCell>
@@ -28,18 +29,24 @@ export function InvoicesTableRow({ invoice, onOpen }: InvoicesTableRowProps) {
         </div>
       </TableCell>
       <TableCell className="px-4 text-sm text-slate-600">
-        {formatRegisteredAt(invoice.createdAt)}
+        {format.dateTime(new Date(invoice.createdAt), { dateStyle: 'medium', timeStyle: 'short' })}
       </TableCell>
-      <TableCell className="px-4 text-sm text-slate-600">{invoice.itemCount}</TableCell>
+      <TableCell className="px-4 text-sm text-slate-600">
+        {t('billing.items', { count: invoice.itemCount })}
+      </TableCell>
       <TableCell className="px-4 text-sm font-medium text-slate-900">
-        {formatRupiah(invoice.totalAmount)}
+        {format.number(invoice.totalAmount, {
+          style: 'currency',
+          currency: 'IDR',
+          maximumFractionDigits: 2,
+        })}
       </TableCell>
       <TableCell className="px-4">
-        <StatusBadge status={invoice.status} />
+        <StatusBadge status={invoice.status} label={t(`common.statuses.${invoice.status}`)} />
       </TableCell>
       <TableCell className="px-4 text-right">
         <Button type="button" size="sm" variant="outline" onClick={() => onOpen(invoice)}>
-          Open
+          {t('billing.open')}
         </Button>
       </TableCell>
     </TableRow>

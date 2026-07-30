@@ -2,38 +2,50 @@
 
 import type { DoctorDetail } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { StatusBadge } from '#components/shared/status-badge';
 import { EMPTY_VALUE } from '#lib/shared/empty-value';
-import { formatMediumDate } from '#lib/shared/format-medium-date';
 
 type DoctorProfileCardProps = {
   doctor: DoctorDetail;
 };
 
 export function DoctorProfileCard({ doctor }: DoctorProfileCardProps) {
+  const t = useTranslations('clinical');
+  const format = useFormatter();
+  const formatDate = (value: string) => format.dateTime(new Date(value), { dateStyle: 'medium' });
   const fields: Array<{ label: string; value: React.ReactNode; isMono?: boolean }> = [
-    { label: 'License Number', value: doctor.licenseNumber, isMono: true },
-    { label: 'Specialty', value: doctor.specialty },
-    { label: 'Title', value: doctor.title ?? EMPTY_VALUE },
-    { label: 'Degrees', value: doctor.degrees ?? EMPTY_VALUE },
-    { label: 'Phone Number', value: doctor.phoneNumber ?? '-', isMono: true },
+    { label: t('doctors.license'), value: doctor.licenseNumber, isMono: true },
+    { label: t('doctors.specialty'), value: doctor.specialty },
+    { label: t('doctors.titleLabel'), value: doctor.title ?? EMPTY_VALUE },
+    { label: t('doctors.degrees'), value: doctor.degrees ?? EMPTY_VALUE },
+    { label: t('doctors.phone'), value: doctor.phoneNumber ?? '-', isMono: true },
     // Read from the linked account: a doctor with no login has no address.
-    { label: 'Email (account)', value: doctor.email ?? EMPTY_VALUE },
-    { label: 'Assigned Patients', value: doctor.patientCount, isMono: true },
+    { label: t('doctors.email'), value: doctor.email ?? EMPTY_VALUE },
     {
-      label: 'Status',
-      value: <StatusBadge status={doctor.isActive ? 'active' : 'inactive'} />,
+      label: t('doctors.assignedPatients'),
+      value: format.number(doctor.patientCount),
+      isMono: true,
     },
-    { label: 'Registered', value: formatMediumDate(doctor.createdAt) },
-    { label: 'Last Updated', value: formatMediumDate(doctor.updatedAt) },
+    {
+      label: t('common.status'),
+      value: (
+        <StatusBadge
+          status={doctor.isActive ? 'active' : 'inactive'}
+          label={t(doctor.isActive ? 'common.active' : 'common.inactive')}
+        />
+      ),
+    },
+    { label: t('doctors.registered'), value: formatDate(doctor.createdAt) },
+    { label: t('doctors.updated'), value: formatDate(doctor.updatedAt) },
   ];
 
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader>
         <CardTitle className="font-heading text-base font-semibold text-slate-900">
-          Profile
+          {t('doctors.profile')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -43,7 +55,11 @@ export function DoctorProfileCard({ doctor }: DoctorProfileCardProps) {
               <dt className="font-heading text-xs font-medium uppercase tracking-wide text-slate-500">
                 {field.label}
               </dt>
-              <dd className={field.isMono ? 'font-mono text-sm text-slate-700' : 'text-sm text-slate-700'}>
+              <dd
+                className={
+                  field.isMono ? 'font-mono text-sm text-slate-700' : 'text-sm text-slate-700'
+                }
+              >
                 {field.value}
               </dd>
             </div>

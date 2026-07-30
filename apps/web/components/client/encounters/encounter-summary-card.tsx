@@ -3,11 +3,11 @@
 import type { EncounterDetail } from '@hms/shared-types';
 import { Card, CardContent, Icon } from '@hms/ui';
 import Link from 'next/link';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { StatusBadge } from '#components/shared/status-badge';
 import { formatEncounterDuration } from '#lib/encounters/format-encounter-duration';
-import { formatRegisteredAt } from '#lib/registrations/format-registered-at';
 
 type EncounterSummaryCardProps = {
   encounter: EncounterDetail;
@@ -16,6 +16,8 @@ type EncounterSummaryCardProps = {
 };
 
 export function EncounterSummaryCard({ encounter, patientHref }: EncounterSummaryCardProps) {
+  const t = useTranslations('clinical');
+  const format = useFormatter();
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4">
@@ -44,13 +46,27 @@ export function EncounterSummaryCard({ encounter, patientHref }: EncounterSummar
           </p>
           <p className="flex items-center gap-1.5 text-slate-600">
             <Icon name="schedule" size={16} className="text-slate-400" />
-            {formatRegisteredAt(encounter.startedAt)}
+            {format.dateTime(new Date(encounter.startedAt), {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            })}
           </p>
           <p className="flex items-center gap-1.5 text-slate-600">
             <Icon name="timer" size={16} className="text-slate-400" />
-            {formatEncounterDuration(encounter.startedAt, encounter.endedAt)}
+            {formatEncounterDuration(encounter.startedAt, encounter.endedAt, {
+              minutes: (minutes) =>
+                t('common.durationMinutes', { minutes: format.number(minutes) }),
+              hoursMinutes: (hours, minutes) =>
+                t('common.durationHoursMinutes', {
+                  hours: format.number(hours),
+                  minutes: format.number(minutes, { minimumIntegerDigits: 2 }),
+                }),
+            })}
           </p>
-          <StatusBadge status={encounter.status} />
+          <StatusBadge
+            status={encounter.status}
+            label={t(`encounters.status.${encounter.status}`)}
+          />
         </div>
       </CardContent>
     </Card>

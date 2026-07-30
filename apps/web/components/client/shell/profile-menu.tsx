@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import {
   Button,
   DropdownMenu,
@@ -20,38 +22,37 @@ type ProfileMenuProps = {
 };
 
 export function ProfileMenu({ profile }: ProfileMenuProps) {
+  const t = useTranslations('authShell.shell.profile');
+  const displayName = profile.isFallbackName ? t('fallbackName') : profile.displayName;
+  const roleLabel = profile.roleKey ? t(`roles.${profile.roleKey}`) : profile.roleLabel;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
           variant="ghost"
-          aria-label="Open profile menu"
+          aria-label={t('openMenu')}
           className="h-10 gap-2 px-2 data-[state=open]:bg-accent"
         >
-          <AvatarInitials name={profile.displayName} size="sm" />
+          <AvatarInitials name={displayName} size="sm" />
           <span className="grid max-w-32 text-left leading-tight">
-            <span className="truncate font-heading text-sm font-medium">
-              {profile.displayName}
-            </span>
-            <span className="truncate text-xs font-normal text-muted-foreground">
-              {profile.roleLabel}
-            </span>
+            <span className="truncate font-heading text-sm font-medium">{displayName}</span>
+            <span className="truncate text-xs font-normal text-muted-foreground">{roleLabel}</span>
           </span>
           <Icon name="expand_more" size={18} className="text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="grid leading-tight">
-          <span className="truncate text-sm font-medium">{profile.displayName}</span>
+          <span className="truncate text-sm font-medium">{displayName}</span>
           <span className="truncate text-xs font-normal text-muted-foreground">
-            {profile.email || profile.roleLabel}
+            {profile.email || roleLabel}
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onSelect={() => void executeLogout()}>
           <Icon name="logout" size={16} />
-          Log out
+          {t('logout')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

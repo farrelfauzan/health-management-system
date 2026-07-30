@@ -2,6 +2,7 @@
 
 import type { DoctorSessionCalendarItem } from '@hms/shared-types';
 import { cn } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 type SessionCalendarBlockProps = {
   session: DoctorSessionCalendarItem;
@@ -17,6 +18,7 @@ function formatPatientTotal(session: DoctorSessionCalendarItem): string {
 }
 
 export function SessionCalendarBlock({ session, onSelect }: SessionCalendarBlockProps) {
+  const t = useTranslations('operations.appointments');
   const isCancelled = session.status === 'CANCELLED';
   return (
     <button
@@ -35,7 +37,7 @@ export function SessionCalendarBlock({ session, onSelect }: SessionCalendarBlock
       </span>
       <span className="truncate text-[11px] font-medium">
         {formatPatientTotal(session)}
-        {isCancelled ? ' · cancelled' : session.status === 'CLOSED' ? ' · closed' : ''}
+        {isCancelled ? ` · ${t('cancel')}` : ''}
       </span>
     </button>
   );

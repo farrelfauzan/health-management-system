@@ -1,6 +1,7 @@
 'use client';
 
 import type { PatientListItem } from '@hms/shared-types';
+import { useTranslations } from 'next-intl';
 import { MAX_INITIAL_PATIENT_ASSIGNMENTS } from '@hms/shared-types';
 import { Checkbox, Skeleton } from '@hms/ui';
 
@@ -17,6 +18,7 @@ export function DoctorPatientPicker({
   isLoading,
   onTogglePatient,
 }: DoctorPatientPickerProps) {
+  const t = useTranslations('clinical');
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -26,7 +28,7 @@ export function DoctorPatientPicker({
     );
   }
   if (patients.length === 0) {
-    return <p className="text-sm text-slate-500">No patients available.</p>;
+    return <p className="text-sm text-slate-500">{t('doctors.noPatientsAvailable')}</p>;
   }
   const isAtLimit = selectedPatientIds.length >= MAX_INITIAL_PATIENT_ASSIGNMENTS;
   return (

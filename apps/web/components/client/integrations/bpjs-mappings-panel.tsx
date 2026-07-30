@@ -35,6 +35,7 @@ import {
   toast,
   useAbility,
 } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import {
   bpjsMappingControllerSetDoctorMappingV1,
@@ -64,6 +65,8 @@ type MappingTarget =
 const UNMAPPED = '__UNMAPPED__';
 
 export function BpjsMappingsPanel() {
+  const t = useTranslations('operations.integrations');
+  const format = useFormatter();
   const ability = useAbility();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState('doctors');
@@ -93,10 +96,7 @@ export function BpjsMappingsPanel() {
   const syncMutation = useMutation({
     mutationFn: async () => {
       const response = await bpjsReferenceControllerSyncCatalogsV1();
-      return parseApiSuccess<BpjsReferenceSyncResultView>(
-        response,
-        'Unable to synchronize BPJS reference catalogs.',
-      ).data;
+      return parseApiSuccess<BpjsReferenceSyncResultView>(response, t('labels.syncError')).data;
     },
     onSuccess: async (result) => {
       await Promise.all([
@@ -110,7 +110,7 @@ export function BpjsMappingsPanel() {
       const count = result.catalogs.reduce((total, catalog) => total + catalog.itemCount, 0);
       toast.success(`BPJS reference catalogs synchronized (${count} items).`);
     },
-    onError: (error) => notifyApiError(error, 'Unable to synchronize BPJS reference catalogs.'),
+    onError: (error) => notifyApiError(error, t('labels.syncError')),
   });
 
   const mappingMutation = useMutation({
@@ -140,23 +140,20 @@ export function BpjsMappingsPanel() {
       ]);
       toast.success('BPJS mapping updated.');
     },
-    onError: (error) => notifyApiError(error, 'Unable to update the BPJS mapping.'),
+    onError: (error) => notifyApiError(error, t('labels.mappingError')),
   });
 
   const remoteDphoMutation = useMutation({
     mutationFn: async (query: string) => {
       const response = await bpjsReferenceControllerSearchCatalogRemoteV1('dpho', { query });
-      return parseApiSuccess<BpjsReferenceItemView[]>(
-        response,
-        'Unable to search the BPJS DPHO catalog.',
-      ).data;
+      return parseApiSuccess<BpjsReferenceItemView[]>(response, t('labels.searchError')).data;
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: [getBpjsReferenceControllerSearchCatalogV1QueryKey('dpho')[0]],
       });
     },
-    onError: (error) => notifyApiError(error, 'Unable to search the BPJS DPHO catalog.'),
+    onError: (error) => notifyApiError(error, t('labels.searchError')),
   });
 
   async function handleDphoSearch(event: FormEvent<HTMLFormElement>): Promise<void> {
@@ -190,11 +187,11 @@ export function BpjsMappingsPanel() {
           } as MappingTarget)
         }
       >
-        <SelectTrigger className="min-w-64" aria-label="BPJS mapping">
-          <SelectValue placeholder="Select a BPJS code" />
+        <SelectTrigger className="min-w-64" aria-label={t('labels.mapping')}>
+          <SelectValue placeholder={t('selectCode')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={UNMAPPED}>Not mapped</SelectItem>
+          <SelectItem value={UNMAPPED}>{t('labels.notMapped')}</SelectItem>
           {references.map((reference) => (
             <SelectItem key={reference.code} value={reference.code}>
               {reference.code} · {reference.display}
@@ -217,7 +214,7 @@ export function BpjsMappingsPanel() {
       <Card>
         <CardHeader className="gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <CardTitle>Reference catalogs</CardTitle>
+            <CardTitle>{t('labels.referenceCatalogs')}</CardTitle>
             <CardDescription>
               Keep PCare doctor and clinic catalogs current before assigning local mappings.
             </CardDescription>
@@ -229,7 +226,7 @@ export function BpjsMappingsPanel() {
               onClick={() => syncMutation.mutate()}
             >
               <Icon name="sync" size={17} />
-              {syncMutation.isPending ? 'Synchronizing…' : 'Sync references'}
+              {syncMutation.isPending ? t('synchronizing') : t('syncReferences')}
             </Button>
           ) : null}
         </CardHeader>
@@ -241,12 +238,17 @@ export function BpjsMappingsPanel() {
               </Badge>
             ))}
             {!statusQuery.isPending && statusQuery.data?.length === 0 ? (
-              <span className="text-sm text-slate-500">References have not been synchronized.</span>
+              <span className="text-sm text-slate-500">{t('labels.notSynchronized')}</span>
             ) : null}
           </div>
           {lastSyncedAt ? (
             <p className="mt-3 text-xs text-slate-500">
-              Latest bulk sync: {new Date(lastSyncedAt).toLocaleString('en-ID')}
+              {t('lastSync', {
+                date: format.dateTime(new Date(lastSyncedAt), {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                }),
+              })}
             </p>
           ) : null}
         </CardContent>
@@ -254,7 +256,7 @@ export function BpjsMappingsPanel() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Local-to-BPJS mappings</CardTitle>
+          <CardTitle>{t('labels.localMappings')}</CardTitle>
           <CardDescription>
             Link doctors, specialties, and formulary items to validated PCare reference codes.
           </CardDescription>
@@ -268,9 +270,9 @@ export function BpjsMappingsPanel() {
             }}
           >
             <TabsList>
-              <TabsTrigger value="doctors">Doctors</TabsTrigger>
-              <TabsTrigger value="specialties">Specialties</TabsTrigger>
-              <TabsTrigger value="medications">Medications</TabsTrigger>
+              <TabsTrigger value="doctors">{t('labels.doctors')}</TabsTrigger>
+              <TabsTrigger value="specialties">{t('labels.specialties')}</TabsTrigger>
+              <TabsTrigger value="medications">{t('labels.medications')}</TabsTrigger>
             </TabsList>
             <div className="my-4">
               {tab === 'medications' && canSyncReferences ? (
@@ -279,8 +281,8 @@ export function BpjsMappingsPanel() {
                   onSubmit={(event) => void handleDphoSearch(event)}
                 >
                   <Input
-                    aria-label="Search DPHO"
-                    placeholder="Search BPJS DPHO (minimum 2 characters)"
+                    aria-label={t('searchDpho')}
+                    placeholder={t('searchDphoPlaceholder')}
                     value={dphoSearch}
                     onChange={(event) => setDphoSearch(event.target.value)}
                   />
@@ -291,8 +293,8 @@ export function BpjsMappingsPanel() {
               ) : tab !== 'medications' ? (
                 <Input
                   className="max-w-md"
-                  aria-label="Filter BPJS references"
-                  placeholder="Filter BPJS reference codes"
+                  aria-label={t('labels.filterReferences')}
+                  placeholder={t('labels.filterReferences')}
                   value={referenceSearch}
                   onChange={(event) => setReferenceSearch(event.target.value)}
                 />
@@ -354,20 +356,21 @@ type MappingTableProps = {
 };
 
 function MappingTable({ rows, loading }: MappingTableProps) {
+  const t = useTranslations('operations.integrations');
   return (
     <div className="overflow-x-auto rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Local record</TableHead>
-            <TableHead>BPJS reference</TableHead>
+            <TableHead>{t('labels.localRecord')}</TableHead>
+            <TableHead>{t('labels.bpjsReference')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rows.length === 0 ? (
             <TableRow>
               <TableCell colSpan={2} className="h-24 text-center text-slate-500">
-                {loading ? 'Loading mappings…' : 'No local records found.'}
+                {loading ? t('loadingMappings') : t('noLocalRecords')}
               </TableCell>
             </TableRow>
           ) : (

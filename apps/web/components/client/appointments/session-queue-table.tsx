@@ -1,17 +1,10 @@
 'use client';
 
 import type { SessionQueueEntry } from '@hms/shared-types';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  cn,
-} from '@hms/ui';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, cn } from '@hms/ui';
 
 import { StatusBadge } from '#components/shared/status-badge';
+import { useTranslations } from 'next-intl';
 
 type SessionQueueTableProps = {
   queue: SessionQueueEntry[];
@@ -19,13 +12,14 @@ type SessionQueueTableProps = {
 };
 
 export function SessionQueueTable({ queue, onSelectEntry }: SessionQueueTableProps) {
+  const t = useTranslations('operations');
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-16">Queue</TableHead>
-          <TableHead>Patient</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead className="w-16">{t('common.queue')}</TableHead>
+          <TableHead>{t('common.patient')}</TableHead>
+          <TableHead>{t('common.status')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

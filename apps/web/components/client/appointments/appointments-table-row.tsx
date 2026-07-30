@@ -3,14 +3,11 @@
 import type { AppointmentListItem } from '@hms/shared-types';
 import { canTransitionAppointmentStatus } from '@hms/shared-types';
 import { TableCell, TableRow, useAbility } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { StatusBadge } from '#components/shared/status-badge';
-import {
-  formatAppointmentDate,
-  formatAppointmentTime,
-} from '#lib/appointments/format-appointment-time';
 
 const RESCHEDULABLE_STATUSES: AppointmentListItem['status'][] = ['SCHEDULED', 'CONFIRMED'];
 
@@ -27,6 +24,8 @@ export function AppointmentsTableRow({
   onReschedule,
   onCancel,
 }: AppointmentsTableRowProps) {
+  const t = useTranslations('operations');
+  const format = useFormatter();
   const ability = useAbility();
   const canReschedule =
     ability.can('update', 'Appointment') && RESCHEDULABLE_STATUSES.includes(appointment.status);
@@ -34,11 +33,11 @@ export function AppointmentsTableRow({
     ability.can('cancel', 'Appointment') &&
     canTransitionAppointmentStatus(appointment.status, 'CANCELLED');
   const actions: RowAction[] = [
-    { label: 'View', icon: 'visibility', onSelect: () => onView(appointment) },
+    { label: t('common.open'), icon: 'visibility', onSelect: () => onView(appointment) },
     ...(canReschedule
       ? [
           {
-            label: 'Reschedule',
+            label: t('appointments.reschedule'),
             icon: 'edit_calendar',
             onSelect: () => onReschedule(appointment),
           },
@@ -47,7 +46,7 @@ export function AppointmentsTableRow({
     ...(canCancel
       ? [
           {
-            label: 'Cancel',
+            label: t('appointments.cancel'),
             icon: 'event_busy',
             isDestructive: true,
             onSelect: () => onCancel(appointment),
@@ -60,10 +59,10 @@ export function AppointmentsTableRow({
     <TableRow className="transition-colors hover:bg-slate-50">
       <TableCell className="px-4 py-3">
         <p className="font-mono text-sm text-slate-900">
-          {formatAppointmentTime(appointment.scheduledAt)}
+          {format.dateTime(new Date(appointment.scheduledAt), { timeStyle: 'short' })}
         </p>
         <p className="font-mono text-xs text-slate-500">
-          {formatAppointmentDate(appointment.scheduledAt)}
+          {format.dateTime(new Date(appointment.scheduledAt), { dateStyle: 'medium' })}
         </p>
       </TableCell>
       <TableCell className="px-4 py-3">
@@ -83,12 +82,15 @@ export function AppointmentsTableRow({
         {appointment.reason ?? '—'}
       </TableCell>
       <TableCell className="px-4">
-        <StatusBadge status={appointment.status} />
+        <StatusBadge
+          status={appointment.status}
+          label={t(`common.statuses.${appointment.status}`)}
+        />
       </TableCell>
       <TableCell className="px-4 text-right">
         <RowActionsMenu
           actions={actions}
-          triggerLabel={`Actions for ${appointment.patient.fullName}`}
+          triggerLabel={t('common.actionsFor', { name: appointment.patient.fullName })}
         />
       </TableCell>
     </TableRow>

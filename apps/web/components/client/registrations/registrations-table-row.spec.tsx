@@ -2,10 +2,12 @@ import type { RegistrationListItem, RegistrationStatusValue } from '@hms/shared-
 import { AbilityProvider, buildAppAbility, Table, TableBody, type AppRule } from '@hms/ui';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi } from 'vitest';
 
 import { RegistrationsTableRow } from './registrations-table-row';
 import type { RegistrationsViewVariant } from '#lib/registrations/registrations-view-variant';
+import messages from '../../../messages/en/operations.json';
 
 const FULL_ACCESS_RULES: AppRule[] = [
   { action: 'read', subject: 'Registration' },
@@ -45,18 +47,20 @@ function renderRow(params: {
   onOpenEncounter?: (registration: RegistrationListItem) => void;
 }): void {
   render(
-    <AbilityProvider ability={buildAppAbility(params.rules)}>
-      <Table>
-        <TableBody>
-          <RegistrationsTableRow
-            registration={buildRegistration(params.status, params.appointment)}
-            variant={params.variant}
-            onTransition={params.onTransition ?? vi.fn()}
-            onOpenEncounter={params.onOpenEncounter ?? vi.fn()}
-          />
-        </TableBody>
-      </Table>
-    </AbilityProvider>,
+    <NextIntlClientProvider locale="en" messages={messages} timeZone="Asia/Jakarta">
+      <AbilityProvider ability={buildAppAbility(params.rules)}>
+        <Table>
+          <TableBody>
+            <RegistrationsTableRow
+              registration={buildRegistration(params.status, params.appointment)}
+              variant={params.variant}
+              onTransition={params.onTransition ?? vi.fn()}
+              onOpenEncounter={params.onOpenEncounter ?? vi.fn()}
+            />
+          </TableBody>
+        </Table>
+      </AbilityProvider>
+    </NextIntlClientProvider>,
   );
 }
 
@@ -66,7 +70,7 @@ describe('RegistrationsTableRow', () => {
 
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('MRN-0001')).toBeInTheDocument();
-    expect(screen.getByText('PENDING')).toBeInTheDocument();
+    expect(screen.getByText('Pending')).toBeInTheDocument();
     expect(screen.getByText('Walk-in')).toBeInTheDocument();
     expect(screen.getByText('Unassigned')).toBeInTheDocument();
   });
@@ -114,17 +118,13 @@ describe('RegistrationsTableRow', () => {
   it('renders no actions for terminal statuses', () => {
     renderRow({ status: 'COMPLETED', rules: FULL_ACCESS_RULES, variant: 'admin' });
 
-    expect(
-      screen.queryByRole('button', { name: 'Actions for John Doe' }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Actions for John Doe' })).not.toBeInTheDocument();
   });
 
   it('hides all actions without the update capability', () => {
     renderRow({ status: 'PENDING', rules: READ_ONLY_RULES, variant: 'admin' });
 
-    expect(
-      screen.queryByRole('button', { name: 'Actions for John Doe' }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Actions for John Doe' })).not.toBeInTheDocument();
   });
 
   it('offers opening an encounter for a checked-in registration', async () => {

@@ -20,29 +20,53 @@ function buildPatient(overrides: Partial<PatientListItem> = {}): PatientListItem
     allergyCount: 0,
     doctorCount: 1,
     doctors: [
-      { id: 'doctor-1', assignmentId: 'assignment-1', fullName: 'Dr. Budi', specialty: 'Cardiology' },
+      {
+        id: 'doctor-1',
+        assignmentId: 'assignment-1',
+        fullName: 'Dr. Budi',
+        specialty: 'Cardiology',
+      },
     ],
     ...overrides,
   };
 }
 
 describe('buildPatientsCsv', () => {
+  const messages = {
+    headers: [
+      'ID Pasien',
+      'Nama Lengkap',
+      'Jenis Kelamin',
+      'Tanggal Lahir',
+      'Status',
+      'Nomor Telepon',
+      'Alamat',
+      'Dokter yang Ditetapkan',
+      'Terdaftar Pada',
+    ],
+    sex: () => 'Perempuan',
+    status: () => 'Rawat jalan',
+    date: () => '12 Mei 1990',
+    dateTime: () => '1 Jul 2026, 07.00',
+  };
+
   it('builds a header row and one row per patient', () => {
-    const csv = buildPatientsCsv([buildPatient()]);
+    const csv = buildPatientsCsv([buildPatient()], messages);
     const [header, row] = csv.split('\n');
 
     expect(header).toBe(
-      'Patient ID,Full Name,Sex,Date of Birth,Status,Phone Number,Address,Assigned Doctors,Registered At',
+      'ID Pasien,Nama Lengkap,Jenis Kelamin,Tanggal Lahir,Status,Nomor Telepon,Alamat,Dokter yang Ditetapkan,Terdaftar Pada',
     );
     expect(row).toBe(
-      'MRN-2026-0001,Aisha Rahman,Female,1990-05-12,OUT-PATIENT,+628123456789,Jakarta,Dr. Budi,2026-07-01T00:00:00.000Z',
+      'MRN-2026-0001,Aisha Rahman,Perempuan,12 Mei 1990,Rawat jalan,+628123456789,Jakarta,Dr. Budi,"1 Jul 2026, 07.00"',
     );
   });
 
   it('escapes values containing commas and quotes', () => {
-    const csv = buildPatientsCsv([
-      buildPatient({ address: 'Jl. Melati, Blok "A"', doctors: [], doctorCount: 0 }),
-    ]);
+    const csv = buildPatientsCsv(
+      [buildPatient({ address: 'Jl. Melati, Blok "A"', doctors: [], doctorCount: 0 })],
+      messages,
+    );
 
     expect(csv.split('\n')[1]).toContain('"Jl. Melati, Blok ""A"""');
   });

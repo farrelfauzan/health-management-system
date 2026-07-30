@@ -55,7 +55,11 @@ describe('buildVitalSignsPayload', () => {
 
   it('accepts a critical but physiologically possible reading', () => {
     const result = buildVitalSignsPayload(
-      buildForm({ oxygenSaturation: '82', systolicBloodPressure: '200', diastolicBloodPressure: '120' }),
+      buildForm({
+        oxygenSaturation: '82',
+        systolicBloodPressure: '200',
+        diastolicBloodPressure: '120',
+      }),
       '',
     );
 

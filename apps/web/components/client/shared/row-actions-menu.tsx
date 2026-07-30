@@ -9,6 +9,7 @@ import {
   Icon,
   cn,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 export type RowAction = {
   label: string;
@@ -23,11 +24,18 @@ type RowActionsMenuProps = {
   triggerLabel?: string;
 };
 
-export function RowActionsMenu({ actions, triggerLabel = 'Open row actions' }: RowActionsMenuProps) {
+export function RowActionsMenu({ actions, triggerLabel }: RowActionsMenuProps) {
+  const t = useTranslations('shared.accessibility');
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" size="icon-sm" aria-label={triggerLabel}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={triggerLabel ?? t('openRowActions')}
+        >
           <Icon name="more_vert" size={18} className="text-slate-500" />
         </Button>
       </DropdownMenuTrigger>

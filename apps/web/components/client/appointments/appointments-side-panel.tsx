@@ -2,6 +2,7 @@
 
 import type { DoctorListItem } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, Icon, cn } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { AppointmentStatusLegend } from '#components/client/appointments/appointment-status-legend';
 import { MedicalStaffList } from '#components/client/appointments/medical-staff-list';
@@ -23,6 +24,7 @@ export function AppointmentsSidePanel({
   onSchedule,
   className,
 }: AppointmentsSidePanelProps) {
+  const t = useTranslations('operations.appointments');
   return (
     <aside className={cn('space-y-4', className)}>
       <Can action="create" subject="Appointment">
@@ -32,13 +34,13 @@ export function AppointmentsSidePanel({
           onClick={onSchedule}
         >
           <Icon name="add" size={18} />
-          Schedule Appointment
+          {t('schedule')}
         </Button>
       </Can>
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
         <CardContent className="space-y-3 p-4">
-          <h3 className="font-heading text-sm font-semibold text-slate-900">Medical Staff</h3>
+          <h3 className="font-heading text-sm font-semibold text-slate-900">{t('medicalStaff')}</h3>
           <MedicalStaffList
             doctors={doctors}
             selectedDoctorIds={selectedDoctorIds}
@@ -50,7 +52,9 @@ export function AppointmentsSidePanel({
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
         <CardContent className="space-y-3 p-4">
-          <h3 className="font-heading text-sm font-semibold text-slate-900">Appointment Status</h3>
+          <h3 className="font-heading text-sm font-semibold text-slate-900">
+            {t('statusHeading')}
+          </h3>
           <AppointmentStatusLegend />
         </CardContent>
       </Card>

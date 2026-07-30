@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AppointmentListItem, AppointmentResponse } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle, useAbility } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { AppointmentRequestRow } from '#components/client/appointments/appointment-request-row';
 import { RejectRequestDialog } from '#components/client/appointments/reject-request-dialog';
@@ -13,9 +14,8 @@ import { parseApiSuccess } from '#lib/api/response';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
 import { useAppointmentRequests } from '#lib/appointments/use-appointment-requests';
 
-const APPROVE_ERROR_FALLBACK = 'Unable to approve the appointment request. Please try again.';
-
 export function AppointmentRequestsPanel() {
+  const t = useTranslations('operations.appointments');
   const ability = useAbility();
   const queryClient = useQueryClient();
   const canApprove = ability.can('approve', 'Appointment');
@@ -33,10 +33,10 @@ export function AppointmentRequestsPanel() {
   async function handleApprove(request: AppointmentListItem): Promise<void> {
     try {
       const response = await approveMutation.mutateAsync(request.id);
-      parseApiSuccess<AppointmentResponse>(response, APPROVE_ERROR_FALLBACK);
+      parseApiSuccess<AppointmentResponse>(response, t('approveError'));
       await invalidateAppointmentQueries(queryClient);
     } catch (error) {
-      notifyApiError(error, APPROVE_ERROR_FALLBACK);
+      notifyApiError(error, t('approveError'));
     }
   }
 
@@ -44,13 +44,14 @@ export function AppointmentRequestsPanel() {
     <Card className="rounded-xl border-amber-200 bg-amber-50/40 shadow-none">
       <CardHeader>
         <CardTitle className="font-heading text-sm">
-          Pending Appointment Requests ({requestsQuery.meta?.total ?? requestsQuery.requests.length}
-          )
+          {t('pendingRequests', {
+            count: requestsQuery.meta?.total ?? requestsQuery.requests.length,
+          })}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {requestsQuery.isPending ? (
-          <p className="text-sm text-slate-500">Loading requests…</p>
+          <p className="text-sm text-slate-500">{t('loadingRequests')}</p>
         ) : (
           <ul className="space-y-2">
             {requestsQuery.requests.map((request) => (

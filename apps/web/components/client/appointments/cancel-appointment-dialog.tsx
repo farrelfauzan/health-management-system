@@ -14,17 +14,12 @@ import {
   DialogTitle,
   Textarea,
 } from '@hms/ui';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { appointmentManagementControllerCancelAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
-import {
-  formatAppointmentDate,
-  formatAppointmentTime,
-} from '#lib/appointments/format-appointment-time';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
-
-const CANCEL_ERROR_FALLBACK = 'Unable to cancel the appointment. Please try again.';
 
 type CancelAppointmentDialogProps = {
   open: boolean;
@@ -37,6 +32,8 @@ export function CancelAppointmentDialog({
   onOpenChange,
   appointment,
 }: CancelAppointmentDialogProps) {
+  const t = useTranslations('operations.appointments');
+  const format = useFormatter();
   const queryClient = useQueryClient();
   const [reason, setReason] = useState<string>('');
   const [cancelError, setCancelError] = useState<string | null>(null);
@@ -56,11 +53,11 @@ export function CancelAppointmentDialog({
     }
     try {
       const response = await cancelMutation.mutateAsync(parsed.data);
-      parseApiSuccess<AppointmentResponse>(response, CANCEL_ERROR_FALLBACK);
+      parseApiSuccess<AppointmentResponse>(response, t('cancelError'));
       await invalidateAppointmentQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setCancelError(notifyApiError(error, CANCEL_ERROR_FALLBACK));
+      setCancelError(notifyApiError(error, t('cancelError')));
     }
   }
 
@@ -68,11 +65,13 @@ export function CancelAppointmentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-heading">Cancel Appointment</DialogTitle>
+          <DialogTitle className="font-heading">{t('cancel')}</DialogTitle>
           <DialogDescription>
-            Cancel {appointment.patient.fullName}&apos;s visit with{' '}
-            {appointment.doctor.fullName} on {formatAppointmentDate(appointment.scheduledAt)} at{' '}
-            {formatAppointmentTime(appointment.scheduledAt)}. This cannot be undone.
+            Cancel {appointment.patient.fullName}&apos;s visit with {appointment.doctor.fullName} ·{' '}
+            {format.dateTime(new Date(appointment.scheduledAt), {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            })}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
@@ -95,7 +94,7 @@ export function CancelAppointmentDialog({
               id="cancel-appointment-reason"
               rows={3}
               value={reason}
-              placeholder="Why is this appointment being cancelled?"
+              placeholder={t('labels.cancelPlaceholder')}
               onChange={(event) => setReason(event.target.value)}
             />
           </div>
@@ -110,7 +109,7 @@ export function CancelAppointmentDialog({
             disabled={cancelMutation.isPending}
             onClick={() => void handleCancelAppointment()}
           >
-            {cancelMutation.isPending ? 'Cancelling…' : 'Cancel Appointment'}
+            {cancelMutation.isPending ? t('cancelling') : t('cancel')}
           </Button>
         </DialogFooter>
       </DialogContent>

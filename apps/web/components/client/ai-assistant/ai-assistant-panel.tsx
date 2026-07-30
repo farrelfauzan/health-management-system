@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { ChatComposer } from '#components/client/ai-assistant/chat-composer';
 import { ChatThread } from '#components/client/ai-assistant/chat-thread';
@@ -9,10 +10,13 @@ import { ConsultationSidebar } from '#components/client/ai-assistant/consultatio
 import { PreviewBadge } from '#components/client/ai-assistant/preview-badge';
 import { PageHeader } from '#components/shared/page-header';
 import { createMockConversationService } from '#lib/ai-assistant/mock-conversation-service';
-import { MOCK_RECENT_HISTORY } from '#lib/ai-assistant/mock-recent-history';
-import { MOCK_SUGGESTED_PROMPTS, type SuggestedPrompt } from '#lib/ai-assistant/mock-suggested-prompts';
+import { buildMockRecentHistory } from '#lib/ai-assistant/mock-recent-history';
+import {
+  buildMockSuggestedPrompts,
+  type SuggestedPrompt,
+} from '#lib/ai-assistant/mock-suggested-prompts';
 import { useConversation } from '#lib/ai-assistant/use-conversation';
-import { ADMIN_ROUTE_METADATA } from '#lib/shell/route-metadata';
+import type { AppLocale } from '../../../i18n/config';
 
 type AiAssistantPanelProps = {
   displayName: string;
@@ -20,11 +24,16 @@ type AiAssistantPanelProps = {
 };
 
 export function AiAssistantPanel({ displayName, replyDelayMs }: AiAssistantPanelProps) {
-  const metadata = ADMIN_ROUTE_METADATA['ai-assistant'];
+  const locale = useLocale() as AppLocale;
+  const t = useTranslations('aiAssistant.header');
+  const prompts = useMemo(() => buildMockSuggestedPrompts(locale), [locale]);
+  const history = useMemo(() => buildMockRecentHistory(locale), [locale]);
   const service = useMemo(
     () =>
-      createMockConversationService(replyDelayMs === undefined ? {} : { replyDelayMs }),
-    [replyDelayMs],
+      createMockConversationService(
+        replyDelayMs === undefined ? { locale } : { replyDelayMs, locale },
+      ),
+    [locale, replyDelayMs],
   );
   const conversation = useConversation({ service, displayName });
   function handleSelectPrompt(prompt: SuggestedPrompt): void {
@@ -33,15 +42,15 @@ export function AiAssistantPanel({ displayName, replyDelayMs }: AiAssistantPanel
   return (
     <div className="space-y-6">
       <PageHeader
-        title={metadata.title}
-        subtitle={metadata.subtitle}
-        breadcrumbs={[...metadata.breadcrumbs]}
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[t('breadcrumbs.advanced'), t('breadcrumbs.assistant')]}
         actions={<PreviewBadge />}
       />
       <section className="flex h-[calc(100vh-16rem)] min-h-[540px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <ConsultationSidebar
-          prompts={MOCK_SUGGESTED_PROMPTS}
-          history={MOCK_RECENT_HISTORY}
+          prompts={prompts}
+          history={history}
           isBusy={conversation.isReplying}
           onNewConsultation={conversation.resetConversation}
           onSelectPrompt={handleSelectPrompt}

@@ -1,4 +1,5 @@
 import { Badge, cn } from '@hms/ui';
+import { useLocale, useMessages } from 'next-intl';
 
 import { resolveStatusTone, type StatusTone } from '#lib/shared/status-badge-tone';
 import { formatStatusLabel } from '#lib/shared/status-label';
@@ -19,6 +20,13 @@ const TONE_CLASSES: Record<StatusTone, string> = {
 
 export function StatusBadge({ status, label, className }: StatusBadgeProps) {
   const tone = resolveStatusTone(status);
+  const locale = useLocale();
+  const messages = useMessages();
+  const normalizedStatus = status
+    .trim()
+    .toLowerCase()
+    .replace(/[-\s]+/g, '_');
+  const translatedLabel = messages.shared?.statuses[normalizedStatus];
 
   return (
     <Badge
@@ -29,7 +37,12 @@ export function StatusBadge({ status, label, className }: StatusBadgeProps) {
         className,
       )}
     >
-      {label ?? formatStatusLabel(status)}
+      {label ??
+        formatStatusLabel(
+          status,
+          locale,
+          translatedLabel ? { [normalizedStatus]: translatedLabel } : {},
+        )}
     </Badge>
   );
 }

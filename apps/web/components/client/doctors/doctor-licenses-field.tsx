@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Icon } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { DoctorLicenseRowFields } from '#components/client/doctors/doctor-license-row-fields';
 import type { LicenseRow } from '#lib/doctors/doctor-credential-rows';
@@ -12,21 +13,17 @@ type DoctorLicensesFieldProps = {
   onRemove: (key: string) => void;
 };
 
-export function DoctorLicensesField({
-  rows,
-  onAdd,
-  onChange,
-  onRemove,
-}: DoctorLicensesFieldProps) {
+export function DoctorLicensesField({ rows, onAdd, onChange, onRemove }: DoctorLicensesFieldProps) {
+  const t = useTranslations('clinical');
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Licences
+          {t('doctors.licensesTitle')}
         </p>
         <Button type="button" size="sm" variant="outline" onClick={onAdd}>
           <Icon name="add" size={16} />
-          Add Licence
+          {t('doctors.addLicense')}
         </Button>
       </div>
       {rows.length > 0 ? (
@@ -43,7 +40,7 @@ export function DoctorLicensesField({
         </div>
       ) : (
         <p className="rounded-lg bg-slate-50 px-3 py-3 text-sm text-slate-500">
-          No licence recorded. Saving replaces the whole list, so removing every row clears them.
+          {t('doctors.licensesEmpty')}
         </p>
       )}
     </div>

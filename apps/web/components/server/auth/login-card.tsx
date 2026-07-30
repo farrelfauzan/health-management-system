@@ -1,15 +1,17 @@
 import { LoginForm } from '#components/client/auth/login-form';
+import { getTranslations } from 'next-intl/server';
 
-export function LoginCard() {
+export async function LoginCard() {
+  const t = await getTranslations('authShell.auth');
   return (
     // No card chrome: the split layout already frames the form, and a bordered
     // white box on a white column only adds a seam.
     <section className="space-y-6">
       <div className="space-y-1">
         <h1 className="font-heading text-2xl font-semibold tracking-tight text-slate-900">
-          Sign in
+          {t('title')}
         </h1>
-        <p className="text-sm text-slate-500">Use your staff account to access the portal.</p>
+        <p className="text-sm text-slate-500">{t('subtitle')}</p>
       </div>
       <LoginForm />
     </section>

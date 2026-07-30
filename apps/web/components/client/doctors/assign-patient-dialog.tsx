@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { CreateDoctorPatientAssignmentInput, DoctorPatientAssignment } from '@hms/shared-types';
+import type {
+  CreateDoctorPatientAssignmentInput,
+  DoctorPatientAssignment,
+} from '@hms/shared-types';
+import { useTranslations } from 'next-intl';
 import {
   Button,
   Combobox,
@@ -21,8 +25,6 @@ import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries';
 import { usePatientsList } from '#lib/patients/use-patients-list';
 
-const ASSIGN_ERROR_FALLBACK = 'Unable to assign the patient. Please try again.';
-const DUPLICATE_ASSIGNMENT_MESSAGE = 'This patient is already assigned to the doctor.';
 const HTTP_CONFLICT_STATUS = 409;
 const PATIENT_PICKER_PAGE = { page: 1, limit: 100 };
 
@@ -42,6 +44,7 @@ export function AssignPatientDialog({
   assignedPatientIds = [],
 }: AssignPatientDialogProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations('clinical');
   const [selectedPatientId, setSelectedPatientId] = useState<string>('');
   const [assignError, setAssignError] = useState<string | null>(null);
   const patientsQuery = usePatientsList(PATIENT_PICKER_PAGE);
@@ -55,7 +58,7 @@ export function AssignPatientDialog({
 
   async function handleAssign(): Promise<void> {
     if (!selectedPatientId) {
-      setAssignError('Select a patient to assign.');
+      setAssignError(t('doctors.patientRequired'));
       return;
     }
     setAssignError(null);
@@ -64,16 +67,16 @@ export function AssignPatientDialog({
         doctorId,
         patientId: selectedPatientId,
       });
-      parseApiSuccess<DoctorPatientAssignment>(response, ASSIGN_ERROR_FALLBACK);
+      parseApiSuccess<DoctorPatientAssignment>(response, t('doctors.assignPatientError'));
       await invalidateDoctorQueries(queryClient);
       setSelectedPatientId('');
       onOpenChange(false);
     } catch (error) {
       if (isApiStatusError(error, HTTP_CONFLICT_STATUS)) {
-        setAssignError(DUPLICATE_ASSIGNMENT_MESSAGE);
+        setAssignError(t('doctors.patientDuplicate'));
         return;
       }
-      setAssignError(notifyApiError(error, ASSIGN_ERROR_FALLBACK));
+      setAssignError(notifyApiError(error, t('doctors.assignPatientError')));
     }
   }
 
@@ -81,8 +84,10 @@ export function AssignPatientDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-heading">Assign Patient</DialogTitle>
-          <DialogDescription>Assign a patient to {doctorName}.</DialogDescription>
+          <DialogTitle className="font-heading">{t('doctors.assignPatient')}</DialogTitle>
+          <DialogDescription>
+            {t('doctors.assignDescription', { name: doctorName })}
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           {assignError ? (
@@ -98,7 +103,7 @@ export function AssignPatientDialog({
               htmlFor="assign-patient-select"
               className="block font-heading text-xs font-medium text-slate-600"
             >
-              Patient
+              {t('patients.title')}
             </label>
             <Combobox
               id="assign-patient-select"
@@ -107,9 +112,9 @@ export function AssignPatientDialog({
                 label: `${patient.fullName} — ${patient.mrn}`,
               }))}
               value={selectedPatientId}
-              placeholder="Select a patient"
-              searchPlaceholder="Search by name or MRN..."
-              emptyMessage="No patient found."
+              placeholder={t('doctors.selectPatient')}
+              searchPlaceholder={t('doctors.searchPatient')}
+              emptyMessage={t('doctors.noPatient')}
               isLoading={patientsQuery.isPending}
               onChange={setSelectedPatientId}
             />
@@ -117,7 +122,7 @@ export function AssignPatientDialog({
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             type="button"
@@ -125,7 +130,7 @@ export function AssignPatientDialog({
             className="bg-primary-container hover:bg-primary"
             onClick={() => void handleAssign()}
           >
-            {assignMutation.isPending ? 'Assigning…' : 'Assign Patient'}
+            {assignMutation.isPending ? t('doctors.assigningPatient') : t('doctors.assignPatient')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -2,6 +2,7 @@
 
 import type { AppointmentListItem, DoctorSessionCalendarItem } from '@hms/shared-types';
 import { Skeleton, cn } from '@hms/ui';
+import { useFormatter } from 'next-intl';
 
 import { CurrentTimeIndicator } from '#components/client/appointments/current-time-indicator';
 import { SessionCalendarBlock } from '#components/client/appointments/session-calendar-block';
@@ -42,6 +43,7 @@ export function DayView({
   onSelectAppointment,
   onSelectSession,
 }: DayViewProps) {
+  const format = useFormatter();
   if (isPending) {
     return (
       <div className="p-4">
@@ -60,10 +62,7 @@ export function DayView({
       <div className="grid border-b border-slate-200" style={GRID_TEMPLATE_STYLE}>
         <div className="h-12 border-r border-slate-200" />
         <div
-          className={cn(
-            'flex h-12 items-center justify-center gap-2',
-            isToday && 'bg-info-tint',
-          )}
+          className={cn('flex h-12 items-center justify-center gap-2', isToday && 'bg-info-tint')}
         >
           <span
             className={cn(
@@ -71,7 +70,7 @@ export function DayView({
               isToday ? 'text-primary' : 'text-slate-500',
             )}
           >
-            {day.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase()}
+            {format.dateTime(day, { weekday: 'long' }).toLocaleUpperCase()}
           </span>
           <span className={cn('text-sm font-bold', isToday ? 'text-primary' : 'text-slate-900')}>
             {day.getDate()}

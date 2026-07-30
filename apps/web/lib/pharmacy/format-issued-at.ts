@@ -1,4 +1,4 @@
-export function formatIssuedAt(value: string | undefined): string {
+export function formatIssuedAt(value: string | undefined, locale = 'id-ID'): string {
   if (!value) {
     return '-';
   }
@@ -6,12 +6,12 @@ export function formatIssuedAt(value: string | undefined): string {
   if (Number.isNaN(date.getTime())) {
     return '-';
   }
-  const datePart = date.toLocaleDateString('en-US', {
+  const datePart = date.toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   });
-  const timePart = date.toLocaleTimeString('en-US', {
+  const timePart = date.toLocaleTimeString(locale, {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,

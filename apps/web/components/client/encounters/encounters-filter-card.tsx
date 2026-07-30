@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { ENCOUNTER_STATUSES, type EncounterStatusValue } from '@hms/shared-types';
 import {
   Button,
@@ -16,7 +17,6 @@ import { DoctorCombobox } from '#components/client/doctors/doctor-combobox';
 import { FilterCard } from '#components/shared/filter-card';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
 import type { EncountersSearchParams } from '#lib/encounters/search-params';
-import { formatStatusLabel } from '#lib/shared/status-label';
 
 const ALL_STATUSES_VALUE = 'ALL';
 const DOCTOR_PICKER_QUERY = { page: 1, limit: 100, isActive: 'true' as const };
@@ -39,6 +39,7 @@ export function EncountersFilterCard({
   onApply,
   onReset,
 }: EncountersFilterCardProps) {
+  const t = useTranslations('clinical');
   const [status, setStatus] = useState<string>(initialQuery.status ?? ALL_STATUSES_VALUE);
   const [doctorId, setDoctorId] = useState<string>(initialQuery.doctorId ?? '');
   const [startedFrom, setStartedFrom] = useState<string>(initialQuery.startedFrom ?? '');
@@ -77,10 +78,10 @@ export function EncountersFilterCard({
         actions={
           <>
             <Button type="submit" size="sm" className="bg-primary-container hover:bg-primary">
-              Apply Filters
+              {t('common.apply')}
             </Button>
             <Button type="button" size="sm" variant="outline" onClick={handleReset}>
-              Reset
+              {t('common.reset')}
             </Button>
           </>
         }
@@ -90,17 +91,17 @@ export function EncountersFilterCard({
             htmlFor="encounters-status-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Status
+            {t('common.status')}
           </label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="encounters-status-filter" className="w-full">
-              <SelectValue placeholder="All Statuses" />
+              <SelectValue placeholder={t('common.allStatuses')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL_STATUSES_VALUE}>All Statuses</SelectItem>
+              <SelectItem value={ALL_STATUSES_VALUE}>{t('common.allStatuses')}</SelectItem>
               {ENCOUNTER_STATUSES.map((statusValue) => (
                 <SelectItem key={statusValue} value={statusValue}>
-                  {formatStatusLabel(statusValue)}
+                  {t(`encounters.status.${statusValue}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -111,34 +112,34 @@ export function EncountersFilterCard({
             htmlFor="encounters-doctor-filter"
             className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
           >
-            Doctor
+            {t('encounters.doctor')}
           </label>
           <DoctorCombobox
             id="encounters-doctor-filter"
             doctors={doctorsQuery.doctors}
             value={doctorId}
             isLoading={doctorsQuery.isPending}
-            emptyOptionLabel="All Doctors"
+            emptyOptionLabel={t('encounters.allDoctors')}
             onChange={setDoctorId}
           />
         </div>
         <div>
           <span className="mb-1.5 block font-heading text-xs font-medium text-slate-600">
-            Started Between
+            {t('encounters.startedBetween')}
           </span>
           <div className="flex items-center gap-2">
             <DatePicker
-              aria-label="Started from"
+              aria-label={t('encounters.startedFrom')}
               className="w-40"
-              placeholder="From"
+              placeholder={t('common.from')}
               value={startedFrom}
               onValueChange={handleStartedFromChange}
             />
             <span className="text-sm text-slate-400">–</span>
             <DatePicker
-              aria-label="Started to"
+              aria-label={t('encounters.startedTo')}
               className="w-40"
-              placeholder="To"
+              placeholder={t('common.to')}
               value={startedTo}
               disabled={startedFrom.length === 0}
               minValue={startedFrom}

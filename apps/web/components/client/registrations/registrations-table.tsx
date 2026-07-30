@@ -2,6 +2,7 @@
 
 import type { RegistrationListItem } from '@hms/shared-types';
 import { TableBody, TableHeader, TableRow } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { RegistrationsTableRow } from '#components/client/registrations/registrations-table-row';
 import { DataTable } from '#components/shared/data-table';
@@ -30,17 +31,16 @@ export function RegistrationsTable({
   onTransition,
   onOpenEncounter,
 }: RegistrationsTableProps) {
+  const t = useTranslations('operations');
   const showEmptyState = !isPending && registrations.length === 0;
 
   if (showEmptyState) {
     return (
       <EmptyState
         icon={isError ? 'error' : 'how_to_reg'}
-        title={isError ? 'Unable to load registrations' : 'No registrations found'}
+        title={isError ? t('registrations.errorTitle') : t('registrations.emptyTitle')}
         description={
-          isError
-            ? 'Something went wrong while fetching the registration queue. It retries automatically.'
-            : 'Adjust the filters or create a new registration to see records here.'
+          isError ? t('registrations.errorDescription') : t('registrations.emptyDescription')
         }
       />
     );
@@ -50,14 +50,14 @@ export function RegistrationsTable({
     <DataTable>
       <TableHeader>
         <TableRow>
-          <DataTableHeaderCell>Patient Name</DataTableHeaderCell>
-          <DataTableHeaderCell>Patient ID</DataTableHeaderCell>
-          <DataTableHeaderCell>Registered</DataTableHeaderCell>
-          <DataTableHeaderCell>Linked Appointment</DataTableHeaderCell>
-          <DataTableHeaderCell>Doctor</DataTableHeaderCell>
-          <DataTableHeaderCell>Status</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.patient')}</DataTableHeaderCell>
+          <DataTableHeaderCell>ID</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('registrations.labels.registered')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('registrations.labels.linkedAppointment')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.doctor')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('common.status')}</DataTableHeaderCell>
           <DataTableHeaderCell>BPJS</DataTableHeaderCell>
-          <DataTableHeaderCell className="text-right">Actions</DataTableHeaderCell>
+          <DataTableHeaderCell className="text-right">{t('common.actions')}</DataTableHeaderCell>
         </TableRow>
       </TableHeader>
       <TableBody>

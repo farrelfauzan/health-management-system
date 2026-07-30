@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, cn } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 export type PrescriptionQueueFilter = 'ALL' | 'STAT';
 
@@ -9,15 +10,11 @@ type PrescriptionQueueToggleProps = {
   onChange: (value: PrescriptionQueueFilter) => void;
 };
 
-const FILTER_LABELS: Record<PrescriptionQueueFilter, string> = {
-  ALL: 'All',
-  STAT: 'STAT Only',
-};
-
 export function PrescriptionQueueToggle({ value, onChange }: PrescriptionQueueToggleProps) {
+  const t = useTranslations('operations.pharmacy');
   return (
-    <div className="flex gap-2" role="group" aria-label="Filter prescriptions by priority">
-      {(Object.keys(FILTER_LABELS) as PrescriptionQueueFilter[]).map((filter) => (
+    <div className="flex gap-2" role="group" aria-label={t('filterPriority')}>
+      {(['ALL', 'STAT'] as PrescriptionQueueFilter[]).map((filter) => (
         <Button
           key={filter}
           type="button"
@@ -33,7 +30,7 @@ export function PrescriptionQueueToggle({ value, onChange }: PrescriptionQueueTo
           )}
           onClick={() => onChange(filter)}
         >
-          {FILTER_LABELS[filter]}
+          {filter === 'ALL' ? t('all') : t('statOnly')}
         </Button>
       ))}
     </div>

@@ -6,9 +6,17 @@ export type FacilityConfig = {
 };
 
 export const FACILITY_KIND_LABELS: Record<FacilityKind, string> = {
-  clinic: 'Clinic',
-  hospital: 'Hospital',
+  clinic: 'Klinik',
+  hospital: 'Rumah Sakit',
 };
+
+export function getFacilityKindLabel(kind: FacilityKind, locale = 'id'): string {
+  if (locale === 'en') {
+    return kind === 'clinic' ? 'Clinic' : 'Hospital';
+  }
+
+  return FACILITY_KIND_LABELS[kind];
+}
 
 export const FACILITY_CONFIG: FacilityConfig = {
   name: 'Saling Jaga',

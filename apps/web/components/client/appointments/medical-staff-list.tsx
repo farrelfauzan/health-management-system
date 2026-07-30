@@ -2,6 +2,7 @@
 
 import type { DoctorListItem } from '@hms/shared-types';
 import { Checkbox, Skeleton } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
 
@@ -18,6 +19,7 @@ export function MedicalStaffList({
   isLoading,
   onToggleDoctor,
 }: MedicalStaffListProps) {
+  const t = useTranslations('operations.appointments');
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -28,7 +30,7 @@ export function MedicalStaffList({
     );
   }
   if (doctors.length === 0) {
-    return <p className="text-sm text-slate-500">No active doctors available.</p>;
+    return <p className="text-sm text-slate-500">{t('noActiveDoctors')}</p>;
   }
   return (
     <div className="space-y-2">
@@ -48,7 +50,7 @@ export function MedicalStaffList({
             </span>
             <Checkbox
               checked={isSelected}
-              aria-label={`Toggle ${doctor.fullName}`}
+              aria-label={t('toggleDoctor', { name: doctor.fullName })}
               onCheckedChange={() => onToggleDoctor(doctor.id)}
             />
           </label>

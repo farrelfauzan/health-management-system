@@ -1,9 +1,20 @@
+import type { ReactNode } from 'react';
 import type { PrescriptionResponse } from '@hms/shared-types';
-import { render, screen } from '@testing-library/react';
+import { render as testingRender, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi } from 'vitest';
 
 import { PrescriptionQueue } from './prescription-queue';
+import messages from '../../../messages/en/operations.json';
+
+function render(node: ReactNode) {
+  return testingRender(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      {node}
+    </NextIntlClientProvider>,
+  );
+}
 
 function buildPrescription(overrides: Partial<PrescriptionResponse>): PrescriptionResponse {
   return {
@@ -66,7 +77,7 @@ describe('PrescriptionQueue', () => {
     expect(screen.getByText('RX-7F9C2B')).toBeInTheDocument();
     expect(screen.getByText('Jonathan Miller')).toBeInTheDocument();
     expect(screen.getByText('#MRN-0007')).toBeInTheDocument();
-    expect(screen.getByText('REGULAR')).toBeInTheDocument();
+    expect(screen.getByText('Regular')).toBeInTheDocument();
     expect(screen.getByText('Amoxicillin 500mg')).toBeInTheDocument();
   });
 

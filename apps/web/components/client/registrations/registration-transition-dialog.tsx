@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { registrationFlowControllerUpdateRegistrationV1 } from '#lib/api/generated/registration-flow/registration-flow';
 import { parseApiSuccess } from '#lib/api/response';
@@ -22,8 +23,6 @@ import {
   type RegistrationTransitionTarget,
 } from '#lib/registrations/registration-transition-meta';
 import { formatStatusLabel } from '#lib/shared/status-label';
-
-const TRANSITION_ERROR_FALLBACK = 'Unable to update the registration. Please try again.';
 
 type RegistrationTransitionDialogProps = {
   open: boolean;
@@ -38,6 +37,7 @@ export function RegistrationTransitionDialog({
   registration,
   targetStatus,
 }: RegistrationTransitionDialogProps) {
+  const t = useTranslations('operations.registrations');
   const queryClient = useQueryClient();
   const [actionError, setActionError] = useState<string | null>(null);
   const meta = REGISTRATION_TRANSITION_META[targetStatus];
@@ -50,11 +50,11 @@ export function RegistrationTransitionDialog({
     setActionError(null);
     try {
       const response = await transitionMutation.mutateAsync();
-      parseApiSuccess<RegistrationListItem>(response, TRANSITION_ERROR_FALLBACK);
+      parseApiSuccess<RegistrationListItem>(response, t('updateError'));
       await invalidateRegistrationQueries(queryClient);
       onOpenChange(false);
     } catch (error) {
-      setActionError(notifyApiError(error, TRANSITION_ERROR_FALLBACK));
+      setActionError(notifyApiError(error, t('updateError')));
     }
   }
 
@@ -62,10 +62,19 @@ export function RegistrationTransitionDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-heading">{meta.title}</DialogTitle>
+          <DialogTitle className="font-heading">
+            {targetStatus === 'CHECKED_IN'
+              ? t('checkIn')
+              : targetStatus === 'COMPLETED'
+                ? t('complete')
+                : t('cancel')}
+          </DialogTitle>
           <DialogDescription>
-            Move the registration for {registration.patient.fullName} from{' '}
-            {formatStatusLabel(registration.status)} to {formatStatusLabel(targetStatus)}.
+            {t('transitionDescription', {
+              name: registration.patient.fullName,
+              from: formatStatusLabel(registration.status),
+              to: formatStatusLabel(targetStatus),
+            })}
           </DialogDescription>
         </DialogHeader>
         {actionError ? (
@@ -78,7 +87,7 @@ export function RegistrationTransitionDialog({
         ) : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Keep Current Status
+            {t('keepStatus')}
           </Button>
           <Button
             type="button"
@@ -87,7 +96,11 @@ export function RegistrationTransitionDialog({
             className={meta.isDestructive ? undefined : 'bg-primary-container hover:bg-primary'}
             onClick={() => void handleConfirm()}
           >
-            {transitionMutation.isPending ? meta.pendingLabel : meta.confirmLabel}
+            {targetStatus === 'CHECKED_IN'
+              ? t('checkIn')
+              : targetStatus === 'COMPLETED'
+                ? t('complete')
+                : t('cancel')}
           </Button>
         </DialogFooter>
       </DialogContent>

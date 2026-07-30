@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import type { AdminRoleOption } from '@hms/shared-types';
 import { Checkbox, cn } from '@hms/ui';
 
@@ -18,12 +20,13 @@ export function AdminUserRolePicker({
   hasError = false,
   onToggleRole,
 }: AdminUserRolePickerProps) {
+  const t = useTranslations('operations.administration');
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading roles…</p>;
+    return <p className="text-sm text-slate-500">{t('saving')}</p>;
   }
 
   if (roles.length === 0) {
-    return <p className="text-sm text-slate-500">No roles available.</p>;
+    return <p className="text-sm text-slate-500">{t('noRoles')}</p>;
   }
 
   return (
