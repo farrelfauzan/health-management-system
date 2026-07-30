@@ -84,6 +84,12 @@ describe('BPJS submission outbox against Postgres', () => {
       where: { prescriptionId: { in: createdPrescriptionIds } },
     });
     await prisma.prescription.deleteMany({ where: { id: { in: createdPrescriptionIds } } });
+    // Receipts hold `medication_id` under RESTRICT, so stock has to be cleared
+    // before the catalog rows. Allocations are already gone with their dispense
+    // items, which own them under CASCADE.
+    await prisma.medicationStockReceipt.deleteMany({
+      where: { medicationId: { in: createdMedicationIds } },
+    });
     await prisma.medication.deleteMany({ where: { id: { in: createdMedicationIds } } });
     await prisma.encounter.deleteMany({ where: { id: { in: createdEncounterIds } } });
     await prisma.registration.deleteMany({ where: { id: { in: createdRegistrationIds } } });
