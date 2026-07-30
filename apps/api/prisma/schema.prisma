@@ -1105,6 +1105,7 @@ model MedicationStockReceipt {
   allocations DispenseItemStockAllocation[]
 
   @@index([medicationId, expiryDate, receivedAt])
+  @@index([medicationId, remainingQuantity, expiryDate])
   @@index([expiryDate])
   @@index([receivedById])
   @@map("medication_stock_receipts")

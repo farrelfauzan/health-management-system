@@ -41,13 +41,13 @@ WHERE "stock_qty" > 0;
 ALTER TABLE "medications" DROP COLUMN "stock_qty";
 
 CREATE INDEX "medications_reorder_level_idx" ON "medications"("reorder_level");
-CREATE INDEX "medication_stock_receipts_medication_id_expiry_date_received_at_idx"
+CREATE INDEX "medication_stock_receipts_medication_id_expiry_date_receive_idx"
     ON "medication_stock_receipts"("medication_id", "expiry_date", "received_at");
 CREATE INDEX "medication_stock_receipts_expiry_date_idx"
     ON "medication_stock_receipts"("expiry_date");
 CREATE INDEX "medication_stock_receipts_received_by_id_idx"
     ON "medication_stock_receipts"("received_by_id");
-CREATE UNIQUE INDEX "dispense_item_stock_allocations_dispense_item_id_stock_receipt_id_key"
+CREATE UNIQUE INDEX "dispense_item_stock_allocations_dispense_item_id_stock_rece_key"
     ON "dispense_item_stock_allocations"("dispense_item_id", "stock_receipt_id");
 CREATE INDEX "dispense_item_stock_allocations_stock_receipt_id_idx"
     ON "dispense_item_stock_allocations"("stock_receipt_id");

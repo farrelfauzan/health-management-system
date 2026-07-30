@@ -17,5 +17,9 @@ ALTER TABLE "medication_stock_receipts"
 ADD CONSTRAINT "medication_stock_receipts_remaining_quantity_check"
 CHECK ("remaining_quantity" >= 0 AND "remaining_quantity" <= "quantity");
 
-CREATE INDEX "medication_stock_receipts_medication_id_remaining_quantity_expiry_date_idx"
+-- Name is the one Prisma derives from `@@index([medicationId, remainingQuantity,
+-- expiryDate])`. Prisma truncates the column list and keeps the `_idx` suffix,
+-- while Postgres would truncate the tail — so a longhand name silently drifts
+-- from the schema and fails CI's `migrate diff` gate.
+CREATE INDEX "medication_stock_receipts_medication_id_remaining_quantity__idx"
 ON "medication_stock_receipts"("medication_id", "remaining_quantity", "expiry_date");
