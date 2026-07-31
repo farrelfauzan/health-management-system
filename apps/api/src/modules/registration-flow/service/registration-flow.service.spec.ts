@@ -77,6 +77,10 @@ describe('RegistrationFlowService', () => {
   const appointmentId = '58e9a316-40b2-4f4c-9207-2a58028babc4';
   const doctorId = '7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11';
 
+  const generalPoliId = '2f5c7a30-1b4e-4a7d-9f1c-1de1a0040001';
+  const dentalPoliId = '3a6d8b41-2c5f-4b8e-8a2d-1de1a0040002';
+
+  // A walk-in: on the clinic-wide ticket roll, with no poli yet.
   const registrationRecord = {
     id: registrationId,
     patientId,
@@ -84,6 +88,8 @@ describe('RegistrationFlowService', () => {
     status: 'PENDING',
     queueNumber: 1,
     queueDate: new Date('2026-07-18T00:00:00.000Z'),
+    specialtyId: null,
+    poliQueueNumber: null,
     registeredAt: new Date('2026-07-18T08:00:00.000Z'),
     checkedInAt: null,
     completedAt: null,
@@ -97,7 +103,27 @@ describe('RegistrationFlowService', () => {
       ownerUserId: null,
     },
     appointment: null,
+    specialty: null,
   };
+
+  function buildPoliRegistration(overrides: {
+    id: string;
+    queueNumber: number;
+    poliQueueNumber: number;
+    poliId: string;
+    poliName: string;
+    status?: string;
+  }) {
+    return {
+      ...registrationRecord,
+      id: overrides.id,
+      queueNumber: overrides.queueNumber,
+      status: overrides.status ?? 'PENDING',
+      specialtyId: overrides.poliId,
+      poliQueueNumber: overrides.poliQueueNumber,
+      specialty: { id: overrides.poliId, name: overrides.poliName },
+    };
+  }
 
   const openAppointment = {
     id: appointmentId,
@@ -416,6 +442,27 @@ describe('RegistrationFlowService', () => {
         expect.objectContaining({ queueDate: new Date('2026-07-19T00:00:00.000Z') }),
       );
     });
+
+    // A patient can only read the board through their own registration (the
+    // board itself is ANY-scoped), so the poli ticket has to appear here too.
+    it('returns both tickets on the created registration', async () => {
+      mockPermissions([{ action: 'create', resource: 'Registration', scope: 'ANY' }]);
+      repositoryMock.createRegistration.mockResolvedValue(
+        buildPoliRegistration({
+          id: registrationId,
+          queueNumber: 12,
+          poliQueueNumber: 4,
+          poliId: generalPoliId,
+          poliName: 'Poli Umum',
+        }),
+      );
+
+      const actualRegistration = await service.createRegistration(createPayload, currentUser);
+
+      expect(actualRegistration.queueNumber).toBe(12);
+      expect(actualRegistration.poliQueueNumber).toBe(4);
+      expect(actualRegistration.poli).toEqual({ id: generalPoliId, name: 'Poli Umum' });
+    });
   });
 
   describe('getQueueBoard', () => {
@@ -488,6 +535,98 @@ describe('RegistrationFlowService', () => {
       const actualBoard = await service.getQueueBoard({ date: '2026-07-18' }, currentUser);
 
       expect(actualBoard.entries).toEqual([]);
+    });
+
+    it('carries both numbers on an entry booked into a poli', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+      repositoryMock.listQueueBoard.mockResolvedValue([
+        buildPoliRegistration({
+          id: 'a3c1de1a-0d9b-44a1-8c2f-6a3c1de1a010',
+          queueNumber: 7,
+          poliQueueNumber: 2,
+          poliId: generalPoliId,
+          poliName: 'Poli Umum',
+        }),
+      ]);
+
+      const actualBoard = await service.getQueueBoard({ date: '2026-07-18' }, currentUser);
+
+      expect(actualBoard.entries[0]?.queueNumber).toBe(7);
+      expect(actualBoard.entries[0]?.poliQueueNumber).toBe(2);
+      expect(actualBoard.entries[0]?.poli).toEqual({ id: generalPoliId, name: 'Poli Umum' });
+    });
+
+    // The clinic-wide roll must keep working for someone whose poli is not yet
+    // known, so the poli fields are simply absent rather than zeroed.
+    it('leaves the poli fields off a walk-in with no appointment', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+      repositoryMock.listQueueBoard.mockResolvedValue([registrationRecord]);
+
+      const actualBoard = await service.getQueueBoard({ date: '2026-07-18' }, currentUser);
+
+      expect(actualBoard.entries[0]?.poliQueueNumber).toBeUndefined();
+      expect(actualBoard.entries[0]?.poli).toBeUndefined();
+      expect(actualBoard.poli).toEqual([]);
+    });
+
+    it('summarizes each poli separately, in name order, ignoring poli-less entries', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+      repositoryMock.listQueueBoard.mockResolvedValue([
+        buildPoliRegistration({
+          id: 'a3c1de1a-0d9b-44a1-8c2f-6a3c1de1a011',
+          queueNumber: 1,
+          poliQueueNumber: 1,
+          poliId: generalPoliId,
+          poliName: 'Poli Umum',
+          status: 'COMPLETED',
+        }),
+        registrationRecord,
+        buildPoliRegistration({
+          id: 'a3c1de1a-0d9b-44a1-8c2f-6a3c1de1a012',
+          queueNumber: 3,
+          poliQueueNumber: 1,
+          poliId: dentalPoliId,
+          poliName: 'Poli Gigi',
+        }),
+        buildPoliRegistration({
+          id: 'a3c1de1a-0d9b-44a1-8c2f-6a3c1de1a013',
+          queueNumber: 4,
+          poliQueueNumber: 2,
+          poliId: generalPoliId,
+          poliName: 'Poli Umum',
+          status: 'CHECKED_IN',
+        }),
+      ]);
+
+      const actualBoard = await service.getQueueBoard({ date: '2026-07-18' }, currentUser);
+
+      expect(actualBoard.poli).toEqual([
+        {
+          poli: { id: dentalPoliId, name: 'Poli Gigi' },
+          waiting: 1,
+          counts: { pending: 1, checkedIn: 0, completed: 0, cancelled: 0 },
+          lastIssuedNumber: 1,
+        },
+        {
+          poli: { id: generalPoliId, name: 'Poli Umum' },
+          waiting: 1,
+          counts: { pending: 0, checkedIn: 1, completed: 1, cancelled: 0 },
+          lastIssuedNumber: 2,
+        },
+      ]);
+      // The walk-in is still on the board; it simply belongs to no poli.
+      expect(actualBoard.entries).toHaveLength(4);
+    });
+
+    it('passes a poli filter through to the repository', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+      await service.getQueueBoard({ date: '2026-07-18', specialtyId: generalPoliId }, currentUser);
+
+      expect(repositoryMock.listQueueBoard).toHaveBeenCalledWith({
+        queueDate: new Date('2026-07-18T00:00:00.000Z'),
+        specialtyId: generalPoliId,
+      });
     });
   });
 

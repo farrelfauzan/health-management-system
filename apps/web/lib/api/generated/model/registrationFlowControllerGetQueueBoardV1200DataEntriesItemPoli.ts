@@ -6,10 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RegistrationFlowControllerGetQueueBoardV1Params = {
-/**
- * @pattern ^\d{4}-\d{2}-\d{2}$
- */
-date?: string;
-specialtyId?: string;
+export type RegistrationFlowControllerGetQueueBoardV1200DataEntriesItemPoli = {
+  id: string;
+  name: string;
 };

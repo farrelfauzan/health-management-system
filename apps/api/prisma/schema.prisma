@@ -569,7 +569,9 @@ model Specialty {
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
 
-  doctors DoctorProfile[]
+  doctors           DoctorProfile[]
+  registrations     Registration[]
+  poliQueueCounters PoliQueueCounter[]
 
   @@index([deletedAt])
   @@index([isActive])
@@ -801,14 +803,43 @@ model Appointment {
 /// … RETURNING`) inside the registration-create transaction — the same
 /// reasoning as `MrnCounter`: concurrent front-desk and self-service
 /// registrations race, and `MAX(queue_number) + 1` hands two patients the
-/// same ticket. The queue is clinic-wide, mirroring the single-facility MRN
-/// decision; a per-poli split arrives with the BPJS poli mapping (P11-T03).
+/// same ticket. The queue is clinic-wide: it is the physical ticket roll at
+/// the door, and it stays clinic-wide even in a multi-poli clinic because
+/// that is what the roll dispenses. The per-poli sequence is a second,
+/// independent number — see `PoliQueueCounter`.
 model QueueCounter {
   queueDate DateTime @id @map("queue_date") @db.Date
   nextValue Int      @map("next_value")
   updatedAt DateTime @default(now()) @map("updated_at")
 
   @@map("queue_counters")
+}
+
+/// Allocates the daily per-poli antrian sequence — the same atomic upsert as
+/// `QueueCounter`, keyed on `(queueDate, specialtyId)` instead of the day
+/// alone (P14-T01).
+///
+/// This is deliberately a *second* number rather than a replacement. The
+/// clinic-wide roll is floor management: one ticket dispenser at the door,
+/// one number per patient, and it must keep working for a walk-in whose poli
+/// is not yet known. The per-poli number is what a poli's own display calls
+/// and what BPJS Antrean Online treats as *the* queue number, which is
+/// per-poli by contract (ADR D-023) — so a patient legitimately carries two
+/// numbers, and collapsing them would break one of the two consumers.
+///
+/// `Specialty` is the clinic's poli entity (see `Specialty.bpjsPoliCode`);
+/// there is no standalone poli table, so the counter keys on it directly.
+model PoliQueueCounter {
+  queueDate   DateTime @map("queue_date") @db.Date
+  specialtyId String   @map("specialty_id") @db.Uuid
+  nextValue   Int      @map("next_value")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+
+  @@id([queueDate, specialtyId])
+  @@index([specialtyId])
+  @@map("poli_queue_counters")
 }
 
 model Registration {
@@ -825,6 +856,21 @@ model Registration {
   /// Stored explicitly rather than derived from `registeredAt` so the board
   /// query never re-does timezone arithmetic over UTC timestamps.
   queueDate     DateTime?          @map("queue_date") @db.Date
+  /// The poli (`Specialty`) this visit is booked into, resolved from the
+  /// linked appointment's doctor when the ticket is issued. Null for a
+  /// walk-in registered without an appointment: the poli is genuinely not
+  /// known yet, and guessing one would allocate a number in a queue the
+  /// patient may never join.
+  ///
+  /// Denormalised onto the registration rather than read back through
+  /// `appointment.doctor.specialtyId` because it is the anchor of the
+  /// allocated number: a doctor who later moves specialty must not
+  /// retroactively move yesterday's tickets into another poli's sequence.
+  specialtyId     String?          @map("specialty_id") @db.Uuid
+  /// The poli's own daily ticket, allocated from `PoliQueueCounter`
+  /// alongside `queueNumber` (P14-T01). Set exactly when `specialtyId` is,
+  /// and governed by the same never-renumbered, never-reissued rule.
+  poliQueueNumber Int?             @map("poli_queue_number")
   registeredAt  DateTime           @default(now()) @map("registered_at")
   checkedInAt   DateTime?          @map("checked_in_at")
   completedAt   DateTime?          @map("completed_at")
@@ -835,13 +881,16 @@ model Registration {
 
   patient         PatientProfile   @relation(fields: [patientId], references: [id], onDelete: Restrict)
   appointment     Appointment?     @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  specialty       Specialty?       @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
   createdBy       User?            @relation("RegistrationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   encounter       Encounter?
   bpjsSubmissions BpjsSubmission[]
 
   @@unique([queueDate, queueNumber])
+  @@unique([queueDate, specialtyId, poliQueueNumber])
   @@index([patientId, status])
   @@index([status, registeredAt])
+  @@index([queueDate, specialtyId])
   @@index([deletedAt])
   @@map("registrations")
 }

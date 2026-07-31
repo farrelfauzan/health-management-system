@@ -68,6 +68,7 @@ export const ModelName = {
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
   QueueCounter: 'QueueCounter',
+  PoliQueueCounter: 'PoliQueueCounter',
   Registration: 'Registration',
   Encounter: 'Encounter',
   VitalSigns: 'VitalSigns',
@@ -396,6 +397,16 @@ export const QueueCounterScalarFieldEnum = {
 export type QueueCounterScalarFieldEnum = (typeof QueueCounterScalarFieldEnum)[keyof typeof QueueCounterScalarFieldEnum]
 
 
+export const PoliQueueCounterScalarFieldEnum = {
+  queueDate: 'queueDate',
+  specialtyId: 'specialtyId',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PoliQueueCounterScalarFieldEnum = (typeof PoliQueueCounterScalarFieldEnum)[keyof typeof PoliQueueCounterScalarFieldEnum]
+
+
 export const RegistrationScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
@@ -403,6 +414,8 @@ export const RegistrationScalarFieldEnum = {
   status: 'status',
   queueNumber: 'queueNumber',
   queueDate: 'queueDate',
+  specialtyId: 'specialtyId',
+  poliQueueNumber: 'poliQueueNumber',
   registeredAt: 'registeredAt',
   checkedInAt: 'checkedInAt',
   completedAt: 'completedAt',

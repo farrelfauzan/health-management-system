@@ -46,6 +46,15 @@ const REGISTRATION_RELATIONS_INCLUDE = {
       },
     },
   },
+  // The poli the per-poli ticket was drawn from, read from the registration's
+  // own column rather than through the appointment: the ticket outlives a
+  // later change to the doctor's specialty.
+  specialty: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
 } satisfies Prisma.RegistrationInclude;
 
 @Injectable()
@@ -224,6 +233,19 @@ export class RegistrationFlowRepository {
         tx,
         payload.queueDate,
       );
+      // The poli is resolved inside the transaction rather than passed in, so
+      // the number and the poli it was drawn from are decided against the same
+      // snapshot the row is written from.
+      const specialtyId = payload.appointmentId
+        ? await this.resolveAppointmentSpecialtyId(tx, payload.appointmentId)
+        : null;
+      const poliQueueNumber = specialtyId
+        ? await this.queueNumberAllocator.allocatePoliQueueNumber(
+            tx,
+            payload.queueDate,
+            specialtyId,
+          )
+        : null;
       await this.privacyNoticeRepository.assertCurrentEvidenceOrCapture(
         tx,
         payload.patientId,
@@ -237,6 +259,8 @@ export class RegistrationFlowRepository {
           createdById: payload.createdById,
           queueNumber,
           queueDate: payload.queueDate,
+          specialtyId,
+          poliQueueNumber,
         },
         include: REGISTRATION_RELATIONS_INCLUDE,
       });
@@ -247,6 +271,7 @@ export class RegistrationFlowRepository {
     return this.prisma.findManyActive(this.prisma.registration, {
       where: {
         queueDate: params.queueDate,
+        ...(params.specialtyId ? { specialtyId: params.specialtyId } : {}),
       },
       orderBy: {
         queueNumber: 'asc',
@@ -268,6 +293,10 @@ export class RegistrationFlowRepository {
    */
   async updateRegistration(payload: UpdateRegistrationRecordPayload) {
     return this.prisma.executeTransaction(async (tx) => {
+      const poliReassignment =
+        payload.appointmentId === undefined
+          ? undefined
+          : await this.resolvePoliReassignment(tx, payload.id, payload.appointmentId);
       const updated = await tx.registration.update({
         where: {
           id: payload.id,
@@ -277,6 +306,7 @@ export class RegistrationFlowRepository {
           ...(payload.appointmentId !== undefined ? { appointmentId: payload.appointmentId } : {}),
           ...(payload.checkedInAt !== undefined ? { checkedInAt: payload.checkedInAt } : {}),
           ...(payload.completedAt !== undefined ? { completedAt: payload.completedAt } : {}),
+          ...(poliReassignment ?? {}),
         },
         include: REGISTRATION_RELATIONS_INCLUDE,
       });
@@ -326,6 +356,82 @@ export class RegistrationFlowRepository {
       create: { registrationId, type: 'PENDAFTARAN' },
       update: {},
     });
+  }
+
+  /**
+   * The poli a registration belongs to is its appointment's doctor's
+   * specialty — the clinic has no standalone poli entity, and a registration
+   * reaches BPJS through exactly that path (see `Specialty.bpjsPoliCode`).
+   */
+  private async resolveAppointmentSpecialtyId(
+    tx: PrismaTransactionClient,
+    appointmentId: string,
+  ): Promise<string | null> {
+    const appointment = await tx.appointment.findFirst({
+      where: {
+        id: appointmentId,
+        deletedAt: null,
+      },
+      select: {
+        doctor: {
+          select: {
+            specialtyId: true,
+          },
+        },
+      },
+    });
+    return appointment?.doctor.specialtyId ?? null;
+  }
+
+  /**
+   * Re-links the per-poli ticket when the appointment link changes, which the
+   * service permits only while the registration is still PENDING.
+   *
+   * A moved patient is issued a *fresh* number from the poli they are actually
+   * attending; the old one is abandoned and leaves a gap, exactly as the
+   * never-renumbered rule requires. Carrying the old number across would put a
+   * patient in a sequence their poli's display never counts to, and reusing it
+   * would collide with whoever that poli has already issued it to. Unlinking
+   * the appointment clears both columns: there is no longer a poli to queue in.
+   *
+   * Returns `undefined` when nothing should change, so the caller folds the
+   * result into the same `UPDATE` as the rest of the payload.
+   */
+  private async resolvePoliReassignment(
+    tx: PrismaTransactionClient,
+    registrationId: string,
+    appointmentId: string | null,
+  ): Promise<{ specialtyId: string | null; poliQueueNumber: number | null } | undefined> {
+    const current = await tx.registration.findUnique({
+      where: { id: registrationId },
+      select: { specialtyId: true, queueDate: true },
+    });
+    if (!current) {
+      return undefined;
+    }
+    const nextSpecialtyId = appointmentId
+      ? await this.resolveAppointmentSpecialtyId(tx, appointmentId)
+      : null;
+    if (nextSpecialtyId === current.specialtyId) {
+      return undefined;
+    }
+    if (!nextSpecialtyId) {
+      return { specialtyId: null, poliQueueNumber: null };
+    }
+    // Registrations predating the queue have no `queueDate`, so there is no
+    // day to allocate against; they keep their empty ticket rather than
+    // acquiring a number retroactively.
+    if (!current.queueDate) {
+      return undefined;
+    }
+    return {
+      specialtyId: nextSpecialtyId,
+      poliQueueNumber: await this.queueNumberAllocator.allocatePoliQueueNumber(
+        tx,
+        current.queueDate,
+        nextSpecialtyId,
+      ),
+    };
   }
 
   private async propagateBpjsCancellation(

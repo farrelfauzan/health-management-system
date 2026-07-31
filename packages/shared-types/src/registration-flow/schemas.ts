@@ -133,6 +133,11 @@ export const queueBoardQuerySchema = z.object({
   date: registrationDateSchema
     .refine(isValidRegistrationDateValue, 'Queue board date must be a valid calendar date')
     .optional(),
+  /**
+   * Narrows the board to one poli, for a poli's own display. Omitted, the
+   * board stays clinic-wide — the front desk still works one ticket roll.
+   */
+  specialtyId: z.string().uuid().optional(),
 });
 
 export const updateRegistrationStatusSchema = z.enum(['CHECKED_IN', 'COMPLETED', 'CANCELLED']);

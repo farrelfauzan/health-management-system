@@ -28,10 +28,12 @@ export type AggregateRegistration = {
 
 export type RegistrationAvgAggregateOutputType = {
   queueNumber: number | null
+  poliQueueNumber: number | null
 }
 
 export type RegistrationSumAggregateOutputType = {
   queueNumber: number | null
+  poliQueueNumber: number | null
 }
 
 export type RegistrationMinAggregateOutputType = {
@@ -41,6 +43,8 @@ export type RegistrationMinAggregateOutputType = {
   status: $Enums.RegistrationStatus | null
   queueNumber: number | null
   queueDate: Date | null
+  specialtyId: string | null
+  poliQueueNumber: number | null
   registeredAt: Date | null
   checkedInAt: Date | null
   completedAt: Date | null
@@ -57,6 +61,8 @@ export type RegistrationMaxAggregateOutputType = {
   status: $Enums.RegistrationStatus | null
   queueNumber: number | null
   queueDate: Date | null
+  specialtyId: string | null
+  poliQueueNumber: number | null
   registeredAt: Date | null
   checkedInAt: Date | null
   completedAt: Date | null
@@ -73,6 +79,8 @@ export type RegistrationCountAggregateOutputType = {
   status: number
   queueNumber: number
   queueDate: number
+  specialtyId: number
+  poliQueueNumber: number
   registeredAt: number
   checkedInAt: number
   completedAt: number
@@ -86,10 +94,12 @@ export type RegistrationCountAggregateOutputType = {
 
 export type RegistrationAvgAggregateInputType = {
   queueNumber?: true
+  poliQueueNumber?: true
 }
 
 export type RegistrationSumAggregateInputType = {
   queueNumber?: true
+  poliQueueNumber?: true
 }
 
 export type RegistrationMinAggregateInputType = {
@@ -99,6 +109,8 @@ export type RegistrationMinAggregateInputType = {
   status?: true
   queueNumber?: true
   queueDate?: true
+  specialtyId?: true
+  poliQueueNumber?: true
   registeredAt?: true
   checkedInAt?: true
   completedAt?: true
@@ -115,6 +127,8 @@ export type RegistrationMaxAggregateInputType = {
   status?: true
   queueNumber?: true
   queueDate?: true
+  specialtyId?: true
+  poliQueueNumber?: true
   registeredAt?: true
   checkedInAt?: true
   completedAt?: true
@@ -131,6 +145,8 @@ export type RegistrationCountAggregateInputType = {
   status?: true
   queueNumber?: true
   queueDate?: true
+  specialtyId?: true
+  poliQueueNumber?: true
   registeredAt?: true
   checkedInAt?: true
   completedAt?: true
@@ -234,6 +250,8 @@ export type RegistrationGroupByOutputType = {
   status: $Enums.RegistrationStatus
   queueNumber: number | null
   queueDate: Date | null
+  specialtyId: string | null
+  poliQueueNumber: number | null
   registeredAt: Date
   checkedInAt: Date | null
   completedAt: Date | null
@@ -273,6 +291,8 @@ export type RegistrationWhereInput = {
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   queueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
   queueDate?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
+  specialtyId?: Prisma.UuidNullableFilter<"Registration"> | string | null
+  poliQueueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
   registeredAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   checkedInAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -282,6 +302,7 @@ export type RegistrationWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   patient?: Prisma.XOR<Prisma.PatientProfileScalarRelationFilter, Prisma.PatientProfileWhereInput>
   appointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
+  specialty?: Prisma.XOR<Prisma.SpecialtyNullableScalarRelationFilter, Prisma.SpecialtyWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
   bpjsSubmissions?: Prisma.BpjsSubmissionListRelationFilter
@@ -294,6 +315,8 @@ export type RegistrationOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   queueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  specialtyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  poliQueueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -303,6 +326,7 @@ export type RegistrationOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   patient?: Prisma.PatientProfileOrderByWithRelationInput
   appointment?: Prisma.AppointmentOrderByWithRelationInput
+  specialty?: Prisma.SpecialtyOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   encounter?: Prisma.EncounterOrderByWithRelationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionOrderByRelationAggregateInput
@@ -312,6 +336,7 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   appointmentId?: string
   queueDate_queueNumber?: Prisma.RegistrationQueueDateQueueNumberCompoundUniqueInput
+  queueDate_specialtyId_poliQueueNumber?: Prisma.RegistrationQueueDateSpecialtyIdPoliQueueNumberCompoundUniqueInput
   AND?: Prisma.RegistrationWhereInput | Prisma.RegistrationWhereInput[]
   OR?: Prisma.RegistrationWhereInput[]
   NOT?: Prisma.RegistrationWhereInput | Prisma.RegistrationWhereInput[]
@@ -319,6 +344,8 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   queueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
   queueDate?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
+  specialtyId?: Prisma.UuidNullableFilter<"Registration"> | string | null
+  poliQueueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
   registeredAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   checkedInAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -328,10 +355,11 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   patient?: Prisma.XOR<Prisma.PatientProfileScalarRelationFilter, Prisma.PatientProfileWhereInput>
   appointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
+  specialty?: Prisma.XOR<Prisma.SpecialtyNullableScalarRelationFilter, Prisma.SpecialtyWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
   bpjsSubmissions?: Prisma.BpjsSubmissionListRelationFilter
-}, "id" | "appointmentId" | "queueDate_queueNumber">
+}, "id" | "appointmentId" | "queueDate_queueNumber" | "queueDate_specialtyId_poliQueueNumber">
 
 export type RegistrationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -340,6 +368,8 @@ export type RegistrationOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   queueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  specialtyId?: Prisma.SortOrderInput | Prisma.SortOrder
+  poliQueueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -364,6 +394,8 @@ export type RegistrationScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumRegistrationStatusWithAggregatesFilter<"Registration"> | $Enums.RegistrationStatus
   queueNumber?: Prisma.IntNullableWithAggregatesFilter<"Registration"> | number | null
   queueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Registration"> | Date | string | null
+  specialtyId?: Prisma.UuidNullableWithAggregatesFilter<"Registration"> | string | null
+  poliQueueNumber?: Prisma.IntNullableWithAggregatesFilter<"Registration"> | number | null
   registeredAt?: Prisma.DateTimeWithAggregatesFilter<"Registration"> | Date | string
   checkedInAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Registration"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Registration"> | Date | string | null
@@ -378,6 +410,7 @@ export type RegistrationCreateInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -386,6 +419,7 @@ export type RegistrationCreateInput = {
   deletedAt?: Date | string | null
   patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
@@ -398,6 +432,8 @@ export type RegistrationUncheckedCreateInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -414,6 +450,7 @@ export type RegistrationUpdateInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -422,6 +459,7 @@ export type RegistrationUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
@@ -434,6 +472,8 @@ export type RegistrationUncheckedUpdateInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -452,6 +492,8 @@ export type RegistrationCreateManyInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -466,6 +508,7 @@ export type RegistrationUpdateManyMutationInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -481,6 +524,8 @@ export type RegistrationUncheckedUpdateManyInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -510,6 +555,12 @@ export type RegistrationQueueDateQueueNumberCompoundUniqueInput = {
   queueNumber: number
 }
 
+export type RegistrationQueueDateSpecialtyIdPoliQueueNumberCompoundUniqueInput = {
+  queueDate: Date | string
+  specialtyId: string
+  poliQueueNumber: number
+}
+
 export type RegistrationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
@@ -517,6 +568,8 @@ export type RegistrationCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrder
   queueDate?: Prisma.SortOrder
+  specialtyId?: Prisma.SortOrder
+  poliQueueNumber?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -528,6 +581,7 @@ export type RegistrationCountOrderByAggregateInput = {
 
 export type RegistrationAvgOrderByAggregateInput = {
   queueNumber?: Prisma.SortOrder
+  poliQueueNumber?: Prisma.SortOrder
 }
 
 export type RegistrationMaxOrderByAggregateInput = {
@@ -537,6 +591,8 @@ export type RegistrationMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrder
   queueDate?: Prisma.SortOrder
+  specialtyId?: Prisma.SortOrder
+  poliQueueNumber?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -553,6 +609,8 @@ export type RegistrationMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrder
   queueDate?: Prisma.SortOrder
+  specialtyId?: Prisma.SortOrder
+  poliQueueNumber?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -564,6 +622,7 @@ export type RegistrationMinOrderByAggregateInput = {
 
 export type RegistrationSumOrderByAggregateInput = {
   queueNumber?: Prisma.SortOrder
+  poliQueueNumber?: Prisma.SortOrder
 }
 
 export type RegistrationScalarRelationFilter = {
@@ -655,6 +714,48 @@ export type RegistrationUncheckedUpdateManyWithoutPatientNestedInput = {
   deleteMany?: Prisma.RegistrationScalarWhereInput | Prisma.RegistrationScalarWhereInput[]
 }
 
+export type RegistrationCreateNestedManyWithoutSpecialtyInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutSpecialtyInput, Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput> | Prisma.RegistrationCreateWithoutSpecialtyInput[] | Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput[]
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutSpecialtyInput | Prisma.RegistrationCreateOrConnectWithoutSpecialtyInput[]
+  createMany?: Prisma.RegistrationCreateManySpecialtyInputEnvelope
+  connect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+}
+
+export type RegistrationUncheckedCreateNestedManyWithoutSpecialtyInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutSpecialtyInput, Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput> | Prisma.RegistrationCreateWithoutSpecialtyInput[] | Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput[]
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutSpecialtyInput | Prisma.RegistrationCreateOrConnectWithoutSpecialtyInput[]
+  createMany?: Prisma.RegistrationCreateManySpecialtyInputEnvelope
+  connect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+}
+
+export type RegistrationUpdateManyWithoutSpecialtyNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutSpecialtyInput, Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput> | Prisma.RegistrationCreateWithoutSpecialtyInput[] | Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput[]
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutSpecialtyInput | Prisma.RegistrationCreateOrConnectWithoutSpecialtyInput[]
+  upsert?: Prisma.RegistrationUpsertWithWhereUniqueWithoutSpecialtyInput | Prisma.RegistrationUpsertWithWhereUniqueWithoutSpecialtyInput[]
+  createMany?: Prisma.RegistrationCreateManySpecialtyInputEnvelope
+  set?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  disconnect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  delete?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  connect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  update?: Prisma.RegistrationUpdateWithWhereUniqueWithoutSpecialtyInput | Prisma.RegistrationUpdateWithWhereUniqueWithoutSpecialtyInput[]
+  updateMany?: Prisma.RegistrationUpdateManyWithWhereWithoutSpecialtyInput | Prisma.RegistrationUpdateManyWithWhereWithoutSpecialtyInput[]
+  deleteMany?: Prisma.RegistrationScalarWhereInput | Prisma.RegistrationScalarWhereInput[]
+}
+
+export type RegistrationUncheckedUpdateManyWithoutSpecialtyNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutSpecialtyInput, Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput> | Prisma.RegistrationCreateWithoutSpecialtyInput[] | Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput[]
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutSpecialtyInput | Prisma.RegistrationCreateOrConnectWithoutSpecialtyInput[]
+  upsert?: Prisma.RegistrationUpsertWithWhereUniqueWithoutSpecialtyInput | Prisma.RegistrationUpsertWithWhereUniqueWithoutSpecialtyInput[]
+  createMany?: Prisma.RegistrationCreateManySpecialtyInputEnvelope
+  set?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  disconnect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  delete?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  connect?: Prisma.RegistrationWhereUniqueInput | Prisma.RegistrationWhereUniqueInput[]
+  update?: Prisma.RegistrationUpdateWithWhereUniqueWithoutSpecialtyInput | Prisma.RegistrationUpdateWithWhereUniqueWithoutSpecialtyInput[]
+  updateMany?: Prisma.RegistrationUpdateManyWithWhereWithoutSpecialtyInput | Prisma.RegistrationUpdateManyWithWhereWithoutSpecialtyInput[]
+  deleteMany?: Prisma.RegistrationScalarWhereInput | Prisma.RegistrationScalarWhereInput[]
+}
+
 export type RegistrationCreateNestedOneWithoutAppointmentInput = {
   create?: Prisma.XOR<Prisma.RegistrationCreateWithoutAppointmentInput, Prisma.RegistrationUncheckedCreateWithoutAppointmentInput>
   connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutAppointmentInput
@@ -724,6 +825,7 @@ export type RegistrationCreateWithoutCreatedByInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -732,6 +834,7 @@ export type RegistrationCreateWithoutCreatedByInput = {
   deletedAt?: Date | string | null
   patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
 }
@@ -743,6 +846,8 @@ export type RegistrationUncheckedCreateWithoutCreatedByInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -789,6 +894,8 @@ export type RegistrationScalarWhereInput = {
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   queueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
   queueDate?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
+  specialtyId?: Prisma.UuidNullableFilter<"Registration"> | string | null
+  poliQueueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
   registeredAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   checkedInAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -803,6 +910,7 @@ export type RegistrationCreateWithoutPatientInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -810,6 +918,7 @@ export type RegistrationCreateWithoutPatientInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
@@ -821,6 +930,8 @@ export type RegistrationUncheckedCreateWithoutPatientInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -858,11 +969,12 @@ export type RegistrationUpdateManyWithWhereWithoutPatientInput = {
   data: Prisma.XOR<Prisma.RegistrationUpdateManyMutationInput, Prisma.RegistrationUncheckedUpdateManyWithoutPatientInput>
 }
 
-export type RegistrationCreateWithoutAppointmentInput = {
+export type RegistrationCreateWithoutSpecialtyInput = {
   id?: string
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -870,6 +982,71 @@ export type RegistrationCreateWithoutAppointmentInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
+  appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationUncheckedCreateWithoutSpecialtyInput = {
+  id?: string
+  patientId: string
+  appointmentId?: string | null
+  status?: $Enums.RegistrationStatus
+  queueNumber?: number | null
+  queueDate?: Date | string | null
+  poliQueueNumber?: number | null
+  registeredAt?: Date | string
+  checkedInAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationCreateOrConnectWithoutSpecialtyInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutSpecialtyInput, Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput>
+}
+
+export type RegistrationCreateManySpecialtyInputEnvelope = {
+  data: Prisma.RegistrationCreateManySpecialtyInput | Prisma.RegistrationCreateManySpecialtyInput[]
+  skipDuplicates?: boolean
+}
+
+export type RegistrationUpsertWithWhereUniqueWithoutSpecialtyInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  update: Prisma.XOR<Prisma.RegistrationUpdateWithoutSpecialtyInput, Prisma.RegistrationUncheckedUpdateWithoutSpecialtyInput>
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutSpecialtyInput, Prisma.RegistrationUncheckedCreateWithoutSpecialtyInput>
+}
+
+export type RegistrationUpdateWithWhereUniqueWithoutSpecialtyInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateWithoutSpecialtyInput, Prisma.RegistrationUncheckedUpdateWithoutSpecialtyInput>
+}
+
+export type RegistrationUpdateManyWithWhereWithoutSpecialtyInput = {
+  where: Prisma.RegistrationScalarWhereInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateManyMutationInput, Prisma.RegistrationUncheckedUpdateManyWithoutSpecialtyInput>
+}
+
+export type RegistrationCreateWithoutAppointmentInput = {
+  id?: string
+  status?: $Enums.RegistrationStatus
+  queueNumber?: number | null
+  queueDate?: Date | string | null
+  poliQueueNumber?: number | null
+  registeredAt?: Date | string
+  checkedInAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
@@ -881,6 +1058,8 @@ export type RegistrationUncheckedCreateWithoutAppointmentInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -913,6 +1092,7 @@ export type RegistrationUpdateWithoutAppointmentInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -920,6 +1100,7 @@ export type RegistrationUpdateWithoutAppointmentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
@@ -931,6 +1112,8 @@ export type RegistrationUncheckedUpdateWithoutAppointmentInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -947,6 +1130,7 @@ export type RegistrationCreateWithoutEncounterInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -955,6 +1139,7 @@ export type RegistrationCreateWithoutEncounterInput = {
   deletedAt?: Date | string | null
   patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
 }
@@ -966,6 +1151,8 @@ export type RegistrationUncheckedCreateWithoutEncounterInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -997,6 +1184,7 @@ export type RegistrationUpdateWithoutEncounterInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1005,6 +1193,7 @@ export type RegistrationUpdateWithoutEncounterInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
 }
@@ -1016,6 +1205,8 @@ export type RegistrationUncheckedUpdateWithoutEncounterInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1031,6 +1222,7 @@ export type RegistrationCreateWithoutBpjsSubmissionsInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1039,6 +1231,7 @@ export type RegistrationCreateWithoutBpjsSubmissionsInput = {
   deletedAt?: Date | string | null
   patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
   appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
 }
@@ -1050,6 +1243,8 @@ export type RegistrationUncheckedCreateWithoutBpjsSubmissionsInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1081,6 +1276,7 @@ export type RegistrationUpdateWithoutBpjsSubmissionsInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1089,6 +1285,7 @@ export type RegistrationUpdateWithoutBpjsSubmissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
 }
@@ -1100,6 +1297,8 @@ export type RegistrationUncheckedUpdateWithoutBpjsSubmissionsInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1117,6 +1316,8 @@ export type RegistrationCreateManyCreatedByInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1130,6 +1331,7 @@ export type RegistrationUpdateWithoutCreatedByInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1138,6 +1340,7 @@ export type RegistrationUpdateWithoutCreatedByInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
   appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
 }
@@ -1149,6 +1352,8 @@ export type RegistrationUncheckedUpdateWithoutCreatedByInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1166,6 +1371,8 @@ export type RegistrationUncheckedUpdateManyWithoutCreatedByInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1180,6 +1387,8 @@ export type RegistrationCreateManyPatientInput = {
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1194,6 +1403,7 @@ export type RegistrationUpdateWithoutPatientInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1201,6 +1411,7 @@ export type RegistrationUpdateWithoutPatientInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
@@ -1212,6 +1423,8 @@ export type RegistrationUncheckedUpdateWithoutPatientInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1229,6 +1442,80 @@ export type RegistrationUncheckedUpdateManyWithoutPatientInput = {
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type RegistrationCreateManySpecialtyInput = {
+  id?: string
+  patientId: string
+  appointmentId?: string | null
+  status?: $Enums.RegistrationStatus
+  queueNumber?: number | null
+  queueDate?: Date | string | null
+  poliQueueNumber?: number | null
+  registeredAt?: Date | string
+  checkedInAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type RegistrationUpdateWithoutSpecialtyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
+  appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateWithoutSpecialtyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateManyWithoutSpecialtyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1276,6 +1563,8 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   status?: boolean
   queueNumber?: boolean
   queueDate?: boolean
+  specialtyId?: boolean
+  poliQueueNumber?: boolean
   registeredAt?: boolean
   checkedInAt?: boolean
   completedAt?: boolean
@@ -1285,6 +1574,7 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   deletedAt?: boolean
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
+  specialty?: boolean | Prisma.Registration$specialtyArgs<ExtArgs>
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
   encounter?: boolean | Prisma.Registration$encounterArgs<ExtArgs>
   bpjsSubmissions?: boolean | Prisma.Registration$bpjsSubmissionsArgs<ExtArgs>
@@ -1298,6 +1588,8 @@ export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   status?: boolean
   queueNumber?: boolean
   queueDate?: boolean
+  specialtyId?: boolean
+  poliQueueNumber?: boolean
   registeredAt?: boolean
   checkedInAt?: boolean
   completedAt?: boolean
@@ -1307,6 +1599,7 @@ export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   deletedAt?: boolean
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
+  specialty?: boolean | Prisma.Registration$specialtyArgs<ExtArgs>
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["registration"]>
 
@@ -1317,6 +1610,8 @@ export type RegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   status?: boolean
   queueNumber?: boolean
   queueDate?: boolean
+  specialtyId?: boolean
+  poliQueueNumber?: boolean
   registeredAt?: boolean
   checkedInAt?: boolean
   completedAt?: boolean
@@ -1326,6 +1621,7 @@ export type RegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   deletedAt?: boolean
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
+  specialty?: boolean | Prisma.Registration$specialtyArgs<ExtArgs>
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["registration"]>
 
@@ -1336,6 +1632,8 @@ export type RegistrationSelectScalar = {
   status?: boolean
   queueNumber?: boolean
   queueDate?: boolean
+  specialtyId?: boolean
+  poliQueueNumber?: boolean
   registeredAt?: boolean
   checkedInAt?: boolean
   completedAt?: boolean
@@ -1345,10 +1643,11 @@ export type RegistrationSelectScalar = {
   deletedAt?: boolean
 }
 
-export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "appointmentId" | "status" | "queueNumber" | "queueDate" | "registeredAt" | "checkedInAt" | "completedAt" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["registration"]>
+export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "appointmentId" | "status" | "queueNumber" | "queueDate" | "specialtyId" | "poliQueueNumber" | "registeredAt" | "checkedInAt" | "completedAt" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["registration"]>
 export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
+  specialty?: boolean | Prisma.Registration$specialtyArgs<ExtArgs>
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
   encounter?: boolean | Prisma.Registration$encounterArgs<ExtArgs>
   bpjsSubmissions?: boolean | Prisma.Registration$bpjsSubmissionsArgs<ExtArgs>
@@ -1357,11 +1656,13 @@ export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.Interna
 export type RegistrationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
+  specialty?: boolean | Prisma.Registration$specialtyArgs<ExtArgs>
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
 }
 export type RegistrationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
+  specialty?: boolean | Prisma.Registration$specialtyArgs<ExtArgs>
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
 }
 
@@ -1370,6 +1671,7 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     patient: Prisma.$PatientProfilePayload<ExtArgs>
     appointment: Prisma.$AppointmentPayload<ExtArgs> | null
+    specialty: Prisma.$SpecialtyPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     encounter: Prisma.$EncounterPayload<ExtArgs> | null
     bpjsSubmissions: Prisma.$BpjsSubmissionPayload<ExtArgs>[]
@@ -1392,6 +1694,25 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
      * query never re-does timezone arithmetic over UTC timestamps.
      */
     queueDate: Date | null
+    /**
+     * The poli (`Specialty`) this visit is booked into, resolved from the
+     * linked appointment's doctor when the ticket is issued. Null for a
+     * walk-in registered without an appointment: the poli is genuinely not
+     * known yet, and guessing one would allocate a number in a queue the
+     * patient may never join.
+     * 
+     * Denormalised onto the registration rather than read back through
+     * `appointment.doctor.specialtyId` because it is the anchor of the
+     * allocated number: a doctor who later moves specialty must not
+     * retroactively move yesterday's tickets into another poli's sequence.
+     */
+    specialtyId: string | null
+    /**
+     * The poli's own daily ticket, allocated from `PoliQueueCounter`
+     * alongside `queueNumber` (P14-T01). Set exactly when `specialtyId` is,
+     * and governed by the same never-renumbered, never-reissued rule.
+     */
+    poliQueueNumber: number | null
     registeredAt: Date
     checkedInAt: Date | null
     completedAt: Date | null
@@ -1795,6 +2116,7 @@ export interface Prisma__RegistrationClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   patient<T extends Prisma.PatientProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientProfileClient<runtime.Types.Result.GetResult<Prisma.$PatientProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   appointment<T extends Prisma.Registration$appointmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$appointmentArgs<ExtArgs>>): Prisma.Prisma__AppointmentClient<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  specialty<T extends Prisma.Registration$specialtyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$specialtyArgs<ExtArgs>>): Prisma.Prisma__SpecialtyClient<runtime.Types.Result.GetResult<Prisma.$SpecialtyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.Registration$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   encounter<T extends Prisma.Registration$encounterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$encounterArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   bpjsSubmissions<T extends Prisma.Registration$bpjsSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$bpjsSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BpjsSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1833,6 +2155,8 @@ export interface RegistrationFieldRefs {
   readonly status: Prisma.FieldRef<"Registration", 'RegistrationStatus'>
   readonly queueNumber: Prisma.FieldRef<"Registration", 'Int'>
   readonly queueDate: Prisma.FieldRef<"Registration", 'DateTime'>
+  readonly specialtyId: Prisma.FieldRef<"Registration", 'String'>
+  readonly poliQueueNumber: Prisma.FieldRef<"Registration", 'Int'>
   readonly registeredAt: Prisma.FieldRef<"Registration", 'DateTime'>
   readonly checkedInAt: Prisma.FieldRef<"Registration", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"Registration", 'DateTime'>
@@ -2257,6 +2581,25 @@ export type Registration$appointmentArgs<ExtArgs extends runtime.Types.Extension
    */
   include?: Prisma.AppointmentInclude<ExtArgs> | null
   where?: Prisma.AppointmentWhereInput
+}
+
+/**
+ * Registration.specialty
+ */
+export type Registration$specialtyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Specialty
+   */
+  select?: Prisma.SpecialtySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Specialty
+   */
+  omit?: Prisma.SpecialtyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SpecialtyInclude<ExtArgs> | null
+  where?: Prisma.SpecialtyWhereInput
 }
 
 /**

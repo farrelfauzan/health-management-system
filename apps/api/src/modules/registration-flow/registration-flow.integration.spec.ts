@@ -16,6 +16,7 @@ describe('RegistrationFlow integration', () => {
   const registrationId = '0d9b34a1-7c2f-4bd0-8a8e-6a3c1de1a001';
   const patientId = '38a3f0f1-51d3-4f68-9d54-1f6a1de1a002';
   const doctorId = '7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11';
+  const specialtyId = '2f5c7a30-1b4e-4a7d-9f1c-1de1a0040001';
 
   const authRepositoryMock = {
     findUserById: jest.fn(),
@@ -46,6 +47,8 @@ describe('RegistrationFlow integration', () => {
     status: 'PENDING',
     queueNumber: 1,
     queueDate: new Date('2026-07-18T00:00:00.000Z'),
+    specialtyId: null,
+    poliQueueNumber: null,
     registeredAt: new Date('2026-07-18T08:00:00.000Z'),
     checkedInAt: null,
     completedAt: null,
@@ -59,6 +62,7 @@ describe('RegistrationFlow integration', () => {
       ownerUserId: null,
     },
     appointment: null,
+    specialty: null,
   };
 
   function buildToken(sub: string, email: string): Promise<string> {
@@ -288,6 +292,54 @@ describe('RegistrationFlow integration', () => {
     const response = await request(app.getHttpServer())
       .get('/api/v1/v1/registrations/queue-board')
       .query({ date: '2026-02-30' })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(registrationRepositoryMock.listQueueBoard).not.toHaveBeenCalled();
+  });
+
+  it('returns the per-poli ticket and summary on the queue board', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+    registrationRepositoryMock.listQueueBoard.mockResolvedValue([
+      {
+        ...registrationRecord,
+        specialtyId,
+        poliQueueNumber: 1,
+        specialty: { id: specialtyId, name: 'Poli Umum' },
+      },
+    ]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/registrations/queue-board')
+      .query({ date: '2026-07-18', specialtyId })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.entries[0].queueNumber).toBe(1);
+    expect(response.body.data.entries[0].poliQueueNumber).toBe(1);
+    expect(response.body.data.entries[0].poli).toEqual({ id: specialtyId, name: 'Poli Umum' });
+    expect(response.body.data.poli).toEqual([
+      {
+        poli: { id: specialtyId, name: 'Poli Umum' },
+        waiting: 1,
+        counts: { pending: 1, checkedIn: 0, completed: 0, cancelled: 0 },
+        lastIssuedNumber: 1,
+      },
+    ]);
+    expect(registrationRepositoryMock.listQueueBoard).toHaveBeenCalledWith({
+      queueDate: new Date('2026-07-18T00:00:00.000Z'),
+      specialtyId,
+    });
+  });
+
+  it('returns 400 for a queue board query with a non-uuid poli filter', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/registrations/queue-board')
+      .query({ specialtyId: 'poli-umum' })
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(400);

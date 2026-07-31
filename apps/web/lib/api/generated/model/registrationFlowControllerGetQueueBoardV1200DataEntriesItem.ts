@@ -7,10 +7,13 @@
  */
 import type { RegistrationFlowControllerGetQueueBoardV1200DataEntriesItemDoctor } from './registrationFlowControllerGetQueueBoardV1200DataEntriesItemDoctor';
 import type { RegistrationFlowControllerGetQueueBoardV1200DataEntriesItemPatient } from './registrationFlowControllerGetQueueBoardV1200DataEntriesItemPatient';
+import type { RegistrationFlowControllerGetQueueBoardV1200DataEntriesItemPoli } from './registrationFlowControllerGetQueueBoardV1200DataEntriesItemPoli';
 
 export type RegistrationFlowControllerGetQueueBoardV1200DataEntriesItem = {
   registrationId: string;
   queueNumber: number;
+  poliQueueNumber: number;
+  poli: RegistrationFlowControllerGetQueueBoardV1200DataEntriesItemPoli;
   status: string;
   registeredAt: string;
   checkedInAt: string;

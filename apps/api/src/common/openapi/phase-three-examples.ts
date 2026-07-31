@@ -240,9 +240,12 @@ const registration = {
   patientId,
   appointmentId,
   status: 'REGISTERED',
-  // Server-allocated daily antrian ticket, never client-supplied.
+  // Server-allocated daily antrian tickets, never client-supplied: one from
+  // the clinic-wide roll, one from the poli's own sequence (P14-T01).
   queueNumber: 1,
   queueDate: '2026-07-20',
+  poliQueueNumber: 1,
+  poli: { id: specialtyId, name: 'Internal Medicine' },
   registeredAt: timestamp,
   createdById: userId,
   createdAt: timestamp,
@@ -582,10 +585,20 @@ export const PHASE_THREE_EXAMPLES = {
     queueBoard: {
       date: '2026-07-20',
       counts: { pending: 0, checkedIn: 1, completed: 0, cancelled: 0 },
+      poli: [
+        {
+          poli: { id: specialtyId, name: specialty.name },
+          waiting: 1,
+          counts: { pending: 0, checkedIn: 1, completed: 0, cancelled: 0 },
+          lastIssuedNumber: 1,
+        },
+      ],
       entries: [
         {
           registrationId,
           queueNumber: 1,
+          poliQueueNumber: 1,
+          poli: { id: specialtyId, name: specialty.name },
           status: 'CHECKED_IN',
           registeredAt: timestamp,
           checkedInAt: timestamp,

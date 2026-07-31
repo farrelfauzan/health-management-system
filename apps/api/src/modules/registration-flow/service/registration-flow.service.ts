@@ -4,8 +4,10 @@ import {
   getCalendarDateInTimeZone,
   QueueBoardCounts,
   QueueBoardEntry,
+  QueueBoardPoliSummary,
   QueueBoardResponse,
   RegistrationListItem,
+  RegistrationPoli,
   RegistrationStatusValue,
   RegistrationWithRelationsRecord,
   UpdateRegistrationRecordPayload,
@@ -176,7 +178,10 @@ export class RegistrationFlowService {
       throw new ForbiddenException('You are not allowed to read the queue board');
     }
     const queueDate = query.date ? parseRegistrationDateOnly(query.date) : this.resolveClinicToday();
-    const registrations = await this.registrationFlowRepository.listQueueBoard({ queueDate });
+    const registrations = await this.registrationFlowRepository.listQueueBoard({
+      queueDate,
+      specialtyId: query.specialtyId,
+    });
     const entries = registrations.flatMap((registration) =>
       registration.queueNumber === null
         ? []
@@ -185,6 +190,7 @@ export class RegistrationFlowService {
     return {
       date: formatCalendarDate(queueDate),
       counts: this.countQueueBoardEntries(entries),
+      poli: this.summarizeQueueBoardPoli(entries),
       entries,
     };
   }
@@ -200,6 +206,10 @@ export class RegistrationFlowService {
     return {
       registrationId: registration.id,
       queueNumber,
+      poliQueueNumber: registration.poliQueueNumber ?? undefined,
+      poli: registration.specialty
+        ? { id: registration.specialty.id, name: registration.specialty.name }
+        : undefined,
       status: registration.status,
       registeredAt: registration.registeredAt.toISOString(),
       checkedInAt: registration.checkedInAt?.toISOString(),
@@ -216,6 +226,41 @@ export class RegistrationFlowService {
           }
         : undefined,
     };
+  }
+
+  /**
+   * Groups the day's entries by poli so each poli's display can read its own
+   * queue directly. Poli with no ticket that day are deliberately absent —
+   * an empty row on a waiting-room screen reads as a poli that is running,
+   * and a poli nobody registered for is not.
+   */
+  private summarizeQueueBoardPoli(entries: QueueBoardEntry[]): QueueBoardPoliSummary[] {
+    const grouped = new Map<string, { poli: RegistrationPoli; entries: QueueBoardEntry[] }>();
+    for (const entry of entries) {
+      if (!entry.poli) {
+        continue;
+      }
+      const existing = grouped.get(entry.poli.id);
+      if (existing) {
+        existing.entries.push(entry);
+        continue;
+      }
+      grouped.set(entry.poli.id, { poli: entry.poli, entries: [entry] });
+    }
+    return [...grouped.values()]
+      .map(({ poli, entries: poliEntries }) => {
+        const counts = this.countQueueBoardEntries(poliEntries);
+        return {
+          poli,
+          waiting: counts.pending + counts.checkedIn,
+          counts,
+          lastIssuedNumber: poliEntries.reduce(
+            (highest, entry) => Math.max(highest, entry.poliQueueNumber ?? 0),
+            0,
+          ),
+        };
+      })
+      .sort((left, right) => left.poli.name.localeCompare(right.poli.name));
   }
 
   private countQueueBoardEntries(entries: QueueBoardEntry[]): QueueBoardCounts {
@@ -406,6 +451,10 @@ export class RegistrationFlowService {
       status: registration.status,
       queueNumber: registration.queueNumber ?? undefined,
       queueDate: registration.queueDate ? formatCalendarDate(registration.queueDate) : undefined,
+      poliQueueNumber: registration.poliQueueNumber ?? undefined,
+      poli: registration.specialty
+        ? { id: registration.specialty.id, name: registration.specialty.name }
+        : undefined,
       registeredAt: registration.registeredAt.toISOString(),
       checkedInAt: registration.checkedInAt?.toISOString(),
       completedAt: registration.completedAt?.toISOString(),

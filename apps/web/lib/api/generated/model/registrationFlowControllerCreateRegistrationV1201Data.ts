@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { RegistrationFlowControllerCreateRegistrationV1201DataPoli } from './registrationFlowControllerCreateRegistrationV1201DataPoli';
 
 export type RegistrationFlowControllerCreateRegistrationV1201Data = {
   id: string;
@@ -13,6 +14,8 @@ export type RegistrationFlowControllerCreateRegistrationV1201Data = {
   status: string;
   queueNumber: number;
   queueDate: string;
+  poliQueueNumber: number;
+  poli: RegistrationFlowControllerCreateRegistrationV1201DataPoli;
   registeredAt: string;
   createdById: string;
   createdAt: string;

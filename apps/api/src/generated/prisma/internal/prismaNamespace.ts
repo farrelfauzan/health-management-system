@@ -401,6 +401,7 @@ export const ModelName = {
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
   QueueCounter: 'QueueCounter',
+  PoliQueueCounter: 'PoliQueueCounter',
   Registration: 'Registration',
   Encounter: 'Encounter',
   VitalSigns: 'VitalSigns',
@@ -449,7 +450,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1708,6 +1709,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.QueueCounterCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.QueueCounterCountAggregateOutputType> | number
+        }
+      }
+    }
+    PoliQueueCounter: {
+      payload: Prisma.$PoliQueueCounterPayload<ExtArgs>
+      fields: Prisma.PoliQueueCounterFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PoliQueueCounterFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PoliQueueCounterFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload>
+        }
+        findFirst: {
+          args: Prisma.PoliQueueCounterFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PoliQueueCounterFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload>
+        }
+        findMany: {
+          args: Prisma.PoliQueueCounterFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload>[]
+        }
+        create: {
+          args: Prisma.PoliQueueCounterCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload>
+        }
+        createMany: {
+          args: Prisma.PoliQueueCounterCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PoliQueueCounterCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload>[]
+        }
+        delete: {
+          args: Prisma.PoliQueueCounterDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload>
+        }
+        update: {
+          args: Prisma.PoliQueueCounterUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload>
+        }
+        deleteMany: {
+          args: Prisma.PoliQueueCounterDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PoliQueueCounterUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PoliQueueCounterUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload>[]
+        }
+        upsert: {
+          args: Prisma.PoliQueueCounterUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PoliQueueCounterPayload>
+        }
+        aggregate: {
+          args: Prisma.PoliQueueCounterAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePoliQueueCounter>
+        }
+        groupBy: {
+          args: Prisma.PoliQueueCounterGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PoliQueueCounterGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PoliQueueCounterCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PoliQueueCounterCountAggregateOutputType> | number
         }
       }
     }
@@ -4469,6 +4544,16 @@ export const QueueCounterScalarFieldEnum = {
 export type QueueCounterScalarFieldEnum = (typeof QueueCounterScalarFieldEnum)[keyof typeof QueueCounterScalarFieldEnum]
 
 
+export const PoliQueueCounterScalarFieldEnum = {
+  queueDate: 'queueDate',
+  specialtyId: 'specialtyId',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PoliQueueCounterScalarFieldEnum = (typeof PoliQueueCounterScalarFieldEnum)[keyof typeof PoliQueueCounterScalarFieldEnum]
+
+
 export const RegistrationScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
@@ -4476,6 +4561,8 @@ export const RegistrationScalarFieldEnum = {
   status: 'status',
   queueNumber: 'queueNumber',
   queueDate: 'queueDate',
+  specialtyId: 'specialtyId',
+  poliQueueNumber: 'poliQueueNumber',
   registeredAt: 'registeredAt',
   checkedInAt: 'checkedInAt',
   completedAt: 'completedAt',
@@ -5851,6 +5938,7 @@ export type GlobalOmitConfig = {
   doctorPatientActivity?: Prisma.DoctorPatientActivityOmit
   appointment?: Prisma.AppointmentOmit
   queueCounter?: Prisma.QueueCounterOmit
+  poliQueueCounter?: Prisma.PoliQueueCounterOmit
   registration?: Prisma.RegistrationOmit
   encounter?: Prisma.EncounterOmit
   vitalSigns?: Prisma.VitalSignsOmit
