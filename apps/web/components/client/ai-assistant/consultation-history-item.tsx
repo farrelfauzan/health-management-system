@@ -3,7 +3,7 @@
 import { Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
-import type { ConsultationHistoryEntry } from '#lib/ai-assistant/mock-recent-history';
+import type { ConsultationHistoryEntry } from '#lib/ai-assistant/consultation-history-entry';
 
 type ConsultationHistoryItemProps = {
   entry: ConsultationHistoryEntry;

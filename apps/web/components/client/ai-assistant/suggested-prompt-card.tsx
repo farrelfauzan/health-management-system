@@ -1,6 +1,6 @@
 'use client';
 
-import type { SuggestedPrompt } from '#lib/ai-assistant/mock-suggested-prompts';
+import type { SuggestedPrompt } from '#lib/ai-assistant/suggested-prompts';
 
 type SuggestedPromptCardProps = {
   prompt: SuggestedPrompt;

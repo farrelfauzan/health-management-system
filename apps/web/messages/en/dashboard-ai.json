@@ -1,7 +1,10 @@
 {
   "dashboard": {
     "header": {
-      "breadcrumbs": { "dashboard": "Main Dashboard", "overview": "Overview" },
+      "breadcrumbs": {
+        "dashboard": "Main Dashboard",
+        "overview": "Overview"
+      },
       "title": "Clinic Overview",
       "newCase": "New Case",
       "greeting": {
@@ -61,7 +64,10 @@
   },
   "aiAssistant": {
     "header": {
-      "breadcrumbs": { "advanced": "Advanced", "assistant": "AI Assistant" },
+      "breadcrumbs": {
+        "advanced": "Advanced",
+        "assistant": "AI Assistant"
+      },
       "title": "AI Clinical Assistant",
       "subtitle": "Ask clinical questions grounded in Saling Jaga patient context."
     },
@@ -73,7 +79,8 @@
       "newConsultation": "New Consultation",
       "suggestedAnalysis": "Suggested Analysis",
       "recentHistory": "Recent History",
-      "historyUnavailable": "Consultation history is not available in the preview"
+      "historyUnavailable": "Consultation history is not available in the preview",
+      "untitledConsultation": "Untitled consultation"
     },
     "composer": {
       "placeholder": "Ask about patients, lab results, or hospital protocol...",
@@ -142,6 +149,75 @@
       "greetingLab": "Based on the latest lab results for Patient #821 (Maria Garcia), I recommend reviewing the potassium levels before her 10:00 AM consultation. Her current levels are at 3.2 mEq/L, which is slightly below the normal range.",
       "labReference": "Lab Report: 2024-04-14_Garcia.pdf",
       "journalReference": "Journal of Clinical Chemistry (Vol 42)"
+    },
+    "errors": {
+      "sessionFailed": "Unable to start a chat session.",
+      "replyFailed": "Unable to get a reply."
+    },
+    "greeting": {
+      "intro": "Hello {displayName}.",
+      "scope": "Ask about clinic services, appointments, or general health information. I cannot diagnose or prescribe."
+    }
+  },
+  "aiProviders": {
+    "header": {
+      "title": "AI Providers",
+      "subtitle": "Configure the upstream provider that answers chatbot conversations. API keys are write-only — only the last four characters are ever shown.",
+      "breadcrumbs": {
+        "advanced": "Advanced",
+        "aiProviders": "AI Providers"
+      },
+      "addProvider": "Add provider"
+    },
+    "states": {
+      "loading": "Loading provider configurations…",
+      "loadFailed": "Unable to load AI provider configurations.",
+      "empty": "No provider is configured yet. Add one, then activate it to start answering conversations."
+    },
+    "table": {
+      "displayName": "Name",
+      "providerKind": "Provider",
+      "model": "Model",
+      "apiKey": "API key",
+      "status": "Status",
+      "lastTest": "Last test",
+      "actions": "Actions",
+      "active": "Active",
+      "staged": "Staged",
+      "noApiKey": "No key",
+      "neverTested": "Never tested"
+    },
+    "actions": {
+      "edit": "Edit",
+      "activate": "Activate",
+      "test": "Test",
+      "testing": "Testing…",
+      "delete": "Delete",
+      "activated": "Provider activated. New conversations will use it.",
+      "activateFailed": "Unable to activate this provider.",
+      "testFailed": "Unable to reach the provider.",
+      "deleted": "Provider retired.",
+      "deleteFailed": "Unable to delete this provider."
+    },
+    "form": {
+      "createTitle": "Add AI provider",
+      "editTitle": "Edit AI provider",
+      "description": "New configurations are staged inactive. Activate one to route conversations to it.",
+      "providerKind": "Provider",
+      "providerKindLocked": "The provider cannot be changed — add a new configuration instead.",
+      "displayName": "Name",
+      "defaultModel": "Model",
+      "baseUrl": "Base URL",
+      "baseUrlHint": "Leave blank to use the vendor default. Required for OpenAI-compatible gateways and Azure OpenAI.",
+      "apiKey": "API key",
+      "apiKeyHint": "Optional only for a self-hosted Ollama host without authentication.",
+      "apiKeyRotateHint": "Leave blank to keep the stored key. Entering a value rotates it.",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "created": "Provider added. Activate it to start using it.",
+      "updated": "Provider updated.",
+      "saveFailed": "Unable to save this provider."
     }
   }
 }

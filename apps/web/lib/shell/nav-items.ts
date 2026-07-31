@@ -16,6 +16,7 @@ export type ShellNavigationKey =
   | 'billing'
   | 'advanced'
   | 'aiAssistant'
+  | 'aiProviders'
   | 'integrations'
   | 'administration'
   | 'today';
@@ -109,6 +110,13 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         labelKey: 'aiAssistant',
         icon: 'psychology',
         ability: { action: 'create', subject: 'ChatSession' },
+      },
+      {
+        href: '/admin/ai-providers',
+        label: 'AI Providers',
+        labelKey: 'aiProviders',
+        icon: 'settings_input_component',
+        ability: { action: 'read', subject: 'AiProviderConfig' },
       },
       {
         href: '/admin/integrations',

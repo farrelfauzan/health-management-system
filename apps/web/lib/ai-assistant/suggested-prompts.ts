@@ -1,6 +1,8 @@
-// DUMMY-DATA: suggested analysis prompts are static preview content. The AI chatbot backend
-// (chat sessions, contextual prompt suggestions) ships post-MVP in Phase 13 — see
-// docs/post-mvp/ai-chatbot.md. Replace with a suggestions endpoint when it exists.
+/**
+ * Static conversation starters for the assistant sidebar. These are UX
+ * affordances, not sample data: the text they insert is a real question the
+ * user sends to the provider like any other message.
+ */
 export type SuggestedPrompt = {
   id: string;
   title: string;
@@ -8,7 +10,7 @@ export type SuggestedPrompt = {
   messageText: string;
 };
 
-export function buildMockSuggestedPrompts(locale: AppLocale): SuggestedPrompt[] {
+export function buildSuggestedPrompts(locale: AppLocale): SuggestedPrompt[] {
   const t = createAiAssistantTranslator(locale);
   return [
     {
