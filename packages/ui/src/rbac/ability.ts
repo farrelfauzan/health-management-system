@@ -40,6 +40,7 @@ export type AppSubject =
   | 'Payment'
   | 'ChatSession'
   | 'ChatMessage'
+  | 'AiProviderConfig'
   | 'BpjsConfig'
   | 'BpjsReference'
   | 'BpjsMapping'

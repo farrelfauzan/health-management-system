@@ -44,6 +44,7 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   payment: 'Payment',
   'chat.session': 'ChatSession',
   'chat.message': 'ChatMessage',
+  'ai-provider': 'AiProviderConfig',
   'bpjs.config': 'BpjsConfig',
   'bpjs.reference': 'BpjsReference',
   'bpjs.mapping': 'BpjsMapping',
