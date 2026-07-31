@@ -58,4 +58,5 @@ export * from '#auth/types';
 export * from '#rbac/schemas';
 export * from '#rbac/types';
 export * from '#ai-chatbot/schemas';
+export * from '#ai-chatbot/contracts';
 export * from '#ai-chatbot/types';

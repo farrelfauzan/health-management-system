@@ -12551,6 +12551,673 @@ paths:
       summary: Monthly BPJS reconciliation report (tercatat vs terkirim vs gagal)
       tags:
         - BPJS PCare
+  /api/v1/admin/ai-providers:
+    get:
+      operationId: AiProviderController_listConfigs_v1
+      parameters: []
+      responses:
+        "200":
+          description: "All live configurations, newest first, with the active one
+            flagged. API keys are write-only: only a presence flag and the
+            four-character hint are ever returned."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        providerKind:
+                          type: string
+                        displayName:
+                          type: string
+                        hasApiKey:
+                          type: boolean
+                        apiKeyHint:
+                          type: string
+                        baseUrl:
+                          nullable: true
+                        defaultModel:
+                          type: string
+                        isActive:
+                          type: boolean
+                        isEnabled:
+                          type: boolean
+                        maxTokens:
+                          type: integer
+                        timeoutMs:
+                          type: integer
+                        lastTestedAt:
+                          type: string
+                        lastTestResult:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - providerKind
+                        - displayName
+                        - hasApiKey
+                        - apiKeyHint
+                        - baseUrl
+                        - defaultModel
+                        - isActive
+                        - isEnabled
+                        - maxTokens
+                        - timeoutMs
+                        - lastTestedAt
+                        - lastTestResult
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 8c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f
+                      providerKind: DEEPSEEK
+                      displayName: Clinic DeepSeek
+                      hasApiKey: true
+                      apiKeyHint: x7Kp
+                      baseUrl: null
+                      defaultModel: deepseek-chat
+                      isActive: true
+                      isEnabled: true
+                      maxTokens: 2048
+                      timeoutMs: 30000
+                      lastTestedAt: 2026-08-12T04:20:00.000Z
+                      lastTestResult: "OK: Provider accepted the credentials and answered with model
+                        deepseek-chat"
+                      createdAt: 2026-08-12T04:00:00.000Z
+                      updatedAt: 2026-08-12T04:20:00.000Z
+                    - id: 5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e
+                      providerKind: OLLAMA
+                      displayName: Clinic Ollama (staged)
+                      hasApiKey: false
+                      apiKeyHint: ""
+                      baseUrl: http://ollama.internal:11434/v1
+                      defaultModel: llama3.2
+                      isActive: false
+                      isEnabled: true
+                      maxTokens: 2048
+                      timeoutMs: 30000
+                      lastTestedAt: null
+                      lastTestResult: null
+                      createdAt: 2026-08-12T05:00:00.000Z
+                      updatedAt: 2026-08-12T05:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List the clinic’s AI provider configurations
+      tags: &a22
+        - AI Chatbot
+    post:
+      operationId: AiProviderController_createConfig_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAiProviderConfigDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  providerKind: DEEPSEEK
+                  displayName: Clinic DeepSeek
+                  apiKey: sk-sample-provider-key
+                  defaultModel: deepseek-chat
+                  isEnabled: true
+                  maxTokens: 2048
+                  timeoutMs: 30000
+      responses:
+        "201":
+          description: The created configuration, always staged inactive — activating it
+            is a separate call, which is how a clinic cuts over between
+            providers without a gap. An API key is required for every kind
+            except OLLAMA, and an explicit base URL for OPENAI_COMPATIBLE and
+            AZURE_OPENAI.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      providerKind:
+                        type: string
+                      displayName:
+                        type: string
+                      hasApiKey:
+                        type: boolean
+                      apiKeyHint:
+                        type: string
+                      baseUrl:
+                        type: string
+                      defaultModel:
+                        type: string
+                      isActive:
+                        type: boolean
+                      isEnabled:
+                        type: boolean
+                      maxTokens:
+                        type: integer
+                      timeoutMs:
+                        type: integer
+                      lastTestedAt:
+                        nullable: true
+                      lastTestResult:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - providerKind
+                      - displayName
+                      - hasApiKey
+                      - apiKeyHint
+                      - baseUrl
+                      - defaultModel
+                      - isActive
+                      - isEnabled
+                      - maxTokens
+                      - timeoutMs
+                      - lastTestedAt
+                      - lastTestResult
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e
+                    providerKind: OLLAMA
+                    displayName: Clinic Ollama (staged)
+                    hasApiKey: false
+                    apiKeyHint: ""
+                    baseUrl: http://ollama.internal:11434/v1
+                    defaultModel: llama3.2
+                    isActive: false
+                    isEnabled: true
+                    maxTokens: 2048
+                    timeoutMs: 30000
+                    lastTestedAt: null
+                    lastTestResult: null
+                    createdAt: 2026-08-12T05:00:00.000Z
+                    updatedAt: 2026-08-12T05:00:00.000Z
+                  message: AI provider configuration created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create an AI provider configuration
+      tags: *a22
+  /api/v1/admin/ai-providers/{id}:
+    patch:
+      operationId: AiProviderController_updateConfig_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAiProviderConfigDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  displayName: Clinic DeepSeek (production)
+                  defaultModel: deepseek-reasoner
+                  apiKey: sk-rotated-provider-key
+      responses:
+        "200":
+          description: The updated configuration. An omitted apiKey keeps the stored key —
+            write-only secrets are never echoed back for re-submission; sending
+            a new one rotates it. A null baseUrl clears the override back to the
+            vendor default, which is refused for kinds that have none.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      providerKind:
+                        type: string
+                      displayName:
+                        type: string
+                      hasApiKey:
+                        type: boolean
+                      apiKeyHint:
+                        type: string
+                      baseUrl:
+                        nullable: true
+                      defaultModel:
+                        type: string
+                      isActive:
+                        type: boolean
+                      isEnabled:
+                        type: boolean
+                      maxTokens:
+                        type: integer
+                      timeoutMs:
+                        type: integer
+                      lastTestedAt:
+                        type: string
+                      lastTestResult:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - providerKind
+                      - displayName
+                      - hasApiKey
+                      - apiKeyHint
+                      - baseUrl
+                      - defaultModel
+                      - isActive
+                      - isEnabled
+                      - maxTokens
+                      - timeoutMs
+                      - lastTestedAt
+                      - lastTestResult
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 8c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f
+                    providerKind: DEEPSEEK
+                    displayName: Clinic DeepSeek
+                    hasApiKey: true
+                    apiKeyHint: x7Kp
+                    baseUrl: null
+                    defaultModel: deepseek-chat
+                    isActive: true
+                    isEnabled: true
+                    maxTokens: 2048
+                    timeoutMs: 30000
+                    lastTestedAt: 2026-08-12T04:20:00.000Z
+                    lastTestResult: "OK: Provider accepted the credentials and answered with model
+                      deepseek-chat"
+                    createdAt: 2026-08-12T04:00:00.000Z
+                    updatedAt: 2026-08-12T04:20:00.000Z
+                  message: AI provider configuration updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: AI provider configuration not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: AI provider configuration not found.
+      security:
+        - bearer: []
+      summary: Update an AI provider configuration
+      tags: *a22
+    delete:
+      operationId: AiProviderController_deleteConfig_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Soft-deletes the configuration and releases the active slot in the
+            same write. The active configuration is refused: deleting it would
+            leave chat with no provider, so activate a replacement first."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e
+                  message: AI provider configuration deleted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: AI provider configuration not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: AI provider configuration not found.
+      security:
+        - bearer: []
+      summary: Retire an AI provider configuration
+      tags: *a22
+  /api/v1/admin/ai-providers/{id}/activate:
+    post:
+      operationId: AiProviderController_activateConfig_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Releases the current active configuration and claims the slot in
+            one transaction, so no request ever sees two providers or none. A
+            configuration that would fail resolution (missing key or base URL
+            for its kind) is refused here rather than at the next patient
+            message. Existing sessions keep their recorded provider metadata.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      providerKind:
+                        type: string
+                      displayName:
+                        type: string
+                      hasApiKey:
+                        type: boolean
+                      apiKeyHint:
+                        type: string
+                      baseUrl:
+                        nullable: true
+                      defaultModel:
+                        type: string
+                      isActive:
+                        type: boolean
+                      isEnabled:
+                        type: boolean
+                      maxTokens:
+                        type: integer
+                      timeoutMs:
+                        type: integer
+                      lastTestedAt:
+                        type: string
+                      lastTestResult:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - providerKind
+                      - displayName
+                      - hasApiKey
+                      - apiKeyHint
+                      - baseUrl
+                      - defaultModel
+                      - isActive
+                      - isEnabled
+                      - maxTokens
+                      - timeoutMs
+                      - lastTestedAt
+                      - lastTestResult
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 8c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f
+                    providerKind: DEEPSEEK
+                    displayName: Clinic DeepSeek
+                    hasApiKey: true
+                    apiKeyHint: x7Kp
+                    baseUrl: null
+                    defaultModel: deepseek-chat
+                    isActive: true
+                    isEnabled: true
+                    maxTokens: 2048
+                    timeoutMs: 30000
+                    lastTestedAt: 2026-08-12T04:20:00.000Z
+                    lastTestResult: "OK: Provider accepted the credentials and answered with model
+                      deepseek-chat"
+                    createdAt: 2026-08-12T04:00:00.000Z
+                    updatedAt: 2026-08-12T04:20:00.000Z
+                  message: AI provider configuration activated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: AI provider configuration not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: AI provider configuration not found.
+      security:
+        - bearer: []
+      summary: Route chat traffic to an AI provider configuration
+      tags: *a22
+  /api/v1/admin/ai-providers/{id}/test:
+    post:
+      operationId: AiProviderController_testConnection_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sends a minimal completion through the real adapter path to prove
+            the key, base URL, and model together. No chat session is created. A
+            failed test is a 200 with isSuccessful=false and the provider’s
+            readable reason — the outcome is also persisted on the
+            configuration. Only the active configuration can be tested, because
+            that is the one a patient message would use.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isSuccessful:
+                        type: boolean
+                      message:
+                        type: string
+                      testedAt:
+                        type: string
+                    required:
+                      - isSuccessful
+                      - message
+                      - testedAt
+                required:
+                  - data
+                example:
+                  data:
+                    isSuccessful: true
+                    message: Provider accepted the credentials and answered with model deepseek-chat
+                    testedAt: 2026-08-12T04:20:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: AI provider configuration not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: AI provider configuration not found.
+      security:
+        - bearer: []
+      summary: Test the stored AI provider credentials
+      tags: *a22
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -12606,7 +13273,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a22
+      tags: &a23
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -12699,7 +13366,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a22
+      tags: *a23
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -12791,7 +13458,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a22
+      tags: *a23
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -14392,6 +15059,91 @@ components:
         force:
           type: boolean
           default: false
+    CreateAiProviderConfigDto:
+      type: object
+      properties:
+        providerKind:
+          type: string
+          enum:
+            - OPENAI
+            - DEEPSEEK
+            - ANTHROPIC
+            - OLLAMA
+            - OPENAI_COMPATIBLE
+            - AZURE_OPENAI
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        apiKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+        baseUrl:
+          type: string
+          format: uri
+          maxLength: 512
+        defaultModel:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._/:-]{0,127}$
+        isEnabled:
+          type: boolean
+          default: true
+        maxTokens:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 32000
+          exclusiveMaximum: false
+          default: 2048
+        timeoutMs:
+          type: integer
+          minimum: 1000
+          exclusiveMinimum: false
+          maximum: 120000
+          exclusiveMaximum: false
+          default: 30000
+      required:
+        - providerKind
+        - displayName
+        - defaultModel
+    UpdateAiProviderConfigDto:
+      type: object
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        apiKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+        baseUrl:
+          type: string
+          format: uri
+          maxLength: 512
+          nullable: true
+        defaultModel:
+          type: string
+          minLength: 1
+          maxLength: 128
+          pattern: ^[A-Za-z0-9][A-Za-z0-9._/:-]{0,127}$
+        isEnabled:
+          type: boolean
+        maxTokens:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 32000
+          exclusiveMaximum: false
+        timeoutMs:
+          type: integer
+          minimum: 1000
+          exclusiveMinimum: false
+          maximum: 120000
+          exclusiveMaximum: false
     AssignRoleDto:
       type: object
       properties:
