@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import type { CSSProperties, ReactNode } from 'react';
 import { buildAppAbility, SidebarInset, SidebarProvider } from '@hms/ui';
 
+import { ChatLauncher } from '#components/client/ai-assistant/chat-launcher';
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
 import { AppSidebar } from '#components/client/shell/app-sidebar';
 import { TopBar } from '#components/server/shell/top-bar';
@@ -50,6 +51,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </main>
         </SidebarInset>
       </SidebarProvider>
+      <ChatLauncher />
     </AppAbilityProvider>
   );
 }

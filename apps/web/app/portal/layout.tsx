@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import type { ReactNode } from 'react';
 
+import { ChatLauncher } from '#components/client/ai-assistant/chat-launcher';
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
 import { PortalTopBar } from '#components/server/portal/portal-top-bar';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
@@ -28,6 +29,7 @@ export default async function PortalLayout({ children }: PortalLayoutProps) {
           <div className="mx-auto w-full min-w-0 max-w-5xl">{children}</div>
         </main>
       </div>
+      <ChatLauncher />
     </AppAbilityProvider>
   );
 }

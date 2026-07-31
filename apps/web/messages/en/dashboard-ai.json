@@ -71,10 +71,6 @@
       "title": "AI Clinical Assistant",
       "subtitle": "Ask clinical questions grounded in Saling Jaga patient context."
     },
-    "preview": {
-      "label": "Preview — simulated responses",
-      "description": "This screen is a preview. Responses are simulated until the AI backend ships."
-    },
     "sidebar": {
       "newConsultation": "New Consultation",
       "suggestedAnalysis": "Suggested Analysis",
@@ -119,37 +115,6 @@
         "message": "Draft a discharge summary for Room 402."
       }
     },
-    "history": {
-      "medicationConflict": "Medication conflict check - Patient #492",
-      "icdLookup": "ICD-10 Code lookup: Type 2 Diabetes",
-      "shiftHandover": "Shift handover notes (April 12)"
-    },
-    "mock": {
-      "suggestionNote": "Note: This is an AI suggestion. Please verify against hospital protocol and current patient vitals before ordering.",
-      "patientLoadSummary": "Here is today's patient load at a glance: 14 patients are scheduled, with 3 marked as high-acuity and an average wait time of 24 minutes.",
-      "patientLoadHigh": "High acuity: 3 patients (2 cardiology, 1 internal medicine).",
-      "patientLoadModerate": "Moderate acuity: 6 patients, longest current wait 41 minutes.",
-      "patientLoadRoutine": "Routine follow-ups: 5 patients, all on schedule.",
-      "queueReference": "Registration Queue snapshot (preview data)",
-      "cardiologyIntro": "Dr. Aris has the following openings for cardiology consultations this week:",
-      "cardiologyThursday": "Thursday 14:30 — 30-minute consultation slot.",
-      "cardiologyFridayMorning": "Friday 09:00 — 45-minute extended slot.",
-      "cardiologyFridayAfternoon": "Friday 15:15 — 30-minute consultation slot.",
-      "cardiologyNote": "Note: This is an AI suggestion. Please confirm availability in the Appointments schedule before booking.",
-      "dischargeSummary": "Draft discharge summary for Room 402: the latest lab results show electrolytes back within normal range and vitals stable for the past 12 hours.",
-      "dischargeCondition": "Discharge condition: stable, ambulating independently.",
-      "dischargeMedication": "Medications on discharge: continue current regimen, no changes.",
-      "dischargeFollowUp": "Follow-up: outpatient review in 7 days with repeat electrolyte panel.",
-      "roomReference": "Lab Report: Room 402 (preview data)",
-      "fallbackIntro": "For mild hypokalemia (3.2 mEq/L), oral potassium supplementation is typically first-line. I would suggest:",
-      "fallbackDose": "Potassium Chloride 40 mEq PO once.",
-      "fallbackRecheck": "Re-check electrolyte panel in 4 hours.",
-      "fallbackMonitor": "Monitor ECG for any U-wave development or QT prolongation.",
-      "greetingSummary": "Hello {displayName}. I've analyzed today's dashboard. You have 14 patients scheduled, with 3 marked as high-acuity.",
-      "greetingLab": "Based on the latest lab results for Patient #821 (Maria Garcia), I recommend reviewing the potassium levels before her 10:00 AM consultation. Her current levels are at 3.2 mEq/L, which is slightly below the normal range.",
-      "labReference": "Lab Report: 2024-04-14_Garcia.pdf",
-      "journalReference": "Journal of Clinical Chemistry (Vol 42)"
-    },
     "errors": {
       "sessionFailed": "Unable to start a chat session.",
       "replyFailed": "Unable to get a reply."
@@ -157,6 +122,14 @@
     "greeting": {
       "intro": "Hello {displayName}.",
       "scope": "Ask about clinic services, appointments, or general health information. I cannot diagnose or prescribe."
+    },
+    "unavailable": {
+      "title": "The assistant is unavailable",
+      "disabled": "AI chat is switched off for this clinic. An administrator can enable it in the deployment settings.",
+      "noProvider": "No AI provider is active yet. An administrator needs to add one and activate it under AI Providers."
+    },
+    "launcher": {
+      "open": "Open the AI assistant"
     }
   },
   "aiProviders": {

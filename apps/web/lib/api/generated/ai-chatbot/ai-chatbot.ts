@@ -29,6 +29,7 @@ import type {
   AiProviderControllerUpdateConfigV1200,
   ChatControllerCreateSessionV1201,
   ChatControllerDeleteSessionV1200,
+  ChatControllerGetAvailabilityV1200,
   ChatControllerGetSessionV1200,
   ChatControllerListAllSessionsV1200,
   ChatControllerListAllSessionsV1Params,
@@ -615,6 +616,98 @@ export function useAiProviderControllerTestConnectionV1<TData = Awaited<ReturnTy
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAiProviderControllerTestConnectionV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Check whether chat can answer right now
+ */
+export const chatControllerGetAvailabilityV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChatControllerGetAvailabilityV1200>(
+      {url: `/api/v1/chat/availability`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getChatControllerGetAvailabilityV1QueryKey = () => {
+    return [
+    `/api/v1/chat/availability`
+    ] as const;
+    }
+
+
+export const getChatControllerGetAvailabilityV1QueryOptions = <TData = Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChatControllerGetAvailabilityV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>> = ({ signal }) => chatControllerGetAvailabilityV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChatControllerGetAvailabilityV1QueryResult = NonNullable<Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>>
+export type ChatControllerGetAvailabilityV1QueryError = unknown
+
+
+export function useChatControllerGetAvailabilityV1<TData = Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerGetAvailabilityV1<TData = Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerGetAvailabilityV1<TData = Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Check whether chat can answer right now
+ */
+
+export function useChatControllerGetAvailabilityV1<TData = Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetAvailabilityV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChatControllerGetAvailabilityV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

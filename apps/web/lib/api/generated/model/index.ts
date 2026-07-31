@@ -129,6 +129,8 @@ export * from './chatControllerCreateSessionV1201';
 export * from './chatControllerCreateSessionV1201Data';
 export * from './chatControllerDeleteSessionV1200';
 export * from './chatControllerDeleteSessionV1200Data';
+export * from './chatControllerGetAvailabilityV1200';
+export * from './chatControllerGetAvailabilityV1200Data';
 export * from './chatControllerGetSessionV1200';
 export * from './chatControllerGetSessionV1200Data';
 export * from './chatControllerListAllSessionsV1Channel';

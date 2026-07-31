@@ -1,9 +1,36 @@
 import { describe, expect, it } from 'vitest';
 
+import enAuthShellMessages from '../messages/en/auth-shell.json';
+import enClinicalMessages from '../messages/en/clinical.json';
+import enDashboardAiMessages from '../messages/en/dashboard-ai.json';
 import enMessages from '../messages/en.json';
+import enOperationsMessages from '../messages/en/operations.json';
 import enPharmacyInventoryMessages from '../messages/en/pharmacy-inventory.json';
+import enSharedMessages from '../messages/en/shared.json';
+import idAuthShellMessages from '../messages/id/auth-shell.json';
+import idClinicalMessages from '../messages/id/clinical.json';
+import idDashboardAiMessages from '../messages/id/dashboard-ai.json';
 import idMessages from '../messages/id.json';
+import idOperationsMessages from '../messages/id/operations.json';
 import idPharmacyInventoryMessages from '../messages/id/pharmacy-inventory.json';
+import idSharedMessages from '../messages/id/shared.json';
+
+/**
+ * Every catalog, not just the two that used to be checked. Indonesian is the
+ * product's primary language, so an English-only string is a defect rather
+ * than a gradual-translation state — and the earlier spec covered `en.json`
+ * (which holds a single key) plus pharmacy inventory, leaving the catalogs
+ * that carry almost all of the UI text unguarded.
+ */
+const CATALOG_PAIRS: ReadonlyArray<readonly [string, unknown, unknown]> = [
+  ['root', enMessages, idMessages],
+  ['auth-shell', enAuthShellMessages, idAuthShellMessages],
+  ['clinical', enClinicalMessages, idClinicalMessages],
+  ['dashboard-ai', enDashboardAiMessages, idDashboardAiMessages],
+  ['operations', enOperationsMessages, idOperationsMessages],
+  ['pharmacy-inventory', enPharmacyInventoryMessages, idPharmacyInventoryMessages],
+  ['shared', enSharedMessages, idSharedMessages],
+];
 
 function collectLeafKeys(value: unknown, prefix = ''): string[] {
   if (typeof value !== 'object' || value === null) {
@@ -15,26 +42,28 @@ function collectLeafKeys(value: unknown, prefix = ''): string[] {
   );
 }
 
+function readLeaf(messages: unknown, key: string): unknown {
+  return key
+    .split('.')
+    .reduce<unknown>((current, part) => (current as Record<string, unknown>)[part], messages);
+}
+
 describe('translation catalogs', () => {
-  it('keeps Indonesian and English message keys in parity', () => {
-    expect(collectLeafKeys(enMessages).sort()).toEqual(collectLeafKeys(idMessages).sort());
-  });
+  it.each(CATALOG_PAIRS)(
+    'keeps the %s catalog in key parity across locales',
+    (_catalog, english, indonesian) => {
+      expect(collectLeafKeys(english).sort()).toEqual(collectLeafKeys(indonesian).sort());
+    },
+  );
 
-  it('keeps pharmacy inventory catalogs in parity', () => {
-    expect(collectLeafKeys(enPharmacyInventoryMessages).sort()).toEqual(
-      collectLeafKeys(idPharmacyInventoryMessages).sort(),
-    );
-  });
-
-  it.each([
-    ['id', idMessages],
-    ['en', enMessages],
-  ])('contains no empty %s messages', (_locale, messages) => {
-    const leaves = collectLeafKeys(messages);
-    for (const key of leaves) {
-      const value = key.split('.').reduce<unknown>((current, part) => {
-        return (current as Record<string, unknown>)[part];
-      }, messages);
+  it.each(
+    CATALOG_PAIRS.flatMap(([catalog, english, indonesian]) => [
+      [`${catalog} (en)`, english] as const,
+      [`${catalog} (id)`, indonesian] as const,
+    ]),
+  )('contains no empty %s messages', (_label, messages) => {
+    for (const key of collectLeafKeys(messages)) {
+      const value = readLeaf(messages, key);
       expect(typeof value === 'string' && value.trim().length > 0).toBe(true);
     }
   });

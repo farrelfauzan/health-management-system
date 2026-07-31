@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import {
+  ChatAvailabilityView,
   ChatExchangeMeta,
   ChatExchangeView,
   ChatMessageListView,
@@ -67,6 +68,30 @@ export class AiChatbotService {
     private readonly safetyPolicyService: SafetyPolicyService,
     private readonly configService: ConfigService,
   ) {}
+
+  /**
+   * Answers "would a message sent right now be answered?" without sending
+   * one. The provider is resolved exactly as `sendMessage` would resolve it,
+   * so a config that fails validation (missing key, unusable base URL) reads
+   * as unavailable here rather than as a working chat that 503s on the first
+   * question. Any other failure propagates: an unavailable *database* is not
+   * the same claim as a disabled feature.
+   */
+  async getAvailability(): Promise<ChatAvailabilityView> {
+    const isEnabled = this.isChatEnabled();
+    if (!isEnabled) {
+      return { isAvailable: false, isEnabled: false, hasActiveProvider: false };
+    }
+    try {
+      await this.resolverService.resolveActiveProvider();
+      return { isAvailable: true, isEnabled: true, hasActiveProvider: true };
+    } catch (caughtError) {
+      if (caughtError instanceof AiChatbotError && caughtError.code === 'AI_NOT_CONFIGURED') {
+        return { isAvailable: false, isEnabled: true, hasActiveProvider: false };
+      }
+      throw caughtError;
+    }
+  }
 
   async createSession(
     input: CreateChatSessionInput,
@@ -358,9 +383,13 @@ export class AiChatbotService {
    * only starting a session and spending tokens are gated.
    */
   private assertChatEnabled(): void {
-    if (this.configService.get<string>('AI_CHAT_ENABLED')?.trim().toLowerCase() !== 'true') {
+    if (!this.isChatEnabled()) {
       throw new AiChatbotError('AI_NOT_CONFIGURED', 'AI chat is not enabled on this deployment');
     }
+  }
+
+  private isChatEnabled(): boolean {
+    return this.configService.get<string>('AI_CHAT_ENABLED')?.trim().toLowerCase() === 'true';
   }
 
   private toSessionView(session: ChatSessionRecord): ChatSessionView {
