@@ -64,7 +64,7 @@ export class RegistrationFlowController {
   @ApiEndpoint({
     summary: "Get a day's queue board",
     responseDescription:
-      "The day's antrian in queue-number order with per-status counts; defaults to today in the clinic time zone.",
+      "The day's antrian in clinic-wide queue-number order with per-status counts and a per-poli summary; defaults to today in the clinic time zone. Pass `specialtyId` to narrow it to one poli's display.",
     responseExample: { data: PHASE_THREE_EXAMPLES.registration.queueBoard },
   })
   async getQueueBoard(

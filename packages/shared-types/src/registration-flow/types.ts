@@ -29,6 +29,8 @@ export type QueueNumberAllocationRow = {
 
 export type ListQueueBoardParams = {
   queueDate: Date;
+  /** Narrows the board to one poli's queue; omitted, it lists the whole clinic. */
+  specialtyId?: string;
 };
 
 export type UpdateRegistrationRecordPayload = {
@@ -51,6 +53,8 @@ export type RegistrationRecord = {
   status: RegistrationStatusValue;
   queueNumber: number | null;
   queueDate: Date | null;
+  specialtyId: string | null;
+  poliQueueNumber: number | null;
   registeredAt: Date;
   checkedInAt: Date | null;
   completedAt: Date | null;
@@ -81,7 +85,13 @@ export type RegistrationAppointmentProjection = {
   doctor: RegistrationDoctorProjection;
 };
 
+export type RegistrationSpecialtyProjection = {
+  id: string;
+  name: string;
+};
+
 export type RegistrationWithRelationsRecord = RegistrationRecord & {
   patient: RegistrationPatientProjection;
   appointment: RegistrationAppointmentProjection | null;
+  specialty: RegistrationSpecialtyProjection | null;
 };

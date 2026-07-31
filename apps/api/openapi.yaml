@@ -4949,6 +4949,18 @@ paths:
                           type: integer
                         queueDate:
                           type: string
+                        poliQueueNumber:
+                          type: integer
+                        poli:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - id
+                            - name
                         registeredAt:
                           type: string
                         createdById:
@@ -5004,6 +5016,8 @@ paths:
                         - status
                         - queueNumber
                         - queueDate
+                        - poliQueueNumber
+                        - poli
                         - registeredAt
                         - createdById
                         - createdAt
@@ -5034,6 +5048,10 @@ paths:
                       status: REGISTERED
                       queueNumber: 1
                       queueDate: 2026-07-20
+                      poliQueueNumber: 1
+                      poli:
+                        id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                        name: Internal Medicine
                       registeredAt: 2026-07-20T08:00:00.000Z
                       createdById: 33333333-3333-4333-8333-333333333333
                       createdAt: 2026-07-20T08:00:00.000Z
@@ -5115,6 +5133,18 @@ paths:
                         type: integer
                       queueDate:
                         type: string
+                      poliQueueNumber:
+                        type: integer
+                      poli:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - name
                       registeredAt:
                         type: string
                       createdById:
@@ -5130,6 +5160,8 @@ paths:
                       - status
                       - queueNumber
                       - queueDate
+                      - poliQueueNumber
+                      - poli
                       - registeredAt
                       - createdById
                       - createdAt
@@ -5147,6 +5179,10 @@ paths:
                     status: REGISTERED
                     queueNumber: 1
                     queueDate: 2026-07-20
+                    poliQueueNumber: 1
+                    poli:
+                      id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                      name: Internal Medicine
                     registeredAt: 2026-07-20T08:00:00.000Z
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -5193,10 +5229,17 @@ paths:
           schema:
             pattern: ^\d{4}-\d{2}-\d{2}$
             type: string
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
       responses:
         "200":
-          description: The day's antrian in queue-number order with per-status counts;
-            defaults to today in the clinic time zone.
+          description: The day's antrian in clinic-wide queue-number order with per-status
+            counts and a per-poli summary; defaults to today in the clinic time
+            zone. Pass `specialtyId` to narrow it to one poli's display.
           content:
             application/json:
               schema:
@@ -5223,6 +5266,46 @@ paths:
                           - checkedIn
                           - completed
                           - cancelled
+                      poli:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            poli:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                name:
+                                  type: string
+                              required:
+                                - id
+                                - name
+                            waiting:
+                              type: integer
+                            counts:
+                              type: object
+                              properties:
+                                pending:
+                                  type: integer
+                                checkedIn:
+                                  type: integer
+                                completed:
+                                  type: integer
+                                cancelled:
+                                  type: integer
+                              required:
+                                - pending
+                                - checkedIn
+                                - completed
+                                - cancelled
+                            lastIssuedNumber:
+                              type: integer
+                          required:
+                            - poli
+                            - waiting
+                            - counts
+                            - lastIssuedNumber
                       entries:
                         type: array
                         items:
@@ -5232,6 +5315,18 @@ paths:
                               type: string
                             queueNumber:
                               type: integer
+                            poliQueueNumber:
+                              type: integer
+                            poli:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                name:
+                                  type: string
+                              required:
+                                - id
+                                - name
                             status:
                               type: string
                             registeredAt:
@@ -5267,6 +5362,8 @@ paths:
                           required:
                             - registrationId
                             - queueNumber
+                            - poliQueueNumber
+                            - poli
                             - status
                             - registeredAt
                             - checkedInAt
@@ -5275,6 +5372,7 @@ paths:
                     required:
                       - date
                       - counts
+                      - poli
                       - entries
                 required:
                   - data
@@ -5286,9 +5384,24 @@ paths:
                       checkedIn: 1
                       completed: 0
                       cancelled: 0
+                    poli:
+                      - poli:
+                          id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                          name: Internal Medicine
+                        waiting: 1
+                        counts:
+                          pending: 0
+                          checkedIn: 1
+                          completed: 0
+                          cancelled: 0
+                        lastIssuedNumber: 1
                     entries:
                       - registrationId: 55555555-5555-4555-8555-555555555555
                         queueNumber: 1
+                        poliQueueNumber: 1
+                        poli:
+                          id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                          name: Internal Medicine
                         status: CHECKED_IN
                         registeredAt: 2026-07-20T08:00:00.000Z
                         checkedInAt: 2026-07-20T08:00:00.000Z
@@ -5354,6 +5467,18 @@ paths:
                         type: integer
                       queueDate:
                         type: string
+                      poliQueueNumber:
+                        type: integer
+                      poli:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - name
                       registeredAt:
                         type: string
                       createdById:
@@ -5369,6 +5494,8 @@ paths:
                       - status
                       - queueNumber
                       - queueDate
+                      - poliQueueNumber
+                      - poli
                       - registeredAt
                       - createdById
                       - createdAt
@@ -5383,6 +5510,10 @@ paths:
                     status: REGISTERED
                     queueNumber: 1
                     queueDate: 2026-07-20
+                    poliQueueNumber: 1
+                    poli:
+                      id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                      name: Internal Medicine
                     registeredAt: 2026-07-20T08:00:00.000Z
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -5460,6 +5591,18 @@ paths:
                         type: integer
                       queueDate:
                         type: string
+                      poliQueueNumber:
+                        type: integer
+                      poli:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - name
                       registeredAt:
                         type: string
                       createdById:
@@ -5477,6 +5620,8 @@ paths:
                       - status
                       - queueNumber
                       - queueDate
+                      - poliQueueNumber
+                      - poli
                       - registeredAt
                       - createdById
                       - createdAt
@@ -5495,6 +5640,10 @@ paths:
                     status: CHECKED_IN
                     queueNumber: 1
                     queueDate: 2026-07-20
+                    poliQueueNumber: 1
+                    poli:
+                      id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                      name: Internal Medicine
                     registeredAt: 2026-07-20T08:00:00.000Z
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z

@@ -19,8 +19,10 @@ import type * as Prisma from "../internal/prismaNamespace"
  * … RETURNING`) inside the registration-create transaction — the same
  * reasoning as `MrnCounter`: concurrent front-desk and self-service
  * registrations race, and `MAX(queue_number) + 1` hands two patients the
- * same ticket. The queue is clinic-wide, mirroring the single-facility MRN
- * decision; a per-poli split arrives with the BPJS poli mapping (P11-T03).
+ * same ticket. The queue is clinic-wide: it is the physical ticket roll at
+ * the door, and it stays clinic-wide even in a multi-poli clinic because
+ * that is what the roll dispenses. The per-poli sequence is a second,
+ * independent number — see `PoliQueueCounter`.
  */
 export type QueueCounterModel = runtime.Types.Result.DefaultSelection<Prisma.$QueueCounterPayload>
 

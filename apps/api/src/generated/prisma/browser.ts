@@ -121,10 +121,30 @@ export type Appointment = Prisma.AppointmentModel
  * … RETURNING`) inside the registration-create transaction — the same
  * reasoning as `MrnCounter`: concurrent front-desk and self-service
  * registrations race, and `MAX(queue_number) + 1` hands two patients the
- * same ticket. The queue is clinic-wide, mirroring the single-facility MRN
- * decision; a per-poli split arrives with the BPJS poli mapping (P11-T03).
+ * same ticket. The queue is clinic-wide: it is the physical ticket roll at
+ * the door, and it stays clinic-wide even in a multi-poli clinic because
+ * that is what the roll dispenses. The per-poli sequence is a second,
+ * independent number — see `PoliQueueCounter`.
  */
 export type QueueCounter = Prisma.QueueCounterModel
+/**
+ * Model PoliQueueCounter
+ * Allocates the daily per-poli antrian sequence — the same atomic upsert as
+ * `QueueCounter`, keyed on `(queueDate, specialtyId)` instead of the day
+ * alone (P14-T01).
+ * 
+ * This is deliberately a *second* number rather than a replacement. The
+ * clinic-wide roll is floor management: one ticket dispenser at the door,
+ * one number per patient, and it must keep working for a walk-in whose poli
+ * is not yet known. The per-poli number is what a poli's own display calls
+ * and what BPJS Antrean Online treats as *the* queue number, which is
+ * per-poli by contract (ADR D-023) — so a patient legitimately carries two
+ * numbers, and collapsing them would break one of the two consumers.
+ * 
+ * `Specialty` is the clinic's poli entity (see `Specialty.bpjsPoliCode`);
+ * there is no standalone poli table, so the counter keys on it directly.
+ */
+export type PoliQueueCounter = Prisma.PoliQueueCounterModel
 /**
  * Model Registration
  * 

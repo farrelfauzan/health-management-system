@@ -207,6 +207,8 @@ export type SpecialtyWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Specialty"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Specialty"> | Date | string | null
   doctors?: Prisma.DoctorProfileListRelationFilter
+  registrations?: Prisma.RegistrationListRelationFilter
+  poliQueueCounters?: Prisma.PoliQueueCounterListRelationFilter
 }
 
 export type SpecialtyOrderByWithRelationInput = {
@@ -219,6 +221,8 @@ export type SpecialtyOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   doctors?: Prisma.DoctorProfileOrderByRelationAggregateInput
+  registrations?: Prisma.RegistrationOrderByRelationAggregateInput
+  poliQueueCounters?: Prisma.PoliQueueCounterOrderByRelationAggregateInput
 }
 
 export type SpecialtyWhereUniqueInput = Prisma.AtLeast<{
@@ -234,6 +238,8 @@ export type SpecialtyWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Specialty"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Specialty"> | Date | string | null
   doctors?: Prisma.DoctorProfileListRelationFilter
+  registrations?: Prisma.RegistrationListRelationFilter
+  poliQueueCounters?: Prisma.PoliQueueCounterListRelationFilter
 }, "id" | "name">
 
 export type SpecialtyOrderByWithAggregationInput = {
@@ -274,6 +280,8 @@ export type SpecialtyCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   doctors?: Prisma.DoctorProfileCreateNestedManyWithoutSpecialtyInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutSpecialtyInput
+  poliQueueCounters?: Prisma.PoliQueueCounterCreateNestedManyWithoutSpecialtyInput
 }
 
 export type SpecialtyUncheckedCreateInput = {
@@ -286,6 +294,8 @@ export type SpecialtyUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   doctors?: Prisma.DoctorProfileUncheckedCreateNestedManyWithoutSpecialtyInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutSpecialtyInput
+  poliQueueCounters?: Prisma.PoliQueueCounterUncheckedCreateNestedManyWithoutSpecialtyInput
 }
 
 export type SpecialtyUpdateInput = {
@@ -298,6 +308,8 @@ export type SpecialtyUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   doctors?: Prisma.DoctorProfileUpdateManyWithoutSpecialtyNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutSpecialtyNestedInput
+  poliQueueCounters?: Prisma.PoliQueueCounterUpdateManyWithoutSpecialtyNestedInput
 }
 
 export type SpecialtyUncheckedUpdateInput = {
@@ -310,6 +322,8 @@ export type SpecialtyUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   doctors?: Prisma.DoctorProfileUncheckedUpdateManyWithoutSpecialtyNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutSpecialtyNestedInput
+  poliQueueCounters?: Prisma.PoliQueueCounterUncheckedUpdateManyWithoutSpecialtyNestedInput
 }
 
 export type SpecialtyCreateManyInput = {
@@ -383,6 +397,11 @@ export type SpecialtyScalarRelationFilter = {
   isNot?: Prisma.SpecialtyWhereInput
 }
 
+export type SpecialtyNullableScalarRelationFilter = {
+  is?: Prisma.SpecialtyWhereInput | null
+  isNot?: Prisma.SpecialtyWhereInput | null
+}
+
 export type SpecialtyCreateNestedOneWithoutDoctorsInput = {
   create?: Prisma.XOR<Prisma.SpecialtyCreateWithoutDoctorsInput, Prisma.SpecialtyUncheckedCreateWithoutDoctorsInput>
   connectOrCreate?: Prisma.SpecialtyCreateOrConnectWithoutDoctorsInput
@@ -397,6 +416,36 @@ export type SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SpecialtyUpdateToOneWithWhereWithoutDoctorsInput, Prisma.SpecialtyUpdateWithoutDoctorsInput>, Prisma.SpecialtyUncheckedUpdateWithoutDoctorsInput>
 }
 
+export type SpecialtyCreateNestedOneWithoutPoliQueueCountersInput = {
+  create?: Prisma.XOR<Prisma.SpecialtyCreateWithoutPoliQueueCountersInput, Prisma.SpecialtyUncheckedCreateWithoutPoliQueueCountersInput>
+  connectOrCreate?: Prisma.SpecialtyCreateOrConnectWithoutPoliQueueCountersInput
+  connect?: Prisma.SpecialtyWhereUniqueInput
+}
+
+export type SpecialtyUpdateOneRequiredWithoutPoliQueueCountersNestedInput = {
+  create?: Prisma.XOR<Prisma.SpecialtyCreateWithoutPoliQueueCountersInput, Prisma.SpecialtyUncheckedCreateWithoutPoliQueueCountersInput>
+  connectOrCreate?: Prisma.SpecialtyCreateOrConnectWithoutPoliQueueCountersInput
+  upsert?: Prisma.SpecialtyUpsertWithoutPoliQueueCountersInput
+  connect?: Prisma.SpecialtyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SpecialtyUpdateToOneWithWhereWithoutPoliQueueCountersInput, Prisma.SpecialtyUpdateWithoutPoliQueueCountersInput>, Prisma.SpecialtyUncheckedUpdateWithoutPoliQueueCountersInput>
+}
+
+export type SpecialtyCreateNestedOneWithoutRegistrationsInput = {
+  create?: Prisma.XOR<Prisma.SpecialtyCreateWithoutRegistrationsInput, Prisma.SpecialtyUncheckedCreateWithoutRegistrationsInput>
+  connectOrCreate?: Prisma.SpecialtyCreateOrConnectWithoutRegistrationsInput
+  connect?: Prisma.SpecialtyWhereUniqueInput
+}
+
+export type SpecialtyUpdateOneWithoutRegistrationsNestedInput = {
+  create?: Prisma.XOR<Prisma.SpecialtyCreateWithoutRegistrationsInput, Prisma.SpecialtyUncheckedCreateWithoutRegistrationsInput>
+  connectOrCreate?: Prisma.SpecialtyCreateOrConnectWithoutRegistrationsInput
+  upsert?: Prisma.SpecialtyUpsertWithoutRegistrationsInput
+  disconnect?: Prisma.SpecialtyWhereInput | boolean
+  delete?: Prisma.SpecialtyWhereInput | boolean
+  connect?: Prisma.SpecialtyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SpecialtyUpdateToOneWithWhereWithoutRegistrationsInput, Prisma.SpecialtyUpdateWithoutRegistrationsInput>, Prisma.SpecialtyUncheckedUpdateWithoutRegistrationsInput>
+}
+
 export type SpecialtyCreateWithoutDoctorsInput = {
   id?: string
   name: string
@@ -406,6 +455,8 @@ export type SpecialtyCreateWithoutDoctorsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutSpecialtyInput
+  poliQueueCounters?: Prisma.PoliQueueCounterCreateNestedManyWithoutSpecialtyInput
 }
 
 export type SpecialtyUncheckedCreateWithoutDoctorsInput = {
@@ -417,6 +468,8 @@ export type SpecialtyUncheckedCreateWithoutDoctorsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutSpecialtyInput
+  poliQueueCounters?: Prisma.PoliQueueCounterUncheckedCreateNestedManyWithoutSpecialtyInput
 }
 
 export type SpecialtyCreateOrConnectWithoutDoctorsInput = {
@@ -444,6 +497,8 @@ export type SpecialtyUpdateWithoutDoctorsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registrations?: Prisma.RegistrationUpdateManyWithoutSpecialtyNestedInput
+  poliQueueCounters?: Prisma.PoliQueueCounterUpdateManyWithoutSpecialtyNestedInput
 }
 
 export type SpecialtyUncheckedUpdateWithoutDoctorsInput = {
@@ -455,6 +510,144 @@ export type SpecialtyUncheckedUpdateWithoutDoctorsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutSpecialtyNestedInput
+  poliQueueCounters?: Prisma.PoliQueueCounterUncheckedUpdateManyWithoutSpecialtyNestedInput
+}
+
+export type SpecialtyCreateWithoutPoliQueueCountersInput = {
+  id?: string
+  name: string
+  description?: string | null
+  bpjsPoliCode?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  doctors?: Prisma.DoctorProfileCreateNestedManyWithoutSpecialtyInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutSpecialtyInput
+}
+
+export type SpecialtyUncheckedCreateWithoutPoliQueueCountersInput = {
+  id?: string
+  name: string
+  description?: string | null
+  bpjsPoliCode?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  doctors?: Prisma.DoctorProfileUncheckedCreateNestedManyWithoutSpecialtyInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutSpecialtyInput
+}
+
+export type SpecialtyCreateOrConnectWithoutPoliQueueCountersInput = {
+  where: Prisma.SpecialtyWhereUniqueInput
+  create: Prisma.XOR<Prisma.SpecialtyCreateWithoutPoliQueueCountersInput, Prisma.SpecialtyUncheckedCreateWithoutPoliQueueCountersInput>
+}
+
+export type SpecialtyUpsertWithoutPoliQueueCountersInput = {
+  update: Prisma.XOR<Prisma.SpecialtyUpdateWithoutPoliQueueCountersInput, Prisma.SpecialtyUncheckedUpdateWithoutPoliQueueCountersInput>
+  create: Prisma.XOR<Prisma.SpecialtyCreateWithoutPoliQueueCountersInput, Prisma.SpecialtyUncheckedCreateWithoutPoliQueueCountersInput>
+  where?: Prisma.SpecialtyWhereInput
+}
+
+export type SpecialtyUpdateToOneWithWhereWithoutPoliQueueCountersInput = {
+  where?: Prisma.SpecialtyWhereInput
+  data: Prisma.XOR<Prisma.SpecialtyUpdateWithoutPoliQueueCountersInput, Prisma.SpecialtyUncheckedUpdateWithoutPoliQueueCountersInput>
+}
+
+export type SpecialtyUpdateWithoutPoliQueueCountersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  doctors?: Prisma.DoctorProfileUpdateManyWithoutSpecialtyNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutSpecialtyNestedInput
+}
+
+export type SpecialtyUncheckedUpdateWithoutPoliQueueCountersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  doctors?: Prisma.DoctorProfileUncheckedUpdateManyWithoutSpecialtyNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutSpecialtyNestedInput
+}
+
+export type SpecialtyCreateWithoutRegistrationsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  bpjsPoliCode?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  doctors?: Prisma.DoctorProfileCreateNestedManyWithoutSpecialtyInput
+  poliQueueCounters?: Prisma.PoliQueueCounterCreateNestedManyWithoutSpecialtyInput
+}
+
+export type SpecialtyUncheckedCreateWithoutRegistrationsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  bpjsPoliCode?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  doctors?: Prisma.DoctorProfileUncheckedCreateNestedManyWithoutSpecialtyInput
+  poliQueueCounters?: Prisma.PoliQueueCounterUncheckedCreateNestedManyWithoutSpecialtyInput
+}
+
+export type SpecialtyCreateOrConnectWithoutRegistrationsInput = {
+  where: Prisma.SpecialtyWhereUniqueInput
+  create: Prisma.XOR<Prisma.SpecialtyCreateWithoutRegistrationsInput, Prisma.SpecialtyUncheckedCreateWithoutRegistrationsInput>
+}
+
+export type SpecialtyUpsertWithoutRegistrationsInput = {
+  update: Prisma.XOR<Prisma.SpecialtyUpdateWithoutRegistrationsInput, Prisma.SpecialtyUncheckedUpdateWithoutRegistrationsInput>
+  create: Prisma.XOR<Prisma.SpecialtyCreateWithoutRegistrationsInput, Prisma.SpecialtyUncheckedCreateWithoutRegistrationsInput>
+  where?: Prisma.SpecialtyWhereInput
+}
+
+export type SpecialtyUpdateToOneWithWhereWithoutRegistrationsInput = {
+  where?: Prisma.SpecialtyWhereInput
+  data: Prisma.XOR<Prisma.SpecialtyUpdateWithoutRegistrationsInput, Prisma.SpecialtyUncheckedUpdateWithoutRegistrationsInput>
+}
+
+export type SpecialtyUpdateWithoutRegistrationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  doctors?: Prisma.DoctorProfileUpdateManyWithoutSpecialtyNestedInput
+  poliQueueCounters?: Prisma.PoliQueueCounterUpdateManyWithoutSpecialtyNestedInput
+}
+
+export type SpecialtyUncheckedUpdateWithoutRegistrationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsPoliCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  doctors?: Prisma.DoctorProfileUncheckedUpdateManyWithoutSpecialtyNestedInput
+  poliQueueCounters?: Prisma.PoliQueueCounterUncheckedUpdateManyWithoutSpecialtyNestedInput
 }
 
 
@@ -464,10 +657,14 @@ export type SpecialtyUncheckedUpdateWithoutDoctorsInput = {
 
 export type SpecialtyCountOutputType = {
   doctors: number
+  registrations: number
+  poliQueueCounters: number
 }
 
 export type SpecialtyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   doctors?: boolean | SpecialtyCountOutputTypeCountDoctorsArgs
+  registrations?: boolean | SpecialtyCountOutputTypeCountRegistrationsArgs
+  poliQueueCounters?: boolean | SpecialtyCountOutputTypeCountPoliQueueCountersArgs
 }
 
 /**
@@ -487,6 +684,20 @@ export type SpecialtyCountOutputTypeCountDoctorsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.DoctorProfileWhereInput
 }
 
+/**
+ * SpecialtyCountOutputType without action
+ */
+export type SpecialtyCountOutputTypeCountRegistrationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RegistrationWhereInput
+}
+
+/**
+ * SpecialtyCountOutputType without action
+ */
+export type SpecialtyCountOutputTypeCountPoliQueueCountersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PoliQueueCounterWhereInput
+}
+
 
 export type SpecialtySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -498,6 +709,8 @@ export type SpecialtySelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   updatedAt?: boolean
   deletedAt?: boolean
   doctors?: boolean | Prisma.Specialty$doctorsArgs<ExtArgs>
+  registrations?: boolean | Prisma.Specialty$registrationsArgs<ExtArgs>
+  poliQueueCounters?: boolean | Prisma.Specialty$poliQueueCountersArgs<ExtArgs>
   _count?: boolean | Prisma.SpecialtyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["specialty"]>
 
@@ -537,6 +750,8 @@ export type SpecialtySelectScalar = {
 export type SpecialtyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "bpjsPoliCode" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["specialty"]>
 export type SpecialtyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   doctors?: boolean | Prisma.Specialty$doctorsArgs<ExtArgs>
+  registrations?: boolean | Prisma.Specialty$registrationsArgs<ExtArgs>
+  poliQueueCounters?: boolean | Prisma.Specialty$poliQueueCountersArgs<ExtArgs>
   _count?: boolean | Prisma.SpecialtyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SpecialtyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -546,6 +761,8 @@ export type $SpecialtyPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "Specialty"
   objects: {
     doctors: Prisma.$DoctorProfilePayload<ExtArgs>[]
+    registrations: Prisma.$RegistrationPayload<ExtArgs>[]
+    poliQueueCounters: Prisma.$PoliQueueCounterPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -959,6 +1176,8 @@ readonly fields: SpecialtyFieldRefs;
 export interface Prisma__SpecialtyClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   doctors<T extends Prisma.Specialty$doctorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Specialty$doctorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoctorProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  registrations<T extends Prisma.Specialty$registrationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Specialty$registrationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  poliQueueCounters<T extends Prisma.Specialty$poliQueueCountersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Specialty$poliQueueCountersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PoliQueueCounterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1410,6 +1629,54 @@ export type Specialty$doctorsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.DoctorProfileScalarFieldEnum | Prisma.DoctorProfileScalarFieldEnum[]
+}
+
+/**
+ * Specialty.registrations
+ */
+export type Specialty$registrationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Registration
+   */
+  select?: Prisma.RegistrationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Registration
+   */
+  omit?: Prisma.RegistrationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RegistrationInclude<ExtArgs> | null
+  where?: Prisma.RegistrationWhereInput
+  orderBy?: Prisma.RegistrationOrderByWithRelationInput | Prisma.RegistrationOrderByWithRelationInput[]
+  cursor?: Prisma.RegistrationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RegistrationScalarFieldEnum | Prisma.RegistrationScalarFieldEnum[]
+}
+
+/**
+ * Specialty.poliQueueCounters
+ */
+export type Specialty$poliQueueCountersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PoliQueueCounter
+   */
+  select?: Prisma.PoliQueueCounterSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PoliQueueCounter
+   */
+  omit?: Prisma.PoliQueueCounterOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PoliQueueCounterInclude<ExtArgs> | null
+  where?: Prisma.PoliQueueCounterWhereInput
+  orderBy?: Prisma.PoliQueueCounterOrderByWithRelationInput | Prisma.PoliQueueCounterOrderByWithRelationInput[]
+  cursor?: Prisma.PoliQueueCounterWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PoliQueueCounterScalarFieldEnum | Prisma.PoliQueueCounterScalarFieldEnum[]
 }
 
 /**

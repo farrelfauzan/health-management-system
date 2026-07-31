@@ -7,6 +7,7 @@
  */
 import type { RegistrationFlowControllerListRegistrationsV1200DataItemAppointment } from './registrationFlowControllerListRegistrationsV1200DataItemAppointment';
 import type { RegistrationFlowControllerListRegistrationsV1200DataItemPatient } from './registrationFlowControllerListRegistrationsV1200DataItemPatient';
+import type { RegistrationFlowControllerListRegistrationsV1200DataItemPoli } from './registrationFlowControllerListRegistrationsV1200DataItemPoli';
 
 export type RegistrationFlowControllerListRegistrationsV1200DataItem = {
   id: string;
@@ -15,6 +16,8 @@ export type RegistrationFlowControllerListRegistrationsV1200DataItem = {
   status: string;
   queueNumber: number;
   queueDate: string;
+  poliQueueNumber: number;
+  poli: RegistrationFlowControllerListRegistrationsV1200DataItemPoli;
   registeredAt: string;
   createdById: string;
   createdAt: string;

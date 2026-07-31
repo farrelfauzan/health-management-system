@@ -7,9 +7,11 @@
  */
 import type { RegistrationFlowControllerGetQueueBoardV1200DataCounts } from './registrationFlowControllerGetQueueBoardV1200DataCounts';
 import type { RegistrationFlowControllerGetQueueBoardV1200DataEntriesItem } from './registrationFlowControllerGetQueueBoardV1200DataEntriesItem';
+import type { RegistrationFlowControllerGetQueueBoardV1200DataPoliItem } from './registrationFlowControllerGetQueueBoardV1200DataPoliItem';
 
 export type RegistrationFlowControllerGetQueueBoardV1200Data = {
   date: string;
   counts: RegistrationFlowControllerGetQueueBoardV1200DataCounts;
+  poli: RegistrationFlowControllerGetQueueBoardV1200DataPoliItem[];
   entries: RegistrationFlowControllerGetQueueBoardV1200DataEntriesItem[];
 };
