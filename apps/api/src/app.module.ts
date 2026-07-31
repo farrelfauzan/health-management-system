@@ -13,6 +13,7 @@ import { SatusehatModule } from './common/satusehat/satusehat.module';
 import { RetentionModule } from './common/retention/retention.module';
 import { StorageModule } from './common/storage/storage.module';
 import { AdminManagementModule } from './modules/admin-management/admin-management.module';
+import { AiChatbotModule } from './modules/ai-chatbot/ai-chatbot.module';
 import { AppointmentManagementModule } from './modules/appointment-management/appointment-management.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BpjsPcareIntegrationModule } from './modules/bpjs-pcare/bpjs-pcare-integration.module';
@@ -63,6 +64,7 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     BillingModule,
     SatusehatIntegrationModule,
     BpjsPcareIntegrationModule,
+    AiChatbotModule,
     AuthModule,
     RbacModule,
     HealthModule,
