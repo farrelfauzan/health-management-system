@@ -14,6 +14,7 @@ import { AiChatbotService } from './service/ai-chatbot.service';
 import { AiProviderConfigService } from './service/ai-provider-config.service';
 import { AiProviderResolverService } from './service/ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './service/chat-context-enrichment.service';
+import { SafetyPolicyService } from './service/safety-policy.service';
 
 /**
  * Feature module for the post-MVP AI chatbot (Phase 13). P13-T03 shipped the
@@ -45,6 +46,7 @@ import { ChatContextEnrichmentService } from './service/chat-context-enrichment.
     AiProviderResolverService,
     AiProviderConfigService,
     ChatContextEnrichmentService,
+    SafetyPolicyService,
     AiChatbotService,
   ],
   exports: [AiProviderConfigRepository, ChatRepository, AiChatbotService],

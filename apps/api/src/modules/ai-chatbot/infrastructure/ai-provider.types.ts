@@ -18,7 +18,8 @@ export type AiChatbotErrorCode =
   | 'AI_PROVIDER_TIMEOUT'
   | 'AI_PROVIDER_UNAUTHORIZED'
   | 'AI_PROVIDER_MODEL_NOT_FOUND'
-  | 'AI_SAFETY_BLOCKED';
+  | 'AI_SAFETY_BLOCKED'
+  | 'AI_RATE_LIMITED';
 
 /**
  * The active provider configuration with its API key decrypted, ready for an

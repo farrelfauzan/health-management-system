@@ -6,6 +6,7 @@ import {
   ChatExchangeView,
   ChatMessageListView,
   ChatMessageRecord,
+  ChatSafetyTagValue,
   ChatMessageView,
   ChatSessionListView,
   ChatSessionRecord,
@@ -24,6 +25,7 @@ import { AI_CHAT_DISCLAIMER } from './ai-chat-disclaimer';
 import { AI_CHAT_SYSTEM_PROMPTS } from './ai-chat-system-prompts';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
+import { SafetyPolicyService } from './safety-policy.service';
 import { ChatRepository } from '../repository/chat.repository';
 
 /**
@@ -54,6 +56,7 @@ export class AiChatbotService {
     private readonly chatRepository: ChatRepository,
     private readonly resolverService: AiProviderResolverService,
     private readonly contextEnrichmentService: ChatContextEnrichmentService,
+    private readonly safetyPolicyService: SafetyPolicyService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -62,6 +65,7 @@ export class AiChatbotService {
     actor: CurrentUser,
   ): Promise<ChatSessionView> {
     this.assertChatEnabled();
+    await this.safetyPolicyService.assertSessionQuota(actor);
     // Resolving at creation is what stamps the audit columns: the session
     // records which credential set answered it, and P13-T01 made those plain
     // columns precisely so they survive the config being rotated away.
@@ -147,15 +151,22 @@ export class AiChatbotService {
   ): Promise<{ data: ChatExchangeView; meta: ChatExchangeMeta }> {
     this.assertChatEnabled();
     const session = await this.requireOwnSession(id, actor);
-    const { adapter, config } = await this.resolverService.resolveActiveProvider();
+    // Guards run before the provider is resolved: a blocked prompt must cost
+    // neither an upstream call nor the clinic's tokens.
+    const inputDecision = await this.safetyPolicyService.evaluateInput(input.content, actor);
     const exchangeStartedAt = new Date();
     const userMessage = await this.chatRepository.appendMessage({
       sessionId: session.id,
       authorUserId: actor.sub,
       actor: 'USER',
       content: input.content,
+      safetyTags: inputDecision.safetyTags,
       createdAt: exchangeStartedAt,
     });
+    if (inputDecision.outcome === 'ESCALATE') {
+      return this.completeWithoutProvider(session, userMessage, inputDecision, exchangeStartedAt);
+    }
+    const { adapter, config } = await this.resolverService.resolveActiveProvider();
     const [history, contextPayload] = await Promise.all([
       this.chatRepository.listMessagesForSession({
         sessionId: session.id,
@@ -181,10 +192,16 @@ export class AiChatbotService {
       messages: this.buildCompletionMessages(session, history.items, contextPayload),
       contextPayload,
     });
+    // The provider's text is never persisted as it arrived: the output
+    // guards run first, and what the patient is shown is what gets stored.
+    const outputDecision = this.safetyPolicyService.evaluateOutput(
+      result.content,
+      session.channel,
+    );
     const assistantMessage = await this.chatRepository.appendMessage({
       sessionId: session.id,
       actor: 'ASSISTANT',
-      content: result.content,
+      content: outputDecision.content,
       providerKind: result.providerKind,
       providerRequestId: result.providerRequestId === '' ? null : result.providerRequestId,
       providerMessageId: result.providerMessageId,
@@ -193,7 +210,7 @@ export class AiChatbotService {
       // The disclaimer is not optional and not inferred — it is persisted
       // per turn so §3.1 is provable from the transcript alone.
       disclaimerShown: true,
-      safetyTags: [],
+      safetyTags: outputDecision.safetyTags,
       // Stamped one millisecond after the user turn: both appends land
       // inside the same millisecond and would otherwise have no defined
       // order, which would let the transcript render the reply first.
@@ -209,6 +226,41 @@ export class AiChatbotService {
         providerKind: result.providerKind,
         model: result.model,
         providerRequestId: result.providerRequestId === '' ? null : result.providerRequestId,
+      },
+    };
+  }
+
+  /**
+   * Answers from the deterministic escalation template without touching the
+   * provider. The turn is persisted exactly like any other assistant reply —
+   * disclaimer flag, safety tags, transcript order — so an emergency looks
+   * the same to an auditor as it does to the patient, and the provider audit
+   * columns stay null because no provider was involved.
+   */
+  private async completeWithoutProvider(
+    session: ChatSessionRecord,
+    userMessage: ChatMessageRecord,
+    decision: { safetyTags: ChatSafetyTagValue[]; replyContent: string },
+    exchangeStartedAt: Date,
+  ): Promise<{ data: ChatExchangeView; meta: ChatExchangeMeta }> {
+    const assistantMessage = await this.chatRepository.appendMessage({
+      sessionId: session.id,
+      actor: 'ASSISTANT',
+      content: decision.replyContent,
+      disclaimerShown: true,
+      safetyTags: decision.safetyTags,
+      createdAt: new Date(exchangeStartedAt.getTime() + 1),
+    });
+    return {
+      data: {
+        userMessage: this.toMessageView(userMessage),
+        assistantMessage: this.toMessageView(assistantMessage),
+      },
+      meta: {
+        disclaimer: AI_CHAT_DISCLAIMER,
+        providerKind: session.providerKind,
+        model: '',
+        providerRequestId: null,
       },
     };
   }
