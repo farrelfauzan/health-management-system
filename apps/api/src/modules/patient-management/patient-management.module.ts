@@ -10,5 +10,6 @@ import { PatientManagementService } from './service/patient-management.service';
   imports: [AuthModule, PrivacyNoticeModule],
   controllers: [PatientManagementController],
   providers: [PatientManagementRepository, PatientManagementService],
+  exports: [PatientManagementService],
 })
 export class PatientManagementModule {}

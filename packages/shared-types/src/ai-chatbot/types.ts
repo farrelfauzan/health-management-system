@@ -59,6 +59,40 @@ export type UpdateAiProviderConfigData = {
   updatedById?: string | null;
 };
 
+/**
+ * The redacted context HMS may send to a third-party provider on the patient
+ * channel (§5.3). Every field is either the patient's own display name or a
+ * summary of their own upcoming visit — no identifiers (NIK, BPJS number,
+ * MRN), no clinical notes, and nothing about any other patient. Fields are
+ * optional throughout: enrichment degrades to silence rather than failing a
+ * conversation.
+ */
+export type PatientChatContext = {
+  displayName?: string;
+  nextAppointment?: {
+    scheduledAt: string;
+    doctorName: string;
+    specialty: string;
+    status: string;
+  };
+  activeQueueNumber?: number;
+};
+
+/**
+ * The redacted doctor-channel context (§5.3). Counts and the clinician's own
+ * next slot only — deliberately no patient names or ids, because a doctor
+ * channel must not become a bulk export route for the patients assigned to
+ * them.
+ */
+export type DoctorChatContext = {
+  displayName?: string;
+  todayAppointmentCount?: number;
+  nextAppointmentAt?: string;
+  assignedPatientCount?: number;
+};
+
+export type ChatContextPayload = PatientChatContext | DoctorChatContext;
+
 export type AiProviderConnectionTestOutcome = {
   isSuccessful: boolean;
   message: string;

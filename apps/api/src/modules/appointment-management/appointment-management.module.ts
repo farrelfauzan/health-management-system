@@ -10,5 +10,6 @@ import { AppointmentManagementService } from './service/appointment-management.s
   imports: [AuthModule],
   controllers: [AppointmentManagementController, AppointmentSessionController],
   providers: [AppointmentManagementRepository, AppointmentManagementService],
+  exports: [AppointmentManagementService],
 })
 export class AppointmentManagementModule {}

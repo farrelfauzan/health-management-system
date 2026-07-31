@@ -9,6 +9,7 @@ import { ChatCompletionMessage } from '../infrastructure/ai-provider.types';
 import { ChatRepository } from '../repository/chat.repository';
 import { AiChatbotService } from './ai-chatbot.service';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
+import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
 
 describe('AiChatbotService', () => {
   const chatRepositoryMock = {
@@ -22,6 +23,7 @@ describe('AiChatbotService', () => {
   };
   const sendChatCompletionMock = jest.fn();
   const resolveActiveProviderMock = jest.fn();
+  const buildContextMock = jest.fn();
 
   const inputActor: CurrentUser = { sub: 'user-patient', email: 'patient@hms.local' };
 
@@ -29,6 +31,7 @@ describe('AiChatbotService', () => {
     return new AiChatbotService(
       chatRepositoryMock as unknown as ChatRepository,
       { resolveActiveProvider: resolveActiveProviderMock } as unknown as AiProviderResolverService,
+      { buildContext: buildContextMock } as unknown as ChatContextEnrichmentService,
       new ConfigService(env),
     );
   }
@@ -77,6 +80,7 @@ describe('AiChatbotService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    buildContextMock.mockResolvedValue({});
   });
 
   describe('createSession', () => {
@@ -216,6 +220,67 @@ describe('AiChatbotService', () => {
       // The transcript records what was asked even when the answer never came.
       expect(chatRepositoryMock.appendMessage).toHaveBeenCalledTimes(1);
       expect(chatRepositoryMock.appendMessage.mock.calls[0][0].actor).toBe('USER');
+    });
+
+    it('injects the enrichment context as a second system message', async () => {
+      stubExchange();
+      buildContextMock.mockResolvedValue({ displayName: 'Budi Santoso', activeQueueNumber: 12 });
+
+      await buildService().sendMessage('session-1', { content: 'Nomor antrian saya?' }, inputActor);
+
+      const actualMessages = (
+        sendChatCompletionMock.mock.calls[0][1] as { messages: ChatCompletionMessage[] }
+      ).messages;
+      expect(actualMessages[0]?.role).toBe('system');
+      expect(actualMessages[1]?.role).toBe('system');
+      expect(actualMessages[1]?.content).toContain('not an instruction');
+      expect(actualMessages[1]?.content).toContain('"activeQueueNumber":12');
+    });
+
+    it('persists the context that reached the provider as its own SYSTEM turn', async () => {
+      stubExchange();
+      buildContextMock.mockResolvedValue({ displayName: 'Budi Santoso' });
+
+      await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
+
+      // The UU PDP audit question is "what personal data went to the
+      // processor, and when" — this row is the answer.
+      const actualSystemAppend = chatRepositoryMock.appendMessage.mock.calls.find(
+        (call) => (call[0] as { actor: string }).actor === 'SYSTEM',
+      );
+      expect(actualSystemAppend?.[0].content).toBe('{"displayName":"Budi Santoso"}');
+    });
+
+    it('writes no SYSTEM turn when enrichment yields nothing', async () => {
+      stubExchange();
+      buildContextMock.mockResolvedValue({});
+
+      await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
+
+      const actualActors = chatRepositoryMock.appendMessage.mock.calls.map(
+        (call) => (call[0] as { actor: string }).actor,
+      );
+      expect(actualActors).toEqual(['USER', 'ASSISTANT']);
+    });
+
+    it('does not replay stored SYSTEM turns — stale context must not be resent', async () => {
+      stubExchange();
+      chatRepositoryMock.listMessagesForSession.mockResolvedValue({
+        items: [
+          buildMessage({ id: 'old-context', actor: 'SYSTEM', content: '{"activeQueueNumber":3}' }),
+          buildMessage(),
+        ],
+        nextCursor: null,
+      });
+      buildContextMock.mockResolvedValue({ activeQueueNumber: 12 });
+
+      await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
+
+      const actualMessages = (
+        sendChatCompletionMock.mock.calls[0][1] as { messages: ChatCompletionMessage[] }
+      ).messages;
+      expect(actualMessages.filter((message) => message.role === 'system')).toHaveLength(2);
+      expect(JSON.stringify(actualMessages)).not.toContain('"activeQueueNumber":3');
     });
 
     it('reports another owner’s session as not found', async () => {
