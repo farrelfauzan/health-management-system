@@ -13218,6 +13218,773 @@ paths:
         - bearer: []
       summary: Test the stored AI provider credentials
       tags: *a22
+  /api/v1/chat/sessions:
+    post:
+      operationId: ChatController_createSession_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateChatSessionDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  channel: PATIENT
+                  title: Jam buka klinik
+      responses:
+        "201":
+          description: The created session, stamped with the provider configuration that
+            will answer it so the transcript stays auditable after a credential
+            rotation. Returns 503 when chat is disabled or no provider is
+            configured, and 429 once the daily session quota is reached.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      channel:
+                        type: string
+                      title:
+                        type: string
+                      providerKind:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - channel
+                      - title
+                      - providerKind
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a
+                    channel: PATIENT
+                    title: Jam buka klinik
+                    providerKind: DEEPSEEK
+                    createdAt: 2026-08-14T01:00:00.000Z
+                    updatedAt: 2026-08-14T01:00:00.000Z
+                  message: Chat session created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Start a chat session
+      tags: &a23
+        - AI Chatbot
+    get:
+      operationId: ChatController_listSessions_v1
+      parameters:
+        - name: channel
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PATIENT
+              - DOCTOR
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: Your live sessions, newest first, cursor-paginated. Pass the
+            returned nextCursor back verbatim to resume after the last item; it
+            is null on the final page.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        channel:
+                          type: string
+                        title:
+                          type: string
+                        providerKind:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - channel
+                        - title
+                        - providerKind
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        type: string
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a
+                      channel: PATIENT
+                      title: Jam buka klinik
+                      providerKind: DEEPSEEK
+                      createdAt: 2026-08-14T01:00:00.000Z
+                      updatedAt: 2026-08-14T01:00:00.000Z
+                  meta:
+                    nextCursor: 7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List your own chat sessions
+      tags: *a23
+  /api/v1/chat/admin/sessions:
+    get:
+      operationId: ChatController_listAllSessions_v1
+      parameters:
+        - name: channel
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PATIENT
+              - DOCTOR
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: "All owners’ live sessions with the owner id, for support triage.
+            Requires the ANY-scoped chat.session.read grant — an OWN-only holder
+            gets 403 here rather than a silently narrowed list. Carries no
+            transcript: reading a conversation is a separate request against
+            that session."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        channel:
+                          type: string
+                        title:
+                          type: string
+                        providerKind:
+                          type: string
+                        ownerUserId:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - channel
+                        - title
+                        - providerKind
+                        - ownerUserId
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        type: string
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a
+                      channel: PATIENT
+                      title: Jam buka klinik
+                      providerKind: DEEPSEEK
+                      ownerUserId: 2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                      createdAt: 2026-08-14T01:00:00.000Z
+                      updatedAt: 2026-08-14T01:00:00.000Z
+                  meta:
+                    nextCursor: 7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List every chat session (admin support view)
+      tags: *a23
+  /api/v1/chat/sessions/{id}:
+    get:
+      operationId: ChatController_getSession_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Session detail. A session belonging to another user answers 404,
+            not 403: whether an id exists in someone else’s account is itself
+            information."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      channel:
+                        type: string
+                      title:
+                        type: string
+                      providerKind:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - channel
+                      - title
+                      - providerKind
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a
+                    channel: PATIENT
+                    title: Jam buka klinik
+                    providerKind: DEEPSEEK
+                    createdAt: 2026-08-14T01:00:00.000Z
+                    updatedAt: 2026-08-14T01:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Chat session not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Chat session not found.
+      security:
+        - bearer: []
+      summary: Read one of your chat sessions
+      tags: *a23
+    delete:
+      operationId: ChatController_deleteSession_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Soft-deletes the session so it leaves your list. The transcript
+            itself is retained: PMK 24/2022 requires the record of what a
+            patient was told to survive, and the daily session quota counts
+            deleted sessions so a delete cannot reset it."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a
+                  message: Chat session deleted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Chat session not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Chat session not found.
+      security:
+        - bearer: []
+      summary: Delete one of your chat sessions
+      tags: *a23
+  /api/v1/chat/sessions/{id}/messages:
+    post:
+      operationId: ChatController_sendMessage_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendChatMessageDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  content: Kapan klinik buka pada hari Sabtu?
+      responses:
+        "200":
+          description: Returns both persisted turns. The mandatory disclaimer is in meta,
+            never inside the assistant content — render the reply only together
+            with it. Emergency messages are answered from a fixed escalation
+            template without contacting any provider. Returns 422 when the
+            safety guards refuse the message, 429 on the hourly limit, 502/504
+            when the provider fails, and 503 when chat is disabled or
+            unconfigured.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      userMessage:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          actor:
+                            type: string
+                          content:
+                            type: string
+                          disclaimerShown:
+                            type: boolean
+                          safetyTags:
+                            type: array
+                            items: {}
+                          providerRequestId:
+                            nullable: true
+                          providerModel:
+                            nullable: true
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - actor
+                          - content
+                          - disclaimerShown
+                          - safetyTags
+                          - providerRequestId
+                          - providerModel
+                          - createdAt
+                      assistantMessage:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          actor:
+                            type: string
+                          content:
+                            type: string
+                          disclaimerShown:
+                            type: boolean
+                          safetyTags:
+                            type: array
+                            items: {}
+                          providerRequestId:
+                            type: string
+                          providerModel:
+                            type: string
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - actor
+                          - content
+                          - disclaimerShown
+                          - safetyTags
+                          - providerRequestId
+                          - providerModel
+                          - createdAt
+                    required:
+                      - userMessage
+                      - assistantMessage
+                  meta:
+                    type: object
+                    properties:
+                      disclaimer:
+                        type: string
+                      providerKind:
+                        type: string
+                      model:
+                        type: string
+                      providerRequestId:
+                        type: string
+                    required:
+                      - disclaimer
+                      - providerKind
+                      - model
+                      - providerRequestId
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    userMessage:
+                      id: 9a0b1c2d-3e4f-4a5b-8c6d-7e8f9a0b1c2d
+                      actor: USER
+                      content: Kapan klinik buka pada hari Sabtu?
+                      disclaimerShown: false
+                      safetyTags: []
+                      providerRequestId: null
+                      providerModel: null
+                      createdAt: 2026-08-14T01:05:00.000Z
+                    assistantMessage:
+                      id: 4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e
+                      actor: ASSISTANT
+                      content: Klinik buka pukul 08.00-14.00 WIB pada hari Sabtu.
+                      disclaimerShown: true
+                      safetyTags: []
+                      providerRequestId: req_abc123
+                      providerModel: deepseek-chat
+                      createdAt: 2026-08-14T01:05:01.000Z
+                  meta:
+                    disclaimer: Informasi ini bukan diagnosis medis. Konsultasikan dengan tenaga
+                      kesehatan. / This information is not a medical diagnosis.
+                      Please consult a healthcare professional.
+                    providerKind: DEEPSEEK
+                    model: deepseek-chat
+                    providerRequestId: req_abc123
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Chat session not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Chat session not found.
+      security:
+        - bearer: []
+      summary: Send a message and receive the assistant’s reply
+      tags: *a23
+    get:
+      operationId: ChatController_listMessages_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: Turns in conversation order, cursor-paginated. SYSTEM turns are
+            part of the record — they hold the redacted context that was sent to
+            the provider — so a client rendering the conversation should display
+            USER and ASSISTANT turns only.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        actor:
+                          type: string
+                        content:
+                          type: string
+                        disclaimerShown:
+                          type: boolean
+                        safetyTags:
+                          type: array
+                          items: {}
+                        providerRequestId:
+                          nullable: true
+                        providerModel:
+                          nullable: true
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - actor
+                        - content
+                        - disclaimerShown
+                        - safetyTags
+                        - providerRequestId
+                        - providerModel
+                        - createdAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 9a0b1c2d-3e4f-4a5b-8c6d-7e8f9a0b1c2d
+                      actor: USER
+                      content: Kapan klinik buka pada hari Sabtu?
+                      disclaimerShown: false
+                      safetyTags: []
+                      providerRequestId: null
+                      providerModel: null
+                      createdAt: 2026-08-14T01:05:00.000Z
+                    - id: 4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e
+                      actor: ASSISTANT
+                      content: Klinik buka pukul 08.00-14.00 WIB pada hari Sabtu.
+                      disclaimerShown: true
+                      safetyTags: []
+                      providerRequestId: req_abc123
+                      providerModel: deepseek-chat
+                      createdAt: 2026-08-14T01:05:01.000Z
+                  meta:
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Chat session not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Chat session not found.
+      security:
+        - bearer: []
+      summary: Read a session transcript
+      tags: *a23
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -13273,7 +14040,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a23
+      tags: &a24
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -13366,7 +14133,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a23
+      tags: *a24
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -13458,7 +14225,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a23
+      tags: *a24
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -15144,6 +15911,28 @@ components:
           exclusiveMinimum: false
           maximum: 120000
           exclusiveMaximum: false
+    CreateChatSessionDto:
+      type: object
+      properties:
+        channel:
+          type: string
+          enum:
+            - PATIENT
+            - DOCTOR
+          default: PATIENT
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+    SendChatMessageDto:
+      type: object
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+        - content
     AssignRoleDto:
       type: object
       properties:

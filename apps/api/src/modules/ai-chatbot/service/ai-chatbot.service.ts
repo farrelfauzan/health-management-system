@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import {
@@ -8,6 +13,7 @@ import {
   ChatMessageRecord,
   ChatSafetyTagValue,
   ChatMessageView,
+  AdminChatSessionListView,
   ChatSessionListView,
   ChatSessionRecord,
   ChatSessionView,
@@ -18,6 +24,7 @@ import {
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuthRepository } from '../../auth/repository/auth.repository';
 import { AiChatbotError } from '../ai-chatbot.error';
 import { ChatCompletionMessage } from '../infrastructure/ai-provider.types';
 import { AI_CHAT_CONTEXT_PREAMBLE } from './ai-chat-context-preamble';
@@ -54,6 +61,7 @@ const REPLAYED_HISTORY_TURN_LIMIT = 20;
 export class AiChatbotService {
   constructor(
     private readonly chatRepository: ChatRepository,
+    private readonly authRepository: AuthRepository,
     private readonly resolverService: AiProviderResolverService,
     private readonly contextEnrichmentService: ChatContextEnrichmentService,
     private readonly safetyPolicyService: SafetyPolicyService,
@@ -96,15 +104,29 @@ export class AiChatbotService {
     };
   }
 
-  /** Admin support view (`chat.session.read:any`) — every owner's sessions. */
-  async listAllSessions(query: ListChatSessionsQueryInput): Promise<ChatSessionListView> {
+  /**
+   * Admin support view (`chat.session.read:any`) — every owner's sessions.
+   * The global guard only proves the actor may read *some* chat session, so
+   * the ANY scope is checked here, the way every other module resolves scope
+   * in its service. Refusing outright beats silently narrowing the list: an
+   * admin screen showing only the operator's own two conversations looks
+   * like an empty clinic, not like a missing grant.
+   */
+  async listAllSessions(
+    query: ListChatSessionsQueryInput,
+    actor: CurrentUser,
+  ): Promise<AdminChatSessionListView> {
+    await this.assertAnyScope(actor, 'ChatSession', 'read');
     const page = await this.chatRepository.listAllSessions({
       channel: query.channel,
       cursor: query.cursor,
       limit: query.limit,
     });
     return {
-      items: page.items.map((session) => this.toSessionView(session)),
+      items: page.items.map((session) => ({
+        ...this.toSessionView(session),
+        ownerUserId: session.ownerUserId,
+      })),
       nextCursor: page.nextCursor,
     };
   }
@@ -298,6 +320,28 @@ export class AiChatbotService {
           content: message.content,
         })),
     ];
+  }
+
+  private async assertAnyScope(
+    actor: CurrentUser,
+    resource: string,
+    action: string,
+  ): Promise<void> {
+    const actorRecord = await this.authRepository.findUserById(actor.sub);
+    if (!actorRecord) {
+      throw new UnauthorizedException('User not found');
+    }
+    const hasAnyScope = actorRecord.roles
+      .flatMap((userRole) => userRole.role.permissions)
+      .some(
+        (rolePermission) =>
+          rolePermission.permission.resource === resource &&
+          rolePermission.permission.action === action &&
+          rolePermission.permission.scope === 'ANY',
+      );
+    if (!hasAnyScope) {
+      throw new ForbiddenException('You are not allowed to read all chat sessions');
+    }
   }
 
   private async requireOwnSession(id: string, actor: CurrentUser): Promise<ChatSessionRecord> {

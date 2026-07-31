@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 
 import { AppointmentManagementModule } from '../appointment-management/appointment-management.module';
+import { AuthModule } from '../auth/auth.module';
 import { PatientManagementModule } from '../patient-management/patient-management.module';
 import { RegistrationFlowModule } from '../registration-flow/registration-flow.module';
 import { AiProviderController } from './controller/ai-provider.controller';
+import { ChatController } from './controller/chat.controller';
 import { AiProviderHttpClient } from './infrastructure/ai-provider-http.client';
 import { AiProviderRegistry } from './infrastructure/providers/ai-provider-registry.service';
 import { AnthropicAdapter } from './infrastructure/providers/anthropic.adapter';
@@ -34,8 +36,13 @@ import { SafetyPolicyService } from './service/safety-policy.service';
  * modules: cross-module access goes through services.
  */
 @Module({
-  imports: [PatientManagementModule, AppointmentManagementModule, RegistrationFlowModule],
-  controllers: [AiProviderController],
+  imports: [
+    AuthModule,
+    PatientManagementModule,
+    AppointmentManagementModule,
+    RegistrationFlowModule,
+  ],
+  controllers: [AiProviderController, ChatController],
   providers: [
     AiProviderConfigRepository,
     ChatRepository,

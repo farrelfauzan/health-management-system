@@ -27,7 +27,19 @@ import type {
   AiProviderControllerListConfigsV1200,
   AiProviderControllerTestConnectionV1200,
   AiProviderControllerUpdateConfigV1200,
+  ChatControllerCreateSessionV1201,
+  ChatControllerDeleteSessionV1200,
+  ChatControllerGetSessionV1200,
+  ChatControllerListAllSessionsV1200,
+  ChatControllerListAllSessionsV1Params,
+  ChatControllerListMessagesV1200,
+  ChatControllerListMessagesV1Params,
+  ChatControllerListSessionsV1200,
+  ChatControllerListSessionsV1Params,
+  ChatControllerSendMessageV1200,
   CreateAiProviderConfigDto,
+  CreateChatSessionDto,
+  SendChatMessageDto,
   UpdateAiProviderConfigDto
 } from '../model';
 
@@ -603,6 +615,671 @@ export function useAiProviderControllerTestConnectionV1<TData = Awaited<ReturnTy
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAiProviderControllerTestConnectionV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Start a chat session
+ */
+export const chatControllerCreateSessionV1 = (
+    createChatSessionDto: CreateChatSessionDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChatControllerCreateSessionV1201>(
+      {url: `/api/v1/chat/sessions`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createChatSessionDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getChatControllerCreateSessionV1QueryKey = (createChatSessionDto?: CreateChatSessionDto,) => {
+    return [
+    'POST', `/api/v1/chat/sessions`, createChatSessionDto
+    ] as const;
+    }
+
+
+export const getChatControllerCreateSessionV1QueryOptions = <TData = Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError = unknown>(createChatSessionDto: CreateChatSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChatControllerCreateSessionV1QueryKey(createChatSessionDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof chatControllerCreateSessionV1>>> = ({ signal }) => chatControllerCreateSessionV1(createChatSessionDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChatControllerCreateSessionV1QueryResult = NonNullable<Awaited<ReturnType<typeof chatControllerCreateSessionV1>>>
+export type ChatControllerCreateSessionV1QueryError = unknown
+
+
+export function useChatControllerCreateSessionV1<TData = Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError = unknown>(
+ createChatSessionDto: CreateChatSessionDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerCreateSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerCreateSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerCreateSessionV1<TData = Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError = unknown>(
+ createChatSessionDto: CreateChatSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerCreateSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerCreateSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerCreateSessionV1<TData = Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError = unknown>(
+ createChatSessionDto: CreateChatSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Start a chat session
+ */
+
+export function useChatControllerCreateSessionV1<TData = Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError = unknown>(
+ createChatSessionDto: CreateChatSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerCreateSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChatControllerCreateSessionV1QueryOptions(createChatSessionDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List your own chat sessions
+ */
+export const chatControllerListSessionsV1 = (
+    params?: ChatControllerListSessionsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChatControllerListSessionsV1200>(
+      {url: `/api/v1/chat/sessions`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getChatControllerListSessionsV1QueryKey = (params?: ChatControllerListSessionsV1Params,) => {
+    return [
+    `/api/v1/chat/sessions`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getChatControllerListSessionsV1QueryOptions = <TData = Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError = unknown>(params?: ChatControllerListSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChatControllerListSessionsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof chatControllerListSessionsV1>>> = ({ signal }) => chatControllerListSessionsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChatControllerListSessionsV1QueryResult = NonNullable<Awaited<ReturnType<typeof chatControllerListSessionsV1>>>
+export type ChatControllerListSessionsV1QueryError = unknown
+
+
+export function useChatControllerListSessionsV1<TData = Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError = unknown>(
+ params: undefined |  ChatControllerListSessionsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerListSessionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerListSessionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerListSessionsV1<TData = Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError = unknown>(
+ params?: ChatControllerListSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerListSessionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerListSessionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerListSessionsV1<TData = Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError = unknown>(
+ params?: ChatControllerListSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List your own chat sessions
+ */
+
+export function useChatControllerListSessionsV1<TData = Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError = unknown>(
+ params?: ChatControllerListSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListSessionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChatControllerListSessionsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List every chat session (admin support view)
+ */
+export const chatControllerListAllSessionsV1 = (
+    params?: ChatControllerListAllSessionsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChatControllerListAllSessionsV1200>(
+      {url: `/api/v1/chat/admin/sessions`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getChatControllerListAllSessionsV1QueryKey = (params?: ChatControllerListAllSessionsV1Params,) => {
+    return [
+    `/api/v1/chat/admin/sessions`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getChatControllerListAllSessionsV1QueryOptions = <TData = Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError = unknown>(params?: ChatControllerListAllSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChatControllerListAllSessionsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>> = ({ signal }) => chatControllerListAllSessionsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChatControllerListAllSessionsV1QueryResult = NonNullable<Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>>
+export type ChatControllerListAllSessionsV1QueryError = unknown
+
+
+export function useChatControllerListAllSessionsV1<TData = Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError = unknown>(
+ params: undefined |  ChatControllerListAllSessionsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerListAllSessionsV1<TData = Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError = unknown>(
+ params?: ChatControllerListAllSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerListAllSessionsV1<TData = Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError = unknown>(
+ params?: ChatControllerListAllSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List every chat session (admin support view)
+ */
+
+export function useChatControllerListAllSessionsV1<TData = Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError = unknown>(
+ params?: ChatControllerListAllSessionsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListAllSessionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChatControllerListAllSessionsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read one of your chat sessions
+ */
+export const chatControllerGetSessionV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChatControllerGetSessionV1200>(
+      {url: `/api/v1/chat/sessions/${id}`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getChatControllerGetSessionV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/chat/sessions/${id}`
+    ] as const;
+    }
+
+
+export const getChatControllerGetSessionV1QueryOptions = <TData = Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChatControllerGetSessionV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof chatControllerGetSessionV1>>> = ({ signal }) => chatControllerGetSessionV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChatControllerGetSessionV1QueryResult = NonNullable<Awaited<ReturnType<typeof chatControllerGetSessionV1>>>
+export type ChatControllerGetSessionV1QueryError = unknown
+
+
+export function useChatControllerGetSessionV1<TData = Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerGetSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerGetSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerGetSessionV1<TData = Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerGetSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerGetSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerGetSessionV1<TData = Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read one of your chat sessions
+ */
+
+export function useChatControllerGetSessionV1<TData = Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerGetSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChatControllerGetSessionV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Delete one of your chat sessions
+ */
+export const chatControllerDeleteSessionV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChatControllerDeleteSessionV1200>(
+      {url: `/api/v1/chat/sessions/${id}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getChatControllerDeleteSessionV1QueryKey = (id: string,) => {
+    return [
+    'DELETE', `/api/v1/chat/sessions/${id}`
+    ] as const;
+    }
+
+
+export const getChatControllerDeleteSessionV1QueryOptions = <TData = Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChatControllerDeleteSessionV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>> = ({ signal }) => chatControllerDeleteSessionV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChatControllerDeleteSessionV1QueryResult = NonNullable<Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>>
+export type ChatControllerDeleteSessionV1QueryError = unknown
+
+
+export function useChatControllerDeleteSessionV1<TData = Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerDeleteSessionV1<TData = Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerDeleteSessionV1<TData = Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Delete one of your chat sessions
+ */
+
+export function useChatControllerDeleteSessionV1<TData = Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerDeleteSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChatControllerDeleteSessionV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Send a message and receive the assistant’s reply
+ */
+export const chatControllerSendMessageV1 = (
+    id: string,
+    sendChatMessageDto: SendChatMessageDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChatControllerSendMessageV1200>(
+      {url: `/api/v1/chat/sessions/${id}/messages`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: sendChatMessageDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getChatControllerSendMessageV1QueryKey = (id: string,
+    sendChatMessageDto?: SendChatMessageDto,) => {
+    return [
+    'POST', `/api/v1/chat/sessions/${id}/messages`, sendChatMessageDto
+    ] as const;
+    }
+
+
+export const getChatControllerSendMessageV1QueryOptions = <TData = Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError = unknown>(id: string,
+    sendChatMessageDto: SendChatMessageDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChatControllerSendMessageV1QueryKey(id,sendChatMessageDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof chatControllerSendMessageV1>>> = ({ signal }) => chatControllerSendMessageV1(id,sendChatMessageDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChatControllerSendMessageV1QueryResult = NonNullable<Awaited<ReturnType<typeof chatControllerSendMessageV1>>>
+export type ChatControllerSendMessageV1QueryError = unknown
+
+
+export function useChatControllerSendMessageV1<TData = Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError = unknown>(
+ id: string,
+    sendChatMessageDto: SendChatMessageDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerSendMessageV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerSendMessageV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerSendMessageV1<TData = Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError = unknown>(
+ id: string,
+    sendChatMessageDto: SendChatMessageDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerSendMessageV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerSendMessageV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerSendMessageV1<TData = Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError = unknown>(
+ id: string,
+    sendChatMessageDto: SendChatMessageDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Send a message and receive the assistant’s reply
+ */
+
+export function useChatControllerSendMessageV1<TData = Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError = unknown>(
+ id: string,
+    sendChatMessageDto: SendChatMessageDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerSendMessageV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChatControllerSendMessageV1QueryOptions(id,sendChatMessageDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read a session transcript
+ */
+export const chatControllerListMessagesV1 = (
+    id: string,
+    params?: ChatControllerListMessagesV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChatControllerListMessagesV1200>(
+      {url: `/api/v1/chat/sessions/${id}/messages`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getChatControllerListMessagesV1QueryKey = (id: string,
+    params?: ChatControllerListMessagesV1Params,) => {
+    return [
+    `/api/v1/chat/sessions/${id}/messages`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getChatControllerListMessagesV1QueryOptions = <TData = Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError = unknown>(id: string,
+    params?: ChatControllerListMessagesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChatControllerListMessagesV1QueryKey(id,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof chatControllerListMessagesV1>>> = ({ signal }) => chatControllerListMessagesV1(id,params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChatControllerListMessagesV1QueryResult = NonNullable<Awaited<ReturnType<typeof chatControllerListMessagesV1>>>
+export type ChatControllerListMessagesV1QueryError = unknown
+
+
+export function useChatControllerListMessagesV1<TData = Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError = unknown>(
+ id: string,
+    params: undefined |  ChatControllerListMessagesV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerListMessagesV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerListMessagesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerListMessagesV1<TData = Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError = unknown>(
+ id: string,
+    params?: ChatControllerListMessagesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chatControllerListMessagesV1>>,
+          TError,
+          Awaited<ReturnType<typeof chatControllerListMessagesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChatControllerListMessagesV1<TData = Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError = unknown>(
+ id: string,
+    params?: ChatControllerListMessagesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read a session transcript
+ */
+
+export function useChatControllerListMessagesV1<TData = Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError = unknown>(
+ id: string,
+    params?: ChatControllerListMessagesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chatControllerListMessagesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChatControllerListMessagesV1QueryOptions(id,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

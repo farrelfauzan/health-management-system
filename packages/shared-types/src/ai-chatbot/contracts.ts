@@ -64,9 +64,24 @@ export type ChatMessageView = {
   createdAt: string;
 };
 
+/**
+ * The admin support view (`chat.session.read:any`). Adds the owner id — a
+ * support conversation starts with "whose session is this" — but still
+ * carries no transcript: reading the messages is a separate, separately
+ * audited request.
+ */
+export type AdminChatSessionView = ChatSessionView & {
+  ownerUserId: string;
+};
+
 /** Cursor page envelope; `nextCursor` is null on the last page. */
 export type ChatSessionListView = {
   items: ChatSessionView[];
+  nextCursor: string | null;
+};
+
+export type AdminChatSessionListView = {
+  items: AdminChatSessionView[];
   nextCursor: string | null;
 };
 
