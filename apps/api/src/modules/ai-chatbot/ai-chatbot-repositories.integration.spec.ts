@@ -22,6 +22,7 @@ describe('AI chatbot repositories against Postgres', () => {
   let prisma: PrismaService;
   let configRepository: AiProviderConfigRepository;
   let chatRepository: ChatRepository;
+  let preexistingActiveConfigId: string | null = null;
 
   function buildConfigRepository(env: Record<string, string>): AiProviderConfigRepository {
     return new AiProviderConfigRepository(prisma, new AiProviderCryptoService(new ConfigService(env)));
@@ -51,6 +52,14 @@ describe('AI chatbot repositories against Postgres', () => {
     await prisma.$connect();
     configRepository = buildConfigRepository({ AI_PROVIDER_ENCRYPTION_KEY: TEST_ENCRYPTION_KEY });
     chatRepository = new ChatRepository(prisma);
+    // The active slot is global — a partial unique index allows exactly one
+    // active row — so activating a test config necessarily deactivates a real
+    // one. On a shared dev database that silently switches the clinic's
+    // chatbot off, which is the opposite of the namespacing this spec
+    // promises, so remember the incumbent and put it back at the end.
+    preexistingActiveConfigId =
+      (await prisma.aiProviderConfig.findFirst({ where: { isActive: true, deletedAt: null } }))
+        ?.id ?? null;
     await deleteTestRows();
   });
 
@@ -59,6 +68,9 @@ describe('AI chatbot repositories against Postgres', () => {
   });
 
   afterAll(async () => {
+    if (preexistingActiveConfigId !== null) {
+      await configRepository.activateConfig(preexistingActiveConfigId);
+    }
     await prisma.$disconnect();
   });
 
@@ -201,7 +213,13 @@ describe('AI chatbot repositories against Postgres', () => {
       expect(await configRepository.findConfigById(created.id)).toBeNull();
       expect(await configRepository.findActiveConfig()).toBeNull();
       expect(await configRepository.getActiveConnection()).toBeNull();
-      expect(await configRepository.listConfigs()).toEqual([]);
+      // Scoped to this spec's own rows: a shared dev database legitimately
+      // holds a clinic's real configurations, and their presence is not a
+      // failure of soft delete.
+      const actualListed = await configRepository.listConfigs();
+      expect(actualListed.filter((record) => record.displayName.startsWith(TEST_MARKER))).toEqual(
+        [],
+      );
     });
   });
 

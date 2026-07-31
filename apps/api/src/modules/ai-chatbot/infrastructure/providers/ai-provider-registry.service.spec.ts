@@ -13,6 +13,7 @@ describe('AiProviderRegistry', () => {
   it.each([
     ['OPENAI', openAiCompatibleAdapter],
     ['DEEPSEEK', openAiCompatibleAdapter],
+    ['GEMINI', openAiCompatibleAdapter],
     ['OLLAMA', openAiCompatibleAdapter],
     ['OPENAI_COMPATIBLE', openAiCompatibleAdapter],
     ['AZURE_OPENAI', openAiCompatibleAdapter],

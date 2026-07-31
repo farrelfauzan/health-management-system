@@ -15895,6 +15895,7 @@ components:
             - OPENAI
             - DEEPSEEK
             - ANTHROPIC
+            - GEMINI
             - OLLAMA
             - OPENAI_COMPATIBLE
             - AZURE_OPENAI

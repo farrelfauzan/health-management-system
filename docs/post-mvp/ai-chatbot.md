@@ -142,6 +142,7 @@ HMS does **not** hard-code a single vendor. Each clinic (facility) configures wh
 | `OPENAI` | `gpt-4o`, `gpt-4o-mini` | OpenAI Chat Completions | `https://api.openai.com/v1` |
 | `DEEPSEEK` | `deepseek-chat`, `deepseek-reasoner` | OpenAI-compatible | `https://api.deepseek.com/v1` |
 | `ANTHROPIC` | `claude-sonnet-4-20250514`, `claude-3-5-haiku-20241022` | Anthropic Messages API | `https://api.anthropic.com/v1` |
+| `GEMINI` | `gemini-3.6-flash`, `gemini-2.5-flash` | OpenAI-compatible (Google compatibility endpoint) | `https://generativelanguage.googleapis.com/v1beta/openai` |
 | `OLLAMA` | `llama3.2`, `mistral`, `qwen2.5`, `deepseek-r1` (local tag) | OpenAI-compatible (`/v1/chat/completions`) | `http://127.0.0.1:11434/v1` |
 | `OPENAI_COMPATIBLE` | User-defined (Groq, Together, LiteLLM gateway) | OpenAI Chat Completions | **Required** — admin supplies `baseUrl` |
 | `AZURE_OPENAI` | Deployment name as `model` | OpenAI-compatible + `api-key` header | Admin supplies Azure resource URL |
@@ -150,8 +151,16 @@ Add new kinds by implementing `AiChatProvider` and registering in `AiProviderReg
 
 **Adapter split:**
 
-- `OpenAiCompatibleAdapter` — one implementation for all OpenAI-shaped APIs (`OPENAI`, `DEEPSEEK`, `OLLAMA`, `OPENAI_COMPATIBLE`, `AZURE_OPENAI`). Differences (auth header name, api-version query param, optional auth for Ollama) live in small strategy objects keyed by `AiProviderKind`.
+- `OpenAiCompatibleAdapter` — one implementation for all OpenAI-shaped APIs (`OPENAI`, `DEEPSEEK`, `GEMINI`, `OLLAMA`, `OPENAI_COMPATIBLE`, `AZURE_OPENAI`). Differences (auth header name, api-version query param, optional auth for Ollama) live in small strategy objects keyed by `AiProviderKind`.
 - `AnthropicAdapter` — separate because Claude uses the Messages API (`/messages`), different auth header (`x-api-key`), and `system` prompt placement. The adapter normalizes to the same HMS result type.
+
+**Gemini notes (`GEMINI`):**
+
+- Routed through Google's **OpenAI-compatibility endpoint**, not the native `generateContent` API, so it reuses `OpenAiCompatibleAdapter` with the standard bearer strategy — the kind exists to give admins the vendor default base URL and model hint, not to add wire code.
+- `apiKey` is a Google AI Studio API key, required like every kind except `OLLAMA`.
+- The published base URL carries a trailing slash (`…/v1beta/openai/`); the resolver strips trailing slashes before the adapter appends `/chat/completions`, so either form is safe to store.
+- **Gemini models are reasoning models**: hidden thinking tokens are billed as output and counted against `max_tokens`. A budget too small returns HTTP 200 with `finish_reason: length` and *no content at all* — see §4.3.6.
+- Compatibility is a subset of the native API. Anything Gemini-specific (thinking config, safety-setting overrides, multimodal parts) is **not** reachable this way; a native adapter would be a separate task if a clinic ever needs it.
 
 **Ollama notes (`OLLAMA`):**
 
@@ -170,6 +179,7 @@ type AiProviderKind =
   | 'OPENAI'
   | 'DEEPSEEK'
   | 'ANTHROPIC'
+  | 'GEMINI'
   | 'OLLAMA'
   | 'OPENAI_COMPATIBLE'
   | 'AZURE_OPENAI';
@@ -274,6 +284,7 @@ Switching to Claude: admin creates `ANTHROPIC` config, activates it — **new se
 - Per-provider circuit breaker keyed by `configId` (a bad key must not trip other clinics)
 - Timeout from config (default 30s), retry with exponential backoff for idempotent-safe transport errors only (not 401/403)
 - Map upstream errors to HMS codes: `AI_PROVIDER_UNAVAILABLE`, `AI_PROVIDER_TIMEOUT`, `AI_PROVIDER_UNAUTHORIZED`, `AI_PROVIDER_MODEL_NOT_FOUND`, `AI_SAFETY_BLOCKED`
+- **A 200 carrying no completion content is a budget failure, not a broken vendor.** Reasoning models bill hidden thinking as output tokens against `max_tokens`, so too small a budget yields `finish_reason: length` with an empty message. The adapter reports that case distinctly and names the token budget, because "unexpected completion shape" sends an admin looking at their key and base URL when the config is fine. This is also why the connection test's probe budget must leave room for a model to think before it answers.
 - Never log raw prompts, API keys, or decrypted credentials
 
 ## 5. Data Model
@@ -394,7 +405,7 @@ Stored in `AiProviderConfig` (§4.3.3). Admins set provider kind, API key, model
 
 | Field | Required | Description |
 | ----- | -------- | ----------- |
-| `providerKind` | yes | `OPENAI`, `DEEPSEEK`, `ANTHROPIC`, `OLLAMA`, `OPENAI_COMPATIBLE`, `AZURE_OPENAI` |
+| `providerKind` | yes | `OPENAI`, `DEEPSEEK`, `ANTHROPIC`, `GEMINI`, `OLLAMA`, `OPENAI_COMPATIBLE`, `AZURE_OPENAI` |
 | `apiKey` | yes (on create/rotate) | Plaintext only in transit; never returned by GET. **Optional for `OLLAMA`** when the target host has no auth |
 | `defaultModel` | yes | Provider-specific model id (`llama3.2` for Ollama; must exist on target host) |
 | `baseUrl` | conditional | Required for `OPENAI_COMPATIBLE` and `AZURE_OPENAI`; optional for `OLLAMA` (see §4.3.1) |

@@ -114,6 +114,19 @@ describe('AiProviderResolverService', () => {
     expect(actualResolved.config.baseUrl).toBe('http://127.0.0.1:11434/v1');
   });
 
+  it('defaults GEMINI to the OpenAI-compatibility base URL', async () => {
+    getActiveConnectionMock.mockResolvedValue(
+      buildConnection({ providerKind: 'GEMINI', baseUrl: null, model: 'gemini-3.6-flash' }),
+    );
+
+    const actualResolved = await buildService().resolveActiveProvider();
+
+    expect(actualResolved.config.baseUrl).toBe(
+      'https://generativelanguage.googleapis.com/v1beta/openai',
+    );
+    expect(resolveAdapterMock).toHaveBeenCalledWith('GEMINI');
+  });
+
   it('rejects a model id with unsupported characters', async () => {
     getActiveConnectionMock.mockResolvedValue(
       buildConnection({ model: 'deepseek-chat?stream=true' }),
@@ -162,9 +175,12 @@ describe('AiProviderResolverService', () => {
   it('rejects an unknown platform provider kind', async () => {
     getActiveConnectionMock.mockResolvedValue(null);
 
+    // Deliberately not a real vendor name: this case is about an env value
+    // outside the enum, so naming an actual vendor makes the test fail the
+    // day that vendor is added rather than the day the guard breaks.
     const actualError = await buildService({
-      AI_PLATFORM_PROVIDER_KIND: 'GEMINI',
-      AI_PLATFORM_MODEL: 'gemini-pro',
+      AI_PLATFORM_PROVIDER_KIND: 'UNSUPPORTED_VENDOR',
+      AI_PLATFORM_MODEL: 'some-model',
     })
       .resolveActiveProvider()
       .catch((err: unknown) => err);

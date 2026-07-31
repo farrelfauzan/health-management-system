@@ -9,6 +9,7 @@ export const AI_PROVIDER_MODEL_PLACEHOLDERS: Readonly<Record<AiProviderKindValue
   OPENAI: 'gpt-4o-mini',
   DEEPSEEK: 'deepseek-chat',
   ANTHROPIC: 'claude-sonnet-4-20250514',
+  GEMINI: 'gemini-3.6-flash',
   OLLAMA: 'llama3.2',
   OPENAI_COMPATIBLE: 'model-id-from-your-gateway',
   AZURE_OPENAI: 'your-deployment-name',
