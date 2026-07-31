@@ -19,9 +19,11 @@ import {
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AiChatbotError } from '../ai-chatbot.error';
 import { ChatCompletionMessage } from '../infrastructure/ai-provider.types';
+import { AI_CHAT_CONTEXT_PREAMBLE } from './ai-chat-context-preamble';
 import { AI_CHAT_DISCLAIMER } from './ai-chat-disclaimer';
 import { AI_CHAT_SYSTEM_PROMPTS } from './ai-chat-system-prompts';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
+import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
 import { ChatRepository } from '../repository/chat.repository';
 
 /**
@@ -51,6 +53,7 @@ export class AiChatbotService {
   constructor(
     private readonly chatRepository: ChatRepository,
     private readonly resolverService: AiProviderResolverService,
+    private readonly contextEnrichmentService: ChatContextEnrichmentService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -153,15 +156,30 @@ export class AiChatbotService {
       content: input.content,
       createdAt: exchangeStartedAt,
     });
-    const history = await this.chatRepository.listMessagesForSession({
-      sessionId: session.id,
-      limit: REPLAYED_HISTORY_TURN_LIMIT,
-    });
+    const [history, contextPayload] = await Promise.all([
+      this.chatRepository.listMessagesForSession({
+        sessionId: session.id,
+        limit: REPLAYED_HISTORY_TURN_LIMIT,
+      }),
+      this.contextEnrichmentService.buildContext(session.channel, actor),
+    ]);
+    // The context that is about to reach a third party is persisted as its
+    // own SYSTEM turn before the call: the UU PDP audit question is "what
+    // personal data went to the processor, and when", and this row is the
+    // answer. Empty context writes nothing.
+    if (Object.keys(contextPayload).length > 0) {
+      await this.chatRepository.appendMessage({
+        sessionId: session.id,
+        actor: 'SYSTEM',
+        content: JSON.stringify(contextPayload),
+        createdAt: exchangeStartedAt,
+      });
+    }
     const result = await adapter.sendChatCompletion(config, {
       sessionExternalId: session.providerSessionId,
       channel: session.channel,
-      messages: this.buildCompletionMessages(session, history.items),
-      contextPayload: {},
+      messages: this.buildCompletionMessages(session, history.items, contextPayload),
+      contextPayload,
     });
     const assistantMessage = await this.chatRepository.appendMessage({
       sessionId: session.id,
@@ -196,29 +214,38 @@ export class AiChatbotService {
   }
 
   /**
-   * Builds the completion request: the channel's system prompt first, then
-   * the replayed transcript oldest-first. SYSTEM turns already stored in the
-   * transcript are replayed as-is so an auditor's view of what the provider
-   * saw matches what was persisted.
+   * Builds the completion request: the channel's system prompt, then the
+   * freshly built context, then the replayed conversation oldest-first.
+   *
+   * Stored SYSTEM turns are **excluded from the replay** on purpose. They
+   * are the audit record of the context sent on earlier exchanges; replaying
+   * them would hand the provider several stale snapshots of the patient's
+   * appointments alongside the current one, which is both confusing to the
+   * model and more personal data than this turn needs.
    */
   private buildCompletionMessages(
     session: ChatSessionRecord,
     history: ChatMessageRecord[],
+    contextPayload: Record<string, unknown>,
   ): ChatCompletionMessage[] {
+    const hasContext = Object.keys(contextPayload).length > 0;
     return [
       { role: 'system', content: AI_CHAT_SYSTEM_PROMPTS[session.channel] },
-      ...history.map((message) => ({
-        role: this.toCompletionRole(message.actor),
-        content: message.content,
-      })),
+      ...(hasContext
+        ? [
+            {
+              role: 'system' as const,
+              content: `${AI_CHAT_CONTEXT_PREAMBLE}\n${JSON.stringify(contextPayload)}`,
+            },
+          ]
+        : []),
+      ...history
+        .filter((message) => message.actor !== 'SYSTEM')
+        .map((message) => ({
+          role: message.actor === 'ASSISTANT' ? ('assistant' as const) : ('user' as const),
+          content: message.content,
+        })),
     ];
-  }
-
-  private toCompletionRole(actor: ChatMessageRecord['actor']): ChatCompletionMessage['role'] {
-    if (actor === 'ASSISTANT') {
-      return 'assistant';
-    }
-    return actor === 'SYSTEM' ? 'system' : 'user';
   }
 
   private async requireOwnSession(id: string, actor: CurrentUser): Promise<ChatSessionRecord> {

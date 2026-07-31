@@ -11,5 +11,6 @@ import { RegistrationFlowService } from './service/registration-flow.service';
   imports: [AuthModule, PrivacyNoticeModule],
   controllers: [RegistrationFlowController],
   providers: [QueueNumberAllocatorRepository, RegistrationFlowRepository, RegistrationFlowService],
+  exports: [RegistrationFlowService],
 })
 export class RegistrationFlowModule {}
