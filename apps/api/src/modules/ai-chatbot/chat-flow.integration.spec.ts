@@ -92,9 +92,25 @@ describe('Chat flow integration', () => {
     };
   }
 
-  const prismaServiceMock = {
+  type PrismaMock = {
+    aiProviderConfig: { findFirst: jest.Mock; findMany: jest.Mock };
+    chatSession: Record<string, jest.Mock>;
+    chatMessage: Record<string, jest.Mock>;
+    [key: string]: unknown;
+  };
+  const prismaServiceMock: PrismaMock = {
     $connect: jest.fn(),
     $disconnect: jest.fn(),
+    /**
+     * The quota-guarded writes run inside a transaction and take a Postgres
+     * advisory lock. Against the in-memory tables the transaction is just the
+     * same delegates and the lock is a no-op — the atomicity itself is proven
+     * against real Postgres in `chat-rate-limit.integration.spec.ts`.
+     */
+    $transaction: jest.fn((run: (tx: unknown) => unknown): unknown =>
+      run(prismaServiceMock as unknown),
+    ),
+    $executeRaw: jest.fn(() => Promise.resolve(0)),
     aiProviderConfig: {
       findFirst: jest.fn((): Promise<Record<string, unknown> | null> =>
         Promise.resolve(buildActiveConfigRow()),

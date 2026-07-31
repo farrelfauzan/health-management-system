@@ -13,6 +13,13 @@ import {
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+
+/**
+ * Advisory-lock namespaces, kept distinct so the two quotas never block each
+ * other for the same user.
+ */
+const MESSAGE_QUOTA_LOCK_NAMESPACE = 1;
+const SESSION_QUOTA_LOCK_NAMESPACE = 2;
 import { ChatMessage, ChatSession, Prisma } from '../../../generated/prisma/client';
 
 /**
@@ -88,50 +95,99 @@ export class ChatRepository {
   }
 
   /**
-   * Counts the user's own turns across every session since an instant — the
-   * denominator for the per-hour rate limit. Scoped by `authorUserId` (which
-   * only USER turns carry) rather than by session, so opening a second
-   * conversation does not buy a fresh budget.
+   * Appends a user turn only if the hourly quota still has room, counting and
+   * inserting **inside one transaction guarded by a per-user advisory lock**.
+   *
+   * Counting and then inserting as two statements is not a rate limit: a
+   * concurrent burst reads the same pre-limit count and every request in it
+   * passes. Measured against real Postgres, ten simultaneous requests with a
+   * single slot remaining all succeeded — a scripted client could send an
+   * unbounded burst for one slot's worth of budget. The lock serializes only
+   * requests from the same user, so an honest clinic never contends, and it
+   * releases with the transaction.
+   *
+   * Returns null when the quota is exhausted; the caller decides what that
+   * means, so the repository stays free of domain errors.
    */
-  async countOwnMessagesSince(authorUserId: string, since: Date): Promise<number> {
-    return this.prismaService.chatMessage.count({
-      where: { authorUserId, actor: 'USER', createdAt: { gte: since } },
+  async appendUserMessageWithinQuota(
+    data: AppendChatMessageData,
+    quota: { since: Date; limit: number },
+  ): Promise<ChatMessageRecord | null> {
+    return this.prismaService.$transaction(async (transaction) => {
+      await transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${data.authorUserId ?? ''}), ${MESSAGE_QUOTA_LOCK_NAMESPACE})`;
+      const sentInWindow = await transaction.chatMessage.count({
+        where: {
+          authorUserId: data.authorUserId,
+          actor: 'USER',
+          createdAt: { gte: quota.since },
+        },
+      });
+      if (sentInWindow >= quota.limit) {
+        return null;
+      }
+      const row = await transaction.chatMessage.create({ data: this.toMessageCreateData(data) });
+      return this.toMessageRecord(row);
     });
   }
 
   /**
-   * Counts sessions the user created since an instant, **including
-   * soft-deleted ones**: deleting a conversation must not reset the daily
-   * quota, or the limit would be one DELETE away from meaningless.
+   * Creates a session only if the daily quota still has room, under the same
+   * lock-count-insert discipline as {@link appendUserMessageWithinQuota} and
+   * for the same reason. Sessions are counted **including soft-deleted ones**:
+   * deleting a conversation must not reset the quota, or the limit would be
+   * one DELETE away from meaningless.
    */
-  async countOwnSessionsSince(ownerUserId: string, since: Date): Promise<number> {
-    return this.prismaService.chatSession.count({
-      where: { ownerUserId, createdAt: { gte: since } },
+  async createSessionWithinQuota(
+    data: CreateChatSessionData,
+    quota: { since: Date; limit: number },
+  ): Promise<ChatSessionRecord | null> {
+    return this.prismaService.$transaction(async (transaction) => {
+      await transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${data.ownerUserId}), ${SESSION_QUOTA_LOCK_NAMESPACE})`;
+      const openedInWindow = await transaction.chatSession.count({
+        where: { ownerUserId: data.ownerUserId, createdAt: { gte: quota.since } },
+      });
+      if (openedInWindow >= quota.limit) {
+        return null;
+      }
+      const row = await transaction.chatSession.create({
+        data: {
+          ownerUserId: data.ownerUserId,
+          channel: data.channel,
+          providerKey: data.providerKey,
+          providerKind: data.providerKind,
+          title: data.title ?? null,
+        },
+      });
+      return this.toSessionRecord(row);
     });
   }
 
   async appendMessage(data: AppendChatMessageData): Promise<ChatMessageRecord> {
     const row = await this.prismaService.chatMessage.create({
-      data: {
-        sessionId: data.sessionId,
-        authorUserId: data.authorUserId ?? null,
-        actor: data.actor,
-        content: data.content,
-        providerKind: data.providerKind ?? null,
-        providerRequestId: data.providerRequestId ?? null,
-        providerMessageId: data.providerMessageId ?? null,
-        providerModel: data.providerModel ?? null,
-        providerStatusCode: data.providerStatusCode ?? null,
-        providerLatencyMs: data.providerLatencyMs ?? null,
-        disclaimerShown: data.disclaimerShown ?? false,
-        safetyTags: data.safetyTags ?? [],
-        // Omitted -> database now(); passed -> the writer owns turn order
-        // (two appends in the same millisecond tie on createdAt, and the
-        // random-UUID id is no tie-break).
-        createdAt: data.createdAt,
-      },
+      data: this.toMessageCreateData(data),
     });
     return this.toMessageRecord(row);
+  }
+
+  private toMessageCreateData(data: AppendChatMessageData): Prisma.ChatMessageUncheckedCreateInput {
+    return {
+      sessionId: data.sessionId,
+      authorUserId: data.authorUserId ?? null,
+      actor: data.actor,
+      content: data.content,
+      providerKind: data.providerKind ?? null,
+      providerRequestId: data.providerRequestId ?? null,
+      providerMessageId: data.providerMessageId ?? null,
+      providerModel: data.providerModel ?? null,
+      providerStatusCode: data.providerStatusCode ?? null,
+      providerLatencyMs: data.providerLatencyMs ?? null,
+      disclaimerShown: data.disclaimerShown ?? false,
+      safetyTags: data.safetyTags ?? [],
+      // Omitted -> database now(); passed -> the writer owns turn order
+      // (two appends in the same millisecond tie on createdAt, and the
+      // random-UUID id is no tie-break).
+      createdAt: data.createdAt,
+    };
   }
 
   /**
