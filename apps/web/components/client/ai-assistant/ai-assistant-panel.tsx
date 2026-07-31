@@ -6,11 +6,13 @@ import { useLocale, useTranslations } from 'next-intl';
 import { ChatComposer } from '#components/client/ai-assistant/chat-composer';
 import { ChatThread } from '#components/client/ai-assistant/chat-thread';
 import { ConfidentialDisclaimer } from '#components/client/ai-assistant/confidential-disclaimer';
+import { AssistantUnavailableNotice } from '#components/client/ai-assistant/assistant-unavailable-notice';
 import { ConsultationSidebar } from '#components/client/ai-assistant/consultation-sidebar';
 import { PageHeader } from '#components/shared/page-header';
 import type { ConsultationHistoryEntry } from '#lib/ai-assistant/consultation-history-entry';
 import { createChatConversationService } from '#lib/ai-assistant/create-chat-conversation-service';
 import { buildSuggestedPrompts, type SuggestedPrompt } from '#lib/ai-assistant/suggested-prompts';
+import { useChatAvailability } from '#lib/ai-assistant/use-chat-availability';
 import { useChatSessions } from '#lib/ai-assistant/use-chat-sessions';
 import { useConversation } from '#lib/ai-assistant/use-conversation';
 import type { AppLocale } from '../../../i18n/config';
@@ -37,7 +39,12 @@ export function AiAssistantPanel({ displayName, channel = 'DOCTOR' }: AiAssistan
     [locale, channel, conversationEpoch],
   );
   const conversation = useConversation({ service, displayName });
-  const sessionsQuery = useChatSessions();
+  const availabilityQuery = useChatAvailability();
+  const availability = availabilityQuery.data;
+  const isUnavailable = availability !== undefined && !availability.isAvailable;
+  // Sessions are only worth fetching once chat is known to work; asking for
+  // them while the feature is off just produces a second failing request.
+  const sessionsQuery = useChatSessions(availability?.isAvailable === true);
   const history = useMemo<ConsultationHistoryEntry[]>(
     () =>
       (sessionsQuery.data ?? []).map((session) => ({
@@ -60,11 +67,14 @@ export function AiAssistantPanel({ displayName, channel = 'DOCTOR' }: AiAssistan
         subtitle={t('subtitle')}
         breadcrumbs={[t('breadcrumbs.advanced'), t('breadcrumbs.assistant')]}
       />
+      {isUnavailable ? (
+        <AssistantUnavailableNotice isEnabled={availability.isEnabled} />
+      ) : null}
       <section className="flex h-[calc(100vh-16rem)] min-h-[540px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <ConsultationSidebar
           prompts={prompts}
           history={history}
-          isBusy={conversation.isReplying}
+          isBusy={conversation.isReplying || isUnavailable}
           onNewConsultation={handleNewConsultation}
           onSelectPrompt={handleSelectPrompt}
         />
@@ -72,7 +82,7 @@ export function AiAssistantPanel({ displayName, channel = 'DOCTOR' }: AiAssistan
           <ChatThread messages={conversation.messages} isReplying={conversation.isReplying} />
           <div className="px-6 pb-4">
             <ChatComposer
-              isBusy={conversation.isReplying}
+              isBusy={conversation.isReplying || isUnavailable}
               onSend={(text) => conversation.sendUserMessage({ text })}
             />
             <ConfidentialDisclaimer />

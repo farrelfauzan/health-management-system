@@ -99,6 +99,58 @@ describe('AiChatbotService', () => {
     evaluateOutputMock.mockImplementation((content: string) => ({ content, safetyTags: [] }));
   });
 
+  describe('getAvailability', () => {
+    it('reports available when the flag is on and a provider resolves', async () => {
+      stubActiveProvider();
+
+      const actualAvailability = await buildService().getAvailability();
+
+      expect(actualAvailability).toEqual({
+        isAvailable: true,
+        isEnabled: true,
+        hasActiveProvider: true,
+      });
+    });
+
+    it('reports the feature flag as the reason when chat is off', async () => {
+      const actualAvailability = await buildService({}).getAvailability();
+
+      expect(actualAvailability).toEqual({
+        isAvailable: false,
+        isEnabled: false,
+        hasActiveProvider: false,
+      });
+      // Nothing should be resolved once the flag has already answered.
+      expect(resolveActiveProviderMock).not.toHaveBeenCalled();
+    });
+
+    it('reports a misconfigured provider as unavailable rather than as working', async () => {
+      resolveActiveProviderMock.mockRejectedValue(
+        new AiChatbotError('AI_NOT_CONFIGURED', 'Provider kind OPENAI requires an API key'),
+      );
+
+      const actualAvailability = await buildService().getAvailability();
+
+      expect(actualAvailability).toEqual({
+        isAvailable: false,
+        isEnabled: true,
+        hasActiveProvider: false,
+      });
+    });
+
+    it('propagates a non-configuration failure instead of claiming chat is off', async () => {
+      // An unavailable database is not the same claim as a disabled feature.
+      resolveActiveProviderMock.mockRejectedValue(new Error('database unreachable'));
+
+      const actualError = await buildService()
+        .getAvailability()
+        .catch((err: unknown) => err);
+
+      expect(actualError).toBeInstanceOf(Error);
+      expect((actualError as Error).message).toBe('database unreachable');
+    });
+  });
+
   describe('createSession', () => {
     it('stamps the resolved provider onto the session', async () => {
       stubActiveProvider();

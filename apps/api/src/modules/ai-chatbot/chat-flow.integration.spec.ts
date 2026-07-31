@@ -96,7 +96,9 @@ describe('Chat flow integration', () => {
     $connect: jest.fn(),
     $disconnect: jest.fn(),
     aiProviderConfig: {
-      findFirst: jest.fn(() => Promise.resolve(buildActiveConfigRow())),
+      findFirst: jest.fn((): Promise<Record<string, unknown> | null> =>
+        Promise.resolve(buildActiveConfigRow()),
+      ),
       findMany: jest.fn(() => Promise.resolve([buildActiveConfigRow()])),
     },
     chatSession: {
@@ -583,6 +585,56 @@ describe('Chat flow integration', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(400);
+    });
+  });
+
+  describe('availability', () => {
+    it('reports available when the flag is on and a provider resolves', async () => {
+      stubOpenAiCompatibleReply('unused');
+      const token = await buildToken(OWNER_USER_ID, 'patient@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/chat/availability')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({
+        isAvailable: true,
+        isEnabled: true,
+        hasActiveProvider: true,
+      });
+    });
+
+    it('reports unavailable with the flag as the reason when chat is off', async () => {
+      process.env.AI_CHAT_ENABLED = 'false';
+      const token = await buildToken(OWNER_USER_ID, 'patient@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/chat/availability')
+        .set('Authorization', `Bearer ${token}`);
+
+      process.env.AI_CHAT_ENABLED = 'true';
+      // 200 with a reason, not a 503: asking whether chat works must itself
+      // always work, or the client cannot render a useful empty state.
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({
+        isAvailable: false,
+        isEnabled: false,
+        hasActiveProvider: false,
+      });
+    });
+
+    it('reports unavailable when no provider configuration is active', async () => {
+      prismaServiceMock.aiProviderConfig.findFirst.mockResolvedValueOnce(null);
+      const token = await buildToken(OWNER_USER_ID, 'patient@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/chat/availability')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.isAvailable).toBe(false);
+      expect(response.body.data.hasActiveProvider).toBe(false);
     });
   });
 

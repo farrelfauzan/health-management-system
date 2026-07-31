@@ -13218,6 +13218,67 @@ paths:
         - bearer: []
       summary: Test the stored AI provider credentials
       tags: *a22
+  /api/v1/chat/availability:
+    get:
+      operationId: ChatController_getAvailability_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Whether a message sent now would be answered, plus the two reasons
+            behind it: the deployment feature flag and whether a usable provider
+            configuration is active. The provider is resolved exactly as sending
+            a message would resolve it, so a misconfigured provider reads as
+            unavailable here rather than as a working chat that fails on the
+            first question. Clients gate the chat entry point on isAvailable
+            rather than discovering the state from a failed send."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isAvailable:
+                        type: boolean
+                      isEnabled:
+                        type: boolean
+                      hasActiveProvider:
+                        type: boolean
+                    required:
+                      - isAvailable
+                      - isEnabled
+                      - hasActiveProvider
+                required:
+                  - data
+                example:
+                  data:
+                    isAvailable: true
+                    isEnabled: true
+                    hasActiveProvider: true
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Check whether chat can answer right now
+      tags: &a23
+        - AI Chatbot
   /api/v1/chat/sessions:
     post:
       operationId: ChatController_createSession_v1
@@ -13311,8 +13372,7 @@ paths:
       security:
         - bearer: []
       summary: Start a chat session
-      tags: &a23
-        - AI Chatbot
+      tags: *a23
     get:
       operationId: ChatController_listSessions_v1
       parameters:

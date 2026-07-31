@@ -5,6 +5,11 @@
  * must honour. All values are synthetic.
  */
 export const AI_CHAT_EXAMPLES = {
+  availability: {
+    isAvailable: true,
+    isEnabled: true,
+    hasActiveProvider: true,
+  },
   session: {
     id: '7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a',
     channel: 'PATIENT',

@@ -40,6 +40,21 @@ import { AiChatbotExceptionFilter } from './ai-chatbot-exception.filter';
 export class ChatController {
   constructor(private readonly chatbotService: AiChatbotService) {}
 
+  @Get('availability')
+  @Auth([{ action: 'create', subject: 'ChatSession' }])
+  @ApiEndpoint({
+    summary: 'Check whether chat can answer right now',
+    responseDescription:
+      'Whether a message sent now would be answered, plus the two reasons behind it: the deployment feature flag and whether a usable provider configuration is active. The provider is resolved exactly as sending a message would resolve it, so a misconfigured provider reads as unavailable here rather than as a working chat that fails on the first question. Clients gate the chat entry point on isAvailable rather than discovering the state from a failed send.',
+    responseExample: { data: AI_CHAT_EXAMPLES.availability },
+  })
+  async getAvailability(@AuthUser() currentUser?: CurrentUser) {
+    this.assertAuthenticated(currentUser);
+    const view = await this.chatbotService.getAvailability();
+
+    return { data: view };
+  }
+
   @Post('sessions')
   @Auth([{ action: 'create', subject: 'ChatSession' }])
   @ApiEndpoint({

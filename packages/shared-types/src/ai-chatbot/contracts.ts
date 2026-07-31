@@ -38,6 +38,19 @@ export type AiProviderConnectionTestResult = {
   testedAt: string;
 };
 
+/**
+ * Whether a message sent right now would actually be answered. Deliberately
+ * a single computed `isAvailable` plus the two reasons behind it: the client
+ * needs one boolean to gate the UI, and support needs to know which of the
+ * two switches is off. Carries no credential or provider detail — a patient
+ * may read this.
+ */
+export type ChatAvailabilityView = {
+  isAvailable: boolean;
+  isEnabled: boolean;
+  hasActiveProvider: boolean;
+};
+
 export type ChatSessionView = {
   id: string;
   channel: ChatChannelValue;

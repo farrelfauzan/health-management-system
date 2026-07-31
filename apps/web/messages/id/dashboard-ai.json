@@ -71,10 +71,6 @@
       "title": "Asisten Klinis AI",
       "subtitle": "Ajukan pertanyaan klinis berdasarkan konteks pasien Saling Jaga."
     },
-    "preview": {
-      "label": "Pratinjau — respons simulasi",
-      "description": "Layar ini adalah pratinjau. Respons disimulasikan hingga backend AI tersedia."
-    },
     "sidebar": {
       "newConsultation": "Konsultasi Baru",
       "suggestedAnalysis": "Analisis yang Disarankan",
@@ -119,37 +115,6 @@
         "message": "Buat draf ringkasan pemulangan untuk Kamar 402."
       }
     },
-    "history": {
-      "medicationConflict": "Pemeriksaan konflik obat - Pasien #492",
-      "icdLookup": "Pencarian kode ICD-10: Diabetes Tipe 2",
-      "shiftHandover": "Catatan serah terima sif (12 April)"
-    },
-    "mock": {
-      "suggestionNote": "Catatan: Ini adalah saran AI. Verifikasi dengan protokol rumah sakit dan tanda vital pasien terkini sebelum melakukan instruksi.",
-      "patientLoadSummary": "Berikut ringkasan beban pasien hari ini: 14 pasien dijadwalkan, 3 di antaranya ditandai dengan kegawatan tinggi, dan waktu tunggu rata-rata 24 menit.",
-      "patientLoadHigh": "Kegawatan tinggi: 3 pasien (2 kardiologi, 1 penyakit dalam).",
-      "patientLoadModerate": "Kegawatan sedang: 6 pasien, waktu tunggu terlama saat ini 41 menit.",
-      "patientLoadRoutine": "Kontrol rutin: 5 pasien, semuanya sesuai jadwal.",
-      "queueReference": "Cuplikan Antrean Pendaftaran (data pratinjau)",
-      "cardiologyIntro": "dr. Aris memiliki jadwal konsultasi kardiologi berikut minggu ini:",
-      "cardiologyThursday": "Kamis 14.30 — slot konsultasi 30 menit.",
-      "cardiologyFridayMorning": "Jumat 09.00 — slot panjang 45 menit.",
-      "cardiologyFridayAfternoon": "Jumat 15.15 — slot konsultasi 30 menit.",
-      "cardiologyNote": "Catatan: Ini adalah saran AI. Konfirmasikan ketersediaan di jadwal Janji Temu sebelum memesan.",
-      "dischargeSummary": "Draf ringkasan pemulangan Kamar 402: hasil lab terbaru menunjukkan elektrolit kembali dalam rentang normal dan tanda vital stabil selama 12 jam terakhir.",
-      "dischargeCondition": "Kondisi saat pemulangan: stabil, dapat berjalan mandiri.",
-      "dischargeMedication": "Obat saat pemulangan: lanjutkan regimen saat ini, tanpa perubahan.",
-      "dischargeFollowUp": "Tindak lanjut: kontrol rawat jalan dalam 7 hari dengan pemeriksaan elektrolit ulang.",
-      "roomReference": "Laporan Lab: Kamar 402 (data pratinjau)",
-      "fallbackIntro": "Untuk hipokalemia ringan (3,2 mEq/L), suplementasi kalium oral umumnya menjadi pilihan pertama. Saran saya:",
-      "fallbackDose": "Kalium Klorida 40 mEq oral satu kali.",
-      "fallbackRecheck": "Periksa ulang panel elektrolit dalam 4 jam.",
-      "fallbackMonitor": "Pantau EKG untuk kemunculan gelombang U atau pemanjangan QT.",
-      "greetingSummary": "Halo {displayName}. Saya telah menganalisis dasbor hari ini. Ada 14 pasien terjadwal, dengan 3 pasien ditandai memiliki kegawatan tinggi.",
-      "greetingLab": "Berdasarkan hasil lab terbaru Pasien #821 (Maria Garcia), saya menyarankan pemeriksaan kadar kalium sebelum konsultasi pukul 10.00. Kadarnya saat ini 3,2 mEq/L, sedikit di bawah rentang normal.",
-      "labReference": "Laporan Lab: 2024-04-14_Garcia.pdf",
-      "journalReference": "Jurnal Kimia Klinis (Vol. 42)"
-    },
     "errors": {
       "sessionFailed": "Tidak dapat memulai sesi obrolan.",
       "replyFailed": "Tidak dapat memperoleh balasan."
@@ -157,6 +122,14 @@
     "greeting": {
       "intro": "Halo {displayName}.",
       "scope": "Tanyakan layanan klinik, janji temu, atau informasi kesehatan umum. Saya tidak dapat mendiagnosis atau meresepkan obat."
+    },
+    "unavailable": {
+      "title": "Asisten tidak tersedia",
+      "disabled": "Obrolan AI dinonaktifkan untuk klinik ini. Administrator dapat mengaktifkannya di pengaturan deployment.",
+      "noProvider": "Belum ada penyedia AI yang aktif. Administrator perlu menambahkan dan mengaktifkannya di menu Penyedia AI."
+    },
+    "launcher": {
+      "open": "Buka asisten AI"
     }
   },
   "aiProviders": {

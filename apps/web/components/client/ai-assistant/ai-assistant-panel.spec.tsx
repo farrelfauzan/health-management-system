@@ -9,12 +9,15 @@ import { getDashboardAiMessages } from '#lib/dashboard/localization';
 const createSessionMock = vi.hoisted(() => vi.fn());
 const sendMessageMock = vi.hoisted(() => vi.fn());
 const listSessionsMock = vi.hoisted(() => vi.fn());
+const getAvailabilityMock = vi.hoisted(() => vi.fn());
 
 vi.mock('#lib/api/generated/ai-chatbot/ai-chatbot', () => ({
   chatControllerCreateSessionV1: createSessionMock,
   chatControllerSendMessageV1: sendMessageMock,
   chatControllerListSessionsV1: listSessionsMock,
+  chatControllerGetAvailabilityV1: getAvailabilityMock,
   getChatControllerListSessionsV1QueryKey: () => ['chat', 'sessions'],
+  getChatControllerGetAvailabilityV1QueryKey: () => ['chat', 'availability'],
 }));
 
 const { AiAssistantPanel } = await import('./ai-assistant-panel');
@@ -40,6 +43,10 @@ describe('AiAssistantPanel', () => {
       data: { data: { id: 'session-1' } },
     });
     listSessionsMock.mockResolvedValue({ status: 200, data: { data: [] } });
+    getAvailabilityMock.mockResolvedValue({
+      status: 200,
+      data: { data: { isAvailable: true, isEnabled: true, hasActiveProvider: true } },
+    });
     sendMessageMock.mockResolvedValue({
       status: 200,
       data: {
@@ -114,6 +121,37 @@ describe('AiAssistantPanel', () => {
     renderPanel();
 
     expect(await screen.findByText('Jam buka klinik')).toBeInTheDocument();
+  });
+
+  it.each([
+    [
+      'no provider is active',
+      { isAvailable: false, isEnabled: true, hasActiveProvider: false },
+      /Belum ada penyedia AI yang aktif/,
+    ],
+    [
+      'the clinic has chat switched off',
+      { isAvailable: false, isEnabled: false, hasActiveProvider: false },
+      /Obrolan AI dinonaktifkan untuk klinik ini/,
+    ],
+  ])('explains the specific reason when %s', async (_reason, availability, expectedCopy) => {
+    getAvailabilityMock.mockResolvedValue({ status: 200, data: { data: availability } });
+    renderPanel();
+
+    // The two reasons send the user to different people, so they must not
+    // share one generic message.
+    expect(await screen.findByText(expectedCopy)).toBeInTheDocument();
+  });
+
+  it('does not ask for sessions while chat is unavailable', async () => {
+    getAvailabilityMock.mockResolvedValue({
+      status: 200,
+      data: { data: { isAvailable: false, isEnabled: true, hasActiveProvider: false } },
+    });
+    renderPanel();
+
+    await screen.findByText(/Belum ada penyedia AI yang aktif/);
+    expect(listSessionsMock).not.toHaveBeenCalled();
   });
 
   it('keeps the confidential-data disclaimer visible', () => {
