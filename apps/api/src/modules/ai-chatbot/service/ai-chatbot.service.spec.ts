@@ -1,11 +1,12 @@
 import { ConfigService } from '@nestjs/config';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 import { ChatMessageRecord, ChatSessionRecord } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AiChatbotError } from '../ai-chatbot.error';
 import { ChatCompletionMessage } from '../infrastructure/ai-provider.types';
+import { AuthRepository } from '../../auth/repository/auth.repository';
 import { ChatRepository } from '../repository/chat.repository';
 import { AiChatbotService } from './ai-chatbot.service';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
@@ -29,11 +30,14 @@ describe('AiChatbotService', () => {
   const evaluateOutputMock = jest.fn();
   const assertSessionQuotaMock = jest.fn();
 
+  const findUserByIdMock = jest.fn();
+
   const inputActor: CurrentUser = { sub: 'user-patient', email: 'patient@hms.local' };
 
   function buildService(env: Record<string, string> = { AI_CHAT_ENABLED: 'true' }): AiChatbotService {
     return new AiChatbotService(
       chatRepositoryMock as unknown as ChatRepository,
+      { findUserById: findUserByIdMock } as unknown as AuthRepository,
       { resolveActiveProvider: resolveActiveProviderMock } as unknown as AiProviderResolverService,
       { buildContext: buildContextMock } as unknown as ChatContextEnrichmentService,
       {
@@ -397,6 +401,48 @@ describe('AiChatbotService', () => {
 
       expect(actualError).toBeInstanceOf(NotFoundException);
       expect(sendChatCompletionMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('admin support view', () => {
+    function mockActorScope(scope: 'ANY' | 'OWN'): void {
+      findUserByIdMock.mockResolvedValue({
+        id: 'user-admin',
+        roles: [
+          {
+            role: {
+              permissions: [
+                { permission: { resource: 'ChatSession', action: 'read', scope } },
+              ],
+            },
+          },
+        ],
+      });
+    }
+
+    it('lists every owner’s sessions for an ANY-scoped actor', async () => {
+      mockActorScope('ANY');
+      chatRepositoryMock.listAllSessions.mockResolvedValue({
+        items: [buildSession({ ownerUserId: 'someone-else' })],
+        nextCursor: null,
+      });
+
+      const actualList = await buildService().listAllSessions({ limit: 20 }, inputActor);
+
+      expect(actualList.items[0]?.ownerUserId).toBe('someone-else');
+    });
+
+    it('refuses an OWN-only actor instead of silently narrowing the list', async () => {
+      // A support screen showing only the operator's own conversations looks
+      // like an empty clinic, not like a missing grant.
+      mockActorScope('OWN');
+
+      const actualError = await buildService()
+        .listAllSessions({ limit: 20 }, inputActor)
+        .catch((err: unknown) => err);
+
+      expect(actualError).toBeInstanceOf(ForbiddenException);
+      expect(chatRepositoryMock.listAllSessions).not.toHaveBeenCalled();
     });
   });
 
