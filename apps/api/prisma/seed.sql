@@ -128,9 +128,14 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('bpjs.submission.read:any', 'BpjsSubmission', 'read', 'ANY', 'Read BPJS PCare submission outbox status'),
     ('bpjs.submission.retry:any', 'BpjsSubmission', 'retry', 'ANY', 'Retry failed BPJS PCare submissions'),
     ('chat.session.create:own', 'ChatSession', 'create', 'OWN', 'Create own chat sessions'),
+    ('chat.session.read:any', 'ChatSession', 'read', 'ANY', 'Read every chat session for the admin support view'),
+    ('chat.session.read:own', 'ChatSession', 'read', 'OWN', 'Read own chat sessions'),
+    ('chat.session.delete:own', 'ChatSession', 'delete', 'OWN', 'Soft-delete own chat sessions'),
     ('chat.message.create:own', 'ChatMessage', 'create', 'OWN', 'Create own chat messages'),
     ('chat.message.read:any', 'ChatMessage', 'read', 'ANY', 'Read all chat messages'),
-    ('chat.message.read:own', 'ChatMessage', 'read', 'OWN', 'Read own chat messages')
+    ('chat.message.read:own', 'ChatMessage', 'read', 'OWN', 'Read own chat messages'),
+    ('ai-provider.read:any', 'AiProviderConfig', 'read', 'ANY', 'Read clinic AI provider configurations without their secrets'),
+    ('ai-provider.write:any', 'AiProviderConfig', 'write', 'ANY', 'Create, rotate, activate, test, and retire AI provider configurations')
 )
 INSERT INTO "permissions" (
   "id",
@@ -247,9 +252,30 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- work, and the P11-T07 integrations monitor needs only the former.
     ('ADMIN', 'bpjs.submission.read:any'),
     ('ADMIN', 'bpjs.submission.retry:any'),
+    -- The chatbot ships two channels, PATIENT and DOCTOR, so PHARMACIST is
+    -- absent from every chat grant below. The design note reads "all
+    -- authenticated" for the OWN-scoped session reads, but a role that cannot
+    -- create a session has nothing to read or delete — the grant would never
+    -- resolve a row, and deny-by-default is the cheaper default to widen later.
+    --
+    -- Session read splits ANY/OWN like the two submission-outbox pairs above:
+    -- ANY is the admin support view over every transcript, OWN is the admin's
+    -- own conversations. Deletion stays OWN even for ADMIN — a transcript
+    -- records what a patient was told, which is why P13-T01 made the session
+    -- owner `onDelete: Restrict`, so removing someone else's is a retention
+    -- decision for a retention job, not a support action.
     ('ADMIN', 'chat.session.create:own'),
+    ('ADMIN', 'chat.session.read:any'),
+    ('ADMIN', 'chat.session.delete:own'),
     ('ADMIN', 'chat.message.create:own'),
     ('ADMIN', 'chat.message.read:any'),
+    -- Provider credentials spend the clinic's money at an upstream vendor and
+    -- decide which third party sees chat context, so custody sits with ADMIN
+    -- alone — the same call as bpjs.config.manage. Read is split from write so
+    -- an ops surface can show which provider is live without the grant that
+    -- rotates the key; the stored key is write-only in the API regardless.
+    ('ADMIN', 'ai-provider.read:any'),
+    ('ADMIN', 'ai-provider.write:any'),
     ('DOCTOR', 'auth.logout:own'),
     ('DOCTOR', 'patient.read:own'),
     ('DOCTOR', 'doctor.read:any'),
@@ -275,6 +301,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'prescription.read:own'),
     ('DOCTOR', 'prescription.write:own'),
     ('DOCTOR', 'chat.session.create:own'),
+    ('DOCTOR', 'chat.session.read:own'),
+    ('DOCTOR', 'chat.session.delete:own'),
     ('DOCTOR', 'chat.message.create:own'),
     ('DOCTOR', 'chat.message.read:own'),
     ('PHARMACIST', 'auth.logout:own'),
@@ -303,6 +331,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PATIENT', 'encounter.read:own'),
     ('PATIENT', 'prescription.read:own'),
     ('PATIENT', 'chat.session.create:own'),
+    ('PATIENT', 'chat.session.read:own'),
+    ('PATIENT', 'chat.session.delete:own'),
     ('PATIENT', 'chat.message.create:own'),
     ('PATIENT', 'chat.message.read:own')
 ),

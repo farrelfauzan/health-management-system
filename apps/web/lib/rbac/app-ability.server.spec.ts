@@ -64,6 +64,50 @@ describe('resolveAppAbilityRules integration permissions', () => {
     expect(ability.can('read', 'BpjsSubmission')).toBe(false);
   });
 
+  it('maps each chat and AI-provider permission to its frontend capability', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: [
+          'chat.session.create:own',
+          'chat.session.read:any',
+          'chat.session.delete:own',
+          'chat.message.create:own',
+          'chat.message.read:any',
+          'ai-provider.read:any',
+          'ai-provider.write:any',
+        ],
+      }),
+    );
+
+    expect(ability.can('create', 'ChatSession')).toBe(true);
+    expect(ability.can('read', 'ChatSession')).toBe(true);
+    expect(ability.can('delete', 'ChatSession')).toBe(true);
+    expect(ability.can('create', 'ChatMessage')).toBe(true);
+    expect(ability.can('read', 'ChatMessage')).toBe(true);
+    expect(ability.can('read', 'AiProviderConfig')).toBe(true);
+    expect(ability.can('write', 'AiProviderConfig')).toBe(true);
+  });
+
+  it('hides the provider settings surface from a chat-only user', () => {
+    // What a seeded PATIENT or DOCTOR carries: they chat, they never see the
+    // key that pays for it.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: [
+          'chat.session.create:own',
+          'chat.session.read:own',
+          'chat.session.delete:own',
+          'chat.message.create:own',
+          'chat.message.read:own',
+        ],
+      }),
+    );
+
+    expect(ability.can('create', 'ChatSession')).toBe(true);
+    expect(ability.can('read', 'AiProviderConfig')).toBe(false);
+    expect(ability.can('write', 'AiProviderConfig')).toBe(false);
+  });
+
   it('keeps malformed and unknown permissions denied', () => {
     const ability = buildAppAbility(
       resolveAppAbilityRules({
