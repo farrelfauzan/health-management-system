@@ -489,6 +489,8 @@ Aligned with branch naming `feature/p13-t<task>-<short-desc>`.
 ## 14. Related Documents
 
 - [Post-MVP implementation plan](./implementation-plan.md) — Phase 13 sequencing
+- [ai-chatbot-readiness.md](./ai-chatbot-readiness.md) — Phase 13 gate: what was verified, and what stays off until a condition is met
+- [ai-chatbot-tools.md](./ai-chatbot-tools.md) — Phase 15 follow-on: tools, retrieval, and memory. **Amends §2.2 of this document** (the diagnosis constraint becomes patient-channel) and fills the §2.1 promises of clinic FAQ and clinical reference search, which have no corpus behind them today
 - [AGENTS.md §10 AI Chatbot Boundaries](../../AGENTS.md) — repository contract
 - [MVP decisions D-007](../MVP/decisions.md) — scope limitation decision
 - [MVP database schema](../MVP/database.md) — `ChatSession` / `ChatMessage` models
