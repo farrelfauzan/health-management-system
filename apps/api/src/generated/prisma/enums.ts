@@ -382,3 +382,32 @@ export const PaymentMethod = {
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const AiProviderKind = {
+  OPENAI: 'OPENAI',
+  DEEPSEEK: 'DEEPSEEK',
+  ANTHROPIC: 'ANTHROPIC',
+  OLLAMA: 'OLLAMA',
+  OPENAI_COMPATIBLE: 'OPENAI_COMPATIBLE',
+  AZURE_OPENAI: 'AZURE_OPENAI'
+} as const
+
+export type AiProviderKind = (typeof AiProviderKind)[keyof typeof AiProviderKind]
+
+
+export const ChatChannel = {
+  PATIENT: 'PATIENT',
+  DOCTOR: 'DOCTOR'
+} as const
+
+export type ChatChannel = (typeof ChatChannel)[keyof typeof ChatChannel]
+
+
+export const ChatActor = {
+  USER: 'USER',
+  ASSISTANT: 'ASSISTANT',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type ChatActor = (typeof ChatActor)[keyof typeof ChatActor]

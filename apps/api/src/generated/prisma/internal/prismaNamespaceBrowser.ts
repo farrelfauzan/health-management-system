@@ -97,7 +97,10 @@ export const ModelName = {
   BpjsReferenceItem: 'BpjsReferenceItem',
   BpjsEligibilityCheck: 'BpjsEligibilityCheck',
   BpjsSubmission: 'BpjsSubmission',
-  BpjsReferral: 'BpjsReferral'
+  BpjsReferral: 'BpjsReferral',
+  AiProviderConfig: 'AiProviderConfig',
+  ChatSession: 'ChatSession',
+  ChatMessage: 'ChatMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -885,6 +888,70 @@ export const BpjsReferralScalarFieldEnum = {
 } as const
 
 export type BpjsReferralScalarFieldEnum = (typeof BpjsReferralScalarFieldEnum)[keyof typeof BpjsReferralScalarFieldEnum]
+
+
+export const AiProviderConfigScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  providerKind: 'providerKind',
+  displayName: 'displayName',
+  apiKeyCiphertext: 'apiKeyCiphertext',
+  apiKeyHint: 'apiKeyHint',
+  credentialKeyVersion: 'credentialKeyVersion',
+  baseUrl: 'baseUrl',
+  defaultModel: 'defaultModel',
+  isActive: 'isActive',
+  isEnabled: 'isEnabled',
+  maxTokens: 'maxTokens',
+  timeoutMs: 'timeoutMs',
+  lastTestedAt: 'lastTestedAt',
+  lastTestResult: 'lastTestResult',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type AiProviderConfigScalarFieldEnum = (typeof AiProviderConfigScalarFieldEnum)[keyof typeof AiProviderConfigScalarFieldEnum]
+
+
+export const ChatSessionScalarFieldEnum = {
+  id: 'id',
+  ownerUserId: 'ownerUserId',
+  channel: 'channel',
+  providerKey: 'providerKey',
+  providerKind: 'providerKind',
+  providerSessionId: 'providerSessionId',
+  providerMetadata: 'providerMetadata',
+  title: 'title',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ChatSessionScalarFieldEnum = (typeof ChatSessionScalarFieldEnum)[keyof typeof ChatSessionScalarFieldEnum]
+
+
+export const ChatMessageScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  authorUserId: 'authorUserId',
+  actor: 'actor',
+  content: 'content',
+  providerKind: 'providerKind',
+  providerRequestId: 'providerRequestId',
+  providerMessageId: 'providerMessageId',
+  providerModel: 'providerModel',
+  providerStatusCode: 'providerStatusCode',
+  providerLatencyMs: 'providerLatencyMs',
+  providerMetadata: 'providerMetadata',
+  disclaimerShown: 'disclaimerShown',
+  safetyTags: 'safetyTags',
+  createdAt: 'createdAt'
+} as const
+
+export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
 
 
 export const SortOrder = {

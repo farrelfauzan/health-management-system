@@ -450,3 +450,59 @@ export type BpjsSubmission = Prisma.BpjsSubmissionModel
  * Soft-deleted like the other clinical rows so history survives edits.
  */
 export type BpjsReferral = Prisma.BpjsReferralModel
+/**
+ * Model AiProviderConfig
+ * A clinic's upstream AI credentials and model defaults (P13-T01). HMS ships
+ * no vendor of its own: the admin picks a kind, supplies a key, and every
+ * chat turn is routed to that endpoint. Several configs may coexist so an
+ * admin can stage a replacement and test it before cutting over, but exactly
+ * one is live — enforced by a hand-written partial unique index on
+ * (facilityId, isActive) in the migration, since Prisma cannot express one.
+ * 
+ * `facilityId` is nullable for the same reason as BpjsPcareConfig: HMS ships
+ * single-facility, so the live deployment holds one facility-less row, and a
+ * multi-facility build fills the column in without a table rewrite. The
+ * partial index coalesces NULL to the nil-UUID sentinel (same convention as
+ * MrnCounter) so the facility-less case is covered by the same guarantee
+ * rather than slipping through Postgres's NULLs-are-distinct rule.
+ * 
+ * The API key exists here only as ciphertext (AES-256-GCM, per-row IV,
+ * `credentialKeyVersion` naming which master key sealed it — mirrors
+ * BpjsPcareConfig so one rotation runbook covers both). `apiKeyHint` holds
+ * the last four plaintext characters purely so the admin UI can tell two keys
+ * apart; it is never enough to reconstruct one. Nothing decrypted is ever
+ * returned by an endpoint or written to a log.
+ */
+export type AiProviderConfig = Prisma.AiProviderConfigModel
+/**
+ * Model ChatSession
+ * One chatbot conversation, owned by the user who started it (P13-T01).
+ * `ownerUserId` is the anchor every `:own` RBAC scope filters on, and it is
+ * `onDelete: Restrict` because a session is an audit record of what a patient
+ * was told — deleting the account must not erase it.
+ * 
+ * `providerKey` records which credential set answered this conversation. It
+ * is a plain string rather than a foreign key on purpose: a config can be
+ * soft-deleted or rotated away while the transcript lives on, and the
+ * deployment-level env fallback (single-tenant dev) has no config row at all,
+ * so an FK would either block those cases or force the column nullable and
+ * lose the audit trail. `providerKind` is denormalized next to it so
+ * analytics and support filtering never need the config row to still exist.
+ */
+export type ChatSession = Prisma.ChatSessionModel
+/**
+ * Model ChatMessage
+ * One turn in a conversation — append-only. Messages carry no `updatedAt` or
+ * `deletedAt` because an edited or vanishing assistant turn would defeat the
+ * point of keeping them: PMK 24/2022 retention and the UU PDP audit trail
+ * both need the exact text the patient saw. Sessions soft-delete; their
+ * messages cascade only when the session row itself is hard-deleted by a
+ * retention job.
+ * 
+ * The provider columns are the audit trail for an external call HMS cannot
+ * replay: which vendor and model answered, the upstream request id to quote
+ * in a support ticket, and how long it took. `disclaimerShown` is persisted
+ * rather than inferred so the safety guarantee is provable per message, and
+ * `safetyTags` records what the guards caught (e.g. `["diagnosis_attempt"]`).
+ */
+export type ChatMessage = Prisma.ChatMessageModel

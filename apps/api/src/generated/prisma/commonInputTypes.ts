@@ -1013,6 +1013,74 @@ export type EnumBpjsSubmissionStatusWithAggregatesFilter<$PrismaModel = never> =
   _max?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
 }
 
+export type EnumAiProviderKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiProviderKind | Prisma.EnumAiProviderKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiProviderKindFilter<$PrismaModel> | $Enums.AiProviderKind
+}
+
+export type EnumAiProviderKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiProviderKind | Prisma.EnumAiProviderKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiProviderKindWithAggregatesFilter<$PrismaModel> | $Enums.AiProviderKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAiProviderKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAiProviderKindFilter<$PrismaModel>
+}
+
+export type EnumChatChannelFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChatChannel | Prisma.EnumChatChannelFieldRefInput<$PrismaModel>
+  in?: $Enums.ChatChannel[] | Prisma.ListEnumChatChannelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChatChannel[] | Prisma.ListEnumChatChannelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChatChannelFilter<$PrismaModel> | $Enums.ChatChannel
+}
+
+export type EnumChatChannelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChatChannel | Prisma.EnumChatChannelFieldRefInput<$PrismaModel>
+  in?: $Enums.ChatChannel[] | Prisma.ListEnumChatChannelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChatChannel[] | Prisma.ListEnumChatChannelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChatChannelWithAggregatesFilter<$PrismaModel> | $Enums.ChatChannel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumChatChannelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumChatChannelFilter<$PrismaModel>
+}
+
+export type EnumChatActorFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChatActor | Prisma.EnumChatActorFieldRefInput<$PrismaModel>
+  in?: $Enums.ChatActor[] | Prisma.ListEnumChatActorFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChatActor[] | Prisma.ListEnumChatActorFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChatActorFilter<$PrismaModel> | $Enums.ChatActor
+}
+
+export type EnumAiProviderKindNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiProviderKind | Prisma.EnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumAiProviderKindNullableFilter<$PrismaModel> | $Enums.AiProviderKind | null
+}
+
+export type EnumChatActorWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChatActor | Prisma.EnumChatActorFieldRefInput<$PrismaModel>
+  in?: $Enums.ChatActor[] | Prisma.ListEnumChatActorFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChatActor[] | Prisma.ListEnumChatActorFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChatActorWithAggregatesFilter<$PrismaModel> | $Enums.ChatActor
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumChatActorFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumChatActorFilter<$PrismaModel>
+}
+
+export type EnumAiProviderKindNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiProviderKind | Prisma.EnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumAiProviderKindNullableWithAggregatesFilter<$PrismaModel> | $Enums.AiProviderKind | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAiProviderKindNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAiProviderKindNullableFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1992,6 +2060,74 @@ export type NestedEnumBpjsSubmissionStatusWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumAiProviderKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiProviderKind | Prisma.EnumAiProviderKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiProviderKindFilter<$PrismaModel> | $Enums.AiProviderKind
+}
+
+export type NestedEnumAiProviderKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiProviderKind | Prisma.EnumAiProviderKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAiProviderKindWithAggregatesFilter<$PrismaModel> | $Enums.AiProviderKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAiProviderKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAiProviderKindFilter<$PrismaModel>
+}
+
+export type NestedEnumChatChannelFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChatChannel | Prisma.EnumChatChannelFieldRefInput<$PrismaModel>
+  in?: $Enums.ChatChannel[] | Prisma.ListEnumChatChannelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChatChannel[] | Prisma.ListEnumChatChannelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChatChannelFilter<$PrismaModel> | $Enums.ChatChannel
+}
+
+export type NestedEnumChatChannelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChatChannel | Prisma.EnumChatChannelFieldRefInput<$PrismaModel>
+  in?: $Enums.ChatChannel[] | Prisma.ListEnumChatChannelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChatChannel[] | Prisma.ListEnumChatChannelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChatChannelWithAggregatesFilter<$PrismaModel> | $Enums.ChatChannel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumChatChannelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumChatChannelFilter<$PrismaModel>
+}
+
+export type NestedEnumChatActorFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChatActor | Prisma.EnumChatActorFieldRefInput<$PrismaModel>
+  in?: $Enums.ChatActor[] | Prisma.ListEnumChatActorFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChatActor[] | Prisma.ListEnumChatActorFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChatActorFilter<$PrismaModel> | $Enums.ChatActor
+}
+
+export type NestedEnumAiProviderKindNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiProviderKind | Prisma.EnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumAiProviderKindNullableFilter<$PrismaModel> | $Enums.AiProviderKind | null
+}
+
+export type NestedEnumChatActorWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChatActor | Prisma.EnumChatActorFieldRefInput<$PrismaModel>
+  in?: $Enums.ChatActor[] | Prisma.ListEnumChatActorFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChatActor[] | Prisma.ListEnumChatActorFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChatActorWithAggregatesFilter<$PrismaModel> | $Enums.ChatActor
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumChatActorFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumChatActorFilter<$PrismaModel>
+}
+
+export type NestedEnumAiProviderKindNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AiProviderKind | Prisma.EnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumAiProviderKindNullableWithAggregatesFilter<$PrismaModel> | $Enums.AiProviderKind | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAiProviderKindNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAiProviderKindNullableFilter<$PrismaModel>
 }
 
 
