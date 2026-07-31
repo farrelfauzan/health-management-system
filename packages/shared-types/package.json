@@ -48,7 +48,9 @@
     "#auth/contracts": "./src/auth/contracts.ts",
     "#auth/types": "./src/auth/types.ts",
     "#rbac/schemas": "./src/rbac/schemas.ts",
-    "#rbac/types": "./src/rbac/types.ts"
+    "#rbac/types": "./src/rbac/types.ts",
+    "#ai-chatbot/schemas": "./src/ai-chatbot/schemas.ts",
+    "#ai-chatbot/types": "./src/ai-chatbot/types.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",
