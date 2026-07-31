@@ -228,14 +228,18 @@ Each facility stores **one active** provider configuration (v1). Secrets never a
 | `apiKeyHint` | string | Last 4 chars for admin UI, e.g. `…x7Kp` |
 | `baseUrl` | string? | Override; required for `OPENAI_COMPATIBLE` and `AZURE_OPENAI`; optional for `OLLAMA` (defaults to `http://127.0.0.1:11434/v1`) |
 | `defaultModel` | string | e.g. `gpt-4o-mini`, `deepseek-chat`, `claude-sonnet-4-20250514` |
-| `isActive` | boolean | Only one `true` per `facilityId` |
+| `isActive` | boolean | Only one `true` per `facilityId`; defaults to `false` so a new config is staged, not switched on |
 | `isEnabled` | boolean | Master switch — chat returns `AI_NOT_CONFIGURED` when false |
 | `maxTokens` | int | Default 2048 |
 | `timeoutMs` | int | Default 30000 |
+| `credentialKeyVersion` | int | Which master key sealed `apiKeyCiphertext` (mirrors `BpjsPcareConfig`, so one rotation runbook covers both) |
+| `lastTestedAt`, `lastTestResult` | timestamp, string? | Outcome of the `/test` endpoint (§4.3.4), surfaced in the admin UI |
 | `createdById`, `updatedById` | UUID | Admin audit |
 | `createdAt`, `updatedAt`, `deletedAt` | timestamps | Soft delete |
 
-**`ChatSession.providerKey`** stores the config id (or `providerKind:configId`) so audit trails show which clinic credential set handled the session.
+As shipped in `P13-T01`: `facilityId` is nullable, matching `BpjsPcareConfig` — HMS ships single-facility, so the live deployment holds one facility-less row and a multi-facility build fills the column in without a table rewrite. "Only one `true` per `facilityId`" is enforced by a hand-written partial unique index (Prisma cannot express one), scoped to rows that are both active and not soft-deleted so an admin can stage a replacement config and so a retired config does not keep holding the slot. `facilityId` is `COALESCE`d to the nil-UUID sentinel (`MrnCounter`'s convention) because Postgres treats NULLs as distinct, which would otherwise leave the only case that exists today unguarded.
+
+**`ChatSession.providerKey`** stores the config id (or `providerKind:configId`) so audit trails show which clinic credential set handled the session. It is deliberately **not** a foreign key: a config can be soft-deleted or rotated away while the transcript lives on, and the platform env fallback below has no config row at all — an FK would either block those cases or force the column nullable and lose the audit trail. `ChatSession.providerKind` is denormalized next to it so support filtering and analytics never depend on the config row still existing.
 
 Optional **platform fallback**: when no clinic config exists (dev/single-tenant), `AiProviderResolverService` may read deployment-level env defaults (`AI_PLATFORM_PROVIDER_*`). Production multi-tenant deployments should require explicit clinic configuration.
 
@@ -299,8 +303,9 @@ Schema baseline for chat messages lives in [docs/MVP/database.md](../MVP/databas
 ### 5.2 Indexes and Retention
 
 - Index `(sessionId, createdAt)` for paginated history
-- Index `ownerUserId` on sessions for user session lists
-- Soft-delete sessions via `deletedAt`; messages are append-only
+- Index `ownerUserId` on sessions for user session lists; index `channel` for the admin support view
+- Soft-delete sessions via `deletedAt`; messages are append-only — `ChatMessage` carries no `updatedAt` or `deletedAt` at all, because an edited or vanishing assistant turn defeats the point of keeping it
+- `ChatSession.ownerUserId` is `onDelete: Restrict`: a transcript records what a patient was told, so deleting the account must not erase it. `ChatMessage.authorUserId` is `onDelete: SetNull` — attribution can be erased, the turn cannot. Messages cascade only when the session row itself is hard-deleted by a retention job
 
 ### 5.3 Context Enrichment (read-only)
 
@@ -441,7 +446,7 @@ Aligned with branch naming `feature/p13-t<task>-<short-desc>`.
 
 ### Backend
 
-1. `P13-T01` Schema migration: `AiProviderConfig`, `ChatSession`, `ChatMessage`, enums, indexes.
+1. `P13-T01` Schema migration: `AiProviderConfig`, `ChatSession`, `ChatMessage`, enums, indexes. **Done** — migration `20260810000000_ai_chatbot_provider_and_chat_schema`, constraints proven in `ai-chatbot-schema.integration.spec.ts`. See §4.3.3 and §5.1 for what shipped.
 2. `P13-T02` RBAC seed: chat + `ai-provider.*` permissions + role bindings.
 3. `P13-T03` Module skeleton + repositories (provider config CRUD with encrypted keys, session/message ownership filters).
 4. `P13-T04` Multi-provider layer: `AiChatProvider` interface, `AiProviderRegistry`, `OpenAiCompatibleAdapter`, `AnthropicAdapter`, `AiProviderCryptoService`, `AiProviderResolverService`, per-config circuit breaker + mocks.

@@ -301,6 +301,40 @@ enum PaymentMethod {
   INSURANCE
 }
 
+/// Upstream AI vendor a clinic points the chatbot at (P13-T01). HMS runs no
+/// inference of its own — every kind here is an external HTTP endpoint the
+/// clinic supplies credentials for. The split is by *wire protocol*, not by
+/// brand: everything except ANTHROPIC speaks OpenAI Chat Completions, so one
+/// adapter serves them all (P13-T04) and adding a vendor is a new enum value
+/// plus a base URL, not a new adapter.
+enum AiProviderKind {
+  OPENAI
+  DEEPSEEK
+  ANTHROPIC
+  OLLAMA
+  OPENAI_COMPATIBLE
+  AZURE_OPENAI
+}
+
+/// Which audience a chat session serves. The channel decides the system
+/// prompt, the context-enrichment policy, and the safety copy — a patient
+/// asking about symptoms and a doctor looking up a guideline are answered
+/// under different rules, so the value is fixed at session creation and never
+/// changes.
+enum ChatChannel {
+  PATIENT
+  DOCTOR
+}
+
+/// Who produced a chat message. SYSTEM covers prompts and policy notices HMS
+/// injects itself; they are persisted alongside user and assistant turns so an
+/// auditor can reconstruct exactly what the provider was shown.
+enum ChatActor {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
 model User {
   id           String    @id @default(uuid()) @db.Uuid
   email        String    @unique
@@ -311,28 +345,32 @@ model User {
   deletedAt    DateTime? @map("deleted_at")
 
   roles                    UserRole[]
-  assignedRoles            UserRole[]              @relation("RoleAssignedBy")
-  unassignedRoles          UserRole[]              @relation("RoleUnassignedBy")
+  assignedRoles            UserRole[]                   @relation("RoleAssignedBy")
+  unassignedRoles          UserRole[]                   @relation("RoleUnassignedBy")
   patientProfiles          PatientProfile[]
   doctorProfile            DoctorProfile?
-  assignedDoctorPatients   DoctorPatient[]         @relation("DoctorPatientAssignedBy")
-  unassignedDoctorPatients DoctorPatient[]         @relation("DoctorPatientUnassignedBy")
-  doctorPatientActivities  DoctorPatientActivity[] @relation("DoctorPatientActivityActor")
-  createdAppointments      Appointment[]           @relation("AppointmentCreatedBy")
-  createdRegistrations     Registration[]          @relation("RegistrationCreatedBy")
-  createdEncounters        Encounter[]             @relation("EncounterCreatedBy")
-  recordedVitalSigns       VitalSigns[]            @relation("VitalSignsRecordedBy")
-  recordedDiagnoses        Diagnosis[]             @relation("DiagnosisRecordedBy")
-  recordedProcedures       Procedure[]             @relation("ProcedureRecordedBy")
-  recordedBpjsReferrals    BpjsReferral[]          @relation("BpjsReferralRecordedBy")
-  dispensedByRecords       DispenseRecord[]        @relation("DispensePharmacist")
-  medicationStockReceipts MedicationStockReceipt[] @relation("MedicationStockReceiptReceivedBy")
-  createdInvoices          Invoice[]               @relation("InvoiceCreatedBy")
-  voidedInvoices           Invoice[]               @relation("InvoiceVoidedBy")
-  receivedPayments         Payment[]               @relation("PaymentCashier")
+  assignedDoctorPatients   DoctorPatient[]              @relation("DoctorPatientAssignedBy")
+  unassignedDoctorPatients DoctorPatient[]              @relation("DoctorPatientUnassignedBy")
+  doctorPatientActivities  DoctorPatientActivity[]      @relation("DoctorPatientActivityActor")
+  createdAppointments      Appointment[]                @relation("AppointmentCreatedBy")
+  createdRegistrations     Registration[]               @relation("RegistrationCreatedBy")
+  createdEncounters        Encounter[]                  @relation("EncounterCreatedBy")
+  recordedVitalSigns       VitalSigns[]                 @relation("VitalSignsRecordedBy")
+  recordedDiagnoses        Diagnosis[]                  @relation("DiagnosisRecordedBy")
+  recordedProcedures       Procedure[]                  @relation("ProcedureRecordedBy")
+  recordedBpjsReferrals    BpjsReferral[]               @relation("BpjsReferralRecordedBy")
+  dispensedByRecords       DispenseRecord[]             @relation("DispensePharmacist")
+  medicationStockReceipts  MedicationStockReceipt[]     @relation("MedicationStockReceiptReceivedBy")
+  createdInvoices          Invoice[]                    @relation("InvoiceCreatedBy")
+  voidedInvoices           Invoice[]                    @relation("InvoiceVoidedBy")
+  receivedPayments         Payment[]                    @relation("PaymentCashier")
   refreshTokens            RefreshToken[]
-  auditLogs                AuditLog[]              @relation("AuditLogActor")
+  auditLogs                AuditLog[]                   @relation("AuditLogActor")
   privacyNoticeRecords     PatientPrivacyNoticeRecord[] @relation("PrivacyNoticeActor")
+  chatSessions             ChatSession[]                @relation("ChatSessionOwner")
+  chatMessages             ChatMessage[]                @relation("ChatMessageAuthor")
+  createdAiProviderConfigs AiProviderConfig[]           @relation("AiProviderConfigCreatedBy")
+  updatedAiProviderConfigs AiProviderConfig[]           @relation("AiProviderConfigUpdatedBy")
 
   @@map("users")
 }
@@ -426,7 +464,7 @@ model PatientProfile {
   satusehatPatientIdCiphertext String? @map("satusehat_patient_id_ciphertext")
   satusehatPatientIdKeyVersion Int?    @map("satusehat_patient_id_key_version") @db.SmallInt
 
-  ownerUser             User?                  @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  ownerUser             User?                        @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
   doctors               DoctorPatient[]
   appointments          Appointment[]
   registrations         Registration[]
@@ -435,7 +473,7 @@ model PatientProfile {
   encounters            Encounter[]
   invoices              Invoice[]
   bpjsEligibilityChecks BpjsEligibilityCheck[]
-  privacyNoticeRecords   PatientPrivacyNoticeRecord[]
+  privacyNoticeRecords  PatientPrivacyNoticeRecord[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -510,19 +548,19 @@ model PatientAllergy {
 }
 
 model Specialty {
-  id          String    @id @default(uuid()) @db.Uuid
-  name        String    @unique
-  description String?
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String    @unique
+  description  String?
   /// BPJS PCare kdPoli this specialty registers under (P11-T03). The clinic
   /// has no standalone poli entity — Specialty is the closest structural
   /// equivalent (a registration reaches BPJS via its doctor's specialty), so
   /// the poli mapping lives here rather than on a new join table. Nullable —
   /// an unmapped specialty fails a BPJS submission fast with a readable
   /// message.
-  bpjsPoliCode String?  @map("bpjs_poli_code")
-  isActive     Boolean  @default(true) @map("is_active")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  bpjsPoliCode String?   @map("bpjs_poli_code")
+  isActive     Boolean   @default(true) @map("is_active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
 
   doctors DoctorProfile[]
@@ -566,7 +604,7 @@ model DoctorProfile {
   // pseudonymous facility-scoped code read on every pendaftaran/kunjungan
   // submission. Nullable — an unmapped doctor fails a BPJS submission fast
   // with a readable message instead of sending garbage.
-  bpjsDoctorCode String? @map("bpjs_doctor_code")
+  bpjsDoctorCode          String? @map("bpjs_doctor_code")
 
   // Listing/profile fields clinics expect on doctor directories (P7-T04).
   // Specialty remains the existing Specialty reference table; title/degrees
@@ -842,10 +880,10 @@ model Encounter {
   /// Treatment plan. Prescribed items stay in `prescriptions`.
   plan       String?
 
-  registration  Registration   @relation(fields: [registrationId], references: [id], onDelete: Restrict)
-  patient       PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  doctor        DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Restrict)
-  createdBy     User?          @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  registration        Registration         @relation(fields: [registrationId], references: [id], onDelete: Restrict)
+  patient             PatientProfile       @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor              DoctorProfile        @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  createdBy           User?                @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   vitalSigns          VitalSigns[]
   diagnoses           Diagnosis[]
   procedures          Procedure[]
@@ -1037,27 +1075,27 @@ model Procedure {
 }
 
 model Medication {
-  id        String              @id @default(uuid()) @db.Uuid
-  code      String              @unique
-  kfaCode   String?             @unique @map("kfa_code")
+  id           String              @id @default(uuid()) @db.Uuid
+  code         String              @unique
+  kfaCode      String?             @unique @map("kfa_code")
   /// BPJS DPHO kdObat (P11-T03), linked by an admin from the search-and-cache
   /// DPHO catalog. Sits alongside kfaCode — two national code systems, one
   /// medication row. Unique for the same reason kfaCode is: one catalog
   /// identity maps to at most one local row.
-  dphoCode  String?             @unique @map("dpho_code")
-  name      String
-  form      String?
-  strength  String?
-  unit      MedicationUnit?
-  category  MedicationCategory?
-  reorderLevel Int              @default(0) @map("reorder_level")
+  dphoCode     String?             @unique @map("dpho_code")
+  name         String
+  form         String?
+  strength     String?
+  unit         MedicationUnit?
+  category     MedicationCategory?
+  reorderLevel Int                 @default(0) @map("reorder_level")
   /// Selling price per `unit`, in rupiah. Nullable because the MVP catalog
   /// predates billing; invoice generation treats an unpriced dispensed
   /// medication as a gap to surface, not a free item.
-  unitPrice Decimal?            @map("unit_price") @db.Decimal(12, 2)
-  createdAt DateTime            @default(now()) @map("created_at")
-  updatedAt DateTime            @updatedAt @map("updated_at")
-  deletedAt DateTime?           @map("deleted_at")
+  unitPrice    Decimal?            @map("unit_price") @db.Decimal(12, 2)
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
+  deletedAt    DateTime?           @map("deleted_at")
 
   prescriptionItems PrescriptionMedication[]
   dispenseItems     DispenseItem[]
@@ -1149,8 +1187,8 @@ model DispenseItem {
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
-  dispenseRecord DispenseRecord @relation(fields: [dispenseRecordId], references: [id], onDelete: Cascade)
-  medication     Medication     @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  dispenseRecord   DispenseRecord                @relation(fields: [dispenseRecordId], references: [id], onDelete: Cascade)
+  medication       Medication                    @relation(fields: [medicationId], references: [id], onDelete: Restrict)
   stockAllocations DispenseItemStockAllocation[]
 
   @@unique([dispenseRecordId, medicationId])
@@ -1159,20 +1197,20 @@ model DispenseItem {
 }
 
 model MedicationStockReceipt {
-  id           String    @id @default(uuid()) @db.Uuid
-  medicationId String    @map("medication_id") @db.Uuid
-  batchNumber  String    @map("batch_number")
-  expiryDate   DateTime? @map("expiry_date") @db.Date
-  quantity     Int
-  remainingQuantity Int  @map("remaining_quantity")
-  receivedAt   DateTime  @default(now()) @map("received_at")
-  receivedById String?   @map("received_by_id") @db.Uuid
-  notes        String?
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  id                String    @id @default(uuid()) @db.Uuid
+  medicationId      String    @map("medication_id") @db.Uuid
+  batchNumber       String    @map("batch_number")
+  expiryDate        DateTime? @map("expiry_date") @db.Date
+  quantity          Int
+  remainingQuantity Int       @map("remaining_quantity")
+  receivedAt        DateTime  @default(now()) @map("received_at")
+  receivedById      String?   @map("received_by_id") @db.Uuid
+  notes             String?
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
 
-  medication  Medication @relation(fields: [medicationId], references: [id], onDelete: Restrict)
-  receivedBy  User?      @relation("MedicationStockReceiptReceivedBy", fields: [receivedById], references: [id], onDelete: SetNull)
+  medication  Medication                    @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  receivedBy  User?                         @relation("MedicationStockReceiptReceivedBy", fields: [receivedById], references: [id], onDelete: SetNull)
   allocations DispenseItemStockAllocation[]
 
   @@index([medicationId, expiryDate, receivedAt])
@@ -1516,17 +1554,17 @@ model BpjsPcareConfig {
 /// PCare endpoints are keyword lookups and cannot be enumerated). Dropdowns
 /// and mapping screens read only this table — never live BPJS calls.
 model BpjsReferenceItem {
-  id      String               @id @default(uuid()) @db.Uuid
-  catalog BpjsReferenceCatalog
-  code    String
-  display String
+  id        String               @id @default(uuid()) @db.Uuid
+  catalog   BpjsReferenceCatalog
+  code      String
+  display   String
   /// Catalog-specific qualifier: for TINDAKAN rows the kdTkp bucket the row
   /// was fetched under ('10' rawat jalan, '20' rawat inap, '50' promotif);
   /// null for every other catalog.
-  groupCode String?  @map("group_code")
-  syncedAt  DateTime @map("synced_at")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  groupCode String?              @map("group_code")
+  syncedAt  DateTime             @map("synced_at")
+  createdAt DateTime             @default(now()) @map("created_at")
+  updatedAt DateTime             @updatedAt @map("updated_at")
 
   @@unique([catalog, code])
   @@index([catalog, display])
@@ -1556,10 +1594,10 @@ model BpjsEligibilityCheck {
   isPrb            Boolean                       @default(false) @map("is_prb")
   /// BPJS's own readable reason (ketAktif for inactive members, the upstream
   /// rejection message for NOT_FOUND) — shown verbatim on the card.
-  statusReason String?  @map("status_reason")
-  checkedAt    DateTime @map("checked_at")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  statusReason     String?                       @map("status_reason")
+  checkedAt        DateTime                      @map("checked_at")
+  createdAt        DateTime                      @default(now()) @map("created_at")
+  updatedAt        DateTime                      @updatedAt @map("updated_at")
 
   patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
 
@@ -1621,16 +1659,151 @@ model BpjsReferral {
   saranaCode              String?   @map("sarana_code")
   khususCode              String?   @map("khusus_code")
   /// tglEstRujuk — the planned referral date shown on the PCare letter.
-  estimatedReferralDate DateTime  @map("estimated_referral_date") @db.Date
-  notes                 String?
-  recordedById          String?   @map("recorded_by_id") @db.Uuid
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @updatedAt @map("updated_at")
-  deletedAt             DateTime? @map("deleted_at")
+  estimatedReferralDate   DateTime  @map("estimated_referral_date") @db.Date
+  notes                   String?
+  recordedById            String?   @map("recorded_by_id") @db.Uuid
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  deletedAt               DateTime? @map("deleted_at")
 
   encounter  Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
   recordedBy User?     @relation("BpjsReferralRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
 
   @@index([deletedAt])
   @@map("bpjs_referrals")
+}
+
+/// A clinic's upstream AI credentials and model defaults (P13-T01). HMS ships
+/// no vendor of its own: the admin picks a kind, supplies a key, and every
+/// chat turn is routed to that endpoint. Several configs may coexist so an
+/// admin can stage a replacement and test it before cutting over, but exactly
+/// one is live — enforced by a hand-written partial unique index on
+/// (facilityId, isActive) in the migration, since Prisma cannot express one.
+///
+/// `facilityId` is nullable for the same reason as BpjsPcareConfig: HMS ships
+/// single-facility, so the live deployment holds one facility-less row, and a
+/// multi-facility build fills the column in without a table rewrite. The
+/// partial index coalesces NULL to the nil-UUID sentinel (same convention as
+/// MrnCounter) so the facility-less case is covered by the same guarantee
+/// rather than slipping through Postgres's NULLs-are-distinct rule.
+///
+/// The API key exists here only as ciphertext (AES-256-GCM, per-row IV,
+/// `credentialKeyVersion` naming which master key sealed it — mirrors
+/// BpjsPcareConfig so one rotation runbook covers both). `apiKeyHint` holds
+/// the last four plaintext characters purely so the admin UI can tell two keys
+/// apart; it is never enough to reconstruct one. Nothing decrypted is ever
+/// returned by an endpoint or written to a log.
+model AiProviderConfig {
+  id                   String         @id @default(uuid()) @db.Uuid
+  facilityId           String?        @map("facility_id") @db.Uuid
+  providerKind         AiProviderKind @map("provider_kind")
+  /// Admin-facing label, e.g. "Clinic GPT-4o" — free text, not an identifier.
+  displayName          String         @map("display_name")
+  apiKeyCiphertext     String         @map("api_key_ciphertext")
+  apiKeyHint           String         @map("api_key_hint")
+  credentialKeyVersion Int            @default(1) @map("credential_key_version")
+  /// Endpoint override. Required for OPENAI_COMPATIBLE and AZURE_OPENAI (no
+  /// sensible default exists); optional elsewhere, where the adapter falls
+  /// back to the vendor's published base URL. Validated in the service layer,
+  /// not the database, because the rule is per-kind.
+  baseUrl              String?        @map("base_url")
+  defaultModel         String         @map("default_model")
+  /// Whether this is the config chat traffic actually routes to.
+  isActive             Boolean        @default(false) @map("is_active")
+  /// Master switch. When false the chat endpoints answer AI_NOT_CONFIGURED
+  /// instead of calling the upstream — how a clinic pauses AI without losing
+  /// its credentials.
+  isEnabled            Boolean        @default(true) @map("is_enabled")
+  maxTokens            Int            @default(2048) @map("max_tokens")
+  timeoutMs            Int            @default(30000) @map("timeout_ms")
+  lastTestedAt         DateTime?      @map("last_tested_at")
+  lastTestResult       String?        @map("last_test_result")
+  createdById          String?        @map("created_by_id") @db.Uuid
+  updatedById          String?        @map("updated_by_id") @db.Uuid
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @updatedAt @map("updated_at")
+  deletedAt            DateTime?      @map("deleted_at")
+
+  createdBy User? @relation("AiProviderConfigCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy User? @relation("AiProviderConfigUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([facilityId, isActive])
+  @@index([deletedAt])
+  @@map("ai_provider_configs")
+}
+
+/// One chatbot conversation, owned by the user who started it (P13-T01).
+/// `ownerUserId` is the anchor every `:own` RBAC scope filters on, and it is
+/// `onDelete: Restrict` because a session is an audit record of what a patient
+/// was told — deleting the account must not erase it.
+///
+/// `providerKey` records which credential set answered this conversation. It
+/// is a plain string rather than a foreign key on purpose: a config can be
+/// soft-deleted or rotated away while the transcript lives on, and the
+/// deployment-level env fallback (single-tenant dev) has no config row at all,
+/// so an FK would either block those cases or force the column nullable and
+/// lose the audit trail. `providerKind` is denormalized next to it so
+/// analytics and support filtering never need the config row to still exist.
+model ChatSession {
+  id                String         @id @default(uuid()) @db.Uuid
+  ownerUserId       String         @map("owner_user_id") @db.Uuid
+  channel           ChatChannel    @default(PATIENT)
+  providerKey       String         @map("provider_key")
+  providerKind      AiProviderKind @map("provider_kind")
+  providerSessionId String?        @map("provider_session_id")
+  providerMetadata  Json?          @map("provider_metadata")
+  /// Auto-generated from the first user message; optional so a session exists
+  /// before anything has been said.
+  title             String?
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  deletedAt         DateTime?      @map("deleted_at")
+
+  ownerUser User          @relation("ChatSessionOwner", fields: [ownerUserId], references: [id], onDelete: Restrict)
+  messages  ChatMessage[]
+
+  @@index([ownerUserId])
+  @@index([providerKey])
+  @@index([channel])
+  @@map("chat_sessions")
+}
+
+/// One turn in a conversation — append-only. Messages carry no `updatedAt` or
+/// `deletedAt` because an edited or vanishing assistant turn would defeat the
+/// point of keeping them: PMK 24/2022 retention and the UU PDP audit trail
+/// both need the exact text the patient saw. Sessions soft-delete; their
+/// messages cascade only when the session row itself is hard-deleted by a
+/// retention job.
+///
+/// The provider columns are the audit trail for an external call HMS cannot
+/// replay: which vendor and model answered, the upstream request id to quote
+/// in a support ticket, and how long it took. `disclaimerShown` is persisted
+/// rather than inferred so the safety guarantee is provable per message, and
+/// `safetyTags` records what the guards caught (e.g. `["diagnosis_attempt"]`).
+model ChatMessage {
+  id                 String          @id @default(uuid()) @db.Uuid
+  sessionId          String          @map("session_id") @db.Uuid
+  /// Null for ASSISTANT and SYSTEM turns, which have no human author.
+  authorUserId       String?         @map("author_user_id") @db.Uuid
+  actor              ChatActor
+  content            String          @db.Text
+  providerKind       AiProviderKind? @map("provider_kind")
+  providerRequestId  String?         @map("provider_request_id")
+  providerMessageId  String?         @map("provider_message_id")
+  providerModel      String?         @map("provider_model")
+  providerStatusCode Int?            @map("provider_status_code")
+  providerLatencyMs  Int?            @map("provider_latency_ms")
+  providerMetadata   Json?           @map("provider_metadata")
+  disclaimerShown    Boolean         @default(false) @map("disclaimer_shown")
+  safetyTags         Json?           @map("safety_tags")
+  createdAt          DateTime        @default(now()) @map("created_at")
+
+  session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  authorUser User?       @relation("ChatMessageAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId, createdAt])
+  @@index([authorUserId])
+  @@index([providerRequestId])
+  @@index([providerMessageId])
+  @@map("chat_messages")
 }

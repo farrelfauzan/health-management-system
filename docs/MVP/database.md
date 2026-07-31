@@ -85,6 +85,15 @@ enum DispenseStatus {
   CANCELLED
 }
 
+enum AiProviderKind {
+  OPENAI
+  DEEPSEEK
+  ANTHROPIC
+  OLLAMA
+  OPENAI_COMPATIBLE
+  AZURE_OPENAI
+}
+
 enum ChatChannel {
   PATIENT
   DOCTOR
@@ -474,43 +483,46 @@ model DispenseItem {
 }
 
 model ChatSession {
-  id                String        @id @default(uuid()) @db.Uuid
-  ownerUserId       String        @db.Uuid @map("owner_user_id")
-  channel           ChatChannel   @default(PATIENT)
-  providerKey       String        @map("provider_key")
-  providerSessionId String?       @map("provider_session_id")
-  providerMetadata  Json?         @map("provider_metadata")
+  id                String         @id @default(uuid()) @db.Uuid
+  ownerUserId       String         @db.Uuid @map("owner_user_id")
+  channel           ChatChannel    @default(PATIENT)
+  providerKey       String         @map("provider_key")
+  providerKind      AiProviderKind @map("provider_kind")
+  providerSessionId String?        @map("provider_session_id")
+  providerMetadata  Json?          @map("provider_metadata")
   title             String?
-  createdAt         DateTime      @default(now()) @map("created_at")
-  updatedAt         DateTime      @updatedAt @map("updated_at")
-  deletedAt         DateTime?     @map("deleted_at")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  deletedAt         DateTime?      @map("deleted_at")
 
-  ownerUser         User          @relation("ChatSessionOwner", fields: [ownerUserId], references: [id], onDelete: Restrict)
+  ownerUser         User           @relation("ChatSessionOwner", fields: [ownerUserId], references: [id], onDelete: Restrict)
   messages          ChatMessage[]
 
   @@index([ownerUserId])
   @@index([providerKey])
+  @@index([channel])
   @@map("chat_sessions")
 }
 
 model ChatMessage {
-  id                 String      @id @default(uuid()) @db.Uuid
-  sessionId          String      @db.Uuid @map("session_id")
-  authorUserId       String?     @db.Uuid @map("author_user_id")
+  id                 String          @id @default(uuid()) @db.Uuid
+  sessionId          String          @db.Uuid @map("session_id")
+  authorUserId       String?         @db.Uuid @map("author_user_id")
   actor              ChatActor
-  content            String      @db.Text
-  providerRequestId  String?     @map("provider_request_id")
-  providerMessageId  String?     @map("provider_message_id")
-  providerModel      String?     @map("provider_model")
-  providerStatusCode Int?        @map("provider_status_code")
-  providerLatencyMs  Int?        @map("provider_latency_ms")
-  providerMetadata   Json?       @map("provider_metadata")
-  disclaimerShown    Boolean     @default(false) @map("disclaimer_shown")
-  safetyTags         Json?       @map("safety_tags")
-  createdAt          DateTime    @default(now()) @map("created_at")
+  content            String          @db.Text
+  providerKind       AiProviderKind? @map("provider_kind")
+  providerRequestId  String?         @map("provider_request_id")
+  providerMessageId  String?         @map("provider_message_id")
+  providerModel      String?         @map("provider_model")
+  providerStatusCode Int?            @map("provider_status_code")
+  providerLatencyMs  Int?            @map("provider_latency_ms")
+  providerMetadata   Json?           @map("provider_metadata")
+  disclaimerShown    Boolean         @default(false) @map("disclaimer_shown")
+  safetyTags         Json?           @map("safety_tags")
+  createdAt          DateTime        @default(now()) @map("created_at")
 
-  session            ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  authorUser         User?       @relation("ChatMessageAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
+  session            ChatSession     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  authorUser         User?           @relation("ChatMessageAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
 
   @@index([sessionId, createdAt])
   @@index([authorUserId])
