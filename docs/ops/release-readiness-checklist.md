@@ -43,7 +43,19 @@ Walk this list top-to-bottom before tagging a release. Every box must be ticked 
 - [ ] `proxy.ts` route matcher covers every protected route group being shipped.
 - [ ] Production build (`pnpm build`) succeeds; no runtime references to dev-only endpoints.
 
-## 7. Sign-off
+## 7. AI chatbot (Phase 13)
+
+Skip this section only if `AI_CHAT_ENABLED` is `false` in every target environment — in which case tick the first box and move on.
+
+- [ ] `AI_CHAT_ENABLED` is `false` in production unless the [readiness review](../post-mvp/ai-chatbot-readiness.md) §5 conditions are met and recorded in the release PR (written clinic acceptance of the pattern-guard limits, signed vendor data-processing agreement).
+- [ ] `AI_CHAT_CONTEXT_ENRICHMENT_ENABLED` is `false` unless SATUSEHAT master-data linkage has been verified — this flag is what sends patient data to a third party.
+- [ ] `AI_PROVIDER_ENCRYPTION_KEY` set, 32 bytes, and **distinct** from `PATIENT_PII_ENCRYPTION_KEY` and `BPJS_CREDENTIAL_ENCRYPTION_KEY`.
+- [ ] Exactly one `ai_provider_configs` row is active, and **Settings → AI Providers → Test** passes against it in the target environment.
+- [ ] `AI_CHAT_RATE_LIMIT_PER_HOUR` and `AI_CHAT_MAX_SESSIONS_PER_DAY` set to values the clinic's provider budget can absorb at worst case (users × limit).
+- [ ] `safetyTags` from the previous staging period reviewed — a rising `diagnosis_attempt` or `prescription_attempt` rate means the model is pushing at the guards and the prompts need work before wider exposure.
+- [ ] Chat surfaces verified hidden for roles without `chat.session.create` and when no provider is active.
+
+## 8. Sign-off
 
 - [ ] Release notes drafted: user-facing changes, migration impact, rollback plan.
 - [ ] Deployment window and owner agreed; runbook open during the deploy.

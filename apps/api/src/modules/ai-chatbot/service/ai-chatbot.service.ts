@@ -98,18 +98,25 @@ export class AiChatbotService {
     actor: CurrentUser,
   ): Promise<ChatSessionView> {
     this.assertChatEnabled();
-    await this.safetyPolicyService.assertSessionQuota(actor);
     // Resolving at creation is what stamps the audit columns: the session
     // records which credential set answered it, and P13-T01 made those plain
     // columns precisely so they survive the config being rotated away.
     const { config } = await this.resolverService.resolveActiveProvider();
-    const session = await this.chatRepository.createSession({
-      ownerUserId: actor.sub,
-      channel: input.channel,
-      providerKey: config.configId,
-      providerKind: config.providerKind,
-      title: input.title ?? null,
-    });
+    // The quota is checked and the row written in one transaction, so a
+    // concurrent burst cannot open more sessions than the limit allows.
+    const session = await this.chatRepository.createSessionWithinQuota(
+      {
+        ownerUserId: actor.sub,
+        channel: input.channel,
+        providerKey: config.configId,
+        providerKind: config.providerKind,
+        title: input.title ?? null,
+      },
+      this.safetyPolicyService.sessionQuota,
+    );
+    if (session === null) {
+      throw this.safetyPolicyService.buildSessionQuotaError();
+    }
     return this.toSessionView(session);
   }
 
@@ -200,16 +207,31 @@ export class AiChatbotService {
     const session = await this.requireOwnSession(id, actor);
     // Guards run before the provider is resolved: a blocked prompt must cost
     // neither an upstream call nor the clinic's tokens.
-    const inputDecision = await this.safetyPolicyService.evaluateInput(input.content, actor);
+    const inputDecision = this.safetyPolicyService.evaluateInput(input.content);
     const exchangeStartedAt = new Date();
-    const userMessage = await this.chatRepository.appendMessage({
+    const userTurn = {
       sessionId: session.id,
       authorUserId: actor.sub,
-      actor: 'USER',
+      actor: 'USER' as const,
       content: input.content,
       safetyTags: inputDecision.safetyTags,
       createdAt: exchangeStartedAt,
-    });
+    };
+    // Quota and write happen in one transaction: counting separately would
+    // let a concurrent burst past the limit, which the P13-T11 load test
+    // measured at ten-for-one. Emergencies skip the quota entirely — a
+    // quota is an anti-abuse measure, and it must never be the reason
+    // someone is not shown the ambulance number.
+    const userMessage =
+      inputDecision.outcome === 'ESCALATE'
+        ? await this.chatRepository.appendMessage(userTurn)
+        : await this.chatRepository.appendUserMessageWithinQuota(
+            userTurn,
+            this.safetyPolicyService.messageQuota,
+          );
+    if (userMessage === null) {
+      throw this.safetyPolicyService.buildMessageQuotaError();
+    }
     if (inputDecision.outcome === 'ESCALATE') {
       return this.completeWithoutProvider(session, userMessage, inputDecision, exchangeStartedAt);
     }

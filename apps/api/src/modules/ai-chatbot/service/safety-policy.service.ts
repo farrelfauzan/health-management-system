@@ -3,9 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { ChatChannelValue, ChatSafetyTagValue } from '@hms/shared-types';
 
-import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AiChatbotError } from '../ai-chatbot.error';
-import { ChatRepository } from '../repository/chat.repository';
 import { AI_CHAT_EMERGENCY_TEMPLATE } from './ai-chat-emergency-template';
 import { AI_CHAT_SAFETY_PATTERNS } from './ai-chat-safety-patterns';
 import { AI_CHAT_UNCERTAINTY_NOTICE } from './ai-chat-uncertainty-notice';
@@ -89,10 +87,7 @@ export class SafetyPolicyService {
   private readonly messagesPerHour: number;
   private readonly sessionsPerDay: number;
 
-  constructor(
-    private readonly chatRepository: ChatRepository,
-    configService: ConfigService,
-  ) {
+  constructor(configService: ConfigService) {
     this.messagesPerHour = this.readPositiveInteger(
       configService,
       'AI_CHAT_RATE_LIMIT_PER_HOUR',
@@ -105,26 +100,41 @@ export class SafetyPolicyService {
     );
   }
 
-  /** Enforces the daily session quota before a new conversation is opened. */
-  async assertSessionQuota(actor: CurrentUser): Promise<void> {
-    const openedToday = await this.chatRepository.countOwnSessionsSince(
-      actor.sub,
-      new Date(Date.now() - DAY_IN_MS),
+  /**
+   * The quota windows and limits the orchestration passes into the
+   * quota-guarded repository writes. Counting here and inserting there would
+   * be two statements and therefore not a limit at all — a concurrent burst
+   * reads the same pre-limit count and every request in it passes — so this
+   * service owns the *policy* and the repository enforces it atomically.
+   */
+  get messageQuota(): { since: Date; limit: number } {
+    return { since: new Date(Date.now() - HOUR_IN_MS), limit: this.messagesPerHour };
+  }
+
+  get sessionQuota(): { since: Date; limit: number } {
+    return { since: new Date(Date.now() - DAY_IN_MS), limit: this.sessionsPerDay };
+  }
+
+  buildMessageQuotaError(): AiChatbotError {
+    return new AiChatbotError(
+      'AI_RATE_LIMITED',
+      `Chat message limit reached (${this.messagesPerHour} per hour); try again later`,
     );
-    if (openedToday >= this.sessionsPerDay) {
-      throw new AiChatbotError(
-        'AI_RATE_LIMITED',
-        `Chat session limit reached (${this.sessionsPerDay} per day); try again later`,
-      );
-    }
+  }
+
+  buildSessionQuotaError(): AiChatbotError {
+    return new AiChatbotError(
+      'AI_RATE_LIMITED',
+      `Chat session limit reached (${this.sessionsPerDay} per day); try again later`,
+    );
   }
 
   /**
-   * Runs the §3.2 input guards in cost order: local content checks first
-   * (free), then the rate-limit query (one count), so an abusive prompt is
-   * refused without touching the database.
+   * Runs the §3.2 *content* guards. Purely local and synchronous — the
+   * quotas are enforced by the repository at write time, because a limit
+   * that counts in one statement and writes in another is not a limit.
    */
-  async evaluateInput(content: string, actor: CurrentUser): Promise<ChatInputDecision> {
+  evaluateInput(content: string): ChatInputDecision {
     const trimmedContent = content.trim();
     if (trimmedContent === '' || hasBinaryContent(content)) {
       throw new AiChatbotError('AI_SAFETY_BLOCKED', 'The message is empty or contains binary data');
@@ -151,7 +161,6 @@ export class SafetyPolicyService {
         replyContent: AI_CHAT_EMERGENCY_TEMPLATE,
       };
     }
-    await this.assertMessageQuota(actor);
     return { outcome: 'ALLOW', safetyTags: [] };
   }
 
@@ -182,19 +191,6 @@ export class SafetyPolicyService {
       resultContent = `${resultContent}\n\n${AI_CHAT_UNCERTAINTY_NOTICE}`;
     }
     return { content: resultContent, safetyTags };
-  }
-
-  private async assertMessageQuota(actor: CurrentUser): Promise<void> {
-    const sentThisHour = await this.chatRepository.countOwnMessagesSince(
-      actor.sub,
-      new Date(Date.now() - HOUR_IN_MS),
-    );
-    if (sentThisHour >= this.messagesPerHour) {
-      throw new AiChatbotError(
-        'AI_RATE_LIMITED',
-        `Chat message limit reached (${this.messagesPerHour} per hour); try again later`,
-      );
-    }
   }
 
   /**

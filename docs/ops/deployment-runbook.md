@@ -23,6 +23,7 @@ API (`apps/api/.env.example` is the authoritative list):
 - `PATIENT_PII_ENCRYPTION_KEY`, `PATIENT_PII_INDEX_KEY`, `PATIENT_PII_KEY_VERSION` — identifier encryption. Both keys are 32 bytes (base64 or hex), must differ from each other and from `AI_PROVIDER_ENCRYPTION_KEY`, and the API refuses to boot without them. Rotation procedures in §5.
 - `PATIENT_MRN_PREFIX`, `PATIENT_MRN_WIDTH` — medical record number format. **Set once, before the first patient exists.** Every number already allocated carries the old format, and MRNs printed on physical folders cannot be renumbered.
 - `PORT` — defaults to 3001.
+- **AI chatbot (Phase 13, both feature flags default off):** `AI_CHAT_ENABLED` and `AI_CHAT_CONTEXT_ENRICHMENT_ENABLED` gate the feature and the sending of patient context respectively — see the [readiness review](../post-mvp/ai-chatbot-readiness.md) §5 for what must be true before either is turned on. `AI_PROVIDER_ENCRYPTION_KEY` (32 bytes, base64 or hex, **distinct from the PATIENT_PII and BPJS keys**) seals clinic API keys; without it the API boots normally but storing a provider key fails with `AI_NOT_CONFIGURED`. Rotation in §5.4. Resilience and quota knobs (`AI_PROVIDER_*`, `AI_CHAT_RATE_LIMIT_PER_HOUR`, `AI_CHAT_MAX_SESSIONS_PER_DAY`) have safe defaults. Provider credentials themselves are **never** environment variables — they are encrypted database rows managed through Settings → AI Providers.
 
 Web:
 
@@ -109,6 +110,16 @@ Cheap — the key seals at most one `bpjs_pcare_configs` row per facility, and e
 
 A lost `BPJS_CREDENTIAL_ENCRYPTION_KEY` is recoverable: delete the stored configuration and re-enter the credentials from the BPJS issuance letter. Every create/update/delete/test is audited (`BPJS_CONFIG_*`, `BPJS_CONNECTION_TESTED`) with field names only, never values.
 
+### 5.4 Rotating `AI_PROVIDER_ENCRYPTION_KEY` (AI provider API keys)
+
+Cheap, and cheaper than the BPJS equivalent: every plaintext exists in the vendor's dashboard, so the worst case is issuing a new key there.
+
+1. Deploy the new key and bump `AI_PROVIDER_KEY_VERSION`. Keep the old key readable until step 2 completes.
+2. For each `ai_provider_configs` row below the new version, rotate the key through **Settings → AI Providers → Edit** (enter a value in the API key field; leaving it blank keeps the stored one). This re-seals under the current key without touching the database.
+3. Remove the old key from the environment and run **Test** on the active configuration to confirm the stored key still decrypts and authenticates.
+
+A lost key is recoverable: issue a new key at the vendor and re-enter it. Keyless configurations (self-hosted Ollama without auth) are unaffected — they store empty ciphertext and never touch crypto. Every create/update/activate/delete/test is audited with field names only, never values.
+
 ## 6. Post-deploy verification
 
 1. `curl -s https://<api>/api/v1/health` → `{"status":"ok","service":"api"}` with an `X-Request-Id` response header.
@@ -116,6 +127,7 @@ A lost `BPJS_CREDENTIAL_ENCRYPTION_KEY` is recoverable: delete the stored config
 3. Load one list screen per critical module (patients, doctors, appointments, registrations) — no 5xx in the API logs.
 4. `pnpm --filter @hms/api exec prisma migrate status` against the production `DATABASE_URL` — up to date, no drift.
 5. Trigger one known 404 (bogus patient id) and confirm the error envelope `{ "error": { "code": "NOT_FOUND", ... } }`.
+6. If the AI chatbot is enabled in this environment: `GET /api/v1/chat/availability` returns `isAvailable: true`, and **Settings → AI Providers → Test** on the active configuration succeeds. If it is not enabled, confirm availability reports `isAvailable: false` with the expected reason — the chat entry point should be absent from the shell.
 
 ## 7. Known gaps (tracked for post-MVP)
 
