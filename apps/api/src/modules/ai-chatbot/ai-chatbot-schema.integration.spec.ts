@@ -16,6 +16,7 @@ describe('AI chatbot schema against Postgres', () => {
   const TEST_MARKER = 'p13-t01-schema-spec';
 
   let prisma: PrismaService;
+  let preexistingActiveConfigId: string | null = null;
 
   function buildConfigData(overrides: {
     displayName: string;
@@ -46,6 +47,23 @@ describe('AI chatbot schema against Postgres', () => {
   beforeAll(async () => {
     prisma = new PrismaService(new ConfigService());
     await prisma.$connect();
+    // These cases assert the partial unique index that permits exactly one
+    // active config, so they need the slot to themselves. On a shared dev
+    // database a clinic's real configuration already holds it and every
+    // `isActive: true` insert here would fail with the very P2002 the first
+    // case is trying to provoke deliberately. Stand the incumbent down for
+    // the duration and restore it afterwards.
+    const incumbent = await prisma.aiProviderConfig.findFirst({
+      where: { isActive: true, deletedAt: null },
+      select: { id: true },
+    });
+    preexistingActiveConfigId = incumbent?.id ?? null;
+    if (preexistingActiveConfigId !== null) {
+      await prisma.aiProviderConfig.update({
+        where: { id: preexistingActiveConfigId },
+        data: { isActive: false },
+      });
+    }
     await deleteTestRows();
   });
 
@@ -54,6 +72,12 @@ describe('AI chatbot schema against Postgres', () => {
   });
 
   afterAll(async () => {
+    if (preexistingActiveConfigId !== null) {
+      await prisma.aiProviderConfig.update({
+        where: { id: preexistingActiveConfigId },
+        data: { isActive: true },
+      });
+    }
     await prisma.$disconnect();
   });
 

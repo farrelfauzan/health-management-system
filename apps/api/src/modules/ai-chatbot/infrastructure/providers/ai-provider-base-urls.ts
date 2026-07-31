@@ -10,6 +10,10 @@ export const DEFAULT_AI_PROVIDER_BASE_URLS: Readonly<Record<AiProviderKindValue,
   OPENAI: 'https://api.openai.com/v1',
   DEEPSEEK: 'https://api.deepseek.com/v1',
   ANTHROPIC: 'https://api.anthropic.com/v1',
+  // Google's OpenAI-compatibility surface, not the native generateContent
+  // API — the published URL carries a trailing slash, which the resolver
+  // strips before the adapter appends `/chat/completions`.
+  GEMINI: 'https://generativelanguage.googleapis.com/v1beta/openai',
   OLLAMA: 'http://127.0.0.1:11434/v1',
   OPENAI_COMPATIBLE: null,
   AZURE_OPENAI: null,

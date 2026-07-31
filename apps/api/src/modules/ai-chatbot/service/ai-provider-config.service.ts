@@ -24,7 +24,16 @@ import { AiProviderResolverService } from './ai-provider-resolver.service';
 
 const AI_PROVIDER_AUDIT_RESOURCE = 'AiProviderConfig';
 const TEST_CONNECTION_PROMPT = 'ping';
-const TEST_CONNECTION_MAX_TOKENS = 16;
+/**
+ * Large enough that a reasoning model can answer at all. Vendors bill thinking
+ * tokens as output and count them against `max_tokens`, so the original
+ * 16-token budget was spent entirely on hidden reasoning: Gemini answered a
+ * `ping` with HTTP 200, `finish_reason: length`, and **no content**, which the
+ * adapter could only report as an unusable completion shape. A connection test
+ * that fails on a correctly configured provider is worse than a slightly more
+ * expensive one — this is a handful of tokens, once, per admin click.
+ */
+const TEST_CONNECTION_MAX_TOKENS = 512;
 const COMPARABLE_FIELD_NAMES = [
   'displayName',
   'baseUrl',

@@ -299,8 +299,10 @@ describe('AiProviderConfigService', () => {
         'config-1',
         expect.objectContaining({ isSuccessful: true }),
       );
-      // A probe must not spend the clinic's full token budget.
-      expect(sendChatCompletionMock.mock.calls[0][0].maxTokens).toBe(16);
+      // A probe must not spend the clinic's full token budget, but it must
+      // still leave a reasoning model room to emit an answer after its
+      // hidden thinking — below that, a healthy provider fails the test.
+      expect(sendChatCompletionMock.mock.calls[0][0].maxTokens).toBe(512);
     });
 
     it('reports a rejected key as a successful HTTP outcome with the reason', async () => {

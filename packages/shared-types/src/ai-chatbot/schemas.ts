@@ -2,13 +2,16 @@ import { z } from 'zod';
 
 /**
  * Upstream vendors the multi-provider gateway can route to. Values mirror the
- * Prisma `AiProviderKind` enum; four of the six speak the OpenAI wire shape
- * and share one adapter, `ANTHROPIC` gets its own (Messages API).
+ * Prisma `AiProviderKind` enum; six of the seven speak the OpenAI wire shape
+ * and share one adapter, `ANTHROPIC` gets its own (Messages API). `GEMINI`
+ * routes through Google's OpenAI-compatibility endpoint rather than the
+ * native `generateContent` API, so it needs no adapter of its own.
  */
 export const AI_PROVIDER_KINDS = [
   'OPENAI',
   'DEEPSEEK',
   'ANTHROPIC',
+  'GEMINI',
   'OLLAMA',
   'OPENAI_COMPATIBLE',
   'AZURE_OPENAI',

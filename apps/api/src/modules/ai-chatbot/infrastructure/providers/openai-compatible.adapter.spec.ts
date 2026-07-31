@@ -45,6 +45,7 @@ describe('OpenAiCompatibleAdapter', () => {
   it('supports every OpenAI-shaped kind and rejects ANTHROPIC', () => {
     expect(adapter.supports('OPENAI')).toBe(true);
     expect(adapter.supports('DEEPSEEK')).toBe(true);
+    expect(adapter.supports('GEMINI')).toBe(true);
     expect(adapter.supports('OLLAMA')).toBe(true);
     expect(adapter.supports('OPENAI_COMPATIBLE')).toBe(true);
     expect(adapter.supports('AZURE_OPENAI')).toBe(true);
@@ -108,6 +109,25 @@ describe('OpenAiCompatibleAdapter', () => {
     expect(actualRequest.headers.Authorization).toBeUndefined();
   });
 
+  it('posts a Gemini config to the OpenAI-compatibility path with a bearer token', async () => {
+    respondWith({ id: 'x', choices: [{ message: { content: 'ok' } }] });
+
+    await adapter.sendChatCompletion(
+      buildConfig({
+        providerKind: 'GEMINI',
+        baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+        model: 'gemini-3.6-flash',
+      }),
+      inputMessages,
+    );
+
+    const actualRequest = sendJsonRequestMock.mock.calls[0][0] as AiProviderHttpRequest;
+    expect(actualRequest.url).toBe(
+      'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+    );
+    expect(actualRequest.headers.Authorization).toBe('Bearer sk-test-key');
+  });
+
   it('builds the Azure deployment URL and api-key header', async () => {
     respondWith({ id: 'x', choices: [{ message: { content: 'ok' } }] });
 
@@ -159,5 +179,19 @@ describe('OpenAiCompatibleAdapter', () => {
 
     expect((actualError as AiChatbotError).code).toBe('AI_PROVIDER_UNAVAILABLE');
     expect((actualError as AiChatbotError).message).toContain('unexpected completion shape');
+  });
+
+  // A reasoning model bills hidden thinking against max_tokens, so a budget
+  // too small for it answers 200 with finish_reason "length" and no content
+  // at all. That reads as a broken provider unless the message says budget.
+  it('names the token budget when a completion is truncated to nothing', async () => {
+    respondWith({ id: 'x', choices: [{ message: {}, finish_reason: 'length' }] });
+
+    const actualError = await adapter
+      .sendChatCompletion(buildConfig(), inputMessages)
+      .catch((err: unknown) => err);
+
+    expect((actualError as AiChatbotError).code).toBe('AI_PROVIDER_UNAVAILABLE');
+    expect((actualError as AiChatbotError).message).toContain('token budget was exhausted');
   });
 });

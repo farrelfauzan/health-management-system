@@ -42,6 +42,7 @@ const BEARER_STRATEGY: OpenAiWireStrategy = {
 const WIRE_STRATEGIES_BY_KIND: Partial<Record<AiProviderKindValue, OpenAiWireStrategy>> = {
   OPENAI: BEARER_STRATEGY,
   DEEPSEEK: BEARER_STRATEGY,
+  GEMINI: BEARER_STRATEGY,
   OLLAMA: BEARER_STRATEGY,
   OPENAI_COMPATIBLE: BEARER_STRATEGY,
   AZURE_OPENAI: {
@@ -63,10 +64,11 @@ type OpenAiChatCompletionResponse = {
 };
 
 /**
- * One adapter for every OpenAI-shaped API: OpenAI itself, DeepSeek, a
- * self-hosted Ollama daemon, any OpenAI-compatible gateway (Groq, Together,
- * LiteLLM), and Azure OpenAI. The differences live in small strategy objects
- * keyed by kind; the completion body and response shape are identical.
+ * One adapter for every OpenAI-shaped API: OpenAI itself, DeepSeek, Gemini
+ * through Google's OpenAI-compatibility endpoint, a self-hosted Ollama
+ * daemon, any OpenAI-compatible gateway (Groq, Together, LiteLLM), and Azure
+ * OpenAI. The differences live in small strategy objects keyed by kind; the
+ * completion body and response shape are identical.
  */
 @Injectable()
 export class OpenAiCompatibleAdapter implements AiChatProvider {
@@ -135,11 +137,17 @@ export class OpenAiCompatibleAdapter implements AiChatProvider {
     payload: OpenAiChatCompletionResponse,
     latencyMs: number,
   ): SendChatCompletionResult {
+    const finishReason = payload.choices?.[0]?.finish_reason;
     const content = payload.choices?.[0]?.message?.content;
     if (typeof content !== 'string' || content === '') {
+      // A truncated-to-nothing answer is a budget problem, not a broken
+      // vendor, and the two need different fixes from whoever reads the
+      // message — so say which one this was rather than "unexpected shape".
       throw new AiChatbotError(
         'AI_PROVIDER_UNAVAILABLE',
-        'AI provider returned an unexpected completion shape',
+        finishReason === 'length'
+          ? 'AI provider returned no content: the token budget was exhausted before any answer was produced (reasoning models spend max_tokens on hidden thinking — raise the configuration Max tokens)'
+          : 'AI provider returned an unexpected completion shape',
         response.status,
       );
     }
