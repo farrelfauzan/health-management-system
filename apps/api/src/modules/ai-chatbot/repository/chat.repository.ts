@@ -87,6 +87,29 @@ export class ChatRepository {
     return result.count > 0;
   }
 
+  /**
+   * Counts the user's own turns across every session since an instant — the
+   * denominator for the per-hour rate limit. Scoped by `authorUserId` (which
+   * only USER turns carry) rather than by session, so opening a second
+   * conversation does not buy a fresh budget.
+   */
+  async countOwnMessagesSince(authorUserId: string, since: Date): Promise<number> {
+    return this.prismaService.chatMessage.count({
+      where: { authorUserId, actor: 'USER', createdAt: { gte: since } },
+    });
+  }
+
+  /**
+   * Counts sessions the user created since an instant, **including
+   * soft-deleted ones**: deleting a conversation must not reset the daily
+   * quota, or the limit would be one DELETE away from meaningless.
+   */
+  async countOwnSessionsSince(ownerUserId: string, since: Date): Promise<number> {
+    return this.prismaService.chatSession.count({
+      where: { ownerUserId, createdAt: { gte: since } },
+    });
+  }
+
   async appendMessage(data: AppendChatMessageData): Promise<ChatMessageRecord> {
     const row = await this.prismaService.chatMessage.create({
       data: {

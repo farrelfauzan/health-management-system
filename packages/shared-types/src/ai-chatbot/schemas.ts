@@ -39,6 +39,27 @@ export const chatActorSchema = z.enum(CHAT_ACTORS);
 
 export type ChatActorValue = z.infer<typeof chatActorSchema>;
 
+/**
+ * What the safety guards caught on a turn, persisted in `ChatMessage.safetyTags`
+ * so the P13-T11 readiness review and the future analytics dashboard can count
+ * them. Tags are additive evidence, not a verdict: a blocked turn and a
+ * rewritten one both carry tags, and the message's presence in the transcript
+ * says which happened.
+ */
+export const CHAT_SAFETY_TAGS = [
+  'diagnosis_attempt',
+  'prescription_attempt',
+  'emergency_escalation',
+  'prompt_injection',
+  'impersonation_attempt',
+  'markup_stripped',
+  'uncertainty_appended',
+] as const;
+
+export const chatSafetyTagSchema = z.enum(CHAT_SAFETY_TAGS);
+
+export type ChatSafetyTagValue = z.infer<typeof chatSafetyTagSchema>;
+
 export const AI_PROVIDER_MODEL_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._/:-]{0,127}$/;
 
 export const AI_CHAT_MESSAGE_MAX_LENGTH = 4000;
