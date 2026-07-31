@@ -5,8 +5,8 @@ import { useTranslations } from 'next-intl';
 
 import { ConsultationHistoryItem } from '#components/client/ai-assistant/consultation-history-item';
 import { SuggestedPromptCard } from '#components/client/ai-assistant/suggested-prompt-card';
-import type { ConsultationHistoryEntry } from '#lib/ai-assistant/mock-recent-history';
-import type { SuggestedPrompt } from '#lib/ai-assistant/mock-suggested-prompts';
+import type { ConsultationHistoryEntry } from '#lib/ai-assistant/consultation-history-entry';
+import type { SuggestedPrompt } from '#lib/ai-assistant/suggested-prompts';
 
 type ConsultationSidebarProps = {
   prompts: SuggestedPrompt[];

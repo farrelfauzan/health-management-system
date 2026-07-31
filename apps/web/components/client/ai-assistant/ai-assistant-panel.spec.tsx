@@ -1,86 +1,124 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
 import { NextIntlClientProvider } from 'next-intl';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AiAssistantPanel } from './ai-assistant-panel';
 import { getDashboardAiMessages } from '#lib/dashboard/localization';
 
+const createSessionMock = vi.hoisted(() => vi.fn());
+const sendMessageMock = vi.hoisted(() => vi.fn());
+const listSessionsMock = vi.hoisted(() => vi.fn());
+
+vi.mock('#lib/api/generated/ai-chatbot/ai-chatbot', () => ({
+  chatControllerCreateSessionV1: createSessionMock,
+  chatControllerSendMessageV1: sendMessageMock,
+  chatControllerListSessionsV1: listSessionsMock,
+  getChatControllerListSessionsV1QueryKey: () => ['chat', 'sessions'],
+}));
+
+const { AiAssistantPanel } = await import('./ai-assistant-panel');
+
 function renderPanel(): void {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   render(
-    <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
-      <AiAssistantPanel displayName="Dr. Sarah" replyDelayMs={0} />
-    </NextIntlClientProvider>,
+    <QueryClientProvider client={queryClient}>
+      <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
+        <AiAssistantPanel displayName="Dr. Sarah" />
+      </NextIntlClientProvider>
+    </QueryClientProvider>,
   );
 }
 
 describe('AiAssistantPanel', () => {
-  it('opens with the scripted greeting addressed to the signed-in user', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    createSessionMock.mockResolvedValue({
+      status: 201,
+      data: { data: { id: 'session-1' } },
+    });
+    listSessionsMock.mockResolvedValue({ status: 200, data: { data: [] } });
+    sendMessageMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: {
+          userMessage: { id: 'm1', actor: 'USER', content: 'Halo' },
+          assistantMessage: {
+            id: 'm2',
+            actor: 'ASSISTANT',
+            content: 'Klinik buka pukul 08.00-20.00 WIB.',
+          },
+        },
+        meta: { disclaimer: 'Informasi ini bukan diagnosis medis.' },
+      },
+    });
+  });
+
+  it('opens with the greeting addressed to the signed-in user', () => {
     renderPanel();
 
     expect(screen.getByText(/Halo Dr\. Sarah\./)).toBeInTheDocument();
-    expect(screen.getByText('Laporan Lab: 2024-04-14_Garcia.pdf')).toBeInTheDocument();
   });
 
-  it('labels the screen as a preview and keeps the confidential-data disclaimer visible', () => {
+  it('does not create a session until the first message is sent', () => {
     renderPanel();
 
-    expect(screen.getByText(/Pratinjau — respons simulasi/)).toBeInTheDocument();
-    expect(screen.getByText('DATA PASIEN RAHASIA:')).toBeInTheDocument();
+    // Opening the screen and typing nothing must not consume a session row
+    // or count against the daily quota.
+    expect(createSessionMock).not.toHaveBeenCalled();
   });
 
-  it('replies with the scripted response when a suggested prompt is selected', async () => {
+  it('creates a session and renders the assistant reply', async () => {
     const user = userEvent.setup();
     renderPanel();
 
     await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
 
-    expect(screen.getByText('Ringkas beban pasien hari ini.')).toBeInTheDocument();
     expect(
-      await screen.findByText(
-        /14 pasien dijadwalkan, 3 di antaranya ditandai dengan kegawatan tinggi/,
-      ),
+      await screen.findByText('Klinik buka pukul 08.00-20.00 WIB.'),
     ).toBeInTheDocument();
+    expect(createSessionMock).toHaveBeenCalledTimes(1);
+    expect(sendMessageMock).toHaveBeenCalledWith('session-1', expect.any(Object));
   });
 
-  it('replies with the fallback response to a free-text message', async () => {
-    const user = userEvent.setup();
-    renderPanel();
-
-    await user.type(
-      screen.getByRole('textbox', { name: 'Kirim pesan ke Asisten Klinis AI' }),
-      'Suggest a treatment adjustment for Ms. Garcia.',
-    );
-    await user.click(screen.getByRole('button', { name: 'Kirim pesan' }));
-
-    expect(screen.getByText('Suggest a treatment adjustment for Ms. Garcia.')).toBeInTheDocument();
-    expect(await screen.findByText(/hipokalemia ringan/)).toBeInTheDocument();
-    expect(await screen.findByText(/Ini adalah saran AI/)).toBeInTheDocument();
-  });
-
-  it('resets the thread when New Consultation is clicked', async () => {
+  it('renders the disclaimer the server returned in meta', async () => {
     const user = userEvent.setup();
     renderPanel();
 
     await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
-    await screen.findByText(
-      /14 pasien dijadwalkan, 3 di antaranya ditandai dengan kegawatan tinggi/,
-    );
 
-    await user.click(screen.getByRole('button', { name: 'Konsultasi Baru' }));
-
-    expect(screen.queryByText('Ringkas beban pasien hari ini.')).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(/14 pasien dijadwalkan, 3 di antaranya ditandai dengan kegawatan tinggi/),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText(/Halo Dr\. Sarah\./)).toBeInTheDocument();
+    // The disclaimer must come from the response envelope, never from a
+    // string the UI holds locally.
+    expect(await screen.findByText('Informasi ini bukan diagnosis medis.')).toBeInTheDocument();
   });
 
-  it('renders recent history entries as disabled preview items', () => {
+  it('reuses one session across turns in the same consultation', async () => {
+    const user = userEvent.setup();
     renderPanel();
 
-    expect(
-      screen.getByRole('button', { name: 'Pemeriksaan konflik obat - Pasien #492' }),
-    ).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+    await screen.findByText('Klinik buka pukul 08.00-20.00 WIB.');
+    await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+
+    expect(createSessionMock).toHaveBeenCalledTimes(1);
+    expect(sendMessageMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('lists the user’s existing sessions in the sidebar', async () => {
+    listSessionsMock.mockResolvedValue({
+      status: 200,
+      data: { data: [{ id: 'session-9', title: 'Jam buka klinik', channel: 'PATIENT' }] },
+    });
+    renderPanel();
+
+    expect(await screen.findByText('Jam buka klinik')).toBeInTheDocument();
+  });
+
+  it('keeps the confidential-data disclaimer visible', () => {
+    renderPanel();
+
+    expect(screen.getByText('DATA PASIEN RAHASIA:')).toBeInTheDocument();
   });
 });

@@ -47,7 +47,8 @@
         "aiAssistant": "AI Assistant",
         "integrations": "Integrations",
         "administration": "Administration",
-        "today": "Today"
+        "today": "Today",
+        "aiProviders": "AI Providers"
       },
       "search": {
         "label": "Search patients",
@@ -118,7 +119,8 @@
         "aiClinicalAssistant": "AI Clinical Assistant",
         "aiAssistantSubtitle": "Ask clinical questions grounded in Saling Jaga patient context.",
         "integrationsSubtitle": "Configure BPJS PCare and monitor external health-data submissions.",
-        "administrationSubtitle": "Manage system users, roles, and permissions."
+        "administrationSubtitle": "Manage system users, roles, and permissions.",
+        "aiProvidersSubtitle": "Configure the upstream AI provider that answers chatbot conversations."
       }
     }
   }

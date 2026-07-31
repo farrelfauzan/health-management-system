@@ -2,6 +2,7 @@
 
 import { Icon } from '@hms/ui';
 
+import { AssistantDisclaimer } from '#components/client/ai-assistant/assistant-disclaimer';
 import { ClinicalReferenceChips } from '#components/client/ai-assistant/clinical-reference-chips';
 import type { AssistantConversationMessage } from '#lib/ai-assistant/conversation-types';
 
@@ -37,6 +38,9 @@ export function AssistantMessage({ message }: AssistantMessageProps) {
         ) : null}
         {message.body.suggestionNote ? (
           <p className="text-xs italic text-slate-500">{message.body.suggestionNote}</p>
+        ) : null}
+        {message.body.disclaimer ? (
+          <AssistantDisclaimer disclaimer={message.body.disclaimer} />
         ) : null}
       </div>
     </div>

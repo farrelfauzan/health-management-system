@@ -47,7 +47,8 @@
         "aiAssistant": "Asisten AI",
         "integrations": "Integrasi",
         "administration": "Administrasi",
-        "today": "Hari ini"
+        "today": "Hari ini",
+        "aiProviders": "Penyedia AI"
       },
       "search": {
         "label": "Cari pasien",
@@ -118,7 +119,8 @@
         "aiClinicalAssistant": "Asisten Klinis AI",
         "aiAssistantSubtitle": "Ajukan pertanyaan klinis berdasarkan konteks pasien Saling Jaga.",
         "integrationsSubtitle": "Konfigurasikan BPJS PCare dan pantau pengiriman data kesehatan eksternal.",
-        "administrationSubtitle": "Kelola pengguna sistem, peran, dan izin."
+        "administrationSubtitle": "Kelola pengguna sistem, peran, dan izin.",
+        "aiProvidersSubtitle": "Atur penyedia AI yang menjawab percakapan chatbot."
       }
     }
   }

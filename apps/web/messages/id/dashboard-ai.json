@@ -1,7 +1,10 @@
 {
   "dashboard": {
     "header": {
-      "breadcrumbs": { "dashboard": "Dasbor Utama", "overview": "Ringkasan" },
+      "breadcrumbs": {
+        "dashboard": "Dasbor Utama",
+        "overview": "Ringkasan"
+      },
       "title": "Ringkasan Klinik",
       "newCase": "Kasus Baru",
       "greeting": {
@@ -61,7 +64,10 @@
   },
   "aiAssistant": {
     "header": {
-      "breadcrumbs": { "advanced": "Lanjutan", "assistant": "Asisten AI" },
+      "breadcrumbs": {
+        "advanced": "Lanjutan",
+        "assistant": "Asisten AI"
+      },
       "title": "Asisten Klinis AI",
       "subtitle": "Ajukan pertanyaan klinis berdasarkan konteks pasien Saling Jaga."
     },
@@ -73,7 +79,8 @@
       "newConsultation": "Konsultasi Baru",
       "suggestedAnalysis": "Analisis yang Disarankan",
       "recentHistory": "Riwayat Terbaru",
-      "historyUnavailable": "Riwayat konsultasi belum tersedia dalam pratinjau"
+      "historyUnavailable": "Riwayat konsultasi belum tersedia dalam pratinjau",
+      "untitledConsultation": "Konsultasi tanpa judul"
     },
     "composer": {
       "placeholder": "Tanyakan tentang pasien, hasil lab, atau protokol rumah sakit...",
@@ -142,6 +149,75 @@
       "greetingLab": "Berdasarkan hasil lab terbaru Pasien #821 (Maria Garcia), saya menyarankan pemeriksaan kadar kalium sebelum konsultasi pukul 10.00. Kadarnya saat ini 3,2 mEq/L, sedikit di bawah rentang normal.",
       "labReference": "Laporan Lab: 2024-04-14_Garcia.pdf",
       "journalReference": "Jurnal Kimia Klinis (Vol. 42)"
+    },
+    "errors": {
+      "sessionFailed": "Tidak dapat memulai sesi obrolan.",
+      "replyFailed": "Tidak dapat memperoleh balasan."
+    },
+    "greeting": {
+      "intro": "Halo {displayName}.",
+      "scope": "Tanyakan layanan klinik, janji temu, atau informasi kesehatan umum. Saya tidak dapat mendiagnosis atau meresepkan obat."
+    }
+  },
+  "aiProviders": {
+    "header": {
+      "title": "Penyedia AI",
+      "subtitle": "Atur penyedia AI yang menjawab percakapan chatbot. Kunci API hanya dapat ditulis — hanya empat karakter terakhir yang ditampilkan.",
+      "breadcrumbs": {
+        "advanced": "Lanjutan",
+        "aiProviders": "Penyedia AI"
+      },
+      "addProvider": "Tambah penyedia"
+    },
+    "states": {
+      "loading": "Memuat konfigurasi penyedia…",
+      "loadFailed": "Tidak dapat memuat konfigurasi penyedia AI.",
+      "empty": "Belum ada penyedia yang dikonfigurasi. Tambahkan satu, lalu aktifkan untuk mulai menjawab percakapan."
+    },
+    "table": {
+      "displayName": "Nama",
+      "providerKind": "Penyedia",
+      "model": "Model",
+      "apiKey": "Kunci API",
+      "status": "Status",
+      "lastTest": "Uji terakhir",
+      "actions": "Aksi",
+      "active": "Aktif",
+      "staged": "Disiapkan",
+      "noApiKey": "Tanpa kunci",
+      "neverTested": "Belum diuji"
+    },
+    "actions": {
+      "edit": "Ubah",
+      "activate": "Aktifkan",
+      "test": "Uji",
+      "testing": "Menguji…",
+      "delete": "Hapus",
+      "activated": "Penyedia diaktifkan. Percakapan baru akan menggunakannya.",
+      "activateFailed": "Tidak dapat mengaktifkan penyedia ini.",
+      "testFailed": "Tidak dapat menghubungi penyedia.",
+      "deleted": "Penyedia dinonaktifkan.",
+      "deleteFailed": "Tidak dapat menghapus penyedia ini."
+    },
+    "form": {
+      "createTitle": "Tambah penyedia AI",
+      "editTitle": "Ubah penyedia AI",
+      "description": "Konfigurasi baru disimpan dalam keadaan nonaktif. Aktifkan salah satu untuk mengarahkan percakapan ke sana.",
+      "providerKind": "Penyedia",
+      "providerKindLocked": "Penyedia tidak dapat diubah — tambahkan konfigurasi baru.",
+      "displayName": "Nama",
+      "defaultModel": "Model",
+      "baseUrl": "Base URL",
+      "baseUrlHint": "Kosongkan untuk memakai bawaan vendor. Wajib untuk gateway OpenAI-compatible dan Azure OpenAI.",
+      "apiKey": "Kunci API",
+      "apiKeyHint": "Opsional hanya untuk host Ollama mandiri tanpa autentikasi.",
+      "apiKeyRotateHint": "Kosongkan untuk mempertahankan kunci tersimpan. Mengisi nilai akan menggantinya.",
+      "save": "Simpan",
+      "saving": "Menyimpan…",
+      "cancel": "Batal",
+      "created": "Penyedia ditambahkan. Aktifkan untuk mulai digunakan.",
+      "updated": "Penyedia diperbarui.",
+      "saveFailed": "Tidak dapat menyimpan penyedia ini."
     }
   }
 }
