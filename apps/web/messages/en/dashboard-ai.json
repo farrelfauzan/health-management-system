@@ -75,8 +75,15 @@
       "newConsultation": "New Consultation",
       "suggestedAnalysis": "Suggested Analysis",
       "recentHistory": "Recent History",
-      "historyUnavailable": "Consultation history is not available in the preview",
-      "untitledConsultation": "Untitled consultation"
+      "untitledConsultation": "Untitled consultation",
+      "historyLoading": "Loading your consultations…",
+      "historyEmpty": "No consultations yet. Ask a question to start one.",
+      "historyError": "Consultation history could not be loaded.",
+      "openConsultation": "Open consultation: {title}",
+      "panelTitle": "Consultations",
+      "openPanel": "Show suggested prompts and history",
+      "collapsePanel": "Collapse the consultation panel",
+      "expandPanel": "Expand the consultation panel"
     },
     "composer": {
       "placeholder": "Ask about patients, lab results, or hospital protocol...",
@@ -92,7 +99,11 @@
       "assistantName": "AI Clinical Assistant",
       "justNow": "Just now",
       "preparingResponse": "AI Clinical Assistant is preparing a response",
-      "clinicalReferences": "Clinical References"
+      "clinicalReferences": "Clinical References",
+      "replyFailed": "The assistant could not be reached. Your question was kept — try sending it again.",
+      "retry": "Try again",
+      "transcriptLoading": "Opening this consultation…",
+      "transcriptFailed": "This consultation could not be opened."
     },
     "disclaimer": {
       "label": "CONFIDENTIAL PATIENT DATA:",
@@ -130,6 +141,13 @@
     },
     "launcher": {
       "open": "Open the AI assistant"
+    },
+    "unread": {
+      "label": "{count, plural, one {# unread reply} other {# unread replies}}"
+    },
+    "notification": {
+      "replyReady": "The AI assistant has replied.",
+      "open": "Open"
     }
   },
   "aiProviders": {

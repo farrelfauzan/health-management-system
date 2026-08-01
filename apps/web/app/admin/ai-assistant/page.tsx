@@ -7,7 +7,6 @@ import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
-import { resolveShellProfile } from '#lib/shell/shell-profile';
 
 export default async function AdminAiAssistantPage() {
   const cookieStore = await cookies();
@@ -19,6 +18,7 @@ export default async function AdminAiAssistantPage() {
   if (!ability.can('create', 'ChatSession')) {
     redirect('/admin/dashboard');
   }
-  const profile = resolveShellProfile(claims);
-  return <AiAssistantPanel displayName={profile.displayName} />;
+  // The signed-in name now reaches the conversation through
+  // `AiAssistantProvider` in the layout, which is where the thread lives.
+  return <AiAssistantPanel />;
 }

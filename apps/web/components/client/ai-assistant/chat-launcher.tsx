@@ -5,9 +5,8 @@ import { usePathname } from 'next/navigation';
 import { Can, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
 import { useChatAvailability } from '#lib/ai-assistant/use-chat-availability';
-
-const ASSISTANT_PATH = '/admin/ai-assistant';
 
 /**
  * The floating chat entry point (ai-chatbot.md §8). It is hidden three ways,

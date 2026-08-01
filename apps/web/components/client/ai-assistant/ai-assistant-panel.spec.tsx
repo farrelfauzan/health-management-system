@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -9,17 +9,26 @@ import { getDashboardAiMessages } from '#lib/dashboard/localization';
 const createSessionMock = vi.hoisted(() => vi.fn());
 const sendMessageMock = vi.hoisted(() => vi.fn());
 const listSessionsMock = vi.hoisted(() => vi.fn());
+const listMessagesMock = vi.hoisted(() => vi.fn());
 const getAvailabilityMock = vi.hoisted(() => vi.fn());
+const pushMock = vi.hoisted(() => vi.fn());
 
 vi.mock('#lib/api/generated/ai-chatbot/ai-chatbot', () => ({
   chatControllerCreateSessionV1: createSessionMock,
   chatControllerSendMessageV1: sendMessageMock,
   chatControllerListSessionsV1: listSessionsMock,
+  chatControllerListMessagesV1: listMessagesMock,
   chatControllerGetAvailabilityV1: getAvailabilityMock,
   getChatControllerListSessionsV1QueryKey: () => ['chat', 'sessions'],
+  getChatControllerListMessagesV1QueryKey: (id: string) => ['chat', 'messages', id],
   getChatControllerGetAvailabilityV1QueryKey: () => ['chat', 'availability'],
 }));
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/admin/ai-assistant',
+  useRouter: () => ({ push: pushMock }),
+}));
 
+const { AiAssistantProvider } = await import('./ai-assistant-provider');
 const { AiAssistantPanel } = await import('./ai-assistant-panel');
 
 function renderPanel(): void {
@@ -29,10 +38,19 @@ function renderPanel(): void {
   render(
     <QueryClientProvider client={queryClient}>
       <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
-        <AiAssistantPanel displayName="Dr. Sarah" />
+        <AiAssistantProvider displayName="Dr. Sarah">
+          <AiAssistantPanel />
+        </AiAssistantProvider>
       </NextIntlClientProvider>
     </QueryClientProvider>,
   );
+}
+
+function buildAxiosError(status: number): Error {
+  return Object.assign(new Error('Request failed'), {
+    isAxiosError: true,
+    response: { status, data: {} },
+  });
 }
 
 describe('AiAssistantPanel', () => {
@@ -43,6 +61,7 @@ describe('AiAssistantPanel', () => {
       data: { data: { id: 'session-1' } },
     });
     listSessionsMock.mockResolvedValue({ status: 200, data: { data: [] } });
+    listMessagesMock.mockResolvedValue({ status: 200, data: { data: [], meta: {} } });
     getAvailabilityMock.mockResolvedValue({
       status: 200,
       data: { data: { isAvailable: true, isEnabled: true, hasActiveProvider: true } },
@@ -83,9 +102,7 @@ describe('AiAssistantPanel', () => {
 
     await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
 
-    expect(
-      await screen.findByText('Klinik buka pukul 08.00-20.00 WIB.'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Klinik buka pukul 08.00-20.00 WIB.')).toBeInTheDocument();
     expect(createSessionMock).toHaveBeenCalledTimes(1);
     expect(sendMessageMock).toHaveBeenCalledWith('session-1', expect.any(Object));
   });
@@ -158,5 +175,150 @@ describe('AiAssistantPanel', () => {
     renderPanel();
 
     expect(screen.getByText('DATA PASIEN RAHASIA:')).toBeInTheDocument();
+  });
+
+  describe('when a send fails', () => {
+    it('keeps the composer usable and offers a retry instead of hanging', async () => {
+      const user = userEvent.setup();
+      const unhandled: unknown[] = [];
+      const collectUnhandled = (reason: unknown): void => {
+        unhandled.push(reason);
+      };
+      process.on('unhandledRejection', collectUnhandled);
+      sendMessageMock.mockRejectedValue(new Error('Network Error'));
+      renderPanel();
+
+      await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+
+      // The typed question stays in the thread, the failure is visible, and
+      // the composer is not disabled for the rest of the page's life.
+      expect(await screen.findByRole('button', { name: 'Coba lagi' })).toBeEnabled();
+      expect(screen.getByText('Ringkas beban pasien hari ini.')).toBeInTheDocument();
+      await waitFor(() => expect(unhandled).toHaveLength(0));
+      process.off('unhandledRejection', collectUnhandled);
+    });
+
+    it('re-sends the same text when the retry is used', async () => {
+      const user = userEvent.setup();
+      sendMessageMock.mockRejectedValueOnce(new Error('Network Error'));
+      renderPanel();
+
+      await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+      await user.click(await screen.findByRole('button', { name: 'Coba lagi' }));
+
+      expect(await screen.findByText('Klinik buka pukul 08.00-20.00 WIB.')).toBeInTheDocument();
+      expect(sendMessageMock).toHaveBeenNthCalledWith(2, 'session-1', {
+        content: 'Ringkas beban pasien hari ini.',
+      });
+    });
+
+    it('does not offer a retry when chat is switched off', async () => {
+      const user = userEvent.setup();
+      sendMessageMock.mockRejectedValue(buildAxiosError(503));
+      renderPanel();
+
+      await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+
+      // A 503 is a policy decision the notice explains; inviting the user to
+      // hammer a switched-off endpoint would be a lie.
+      await waitFor(() => expect(sendMessageMock).toHaveBeenCalled());
+      expect(screen.queryByRole('button', { name: 'Coba lagi' })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('recent history', () => {
+    function mockOneSession(): void {
+      listSessionsMock.mockResolvedValue({
+        status: 200,
+        data: { data: [{ id: 'session-9', title: 'Jam buka klinik', channel: 'PATIENT' }] },
+      });
+    }
+
+    it('opens a past consultation and renders its turns', async () => {
+      const user = userEvent.setup();
+      mockOneSession();
+      listMessagesMock.mockResolvedValue({
+        status: 200,
+        data: {
+          data: [
+            {
+              id: 't1',
+              actor: 'USER',
+              content: 'Jam berapa klinik buka?',
+              createdAt: '2026-07-01T02:00:00.000Z',
+            },
+            {
+              id: 't2',
+              actor: 'SYSTEM',
+              content: 'redacted-context-payload',
+              createdAt: '2026-07-01T02:00:01.000Z',
+            },
+            {
+              id: 't3',
+              actor: 'ASSISTANT',
+              content: 'Pukul 08.00 sampai 20.00 WIB.',
+              createdAt: '2026-07-01T02:00:02.000Z',
+            },
+          ],
+          meta: { nextCursor: null },
+        },
+      });
+      renderPanel();
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Buka konsultasi: Jam buka klinik' }),
+      );
+
+      expect(await screen.findByText('Pukul 08.00 sampai 20.00 WIB.')).toBeInTheDocument();
+      expect(screen.getByText('Jam berapa klinik buka?')).toBeInTheDocument();
+      // SYSTEM turns are the record of processing, not conversation.
+      expect(screen.queryByText('redacted-context-payload')).not.toBeInTheDocument();
+    });
+
+    it('appends to the opened session instead of creating a new one', async () => {
+      const user = userEvent.setup();
+      mockOneSession();
+      renderPanel();
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Buka konsultasi: Jam buka klinik' }),
+      );
+      await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+
+      await waitFor(() =>
+        expect(sendMessageMock).toHaveBeenCalledWith('session-9', expect.any(Object)),
+      );
+      expect(createSessionMock).not.toHaveBeenCalled();
+    });
+
+    it('refreshes the list once a send has created a session', async () => {
+      const user = userEvent.setup();
+      renderPanel();
+
+      await waitFor(() => expect(listSessionsMock).toHaveBeenCalledTimes(1));
+      listSessionsMock.mockResolvedValue({
+        status: 200,
+        data: { data: [{ id: 'session-1', title: 'Beban pasien', channel: 'DOCTOR' }] },
+      });
+      await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+
+      // Without the invalidation the conversation the user just had is
+      // missing from history until a full page reload.
+      expect(await screen.findByText('Beban pasien')).toBeInTheDocument();
+    });
+
+    it('says the history is empty rather than rendering nothing', async () => {
+      renderPanel();
+
+      expect(await screen.findByText(/Belum ada konsultasi/)).toBeInTheDocument();
+    });
+
+    it('distinguishes a failed history load from an empty one', async () => {
+      listSessionsMock.mockRejectedValue(new Error('Network Error'));
+      renderPanel();
+
+      expect(await screen.findByText('Riwayat konsultasi gagal dimuat.')).toBeInTheDocument();
+      expect(screen.queryByText(/Belum ada konsultasi/)).not.toBeInTheDocument();
+    });
   });
 });

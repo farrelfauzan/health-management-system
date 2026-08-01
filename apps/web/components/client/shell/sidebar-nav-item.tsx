@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Icon, SidebarMenuButton, SidebarMenuItem } from '@hms/ui';
+import { Icon, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from '@hms/ui';
 
 import type { AdminNavItem } from '#lib/shell/nav-items';
+import { useNavBadge } from '#lib/shell/use-nav-badge';
 
 type SidebarNavItemProps = {
   item: AdminNavItem;
@@ -12,6 +13,7 @@ type SidebarNavItemProps = {
 };
 
 export function SidebarNavItem({ item, label, isActive }: SidebarNavItemProps) {
+  const badge = useNavBadge(item.badgeKey);
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -25,6 +27,11 @@ export function SidebarNavItem({ item, label, isActive }: SidebarNavItemProps) {
           <span>{label}</span>
         </Link>
       </SidebarMenuButton>
+      {badge === null ? null : (
+        <SidebarMenuBadge aria-label={badge.label}>
+          <span aria-hidden="true">{badge.count}</span>
+        </SidebarMenuBadge>
+      )}
     </SidebarMenuItem>
   );
 }

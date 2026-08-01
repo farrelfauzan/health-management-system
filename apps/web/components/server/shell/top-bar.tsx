@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { Button, Icon, Separator, SidebarTrigger } from '@hms/ui';
+import { Separator, SidebarTrigger } from '@hms/ui';
 
+import { AiAssistantTopBarLink } from '#components/client/shell/ai-assistant-top-bar-link';
 import { GlobalSearch } from '#components/client/shell/global-search';
 import { LanguageSwitcher } from '#components/client/shared/language-switcher';
 import { NotificationsMenu } from '#components/client/shell/notifications-menu';
@@ -19,17 +19,7 @@ export async function TopBar({ profile }: TopBarProps) {
       <SidebarTrigger className="md:hidden" />
       <GlobalSearch />
       <div className="ml-auto flex items-center gap-2">
-        <Button
-          asChild
-          variant="ghost"
-          size="icon"
-          className="relative rounded-full text-muted-foreground"
-        >
-          <Link href="/admin/ai-assistant" aria-label={t('openAiAssistant')}>
-            <Icon name="smart_toy" size={22} />
-            <span className="absolute right-2 top-2 size-2 rounded-full border-2 border-card bg-secondary" />
-          </Link>
-        </Button>
+        <AiAssistantTopBarLink label={t('openAiAssistant')} />
         <NotificationsMenu />
         <LanguageSwitcher />
         <Separator orientation="vertical" className="mx-2 h-6!" />

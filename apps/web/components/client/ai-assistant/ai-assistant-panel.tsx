@@ -1,44 +1,45 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Button, Icon } from '@hms/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { AssistantUnavailableNotice } from '#components/client/ai-assistant/assistant-unavailable-notice';
 import { ChatComposer } from '#components/client/ai-assistant/chat-composer';
 import { ChatThread } from '#components/client/ai-assistant/chat-thread';
 import { ConfidentialDisclaimer } from '#components/client/ai-assistant/confidential-disclaimer';
-import { AssistantUnavailableNotice } from '#components/client/ai-assistant/assistant-unavailable-notice';
+import { ConsultationPanelDrawer } from '#components/client/ai-assistant/consultation-panel-drawer';
 import { ConsultationSidebar } from '#components/client/ai-assistant/consultation-sidebar';
 import { PageHeader } from '#components/shared/page-header';
+import { usePersistedBoolean } from '#hooks/use-persisted-boolean';
+import { useAiAssistant } from '#lib/ai-assistant/ai-assistant-context';
 import type { ConsultationHistoryEntry } from '#lib/ai-assistant/consultation-history-entry';
-import { createChatConversationService } from '#lib/ai-assistant/create-chat-conversation-service';
+import type { ConsultationPanelProps } from '#lib/ai-assistant/consultation-panel-props';
 import { buildSuggestedPrompts, type SuggestedPrompt } from '#lib/ai-assistant/suggested-prompts';
 import { useChatAvailability } from '#lib/ai-assistant/use-chat-availability';
 import { useChatSessions } from '#lib/ai-assistant/use-chat-sessions';
-import { useConversation } from '#lib/ai-assistant/use-conversation';
 import type { AppLocale } from '../../../i18n/config';
 
-type AiAssistantPanelProps = {
-  displayName: string;
-  channel?: 'PATIENT' | 'DOCTOR';
-};
+const SIDEBAR_COLLAPSED_STORAGE_KEY = 'hms.ai-assistant.sidebar-collapsed';
 
-export function AiAssistantPanel({ displayName, channel = 'DOCTOR' }: AiAssistantPanelProps) {
+/**
+ * The assistant screen. It no longer owns the conversation — `AiAssistantProvider`
+ * does, above the route — so navigating away and back finds the thread and any
+ * in-flight reply still there. What lives here is presentation: layout, the
+ * availability gate, and the consultation panel's collapse state.
+ */
+export function AiAssistantPanel() {
   const locale = useLocale() as AppLocale;
   const t = useTranslations('aiAssistant.header');
   const tSidebar = useTranslations('aiAssistant.sidebar');
+  const tConversation = useTranslations('aiAssistant.conversation');
+  const assistant = useAiAssistant();
   const prompts = useMemo(() => buildSuggestedPrompts(locale), [locale]);
-  /**
-   * Bumped by "new consultation" so a fresh service — and therefore a fresh
-   * server-side session — is built. The session id lives inside the service
-   * instance, so replacing the instance is what starts a new conversation.
-   */
-  const [conversationEpoch, setConversationEpoch] = useState(0);
-  const service = useMemo(
-    () => createChatConversationService({ locale, channel }),
-    // conversationEpoch is a deliberate dependency: it is the reset signal.
-    [locale, channel, conversationEpoch],
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = usePersistedBoolean(
+    SIDEBAR_COLLAPSED_STORAGE_KEY,
+    false,
   );
-  const conversation = useConversation({ service, displayName });
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const availabilityQuery = useChatAvailability();
   const availability = availabilityQuery.data;
   const isUnavailable = availability !== undefined && !availability.isAvailable;
@@ -53,13 +54,30 @@ export function AiAssistantPanel({ displayName, channel = 'DOCTOR' }: AiAssistan
       })),
     [sessionsQuery.data, tSidebar],
   );
+  const isBusy = assistant.isReplying || assistant.isTranscriptLoading || isUnavailable;
   function handleSelectPrompt(prompt: SuggestedPrompt): void {
-    conversation.sendUserMessage({ text: prompt.messageText, promptId: prompt.id });
+    assistant.sendUserMessage({ text: prompt.messageText, promptId: prompt.id });
+    setIsDrawerOpen(false);
   }
   function handleNewConsultation(): void {
-    setConversationEpoch((previous) => previous + 1);
-    conversation.resetConversation();
+    assistant.startNewConsultation();
+    setIsDrawerOpen(false);
   }
+  function handleSelectConsultation(entry: ConsultationHistoryEntry): void {
+    assistant.openConsultation(entry);
+    setIsDrawerOpen(false);
+  }
+  const panelProps: ConsultationPanelProps = {
+    prompts,
+    history,
+    activeSessionId: assistant.activeSessionId,
+    isBusy,
+    isHistoryLoading: sessionsQuery.isPending && availability?.isAvailable === true,
+    hasHistoryFailed: sessionsQuery.isError,
+    onNewConsultation: handleNewConsultation,
+    onSelectPrompt: handleSelectPrompt,
+    onSelectConsultation: handleSelectConsultation,
+  };
   return (
     <div className="space-y-6">
       <PageHeader
@@ -67,24 +85,48 @@ export function AiAssistantPanel({ displayName, channel = 'DOCTOR' }: AiAssistan
         subtitle={t('subtitle')}
         breadcrumbs={[t('breadcrumbs.advanced'), t('breadcrumbs.assistant')]}
       />
-      {isUnavailable ? (
-        <AssistantUnavailableNotice isEnabled={availability.isEnabled} />
-      ) : null}
+      {isUnavailable ? <AssistantUnavailableNotice isEnabled={availability.isEnabled} /> : null}
       <section className="flex h-[calc(100vh-16rem)] min-h-[540px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <ConsultationSidebar
-          prompts={prompts}
-          history={history}
-          isBusy={conversation.isReplying || isUnavailable}
-          onNewConsultation={handleNewConsultation}
-          onSelectPrompt={handleSelectPrompt}
+          {...panelProps}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapsed={setIsSidebarCollapsed}
+        />
+        <ConsultationPanelDrawer
+          {...panelProps}
+          isOpen={isDrawerOpen}
+          onOpenChange={setIsDrawerOpen}
         />
         <div className="flex min-w-0 flex-1 flex-col bg-surface-bright">
-          <ChatThread messages={conversation.messages} isReplying={conversation.isReplying} />
+          <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-2 lg:hidden">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => setIsDrawerOpen(true)}
+              aria-label={tSidebar('openPanel')}
+            >
+              <Icon name="menu" size={20} className="text-current" />
+            </Button>
+            <span className="text-sm font-medium text-slate-700">{tSidebar('panelTitle')}</span>
+          </div>
+          {assistant.hasTranscriptFailed ? (
+            <p role="status" className="px-6 pt-4 text-sm text-destructive">
+              {tConversation('transcriptFailed')}
+            </p>
+          ) : null}
+          {assistant.isTranscriptLoading ? (
+            <p role="status" className="px-6 pt-4 text-sm text-slate-500">
+              {tConversation('transcriptLoading')}
+            </p>
+          ) : null}
+          <ChatThread
+            messages={assistant.messages}
+            isReplying={assistant.isReplying}
+            onRetry={assistant.retryFailedMessage}
+          />
           <div className="px-6 pb-4">
-            <ChatComposer
-              isBusy={conversation.isReplying || isUnavailable}
-              onSend={(text) => conversation.sendUserMessage({ text })}
-            />
+            <ChatComposer isBusy={isBusy} onSend={(text) => assistant.sendUserMessage({ text })} />
             <ConfidentialDisclaimer />
           </div>
         </div>

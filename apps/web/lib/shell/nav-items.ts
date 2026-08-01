@@ -21,12 +21,20 @@ export type ShellNavigationKey =
   | 'administration'
   | 'today';
 
+/**
+ * Which live count, if any, a nav entry carries. Kept as a key rather than a
+ * number because this table is static data read on the server, while every
+ * count it can name is client state.
+ */
+export type ShellNavBadgeKey = 'aiAssistantUnread';
+
 export type AdminNavItem = {
   href: string;
   label: string;
   labelKey: ShellNavigationKey;
   icon: string;
   ability: AdminNavAbility | AdminNavAbility[] | null;
+  badgeKey?: ShellNavBadgeKey;
 };
 
 export type AdminNavSection = {
@@ -110,6 +118,7 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         labelKey: 'aiAssistant',
         icon: 'psychology',
         ability: { action: 'create', subject: 'ChatSession' },
+        badgeKey: 'aiAssistantUnread',
       },
       {
         href: '/admin/ai-providers',
