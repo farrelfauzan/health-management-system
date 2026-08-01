@@ -56,6 +56,8 @@ The chatbot must never submit FHIR resources or mutate clinical records. It read
 - Voice input/output (evaluate in a later iteration)
 - Real-time streaming tokens to the browser (start with request/response; streaming is optional v1.1)
 
+**Amended by [ai-chatbot-tools.md](./ai-chatbot-tools.md) §2.3 (Phase 15):** the first bullet becomes **patient-channel**. On the doctor channel a diagnosis match is still tagged `diagnosis_attempt` but appends a clinical-judgement notice instead of discarding the reply — the no-diagnosis rule exists to keep unlicensed medical advice away from a layperson, and a licensed clinician is not one. The doctor-channel constraint becomes "will not replace clinical judgement". The prescribing rule is unchanged on both channels.
+
 ### 2.3 Future Considerations (not committed)
 
 - ICD-10 coding *suggestions* during encounter documentation (human-in-the-loop only)
@@ -72,6 +74,8 @@ The chatbot must never submit FHIR resources or mutate clinical records. It read
 4. **Escalation copy** — emergency symptom patterns route to "contact emergency services / visit ER" template (Indonesian + English).
 5. **PII minimization** — do not send full national IDs, raw clinical notes, or unrelated patient data to the provider; use redacted context objects (see §5.3).
 6. **Audit retention** — align with PMK 24/2022 RME retention (minimum 25 years) and UU PDP No. 27/2022 field-level audit (Phase 12 `P12-T05`).
+7. **A clinic fact with no lookup behind it is not an answer** (Phase 15). When tools were offered, none was called, and the reply asserts a count, name, date, or amount, the turn is tagged `unsourced_claim` and the reply is replaced rather than shown — the model answering from training data is the one tool-era failure that is invisible to the reader. See [ai-chatbot-tools.md](./ai-chatbot-tools.md) §4.7.2; it also covers the case where an `OPENAI_COMPATIBLE` router (§4.3.1) silently falls back to a backend that ignores `tools`, since that produces the same signature.
+8. **Data fetched on the model's behalf does not return to the model** (Phase 15, §4.2.1). A tool result is rendered to the asking user, not transmitted, unless a clinic has opted into Mode B with the four legal conditions met. This is the rule that keeps rule 5 true once the payload can no longer be computed in advance — an allowlisted projection is a minimisation control, while not transmitting at all is the absence of a transfer.
 
 ### 3.2 Input Guards
 
@@ -115,6 +119,8 @@ ai-chatbot/
 
 ### 4.2 Integration Pattern
 
+**Phase 13 — as shipped.** One outbound call per user message; the payload is fully known before it is sent.
+
 ```
 Client (web/mobile)
   -> POST /api/v1/chat/sessions/:id/messages
@@ -130,6 +136,40 @@ Client (web/mobile)
 ```
 
 Cross-module reads (appointments, patient profile summaries, encounter summaries) go through **existing domain services**, never foreign repositories.
+
+#### 4.2.1 Tool dispatch (Phase 15 — not built in Phase 13)
+
+Recorded here because it changes the shape of §4.2, and a reader of this document should not have to discover that from another file. Full design in [ai-chatbot-tools.md](./ai-chatbot-tools.md) §4.4; this is the summary that keeps the two documents consistent.
+
+A tool loop inverts the ordering above: the model decides mid-conversation what to fetch, so the payload can no longer be computed in advance. **The dispatch splits, and the default half never transmits the result.**
+
+```
+AiChatbotService (tool loop)
+  1 build tool list from the caller's ability      -- empty list => §4.2 exactly, no `tools` on the wire
+  2 adapter.sendChatCompletion(..., tools)         -- provider sees prompt + tool CATALOGUE only
+  3 reply is a tool call -> validate args (Zod)    -- a hallucinated argument fails here
+  4 execute as the ASKING USER via domain service  -- same RBAC as the REST route
+  5 project through the tool's output allowlist    -- fails closed; a field nobody listed cannot appear
+  6 persist SYSTEM turn (tool, args, result)       -- unconditional, BEFORE any transmission decision
+       |
+       +-- Mode A  AI_CHAT_TOOL_RESULT_TO_PROVIDER=false  (default)
+       |     STOP. result returned to the client in meta.toolResults,
+       |     rendered by a per-tool component. The model never sees the rows.
+       |     -> no patient field leaves HMS
+       |
+       +-- Mode B  AI_CHAT_TOOL_RESULT_TO_PROVIDER=true   (opt-in)
+             append result to messages and loop (max 3 calls per user message),
+             so the model composes prose over the rows.
+             -> patient fields cross the border; see the four conditions below
+```
+
+**Two things the tool list depends on, both Phase 15.** `ChatChannel` gains an `ADMIN` value (migration + shared-types), because the channel decides the system prompt and the context policy and an operational prompt should not carry clinical-safety copy written for a clinician. And a tool declares the **scope** its permission must resolve to, not just the action: `list_my_patients` requires `patient.read` at `OWN`, so an `ADMIN` holding `patient.read:any` is *not* offered it. Channel and role must also agree — a doctor-channel session opened by a non-doctor is offered zero tools. Both rules are fails-closed in `ChatToolRegistry`; see [ai-chatbot-tools.md](./ai-chatbot-tools.md) §4.1.1 and §2.1.2.
+
+**Why the split matters here.** The model is not the component that reads the database — it is the component that decides *what* to read. Intent classification and argument extraction need an LLM; composing a sentence around the rows does not, and it is the only part that requires the rows to leave the country. Mode A keeps the whole §3.1 rule-5 guarantee intact while still answering from live HMS data.
+
+Mode A is also cheaper (one round trip instead of two-to-four) and **structurally immune to prompt injection through a tool result** — a payload that never re-enters the model's context cannot carry an instruction into it.
+
+Mode B is a deliberate clinic decision requiring four things in hand, none of which is a code change: explicit patient consent for AI processing (UU PDP Pasal 20), a recorded cross-border transfer basis (Pasal 56), a filed DPIA (Pasal 34), and a signed DPA (Pasal 51). Router provider kinds (`OPENAI_COMPATIBLE`) are refused while Mode B is on, because the recorded `providerKind` is then the router rather than the actual destination — an unknown destination cannot satisfy Pasal 56.
 
 ### 4.3 Multi-Provider AI Service
 
@@ -298,7 +338,7 @@ Schema baseline for chat messages lives in [docs/MVP/database.md](../MVP/databas
 **ChatSession**
 
 - `ownerUserId` — RBAC ownership anchor for `:own` scopes
-- `channel` — `PATIENT | DOCTOR` (separate system prompts and context policies)
+- `channel` — `PATIENT | DOCTOR` (separate system prompts and context policies). **Phase 15 adds `ADMIN`** for clinic-operations questions answered from aggregates — queue load, cashier totals, appointment capacity, stock and expiry — never from a patient row. The value is chosen by the client and defaults to `PATIENT`, so the channel a session claims is not evidence about who opened it; the tool registry checks the caller's role independently (§4.2.1)
 - `providerKey` — active `AiProviderConfig.id` at session creation time
 - `providerKind` — denormalized `AiProviderKind` for filtering/analytics
 - `providerSessionId` — external thread id when the upstream supports it
@@ -368,6 +408,16 @@ Example success meta:
 }
 ```
 
+**Phase 15 addition — `meta.toolResults`.** When the tool loop runs (§4.2.1), each dispatched tool contributes one entry, matching the persisted `SYSTEM` turns one-to-one:
+
+```json
+"toolResults": [
+  { "tool": "list_my_appointments", "arguments": { "date": "2026-08-01" }, "result": { "…": "per-tool allowlist" } }
+]
+```
+
+In Mode A this array **is** the answer — the client renders it with a per-tool component, and the assistant's own text announces the lookup rather than describing its contents. Each tool's *output* schema therefore joins its argument schema in `packages/shared-types/src/ai-chatbot/` and reaches the web client through Orval; it is API contract, not an internal projection. The field is absent when no tool ran, so Phase 13 clients are unaffected.
+
 ## 7. RBAC
 
 Permissions (seed in `P13-T02`):
@@ -426,6 +476,11 @@ Environment variables for single-tenant dev or platform-managed default. **Not a
 | `AI_CHAT_RATE_LIMIT_PER_HOUR` | no | Default 60 messages/user |
 | `AI_CHAT_MAX_MESSAGE_LENGTH` | no | Default 4000 |
 | `AI_CHAT_ENABLED` | no | Feature flag; default false until Phase 13 complete |
+| `AI_CHAT_CONTEXT_ENRICHMENT_ENABLED` | no | Default false — §5.3 context payload. Off means only what the user typed reaches the provider |
+| `AI_CHAT_TOOLS_ENABLED` | no | **Phase 15.** Default false — gates the tool loop (§4.2.1) as a whole |
+| `AI_CHAT_TOOL_RESULT_TO_PROVIDER` | no | **Phase 15.** Default false = Mode A. Setting true transmits tool results to the provider and requires consent + transfer basis + DPIA + DPA; refused while the active config is a router kind |
+
+`AI_CHAT_CONTEXT_ENRICHMENT_ENABLED`, `AI_CHAT_TOOLS_ENABLED`, and `AI_CHAT_TOOL_RESULT_TO_PROVIDER` are independent of one another and each defaults off. Turning on `AI_CHAT_TOOLS_ENABLED` alone gives a doctor real answers from live HMS data with **no patient field leaving the deployment** — that is the intended production posture, and `AI_CHAT_TOOL_RESULT_TO_PROVIDER` may stay off indefinitely without blocking it.
 
 ### 9.3 API key encryption
 
@@ -490,7 +545,8 @@ Aligned with branch naming `feature/p13-t<task>-<short-desc>`.
 
 - [Post-MVP implementation plan](./implementation-plan.md) — Phase 13 sequencing
 - [ai-chatbot-readiness.md](./ai-chatbot-readiness.md) — Phase 13 gate: what was verified, and what stays off until a condition is met
-- [ai-chatbot-tools.md](./ai-chatbot-tools.md) — Phase 15 follow-on: tools, retrieval, and memory. **Amends §2.2 of this document** (the diagnosis constraint becomes patient-channel) and fills the §2.1 promises of clinic FAQ and clinical reference search, which have no corpus behind them today
+- [ai-assistant-frontend-fixes.md](./ai-assistant-frontend-fixes.md) — open frontend items against §8: a send-failure crash, recent history shipped as a stub, background conversation with toast and unread badge, and a collapsible sidebar. Frontend only; no API change
+- [ai-chatbot-tools.md](./ai-chatbot-tools.md) — Phase 15 follow-on: tools, retrieval, and memory. **Amends §2.2 of this document** (the diagnosis constraint becomes patient-channel), **extends §4.2 with the tool dispatch split** summarised in §4.2.1, **adds hard rules §3.1.7–3.1.8**, and fills the §2.1 promises of clinic FAQ and clinical reference search, which have no corpus behind them today. Its §4.8 records the decision to build the loop and retrieval in this repository rather than adopt an agent framework, with the conditions that would reverse it
 - [AGENTS.md §10 AI Chatbot Boundaries](../../AGENTS.md) — repository contract
 - [MVP decisions D-007](../MVP/decisions.md) — scope limitation decision
 - [MVP database schema](../MVP/database.md) — `ChatSession` / `ChatMessage` models
