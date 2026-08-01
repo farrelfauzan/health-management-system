@@ -255,6 +255,20 @@ describe('BpjsAntreanSubmissionService', () => {
     });
   });
 
+  it('treats a missing NIK as absent rather than crashing the send', async () => {
+    // The shape of the P14-T05 regression that broke the PCare ops suite: a
+    // nullable identifier arriving as absent rather than null must fail as a
+    // readable data error, never as an opaque crypto TypeError — and above all
+    // it must not be able to take down a submission for the *other*
+    // integration that never reads the field.
+    const { service } = buildService();
+    const antrean = { ...buildSourceData().antrean, nationalIdentityNumber: null };
+
+    await expect(service.submit('ANTREAN_ADD', buildSourceData({ antrean }))).rejects.toBeInstanceOf(
+      BpjsSubmissionDataError,
+    );
+  });
+
   it('refuses to send when antrean is not configured', async () => {
     const { service, configRepositoryMock } = buildService();
     configRepositoryMock.getConnection.mockResolvedValue(null);

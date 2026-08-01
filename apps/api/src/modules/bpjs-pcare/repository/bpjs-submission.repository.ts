@@ -197,12 +197,7 @@ export class BpjsSubmissionRepository {
         checkedInAt: registration.checkedInAt,
       },
       patient: {
-        bpjsNumber:
-          registration.patient.bpjsNumberCiphertext === null
-            ? null
-            : this.identifierCryptoService.decryptIdentifier(
-                registration.patient.bpjsNumberCiphertext,
-              ),
+        bpjsNumber: this.decryptOptionalIdentifier(registration.patient.bpjsNumberCiphertext),
       },
       appointmentDoctor: this.toDoctorData(registration.appointment?.doctor ?? null),
       encounter:
@@ -270,7 +265,7 @@ export class BpjsSubmissionRepository {
     const session = registration.appointment?.session ?? null;
     return {
       bpjsBookingCode: registration.appointment?.bpjsBookingCode ?? null,
-      poliQueueNumber: registration.poliQueueNumber,
+      poliQueueNumber: registration.poliQueueNumber ?? null,
       // The poli denormalised onto the registration (P14-T01) is the anchor of
       // the allocated number, so it wins over the doctor's current specialty:
       // a doctor who later moves poli must not retag yesterday's ticket.
@@ -284,12 +279,27 @@ export class BpjsSubmissionRepository {
       practiceWindow: session === null ? null : `${session.startTime}-${session.endTime}`,
       sessionStart: session === null ? null : session.sessionDate,
       medicalRecordNumber: registration.patient.mrn,
-      nationalIdentityNumber:
-        registration.patient.nikCiphertext === null
-          ? null
-          : this.identifierCryptoService.decryptIdentifier(registration.patient.nikCiphertext),
+      nationalIdentityNumber: this.decryptOptionalIdentifier(registration.patient.nikCiphertext),
       phoneNumber: registration.patient.phoneNumber,
     };
+  }
+
+  /**
+   * Decrypts a sealed identifier, treating "absent" and "null" alike.
+   *
+   * The nullish check is deliberate rather than `=== null`. These columns are
+   * nullable, and a projection that does not select one yields `undefined` —
+   * which a strict null check waves through into the crypto service, where it
+   * fails with an opaque `ERR_INVALID_ARG_TYPE`. That failure surfaced as a
+   * *PCare* submission crashing on a field only Antrean reads, which is the
+   * worst shape this bug could take: one integration's optional data breaking
+   * another integration's send.
+   */
+  private decryptOptionalIdentifier(ciphertext: string | null | undefined): string | null {
+    if (ciphertext === null || ciphertext === undefined || ciphertext === '') {
+      return null;
+    }
+    return this.identifierCryptoService.decryptIdentifier(ciphertext);
   }
 
   private toSiblingRow(

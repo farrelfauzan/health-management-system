@@ -96,13 +96,27 @@ describe('BPJS PCare submission ops integration', () => {
         status: 'CHECKED_IN',
         queueDate: new Date('2026-08-05T00:00:00.000Z'),
         checkedInAt: new Date('2026-08-05T02:00:00.000Z'),
-        patient: { bpjsNumberCiphertext: sealedBpjsNumberCiphertext },
+        // Mirrors the columns `findSubmissionSourceData` selects. Kept in step
+        // deliberately: this stub *is* the row as far as the repository is
+        // concerned, and a field the query reads but the stub omits arrives as
+        // `undefined` rather than `null` — which is how P14-T05 first broke
+        // this PCare suite.
+        poliQueueNumber: 3,
+        specialty: { name: 'Poli Umum', bpjsPoliCode: '001' },
+        patient: {
+          mrn: '00000042',
+          phoneNumber: '081200000000',
+          bpjsNumberCiphertext: sealedBpjsNumberCiphertext,
+          nikCiphertext: null,
+        },
         appointment: {
+          bpjsBookingCode: null,
           doctor: {
             fullName: 'dr. Sinta Dewi',
             bpjsDoctorCode: '1234',
             specialty: { bpjsPoliCode: '001' },
           },
+          session: null,
         },
         encounter: null,
         bpjsSubmissions: submissionRows
