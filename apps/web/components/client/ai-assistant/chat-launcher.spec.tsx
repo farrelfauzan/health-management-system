@@ -4,6 +4,10 @@ import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
+import {
+  AiAssistantContext,
+  type AiAssistantContextValue,
+} from '#lib/ai-assistant/ai-assistant-context';
 import { getDashboardAiMessages } from '#lib/dashboard/localization';
 
 const getAvailabilityMock = vi.hoisted(() => vi.fn());
@@ -17,13 +21,38 @@ vi.mock('next/navigation', () => ({ usePathname: usePathnameMock }));
 
 const { ChatLauncher } = await import('./chat-launcher');
 
-function renderLauncher(canChat = true): void {
+/**
+ * Only `assistantPath` matters to the launcher; the rest of the conversation
+ * is stubbed so this spec stays about visibility and destination.
+ */
+function buildAssistantContext(assistantPath: string | null): AiAssistantContextValue {
+  return {
+    assistantPath,
+    messages: [],
+    isReplying: false,
+    activeSessionId: null,
+    isTranscriptLoading: false,
+    hasTranscriptFailed: false,
+    unreadCount: 0,
+    sendUserMessage: () => {},
+    retryFailedMessage: () => {},
+    startNewConsultation: () => {},
+    openConsultation: () => {},
+  };
+}
+
+function renderLauncher(
+  canChat = true,
+  assistantPath: string | null = '/admin/ai-assistant',
+): void {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={queryClient}>
       <AppAbilityProvider rules={canChat ? [{ action: 'create', subject: 'ChatSession' }] : []}>
         <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
-          <ChatLauncher />
+          <AiAssistantContext.Provider value={buildAssistantContext(assistantPath)}>
+            <ChatLauncher />
+          </AiAssistantContext.Provider>
         </NextIntlClientProvider>
       </AppAbilityProvider>
     </QueryClientProvider>,
@@ -55,7 +84,10 @@ describe('ChatLauncher', () => {
   });
 
   it.each([
-    ['the clinic has chat switched off', { isAvailable: false, isEnabled: false, hasActiveProvider: false }],
+    [
+      'the clinic has chat switched off',
+      { isAvailable: false, isEnabled: false, hasActiveProvider: false },
+    ],
     ['no provider is active', { isAvailable: false, isEnabled: true, hasActiveProvider: false }],
   ])('stays hidden when %s', async (_reason, availability) => {
     getAvailabilityMock.mockResolvedValue({ status: 200, data: { data: availability } });
@@ -78,6 +110,24 @@ describe('ChatLauncher', () => {
     renderLauncher();
 
     await waitFor(() => expect(usePathnameMock).toHaveBeenCalled());
+    expect(screen.queryByRole('link', { name: 'Buka asisten AI' })).not.toBeInTheDocument();
+  });
+
+  it('points at the assistant route of the shell it is rendered in', async () => {
+    usePathnameMock.mockReturnValue('/doctor/encounters');
+    renderLauncher(true, '/doctor/ai-assistant');
+
+    // `proxy.ts` gates /admin to admins, so linking a doctor at the admin
+    // screen sent them to their dashboard instead of the assistant.
+    const launcher = await screen.findByRole('link', { name: 'Buka asisten AI' });
+    expect(launcher).toHaveAttribute('href', '/doctor/ai-assistant');
+  });
+
+  it('stays hidden in a shell that has no assistant screen', async () => {
+    usePathnameMock.mockReturnValue('/portal/registrations');
+    renderLauncher(true, null);
+
+    await waitFor(() => expect(getAvailabilityMock).toHaveBeenCalled());
     expect(screen.queryByRole('link', { name: 'Buka asisten AI' })).not.toBeInTheDocument();
   });
 });

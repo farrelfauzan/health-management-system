@@ -8,7 +8,13 @@ import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 
-export default async function AdminAiAssistantPage() {
+/**
+ * The assistant inside the doctor shell. It exists because `proxy.ts` gates by
+ * path prefix: doctors hold `chat.session.create:own`, but every entry point
+ * pointed at `/admin/ai-assistant`, which the gate bounces for anyone without
+ * an admin session — so a clinician granted the assistant could never open it.
+ */
+export default async function DoctorAiAssistantPage() {
   const cookieStore = await cookies();
   const claims = resolveSessionClaims({
     accessToken: cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value,
@@ -16,9 +22,7 @@ export default async function AdminAiAssistantPage() {
   });
   const ability = buildAppAbility(resolveAppAbilityRules(claims));
   if (!ability.can('create', 'ChatSession')) {
-    redirect('/admin/dashboard');
+    redirect('/doctor/dashboard');
   }
-  // The signed-in name now reaches the conversation through
-  // `AiAssistantProvider` in the layout, which is where the thread lives.
   return <AiAssistantPanel />;
 }

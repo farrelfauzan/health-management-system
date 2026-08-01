@@ -75,8 +75,22 @@
       "newConsultation": "Konsultasi Baru",
       "suggestedAnalysis": "Analisis yang Disarankan",
       "recentHistory": "Riwayat Terbaru",
-      "historyUnavailable": "Riwayat konsultasi belum tersedia dalam pratinjau",
-      "untitledConsultation": "Konsultasi tanpa judul"
+      "untitledConsultation": "Konsultasi tanpa judul",
+      "historyLoading": "Memuat konsultasi Anda…",
+      "historyEmpty": "Belum ada konsultasi. Ajukan pertanyaan untuk memulai.",
+      "historyError": "Riwayat konsultasi gagal dimuat.",
+      "openConsultation": "Buka konsultasi: {title}",
+      "delete": "Hapus",
+      "deleting": "Menghapus…",
+      "deleteConsultation": "Hapus konsultasi: {title}",
+      "deleteTitle": "Hapus konsultasi ini?",
+      "deleteDescription": "“{title}” akan hilang dari daftar riwayat Anda. Transkripnya tetap disimpan — aturan rekam medis mewajibkan catatan percakapan tetap ada.",
+      "deleteCancel": "Batal",
+      "deleteError": "Konsultasi ini gagal dihapus.",
+      "panelTitle": "Konsultasi",
+      "openPanel": "Tampilkan saran pertanyaan dan riwayat",
+      "collapsePanel": "Ciutkan panel konsultasi",
+      "expandPanel": "Bentangkan panel konsultasi"
     },
     "composer": {
       "placeholder": "Tanyakan tentang pasien, hasil lab, atau protokol rumah sakit...",
@@ -92,7 +106,11 @@
       "assistantName": "Asisten Klinis AI",
       "justNow": "Baru saja",
       "preparingResponse": "Asisten Klinis AI sedang menyiapkan respons",
-      "clinicalReferences": "Referensi Klinis"
+      "clinicalReferences": "Referensi Klinis",
+      "replyFailed": "Asisten tidak dapat dihubungi. Pertanyaan Anda tersimpan — coba kirim lagi.",
+      "retry": "Coba lagi",
+      "transcriptLoading": "Membuka konsultasi ini…",
+      "transcriptFailed": "Konsultasi ini gagal dibuka."
     },
     "disclaimer": {
       "label": "DATA PASIEN RAHASIA:",
@@ -130,6 +148,13 @@
     },
     "launcher": {
       "open": "Buka asisten AI"
+    },
+    "unread": {
+      "label": "{count, plural, other {# balasan belum dibaca}}"
+    },
+    "notification": {
+      "replyReady": "Asisten AI telah membalas.",
+      "open": "Buka"
     }
   },
   "aiProviders": {

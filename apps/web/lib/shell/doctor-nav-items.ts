@@ -31,6 +31,17 @@ export const DOCTOR_NAV_SECTIONS: AdminNavSection[] = [
         icon: 'event',
         ability: { action: 'read', subject: 'Appointment' },
       },
+      {
+        // The assistant is an OWN-scoped grant every doctor holds, so it
+        // belongs in this shell. It was previously reachable only through the
+        // floating launcher, and that pointed at the admin route.
+        href: '/doctor/ai-assistant',
+        label: 'AI Assistant',
+        labelKey: 'aiAssistant',
+        icon: 'psychology',
+        ability: { action: 'create', subject: 'ChatSession' },
+        badgeKey: 'aiAssistantUnread',
+      },
     ],
   },
 ];

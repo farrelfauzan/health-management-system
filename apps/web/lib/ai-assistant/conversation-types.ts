@@ -34,12 +34,29 @@ export type AssistantConversationMessage = {
   body: AssistantMessageBody;
 };
 
-export type ConversationMessage = UserConversationMessage | AssistantConversationMessage;
-
 export type ConversationReplyRequest = {
   text: string;
   promptId?: string;
 };
+
+/**
+ * A send that failed in transport, rendered in the thread rather than only in
+ * a toast. It carries the request that failed so retrying re-sends exactly
+ * what the user typed — losing someone's question because the network blinked
+ * is the part that feels broken.
+ *
+ * Policy failures (chat switched off) deliberately never become one of these:
+ * they are answered by `AssistantUnavailableNotice`, and offering "try again"
+ * for a decision the clinic made would be a lie.
+ */
+export type ErrorConversationMessage = {
+  id: string;
+  role: 'error';
+  request: ConversationReplyRequest;
+};
+
+export type ConversationMessage =
+  UserConversationMessage | AssistantConversationMessage | ErrorConversationMessage;
 
 export interface ConversationService {
   buildGreeting(input: { displayName: string }): AssistantMessageBody;
