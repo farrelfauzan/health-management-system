@@ -42,7 +42,7 @@ function renderPanel(canDelete = true): void {
     <QueryClientProvider client={queryClient}>
       <AppAbilityProvider rules={canDelete ? [{ action: 'delete', subject: 'ChatSession' }] : []}>
         <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
-          <AiAssistantProvider displayName="Dr. Sarah">
+          <AiAssistantProvider displayName="Dr. Sarah" assistantPath="/admin/ai-assistant">
             <AiAssistantPanel />
           </AiAssistantProvider>
         </NextIntlClientProvider>

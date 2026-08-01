@@ -10,6 +10,7 @@ import { TopBar } from '#components/server/shell/top-bar';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
+import { DOCTOR_ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { DOCTOR_NAV_SECTIONS } from '#lib/shell/doctor-nav-items';
 import { filterNavSections } from '#lib/shell/filter-nav-sections';
@@ -32,7 +33,7 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
 
   return (
     <AppAbilityProvider rules={rules}>
-      <AiAssistantProvider displayName={profile.displayName}>
+      <AiAssistantProvider displayName={profile.displayName} assistantPath={DOCTOR_ASSISTANT_PATH}>
         <SidebarProvider style={SIDEBAR_STYLE}>
           <AppSidebar sections={sections} homeHref="/doctor/dashboard" />
           <SidebarInset className="min-w-0">

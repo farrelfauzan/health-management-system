@@ -5,7 +5,6 @@ import { Button, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { useOptionalAiAssistant } from '#lib/ai-assistant/ai-assistant-context';
-import { ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
 
 type AiAssistantTopBarLinkProps = {
   label: string;
@@ -21,6 +20,9 @@ export function AiAssistantTopBarLink({ label }: AiAssistantTopBarLinkProps) {
   const t = useTranslations('aiAssistant.unread');
   const assistant = useOptionalAiAssistant();
   const unreadCount = assistant?.unreadCount ?? 0;
+  if (assistant?.assistantPath == null) {
+    return null;
+  }
   return (
     <Button
       asChild
@@ -28,7 +30,7 @@ export function AiAssistantTopBarLink({ label }: AiAssistantTopBarLinkProps) {
       size="icon"
       className="relative rounded-full text-muted-foreground"
     >
-      <Link href={ASSISTANT_PATH} aria-label={label}>
+      <Link href={assistant.assistantPath} aria-label={label}>
         <Icon name="smart_toy" size={22} />
         {unreadCount > 0 ? (
           <span

@@ -7,6 +7,7 @@ import { ChatLauncher } from '#components/client/ai-assistant/chat-launcher';
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
 import { AppSidebar } from '#components/client/shell/app-sidebar';
 import { TopBar } from '#components/server/shell/top-bar';
+import { ADMIN_ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { hasAnyRole } from '#lib/auth/access-token-claims';
 import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
@@ -41,7 +42,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         The conversation lives here, above the route, so it survives navigation
         — and so the sidebar entry and top bar can read its unread count.
       */}
-      <AiAssistantProvider displayName={profile.displayName}>
+      <AiAssistantProvider displayName={profile.displayName} assistantPath={ADMIN_ASSISTANT_PATH}>
         <SidebarProvider style={SIDEBAR_STYLE}>
           <AppSidebar sections={sections} />
           {/*

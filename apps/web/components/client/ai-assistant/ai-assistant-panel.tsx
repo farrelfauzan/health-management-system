@@ -92,7 +92,13 @@ export function AiAssistantPanel() {
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        breadcrumbs={[t('breadcrumbs.advanced'), t('breadcrumbs.assistant')]}
+        // "Advanced" is an admin sidebar section; the doctor shell has no such
+        // group, so naming one there would describe navigation that isn't there.
+        breadcrumbs={
+          assistant.assistantPath?.startsWith('/doctor')
+            ? [t('breadcrumbs.assistant')]
+            : [t('breadcrumbs.advanced'), t('breadcrumbs.assistant')]
+        }
       />
       {isUnavailable ? <AssistantUnavailableNotice isEnabled={availability.isEnabled} /> : null}
       <section className="flex h-[calc(100vh-16rem)] min-h-[540px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">

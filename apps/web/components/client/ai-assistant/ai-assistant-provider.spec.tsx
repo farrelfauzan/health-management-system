@@ -53,7 +53,7 @@ function renderProvider(): { rerender: () => void } {
   const buildTree = () => (
     <QueryClientProvider client={queryClient}>
       <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
-        <AiAssistantProvider displayName="Dr. Sarah">
+        <AiAssistantProvider displayName="Dr. Sarah" assistantPath="/admin/ai-assistant">
           <ConversationProbe />
         </AiAssistantProvider>
       </NextIntlClientProvider>

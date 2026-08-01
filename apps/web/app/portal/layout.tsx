@@ -24,6 +24,13 @@ export default async function PortalLayout({ children }: PortalLayoutProps) {
   const profile = resolveShellProfile(claims);
   return (
     <AppAbilityProvider rules={rules}>
+      {/*
+        No `assistantPath`: the portal has no assistant screen yet, so the
+        launcher stays hidden rather than sending a patient to a route the
+        request gate bounces. Giving patients one needs a patient-appropriate
+        prompt set first — the current prompts ("summarize today's patient
+        load", "draft discharge for Room 402") are written for clinicians.
+      */}
       <AiAssistantProvider displayName={profile.displayName} channel="PATIENT">
         <div className="flex min-h-svh flex-col bg-surface">
           <PortalTopBar profile={profile} />

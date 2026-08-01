@@ -7,6 +7,12 @@ import type { ConversationMessage } from '#lib/ai-assistant/conversation-types';
 import type { SendConversationMessageInput } from '#lib/ai-assistant/use-conversation';
 
 export type AiAssistantContextValue = {
+  /**
+   * Where this shell's assistant screen lives, or null when the shell has
+   * none. Entry points read it from here so they cannot link somewhere
+   * `proxy.ts` will bounce the current user away from.
+   */
+  assistantPath: string | null;
   messages: ConversationMessage[];
   isReplying: boolean;
   /** The session the thread is currently attached to, once one exists. */

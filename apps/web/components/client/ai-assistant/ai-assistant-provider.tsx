@@ -11,7 +11,6 @@ import {
   getChatControllerListSessionsV1QueryKey,
 } from '#lib/api/generated/ai-chatbot/ai-chatbot';
 import { AiAssistantContext } from '#lib/ai-assistant/ai-assistant-context';
-import { ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
 import type { ConsultationHistoryEntry } from '#lib/ai-assistant/consultation-history-entry';
 import { createChatConversationService } from '#lib/ai-assistant/create-chat-conversation-service';
 import { formatTurnTime } from '#lib/ai-assistant/format-turn-time';
@@ -23,6 +22,12 @@ import type { AppLocale } from '../../../i18n/config';
 type AiAssistantProviderProps = {
   displayName: string;
   channel?: 'PATIENT' | 'DOCTOR';
+  /**
+   * This shell's assistant route. Omitted by shells that have no assistant
+   * screen, which hides their entry points rather than pointing them at a
+   * route the request gate will bounce.
+   */
+  assistantPath?: string | null;
   children: ReactNode;
 };
 
@@ -47,6 +52,7 @@ type ConversationSource = {
 export function AiAssistantProvider({
   displayName,
   channel = 'DOCTOR',
+  assistantPath = null,
   children,
 }: AiAssistantProviderProps) {
   const locale = useLocale() as AppLocale;
@@ -54,7 +60,7 @@ export function AiAssistantProvider({
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const isAssistantRouteActive = pathname === ASSISTANT_PATH;
+  const isAssistantRouteActive = assistantPath !== null && pathname === assistantPath;
   const [source, setSource] = useState<ConversationSource>({ epoch: 0, sessionId: null });
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -88,9 +94,13 @@ export function AiAssistantProvider({
     }
     setUnreadCount((previous) => previous + 1);
     toast.info(replyReadyCopy, {
-      action: { label: openCopy, onClick: () => router.push(ASSISTANT_PATH) },
+      // No action when the shell has no assistant screen: a toast button that
+      // navigates somewhere the request gate rejects is worse than no button.
+      ...(assistantPath === null
+        ? {}
+        : { action: { label: openCopy, onClick: () => router.push(assistantPath) } }),
     });
-  }, [openCopy, replyReadyCopy, router]);
+  }, [assistantPath, openCopy, replyReadyCopy, router]);
   const service = useMemo(
     () =>
       createChatConversationService({
@@ -140,6 +150,7 @@ export function AiAssistantProvider({
   );
   const value = useMemo(
     () => ({
+      assistantPath,
       messages: conversation.messages,
       isReplying: conversation.isReplying,
       activeSessionId,
@@ -152,6 +163,7 @@ export function AiAssistantProvider({
       openConsultation,
     }),
     [
+      assistantPath,
       conversation.messages,
       conversation.isReplying,
       conversation.sendUserMessage,
