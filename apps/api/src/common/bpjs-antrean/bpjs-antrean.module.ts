@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { BpjsGatewayModule } from '../bpjs-gateway/bpjs-gateway.module';
+
 import { BpjsAntreanHttpClient } from './bpjs-antrean-http.client';
 import { BpjsAntreanInboundConfig } from './bpjs-antrean-inbound.config';
 
@@ -18,6 +20,7 @@ import { BpjsAntreanInboundConfig } from './bpjs-antrean-inbound.config';
  * each other.
  */
 @Module({
+  imports: [BpjsGatewayModule],
   providers: [BpjsAntreanHttpClient, BpjsAntreanInboundConfig],
   exports: [BpjsAntreanHttpClient, BpjsAntreanInboundConfig],
 })

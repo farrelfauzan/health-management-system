@@ -1,6 +1,8 @@
 import { createCipheriv, createHash } from 'node:crypto';
 
 import { ConfigService } from '@nestjs/config';
+
+import { BpjsProtocolCaptureService } from '../bpjs-gateway/bpjs-protocol-capture.service';
 import { Logger } from '@nestjs/common';
 
 import LZString from 'lz-string';
@@ -42,6 +44,10 @@ describe('BpjsAntreanHttpClient', () => {
   function buildClient(env: Record<string, string> = {}): BpjsAntreanHttpClient {
     return new BpjsAntreanHttpClient(
       new ConfigService({ BPJS_ANTREAN_RETRY_BASE_DELAY_MS: '1', ...env }),
+      // The UAT capture instrument (P14-T06), disabled — these cases assert
+      // the wire protocol, and a capture sink writing to disk is neither part
+      // of it nor allowed to affect it.
+      new BpjsProtocolCaptureService(new ConfigService({})),
     );
   }
 

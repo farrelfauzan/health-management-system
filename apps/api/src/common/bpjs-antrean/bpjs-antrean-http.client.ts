@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { BpjsGatewayTransport } from '../bpjs-gateway/bpjs-gateway.transport';
+import { BpjsProtocolCaptureService } from '../bpjs-gateway/bpjs-protocol-capture.service';
 import {
   BpjsGatewayFailureKind,
   BpjsGatewayResponseEnvelope,
-} from '../bpjs-gateway/bpjs-gateway.types';
+  BpjsGatewayCapturedExchange,} from '../bpjs-gateway/bpjs-gateway.types';
 import { BpjsPcareCodecError } from '../bpjs-pcare/bpjs-pcare-codec.error';
 import { decodeBpjsPcareResponse } from '../bpjs-pcare/decode-bpjs-pcare-response';
 import { BpjsAntreanError } from './bpjs-antrean.error';
@@ -56,7 +57,10 @@ export class BpjsAntreanHttpClient {
   private readonly adapterConfig: BpjsAntreanAdapterConfig;
   private readonly transport: BpjsGatewayTransport;
 
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private readonly captureService: BpjsProtocolCaptureService,
+  ) {
     this.adapterConfig = resolveBpjsAntreanAdapterConfig(configService);
     this.transport = new BpjsGatewayTransport(
       {
@@ -69,9 +73,31 @@ export class BpjsAntreanHttpClient {
         isServiceError: (caughtError) => caughtError instanceof BpjsAntreanError,
         describeFailure: (caughtError) =>
           caughtError instanceof BpjsAntreanError ? caughtError.code : 'an unrecognised failure',
+        captureExchange: (exchange) => this.recordExchange(exchange),
       },
       this.adapterConfig,
     );
+  }
+
+  /**
+   * Hands one exchange to the UAT capture instrument (P14-T06). A no-op
+   * unless `BPJS_PROTOCOL_CAPTURE_DIR` is configured, and deliberately not
+   * awaited — the call must not wait on a disk write.
+   */
+  private recordExchange(exchange: BpjsGatewayCapturedExchange): void {
+    void this.captureService.record({
+      service: 'BPJS Antrean',
+      direction: 'OUTBOUND',
+      method: exchange.method,
+      path: exchange.path,
+      statusCode: exchange.statusCode,
+      requestHeaders: exchange.requestHeaders,
+      requestBody: exchange.requestBody,
+      rawResponseBody: exchange.rawResponseBody,
+      decodedResponse: exchange.decodedResponse,
+      outcome: exchange.outcome,
+      failureReason: exchange.failureReason,
+    });
   }
 
   /** Sends one signed request and returns the decoded response envelope. */

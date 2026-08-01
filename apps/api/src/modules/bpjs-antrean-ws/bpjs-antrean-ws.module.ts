@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 
 import { AuditModule } from '../../common/audit/audit.module';
 import { BpjsAntreanModule } from '../../common/bpjs-antrean/bpjs-antrean.module';
+import { BpjsGatewayModule } from '../../common/bpjs-gateway/bpjs-gateway.module';
 import { PrivacyNoticeModule } from '../../common/privacy-notice/privacy-notice.module';
 import { AppointmentManagementModule } from '../appointment-management/appointment-management.module';
 import { AuthModule } from '../auth/auth.module';
 import { BpjsAntreanIntegrationModule } from '../bpjs-antrean/bpjs-antrean-integration.module';
 import { BpjsPcareIntegrationModule } from '../bpjs-pcare/bpjs-pcare-integration.module';
 import { PatientManagementModule } from '../patient-management/patient-management.module';
+import { BpjsAntreanInboundCaptureInterceptor } from './controller/bpjs-antrean-inbound-capture.interceptor';
 import { BpjsAntreanWsController } from './controller/bpjs-antrean-ws.controller';
 import { BpjsAntreanInboundRateLimitGuard } from './guard/bpjs-antrean-inbound-rate-limit.guard';
 import { BpjsAntreanInboundTokenGuard } from './guard/bpjs-antrean-inbound-token.guard';
@@ -40,6 +42,7 @@ import { BpjsAntreanSystemActorService } from './service/bpjs-antrean-system-act
     AuditModule,
     AuthModule,
     BpjsAntreanModule,
+    BpjsGatewayModule,
     PrivacyNoticeModule,
     PatientManagementModule,
     AppointmentManagementModule,
@@ -48,6 +51,7 @@ import { BpjsAntreanSystemActorService } from './service/bpjs-antrean-system-act
   ],
   controllers: [BpjsAntreanWsController],
   providers: [
+    BpjsAntreanInboundCaptureInterceptor,
     BpjsAntreanInboundRateLimiter,
     BpjsAntreanInboundAuditService,
     BpjsAntreanInboundTokenService,

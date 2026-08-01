@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { BpjsGatewayModule } from '../bpjs-gateway/bpjs-gateway.module';
+
 import { BpjsPcareHttpClient } from './bpjs-pcare-http.client';
 
 /**
@@ -8,6 +10,7 @@ import { BpjsPcareHttpClient } from './bpjs-pcare-http.client';
  * signing, and the response codec never leave this directory.
  */
 @Module({
+  imports: [BpjsGatewayModule],
   providers: [BpjsPcareHttpClient],
   exports: [BpjsPcareHttpClient],
 })

@@ -5,7 +5,9 @@ import { Test } from '@nestjs/testing';
 import { ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 
+import { BpjsProtocolCaptureService } from '../../common/bpjs-gateway/bpjs-protocol-capture.service';
 import { BpjsAntreanConfigService } from '../bpjs-antrean/service/bpjs-antrean-config.service';
+import { BpjsAntreanInboundCaptureInterceptor } from './controller/bpjs-antrean-inbound-capture.interceptor';
 import { BpjsAntreanWsController } from './controller/bpjs-antrean-ws.controller';
 import { BpjsAntreanInboundRateLimitGuard } from './guard/bpjs-antrean-inbound-rate-limit.guard';
 import { BpjsAntreanInboundTokenGuard } from './guard/bpjs-antrean-inbound-token.guard';
@@ -70,6 +72,11 @@ describe('BPJS Antrean inbound web services integration', () => {
       controllers: [BpjsAntreanWsController],
       providers: [
         Reflector,
+        // The UAT capture instrument (P14-T06) with no directory configured,
+        // which is its production state: the interceptor must be inert and
+        // must not change a single response in this suite.
+        BpjsProtocolCaptureService,
+        BpjsAntreanInboundCaptureInterceptor,
         BpjsAntreanInboundConfig,
         BpjsAntreanInboundRateLimiter,
         BpjsAntreanInboundTokenService,
