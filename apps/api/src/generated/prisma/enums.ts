@@ -53,7 +53,11 @@ export const AuditAction = {
   AI_PROVIDER_CONFIG_UPDATED: 'AI_PROVIDER_CONFIG_UPDATED',
   AI_PROVIDER_CONFIG_ACTIVATED: 'AI_PROVIDER_CONFIG_ACTIVATED',
   AI_PROVIDER_CONFIG_DELETED: 'AI_PROVIDER_CONFIG_DELETED',
-  AI_PROVIDER_CONNECTION_TESTED: 'AI_PROVIDER_CONNECTION_TESTED'
+  AI_PROVIDER_CONNECTION_TESTED: 'AI_PROVIDER_CONNECTION_TESTED',
+  BPJS_ANTREAN_CONFIG_CREATED: 'BPJS_ANTREAN_CONFIG_CREATED',
+  BPJS_ANTREAN_CONFIG_UPDATED: 'BPJS_ANTREAN_CONFIG_UPDATED',
+  BPJS_ANTREAN_CONFIG_DELETED: 'BPJS_ANTREAN_CONFIG_DELETED',
+  BPJS_ANTREAN_CONNECTION_TESTED: 'BPJS_ANTREAN_CONNECTION_TESTED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -115,6 +119,14 @@ export const BpjsPcareEnvironment = {
 } as const
 
 export type BpjsPcareEnvironment = (typeof BpjsPcareEnvironment)[keyof typeof BpjsPcareEnvironment]
+
+
+export const BpjsAntreanEnvironment = {
+  DEVELOPMENT: 'DEVELOPMENT',
+  PRODUCTION: 'PRODUCTION'
+} as const
+
+export type BpjsAntreanEnvironment = (typeof BpjsAntreanEnvironment)[keyof typeof BpjsAntreanEnvironment]
 
 
 export const PatientStatus = {

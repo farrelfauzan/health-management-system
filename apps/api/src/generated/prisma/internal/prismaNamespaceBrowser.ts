@@ -95,6 +95,7 @@ export const ModelName = {
   SatusehatSubmission: 'SatusehatSubmission',
   AuditLog: 'AuditLog',
   BpjsPcareConfig: 'BpjsPcareConfig',
+  BpjsAntreanConfig: 'BpjsAntreanConfig',
   BpjsReferenceItem: 'BpjsReferenceItem',
   BpjsEligibilityCheck: 'BpjsEligibilityCheck',
   BpjsSubmission: 'BpjsSubmission',
@@ -827,6 +828,29 @@ export const BpjsPcareConfigScalarFieldEnum = {
 } as const
 
 export type BpjsPcareConfigScalarFieldEnum = (typeof BpjsPcareConfigScalarFieldEnum)[keyof typeof BpjsPcareConfigScalarFieldEnum]
+
+
+export const BpjsAntreanConfigScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  environment: 'environment',
+  consId: 'consId',
+  kdProviderPpk: 'kdProviderPpk',
+  secretKeyCiphertext: 'secretKeyCiphertext',
+  secretKeyLast4: 'secretKeyLast4',
+  userKeyCiphertext: 'userKeyCiphertext',
+  userKeyLast4: 'userKeyLast4',
+  inboundUsername: 'inboundUsername',
+  inboundPasswordHash: 'inboundPasswordHash',
+  credentialKeyVersion: 'credentialKeyVersion',
+  isActive: 'isActive',
+  lastTestedAt: 'lastTestedAt',
+  lastTestResult: 'lastTestResult',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsAntreanConfigScalarFieldEnum = (typeof BpjsAntreanConfigScalarFieldEnum)[keyof typeof BpjsAntreanConfigScalarFieldEnum]
 
 
 export const BpjsReferenceItemScalarFieldEnum = {

@@ -1,4 +1,5 @@
 import type {
+  BpjsAntreanConfigView,
   BpjsMappingOverviewView,
   BpjsMonthlyReportView,
   BpjsPcareConfigView,
@@ -22,6 +23,10 @@ import {
   getBpjsReportControllerGetMonthlyReportV1QueryKey,
   getBpjsSubmissionControllerListSubmissionsV1QueryKey,
 } from '#lib/api/generated/bpjs-pcare/bpjs-pcare';
+import {
+  bpjsAntreanConfigControllerGetConfigV1,
+  getBpjsAntreanConfigControllerGetConfigV1QueryKey,
+} from '#lib/api/generated/bpjs-antrean/bpjs-antrean';
 import type { BpjsSubmissionControllerListSubmissionsV1Params } from '#lib/api/generated/model/bpjsSubmissionControllerListSubmissionsV1Params';
 import {
   getSatusehatSubmissionControllerListSubmissionsV1QueryKey,
@@ -35,6 +40,16 @@ export function useBpjsConfig(enabled = true) {
     queryKey: getBpjsPcareConfigControllerGetConfigV1QueryKey(),
     queryFn: (signal) => bpjsPcareConfigControllerGetConfigV1(signal),
     errorMessage: 'Unable to load the BPJS PCare configuration.',
+    enabled,
+    options: { retry: false },
+  });
+}
+
+export function useBpjsAntreanConfig(enabled = true) {
+  return useApiQuery<BpjsAntreanConfigView>({
+    queryKey: getBpjsAntreanConfigControllerGetConfigV1QueryKey(),
+    queryFn: (signal) => bpjsAntreanConfigControllerGetConfigV1(signal),
+    errorMessage: 'Unable to load the BPJS Antrean configuration.',
     enabled,
     options: { retry: false },
   });

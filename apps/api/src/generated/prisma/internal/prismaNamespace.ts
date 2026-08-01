@@ -428,6 +428,7 @@ export const ModelName = {
   SatusehatSubmission: 'SatusehatSubmission',
   AuditLog: 'AuditLog',
   BpjsPcareConfig: 'BpjsPcareConfig',
+  BpjsAntreanConfig: 'BpjsAntreanConfig',
   BpjsReferenceItem: 'BpjsReferenceItem',
   BpjsEligibilityCheck: 'BpjsEligibilityCheck',
   BpjsSubmission: 'BpjsSubmission',
@@ -450,7 +451,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3710,6 +3711,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BpjsAntreanConfig: {
+      payload: Prisma.$BpjsAntreanConfigPayload<ExtArgs>
+      fields: Prisma.BpjsAntreanConfigFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BpjsAntreanConfigFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BpjsAntreanConfigFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload>
+        }
+        findFirst: {
+          args: Prisma.BpjsAntreanConfigFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BpjsAntreanConfigFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload>
+        }
+        findMany: {
+          args: Prisma.BpjsAntreanConfigFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload>[]
+        }
+        create: {
+          args: Prisma.BpjsAntreanConfigCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload>
+        }
+        createMany: {
+          args: Prisma.BpjsAntreanConfigCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BpjsAntreanConfigCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload>[]
+        }
+        delete: {
+          args: Prisma.BpjsAntreanConfigDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload>
+        }
+        update: {
+          args: Prisma.BpjsAntreanConfigUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload>
+        }
+        deleteMany: {
+          args: Prisma.BpjsAntreanConfigDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BpjsAntreanConfigUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BpjsAntreanConfigUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload>[]
+        }
+        upsert: {
+          args: Prisma.BpjsAntreanConfigUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsAntreanConfigPayload>
+        }
+        aggregate: {
+          args: Prisma.BpjsAntreanConfigAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBpjsAntreanConfig>
+        }
+        groupBy: {
+          args: Prisma.BpjsAntreanConfigGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsAntreanConfigGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BpjsAntreanConfigCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsAntreanConfigCountAggregateOutputType> | number
+        }
+      }
+    }
     BpjsReferenceItem: {
       payload: Prisma.$BpjsReferenceItemPayload<ExtArgs>
       fields: Prisma.BpjsReferenceItemFieldRefs
@@ -4976,6 +5051,29 @@ export const BpjsPcareConfigScalarFieldEnum = {
 export type BpjsPcareConfigScalarFieldEnum = (typeof BpjsPcareConfigScalarFieldEnum)[keyof typeof BpjsPcareConfigScalarFieldEnum]
 
 
+export const BpjsAntreanConfigScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  environment: 'environment',
+  consId: 'consId',
+  kdProviderPpk: 'kdProviderPpk',
+  secretKeyCiphertext: 'secretKeyCiphertext',
+  secretKeyLast4: 'secretKeyLast4',
+  userKeyCiphertext: 'userKeyCiphertext',
+  userKeyLast4: 'userKeyLast4',
+  inboundUsername: 'inboundUsername',
+  inboundPasswordHash: 'inboundPasswordHash',
+  credentialKeyVersion: 'credentialKeyVersion',
+  isActive: 'isActive',
+  lastTestedAt: 'lastTestedAt',
+  lastTestResult: 'lastTestResult',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsAntreanConfigScalarFieldEnum = (typeof BpjsAntreanConfigScalarFieldEnum)[keyof typeof BpjsAntreanConfigScalarFieldEnum]
+
+
 export const BpjsReferenceItemScalarFieldEnum = {
   id: 'id',
   catalog: 'catalog',
@@ -5687,6 +5785,20 @@ export type ListEnumBpjsPcareEnvironmentFieldRefInput<$PrismaModel> = FieldRefIn
 
 
 /**
+ * Reference to a field of type 'BpjsAntreanEnvironment'
+ */
+export type EnumBpjsAntreanEnvironmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsAntreanEnvironment'>
+    
+
+
+/**
+ * Reference to a field of type 'BpjsAntreanEnvironment[]'
+ */
+export type ListEnumBpjsAntreanEnvironmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsAntreanEnvironment[]'>
+    
+
+
+/**
  * Reference to a field of type 'BpjsReferenceCatalog'
  */
 export type EnumBpjsReferenceCatalogFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BpjsReferenceCatalog'>
@@ -5965,6 +6077,7 @@ export type GlobalOmitConfig = {
   satusehatSubmission?: Prisma.SatusehatSubmissionOmit
   auditLog?: Prisma.AuditLogOmit
   bpjsPcareConfig?: Prisma.BpjsPcareConfigOmit
+  bpjsAntreanConfig?: Prisma.BpjsAntreanConfigOmit
   bpjsReferenceItem?: Prisma.BpjsReferenceItemOmit
   bpjsEligibilityCheck?: Prisma.BpjsEligibilityCheckOmit
   bpjsSubmission?: Prisma.BpjsSubmissionOmit

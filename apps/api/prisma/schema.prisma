@@ -46,6 +46,10 @@ enum AuditAction {
   AI_PROVIDER_CONFIG_ACTIVATED
   AI_PROVIDER_CONFIG_DELETED
   AI_PROVIDER_CONNECTION_TESTED
+  BPJS_ANTREAN_CONFIG_CREATED
+  BPJS_ANTREAN_CONFIG_UPDATED
+  BPJS_ANTREAN_CONFIG_DELETED
+  BPJS_ANTREAN_CONNECTION_TESTED
 }
 
 enum BpjsSubmissionType {
@@ -86,6 +90,17 @@ enum BpjsReferenceCatalog {
 }
 
 enum BpjsPcareEnvironment {
+  DEVELOPMENT
+  PRODUCTION
+}
+
+/// Environment selector for the BPJS Antrean service (P14-T03). A separate
+/// enum from BpjsPcareEnvironment rather than a shared one: the two services
+/// are separately issued and separately revoked, so a clinic can run PCare
+/// against production while antrean is still pointed at the development
+/// gateway. Whether a development environment is issued for antrean at all is
+/// spike question Q11 (docs/post-mvp/bpjs-antrean-spike.md).
+enum BpjsAntreanEnvironment {
   DEVELOPMENT
   PRODUCTION
 }
@@ -1597,6 +1612,47 @@ model BpjsPcareConfig {
   updatedAt               DateTime             @updatedAt @map("updated_at")
 
   @@map("bpjs_pcare_configs")
+}
+
+/// BPJS Antrean Online (Mobile JKN) bridging credentials for one facility
+/// (P14-T03). A separate row from BpjsPcareConfig, not a column on it: BPJS
+/// issues the Antrean service its own consumer ID, secret key, and user key
+/// through a separate branch-office request, and revokes them separately —
+/// losing one credential set must not disable the other (ADR D-023).
+///
+/// The outbound half (`consId`/`secretKey`/`userKey`) is what HMS signs its
+/// calls to BPJS with. The inbound half (`inboundUsername`/
+/// `inboundPasswordHash`) is the credential pair BPJS presents to the
+/// facility's own token endpoint; it is nullable because it is agreed at UAT,
+/// long after outbound credentials are first stored, and the endpoint that
+/// consumes it is P14-T04. The password is hashed, never sealed — HMS only
+/// ever verifies it, and must not be able to read it back.
+///
+/// Secrets are sealed with the same BpjsCredentialCryptoService under
+/// BPJS_CREDENTIAL_ENCRYPTION_KEY as the PCare row, so one rotation runbook
+/// covers both. `facilityId` is null on the single-tenant deployment — Postgres
+/// unique indexes treat NULLs as distinct, so a hand-written partial unique
+/// index in the migration is what actually keeps that row a singleton.
+model BpjsAntreanConfig {
+  id                   String                 @id @default(uuid()) @db.Uuid
+  facilityId           String?                @unique @map("facility_id") @db.Uuid
+  environment          BpjsAntreanEnvironment
+  consId               String                 @map("cons_id")
+  kdProviderPpk        String                 @map("kd_provider_ppk")
+  secretKeyCiphertext  String                 @map("secret_key_ciphertext")
+  secretKeyLast4       String                 @map("secret_key_last4")
+  userKeyCiphertext    String                 @map("user_key_ciphertext")
+  userKeyLast4         String                 @map("user_key_last4")
+  inboundUsername      String?                @map("inbound_username")
+  inboundPasswordHash  String?                @map("inbound_password_hash")
+  credentialKeyVersion Int                    @default(1) @map("credential_key_version")
+  isActive             Boolean                @default(true) @map("is_active")
+  lastTestedAt         DateTime?              @map("last_tested_at")
+  lastTestResult       String?                @map("last_test_result")
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+
+  @@map("bpjs_antrean_configs")
 }
 
 /// One row of a BPJS PCare reference catalog (P11-T03). The design doc lists
