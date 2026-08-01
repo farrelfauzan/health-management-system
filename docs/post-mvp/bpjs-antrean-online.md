@@ -148,7 +148,7 @@ HMS cannot write HFIS. So: a settings screen that reads `ref/poli` and `ref/dokt
 3. A deployment with a public IP, TLS, and someone accountable for its uptime.
 4. `P14-T01`, which is the only piece that can be built today and should be, whenever a second poli makes the clinic-wide roll awkward.
 
-Until 1–3 exist, the correct state of this feature is this document.
+Until 1–3 exist, the correct state of this feature is this document plus [bpjs-antrean-spike.md](./bpjs-antrean-spike.md), which stages `P14-T02` — the credential intake to run against 1–3, and the question register the spike answers once they are met. `P14-T01` shipped; it never depended on any of them.
 
 ## 8. Sources
 
