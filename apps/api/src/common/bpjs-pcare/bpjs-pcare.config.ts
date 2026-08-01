@@ -1,14 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 
+import { resolveBpjsGatewayAdapterConfig } from '../bpjs-gateway/resolve-bpjs-gateway-adapter-config';
 import { BpjsPcareAdapterConfig } from './bpjs-pcare.types';
 
+const SERVICE_LABEL = 'BPJS PCare';
+const ENV_PREFIX = 'BPJS_PCARE';
 const DEFAULT_DEVELOPMENT_BASE_URL = 'https://apijkn-dev.bpjs-kesehatan.go.id/pcare-rest-dev';
 const DEFAULT_PRODUCTION_BASE_URL = 'https://new-api.bpjs-kesehatan.go.id/pcare-rest-v3.0';
-const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
-const DEFAULT_MAX_RETRY_ATTEMPTS = 2;
-const DEFAULT_RETRY_BASE_DELAY_MS = 250;
-const DEFAULT_CIRCUIT_BREAKER_FAILURE_THRESHOLD = 5;
-const DEFAULT_CIRCUIT_BREAKER_OPEN_DURATION_MS = 30_000;
 const DEFAULT_WORKER_POLL_INTERVAL_MS = 15_000;
 const DEFAULT_SUBMISSION_MAX_ATTEMPTS = 8;
 const DEFAULT_SUBMISSION_RETRY_BASE_DELAY_MS = 60_000;
@@ -18,36 +16,14 @@ function readOptionalValue(configService: ConfigService, key: string): string | 
   return rawValue === undefined || rawValue === '' ? undefined : rawValue;
 }
 
-function readBaseUrl(configService: ConfigService, key: string, fallback: string): string {
-  const rawValue = readOptionalValue(configService, key) ?? fallback;
-  try {
-    new URL(rawValue);
-  } catch {
-    throw new Error(`BPJS PCare configuration error: ${key} must be a valid URL`);
-  }
-  return rawValue.replace(/\/+$/, '');
-}
-
-function readNonNegativeInteger(
-  configService: ConfigService,
-  key: string,
-  fallback: number,
-): number {
+function readPositiveInteger(configService: ConfigService, key: string, fallback: number): number {
   const rawValue = readOptionalValue(configService, key);
   if (rawValue === undefined) {
     return fallback;
   }
   const parsed = Number(rawValue);
-  if (!Number.isInteger(parsed) || parsed < 0) {
-    throw new Error(`BPJS PCare configuration error: ${key} must be a non-negative integer`);
-  }
-  return parsed;
-}
-
-function readPositiveInteger(configService: ConfigService, key: string, fallback: number): number {
-  const parsed = readNonNegativeInteger(configService, key, fallback);
-  if (parsed === 0) {
-    throw new Error(`BPJS PCare configuration error: ${key} must be a positive integer`);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    throw new Error(`${SERVICE_LABEL} configuration error: ${key} must be a positive integer`);
   }
   return parsed;
 }
@@ -62,52 +38,21 @@ function readBooleanFlag(configService: ConfigService, key: string, fallback: bo
 
 /**
  * Resolves the BPJS PCare adapter configuration from environment values at
- * startup. Unlike SATUSEHAT, no credentials live here — they are per-facility
- * database rows (`BpjsPcareConfig`), so the environment only carries base
- * URLs and the resilience policy. The development base URL default follows
- * the current apijkn-dev convention, but BPJS has issued differently-shaped
- * dev hosts over time (ADR D-022) — confirm it against the facility's
- * credential issuance letter and override when it differs.
+ * startup. The hosts and the resilience policy come from the shared gateway
+ * resolver — every BPJS service enforces the same policy; what stays here is
+ * the submission worker, which is PCare's alone (P11-T05).
  */
 export function resolveBpjsPcareAdapterConfig(
   configService: ConfigService,
 ): BpjsPcareAdapterConfig {
   return {
-    developmentBaseUrl: readBaseUrl(
+    ...resolveBpjsGatewayAdapterConfig({
       configService,
-      'BPJS_PCARE_DEVELOPMENT_BASE_URL',
-      DEFAULT_DEVELOPMENT_BASE_URL,
-    ),
-    productionBaseUrl: readBaseUrl(
-      configService,
-      'BPJS_PCARE_PRODUCTION_BASE_URL',
-      DEFAULT_PRODUCTION_BASE_URL,
-    ),
-    requestTimeoutMs: readPositiveInteger(
-      configService,
-      'BPJS_PCARE_REQUEST_TIMEOUT_MS',
-      DEFAULT_REQUEST_TIMEOUT_MS,
-    ),
-    maxRetryAttempts: readNonNegativeInteger(
-      configService,
-      'BPJS_PCARE_MAX_RETRY_ATTEMPTS',
-      DEFAULT_MAX_RETRY_ATTEMPTS,
-    ),
-    retryBaseDelayMs: readPositiveInteger(
-      configService,
-      'BPJS_PCARE_RETRY_BASE_DELAY_MS',
-      DEFAULT_RETRY_BASE_DELAY_MS,
-    ),
-    circuitBreakerFailureThreshold: readPositiveInteger(
-      configService,
-      'BPJS_PCARE_CIRCUIT_BREAKER_FAILURE_THRESHOLD',
-      DEFAULT_CIRCUIT_BREAKER_FAILURE_THRESHOLD,
-    ),
-    circuitBreakerOpenDurationMs: readPositiveInteger(
-      configService,
-      'BPJS_PCARE_CIRCUIT_BREAKER_OPEN_DURATION_MS',
-      DEFAULT_CIRCUIT_BREAKER_OPEN_DURATION_MS,
-    ),
+      serviceLabel: SERVICE_LABEL,
+      envPrefix: ENV_PREFIX,
+      developmentBaseUrlFallback: DEFAULT_DEVELOPMENT_BASE_URL,
+      productionBaseUrlFallback: DEFAULT_PRODUCTION_BASE_URL,
+    }),
     workerEnabled: readBooleanFlag(configService, 'BPJS_WORKER_ENABLED', true),
     workerPollIntervalMs: readPositiveInteger(
       configService,

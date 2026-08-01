@@ -120,7 +120,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('satusehat.link:any', 'Satusehat', 'link', 'ANY', 'Link patients and practitioners to SATUSEHAT IHS records'),
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
-    ('bpjs.config.manage:any', 'BpjsConfig', 'manage', 'ANY', 'Manage BPJS PCare bridging credentials and connection settings'),
+    ('bpjs.config.manage:any', 'BpjsConfig', 'manage', 'ANY', 'Manage BPJS bridging credentials and connection settings (PCare and Antrean Online)'),
     ('bpjs.reference.sync:any', 'BpjsReference', 'sync', 'ANY', 'Sync BPJS PCare reference catalogs and run keyword search-and-cache lookups'),
     ('bpjs.reference.read:any', 'BpjsReference', 'read', 'ANY', 'Read the synced BPJS PCare reference catalogs and their sync status'),
     ('bpjs.mapping.manage:any', 'BpjsMapping', 'manage', 'ANY', 'Map doctors, specialties, and medications to BPJS PCare codes'),

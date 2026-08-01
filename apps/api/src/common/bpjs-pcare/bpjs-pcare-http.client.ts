@@ -1,47 +1,56 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { BpjsPcareCircuitBreaker } from './bpjs-pcare-circuit-breaker';
+import { BpjsGatewayTransport } from '../bpjs-gateway/bpjs-gateway.transport';
+import {
+  BpjsGatewayFailureKind,
+  BpjsGatewayResponseEnvelope,
+} from '../bpjs-gateway/bpjs-gateway.types';
 import { BpjsPcareCodecError } from './bpjs-pcare-codec.error';
 import { BpjsPcareError } from './bpjs-pcare.error';
 import { resolveBpjsPcareAdapterConfig } from './bpjs-pcare.config';
 import {
   BpjsPcareAdapterConfig,
   BpjsPcareConnection,
-  BpjsPcareHttpMethod,
+  BpjsPcareErrorCode,
   BpjsPcareRequest,
   BpjsPcareResponseEnvelope,
 } from './bpjs-pcare.types';
 import { buildBpjsPcareHeaders } from './build-bpjs-pcare-headers';
 import { decodeBpjsPcareResponse } from './decode-bpjs-pcare-response';
-import { mapBpjsPcareTransportError } from './map-bpjs-pcare-transport-error';
 
-const IDEMPOTENT_METHODS: readonly BpjsPcareHttpMethod[] = ['GET', 'PUT', 'DELETE'];
+const SERVICE_LABEL = 'BPJS PCare';
 const RETRYABLE_ERROR_CODES: readonly string[] = ['BPJS_PCARE_TIMEOUT', 'BPJS_PCARE_UNAVAILABLE'];
-const SUCCESS_META_DATA_CODES: readonly number[] = [200, 201];
 
 /**
- * Signed HTTP client for the BPJS PCare REST v3.0 gateway. Owns the
- * cross-cutting resilience policy — request timeout, exponential-backoff
- * retries for idempotent requests only, and a circuit breaker over transport
- * failures — plus the protocol coupling the codec pins down: each attempt
- * signs with a fresh timestamp and decodes the response with that same
- * timestamp, because the response AES key derives from it (ADR D-022).
- * Credentials arrive per call in {@link BpjsPcareConnection} — they are
- * per-facility database rows, not deployment configuration.
+ * Signed HTTP client for the BPJS PCare REST v3.0 gateway. Contributes the
+ * three things that are PCare's own — the base URLs, the five-header signing
+ * scheme, and the `BPJS_PCARE_*` error vocabulary — and delegates the request
+ * timeout, retry policy, circuit breaker, and envelope reading to the shared
+ * {@link BpjsGatewayTransport}. Credentials arrive per call in
+ * {@link BpjsPcareConnection} — they are per-facility database rows, not
+ * deployment configuration.
  */
 @Injectable()
 export class BpjsPcareHttpClient {
-  private readonly logger = new Logger(BpjsPcareHttpClient.name);
   private readonly adapterConfig: BpjsPcareAdapterConfig;
-  private readonly circuitBreaker: BpjsPcareCircuitBreaker;
+  private readonly transport: BpjsGatewayTransport;
 
   constructor(configService: ConfigService) {
     this.adapterConfig = resolveBpjsPcareAdapterConfig(configService);
-    this.circuitBreaker = new BpjsPcareCircuitBreaker({
-      failureThreshold: this.adapterConfig.circuitBreakerFailureThreshold,
-      openDurationMs: this.adapterConfig.circuitBreakerOpenDurationMs,
-    });
+    this.transport = new BpjsGatewayTransport(
+      {
+        serviceLabel: SERVICE_LABEL,
+        createError: (kind, message, upstreamStatusCode) =>
+          new BpjsPcareError(toPcareErrorCode(kind), message, upstreamStatusCode),
+        isRetryableError: (caughtError) =>
+          caughtError instanceof BpjsPcareError && RETRYABLE_ERROR_CODES.includes(caughtError.code),
+        isServiceError: (caughtError) => caughtError instanceof BpjsPcareError,
+        describeFailure: (caughtError) =>
+          caughtError instanceof BpjsPcareError ? caughtError.code : 'an unrecognised failure',
+      },
+      this.adapterConfig,
+    );
   }
 
   /** Sends one signed request and returns the decoded response envelope. */
@@ -49,160 +58,20 @@ export class BpjsPcareHttpClient {
     connection: BpjsPcareConnection,
     request: BpjsPcareRequest,
   ): Promise<BpjsPcareResponseEnvelope> {
-    const maxAttempts = this.resolveMaxAttempts(request.method);
-    let lastError: BpjsPcareError | null = null;
-    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-      if (attempt > 1) {
-        await this.delayBeforeRetry(attempt);
-      }
-      try {
-        return await this.executeRequest(connection, request);
-      } catch (caughtError) {
-        if (!this.isRetryableError(caughtError)) {
-          throw caughtError;
-        }
-        lastError = caughtError as BpjsPcareError;
-        this.logger.warn(
-          `BPJS PCare ${request.method} attempt ${attempt}/${maxAttempts} failed with ${lastError.code}`,
-        );
-      }
-    }
-    throw lastError as BpjsPcareError;
-  }
-
-  private resolveMaxAttempts(method: BpjsPcareHttpMethod): number {
-    return IDEMPOTENT_METHODS.includes(method) ? this.adapterConfig.maxRetryAttempts + 1 : 1;
-  }
-
-  private isRetryableError(caughtError: unknown): boolean {
-    return (
-      caughtError instanceof BpjsPcareError && RETRYABLE_ERROR_CODES.includes(caughtError.code)
-    );
-  }
-
-  private async delayBeforeRetry(attempt: number): Promise<void> {
-    const delayMs = this.adapterConfig.retryBaseDelayMs * 2 ** (attempt - 2);
-    await new Promise((resolve) => setTimeout(resolve, delayMs));
-  }
-
-  private async executeRequest(
-    connection: BpjsPcareConnection,
-    request: BpjsPcareRequest,
-  ): Promise<BpjsPcareResponseEnvelope> {
-    if (!this.circuitBreaker.canExecute()) {
-      throw new BpjsPcareError(
-        'BPJS_PCARE_CIRCUIT_OPEN',
-        'BPJS PCare circuit breaker is open after repeated upstream failures',
-      );
-    }
-    try {
-      const result = await this.performRequest(connection, request);
-      this.circuitBreaker.recordSuccess();
-      return result;
-    } catch (caughtError) {
-      if (this.isRetryableError(caughtError)) {
-        this.circuitBreaker.recordFailure();
-      } else if (caughtError instanceof BpjsPcareError) {
-        this.circuitBreaker.recordSuccess();
-      }
-      throw caughtError;
-    }
-  }
-
-  private async performRequest(
-    connection: BpjsPcareConnection,
-    request: BpjsPcareRequest,
-  ): Promise<BpjsPcareResponseEnvelope> {
-    const timestampSeconds = Math.floor(Date.now() / 1000);
-    const response = await this.performFetch(connection, request, timestampSeconds);
-    return this.parseResponse(connection, response, timestampSeconds);
-  }
-
-  private async performFetch(
-    connection: BpjsPcareConnection,
-    request: BpjsPcareRequest,
-    timestampSeconds: number,
-  ): Promise<Response> {
-    const signedHeaders = buildBpjsPcareHeaders({
-      credentials: connection.credentials,
-      timestampSeconds,
+    return this.transport.sendRequest({
+      request,
+      baseUrl: this.resolveBaseUrl(connection),
+      buildHeaders: (timestampSeconds) =>
+        buildBpjsPcareHeaders({ credentials: connection.credentials, timestampSeconds }),
+      decodeEnvelope: ({ rawBody, timestampSeconds, statusCode }) =>
+        this.decodeEnvelope(connection, rawBody, timestampSeconds, statusCode),
     });
-    const headers: Record<string, string> = { ...signedHeaders, Accept: 'application/json' };
-    const hasBody = request.body !== undefined;
-    if (hasBody) {
-      headers['Content-Type'] = 'application/json';
-    }
-    try {
-      return await fetch(this.buildRequestUrl(connection, request), {
-        method: request.method,
-        headers,
-        ...(hasBody ? { body: JSON.stringify(request.body) } : {}),
-        signal: AbortSignal.timeout(this.adapterConfig.requestTimeoutMs),
-      });
-    } catch (caughtError) {
-      throw mapBpjsPcareTransportError(caughtError);
-    }
   }
 
-  private buildRequestUrl(connection: BpjsPcareConnection, request: BpjsPcareRequest): string {
-    const baseUrl =
-      connection.environment === 'PRODUCTION'
-        ? this.adapterConfig.productionBaseUrl
-        : this.adapterConfig.developmentBaseUrl;
-    const path =
-      request.path === '' || request.path.startsWith('/') ? request.path : `/${request.path}`;
-    return `${baseUrl}${path}`;
-  }
-
-  private async parseResponse(
-    connection: BpjsPcareConnection,
-    response: Response,
-    timestampSeconds: number,
-  ): Promise<BpjsPcareResponseEnvelope> {
-    if (response.status === 401 || response.status === 403) {
-      throw new BpjsPcareError(
-        'BPJS_PCARE_UNAUTHORIZED',
-        `BPJS PCare rejected the request credentials (HTTP ${response.status})`,
-        response.status,
-      );
-    }
-    if (response.status === 429 || response.status >= 500) {
-      throw new BpjsPcareError(
-        'BPJS_PCARE_UNAVAILABLE',
-        `BPJS PCare upstream failure (HTTP ${response.status})`,
-        response.status,
-      );
-    }
-    const rawBody = await this.readResponseBody(response);
-    const envelope = this.decodeEnvelope(connection, rawBody, timestampSeconds, response.status);
-    if (!response.ok) {
-      throw new BpjsPcareError(
-        'BPJS_PCARE_REQUEST_REJECTED',
-        `BPJS PCare rejected the request (HTTP ${response.status}: ${envelope.metaData.message})`,
-        response.status,
-      );
-    }
-    const normalisedCode = this.normaliseMetaDataCode(envelope.metaData.code);
-    if (normalisedCode === null || !SUCCESS_META_DATA_CODES.includes(normalisedCode)) {
-      throw new BpjsPcareError(
-        'BPJS_PCARE_REQUEST_REJECTED',
-        `BPJS PCare rejected the request (code ${String(envelope.metaData.code)}: ${envelope.metaData.message})`,
-        response.status,
-      );
-    }
-    return envelope;
-  }
-
-  private async readResponseBody(response: Response): Promise<string> {
-    try {
-      return await response.text();
-    } catch {
-      throw new BpjsPcareError(
-        'BPJS_PCARE_UNAVAILABLE',
-        'BPJS PCare response body could not be read',
-        response.status,
-      );
-    }
+  private resolveBaseUrl(connection: BpjsPcareConnection): string {
+    return connection.environment === 'PRODUCTION'
+      ? this.adapterConfig.productionBaseUrl
+      : this.adapterConfig.developmentBaseUrl;
   }
 
   private decodeEnvelope(
@@ -210,7 +79,7 @@ export class BpjsPcareHttpClient {
     rawBody: string,
     timestampSeconds: number,
     statusCode: number,
-  ): BpjsPcareResponseEnvelope {
+  ): BpjsGatewayResponseEnvelope {
     try {
       return decodeBpjsPcareResponse({
         context: {
@@ -227,9 +96,14 @@ export class BpjsPcareHttpClient {
       throw caughtError;
     }
   }
+}
 
-  private normaliseMetaDataCode(code: string | number): number | null {
-    const parsed = typeof code === 'number' ? code : Number(code);
-    return Number.isInteger(parsed) ? parsed : null;
-  }
+/**
+ * Maps a transport-level failure kind onto PCare's own error vocabulary. The
+ * `BPJS_PCARE_*` codes are persisted on submission rows and read by the
+ * integrations monitor, so they stay stable and service-specific even though
+ * the failures they name are generic.
+ */
+function toPcareErrorCode(kind: BpjsGatewayFailureKind): BpjsPcareErrorCode {
+  return `BPJS_PCARE_${kind}` as BpjsPcareErrorCode;
 }

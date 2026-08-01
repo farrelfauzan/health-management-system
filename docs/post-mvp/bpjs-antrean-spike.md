@@ -122,6 +122,18 @@ Each question carries the current hypothesis and its evidence standing, how it g
 
 Redaction rule for anything committed: no card numbers, no NIK, no member names, no credentials or derived keys. Replace member identifiers with structurally valid synthetic values the way `phase-three-examples.ts` does, and note in the fixture that it was redacted.
 
+## 3.1 Where the answers land in code
+
+`P14-T03` shipped ahead of this spike (§5), so several questions now have a concrete line of code to check rather than a blank to fill. Recorded here so the spike is a diff against something real:
+
+| Question | What to run | File that changes if the hypothesis is wrong |
+| --- | --- | --- |
+| Q2 (endpoint set), Q11 (dev environment) | Admin → Integrations → BPJS Antrean → *Test connection* | `apps/api/src/common/bpjs-antrean/bpjs-antrean.config.ts` (base URLs, overridable by env today) |
+| Q7 (response codec) | The same test connection: a decode failure surfaces as `BPJS_ANTREAN_DECRYPT_FAILED` / `BPJS_ANTREAN_DECOMPRESS_FAILED` | the `decodeBpjsPcareResponse` import in `bpjs-antrean-http.client.ts` — one line |
+| Q8 (`X-Authorization` drops away) | The same test connection: a 401 with a valid signature points here | `apps/api/src/common/bpjs-antrean/build-bpjs-antrean-headers.ts` |
+| Q3 (HFIS vs PCare codes) | Diff the decoded `ref/poli` list against the synced PCare `POLI` catalog | `Specialty.bpjsPoliCode` gains an HFIS-scoped sibling, as §2 Q3 says |
+| failure taxonomy | Collect the `metaData.code` values observed | the 200/201 success set in `common/bpjs-gateway/bpjs-gateway.transport.ts` |
+
 ## 4. Exit criteria for `P14-T02`
 
 The spike is done when all of the following hold. Partial answers do not close it; they narrow it.
@@ -134,9 +146,11 @@ The spike is done when all of the following hold. Partial answers do not close i
 
 ## 5. What must not happen before those answers
 
-Stated because the temptation is real and the cost is asymmetric:
+Stated because the temptation is real and the cost is asymmetric.
 
-- **No `BpjsAntreanConfig` schema, no adapter, no inbound module.** `P14-T03` and `P14-T04` are gated on Q2/Q4/Q5/Q7. Writing them against the hypotheses produces code that compiles, passes its own invented fixtures, and is wrong in ways UAT discovers.
+> **Amended.** `P14-T03` was built anyway, before this spike ran and with every question below still unanswered. That was a deliberate call, and it does not retract the reasoning — it accepts the cost the first bullet describes. What it changes is the shape of the remaining risk, so the list is annotated rather than deleted.
+
+- **~~No `BpjsAntreanConfig` schema, no adapter~~ — built (`P14-T03`); no inbound module.** The config row, the outbound adapter, and the admin surface exist. The half that never depended on an answer — a separate credential row, sealed outbound keys, a hashed inbound password, write-only secrets, the audit trail, and the shared gateway transport extracted from the PCare client — is finished and correct on its own terms. The half that does is labelled as such wherever it is load-bearing: the four-header builder (Q8), the `antreanfktp` base URLs (Q2, Q11), the reused D-022 codec (Q7), the `ref/poli` test path (Q2), and the 200/201 success reading inherited from PCare. Those are now **verification steps against running code** rather than prerequisites to writing it, and the first live `ref/poli` call settles four of them at once. The residual cost is the one this bullet always named: the code compiles and passes tests built on its own reading of the spec, so its green suites are evidence of internal consistency and nothing more. **`P14-T04` remains gated** — Q4 and Q5 are a token scheme and a contract on a public write surface, and a guessed guard there is worse than no code.
 - **No hand-written fixtures.** A fixture is evidence. One assembled from a reading of the spec is a restatement of the hypothesis wearing evidence's clothes, and it will pass every test written against it.
 - **No public inbound route.** HMS has exactly two public routes today (`auth`, `health`) and neither writes. The third one is `P14-T04`, behind a purpose-built token guard, an IP allowlist, and per-endpoint rate limiting — all of which need Q4 and Q6 to exist first.
 - **No promise to the clinic about a date.** The UAT slot, the profile flag, and the credentials are all on BPJS's timeline, not the project's.

@@ -16,6 +16,7 @@ import { AdminManagementModule } from './modules/admin-management/admin-manageme
 import { AiChatbotModule } from './modules/ai-chatbot/ai-chatbot.module';
 import { AppointmentManagementModule } from './modules/appointment-management/appointment-management.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { BpjsAntreanIntegrationModule } from './modules/bpjs-antrean/bpjs-antrean-integration.module';
 import { BpjsPcareIntegrationModule } from './modules/bpjs-pcare/bpjs-pcare-integration.module';
 import { DoctorManagementModule } from './modules/doctor-management/doctor-management.module';
 import { DoctorPatientModule } from './modules/doctor-patient/doctor-patient.module';
@@ -64,6 +65,7 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     BillingModule,
     SatusehatIntegrationModule,
     BpjsPcareIntegrationModule,
+    BpjsAntreanIntegrationModule,
     AiChatbotModule,
     AuthModule,
     RbacModule,

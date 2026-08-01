@@ -74,11 +74,3 @@ export type BpjsPcareRequest = {
   readonly path: string;
   readonly body?: unknown;
 };
-
-export type BpjsPcareCircuitBreakerState = 'CLOSED' | 'OPEN' | 'HALF_OPEN';
-
-export type BpjsPcareCircuitBreakerOptions = {
-  readonly failureThreshold: number;
-  readonly openDurationMs: number;
-  readonly now?: () => number;
-};

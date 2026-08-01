@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { BpjsAntreanSettingsPanel } from '#components/client/integrations/bpjs-antrean-settings-panel';
 import { BpjsMappingsPanel } from '#components/client/integrations/bpjs-mappings-panel';
 import { BpjsSettingsPanel } from '#components/client/integrations/bpjs-settings-panel';
 import { IntegrationSubmissionMonitor } from '#components/client/integrations/integration-submission-monitor';
@@ -24,6 +25,7 @@ export function IntegrationsPanel() {
         <TabsList>
           {canMonitor ? <TabsTrigger value="monitor">{t('monitor')}</TabsTrigger> : null}
           {canConfigure ? <TabsTrigger value="settings">{t('settings')}</TabsTrigger> : null}
+          {canConfigure ? <TabsTrigger value="antrean">{t('antrean.tab')}</TabsTrigger> : null}
           {canMap ? <TabsTrigger value="mappings">{t('mappings')}</TabsTrigger> : null}
         </TabsList>
         {canMonitor ? (
@@ -34,6 +36,11 @@ export function IntegrationsPanel() {
         {canConfigure ? (
           <TabsContent value="settings">
             <BpjsSettingsPanel />
+          </TabsContent>
+        ) : null}
+        {canConfigure ? (
+          <TabsContent value="antrean">
+            <BpjsAntreanSettingsPanel />
           </TabsContent>
         ) : null}
         {canMap ? (

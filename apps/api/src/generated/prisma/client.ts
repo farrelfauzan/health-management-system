@@ -417,6 +417,29 @@ export type AuditLog = Prisma.AuditLogModel
  */
 export type BpjsPcareConfig = Prisma.BpjsPcareConfigModel
 /**
+ * Model BpjsAntreanConfig
+ * BPJS Antrean Online (Mobile JKN) bridging credentials for one facility
+ * (P14-T03). A separate row from BpjsPcareConfig, not a column on it: BPJS
+ * issues the Antrean service its own consumer ID, secret key, and user key
+ * through a separate branch-office request, and revokes them separately —
+ * losing one credential set must not disable the other (ADR D-023).
+ * 
+ * The outbound half (`consId`/`secretKey`/`userKey`) is what HMS signs its
+ * calls to BPJS with. The inbound half (`inboundUsername`/
+ * `inboundPasswordHash`) is the credential pair BPJS presents to the
+ * facility's own token endpoint; it is nullable because it is agreed at UAT,
+ * long after outbound credentials are first stored, and the endpoint that
+ * consumes it is P14-T04. The password is hashed, never sealed — HMS only
+ * ever verifies it, and must not be able to read it back.
+ * 
+ * Secrets are sealed with the same BpjsCredentialCryptoService under
+ * BPJS_CREDENTIAL_ENCRYPTION_KEY as the PCare row, so one rotation runbook
+ * covers both. `facilityId` is null on the single-tenant deployment — Postgres
+ * unique indexes treat NULLs as distinct, so a hand-written partial unique
+ * index in the migration is what actually keeps that row a singleton.
+ */
+export type BpjsAntreanConfig = Prisma.BpjsAntreanConfigModel
+/**
  * Model BpjsReferenceItem
  * One row of a BPJS PCare reference catalog (P11-T03). The design doc lists
  * eight tables, but every catalog carries the identical shape (BPJS code,
