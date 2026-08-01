@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { ConsultationHistoryItem } from '#components/client/ai-assistant/consultation-history-item';
+import { DeleteConsultationDialog } from '#components/client/ai-assistant/delete-consultation-dialog';
 import type { ConsultationHistoryEntry } from '#lib/ai-assistant/consultation-history-entry';
 
 type ConsultationHistoryListProps = {
@@ -11,6 +13,7 @@ type ConsultationHistoryListProps = {
   isLoading: boolean;
   hasFailed: boolean;
   onSelect: (entry: ConsultationHistoryEntry) => void;
+  onDeleted: (sessionId: string) => void;
 };
 
 /**
@@ -25,8 +28,13 @@ export function ConsultationHistoryList({
   isLoading,
   hasFailed,
   onSelect,
+  onDeleted,
 }: ConsultationHistoryListProps) {
   const t = useTranslations('aiAssistant.sidebar');
+  // One dialog for the whole list rather than one per row: the confirmation is
+  // about whichever entry was asked about, and mounting N dialogs to show at
+  // most one is waste the sidebar re-pays on every history refresh.
+  const [pendingDeletion, setPendingDeletion] = useState<ConsultationHistoryEntry | null>(null);
   if (isLoading) {
     return <p className="px-2 py-3 text-sm text-slate-500">{t('historyLoading')}</p>;
   }
@@ -48,8 +56,14 @@ export function ConsultationHistoryList({
           entry={entry}
           isActive={entry.id === activeSessionId}
           onSelect={onSelect}
+          onRequestDelete={setPendingDeletion}
         />
       ))}
+      <DeleteConsultationDialog
+        entry={pendingDeletion}
+        onOpenChange={(isOpen) => !isOpen && setPendingDeletion(null)}
+        onDeleted={onDeleted}
+      />
     </div>
   );
 }

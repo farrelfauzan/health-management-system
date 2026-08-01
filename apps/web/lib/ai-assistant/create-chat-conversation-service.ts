@@ -5,6 +5,7 @@ import {
   chatControllerSendMessageV1,
 } from '#lib/api/generated/ai-chatbot/ai-chatbot';
 import { parseApiSuccess } from '#lib/api/response';
+import { buildSessionTitle } from '#lib/ai-assistant/build-session-title';
 import type {
   AssistantMessageBody,
   ConversationReplyRequest,
@@ -63,9 +64,13 @@ export function createChatConversationService({
   let sessionIdPromise: Promise<string> | null =
     sessionId === undefined ? null : Promise.resolve(sessionId);
 
-  async function resolveSessionId(): Promise<string> {
+  async function resolveSessionId(firstMessage: string): Promise<string> {
     if (sessionIdPromise === null) {
-      sessionIdPromise = chatControllerCreateSessionV1({ channel })
+      const title = buildSessionTitle(firstMessage);
+      sessionIdPromise = chatControllerCreateSessionV1({
+        channel,
+        ...(title === undefined ? {} : { title }),
+      })
         .then((response) => {
           const createdId = parseApiSuccess<ChatSessionEnvelope>(
             response,
@@ -89,7 +94,10 @@ export function createChatConversationService({
       return { paragraphs: [t('greeting.intro', { displayName }), t('greeting.scope')] };
     },
     async requestReply(request: ConversationReplyRequest): Promise<AssistantMessageBody> {
-      const resolvedSessionId = await resolveSessionId();
+      // The first message doubles as the session's title; a session created
+      // without one shows up in the sidebar as "untitled" forever, because
+      // nothing else ever names it.
+      const resolvedSessionId = await resolveSessionId(request.text);
       const response = await chatControllerSendMessageV1(resolvedSessionId, {
         content: request.text,
       });

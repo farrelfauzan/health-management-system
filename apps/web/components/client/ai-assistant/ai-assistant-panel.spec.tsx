@@ -4,12 +4,14 @@ import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { AppAbilityProvider } from '#components/client/app-ability-provider';
 import { getDashboardAiMessages } from '#lib/dashboard/localization';
 
 const createSessionMock = vi.hoisted(() => vi.fn());
 const sendMessageMock = vi.hoisted(() => vi.fn());
 const listSessionsMock = vi.hoisted(() => vi.fn());
 const listMessagesMock = vi.hoisted(() => vi.fn());
+const deleteSessionMock = vi.hoisted(() => vi.fn());
 const getAvailabilityMock = vi.hoisted(() => vi.fn());
 const pushMock = vi.hoisted(() => vi.fn());
 
@@ -18,6 +20,7 @@ vi.mock('#lib/api/generated/ai-chatbot/ai-chatbot', () => ({
   chatControllerSendMessageV1: sendMessageMock,
   chatControllerListSessionsV1: listSessionsMock,
   chatControllerListMessagesV1: listMessagesMock,
+  chatControllerDeleteSessionV1: deleteSessionMock,
   chatControllerGetAvailabilityV1: getAvailabilityMock,
   getChatControllerListSessionsV1QueryKey: () => ['chat', 'sessions'],
   getChatControllerListMessagesV1QueryKey: (id: string) => ['chat', 'messages', id],
@@ -31,17 +34,19 @@ vi.mock('next/navigation', () => ({
 const { AiAssistantProvider } = await import('./ai-assistant-provider');
 const { AiAssistantPanel } = await import('./ai-assistant-panel');
 
-function renderPanel(): void {
+function renderPanel(canDelete = true): void {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
-        <AiAssistantProvider displayName="Dr. Sarah">
-          <AiAssistantPanel />
-        </AiAssistantProvider>
-      </NextIntlClientProvider>
+      <AppAbilityProvider rules={canDelete ? [{ action: 'delete', subject: 'ChatSession' }] : []}>
+        <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
+          <AiAssistantProvider displayName="Dr. Sarah">
+            <AiAssistantPanel />
+          </AiAssistantProvider>
+        </NextIntlClientProvider>
+      </AppAbilityProvider>
     </QueryClientProvider>,
   );
 }
@@ -62,6 +67,7 @@ describe('AiAssistantPanel', () => {
     });
     listSessionsMock.mockResolvedValue({ status: 200, data: { data: [] } });
     listMessagesMock.mockResolvedValue({ status: 200, data: { data: [], meta: {} } });
+    deleteSessionMock.mockResolvedValue({ status: 200, data: { data: { id: 'session-9' } } });
     getAvailabilityMock.mockResolvedValue({
       status: 200,
       data: { data: { isAvailable: true, isEnabled: true, hasActiveProvider: true } },
@@ -319,6 +325,97 @@ describe('AiAssistantPanel', () => {
 
       expect(await screen.findByText('Riwayat konsultasi gagal dimuat.')).toBeInTheDocument();
       expect(screen.queryByText(/Belum ada konsultasi/)).not.toBeInTheDocument();
+    });
+
+    it('names a new session after the question that started it', async () => {
+      const user = userEvent.setup();
+      renderPanel();
+
+      await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+
+      // Nothing else ever names a session, so without this every entry in
+      // the history list reads "untitled".
+      await waitFor(() =>
+        expect(createSessionMock).toHaveBeenCalledWith({
+          channel: 'DOCTOR',
+          title: 'Ringkas beban pasien hari ini.',
+        }),
+      );
+    });
+
+    it('removes a consultation after the confirmation is accepted', async () => {
+      const user = userEvent.setup();
+      mockOneSession();
+      renderPanel();
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Hapus konsultasi: Jam buka klinik' }),
+      );
+      listSessionsMock.mockResolvedValue({ status: 200, data: { data: [] } });
+      await user.click(screen.getByRole('button', { name: 'Hapus' }));
+
+      await waitFor(() => expect(deleteSessionMock).toHaveBeenCalledWith('session-9'));
+      expect(await screen.findByText(/Belum ada konsultasi/)).toBeInTheDocument();
+    });
+
+    it('does not delete anything until the confirmation is accepted', async () => {
+      const user = userEvent.setup();
+      mockOneSession();
+      renderPanel();
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Hapus konsultasi: Jam buka klinik' }),
+      );
+      await user.click(screen.getByRole('button', { name: 'Batal' }));
+
+      expect(deleteSessionMock).not.toHaveBeenCalled();
+      expect(screen.getByText('Jam buka klinik')).toBeInTheDocument();
+    });
+
+    it('hides the delete control from a user without the grant', async () => {
+      mockOneSession();
+      renderPanel(false);
+
+      // Visibility only — the backend guard is still the source of truth.
+      expect(await screen.findByText('Jam buka klinik')).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Hapus konsultasi: Jam buka klinik' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('returns to a fresh consultation when the open one is deleted', async () => {
+      const user = userEvent.setup();
+      mockOneSession();
+      listMessagesMock.mockResolvedValue({
+        status: 200,
+        data: {
+          data: [
+            {
+              id: 't1',
+              actor: 'USER',
+              content: 'Jam berapa klinik buka?',
+              createdAt: '2026-07-01T02:00:00.000Z',
+            },
+          ],
+          meta: { nextCursor: null },
+        },
+      });
+      renderPanel();
+
+      await user.click(
+        await screen.findByRole('button', { name: 'Buka konsultasi: Jam buka klinik' }),
+      );
+      await screen.findByText('Jam berapa klinik buka?');
+      await user.click(screen.getByRole('button', { name: 'Hapus konsultasi: Jam buka klinik' }));
+      listSessionsMock.mockResolvedValue({ status: 200, data: { data: [] } });
+      await user.click(screen.getByRole('button', { name: 'Hapus' }));
+
+      // Leaving the transcript on screen would attach the next send to a
+      // session the server has already retired.
+      await waitFor(() =>
+        expect(screen.queryByText('Jam berapa klinik buka?')).not.toBeInTheDocument(),
+      );
+      expect(screen.getByText(/Halo Dr\. Sarah\./)).toBeInTheDocument();
     });
   });
 });

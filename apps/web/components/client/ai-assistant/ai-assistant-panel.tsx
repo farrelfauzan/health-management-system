@@ -67,6 +67,14 @@ export function AiAssistantPanel() {
     assistant.openConsultation(entry);
     setIsDrawerOpen(false);
   }
+  function handleConsultationDeleted(sessionId: string): void {
+    // Deleting the consultation you are reading has to leave the thread
+    // somewhere valid; the alternative is a transcript attached to a session
+    // the next send would be rejected against.
+    if (assistant.activeSessionId === sessionId) {
+      assistant.startNewConsultation();
+    }
+  }
   const panelProps: ConsultationPanelProps = {
     prompts,
     history,
@@ -77,6 +85,7 @@ export function AiAssistantPanel() {
     onNewConsultation: handleNewConsultation,
     onSelectPrompt: handleSelectPrompt,
     onSelectConsultation: handleSelectConsultation,
+    onConsultationDeleted: handleConsultationDeleted,
   };
   return (
     <div className="space-y-6">

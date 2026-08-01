@@ -16,4 +16,5 @@ export type ConsultationPanelProps = {
   onNewConsultation: () => void;
   onSelectPrompt: (prompt: SuggestedPrompt) => void;
   onSelectConsultation: (entry: ConsultationHistoryEntry) => void;
+  onConsultationDeleted: (sessionId: string) => void;
 };

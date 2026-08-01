@@ -23,6 +23,7 @@ export function ConsultationPanelContent({
   onNewConsultation,
   onSelectPrompt,
   onSelectConsultation,
+  onConsultationDeleted,
 }: ConsultationPanelProps) {
   const t = useTranslations('aiAssistant.sidebar');
   return (
@@ -59,6 +60,7 @@ export function ConsultationPanelContent({
             isLoading={isHistoryLoading}
             hasFailed={hasHistoryFailed}
             onSelect={onSelectConsultation}
+            onDeleted={onConsultationDeleted}
           />
         </section>
       </div>
