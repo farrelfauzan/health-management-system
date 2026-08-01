@@ -13081,6 +13081,76 @@ paths:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
       tags: *a22
+  /api/v1/bpjs/antrean/inbound-readiness:
+    get:
+      operationId: BpjsAntreanConfigController_getInboundReadiness_v1
+      parameters: []
+      responses:
+        "200":
+          description: Whether the public inbound surface (P14-T04) is live, and which
+            precondition is missing when it is not. It stays dark until the
+            deployment carries BPJS’s published source IP ranges and the
+            facility has stored the inbound credential pair agreed at UAT — both
+            values BPJS issues per facility, neither of which HMS can default.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isEnabled:
+                        type: boolean
+                      hasSourceIpAllowlist:
+                        type: boolean
+                      allowedSourceRangeCount:
+                        type: integer
+                      hasInboundCredentials:
+                        type: boolean
+                      tokenLifetimeSeconds:
+                        type: integer
+                      trustedProxyHopCount:
+                        type: integer
+                    required:
+                      - isEnabled
+                      - hasSourceIpAllowlist
+                      - allowedSourceRangeCount
+                      - hasInboundCredentials
+                      - tokenLifetimeSeconds
+                      - trustedProxyHopCount
+                required:
+                  - data
+                example:
+                  data:
+                    isEnabled: false
+                    hasSourceIpAllowlist: false
+                    allowedSourceRangeCount: 0
+                    hasInboundCredentials: true
+                    tokenLifetimeSeconds: 3600
+                    trustedProxyHopCount: 0
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Report whether the inbound Antrean web services can serve BPJS
+      tags: *a22
   /api/v1/admin/ai-providers:
     get:
       operationId: AiProviderController_listConfigs_v1
@@ -15064,6 +15134,7 @@ components:
                 - ACKNOWLEDGED
                 - PROVIDED_ACKNOWLEDGEMENT_DECLINED
                 - DEFERRED_EMERGENCY
+                - DEFERRED_REMOTE_REGISTRATION
             subjectType:
               type: string
               enum:
@@ -15084,6 +15155,7 @@ components:
                 - PATIENT_PORTAL
                 - LEGACY_IMPORT
                 - EMERGENCY
+                - BPJS_ANTREAN
           required:
             - privacyNoticeVersionId
             - locale
@@ -15242,6 +15314,7 @@ components:
                 - ACKNOWLEDGED
                 - PROVIDED_ACKNOWLEDGEMENT_DECLINED
                 - DEFERRED_EMERGENCY
+                - DEFERRED_REMOTE_REGISTRATION
             subjectType:
               type: string
               enum:
@@ -15262,6 +15335,7 @@ components:
                 - PATIENT_PORTAL
                 - LEGACY_IMPORT
                 - EMERGENCY
+                - BPJS_ANTREAN
           required:
             - privacyNoticeVersionId
             - locale
@@ -15767,6 +15841,7 @@ components:
                 - ACKNOWLEDGED
                 - PROVIDED_ACKNOWLEDGEMENT_DECLINED
                 - DEFERRED_EMERGENCY
+                - DEFERRED_REMOTE_REGISTRATION
             subjectType:
               type: string
               enum:
@@ -15787,6 +15862,7 @@ components:
                 - PATIENT_PORTAL
                 - LEGACY_IMPORT
                 - EMERGENCY
+                - BPJS_ANTREAN
           required:
             - privacyNoticeVersionId
             - locale

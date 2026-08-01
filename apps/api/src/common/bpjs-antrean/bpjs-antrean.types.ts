@@ -53,6 +53,24 @@ export type BpjsAntreanConnection = {
   readonly credentials: BpjsAntreanRequestCredentials;
 };
 
+/**
+ * Key material for the *inbound* token scheme (P14-T04). Stays in this
+ * API-internal types file for the same reason {@link BpjsAntreanConnection}
+ * does: it is derived from a stored credential and must never be modelled in
+ * `@hms/shared-types`, where the web app could import it.
+ *
+ * Both fields are derived from the stored bcrypt hash of BPJS's inbound
+ * password, never from the password itself, and the hash is not recoverable
+ * from either. Deriving them this way is what makes a password rotation
+ * invalidate every outstanding token with no revocation list to maintain:
+ * a new hash produces a new signing key *and* a new fingerprint, so tokens
+ * signed under the old one fail both checks.
+ */
+export type BpjsAntreanInboundTokenMaterial = {
+  readonly signingKey: Buffer;
+  readonly credentialFingerprint: string;
+};
+
 export type BpjsAntreanRequest = {
   readonly method: BpjsGatewayHttpMethod;
   readonly path: string;

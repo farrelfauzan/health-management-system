@@ -14,4 +14,5 @@ export const CreatePatientDtoPrivacyNoticeProvenance = {
   PATIENT_PORTAL: 'PATIENT_PORTAL',
   LEGACY_IMPORT: 'LEGACY_IMPORT',
   EMERGENCY: 'EMERGENCY',
+  BPJS_ANTREAN: 'BPJS_ANTREAN',
 } as const;

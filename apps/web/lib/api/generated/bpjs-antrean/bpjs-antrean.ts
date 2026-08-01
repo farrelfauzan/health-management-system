@@ -23,6 +23,7 @@ import type {
 import type {
   BpjsAntreanConfigControllerDeleteConfigV1200,
   BpjsAntreanConfigControllerGetConfigV1200,
+  BpjsAntreanConfigControllerGetInboundReadinessV1200,
   BpjsAntreanConfigControllerTestConnectionV1200,
   BpjsAntreanConfigControllerUpsertConfigV1200,
   UpsertBpjsAntreanConfigDto
@@ -407,6 +408,98 @@ export function useBpjsAntreanConfigControllerTestConnectionV1<TData = Awaited<R
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getBpjsAntreanConfigControllerTestConnectionV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Report whether the inbound Antrean web services can serve BPJS
+ */
+export const bpjsAntreanConfigControllerGetInboundReadinessV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<BpjsAntreanConfigControllerGetInboundReadinessV1200>(
+      {url: `/api/v1/bpjs/antrean/inbound-readiness`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getBpjsAntreanConfigControllerGetInboundReadinessV1QueryKey = () => {
+    return [
+    `/api/v1/bpjs/antrean/inbound-readiness`
+    ] as const;
+    }
+
+
+export const getBpjsAntreanConfigControllerGetInboundReadinessV1QueryOptions = <TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getBpjsAntreanConfigControllerGetInboundReadinessV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>> = ({ signal }) => bpjsAntreanConfigControllerGetInboundReadinessV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type BpjsAntreanConfigControllerGetInboundReadinessV1QueryResult = NonNullable<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>>
+export type BpjsAntreanConfigControllerGetInboundReadinessV1QueryError = unknown
+
+
+export function useBpjsAntreanConfigControllerGetInboundReadinessV1<TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>,
+          TError,
+          Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useBpjsAntreanConfigControllerGetInboundReadinessV1<TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>,
+          TError,
+          Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useBpjsAntreanConfigControllerGetInboundReadinessV1<TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Report whether the inbound Antrean web services can serve BPJS
+ */
+
+export function useBpjsAntreanConfigControllerGetInboundReadinessV1<TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetInboundReadinessV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getBpjsAntreanConfigControllerGetInboundReadinessV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

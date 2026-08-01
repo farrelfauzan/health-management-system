@@ -21,7 +21,12 @@ WITH seed_roles(code, name, description) AS (
     ('ADMIN', 'Admin', 'Operational administrator for HMS modules'),
     ('DOCTOR', 'Doctor', 'Clinical user with doctor-scoped access'),
     ('PHARMACIST', 'Pharmacist', 'Pharmacy workflow operator'),
-    ('PATIENT', 'Patient', 'Patient self-service access role')
+    ('PATIENT', 'Patient', 'Patient self-service access role'),
+    -- Not a human role. It exists so the inbound BPJS Antrean bridge (P14-T04)
+    -- has an actor whose reach is written down in the same table as everyone
+    -- else's, instead of a code path that skips the permission check. Its
+    -- grants below are exactly the six inbound services and nothing more.
+    ('BPJS_ANTREAN_SYSTEM', 'BPJS Antrean Bridge', 'Reserved service account for inbound Mobile JKN queue calls')
 )
 INSERT INTO "roles" (
   "id",
@@ -334,7 +339,21 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PATIENT', 'chat.session.read:own'),
     ('PATIENT', 'chat.session.delete:own'),
     ('PATIENT', 'chat.message.create:own'),
-    ('PATIENT', 'chat.message.read:own')
+    ('PATIENT', 'chat.message.read:own'),
+    -- The inbound BPJS Antrean bridge (P14-T04). Enumerated one line at a time
+    -- rather than borrowed from ADMIN, because this is the reach a caller from
+    -- the public internet gets if the token check is ever defeated, and the
+    -- list is the mitigation. Two grants are deliberately absent:
+    -- `patient.read-identifier:any`, because the bridge matches members through
+    -- the blind index and never decrypts a NIK; and every `registration.*`
+    -- grant, because a Mobile JKN booking is an appointment — the patient is
+    -- still checked in at the counter by a human.
+    ('BPJS_ANTREAN_SYSTEM', 'patient.read:any'),
+    ('BPJS_ANTREAN_SYSTEM', 'patient.create:any'),
+    ('BPJS_ANTREAN_SYSTEM', 'appointment.read:any'),
+    ('BPJS_ANTREAN_SYSTEM', 'appointment.create:any'),
+    ('BPJS_ANTREAN_SYSTEM', 'appointment.cancel:any'),
+    ('BPJS_ANTREAN_SYSTEM', 'appointment.session.read:any')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"
@@ -365,6 +384,71 @@ WHERE rp."role_id" = r."id"
   AND rp."permission_id" = p."id"
   AND r."code" = 'DOCTOR'
   AND p."permission_key" = 'patient.read:any';
+
+-- Reserved service account for the inbound BPJS Antrean bridge (P14-T04).
+-- Baseline, not demo data: a production deployment needs this row, because a
+-- Mobile JKN booking has to be attributable to something and `created_by_id`
+-- is how every other write in HMS records who did it.
+--
+-- `password_hash` is deliberately not a hash. bcrypt rejects a malformed
+-- digest, so no password can ever verify against it — and the login path
+-- refuses `is_system` accounts before it gets that far. Two independent
+-- reasons, because this is the one account whose credentials would hand
+-- someone the patient table.
+INSERT INTO "users" (
+  "id",
+  "email",
+  "password_hash",
+  "is_active",
+  "is_system",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+VALUES (
+  md5('user:bpjs-antrean-bridge@system.hms.local')::uuid,
+  'bpjs-antrean-bridge@system.hms.local',
+  '!no-login:bpjs-antrean-bridge',
+  true,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+)
+ON CONFLICT ("email") DO UPDATE
+SET
+  "password_hash" = EXCLUDED."password_hash",
+  "is_active" = true,
+  "is_system" = true,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
+INSERT INTO "user_roles" (
+  "id",
+  "user_id",
+  "role_id",
+  "assigned_at",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('user_role:bpjs-antrean-bridge@system.hms.local:BPJS_ANTREAN_SYSTEM')::uuid,
+  u."id",
+  r."id",
+  NOW(),
+  NOW(),
+  NOW(),
+  NULL
+FROM "users" u
+JOIN "roles" r ON r."code" = 'BPJS_ANTREAN_SYSTEM'
+WHERE u."email" = 'bpjs-antrean-bridge@system.hms.local'
+ON CONFLICT ("user_id", "role_id") DO UPDATE
+SET
+  "unassigned_at" = NULL,
+  "unassigned_by_id" = NULL,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
 
 -- Development demo patients. Replace or remove this block for production seeds.
 -- These MRNs keep their legacy `MRN-000n` shape deliberately: row ids are

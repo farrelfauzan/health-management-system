@@ -78,6 +78,8 @@ export * from './bpjsAntreanConfigControllerDeleteConfigV1200';
 export * from './bpjsAntreanConfigControllerDeleteConfigV1200Data';
 export * from './bpjsAntreanConfigControllerGetConfigV1200';
 export * from './bpjsAntreanConfigControllerGetConfigV1200Data';
+export * from './bpjsAntreanConfigControllerGetInboundReadinessV1200';
+export * from './bpjsAntreanConfigControllerGetInboundReadinessV1200Data';
 export * from './bpjsAntreanConfigControllerTestConnectionV1200';
 export * from './bpjsAntreanConfigControllerTestConnectionV1200Data';
 export * from './bpjsAntreanConfigControllerUpsertConfigV1200';

@@ -40,4 +40,15 @@ export const BPJS_ANTREAN_EXAMPLES = {
   deletedConfig: {
     id: '7c6b5a49-3821-4d0e-9f8a-1b2c3d4e5f60',
   },
+  // The state every deployment is in until a clinic is actually onboarded:
+  // credentials stored, but no source ranges configured, so BPJS cannot reach
+  // the facility and neither can anyone else.
+  inboundReadiness: {
+    isEnabled: false,
+    hasSourceIpAllowlist: false,
+    allowedSourceRangeCount: 0,
+    hasInboundCredentials: true,
+    tokenLifetimeSeconds: 3600,
+    trustedProxyHopCount: 0,
+  },
 } as const;

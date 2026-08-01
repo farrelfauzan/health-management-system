@@ -2,6 +2,7 @@ import {
   Actor,
   AppointmentListItem,
   AppointmentWithRelationsRecord,
+  BookBpjsAntreanSessionInput,
   BookSessionSlotResult,
   CreateAppointmentInput,
   CreateSessionAppointmentInput,
@@ -518,6 +519,108 @@ export class AppointmentManagementService {
     return this.toAppointmentListItem(cancelled);
   }
 
+  /**
+   * Books a session slot on behalf of the inbound BPJS Antrean bridge
+   * (P14-T04). A separate entry point from {@link createAppointment} rather
+   * than a flag on it, for one reason worth stating: `bpjsBookingCode` must be
+   * unsettable from the HTTP API. The request schema has no such field, and
+   * this method is the only path that writes one — so no admin, patient, or
+   * compromised client can mint a booking that P14-T05 will then skip
+   * publishing because it looks like BPJS's own.
+   *
+   * Everything else is the ordinary session-booking path: the same permission
+   * check, the same schedule-window validation, the same capacity lock. The
+   * bridge gets no shortcuts through the business rules, only a field.
+   */
+  async bookSessionForBpjsAntrean(
+    input: BookBpjsAntreanSessionInput,
+    currentUser: CurrentUser,
+  ): Promise<{ appointment: AppointmentListItem; queueNumber: number }> {
+    const actor = await this.getActorOrThrow(currentUser);
+    if (!this.resolveScope(actor, 'Appointment', 'create').hasAny) {
+      throw new ForbiddenException('You are not allowed to create appointments');
+    }
+    const window = await this.resolveBookableWindow(input);
+    const result = await this.appointmentManagementRepository.bookSessionSlot({
+      patientId: input.patientId,
+      doctorId: input.doctorId,
+      scheduleId: window.id,
+      sessionDate: input.sessionDate,
+      startTime: window.startTime,
+      endTime: window.endTime,
+      maxPatients: window.maxPatients,
+      scheduledAt: window.sessionStart,
+      reason: input.reason,
+      createdById: currentUser.sub,
+      bpjsBookingCode: input.bpjsBookingCode,
+    });
+    if (result.outcome === 'DUPLICATE_BOOKING_CODE') {
+      throw new ConflictException('Booking code already exists');
+    }
+    const appointment = await this.resolveBookedAppointment(result);
+    return {
+      appointment,
+      queueNumber: result.outcome === 'BOOKED' ? result.queueNumber : 0,
+    };
+  }
+
+  /**
+   * Resolves a booking by BPJS's `kodebooking` (P14-T04). Read-scoped like
+   * every other appointment read; the bridge's reserved actor holds
+   * `appointment.read:any` and nothing narrower would work, since the booking
+   * belongs to a patient the bridge does not own.
+   */
+  async getAppointmentByBpjsBookingCode(
+    bpjsBookingCode: string,
+    currentUser: CurrentUser,
+  ): Promise<AppointmentListItem> {
+    const actor = await this.getActorOrThrow(currentUser);
+    if (!this.resolveScope(actor, 'Appointment', 'read').hasAny) {
+      throw new ForbiddenException('You are not allowed to read appointments');
+    }
+    const appointment =
+      await this.appointmentManagementRepository.findAppointmentByBpjsBookingCode(bpjsBookingCode);
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    return this.toAppointmentListItem(appointment);
+  }
+
+  private async resolveBookableWindow(input: BookBpjsAntreanSessionInput): Promise<{
+    id: string;
+    startTime: string;
+    endTime: string;
+    maxPatients: number | null;
+    sessionStart: Date;
+  }> {
+    const window = await this.appointmentManagementRepository.findScheduleWindowById(
+      input.scheduleId,
+    );
+    if (!window || window.doctorId !== input.doctorId || !window.isAvailable) {
+      throw new BadRequestException('Schedule window not found for this doctor');
+    }
+    if (getDayOfWeekForDate(input.sessionDate) !== window.dayOfWeek) {
+      throw new BadRequestException('sessionDate does not fall on the schedule day');
+    }
+    const sessionStart = buildZonedDateTime({
+      date: input.sessionDate,
+      time: window.startTime,
+      timeZone: this.clinicTimeZone,
+    });
+    if (Date.now() >= sessionStart.getTime() - SESSION_BOOKING_CUTOFF_MINUTES * 60_000) {
+      throw new BadRequestException(
+        `Booking closes ${SESSION_BOOKING_CUTOFF_MINUTES} minutes before the session starts`,
+      );
+    }
+    return {
+      id: window.id,
+      startTime: window.startTime,
+      endTime: window.endTime,
+      maxPatients: window.maxPatients,
+      sessionStart,
+    };
+  }
+
   private async createSessionBooking(
     payload: CreateSessionAppointmentInput,
     currentUser: CurrentUser,
@@ -626,6 +729,10 @@ export class AppointmentManagementService {
 
     if (result.outcome === 'ALREADY_BOOKED') {
       throw new ConflictException('Patient already has a booking in this session');
+    }
+
+    if (result.outcome === 'DUPLICATE_BOOKING_CODE') {
+      throw new ConflictException('Booking code already exists');
     }
 
     const created = await this.appointmentManagementRepository.findAppointmentDetailById(

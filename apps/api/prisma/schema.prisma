@@ -50,6 +50,16 @@ enum AuditAction {
   BPJS_ANTREAN_CONFIG_UPDATED
   BPJS_ANTREAN_CONFIG_DELETED
   BPJS_ANTREAN_CONNECTION_TESTED
+  /// Inbound Antrean Online web services (P14-T04). Every call BPJS makes into
+  /// the facility lands as one of these, refusals included — the endpoints are
+  /// reachable from the public internet, so "nothing happened" has to be
+  /// distinguishable from "nobody called".
+  BPJS_ANTREAN_INBOUND_TOKEN_ISSUED
+  BPJS_ANTREAN_INBOUND_CALL_REJECTED
+  BPJS_ANTREAN_INBOUND_QUEUE_READ
+  BPJS_ANTREAN_INBOUND_BOOKING_CREATED
+  BPJS_ANTREAN_INBOUND_BOOKING_CANCELLED
+  BPJS_ANTREAN_INBOUND_PATIENT_REGISTERED
 }
 
 enum BpjsSubmissionType {
@@ -193,6 +203,13 @@ enum PrivacyNoticeOutcome {
   ACKNOWLEDGED
   PROVIDED_ACKNOWLEDGEMENT_DECLINED
   DEFERRED_EMERGENCY
+  /// The record was created by a machine-to-machine call with nobody present
+  /// to receive the notice — today only BPJS `pasien baru` (P14-T04). It is a
+  /// deferral, not an acknowledgement: the member acknowledged *BPJS's* notice
+  /// in Mobile JKN, which is not the clinic's, and recording that as
+  /// ACKNOWLEDGED would be fabricated evidence in an append-only legal record.
+  /// The clinic owes this patient the notice at their first counter visit.
+  DEFERRED_REMOTE_REGISTRATION
 }
 
 enum PrivacyNoticeLocale {
@@ -210,6 +227,10 @@ enum PrivacyNoticeProvenance {
   PATIENT_PORTAL
   LEGACY_IMPORT
   EMERGENCY
+  /// Created by the inbound BPJS Antrean bridge (P14-T04). Distinct from
+  /// PATIENT_PORTAL: the patient never touched an HMS surface, and the only
+  /// actor on the row is the reserved system account.
+  BPJS_ANTREAN
 }
 
 /// Lifecycle of a clinical encounter (the PMK 24/2022 medical record for one
@@ -361,6 +382,13 @@ model User {
   email        String    @unique
   passwordHash String    @map("password_hash")
   isActive     Boolean   @default(true) @map("is_active")
+  /// Reserved service account: a row that exists so machine-originated writes
+  /// have a real actor to hang off (P14-T04's BPJS Antrean bridge is the first
+  /// one). It stays `isActive` because every domain service resolves its
+  /// permissions through the ordinary active-user lookup — what makes it a
+  /// non-identity is that the login path refuses it outright, so no password,
+  /// reset, or token grant can ever turn it into a session.
+  isSystem     Boolean   @default(false) @map("is_system")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
@@ -789,6 +817,19 @@ model Appointment {
   type        AppointmentType   @default(SESSION)
   sessionId   String?           @map("session_id") @db.Uuid
   queueNumber Int?              @map("queue_number")
+  /// BPJS's own identifier for a Mobile JKN booking (`kodebooking`), set only
+  /// by the inbound Antrean bridge (P14-T04) and null for every appointment a
+  /// human made. This column *is* the provenance marker the phase needs, and
+  /// it is not optional for two reasons: it is how `sisa antrean` and `batal
+  /// antrean` address a booking BPJS made, and it is what stops P14-T05's
+  /// outbox re-publishing that booking back to BPJS with `antrean/add` as
+  /// though it were a walk-in — it is already BPJS's row.
+  ///
+  /// Unique, because `kodebooking` is BPJS's primary key for the booking: a
+  /// retried `ambil antrean` must collide rather than create a second
+  /// appointment for the same member. Whether `kodebooking` is genuinely the
+  /// identifier BPJS carries is spike question Q10.
+  bpjsBookingCode String?        @unique @map("bpjs_booking_code")
   scheduledAt DateTime          @map("scheduled_at")
   status      AppointmentStatus @default(SCHEDULED)
   reason      String?

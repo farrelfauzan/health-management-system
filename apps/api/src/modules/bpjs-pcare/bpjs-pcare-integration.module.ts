@@ -54,5 +54,8 @@ import { BpjsSubmissionWorker } from './service/bpjs-submission.worker';
     BpjsSubmissionWorker,
     BpjsReportService,
   ],
+  // The inbound Antrean surface (P14-T04) resolves BPJS poli and doctor codes
+  // through the mapping service rather than reading the columns itself.
+  exports: [BpjsMappingService],
 })
 export class BpjsPcareIntegrationModule {}

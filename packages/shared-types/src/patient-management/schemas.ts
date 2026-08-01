@@ -218,6 +218,12 @@ export const PRIVACY_NOTICE_OUTCOMES = [
   'ACKNOWLEDGED',
   'PROVIDED_ACKNOWLEDGEMENT_DECLINED',
   'DEFERRED_EMERGENCY',
+  // The record was created machine-to-machine with nobody present to receive
+  // the notice — today only BPJS `pasien baru` (P14-T04). Recording that as
+  // ACKNOWLEDGED would be fabricated evidence: the member acknowledged BPJS's
+  // notice in Mobile JKN, which is not the clinic's. The clinic owes this
+  // patient the notice at their first counter visit.
+  'DEFERRED_REMOTE_REGISTRATION',
 ] as const;
 export const privacyNoticeOutcomeSchema = z.enum(PRIVACY_NOTICE_OUTCOMES);
 export type PrivacyNoticeOutcomeValue = z.infer<typeof privacyNoticeOutcomeSchema>;
@@ -230,7 +236,13 @@ export const privacyNoticeEvidenceSchema = z
     subjectType: z.enum(['SELF', 'REPRESENTATIVE']),
     representativeName: z.string().trim().min(2).max(120).optional(),
     representativeRelation: z.string().trim().min(2).max(60).optional(),
-    provenance: z.enum(['FRONT_DESK', 'PATIENT_PORTAL', 'LEGACY_IMPORT', 'EMERGENCY']),
+    provenance: z.enum([
+      'FRONT_DESK',
+      'PATIENT_PORTAL',
+      'LEGACY_IMPORT',
+      'EMERGENCY',
+      'BPJS_ANTREAN',
+    ]),
   })
   .superRefine((value, context) => {
     const hasRepresentative =
@@ -261,6 +273,31 @@ export const privacyNoticeEvidenceSchema = z
         code: 'custom',
         message: 'Emergency deferral must use EMERGENCY provenance',
         path: ['provenance'],
+      });
+    }
+    // The remote-registration pair is bound in both directions. A BPJS-created
+    // record must not claim any outcome that implies a person received the
+    // notice, and no human-facing surface may borrow the deferral that exists
+    // because nobody was there — either half alone would turn an append-only
+    // legal record into a place where consent evidence can be invented.
+    if (
+      value.outcome === 'DEFERRED_REMOTE_REGISTRATION' &&
+      value.provenance !== 'BPJS_ANTREAN'
+    ) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Remote-registration deferral must use BPJS_ANTREAN provenance',
+        path: ['provenance'],
+      });
+    }
+    if (
+      value.provenance === 'BPJS_ANTREAN' &&
+      value.outcome !== 'DEFERRED_REMOTE_REGISTRATION'
+    ) {
+      context.addIssue({
+        code: 'custom',
+        message: 'A BPJS Antrean registration can only defer the privacy notice',
+        path: ['outcome'],
       });
     }
   });

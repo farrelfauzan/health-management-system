@@ -109,6 +109,21 @@ export class BpjsAntreanConfigController {
     return { data: result };
   }
 
+  @Get('inbound-readiness')
+  @Auth([{ action: 'manage', subject: 'BpjsConfig' }])
+  @ApiEndpoint({
+    summary: 'Report whether the inbound Antrean web services can serve BPJS',
+    responseDescription:
+      'Whether the public inbound surface (P14-T04) is live, and which precondition is missing when it is not. It stays dark until the deployment carries BPJS\u2019s published source IP ranges and the facility has stored the inbound credential pair agreed at UAT \u2014 both values BPJS issues per facility, neither of which HMS can default.',
+    responseExample: { data: BPJS_ANTREAN_EXAMPLES.inboundReadiness },
+  })
+  async getInboundReadiness(@AuthUser() currentUser?: CurrentUser) {
+    this.assertAuthenticated(currentUser);
+    const readiness = await this.configService.getInboundReadiness();
+
+    return { data: readiness };
+  }
+
   private assertAuthenticated(currentUser?: CurrentUser): CurrentUser {
     if (!currentUser) {
       throw new UnauthorizedException('Authentication required');

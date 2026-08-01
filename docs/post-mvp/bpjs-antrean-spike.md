@@ -56,10 +56,10 @@ Each question carries the current hypothesis and its evidence standing, how it g
 
 ### Q4 — What is the inbound token scheme?
 
-- **Status:** UNANSWERED. *Security-critical; `P14-T04` is to be reviewed as such.*
+- **Status:** UNANSWERED. *Security-critical; `P14-T04` is to be reviewed as such.* `P14-T04` shipped against the hypothesis below — see §3.1 for the single file each detail lives in, and §5 for why a dark surface is not the thing this question was protecting against.
 - **Hypothesis:** BPJS posts the agreed username/password to a facility-hosted token endpoint and carries the returned token on subsequent calls. Evidence standing: the shape is consistent across sources; **every detail is open** — endpoint path, credential encoding, token format and lifetime, which header carries it, and what BPJS does when it expires mid-session.
 - **How it gets answered:** UAT documentation, then confirmed by BPJS actually calling the facility during UAT.
-- **Blocks:** `P14-T04` entirely. This is the guard on a public write surface; a guessed scheme is worse than no code.
+- **Blocks:** ~~`P14-T04` entirely~~ — the *protocol* half only. The token is issued and verified by a stateless HMAC scheme keyed on the stored password hash; what stays unconfirmed is the wire form (which header carries it, how it is encoded, its lifetime, and what BPJS does when it expires mid-session). A guessed scheme is still worse than no code on a *reachable* write surface, which is why the surface refuses everything until Q6's answer is configured.
 
 ### Q5 — What are the exact inbound service contracts?
 
@@ -70,9 +70,9 @@ Each question carries the current hypothesis and its evidence standing, how it g
 
 ### Q6 — Which source IPs will BPJS call from?
 
-- **Status:** UNANSWERED.
+- **Status:** UNANSWERED. **This is now the switch, not just a setting.** `BPJS_ANTREAN_INBOUND_ALLOWED_IPS` is what turns the inbound surface on: unset, every request is refused before it is parsed.
 - **How it gets answered:** branch office, as part of the intake in §1.1.
-- **Blocks:** `P14-T04`'s allowlist, which is enforced *before* the token check. Also an infrastructure task for whoever owns the deployment.
+- **Blocks:** `P14-T04`'s allowlist, which is enforced *before* the token check — deliberately, so the token check is never a credential oracle for arbitrary callers. Also an infrastructure task for whoever owns the deployment. Until it is answered, `P14-T04` is merged code that serves nobody, which is the intended state.
 
 ### Q7 — Is the v2 response codec identical to D-022's?
 
@@ -133,6 +133,12 @@ Redaction rule for anything committed: no card numbers, no NIK, no member names,
 | Q8 (`X-Authorization` drops away) | The same test connection: a 401 with a valid signature points here | `apps/api/src/common/bpjs-antrean/build-bpjs-antrean-headers.ts` |
 | Q3 (HFIS vs PCare codes) | Diff the decoded `ref/poli` list against the synced PCare `POLI` catalog | `Specialty.bpjsPoliCode` gains an HFIS-scoped sibling, as §2 Q3 says |
 | failure taxonomy | Collect the `metaData.code` values observed | the 200/201 success set in `common/bpjs-gateway/bpjs-gateway.transport.ts` |
+| Q4 (token header) | The first inbound call BPJS makes at UAT | `TOKEN_HEADER` in `modules/bpjs-antrean-ws/guard/bpjs-antrean-inbound-token.guard.ts` — one line |
+| Q4 (token encoding, lifetime) | Same call, plus the UAT document | `modules/bpjs-antrean-ws/service/bpjs-antrean-inbound-token.service.ts`; lifetime is already `BPJS_ANTREAN_INBOUND_TOKEN_TTL_SECONDS` and needs no code change |
+| Q5 (paths, field names, envelope casing) | The UAT document, then the calls themselves | `packages/shared-types/src/bpjs-antrean-ws/{schemas,contracts}.ts` and the `@Post` paths in `modules/bpjs-antrean-ws/controller/bpjs-antrean-ws.controller.ts` |
+| Q6 (source IPs) | Branch office | `BPJS_ANTREAN_INBOUND_ALLOWED_IPS` — configuration, not code; **also the switch that makes the surface reachable at all** |
+| Q9 (`estimasidilayani`) | UAT acceptance criteria | `modules/bpjs-antrean-ws/service/estimate-antrean-service-time.ts`, with `BPJS_ANTREAN_AVERAGE_SERVICE_MINUTES` as the configured average |
+| Q10 (Mobile JKN booking identity) | The inbound contract | `Appointment.bpjsBookingCode` — already unique and already the marker `P14-T05` skips on; a different identifier is a column rename, not a redesign |
 
 ## 4. Exit criteria for `P14-T02`
 
@@ -152,5 +158,5 @@ Stated because the temptation is real and the cost is asymmetric.
 
 - **~~No `BpjsAntreanConfig` schema, no adapter~~ — built (`P14-T03`); no inbound module.** The config row, the outbound adapter, and the admin surface exist. The half that never depended on an answer — a separate credential row, sealed outbound keys, a hashed inbound password, write-only secrets, the audit trail, and the shared gateway transport extracted from the PCare client — is finished and correct on its own terms. The half that does is labelled as such wherever it is load-bearing: the four-header builder (Q8), the `antreanfktp` base URLs (Q2, Q11), the reused D-022 codec (Q7), the `ref/poli` test path (Q2), and the 200/201 success reading inherited from PCare. Those are now **verification steps against running code** rather than prerequisites to writing it, and the first live `ref/poli` call settles four of them at once. The residual cost is the one this bullet always named: the code compiles and passes tests built on its own reading of the spec, so its green suites are evidence of internal consistency and nothing more. **`P14-T04` remains gated** — Q4 and Q5 are a token scheme and a contract on a public write surface, and a guessed guard there is worse than no code.
 - **No hand-written fixtures.** A fixture is evidence. One assembled from a reading of the spec is a restatement of the hypothesis wearing evidence's clothes, and it will pass every test written against it.
-- **No public inbound route.** HMS has exactly two public routes today (`auth`, `health`) and neither writes. The third one is `P14-T04`, behind a purpose-built token guard, an IP allowlist, and per-endpoint rate limiting — all of which need Q4 and Q6 to exist first.
+- **~~No public inbound route~~ — built (`P14-T04`), and dark on every deployment.** The routes exist behind a purpose-built token guard, a source-IP allowlist, and per-endpoint rate limiting. They are also unreachable: the allowlist guard runs first and refuses *everything* while `BPJS_ANTREAN_INBOUND_ALLOWED_IPS` is unset, and the token endpoint refuses everything while `BpjsAntreanConfig` carries no inbound credential pair. Both are values BPJS issues per facility, so neither can be defaulted, guessed, or arrived at by accident — which means the bullet's actual concern is intact. HMS still has two reachable public routes; the third becomes reachable at the moment Q6's answer is typed into an environment file. What remains hypothesis is the protocol (Q4's header and token encoding, Q5's paths and field names, the `metaData` casing); what does not is the ordering of the guards, the absence of any HMS identity in the token, and the six enumerated grants on the reserved system actor.
 - **No promise to the clinic about a date.** The UAT slot, the profile flag, and the credentials are all on BPJS's timeline, not the project's.
