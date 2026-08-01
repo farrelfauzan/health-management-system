@@ -55,6 +55,20 @@ describe('BpjsSubmissionService', () => {
       dispensedMedications: [],
       pendaftaran: null,
       kunjungan: null,
+      antrean: {
+        bpjsBookingCode: null,
+        poliQueueNumber: 3,
+        poliCode: '001',
+        poliName: 'Umum',
+        doctorCode: 'D01',
+        doctorName: 'dr. Andi',
+        practiceWindow: '08:00-12:00',
+        sessionStart: new Date('2026-08-05T01:00:00.000Z'),
+        medicalRecordNumber: '00000042',
+        nationalIdentityNumber: '3201011234567890',
+        phoneNumber: '081200000000',
+      },
+      antreanAdd: null,
       ...overrides,
     };
   }
@@ -76,9 +90,18 @@ describe('BpjsSubmissionService', () => {
       submissionRepositoryMock as never,
       configRepositoryMock as never,
       httpClientMock as never,
+      antreanSubmissionServiceMock as never,
       configServiceMock as never,
     );
   }
+
+  // The Antrean half of the outbox (P14-T05) has its own suite; here it is
+  // stubbed so these cases keep asserting the PCare payloads and the shared
+  // retry bookkeeping without a second integration's transport in the way.
+  const antreanSubmissionServiceMock = {
+    submit: jest.fn(),
+    isPermanentFailure: jest.fn().mockReturnValue(false),
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -191,6 +214,7 @@ describe('BpjsSubmissionService', () => {
     const finishedEncounter = {
       id: 'encounter-1',
       status: 'FINISHED',
+      startedAt: new Date('2026-08-05T02:30:00.000Z'),
       endedAt: new Date('2026-08-05T04:00:00.000Z'),
       subjective: 'Demam tiga hari',
       doctor: mockMappedDoctor,

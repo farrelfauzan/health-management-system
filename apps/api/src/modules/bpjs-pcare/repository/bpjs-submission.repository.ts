@@ -1,4 +1,5 @@
 import {
+  BpjsAntreanSubmissionSourceData,
   BpjsMonthlyReconciliationData,
   BpjsSubmissionDispensedMedicationData,
   BpjsSubmissionDoctorData,
@@ -96,12 +97,28 @@ export class BpjsSubmissionRepository {
         status: true,
         queueDate: true,
         checkedInAt: true,
-        patient: { select: { bpjsNumberCiphertext: true } },
-        appointment: { select: { doctor: { select: DOCTOR_MAPPING_SELECT } } },
+        poliQueueNumber: true,
+        specialty: { select: { name: true, bpjsPoliCode: true } },
+        patient: {
+          select: {
+            mrn: true,
+            phoneNumber: true,
+            bpjsNumberCiphertext: true,
+            nikCiphertext: true,
+          },
+        },
+        appointment: {
+          select: {
+            bpjsBookingCode: true,
+            doctor: { select: DOCTOR_MAPPING_SELECT },
+            session: { select: { sessionDate: true, startTime: true, endTime: true } },
+          },
+        },
         encounter: {
           select: {
             id: true,
             status: true,
+            startedAt: true,
             endedAt: true,
             subjective: true,
             doctor: { select: DOCTOR_MAPPING_SELECT },
@@ -154,7 +171,7 @@ export class BpjsSubmissionRepository {
           },
         },
         bpjsSubmissions: {
-          where: { type: { in: ['PENDAFTARAN', 'KUNJUNGAN'] } },
+          where: { type: { in: ['PENDAFTARAN', 'KUNJUNGAN', 'ANTREAN_ADD'] } },
           select: { type: true, status: true, bpjsReferenceNo: true, submittedKdPoli: true },
         },
       },
@@ -167,6 +184,7 @@ export class BpjsSubmissionRepository {
       (row) => row.type === 'PENDAFTARAN',
     );
     const kunjunganRow = registration.bpjsSubmissions.find((row) => row.type === 'KUNJUNGAN');
+    const antreanAddRow = registration.bpjsSubmissions.find((row) => row.type === 'ANTREAN_ADD');
     const activeReferral =
       registration.encounter?.bpjsReferral?.deletedAt === null
         ? registration.encounter.bpjsReferral
@@ -192,6 +210,7 @@ export class BpjsSubmissionRepository {
           ? null
           : {
               id: registration.encounter.id,
+              startedAt: registration.encounter.startedAt,
               status: registration.encounter.status,
               endedAt: registration.encounter.endedAt,
               subjective: registration.encounter.subjective,
@@ -226,6 +245,50 @@ export class BpjsSubmissionRepository {
       dispensedMedications: this.collectDispensedMedications(registration.encounter),
       pendaftaran: this.toSiblingRow(pendaftaranRow),
       kunjungan: this.toSiblingRow(kunjunganRow),
+      antrean: this.toAntreanData(registration),
+      antreanAdd: this.toSiblingRow(antreanAddRow),
+    };
+  }
+
+  /**
+   * The Antrean Online view of the same visit (P14-T05). The doctor is read
+   * from the appointment rather than the encounter because `antrean/add` is
+   * published at check-in, before any encounter exists — and a walk-in with
+   * no appointment legitimately has no doctor, poli, or session, which the
+   * submission service refuses with a readable message rather than guessing.
+   */
+  private toAntreanData(registration: {
+    poliQueueNumber: number | null;
+    specialty: { name: string; bpjsPoliCode: string | null } | null;
+    patient: { mrn: string; phoneNumber: string; nikCiphertext: string | null };
+    appointment: {
+      bpjsBookingCode: string | null;
+      doctor: DoctorMappingRow;
+      session: { sessionDate: Date; startTime: string; endTime: string } | null;
+    } | null;
+  }): BpjsAntreanSubmissionSourceData {
+    const session = registration.appointment?.session ?? null;
+    return {
+      bpjsBookingCode: registration.appointment?.bpjsBookingCode ?? null,
+      poliQueueNumber: registration.poliQueueNumber,
+      // The poli denormalised onto the registration (P14-T01) is the anchor of
+      // the allocated number, so it wins over the doctor's current specialty:
+      // a doctor who later moves poli must not retag yesterday's ticket.
+      poliCode:
+        registration.specialty?.bpjsPoliCode ??
+        registration.appointment?.doctor.specialty.bpjsPoliCode ??
+        null,
+      poliName: registration.specialty?.name ?? null,
+      doctorCode: registration.appointment?.doctor.bpjsDoctorCode ?? null,
+      doctorName: registration.appointment?.doctor.fullName ?? null,
+      practiceWindow: session === null ? null : `${session.startTime}-${session.endTime}`,
+      sessionStart: session === null ? null : session.sessionDate,
+      medicalRecordNumber: registration.patient.mrn,
+      nationalIdentityNumber:
+        registration.patient.nikCiphertext === null
+          ? null
+          : this.identifierCryptoService.decryptIdentifier(registration.patient.nikCiphertext),
+      phoneNumber: registration.patient.phoneNumber,
     };
   }
 

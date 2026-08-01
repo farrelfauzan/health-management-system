@@ -12347,6 +12347,9 @@ paths:
               - KUNJUNGAN
               - PENDAFTARAN_DELETE
               - OBAT
+              - ANTREAN_ADD
+              - ANTREAN_PANGGIL
+              - ANTREAN_BATAL
         - name: registrationId
           required: false
           in: query
@@ -13150,6 +13153,108 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
+      tags: *a22
+  /api/v1/bpjs/antrean/hfis-reconciliation:
+    get:
+      operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Reads the HFIS poli and doctor references live and diffs them
+            against mapped specialties, mapped practitioners, and the next week
+            of open sessions. This is a report, never a sync: HMS cannot write
+            HFIS, and either system can be the wrong one — the clinic fixes
+            whichever it is. The finding that costs a patient something is
+            NO_OPEN_SESSION, where Mobile JKN advertises a shift HMS cannot
+            honour."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      checkedAt:
+                        type: string
+                      windowFrom:
+                        type: string
+                      windowTo:
+                        type: string
+                      hfisPoliCount:
+                        type: integer
+                      hfisDoctorCount:
+                        type: integer
+                      findings:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            kind:
+                              type: string
+                            code:
+                              type: string
+                            subject:
+                              type: string
+                            detail:
+                              type: string
+                          required:
+                            - kind
+                            - code
+                            - subject
+                            - detail
+                    required:
+                      - checkedAt
+                      - windowFrom
+                      - windowTo
+                      - hfisPoliCount
+                      - hfisDoctorCount
+                      - findings
+                required:
+                  - data
+                example:
+                  data:
+                    checkedAt: 2026-08-16T02:00:00.000Z
+                    windowFrom: 2026-08-16
+                    windowTo: 2026-08-23
+                    hfisPoliCount: 3
+                    hfisDoctorCount: 5
+                    findings:
+                      - kind: NO_OPEN_SESSION
+                        code: D01
+                        subject: dr. Andi Prasetyo
+                        detail: HFIS advertises this practitioner but HMS has no open session for them
+                          in the window — a member who books will be refused
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: BPJS Antrean is not configured.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: BPJS Antrean is not configured.
+      security:
+        - bearer: []
+      summary: Compare HFIS against HMS and report the disagreements
       tags: *a22
   /api/v1/admin/ai-providers:
     get:

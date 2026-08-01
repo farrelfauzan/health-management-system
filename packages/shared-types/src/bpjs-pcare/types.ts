@@ -265,6 +265,12 @@ export type BpjsSubmissionDispensedMedicationData = {
 
 export type BpjsSubmissionEncounterData = {
   id: string;
+  /**
+   * When the doctor began seeing the patient. The closest thing HMS observes
+   * to Antrean Online's "sedang dilayani" (P14-T05, §3.5) — there is no
+   * "patient called" event to use instead.
+   */
+  startedAt: Date;
   status: string;
   endedAt: Date | null;
   subjective: string | null;
@@ -286,6 +292,32 @@ export type BpjsSubmissionSiblingRow = {
   submittedKdPoli: string | null;
 };
 
+/**
+ * The fields only Antrean Online publishing needs (P14-T05), kept in their own
+ * block rather than flattened onto the source data so the PCare submission
+ * path reads exactly as it did before this task.
+ *
+ * `bpjsBookingCode` is the provenance marker and the reason this block exists
+ * at all: a booking BPJS made through Mobile JKN is already BPJS's own row,
+ * and publishing `antrean/add` for it would give the member two queue numbers.
+ */
+export type BpjsAntreanSubmissionSourceData = {
+  /** BPJS's own identifier when the booking came from Mobile JKN; null for a walk-in. */
+  bpjsBookingCode: string | null;
+  /** The per-poli antrian number (P14-T01) — what `angkaantrean` carries. */
+  poliQueueNumber: number | null;
+  poliCode: string | null;
+  poliName: string | null;
+  doctorCode: string | null;
+  doctorName: string | null;
+  /** Session window as `HH:mm-HH:mm`, or null for a walk-in with no session. */
+  practiceWindow: string | null;
+  sessionStart: Date | null;
+  medicalRecordNumber: string;
+  nationalIdentityNumber: string | null;
+  phoneNumber: string;
+};
+
 export type BpjsSubmissionSourceData = {
   registration: {
     id: string;
@@ -301,4 +333,7 @@ export type BpjsSubmissionSourceData = {
   dispensedMedications: BpjsSubmissionDispensedMedicationData[];
   pendaftaran: BpjsSubmissionSiblingRow | null;
   kunjungan: BpjsSubmissionSiblingRow | null;
+  antrean: BpjsAntreanSubmissionSourceData;
+  /** The sibling `ANTREAN_ADD` row, read by `panggil` and `batal` to know a queue entry exists upstream. */
+  antreanAdd: BpjsSubmissionSiblingRow | null;
 };

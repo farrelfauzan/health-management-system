@@ -68,12 +68,19 @@ type MonitorRow = {
 };
 
 const STATUS_OPTIONS: StatusFilter[] = ['ALL', 'PENDING', 'SUBMITTED', 'FAILED'];
+// Both BPJS integrations drain through one outbox, so this filter spans them:
+// the first four are PCare claims (P11-T05), the ANTREAN_* three are Antrean
+// Online queue publishing (P14-T05). Listed rather than derived from the enum
+// so the order stays meaningful to an operator — claims first, queue second.
 const TYPE_OPTIONS: Array<'ALL' | BpjsSubmissionTypeValue> = [
   'ALL',
   'PENDAFTARAN',
   'KUNJUNGAN',
   'PENDAFTARAN_DELETE',
   'OBAT',
+  'ANTREAN_ADD',
+  'ANTREAN_PANGGIL',
+  'ANTREAN_BATAL',
 ];
 
 function currentMonth(): string {

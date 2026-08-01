@@ -146,6 +146,13 @@ export const BPJS_SUBMISSION_TYPES = [
   'KUNJUNGAN',
   'PENDAFTARAN_DELETE',
   'OBAT',
+  // Antrean Online publishing (P14-T05). Same outbox, same worker, same
+  // monitor — a different BPJS service behind them. Listed here rather than
+  // in a separate enum so the submissions screen's type filter covers both
+  // integrations without the UI having to know there are two.
+  'ANTREAN_ADD',
+  'ANTREAN_PANGGIL',
+  'ANTREAN_BATAL',
 ] as const;
 
 export const bpjsSubmissionTypeSchema = z.enum(BPJS_SUBMISSION_TYPES);

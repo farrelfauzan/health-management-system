@@ -20,6 +20,7 @@ import { buildBpjsPendaftaranDeletePath } from '../../../common/bpjs-pcare/build
 import { buildBpjsPendaftaranPayload } from '../../../common/bpjs-pcare/build-bpjs-pendaftaran-payload';
 import { resolveBpjsPcareAdapterConfig } from '../../../common/bpjs-pcare/bpjs-pcare.config';
 import { parseBpjsPcareSubmissionReference } from '../../../common/bpjs-pcare/parse-bpjs-pcare-submission-reference';
+import { BpjsAntreanSubmissionService } from '../../bpjs-antrean/service/bpjs-antrean-submission.service';
 import { BpjsPcareConfigRepository } from '../repository/bpjs-pcare-config.repository';
 import { BpjsSubmissionRepository } from '../repository/bpjs-submission.repository';
 import { BpjsSubmissionDataError } from './bpjs-submission-data.error';
@@ -30,6 +31,11 @@ const PERMANENT_ERROR_CODES: readonly BpjsPcareErrorCode[] = [
   'BPJS_PCARE_REQUEST_REJECTED',
 ];
 const MAX_STORED_ERROR_LENGTH = 500;
+const ANTREAN_SUBMISSION_TYPES: readonly BpjsSubmissionRecord['type'][] = [
+  'ANTREAN_ADD',
+  'ANTREAN_PANGGIL',
+  'ANTREAN_BATAL',
+];
 
 type BpjsSubmissionOutcome = {
   bpjsReferenceNo: string | null;
@@ -37,7 +43,8 @@ type BpjsSubmissionOutcome = {
 };
 
 /**
- * Drains the BPJS submission outbox (P11-T05), mirroring the SATUSEHAT
+ * Drains the BPJS submission outbox (P11-T05, extended by P14-T05), mirroring
+ * the SATUSEHAT
  * submission service: an attempt either settles the row SUBMITTED, schedules
  * an exponential-backoff retry, or fails it permanently. Data errors
  * (missing mappings, missing primary diagnosis, cancelled registrations)
@@ -48,6 +55,14 @@ type BpjsSubmissionOutcome = {
  * arrives when the encounter opens, so time fixes it where the retry budget
  * allows. {@link processSubmission} never throws: the worker and the ops
  * retry endpoint both rely on that.
+ *
+ * Since P14-T05 this service drains **two** BPJS integrations. The Antrean
+ * types are delegated to {@link BpjsAntreanSubmissionService} for payload
+ * building and transport — they sign with different credentials and run on
+ * their own circuit breaker — while the outbox bookkeeping stays here, so
+ * there is exactly one retry policy, one worker and one monitor for both.
+ * Splitting the bookkeeping would mean two backoff curves to keep in step,
+ * which is the failure mode §4.4 of the evaluation set out to avoid.
  */
 @Injectable()
 export class BpjsSubmissionService {
@@ -57,6 +72,7 @@ export class BpjsSubmissionService {
     private readonly submissionRepository: BpjsSubmissionRepository,
     private readonly configRepository: BpjsPcareConfigRepository,
     private readonly httpClient: BpjsPcareHttpClient,
+    private readonly antreanSubmissionService: BpjsAntreanSubmissionService,
     configService: ConfigService,
   ) {
     this.adapterConfig = resolveBpjsPcareAdapterConfig(configService);
@@ -90,6 +106,9 @@ export class BpjsSubmissionService {
     }
     if (submission.type === 'OBAT') {
       return this.submitObat(sourceData);
+    }
+    if (this.isAntreanSubmission(submission.type)) {
+      return this.antreanSubmissionService.submit(submission.type, sourceData);
     }
     return this.submitPendaftaranDelete(sourceData);
   }
@@ -344,7 +363,12 @@ export class BpjsSubmissionService {
     const lastError = this.describeError(caughtError);
     const isPermanent =
       caughtError instanceof BpjsSubmissionDataError ||
-      (caughtError instanceof BpjsPcareError && PERMANENT_ERROR_CODES.includes(caughtError.code));
+      (caughtError instanceof BpjsPcareError && PERMANENT_ERROR_CODES.includes(caughtError.code)) ||
+      // Antrean failures carry their own error vocabulary, so the two services
+      // each classify their own upstream. Everything after that — attempt
+      // counting, the backoff curve, the retry endpoint, the monitor — is
+      // shared, which is the point of putting both on one outbox (§4.4).
+      this.antreanSubmissionService.isPermanentFailure(caughtError);
     if (isPermanent || attemptNumber >= this.adapterConfig.submissionMaxAttempts) {
       await this.submissionRepository.markFailed({
         id: submission.id,
@@ -366,6 +390,10 @@ export class BpjsSubmissionService {
     this.logger.warn(
       `BPJS ${submission.type} attempt ${attemptNumber} failed; retrying in ${delayMs}ms`,
     );
+  }
+
+  private isAntreanSubmission(type: BpjsSubmissionRecord['type']): boolean {
+    return ANTREAN_SUBMISSION_TYPES.includes(type);
   }
 
   private describeError(caughtError: unknown): string {

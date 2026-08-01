@@ -324,9 +324,11 @@ export class RegistrationFlowRepository {
           WHERE "id" = ${updated.patientId}::uuid
         `;
         await this.enqueueBpjsPendaftaran(tx, updated.id, updated.patientId);
+        await this.enqueueBpjsAntreanAdd(tx, updated.id, updated.patientId, updated.appointmentId);
       }
       if (payload.status === 'CANCELLED') {
         await this.propagateBpjsCancellation(tx, updated.id);
+        await this.propagateBpjsAntreanCancellation(tx, updated.id);
       }
       return updated;
     });
@@ -354,6 +356,86 @@ export class RegistrationFlowRepository {
     await tx.bpjsSubmission.upsert({
       where: { registrationId_type: { registrationId, type: 'PENDAFTARAN' } },
       create: { registrationId, type: 'PENDAFTARAN' },
+      update: {},
+    });
+  }
+
+  /**
+   * Publishes a **walk-in's** queue entry to Antrean Online (P14-T05).
+   *
+   * The provenance check is the load-bearing line: a registration whose
+   * appointment carries a `bpjsBookingCode` came from Mobile JKN through the
+   * inbound `ambil antrean` service (P14-T04), so BPJS already holds that
+   * queue entry. Publishing it back with `antrean/add` would give the member
+   * two numbers for one visit — which is exactly why the evaluation §4.4 calls
+   * provenance "a second reason that column is not optional".
+   *
+   * Gated on an active `BpjsAntreanConfig` as well as the card number, so a
+   * clinic running PCare bridging with no antrean never accumulates rows for
+   * an integration it has not been issued credentials for.
+   */
+  private async enqueueBpjsAntreanAdd(
+    tx: PrismaTransactionClient,
+    registrationId: string,
+    patientId: string,
+    appointmentId: string | null,
+  ): Promise<void> {
+    const patient = await tx.patientProfile.findFirst({
+      where: { id: patientId },
+      select: { bpjsNumberCiphertext: true },
+    });
+    if (!patient?.bpjsNumberCiphertext) {
+      return;
+    }
+    const activeConfig = await tx.bpjsAntreanConfig.findFirst({
+      where: { facilityId: null, isActive: true },
+      select: { id: true },
+    });
+    if (!activeConfig) {
+      return;
+    }
+    if (appointmentId !== null && (await this.hasBpjsOriginBooking(tx, appointmentId))) {
+      return;
+    }
+    await tx.bpjsSubmission.upsert({
+      where: { registrationId_type: { registrationId, type: 'ANTREAN_ADD' } },
+      create: { registrationId, type: 'ANTREAN_ADD' },
+      update: {},
+    });
+  }
+
+  private async hasBpjsOriginBooking(
+    tx: PrismaTransactionClient,
+    appointmentId: string,
+  ): Promise<boolean> {
+    const appointment = await tx.appointment.findFirst({
+      where: { id: appointmentId, deletedAt: null },
+      select: { bpjsBookingCode: true },
+    });
+    return appointment?.bpjsBookingCode != null;
+  }
+
+  /**
+   * Withdraws a queue entry the clinic published. Mirrors
+   * {@link propagateBpjsCancellation}: only a queue entry BPJS actually
+   * received is worth cancelling, so an `ANTREAN_ADD` still pending or failed
+   * is simply left alone — cancelling something never sent would be an error
+   * on BPJS's side and a confusing FAILED row on the monitor.
+   */
+  private async propagateBpjsAntreanCancellation(
+    tx: PrismaTransactionClient,
+    registrationId: string,
+  ): Promise<void> {
+    const antreanAdd = await tx.bpjsSubmission.findUnique({
+      where: { registrationId_type: { registrationId, type: 'ANTREAN_ADD' } },
+      select: { status: true },
+    });
+    if (antreanAdd?.status !== 'SUBMITTED') {
+      return;
+    }
+    await tx.bpjsSubmission.upsert({
+      where: { registrationId_type: { registrationId, type: 'ANTREAN_BATAL' } },
+      create: { registrationId, type: 'ANTREAN_BATAL' },
       update: {},
     });
   }

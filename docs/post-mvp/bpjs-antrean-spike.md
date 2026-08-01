@@ -38,7 +38,7 @@ Each question carries the current hypothesis and its evidence standing, how it g
 - **Status:** UNANSWERED. *This is the first question; several others read differently depending on it.*
 - **Hypothesis:** FKTP uses the simpler `antrean/panggil` (`status` + `waktu`) pair, and the FKRTL task-ID set (`antrean/updatewaktu` with `taskid` 1–7 plus 99 for no-show, read back via `antrean/getlisttask`) does not apply. Evidence standing: weak — the FKTP material is thinner than FKRTL's and the two mix freely in circulated documents.
 - **How it gets answered:** the UAT checklist enumerates the services the facility must demonstrate. Confirm against that document, then against a real `panggil` call.
-- **Blocks:** `P14-T05` (how many lifecycle events HMS emits) and, if task IDs *do* apply, a decision that reaches beyond the integration: HMS records no "patient called" event at all — `RegistrationStatus` goes `PENDING → CHECKED_IN → COMPLETED` — so it must either add that event to the registration lifecycle (a real UX change on the doctor's queue screen) or send the encounter-open time as an approximation and accept called-time ≈ served-time on BPJS's dashboard. See [bpjs-antrean-online.md](./bpjs-antrean-online.md) §3.5. Do not decide this before the answer.
+- **Blocks:** `P14-T05`'s lifecycle coverage. That task shipped publishing **one** status (`sedang dilayani`, at the moment the encounter opens), because it is the only queue event HMS genuinely observes. If task IDs *do* apply, the fix is not a payload edit but a decision that reaches beyond the integration: HMS records no "patient called" event at all — `RegistrationStatus` goes `PENDING → CHECKED_IN → COMPLETED` — so it must either add that event to the registration lifecycle (a real UX change on the doctor's queue screen) or send the encounter-open time as an approximation and accept called-time ≈ served-time on BPJS's dashboard. See [bpjs-antrean-online.md](./bpjs-antrean-online.md) §3.5. Do not decide this before the answer.
 
 ### Q2 — What is the exact outbound endpoint set for FKTP?
 
@@ -139,6 +139,10 @@ Redaction rule for anything committed: no card numbers, no NIK, no member names,
 | Q6 (source IPs) | Branch office | `BPJS_ANTREAN_INBOUND_ALLOWED_IPS` — configuration, not code; **also the switch that makes the surface reachable at all** |
 | Q9 (`estimasidilayani`) | UAT acceptance criteria | `modules/bpjs-antrean-ws/service/estimate-antrean-service-time.ts`, with `BPJS_ANTREAN_AVERAGE_SERVICE_MINUTES` as the configured average |
 | Q10 (Mobile JKN booking identity) | The inbound contract | `Appointment.bpjsBookingCode` — already unique and already the marker `P14-T05` skips on; a different identifier is a column rename, not a redesign |
+| Q1 (task IDs vs `panggil`) | The UAT checklist, then one live `panggil` | `common/bpjs-antrean/build-bpjs-antrean-panggil-payload.ts` for the payload; the *lifecycle* answer is a new task, not an edit here |
+| Q2 (outbound payload fields) | The UAT checklist, then one live call each | `common/bpjs-antrean/build-bpjs-antrean-{add,panggil,batal}-payload.ts`, one file per service |
+| Q2 (date format) | The first accepted `antrean/add` | `common/bpjs-antrean/format-bpjs-antrean-date.ts` — deliberately separate from PCare's `dd-MM-yyyy` (D-022) |
+| Q3 (HFIS vs PCare codes), operationally | Admin → Integrations → BPJS Antrean → *HFIS reconciliation* | the report is the diff; a divergence shows up as `POLI_ONLY_IN_HFIS` / `DOCTOR_ONLY_IN_HFIS` findings rather than as a silent mismatch |
 
 ## 4. Exit criteria for `P14-T02`
 

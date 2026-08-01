@@ -15,7 +15,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AppointmentManagementService } from '../../appointment-management/service/appointment-management.service';
 import { PatientManagementService } from '../../patient-management/service/patient-management.service';
 import { BpjsAntreanServiceError } from '../bpjs-antrean-service.error';
-import { buildAntreanBookingCode } from './build-antrean-booking-code';
+import { buildAntreanBookingCode } from '../../../common/bpjs-antrean/build-antrean-booking-code';
 import { estimateAntreanServiceTime } from './estimate-antrean-service-time';
 import { BpjsAntreanInboundConfig } from '../../../common/bpjs-antrean/bpjs-antrean-inbound.config';
 import {
