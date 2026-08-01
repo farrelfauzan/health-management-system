@@ -3,7 +3,13 @@ import { randomBytes } from 'node:crypto';
 const RANDOM_BYTE_COUNT = 5;
 
 /**
- * Mints the `kodebooking` HMS returns from `ambil antrean` (P14-T04).
+ * Mints a `kodebooking` — the identifier BPJS holds for one queue entry.
+ *
+ * Used in **both** directions, which is why it lives in `common/`: the
+ * inbound `ambil antrean` service (P14-T04) mints one for a Mobile JKN
+ * booking, and the outbound `antrean/add` publisher (P14-T05) mints one for a
+ * walk-in. Two generators would eventually disagree, and the column they both
+ * write is unique.
  *
  * The facility issues this code, not BPJS — it is the handle the member's
  * phone then carries back on `sisa antrean` and `batal antrean`. Two

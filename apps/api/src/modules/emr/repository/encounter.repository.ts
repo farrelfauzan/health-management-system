@@ -138,14 +138,53 @@ export class EncounterRepository {
   async createEncounter(
     payload: CreateEncounterRecordPayload,
   ): Promise<EncounterWithRelationsRecord> {
-    return this.prisma.encounter.create({
-      data: {
-        registrationId: payload.registrationId,
-        patientId: payload.patientId,
-        doctorId: payload.doctorId,
-        createdById: payload.createdById,
-      },
-      include: ENCOUNTER_LIST_INCLUDE,
+    return this.prisma.executeTransaction(async (tx) => {
+      const created = await tx.encounter.create({
+        data: {
+          registrationId: payload.registrationId,
+          patientId: payload.patientId,
+          doctorId: payload.doctorId,
+          createdById: payload.createdById,
+        },
+        include: ENCOUNTER_LIST_INCLUDE,
+      });
+      await this.enqueueBpjsAntreanPanggil(tx, payload.registrationId);
+      return created;
+    });
+  }
+
+  /**
+   * Reports service progress to Antrean Online (P14-T05). Enqueued when the
+   * encounter *opens*, because that is the only moment in the visit HMS
+   * actually observes that maps onto BPJS's queue lifecycle — there is no
+   * "patient called" event anywhere in the registration lifecycle (evaluation
+   * §3.5), and inventing one from the check-in time would report a queue
+   * position, not a service start.
+   *
+   * Enqueued in the same transaction as the encounter, so a visit that opened
+   * always has its progress row and a rolled-back open never leaves one.
+   * Skipped entirely unless the clinic has a queue entry to update at all —
+   * no `ANTREAN_ADD` row means either no antrean bridging or a Mobile JKN
+   * booking whose entry BPJS already owns. The row is enqueued as soon as the
+   * add *exists*, not once it has been sent: a walk-in can be seen before the
+   * worker drains, and the submission service holds `panggil` back until the
+   * add settles, the same way `kunjungan` waits for `pendaftaran`.
+   */
+  private async enqueueBpjsAntreanPanggil(
+    tx: PrismaTransactionClient,
+    registrationId: string,
+  ): Promise<void> {
+    const antreanAdd = await tx.bpjsSubmission.findUnique({
+      where: { registrationId_type: { registrationId, type: 'ANTREAN_ADD' } },
+      select: { status: true },
+    });
+    if (antreanAdd === null) {
+      return;
+    }
+    await tx.bpjsSubmission.upsert({
+      where: { registrationId_type: { registrationId, type: 'ANTREAN_PANGGIL' } },
+      create: { registrationId, type: 'ANTREAN_PANGGIL' },
+      update: {},
     });
   }
 

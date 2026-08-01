@@ -73,7 +73,10 @@ export const BpjsSubmissionType = {
   PENDAFTARAN: 'PENDAFTARAN',
   KUNJUNGAN: 'KUNJUNGAN',
   PENDAFTARAN_DELETE: 'PENDAFTARAN_DELETE',
-  OBAT: 'OBAT'
+  OBAT: 'OBAT',
+  ANTREAN_ADD: 'ANTREAN_ADD',
+  ANTREAN_PANGGIL: 'ANTREAN_PANGGIL',
+  ANTREAN_BATAL: 'ANTREAN_BATAL'
 } as const
 
 export type BpjsSubmissionType = (typeof BpjsSubmissionType)[keyof typeof BpjsSubmissionType]

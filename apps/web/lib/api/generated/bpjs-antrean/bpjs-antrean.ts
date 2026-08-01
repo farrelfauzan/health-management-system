@@ -23,6 +23,7 @@ import type {
 import type {
   BpjsAntreanConfigControllerDeleteConfigV1200,
   BpjsAntreanConfigControllerGetConfigV1200,
+  BpjsAntreanConfigControllerGetHfisReconciliationV1200,
   BpjsAntreanConfigControllerGetInboundReadinessV1200,
   BpjsAntreanConfigControllerTestConnectionV1200,
   BpjsAntreanConfigControllerUpsertConfigV1200,
@@ -500,6 +501,98 @@ export function useBpjsAntreanConfigControllerGetInboundReadinessV1<TData = Awai
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getBpjsAntreanConfigControllerGetInboundReadinessV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Compare HFIS against HMS and report the disagreements
+ */
+export const bpjsAntreanConfigControllerGetHfisReconciliationV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<BpjsAntreanConfigControllerGetHfisReconciliationV1200>(
+      {url: `/api/v1/bpjs/antrean/hfis-reconciliation`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getBpjsAntreanConfigControllerGetHfisReconciliationV1QueryKey = () => {
+    return [
+    `/api/v1/bpjs/antrean/hfis-reconciliation`
+    ] as const;
+    }
+
+
+export const getBpjsAntreanConfigControllerGetHfisReconciliationV1QueryOptions = <TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getBpjsAntreanConfigControllerGetHfisReconciliationV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>> = ({ signal }) => bpjsAntreanConfigControllerGetHfisReconciliationV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type BpjsAntreanConfigControllerGetHfisReconciliationV1QueryResult = NonNullable<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>>
+export type BpjsAntreanConfigControllerGetHfisReconciliationV1QueryError = unknown
+
+
+export function useBpjsAntreanConfigControllerGetHfisReconciliationV1<TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>,
+          TError,
+          Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useBpjsAntreanConfigControllerGetHfisReconciliationV1<TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>,
+          TError,
+          Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useBpjsAntreanConfigControllerGetHfisReconciliationV1<TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Compare HFIS against HMS and report the disagreements
+ */
+
+export function useBpjsAntreanConfigControllerGetHfisReconciliationV1<TData = Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof bpjsAntreanConfigControllerGetHfisReconciliationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getBpjsAntreanConfigControllerGetHfisReconciliationV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

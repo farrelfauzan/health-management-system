@@ -51,4 +51,20 @@ export const BPJS_ANTREAN_EXAMPLES = {
     tokenLifetimeSeconds: 3600,
     trustedProxyHopCount: 0,
   },
+  reconciliationReport: {
+    checkedAt: '2026-08-16T02:00:00.000Z',
+    windowFrom: '2026-08-16',
+    windowTo: '2026-08-23',
+    hfisPoliCount: 3,
+    hfisDoctorCount: 5,
+    findings: [
+      {
+        kind: 'NO_OPEN_SESSION',
+        code: 'D01',
+        subject: 'dr. Andi Prasetyo',
+        detail:
+          'HFIS advertises this practitioner but HMS has no open session for them in the window — a member who books will be refused',
+      },
+    ],
+  },
 } as const;

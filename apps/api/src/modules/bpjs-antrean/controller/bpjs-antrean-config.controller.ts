@@ -17,6 +17,7 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { BPJS_ANTREAN_EXAMPLES } from '../../../common/openapi/bpjs-antrean-examples';
 import { UpsertBpjsAntreanConfigDto } from '../dto/upsert-bpjs-antrean-config.dto';
 import { BpjsAntreanConfigService } from '../service/bpjs-antrean-config.service';
+import { BpjsAntreanReconciliationService } from '../service/bpjs-antrean-reconciliation.service';
 
 @ApiTags('BPJS Antrean')
 @Controller({
@@ -24,7 +25,10 @@ import { BpjsAntreanConfigService } from '../service/bpjs-antrean-config.service
   path: 'bpjs/antrean',
 })
 export class BpjsAntreanConfigController {
-  constructor(private readonly configService: BpjsAntreanConfigService) {}
+  constructor(
+    private readonly configService: BpjsAntreanConfigService,
+    private readonly reconciliationService: BpjsAntreanReconciliationService,
+  ) {}
 
   @Get('config')
   @Auth([{ action: 'manage', subject: 'BpjsConfig' }])
@@ -122,6 +126,22 @@ export class BpjsAntreanConfigController {
     const readiness = await this.configService.getInboundReadiness();
 
     return { data: readiness };
+  }
+
+  @Get('hfis-reconciliation')
+  @Auth([{ action: 'manage', subject: 'BpjsConfig' }])
+  @ApiEndpoint({
+    summary: 'Compare HFIS against HMS and report the disagreements',
+    responseDescription:
+      'Reads the HFIS poli and doctor references live and diffs them against mapped specialties, mapped practitioners, and the next week of open sessions. This is a report, never a sync: HMS cannot write HFIS, and either system can be the wrong one — the clinic fixes whichever it is. The finding that costs a patient something is NO_OPEN_SESSION, where Mobile JKN advertises a shift HMS cannot honour.',
+    responseExample: { data: BPJS_ANTREAN_EXAMPLES.reconciliationReport },
+    notFoundDescription: 'BPJS Antrean is not configured.',
+  })
+  async getHfisReconciliation(@AuthUser() currentUser?: CurrentUser) {
+    this.assertAuthenticated(currentUser);
+    const report = await this.reconciliationService.buildReport();
+
+    return { data: report };
   }
 
   private assertAuthenticated(currentUser?: CurrentUser): CurrentUser {

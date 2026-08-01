@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { BpjsPcareModule } from '../../common/bpjs-pcare/bpjs-pcare.module';
+import { BpjsAntreanIntegrationModule } from '../bpjs-antrean/bpjs-antrean-integration.module';
 import { BpjsEligibilityController } from './controller/bpjs-eligibility.controller';
 import { BpjsMappingController } from './controller/bpjs-mapping.controller';
 import { BpjsPcareConfigController } from './controller/bpjs-pcare-config.controller';
@@ -30,7 +31,7 @@ import { BpjsSubmissionWorker } from './service/bpjs-submission.worker';
  * the common {@link BpjsPcareModule} adapter it builds on.
  */
 @Module({
-  imports: [BpjsPcareModule],
+  imports: [BpjsPcareModule, BpjsAntreanIntegrationModule],
   controllers: [
     BpjsPcareConfigController,
     BpjsReferenceController,

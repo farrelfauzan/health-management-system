@@ -3,7 +3,10 @@ import { Module } from '@nestjs/common';
 import { BpjsAntreanModule } from '../../common/bpjs-antrean/bpjs-antrean.module';
 import { BpjsAntreanConfigController } from './controller/bpjs-antrean-config.controller';
 import { BpjsAntreanConfigRepository } from './repository/bpjs-antrean-config.repository';
+import { BpjsAntreanReconciliationRepository } from './repository/bpjs-antrean-reconciliation.repository';
 import { BpjsAntreanConfigService } from './service/bpjs-antrean-config.service';
+import { BpjsAntreanReconciliationService } from './service/bpjs-antrean-reconciliation.service';
+import { BpjsAntreanSubmissionService } from './service/bpjs-antrean-submission.service';
 
 /**
  * Feature module for BPJS Antrean Online (Mobile JKN) bridging (P14-T03:
@@ -20,9 +23,15 @@ import { BpjsAntreanConfigService } from './service/bpjs-antrean-config.service'
 @Module({
   imports: [BpjsAntreanModule],
   controllers: [BpjsAntreanConfigController],
-  providers: [BpjsAntreanConfigRepository, BpjsAntreanConfigService],
+  providers: [
+    BpjsAntreanConfigRepository,
+    BpjsAntreanReconciliationRepository,
+    BpjsAntreanConfigService,
+    BpjsAntreanSubmissionService,
+    BpjsAntreanReconciliationService,
+  ],
   // The inbound web service (P14-T04) verifies BPJS's credentials through this
   // service; the stored hash never leaves the repository behind it.
-  exports: [BpjsAntreanConfigService],
+  exports: [BpjsAntreanConfigService, BpjsAntreanSubmissionService],
 })
 export class BpjsAntreanIntegrationModule {}

@@ -67,6 +67,22 @@ enum BpjsSubmissionType {
   KUNJUNGAN
   PENDAFTARAN_DELETE
   OBAT
+  /// Antrean Online publishing (P14-T05). These ride the *same* outbox table,
+  /// worker, backoff and monitor as the PCare types — §4.4 of the evaluation
+  /// asks for exactly that, and the alternative was a second worker with a
+  /// second retry policy to keep in step.
+  ///
+  /// They are still a different integration: they sign with the Antrean
+  /// credentials, not PCare's, and each service has its own circuit breaker,
+  /// so a PCare outage cannot stop antrean publishing or the reverse.
+  ///
+  /// ANTREAN_ADD is enqueued for **walk-ins only**. A Mobile JKN booking is
+  /// already BPJS's own row, and re-publishing it would create a duplicate
+  /// queue entry for the member; `Appointment.bpjsBookingCode` is what the
+  /// enqueue hook checks to tell the two apart.
+  ANTREAN_ADD
+  ANTREAN_PANGGIL
+  ANTREAN_BATAL
 }
 
 /// FAILED is terminal for the worker: only an admin retry re-opens it —
