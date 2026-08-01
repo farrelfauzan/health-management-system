@@ -1,4 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseFilters, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 
 import {
@@ -28,6 +38,7 @@ import { BpjsAntreanInboundTokenService } from '../service/bpjs-antrean-inbound-
 import { BpjsAntreanNewPatientService } from '../service/bpjs-antrean-new-patient.service';
 import { BpjsAntreanQueueService } from '../service/bpjs-antrean-queue.service';
 import { BpjsAntreanSystemActorService } from '../service/bpjs-antrean-system-actor.service';
+import { BpjsAntreanInboundCaptureInterceptor } from './bpjs-antrean-inbound-capture.interceptor';
 import { BpjsAntreanWsExceptionFilter } from './bpjs-antrean-ws-exception.filter';
 
 const OK_META_CODE = 200;
@@ -63,10 +74,16 @@ const OK_MESSAGE = 'Ok';
  *
  * Every endpoint answers 200 with BPJS's `metaData` envelope, including on
  * failure — see {@link BpjsAntreanWsExceptionFilter}.
+ *
+ * The capture interceptor is the UAT instrument (P14-T06) and is inert unless
+ * an operator configures a capture directory. It sits after the guards on
+ * purpose: a refused request must not write an attacker-controlled body to
+ * the facility's disk.
  */
 @ApiExcludeController()
 @Controller({ version: '1', path: 'bpjs/antrean/ws' })
 @UseFilters(BpjsAntreanWsExceptionFilter)
+@UseInterceptors(BpjsAntreanInboundCaptureInterceptor)
 export class BpjsAntreanWsController {
   constructor(
     private readonly tokenService: BpjsAntreanInboundTokenService,

@@ -63,6 +63,27 @@ export type BpjsGatewayServiceProfile = {
   readonly isServiceError: (caughtError: unknown) => boolean;
   /** Short, credential-free description of a failure for the retry log line. */
   readonly describeFailure: (caughtError: unknown) => string;
+  /**
+   * Optional UAT instrument (P14-T06). When present, the transport hands it
+   * every completed exchange — **including rejected ones**, because the
+   * failure taxonomy is one of the fixtures `P14-T02` must record from real
+   * responses rather than guess. Fire-and-forget by contract: the transport
+   * never awaits it and never lets it affect the call.
+   */
+  readonly captureExchange?: (exchange: BpjsGatewayCapturedExchange) => void;
+};
+
+/** One completed request/response exchange, as handed to {@link BpjsGatewayServiceProfile.captureExchange}. */
+export type BpjsGatewayCapturedExchange = {
+  readonly method: BpjsGatewayHttpMethod;
+  readonly path: string;
+  readonly statusCode: number;
+  readonly requestHeaders: Readonly<Record<string, string>>;
+  readonly requestBody: unknown;
+  readonly rawResponseBody: string;
+  readonly decodedResponse: unknown;
+  readonly outcome: 'ACCEPTED' | 'REJECTED';
+  readonly failureReason?: string;
 };
 
 /**

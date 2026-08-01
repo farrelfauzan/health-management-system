@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 import { BpjsGatewayCircuitBreaker } from './bpjs-gateway-circuit-breaker';
 import {
   BpjsGatewayCall,
+  BpjsGatewayCapturedExchange,
   BpjsGatewayHttpMethod,
   BpjsGatewayResiliencePolicy,
   BpjsGatewayResponseEnvelope,
@@ -106,15 +107,19 @@ export class BpjsGatewayTransport {
 
   private async performCall(call: BpjsGatewayCall): Promise<BpjsGatewayResponseEnvelope> {
     const timestampSeconds = Math.floor(Date.now() / 1000);
-    const response = await this.performFetch(call, timestampSeconds);
-    return this.parseResponse(call, response, timestampSeconds);
-  }
-
-  private async performFetch(call: BpjsGatewayCall, timestampSeconds: number): Promise<Response> {
     const headers: Record<string, string> = {
       ...call.buildHeaders(timestampSeconds),
       Accept: 'application/json',
     };
+    const response = await this.performFetch(call, headers);
+    return this.parseResponse(call, response, timestampSeconds, headers);
+  }
+
+  private async performFetch(
+    call: BpjsGatewayCall,
+    signedHeaders: Record<string, string>,
+  ): Promise<Response> {
+    const headers: Record<string, string> = { ...signedHeaders };
     const hasBody = call.request.body !== undefined;
     if (hasBody) {
       headers['Content-Type'] = 'application/json';
@@ -157,10 +162,72 @@ export class BpjsGatewayTransport {
     return `${call.baseUrl}${path}`;
   }
 
+  /**
+   * Decodes the envelope and, when a capture sink is configured, hands the
+   * whole exchange to it (P14-T06).
+   *
+   * Two properties matter and both are why this is a wrapper rather than a
+   * line in `parseResponse`. First, a **decode failure is captured too** — a
+   * codec mismatch is the single most valuable thing a UAT run can discover
+   * (spike question Q7), and it is exactly the case where no envelope exists
+   * to record. Second, capture is wrapped so it can never affect the call:
+   * losing a fixture is a bad afternoon, failing a member's booking because a
+   * disk filled up is a patient standing at a counter.
+   */
+  private decodeAndCapture(params: {
+    call: BpjsGatewayCall;
+    rawBody: string;
+    timestampSeconds: number;
+    statusCode: number;
+    signedHeaders: Record<string, string>;
+  }): BpjsGatewayResponseEnvelope {
+    const { call, rawBody, timestampSeconds, statusCode, signedHeaders } = params;
+    try {
+      const envelope = call.decodeEnvelope({ rawBody, timestampSeconds, statusCode });
+      this.captureExchange({
+        method: call.request.method,
+        path: call.request.path,
+        statusCode,
+        requestHeaders: signedHeaders,
+        requestBody: call.request.body,
+        rawResponseBody: rawBody,
+        decodedResponse: envelope,
+        outcome: statusCode >= 200 && statusCode < 300 ? 'ACCEPTED' : 'REJECTED',
+      });
+      return envelope;
+    } catch (decodeError) {
+      this.captureExchange({
+        method: call.request.method,
+        path: call.request.path,
+        statusCode,
+        requestHeaders: signedHeaders,
+        requestBody: call.request.body,
+        rawResponseBody: rawBody,
+        decodedResponse: undefined,
+        outcome: 'REJECTED',
+        failureReason: this.profile.describeFailure(decodeError),
+      });
+      throw decodeError;
+    }
+  }
+
+  private captureExchange(exchange: BpjsGatewayCapturedExchange): void {
+    if (this.profile.captureExchange === undefined) {
+      return;
+    }
+    try {
+      this.profile.captureExchange(exchange);
+    } catch {
+      // Deliberately silent: the sink logs its own failures, and a capture
+      // problem must never surface as a BPJS transport failure.
+    }
+  }
+
   private async parseResponse(
     call: BpjsGatewayCall,
     response: Response,
     timestampSeconds: number,
+    signedHeaders: Record<string, string>,
   ): Promise<BpjsGatewayResponseEnvelope> {
     if (response.status === 401 || response.status === 403) {
       throw this.profile.createError(
@@ -177,10 +244,12 @@ export class BpjsGatewayTransport {
       );
     }
     const rawBody = await this.readResponseBody(response);
-    const envelope = call.decodeEnvelope({
+    const envelope = this.decodeAndCapture({
+      call,
       rawBody,
       timestampSeconds,
       statusCode: response.status,
+      signedHeaders,
     });
     if (!response.ok) {
       throw this.profile.createError(
