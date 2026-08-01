@@ -4347,6 +4347,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   passwordHash: 'passwordHash',
   isActive: 'isActive',
+  isSystem: 'isSystem',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -4597,6 +4598,7 @@ export const AppointmentScalarFieldEnum = {
   type: 'type',
   sessionId: 'sessionId',
   queueNumber: 'queueNumber',
+  bpjsBookingCode: 'bpjsBookingCode',
   scheduledAt: 'scheduledAt',
   status: 'status',
   reason: 'reason',

@@ -10,6 +10,7 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { BpjsAntreanHttpClient } from '../../../common/bpjs-antrean/bpjs-antrean-http.client';
 import { BpjsAntreanError } from '../../../common/bpjs-antrean/bpjs-antrean.error';
+import { BpjsAntreanInboundConfig } from '../../../common/bpjs-antrean/bpjs-antrean-inbound.config';
 import { BpjsAntreanConfigRepository } from '../repository/bpjs-antrean-config.repository';
 import { BpjsAntreanConfigService } from './bpjs-antrean-config.service';
 
@@ -59,11 +60,27 @@ describe('BpjsAntreanConfigService', () => {
     },
   };
 
+  // The inbound surface's deployment configuration. Stubbed rather than
+  // constructed from env, because what this suite asserts about readiness is
+  // that the service reports the *credential* half honestly — the allowlist
+  // half has its own suite in `common/bpjs-antrean`.
+  const mockInboundConfig = {
+    buildReadiness: jest.fn((hasInboundCredentials: boolean) => ({
+      isEnabled: false,
+      hasSourceIpAllowlist: false,
+      allowedSourceRangeCount: 0,
+      hasInboundCredentials,
+      tokenLifetimeSeconds: 3600,
+      trustedProxyHopCount: 0,
+    })),
+  };
+
   function buildService(): BpjsAntreanConfigService {
     return new BpjsAntreanConfigService(
       mockRepository as unknown as BpjsAntreanConfigRepository,
       mockHttpClient as unknown as BpjsAntreanHttpClient,
       mockAuditService as unknown as AuditService,
+      mockInboundConfig as unknown as BpjsAntreanInboundConfig,
     );
   }
 
@@ -306,6 +323,44 @@ describe('BpjsAntreanConfigService', () => {
       await expect(buildService().testConnection(inputActor)).rejects.toBeInstanceOf(
         NotFoundException,
       );
+    });
+  });
+
+  describe('getInboundReadiness', () => {
+    it('reports no inbound credentials when nothing is stored at all', async () => {
+      mockRepository.findConfig.mockResolvedValue(null);
+
+      const actual = await buildService().getInboundReadiness();
+
+      expect(actual.hasInboundCredentials).toBe(false);
+      expect(actual.isEnabled).toBe(false);
+    });
+
+    it('reports no inbound credentials while only half the pair is stored', async () => {
+      // The username is agreed at UAT before the password is exchanged, so a
+      // half-configured row is a real state — and reporting it as ready would
+      // send an operator hunting for a network fault that is not there.
+      mockRepository.findConfig.mockResolvedValue({
+        ...storedRecord,
+        inboundUsername: 'bpjs-antrean-ws',
+        hasInboundPassword: false,
+      });
+
+      const actual = await buildService().getInboundReadiness();
+
+      expect(actual.hasInboundCredentials).toBe(false);
+    });
+
+    it('reports inbound credentials once both halves are stored', async () => {
+      mockRepository.findConfig.mockResolvedValue({
+        ...storedRecord,
+        inboundUsername: 'bpjs-antrean-ws',
+        hasInboundPassword: true,
+      });
+
+      const actual = await buildService().getInboundReadiness();
+
+      expect(actual.hasInboundCredentials).toBe(true);
     });
   });
 });

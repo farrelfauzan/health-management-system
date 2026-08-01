@@ -175,7 +175,7 @@ export class PatientManagementService {
       throw new ForbiddenException('You are not allowed to create patients');
     }
 
-    this.assertPrivacyNoticeActorRules(payload.privacyNotice, false);
+    this.assertPrivacyNoticeActorRules(payload.privacyNotice, false, actor.isSystem === true);
 
     if (payload.ownerUserId) {
       const ownerUser = await this.patientManagementRepository.findActiveUserById(payload.ownerUserId);
@@ -658,12 +658,23 @@ export class PatientManagementService {
   private assertPrivacyNoticeActorRules(
     evidence: CreatePatientDto['privacyNotice'],
     isOwnPatient: boolean,
+    isSystemActor = false,
   ): void {
     if (isOwnPatient && evidence.subjectType === 'REPRESENTATIVE') {
       throw new ForbiddenException('Patients cannot act as their own representative');
     }
     if (isOwnPatient && evidence.outcome === 'DEFERRED_EMERGENCY') {
       throw new ForbiddenException('Emergency privacy notice deferral is staff-only');
+    }
+    // `BPJS_ANTREAN` provenance says "a machine created this record and nobody
+    // was present to receive the notice". A human at a counter *was* present,
+    // so a staff or patient caller claiming it would be recording a deferral
+    // they are not entitled to — and would leave a patient permanently marked
+    // as still owed a notice they were in fact given.
+    if (evidence.provenance === 'BPJS_ANTREAN' && !isSystemActor) {
+      throw new ForbiddenException(
+        'BPJS Antrean provenance is reserved for the inbound Antrean bridge',
+      );
     }
   }
 }

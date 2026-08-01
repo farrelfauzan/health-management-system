@@ -8,6 +8,7 @@ import {
 import {
   BpjsAntreanConfigRecord,
   BpjsAntreanConfigView,
+  BpjsAntreanInboundReadiness,
   BpjsAntreanConnectionTestOutcome,
   BpjsAntreanConnectionTestResult,
   UpsertBpjsAntreanConfigInput,
@@ -17,7 +18,11 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { BpjsAntreanHttpClient } from '../../../common/bpjs-antrean/bpjs-antrean-http.client';
 import { BpjsAntreanError } from '../../../common/bpjs-antrean/bpjs-antrean.error';
-import { BpjsAntreanConnection } from '../../../common/bpjs-antrean/bpjs-antrean.types';
+import {
+  BpjsAntreanConnection,
+  BpjsAntreanInboundTokenMaterial,
+} from '../../../common/bpjs-antrean/bpjs-antrean.types';
+import { BpjsAntreanInboundConfig } from '../../../common/bpjs-antrean/bpjs-antrean-inbound.config';
 import { BpjsAntreanConfigRepository } from '../repository/bpjs-antrean-config.repository';
 
 const BPJS_ANTREAN_CONFIG_AUDIT_RESOURCE = 'BpjsAntreanConfig';
@@ -51,6 +56,7 @@ export class BpjsAntreanConfigService {
     private readonly configRepository: BpjsAntreanConfigRepository,
     private readonly httpClient: BpjsAntreanHttpClient,
     private readonly auditService: AuditService,
+    private readonly inboundConfig: BpjsAntreanInboundConfig,
   ) {}
 
   async getConfig(): Promise<BpjsAntreanConfigView> {
@@ -104,6 +110,44 @@ export class BpjsAntreanConfigService {
       message: outcome.message,
       testedAt: outcome.testedAt.toISOString(),
     };
+  }
+
+  /**
+   * Whether the inbound surface can serve BPJS yet (P14-T04). Both halves have
+   * to hold: the deployment must carry BPJS's published source ranges, and the
+   * facility must have stored the credential pair agreed at UAT. Reported as a
+   * readiness object rather than a boolean because an operator staring at a
+   * silent integration needs to know *which* half is missing — and neither
+   * half is something HMS can supply for them.
+   */
+  async getInboundReadiness(): Promise<BpjsAntreanInboundReadiness> {
+    const record = await this.configRepository.findConfig();
+    const hasInboundCredentials =
+      record !== null && record.inboundUsername !== null && record.hasInboundPassword;
+    return this.inboundConfig.buildReadiness(hasInboundCredentials);
+  }
+
+  /**
+   * Verifies the inbound credential pair for the token endpoint (P14-T04).
+   * Returns a boolean rather than throwing, and says nothing about *why* it
+   * failed: the caller is a public endpoint, and "no credential configured",
+   * "wrong username" and "wrong password" must be indistinguishable from
+   * outside. The audit trail records the distinction; the response does not.
+   */
+  async verifyInboundCredentials(params: {
+    username: string;
+    password: string;
+  }): Promise<boolean> {
+    return this.configRepository.verifyInboundCredentials(params);
+  }
+
+  /**
+   * Token signing material for the inbound surface, or null when BPJS's
+   * inbound pair has not been agreed yet — which is the normal state until
+   * UAT, and one of the two conditions that keep the surface dark.
+   */
+  async getInboundTokenMaterial(): Promise<BpjsAntreanInboundTokenMaterial | null> {
+    return this.configRepository.getInboundTokenMaterial();
   }
 
   private async performConnectionTest(

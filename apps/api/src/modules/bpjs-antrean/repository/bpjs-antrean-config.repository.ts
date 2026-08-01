@@ -1,5 +1,7 @@
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
 import { Injectable } from '@nestjs/common';
-import { hash } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 
 import {
   BpjsAntreanConfigRecord,
@@ -9,12 +11,18 @@ import {
 } from '@hms/shared-types';
 
 import { BpjsAntreanError } from '../../../common/bpjs-antrean/bpjs-antrean.error';
-import { BpjsAntreanConnection } from '../../../common/bpjs-antrean/bpjs-antrean.types';
+import {
+  BpjsAntreanConnection,
+  BpjsAntreanInboundTokenMaterial,
+} from '../../../common/bpjs-antrean/bpjs-antrean.types';
 import { BpjsCredentialCryptoService } from '../../../common/crypto/bpjs-credential-crypto.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { BpjsAntreanConfig } from '../../../generated/prisma/client';
 
 const INBOUND_PASSWORD_SALT_ROUNDS = 10;
+const INBOUND_TOKEN_KEY_LABEL = 'bpjs-antrean-inbound-token-signing-key-v1';
+const INBOUND_FINGERPRINT_LABEL = 'bpjs-antrean-inbound-credential-fingerprint-v1';
+const INBOUND_FINGERPRINT_LENGTH = 16;
 
 /**
  * Persistence for the facility's Antrean Online bridging credentials. This
@@ -117,6 +125,65 @@ export class BpjsAntreanConfigRepository {
         userKey: this.credentialCryptoService.revealCredential(row.userKeyCiphertext),
       },
     };
+  }
+
+  /**
+   * Verifies the credential pair BPJS presents to the facility's token
+   * endpoint (P14-T04). The comparison happens *here*, inside the encryption
+   * boundary, precisely so the stored hash still has no way out of this file.
+   *
+   * The username is compared in constant time alongside the password: the
+   * endpoint is reachable from the public internet, and a short-circuit on a
+   * wrong username would make usernames enumerable by timing. bcrypt is run
+   * even when the username does not match, for the same reason — a mismatched
+   * username must cost the same as a mismatched password.
+   */
+  async verifyInboundCredentials(params: {
+    username: string;
+    password: string;
+  }): Promise<boolean> {
+    const row = await this.prismaService.bpjsAntreanConfig.findFirst({
+      where: { facilityId: null },
+    });
+    if (row === null || row.inboundUsername === null || row.inboundPasswordHash === null) {
+      return false;
+    }
+    const isUsernameValid = this.matchesInConstantTime(params.username, row.inboundUsername);
+    const isPasswordValid = await compare(params.password, row.inboundPasswordHash);
+    return isUsernameValid && isPasswordValid;
+  }
+
+  /**
+   * Derives the inbound token signing key and credential fingerprint from the
+   * stored password hash. Returns null when no inbound credential is stored,
+   * which is one of the two conditions that keep the inbound surface dark.
+   */
+  async getInboundTokenMaterial(): Promise<BpjsAntreanInboundTokenMaterial | null> {
+    const row = await this.prismaService.bpjsAntreanConfig.findFirst({
+      where: { facilityId: null },
+      select: { inboundPasswordHash: true },
+    });
+    if (row === null || row.inboundPasswordHash === null) {
+      return null;
+    }
+    return {
+      signingKey: createHmac('sha256', INBOUND_TOKEN_KEY_LABEL)
+        .update(row.inboundPasswordHash)
+        .digest(),
+      credentialFingerprint: createHmac('sha256', INBOUND_FINGERPRINT_LABEL)
+        .update(row.inboundPasswordHash)
+        .digest('hex')
+        .slice(0, INBOUND_FINGERPRINT_LENGTH),
+    };
+  }
+
+  private matchesInConstantTime(candidate: string, expected: string): boolean {
+    const candidateBytes = Buffer.from(candidate, 'utf8');
+    const expectedBytes = Buffer.from(expected, 'utf8');
+    if (candidateBytes.length !== expectedBytes.length) {
+      return false;
+    }
+    return timingSafeEqual(candidateBytes, expectedBytes);
   }
 
   async recordConnectionTest(

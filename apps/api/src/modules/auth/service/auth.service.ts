@@ -35,6 +35,14 @@ export class AuthService {
       await this.recordFailedLogin();
       throw new UnauthorizedException('Invalid credentials');
     }
+    // Reserved service accounts (the BPJS Antrean bridge, P14-T04) are actors
+    // for machine-originated writes, never identities. Refusing here — before
+    // the password is even compared — means no credential an admin could set
+    // on that row, deliberately or by accident, ever becomes a session.
+    if (user.isSystem) {
+      await this.recordFailedLogin();
+      throw new UnauthorizedException('Invalid credentials');
+    }
     const isValidPassword = await compare(payload.password, user.passwordHash);
     if (!isValidPassword) {
       await this.recordFailedLogin();

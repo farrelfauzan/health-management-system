@@ -107,6 +107,20 @@ export class AppointmentManagementRepository {
     });
   }
 
+  /**
+   * Looks a booking up by BPJS's own identifier (P14-T04). Used by the inbound
+   * `sisa antrean` and `batal antrean` services, which address a booking the
+   * way BPJS holds it rather than by an HMS id the member never sees.
+   */
+  async findAppointmentByBpjsBookingCode(bpjsBookingCode: string) {
+    return this.prisma.findFirstActive(this.prisma.appointment, {
+      where: {
+        bpjsBookingCode,
+      },
+      include: APPOINTMENT_RELATIONS_INCLUDE,
+    });
+  }
+
   async findActivePatientById(id: string) {
     return this.prisma.findFirstActive(this.prisma.patientProfile, {
       where: {
@@ -269,24 +283,47 @@ export class AppointmentManagementRepository {
         }
       }
 
+      if (payload.bpjsBookingCode !== undefined) {
+        const existingByBookingCode = await tx.appointment.findUnique({
+          where: { bpjsBookingCode: payload.bpjsBookingCode },
+          select: { id: true },
+        });
+        if (existingByBookingCode) {
+          return { outcome: 'DUPLICATE_BOOKING_CODE' };
+        }
+      }
+
+      // Allocated under the `FOR UPDATE` lock taken above, so concurrent
+      // bookings for the same session serialise here and `MAX + 1` cannot hand
+      // two patients the same position — the same reasoning as `QueueCounter`,
+      // with the session row playing the counter's part. Never renumbered: a
+      // cancellation leaves a gap, exactly as a paper ticket roll does.
+      const highest = await tx.appointment.aggregate({
+        where: { sessionId: session.id },
+        _max: { queueNumber: true },
+      });
+      const queueNumber = (highest._max.queueNumber ?? 0) + 1;
+
       const created = await tx.appointment.create({
         data: {
           patientId: payload.patientId,
           doctorId: payload.doctorId,
           type: 'SESSION',
           sessionId: session.id,
+          queueNumber,
           scheduledAt: payload.scheduledAt,
           status: 'SCHEDULED',
           reason: payload.reason,
           notes: payload.notes,
           createdById: payload.createdById,
+          bpjsBookingCode: payload.bpjsBookingCode ?? null,
         },
         select: {
           id: true,
         },
       });
 
-      return { outcome: 'BOOKED', appointmentId: created.id };
+      return { outcome: 'BOOKED', appointmentId: created.id, queueNumber };
     });
   }
 

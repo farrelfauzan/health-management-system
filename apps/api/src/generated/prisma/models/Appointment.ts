@@ -41,6 +41,7 @@ export type AppointmentMinAggregateOutputType = {
   type: $Enums.AppointmentType | null
   sessionId: string | null
   queueNumber: number | null
+  bpjsBookingCode: string | null
   scheduledAt: Date | null
   status: $Enums.AppointmentStatus | null
   reason: string | null
@@ -58,6 +59,7 @@ export type AppointmentMaxAggregateOutputType = {
   type: $Enums.AppointmentType | null
   sessionId: string | null
   queueNumber: number | null
+  bpjsBookingCode: string | null
   scheduledAt: Date | null
   status: $Enums.AppointmentStatus | null
   reason: string | null
@@ -75,6 +77,7 @@ export type AppointmentCountAggregateOutputType = {
   type: number
   sessionId: number
   queueNumber: number
+  bpjsBookingCode: number
   scheduledAt: number
   status: number
   reason: number
@@ -102,6 +105,7 @@ export type AppointmentMinAggregateInputType = {
   type?: true
   sessionId?: true
   queueNumber?: true
+  bpjsBookingCode?: true
   scheduledAt?: true
   status?: true
   reason?: true
@@ -119,6 +123,7 @@ export type AppointmentMaxAggregateInputType = {
   type?: true
   sessionId?: true
   queueNumber?: true
+  bpjsBookingCode?: true
   scheduledAt?: true
   status?: true
   reason?: true
@@ -136,6 +141,7 @@ export type AppointmentCountAggregateInputType = {
   type?: true
   sessionId?: true
   queueNumber?: true
+  bpjsBookingCode?: true
   scheduledAt?: true
   status?: true
   reason?: true
@@ -240,6 +246,7 @@ export type AppointmentGroupByOutputType = {
   type: $Enums.AppointmentType
   sessionId: string | null
   queueNumber: number | null
+  bpjsBookingCode: string | null
   scheduledAt: Date
   status: $Enums.AppointmentStatus
   reason: string | null
@@ -280,6 +287,7 @@ export type AppointmentWhereInput = {
   type?: Prisma.EnumAppointmentTypeFilter<"Appointment"> | $Enums.AppointmentType
   sessionId?: Prisma.UuidNullableFilter<"Appointment"> | string | null
   queueNumber?: Prisma.IntNullableFilter<"Appointment"> | number | null
+  bpjsBookingCode?: Prisma.StringNullableFilter<"Appointment"> | string | null
   scheduledAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
   status?: Prisma.EnumAppointmentStatusFilter<"Appointment"> | $Enums.AppointmentStatus
   reason?: Prisma.StringNullableFilter<"Appointment"> | string | null
@@ -302,6 +310,7 @@ export type AppointmentOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   queueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  bpjsBookingCode?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -319,6 +328,7 @@ export type AppointmentOrderByWithRelationInput = {
 
 export type AppointmentWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  bpjsBookingCode?: string
   sessionId_queueNumber?: Prisma.AppointmentSessionIdQueueNumberCompoundUniqueInput
   AND?: Prisma.AppointmentWhereInput | Prisma.AppointmentWhereInput[]
   OR?: Prisma.AppointmentWhereInput[]
@@ -341,7 +351,7 @@ export type AppointmentWhereUniqueInput = Prisma.AtLeast<{
   session?: Prisma.XOR<Prisma.AppointmentSessionNullableScalarRelationFilter, Prisma.AppointmentSessionWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   registration?: Prisma.XOR<Prisma.RegistrationNullableScalarRelationFilter, Prisma.RegistrationWhereInput> | null
-}, "id" | "sessionId_queueNumber">
+}, "id" | "bpjsBookingCode" | "sessionId_queueNumber">
 
 export type AppointmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -350,6 +360,7 @@ export type AppointmentOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   queueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  bpjsBookingCode?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -375,6 +386,7 @@ export type AppointmentScalarWhereWithAggregatesInput = {
   type?: Prisma.EnumAppointmentTypeWithAggregatesFilter<"Appointment"> | $Enums.AppointmentType
   sessionId?: Prisma.UuidNullableWithAggregatesFilter<"Appointment"> | string | null
   queueNumber?: Prisma.IntNullableWithAggregatesFilter<"Appointment"> | number | null
+  bpjsBookingCode?: Prisma.StringNullableWithAggregatesFilter<"Appointment"> | string | null
   scheduledAt?: Prisma.DateTimeWithAggregatesFilter<"Appointment"> | Date | string
   status?: Prisma.EnumAppointmentStatusWithAggregatesFilter<"Appointment"> | $Enums.AppointmentStatus
   reason?: Prisma.StringNullableWithAggregatesFilter<"Appointment"> | string | null
@@ -389,6 +401,7 @@ export type AppointmentCreateInput = {
   id?: string
   type?: $Enums.AppointmentType
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -410,6 +423,7 @@ export type AppointmentUncheckedCreateInput = {
   type?: $Enums.AppointmentType
   sessionId?: string | null
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -425,6 +439,7 @@ export type AppointmentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -446,6 +461,7 @@ export type AppointmentUncheckedUpdateInput = {
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -464,6 +480,7 @@ export type AppointmentCreateManyInput = {
   type?: $Enums.AppointmentType
   sessionId?: string | null
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -478,6 +495,7 @@ export type AppointmentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -494,6 +512,7 @@ export type AppointmentUncheckedUpdateManyInput = {
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -526,6 +545,7 @@ export type AppointmentCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrder
+  bpjsBookingCode?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrder
@@ -547,6 +567,7 @@ export type AppointmentMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrder
+  bpjsBookingCode?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrder
@@ -564,6 +585,7 @@ export type AppointmentMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrder
+  bpjsBookingCode?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrder
@@ -779,6 +801,7 @@ export type AppointmentCreateWithoutCreatedByInput = {
   id?: string
   type?: $Enums.AppointmentType
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -799,6 +822,7 @@ export type AppointmentUncheckedCreateWithoutCreatedByInput = {
   type?: $Enums.AppointmentType
   sessionId?: string | null
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -845,6 +869,7 @@ export type AppointmentScalarWhereInput = {
   type?: Prisma.EnumAppointmentTypeFilter<"Appointment"> | $Enums.AppointmentType
   sessionId?: Prisma.UuidNullableFilter<"Appointment"> | string | null
   queueNumber?: Prisma.IntNullableFilter<"Appointment"> | number | null
+  bpjsBookingCode?: Prisma.StringNullableFilter<"Appointment"> | string | null
   scheduledAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
   status?: Prisma.EnumAppointmentStatusFilter<"Appointment"> | $Enums.AppointmentStatus
   reason?: Prisma.StringNullableFilter<"Appointment"> | string | null
@@ -859,6 +884,7 @@ export type AppointmentCreateWithoutPatientInput = {
   id?: string
   type?: $Enums.AppointmentType
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -878,6 +904,7 @@ export type AppointmentUncheckedCreateWithoutPatientInput = {
   type?: $Enums.AppointmentType
   sessionId?: string | null
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -919,6 +946,7 @@ export type AppointmentCreateWithoutDoctorInput = {
   id?: string
   type?: $Enums.AppointmentType
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -938,6 +966,7 @@ export type AppointmentUncheckedCreateWithoutDoctorInput = {
   type?: $Enums.AppointmentType
   sessionId?: string | null
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -979,6 +1008,7 @@ export type AppointmentCreateWithoutSessionInput = {
   id?: string
   type?: $Enums.AppointmentType
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -998,6 +1028,7 @@ export type AppointmentUncheckedCreateWithoutSessionInput = {
   doctorId: string
   type?: $Enums.AppointmentType
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -1039,6 +1070,7 @@ export type AppointmentCreateWithoutRegistrationInput = {
   id?: string
   type?: $Enums.AppointmentType
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -1059,6 +1091,7 @@ export type AppointmentUncheckedCreateWithoutRegistrationInput = {
   type?: $Enums.AppointmentType
   sessionId?: string | null
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -1089,6 +1122,7 @@ export type AppointmentUpdateWithoutRegistrationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1109,6 +1143,7 @@ export type AppointmentUncheckedUpdateWithoutRegistrationInput = {
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1126,6 +1161,7 @@ export type AppointmentCreateManyCreatedByInput = {
   type?: $Enums.AppointmentType
   sessionId?: string | null
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -1139,6 +1175,7 @@ export type AppointmentUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1159,6 +1196,7 @@ export type AppointmentUncheckedUpdateWithoutCreatedByInput = {
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1176,6 +1214,7 @@ export type AppointmentUncheckedUpdateManyWithoutCreatedByInput = {
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1191,6 +1230,7 @@ export type AppointmentCreateManyPatientInput = {
   type?: $Enums.AppointmentType
   sessionId?: string | null
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -1205,6 +1245,7 @@ export type AppointmentUpdateWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1224,6 +1265,7 @@ export type AppointmentUncheckedUpdateWithoutPatientInput = {
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1241,6 +1283,7 @@ export type AppointmentUncheckedUpdateManyWithoutPatientInput = {
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1257,6 +1300,7 @@ export type AppointmentCreateManyDoctorInput = {
   type?: $Enums.AppointmentType
   sessionId?: string | null
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -1271,6 +1315,7 @@ export type AppointmentUpdateWithoutDoctorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1290,6 +1335,7 @@ export type AppointmentUncheckedUpdateWithoutDoctorInput = {
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1307,6 +1353,7 @@ export type AppointmentUncheckedUpdateManyWithoutDoctorInput = {
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1323,6 +1370,7 @@ export type AppointmentCreateManySessionInput = {
   doctorId: string
   type?: $Enums.AppointmentType
   queueNumber?: number | null
+  bpjsBookingCode?: string | null
   scheduledAt: Date | string
   status?: $Enums.AppointmentStatus
   reason?: string | null
@@ -1337,6 +1385,7 @@ export type AppointmentUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1356,6 +1405,7 @@ export type AppointmentUncheckedUpdateWithoutSessionInput = {
   doctorId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1373,6 +1423,7 @@ export type AppointmentUncheckedUpdateManyWithoutSessionInput = {
   doctorId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAppointmentTypeFieldUpdateOperationsInput | $Enums.AppointmentType
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsBookingCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1392,6 +1443,7 @@ export type AppointmentSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   type?: boolean
   sessionId?: boolean
   queueNumber?: boolean
+  bpjsBookingCode?: boolean
   scheduledAt?: boolean
   status?: boolean
   reason?: boolean
@@ -1414,6 +1466,7 @@ export type AppointmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   type?: boolean
   sessionId?: boolean
   queueNumber?: boolean
+  bpjsBookingCode?: boolean
   scheduledAt?: boolean
   status?: boolean
   reason?: boolean
@@ -1435,6 +1488,7 @@ export type AppointmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   type?: boolean
   sessionId?: boolean
   queueNumber?: boolean
+  bpjsBookingCode?: boolean
   scheduledAt?: boolean
   status?: boolean
   reason?: boolean
@@ -1456,6 +1510,7 @@ export type AppointmentSelectScalar = {
   type?: boolean
   sessionId?: boolean
   queueNumber?: boolean
+  bpjsBookingCode?: boolean
   scheduledAt?: boolean
   status?: boolean
   reason?: boolean
@@ -1466,7 +1521,7 @@ export type AppointmentSelectScalar = {
   deletedAt?: boolean
 }
 
-export type AppointmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "doctorId" | "type" | "sessionId" | "queueNumber" | "scheduledAt" | "status" | "reason" | "notes" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["appointment"]>
+export type AppointmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "doctorId" | "type" | "sessionId" | "queueNumber" | "bpjsBookingCode" | "scheduledAt" | "status" | "reason" | "notes" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["appointment"]>
 export type AppointmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   doctor?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
@@ -1503,6 +1558,21 @@ export type $AppointmentPayload<ExtArgs extends runtime.Types.Extensions.Interna
     type: $Enums.AppointmentType
     sessionId: string | null
     queueNumber: number | null
+    /**
+     * BPJS's own identifier for a Mobile JKN booking (`kodebooking`), set only
+     * by the inbound Antrean bridge (P14-T04) and null for every appointment a
+     * human made. This column *is* the provenance marker the phase needs, and
+     * it is not optional for two reasons: it is how `sisa antrean` and `batal
+     * antrean` address a booking BPJS made, and it is what stops P14-T05's
+     * outbox re-publishing that booking back to BPJS with `antrean/add` as
+     * though it were a walk-in — it is already BPJS's row.
+     * 
+     * Unique, because `kodebooking` is BPJS's primary key for the booking: a
+     * retried `ambil antrean` must collide rather than create a second
+     * appointment for the same member. Whether `kodebooking` is genuinely the
+     * identifier BPJS carries is spike question Q10.
+     */
+    bpjsBookingCode: string | null
     scheduledAt: Date
     status: $Enums.AppointmentStatus
     reason: string | null
@@ -1945,6 +2015,7 @@ export interface AppointmentFieldRefs {
   readonly type: Prisma.FieldRef<"Appointment", 'AppointmentType'>
   readonly sessionId: Prisma.FieldRef<"Appointment", 'String'>
   readonly queueNumber: Prisma.FieldRef<"Appointment", 'Int'>
+  readonly bpjsBookingCode: Prisma.FieldRef<"Appointment", 'String'>
   readonly scheduledAt: Prisma.FieldRef<"Appointment", 'DateTime'>
   readonly status: Prisma.FieldRef<"Appointment", 'AppointmentStatus'>
   readonly reason: Prisma.FieldRef<"Appointment", 'String'>

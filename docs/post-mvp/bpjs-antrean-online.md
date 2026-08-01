@@ -95,7 +95,7 @@ Both `antrean/add` and `ambil antrean` return an estimated service time. HMS mea
 
 ### 3.7 Public inbound surface — **gap, and the security-relevant one**
 
-`@PublicRoute()` is used in exactly two places today (`auth`, `health`); everything else is behind `JwtAuthGuard` + `PermissionsGuard`. The inbound WS is a third public surface, and unlike the other two it writes patients and bookings. See §4.2.
+`@PublicRoute()` is used in exactly two places today (`auth`, `health`); everything else is behind `JwtAuthGuard` + `PermissionsGuard`. The inbound WS is a third public surface, and unlike the other two it writes patients and bookings. See §4.2. **Built in `P14-T04`, and reachable only once an operator configures BPJS's source ranges** — the count of *reachable* public routes is therefore still two until a clinic is onboarded, which is the property that let the module merge while the spike's questions were open.
 
 ## 4. Architecture If Adopted
 
@@ -129,7 +129,7 @@ HMS cannot write HFIS. So: a settings screen that reads `ref/poli` and `ref/dokt
 1. `P14-T01` Per-poli queue numbering: composite `(queueDate, specialtyId)` counter alongside the clinic-wide roll, allocated in the same registration transaction, exposed on the queue board. The `P8-T06` follow-through; the only task with no external dependency, and independently useful for a multi-poli clinic.
 2. `P14-T02` Spike: obtain Antrean-service credentials for the pilot clinic; confirm the FKTP endpoint set, whether task IDs apply (§2.2), whether HFIS poli/doctor codes match the PCare catalog (§3.2), and the inbound token scheme. Output: ADR + recorded fixtures.
 3. `P14-T03` `BpjsAntreanConfig` + outbound adapter reusing the D-022 codec; admin settings surface with write-only secrets and test connection (`ref/poli`). **Done** — built ahead of `P14-T02` and on that spike's hypotheses rather than its answers; see [implementation-plan.md](./implementation-plan.md) §9 and [bpjs-antrean-spike.md](./bpjs-antrean-spike.md) §3.1 and §5. §4.1's "extract the shared parts rather than forking it" was taken literally: the PCare client's resilience policy and envelope reading now live in a service-agnostic `common/bpjs-gateway/` transport that both services drive, with one circuit breaker each.
-4. `P14-T04` Inbound WS module: token guard, IP allowlist, rate limiting, the six services, system-actor provenance, audit. The security-critical task — review it as such.
+4. `P14-T04` Inbound WS module: token guard, IP allowlist, rate limiting, the six services, system-actor provenance, audit. The security-critical task — review it as such. **Done, and dark on every deployment** — the allowlist guard refuses everything until an operator configures BPJS's published ranges, so merging it gave no clinic a public write path. §4.2's non-negotiables are all in place, and §3.4's actorship gap is closed by a reserved `BPJS_ANTREAN_SYSTEM` account with six enumerated grants rather than by a permission bypass. See [implementation-plan.md](./implementation-plan.md) §9.
 5. `P14-T05` Outbound publishing: `add`/`panggil`/`batal` as new outbox types with the provenance skip; HFIS reconciliation screen.
 6. `P14-T06` UAT support: run the BPJS checklist against the deployed pilot, re-record fixtures from real responses, and write the onboarding runbook entry (branch-office request, public-IP requirement, credential intake, UAT walkthrough).
 

@@ -21,5 +21,8 @@ import { BpjsAntreanConfigService } from './service/bpjs-antrean-config.service'
   imports: [BpjsAntreanModule],
   controllers: [BpjsAntreanConfigController],
   providers: [BpjsAntreanConfigRepository, BpjsAntreanConfigService],
+  // The inbound web service (P14-T04) verifies BPJS's credentials through this
+  // service; the stored hash never leaves the repository behind it.
+  exports: [BpjsAntreanConfigService],
 })
 export class BpjsAntreanIntegrationModule {}

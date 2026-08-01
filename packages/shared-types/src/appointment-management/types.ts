@@ -38,13 +38,43 @@ export type BookSessionSlotPayload = {
   reason?: string;
   notes?: string;
   createdById: string;
+  /**
+   * BPJS's `kodebooking` for a Mobile JKN booking (P14-T04). Absent for every
+   * booking a human made, and the marker that stops P14-T05 re-publishing this
+   * row back to BPJS as though it were a walk-in.
+   */
+  bpjsBookingCode?: string;
 };
 
 export type BookSessionSlotResult =
   | { outcome: 'SESSION_NOT_OPEN' }
   | { outcome: 'SESSION_FULL' }
   | { outcome: 'ALREADY_BOOKED' }
-  | { outcome: 'BOOKED'; appointmentId: string };
+  | { outcome: 'DUPLICATE_BOOKING_CODE' }
+  /**
+   * `queueNumber` is the booking's position in its session, allocated inside
+   * the same row lock that enforces capacity. It exists so `ambil antrean` can
+   * answer with a number at booking time: the per-poli antrian number
+   * (P14-T01) is allocated at check-in, which can be days later, and Mobile
+   * JKN needs a number on the member's phone the moment they book.
+   */
+  | { outcome: 'BOOKED'; appointmentId: string; queueNumber: number };
+
+/**
+ * A session booking made by the inbound BPJS Antrean bridge (P14-T04) rather
+ * than by a person. Separate from {@link CreateSessionAppointmentInput}
+ * because it carries BPJS's booking code, which no HTTP client of the HMS API
+ * may ever set — the wire schema has no such field, and this type is the only
+ * way one reaches the database.
+ */
+export type BookBpjsAntreanSessionInput = {
+  patientId: string;
+  doctorId: string;
+  scheduleId: string;
+  sessionDate: string;
+  bpjsBookingCode: string;
+  reason?: string;
+};
 
 export type UpdateAppointmentRecordPayload = {
   id: string;
