@@ -227,7 +227,7 @@ apps/api/src/modules/document-management/
 
 ```prisma
 enum DocumentOwnerType { CLINIC PATIENT DOCTOR ADMIN }
-enum DocumentPurpose   { FAQ_KNOWLEDGE_BASE GENERAL }  // extended later
+enum DocumentPurpose   { FAQ_KNOWLEDGE_BASE PERSONAL_KNOWLEDGE_BASE GENERAL }  // extended later
 enum DocumentIngestStatus { PENDING PROCESSING READY FAILED NOT_APPLICABLE }
 
 model Document {
@@ -249,14 +249,19 @@ model DocumentChunk {
   documentId String                      @db.Uuid  // cascade delete with document
   chunkIndex Int
   content    String
-  embedding  Unsupported("vector(1536)")           // pgvector — already our dev DB
+  embedding  Unsupported("vector(1024)")           // pgvector; bge-m3 dimension — see embedding note below
   @@index([documentId])
 }
 ```
 
-**Ingestion pipeline** (async, triggered on upload with `purpose = FAQ_KNOWLEDGE_BASE`): extract text (PDF/DOCX/MD/plain — start with MD + PDF), chunk ~500 tokens with overlap, embed, upsert chunks. Re-upload = new document version → re-ingest → atomic swap. Embeddings come from the clinic's configured AI provider where it offers an embeddings endpoint (OpenAI-compatible `/embeddings`); the embedding model + dimension are recorded per corpus so a provider switch triggers a re-embed rather than silently mixing spaces.
+**Ingestion pipeline** (async, triggered on upload with a knowledge-base purpose): extract text (PDF/DOCX/MD/plain — start with MD + PDF), chunk ~500 tokens with overlap, embed, upsert chunks. Re-upload = new document version → re-ingest → atomic swap. **Embeddings are local via Ollama (`bge-m3`, 1024 dims)** — this follows the Phase 15 decision in [ai-chatbot-tools.md](../post-mvp/ai-chatbot-tools.md) §5.4 (cross-lingual ID↔EN quality; no second cloud processor seeing every customer question), and since both features share this one store, the embedding configuration is shared too. `embeddingModel` + `embeddingVersion` are recorded per chunk so a model switch triggers a re-embed rather than silently mixing vector spaces.
 
-**RBAC** (seeded with the module): `document.read` / `document.write` with `ANY` (ADMIN, SUPER_ADMIN) and `OWN` scopes ready for the patient/doctor future — v1 only wires the admin-`ANY` routes.
+**One store, many knowledge bases.** This module is also where **Phase 15 retrieval keeps every corpus** ([ai-chatbot-tools.md](../post-mvp/ai-chatbot-tools.md) §5.5 — it supersedes that document's earlier `ClinicDocument` naming):
+
+- **Clinic corpus** (`ownerType = CLINIC`) — the FAQ/SOP knowledge base, admin-managed via `document.write:any`. The **only** corpus the WA/Telegram channel can ever touch: `search_faq` is hard-filtered to `ownerType = CLINIC` + `purpose = FAQ_KNOWLEDGE_BASE` in the repository query.
+- **Personal knowledge bases** (`ownerType = DOCTOR | ADMIN`, `purpose = PERSONAL_KNOWLEDGE_BASE`) — a doctor or admin maintains their own document corpus via `document.write:own` / `document.read:own`, retrieved **only in that user's own in-app chat sessions** (Phase 15 `P15-T20`). Private to the owner; never in the public channel's candidate set; must contain no patient data (upload notice + readiness spot-check per Phase 15 §5.1).
+
+**RBAC** (seeded with the module): `document.read` / `document.write` with `ANY` (ADMIN, SUPER_ADMIN) and `OWN` (DOCTOR, ADMIN — personal KBs; patient documents later) scopes. This CS phase wires only the admin-`ANY` routes; the `OWN` routes land with Phase 15 `P15-T20`.
 
 ---
 
@@ -405,7 +410,7 @@ Phases assume ai-chatbot Phase 13 (provider layer) is merged. Branch naming `fea
 | D-CS-04 | Draft-patient + arrival-completes-record flow; silent phone matching | Unverified channel can never read the registry, but admin work is still saved |
 | D-CS-08 | An existing-patient match must be authenticated before linking: channel possession (WA), contact share (TG), or OTP to the registered number — handled as a deterministic state, never through the LLM | A phone number is a claim, not proof; without this, knowing someone's number lets you book against (and probe) their record. Unverified fallback is a draft booking, so no dead ends and no registry oracle |
 | D-CS-05 | Telegram ships first as pilot | Free, official, zero ban risk — de-risks the conversational core before the WA number is exposed |
-| D-CS-06 | `document-management` built general (ownerType/purpose) though v1 is FAQ-only | The future admin/patient/doctor document feature is a policy addition, not a schema migration |
+| D-CS-06 | `document-management` is the single document store: CS FAQ corpus, Phase 15 retrieval, and per-owner knowledge bases (doctor/admin `OWN`-scoped) all live in it; embeddings follow Phase 15's local `bge-m3` decision | One ingestion pipeline, one embedding space, one S3 layout; the future patient/doctor document feature and personal KBs are policy additions, not schema migrations |
 | D-CS-07 | Intent classification = the tool loop itself, no separate classifier stage | Fewer components, half the latency; revisit only on observed misrouting |
 
 ## 11. Sources
