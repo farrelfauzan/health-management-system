@@ -28,6 +28,7 @@ const STATUS_BY_ERROR_CODE: Readonly<Record<AiChatbotErrorCode, number>> = {
   // like every other upstream fault if the P15-T04 loop ever lets one surface.
   AI_TOOL_UNAVAILABLE: HttpStatus.BAD_GATEWAY,
   AI_TOOL_INVALID_ARGUMENTS: HttpStatus.BAD_GATEWAY,
+  AI_TOOL_EXECUTION_FAILED: HttpStatus.BAD_GATEWAY,
 };
 
 /**

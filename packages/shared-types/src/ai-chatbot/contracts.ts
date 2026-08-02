@@ -114,14 +114,33 @@ export type ChatExchangeView = {
 };
 
 /**
+ * One executed lookup of a Mode A exchange (ai-chatbot-tools.md §4.5),
+ * matching its persisted SYSTEM turn one-to-one. In Mode A this is the
+ * primary answer surface — the assistant text was composed before the
+ * lookups ran and must not assert their content, so the client renders each
+ * entry with a per-tool component. A failed or empty lookup renders as
+ * exactly that, never as model prose about what might have been there:
+ * `result` is null and `errorCode` names the typed failure.
+ */
+export type ChatToolResultView = {
+  toolName: string;
+  arguments: unknown;
+  outcome: 'SUCCESS' | 'FAILED';
+  result: unknown;
+  errorCode: string | null;
+};
+
+/**
  * Envelope `meta` for a send-message response. The disclaimer text rides
  * here (never inside the assistant content) so a client cannot render the
  * reply without it, and the provider identifiers give support a thread to
- * pull without exposing the transcript.
+ * pull without exposing the transcript. `toolResults` is present only on an
+ * exchange where the assistant requested lookups.
  */
 export type ChatExchangeMeta = {
   disclaimer: string;
   providerKind: AiProviderKindValue;
   model: string;
   providerRequestId: string | null;
+  toolResults?: ChatToolResultView[];
 };

@@ -24,7 +24,8 @@ export type AiChatbotErrorCode =
   | 'AI_SAFETY_BLOCKED'
   | 'AI_RATE_LIMITED'
   | 'AI_TOOL_UNAVAILABLE'
-  | 'AI_TOOL_INVALID_ARGUMENTS';
+  | 'AI_TOOL_INVALID_ARGUMENTS'
+  | 'AI_TOOL_EXECUTION_FAILED';
 
 /**
  * The active provider configuration with its API key decrypted, ready for an

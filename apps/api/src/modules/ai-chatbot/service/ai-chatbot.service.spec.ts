@@ -1,13 +1,19 @@
 import { ConfigService } from '@nestjs/config';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
-import { ChatMessageRecord, ChatSessionRecord } from '@hms/shared-types';
+import {
+  ChatMessageRecord,
+  ChatSessionRecord,
+  checkMedicationStockToolArgsSchema,
+} from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AiChatbotError } from '../ai-chatbot.error';
 import { ChatCompletionMessage } from '../infrastructure/ai-provider.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { ChatRepository } from '../repository/chat.repository';
+import { ChatTool } from '../tools/chat-tool.interface';
+import { ChatToolRegistry } from '../tools/chat-tool.registry';
 import { AiChatbotService } from './ai-chatbot.service';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
@@ -37,7 +43,10 @@ describe('AiChatbotService', () => {
 
   const inputActor: CurrentUser = { sub: 'user-patient', email: 'patient@hms.local' };
 
-  function buildService(env: Record<string, string> = { AI_CHAT_ENABLED: 'true' }): AiChatbotService {
+  function buildService(
+    env: Record<string, string> = { AI_CHAT_ENABLED: 'true' },
+    toolRegistry: ChatToolRegistry = new ChatToolRegistry(),
+  ): AiChatbotService {
     return new AiChatbotService(
       chatRepositoryMock as unknown as ChatRepository,
       { findUserById: findUserByIdMock } as unknown as AuthRepository,
@@ -53,6 +62,7 @@ describe('AiChatbotService', () => {
         buildSessionQuotaError: () =>
           new AiChatbotError('AI_RATE_LIMITED', 'Chat session limit reached'),
       } as unknown as SafetyPolicyService,
+      toolRegistry,
       new ConfigService(env),
     );
   }
@@ -238,6 +248,7 @@ describe('AiChatbotService', () => {
       });
       sendChatCompletionMock.mockResolvedValue({
         content: 'Klinik buka pukul 08.00.',
+        toolCalls: [],
         providerKind: 'DEEPSEEK',
         providerRequestId: 'req-1',
         providerMessageId: 'msg-1',
@@ -462,6 +473,229 @@ describe('AiChatbotService', () => {
 
       expect(actualError).toBeInstanceOf(NotFoundException);
       expect(sendChatCompletionMock).not.toHaveBeenCalled();
+    });
+
+    describe('Mode A tool loop', () => {
+      const mockDoctorActorRecord = {
+        roles: [
+          {
+            role: {
+              code: 'DOCTOR',
+              permissions: [
+                { permission: { resource: 'medication', action: 'read', scope: 'ANY' } },
+              ],
+            },
+          },
+        ],
+      };
+
+      function buildStockTool(execute: jest.Mock): ChatTool {
+        return {
+          name: 'check_medication_stock',
+          description: 'Check current medication stock levels',
+          channels: ['DOCTOR'],
+          allowedRoleCodes: ['DOCTOR'],
+          requiredPermission: { resource: 'medication', action: 'read', scope: 'ANY' },
+          argumentSchema: checkMedicationStockToolArgsSchema,
+          execute,
+        };
+      }
+
+      function buildToolRegistry(execute: jest.Mock): ChatToolRegistry {
+        const registry = new ChatToolRegistry();
+        registry.registerTool(buildStockTool(execute));
+        return registry;
+      }
+
+      function stubDoctorExchange(): void {
+        stubExchange();
+        chatRepositoryMock.findSessionForOwner.mockResolvedValue(
+          buildSession({ channel: 'DOCTOR' }),
+        );
+        findUserByIdMock.mockResolvedValue(mockDoctorActorRecord);
+      }
+
+      function respondWithToolCalls(toolCalls: unknown[]): void {
+        sendChatCompletionMock.mockResolvedValue({
+          content: 'Saya cek stok obat.',
+          toolCalls,
+          providerKind: 'DEEPSEEK',
+          providerRequestId: 'req-1',
+          providerMessageId: 'msg-1',
+          model: 'deepseek-chat',
+          latencyMs: 820,
+          rawMetadata: {},
+        });
+      }
+
+      it('offers the ability-filtered tool catalogue on the wire', async () => {
+        stubDoctorExchange();
+        const service = buildService(undefined, buildToolRegistry(jest.fn()));
+
+        await service.sendMessage('session-1', { content: 'Cek stok amoxicillin' }, inputActor);
+
+        const actualInput = sendChatCompletionMock.mock.calls[0][1] as {
+          tools?: Array<{ name: string; parameters: Record<string, unknown> }>;
+        };
+        expect(actualInput.tools).toHaveLength(1);
+        expect(actualInput.tools?.[0]?.name).toBe('check_medication_stock');
+        // The JSON Schema is derived from the same Zod object dispatch
+        // validates against — the "one definition, no drift" seam.
+        expect(actualInput.tools?.[0]?.parameters).toMatchObject({
+          type: 'object',
+          properties: { medicationName: expect.anything() },
+        });
+      });
+
+      it('sends no tools field and skips the actor fetch while the registry is empty', async () => {
+        stubExchange();
+
+        await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
+
+        const actualInput = sendChatCompletionMock.mock.calls[0][1] as Record<string, unknown>;
+        expect(actualInput).not.toHaveProperty('tools');
+        expect(findUserByIdMock).not.toHaveBeenCalled();
+      });
+
+      it('executes a requested call once, persists it, and returns it in meta — never to the provider', async () => {
+        stubDoctorExchange();
+        const mockExecute = jest.fn().mockResolvedValue({ medicationCount: 3 });
+        const service = buildService(undefined, buildToolRegistry(mockExecute));
+        respondWithToolCalls([
+          { id: 'call_1', name: 'check_medication_stock', arguments: { medicationName: 'amoxicillin' } },
+        ]);
+
+        const actualResult = await service.sendMessage(
+          'session-1',
+          { content: 'Cek stok amoxicillin' },
+          inputActor,
+        );
+
+        expect(mockExecute).toHaveBeenCalledWith(inputActor, { medicationName: 'amoxicillin' });
+        expect(actualResult.meta.toolResults).toEqual([
+          {
+            toolName: 'check_medication_stock',
+            arguments: { medicationName: 'amoxicillin' },
+            outcome: 'SUCCESS',
+            result: { medicationCount: 3 },
+            errorCode: null,
+          },
+        ]);
+        // Invariant 4 (ai-chatbot-tools.md §4.4): one round trip, and the
+        // outbound body carries no tool result and no role:'tool' turn. This
+        // is the regression test that Mode A stays Mode A.
+        expect(sendChatCompletionMock).toHaveBeenCalledTimes(1);
+        const outboundInput = sendChatCompletionMock.mock.calls[0][1] as {
+          messages: ChatCompletionMessage[];
+        };
+        expect(outboundInput.messages.some((message) => message.role === 'tool')).toBe(false);
+        expect(JSON.stringify(outboundInput)).not.toContain('medicationCount');
+      });
+
+      it('persists one SYSTEM turn per executed call, authored by the asking user', async () => {
+        stubDoctorExchange();
+        const service = buildService(
+          undefined,
+          buildToolRegistry(jest.fn().mockResolvedValue({ medicationCount: 3 })),
+        );
+        respondWithToolCalls([{ id: 'call_1', name: 'check_medication_stock', arguments: {} }]);
+
+        await service.sendMessage('session-1', { content: 'Cek stok' }, inputActor);
+
+        const actualToolTurn = (
+          chatRepositoryMock.appendMessage.mock.calls as Array<[Record<string, unknown>]>
+        )
+          .map((call) => call[0])
+          .find((data) => data.actor === 'SYSTEM') as Record<string, unknown>;
+        expect(JSON.parse(actualToolTurn.content as string)).toEqual({
+          toolName: 'check_medication_stock',
+          arguments: {},
+          outcome: 'SUCCESS',
+          result: { medicationCount: 3 },
+          errorCode: null,
+        });
+        // The author id is what makes the turn count against the hourly
+        // message quota — the loop never exists without the counter.
+        expect(actualToolTurn.authorUserId).toBe(inputActor.sub);
+      });
+
+      it('caps execution at three calls per message', async () => {
+        stubDoctorExchange();
+        const mockExecute = jest.fn().mockResolvedValue({ medicationCount: 3 });
+        const service = buildService(undefined, buildToolRegistry(mockExecute));
+        respondWithToolCalls(
+          [1, 2, 3, 4, 5].map((index) => ({
+            id: `call_${index}`,
+            name: 'check_medication_stock',
+            arguments: {},
+          })),
+        );
+
+        const actualResult = await service.sendMessage(
+          'session-1',
+          { content: 'Cek stok' },
+          inputActor,
+        );
+
+        expect(mockExecute).toHaveBeenCalledTimes(3);
+        expect(actualResult.meta.toolResults).toHaveLength(3);
+      });
+
+      it('renders a refused call as failed without discarding the exchange', async () => {
+        stubDoctorExchange();
+        const service = buildService(undefined, buildToolRegistry(jest.fn()));
+        respondWithToolCalls([
+          { id: 'call_1', name: 'list_my_patients', arguments: { page: 1 } },
+        ]);
+
+        const actualResult = await service.sendMessage(
+          'session-1',
+          { content: 'Pasien saya siapa saja?' },
+          inputActor,
+        );
+
+        expect(actualResult.data.assistantMessage.content).toBe('Saya cek stok obat.');
+        expect(actualResult.meta.toolResults).toEqual([
+          {
+            toolName: 'list_my_patients',
+            arguments: { page: 1 },
+            outcome: 'FAILED',
+            result: null,
+            errorCode: 'AI_TOOL_UNAVAILABLE',
+          },
+        ]);
+      });
+
+      it('maps a domain-service failure to AI_TOOL_EXECUTION_FAILED', async () => {
+        stubDoctorExchange();
+        const service = buildService(
+          undefined,
+          buildToolRegistry(jest.fn().mockRejectedValue(new Error('database gone'))),
+        );
+        respondWithToolCalls([{ id: 'call_1', name: 'check_medication_stock', arguments: {} }]);
+
+        const actualResult = await service.sendMessage(
+          'session-1',
+          { content: 'Cek stok' },
+          inputActor,
+        );
+
+        expect(actualResult.meta.toolResults?.[0]?.outcome).toBe('FAILED');
+        expect(actualResult.meta.toolResults?.[0]?.errorCode).toBe('AI_TOOL_EXECUTION_FAILED');
+      });
+
+      it('omits toolResults from meta when the model called nothing', async () => {
+        stubDoctorExchange();
+        const service = buildService(undefined, buildToolRegistry(jest.fn()));
+
+        const actualResult = await service.sendMessage(
+          'session-1',
+          { content: 'Halo' },
+          inputActor,
+        );
+
+        expect(actualResult.meta).not.toHaveProperty('toolResults');
+      });
     });
   });
 

@@ -5,7 +5,11 @@ import { ChatChannelValue, ChatToolNameValue } from '@hms/shared-types';
 import { ActorScopeResolution } from '../../../common/authorization/actor.types';
 import { AiChatbotError } from '../ai-chatbot.error';
 import { ChatTool } from './chat-tool.interface';
-import { ChatToolCaller, ChatToolDispatchRequest } from './chat-tool.types';
+import {
+  ChatToolCaller,
+  ChatToolDispatchOutcome,
+  ChatToolDispatchRequest,
+} from './chat-tool.types';
 
 /**
  * Which role a session channel belongs to. The channel a session claims is
@@ -40,6 +44,15 @@ export class ChatToolRegistry {
   }
 
   /**
+   * Whether anything is registered at all — lets the orchestration skip the
+   * per-message actor fetch entirely while the catalogue is empty, instead of
+   * paying a query to compute an empty offer.
+   */
+  hasRegisteredTools(): boolean {
+    return this.toolsByName.size > 0;
+  }
+
+  /**
    * The tools this caller may be offered in this channel. An empty list
    * means the wire request carries no `tools` field at all — today's
    * behaviour exactly.
@@ -60,7 +73,7 @@ export class ChatToolRegistry {
    * outside its catalogue gains nothing; a hallucinated argument fails the
    * Zod schema, never a repository.
    */
-  async dispatchTool(request: ChatToolDispatchRequest): Promise<unknown> {
+  async dispatchTool(request: ChatToolDispatchRequest): Promise<ChatToolDispatchOutcome> {
     const parsedName = this.parseToolName(request.toolName);
     const tool = parsedName === null ? undefined : this.toolsByName.get(parsedName);
     if (
@@ -80,7 +93,8 @@ export class ChatToolRegistry {
         `Arguments rejected for tool: ${tool.name}`,
       );
     }
-    return tool.execute(request.caller.user, parsedArguments.data);
+    const result = await tool.execute(request.caller.user, parsedArguments.data);
+    return { toolName: tool.name, validatedArguments: parsedArguments.data, result };
   }
 
   private parseToolName(toolName: string): ChatToolNameValue | null {

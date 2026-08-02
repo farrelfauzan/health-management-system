@@ -14,6 +14,7 @@ import {
   ChatMessageRecord,
   ChatSafetyTagValue,
   ChatMessageView,
+  ChatToolResultView,
   AdminChatSessionListView,
   ChatSessionListView,
   ChatSessionRecord,
@@ -27,7 +28,11 @@ import {
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { AiChatbotError } from '../ai-chatbot.error';
-import { ChatCompletionMessage } from '../infrastructure/ai-provider.types';
+import { ChatCompletionMessage, ChatToolCall } from '../infrastructure/ai-provider.types';
+import { buildChatToolCaller } from '../tools/build-chat-tool-caller';
+import { buildChatToolWireDefinitions } from '../tools/build-chat-tool-wire-definitions';
+import { ChatToolRegistry } from '../tools/chat-tool.registry';
+import { ChatToolCaller } from '../tools/chat-tool.types';
 import { AI_CHAT_CONTEXT_PREAMBLE } from './ai-chat-context-preamble';
 import { AI_CHAT_DISCLAIMER } from './ai-chat-disclaimer';
 import { AI_CHAT_SYSTEM_PROMPTS } from './ai-chat-system-prompts';
@@ -45,9 +50,20 @@ import { ChatRepository } from '../repository/chat.repository';
 const REPLAYED_HISTORY_TURN_LIMIT = 20;
 
 /**
+ * At most this many lookups execute per user message (ai-chatbot-tools.md
+ * §4.4). Not a performance guard: it is what bounds the damage of a prompt
+ * injection asking for lookups in bulk, and each executed call also consumes
+ * one slot of the hourly message quota, so the loop never exists without the
+ * counter.
+ */
+const MAX_TOOL_CALLS_PER_MESSAGE = 3;
+
+/**
  * Orchestrates a chat exchange end to end: ownership check, provider
- * resolution, history replay, the upstream call, and persistence of both
- * turns with their audit trail.
+ * resolution, history replay, the upstream call, the Mode A tool loop
+ * (P15-T04 — the model chooses lookups, HMS executes them as the asking
+ * user, and the results go to the client, never back to the provider), and
+ * persistence of every turn with its audit trail.
  *
  * Two boundaries are deliberate. The **disclaimer is structural** — every
  * assistant turn persists `disclaimerShown: true` and the text rides in the
@@ -66,6 +82,7 @@ export class AiChatbotService {
     private readonly resolverService: AiProviderResolverService,
     private readonly contextEnrichmentService: ChatContextEnrichmentService,
     private readonly safetyPolicyService: SafetyPolicyService,
+    private readonly chatToolRegistry: ChatToolRegistry,
     private readonly configService: ConfigService,
   ) {}
 
@@ -236,6 +253,17 @@ export class AiChatbotService {
       return this.completeWithoutProvider(session, userMessage, inputDecision, exchangeStartedAt);
     }
     const { adapter, config } = await this.resolverService.resolveActiveProvider();
+    // The tool caller is built only when something is registered: while the
+    // catalogue is empty every exchange skips the actor fetch and the wire
+    // request is byte-identical to Phase 13.
+    const toolCaller = this.chatToolRegistry.hasRegisteredTools()
+      ? await this.buildToolCaller(actor)
+      : null;
+    const offeredTools =
+      toolCaller === null
+        ? []
+        : this.chatToolRegistry.listOfferedTools(toolCaller, session.channel);
+    const toolDefinitions = buildChatToolWireDefinitions(offeredTools);
     const [history, contextPayload] = await Promise.all([
       this.chatRepository.listMessagesForSession({
         sessionId: session.id,
@@ -260,6 +288,7 @@ export class AiChatbotService {
       channel: session.channel,
       messages: this.buildCompletionMessages(session, history.items, contextPayload),
       contextPayload,
+      ...(toolDefinitions.length === 0 ? {} : { tools: toolDefinitions }),
     });
     // The provider's text is never persisted as it arrived: the output
     // guards run first, and what the patient is shown is what gets stored.
@@ -285,6 +314,15 @@ export class AiChatbotService {
       // order, which would let the transcript render the reply first.
       createdAt: new Date(exchangeStartedAt.getTime() + 1),
     });
+    // Mode A (ai-chatbot-tools.md §4.4): the lookups the model requested run
+    // now, as the asking user, and stop here — nothing is sent back to the
+    // provider, so a result can never carry an instruction into the model's
+    // context. Each executed call is persisted as its own SYSTEM turn before
+    // the response leaves the service.
+    const toolResults =
+      toolCaller === null || result.toolCalls.length === 0
+        ? []
+        : await this.executeToolCalls(session, toolCaller, result.toolCalls, exchangeStartedAt);
     return {
       data: {
         userMessage: this.toMessageView(userMessage),
@@ -295,8 +333,85 @@ export class AiChatbotService {
         providerKind: result.providerKind,
         model: result.model,
         providerRequestId: result.providerRequestId === '' ? null : result.providerRequestId,
+        ...(toolResults.length === 0 ? {} : { toolResults }),
       },
     };
+  }
+
+  /**
+   * Executes at most {@link MAX_TOOL_CALLS_PER_MESSAGE} of the model's
+   * requested calls, in order, dropping the excess. Every executed call —
+   * including a refused or failed one — persists a SYSTEM turn carrying what
+   * was asked and what came back, stamped after the assistant turn so the
+   * transcript reads announcement-then-lookup. The turn carries the asking
+   * user's id on purpose: that is what makes it count against the hourly
+   * message quota.
+   */
+  private async executeToolCalls(
+    session: ChatSessionRecord,
+    caller: ChatToolCaller,
+    toolCalls: ReadonlyArray<ChatToolCall>,
+    exchangeStartedAt: Date,
+  ): Promise<ChatToolResultView[]> {
+    const executableCalls = toolCalls.slice(0, MAX_TOOL_CALLS_PER_MESSAGE);
+    const toolResults: ChatToolResultView[] = [];
+    for (const [index, toolCall] of executableCalls.entries()) {
+      const toolResult = await this.executeSingleToolCall(session, caller, toolCall);
+      await this.chatRepository.appendMessage({
+        sessionId: session.id,
+        authorUserId: caller.user.sub,
+        actor: 'SYSTEM',
+        content: JSON.stringify(toolResult),
+        createdAt: new Date(exchangeStartedAt.getTime() + 2 + index),
+      });
+      toolResults.push(toolResult);
+    }
+    return toolResults;
+  }
+
+  /**
+   * One dispatch, converted to a view instead of a thrown error: a failed
+   * lookup is part of the exchange's answer (§4.5 — it renders as failed,
+   * never as prose about what might have been there), and one bad call must
+   * not discard the assistant turn or the other results.
+   */
+  private async executeSingleToolCall(
+    session: ChatSessionRecord,
+    caller: ChatToolCaller,
+    toolCall: ChatToolCall,
+  ): Promise<ChatToolResultView> {
+    try {
+      const outcome = await this.chatToolRegistry.dispatchTool({
+        caller,
+        channel: session.channel,
+        toolName: toolCall.name,
+        arguments: toolCall.arguments,
+      });
+      return {
+        toolName: outcome.toolName,
+        arguments: outcome.validatedArguments,
+        outcome: 'SUCCESS',
+        result: outcome.result,
+        errorCode: null,
+      };
+    } catch (caughtError) {
+      return {
+        toolName: toolCall.name,
+        arguments: toolCall.arguments,
+        outcome: 'FAILED',
+        result: null,
+        errorCode:
+          caughtError instanceof AiChatbotError ? caughtError.code : 'AI_TOOL_EXECUTION_FAILED',
+      };
+    }
+  }
+
+  private async buildToolCaller(actor: CurrentUser): Promise<ChatToolCaller> {
+    const actorRecord = await this.authRepository.findUserById(actor.sub);
+    if (!actorRecord) {
+      throw new UnauthorizedException('User not found');
+    }
+    return buildChatToolCaller(actor, actorRecord);
   }
 
   /**

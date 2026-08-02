@@ -78,6 +78,9 @@ importers:
       yaml:
         specifier: ^2.8.1
         version: 2.9.0
+      zod-to-json-schema:
+        specifier: ^3.25.2
+        version: 3.25.2(zod@3.25.76)
     devDependencies:
       '@hms/config':
         specifier: workspace:*
