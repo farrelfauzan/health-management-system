@@ -141,11 +141,55 @@ describe('SafetyPolicyService', () => {
       expect(actualDecision.content).toBe(inputContent);
     });
 
-    it('gives the doctor channel clinician-appropriate refusal copy', () => {
-      const actualDecision = buildService().evaluateOutput('You have dengue fever.', 'DOCTOR');
+    it('keeps a doctor-channel diagnosis reply and appends the clinical-judgement notice', () => {
+      const inputContent = 'You have dengue fever based on the platelet trend.';
 
-      expect(actualDecision.content).toContain('clinical judgement');
-      expect(actualDecision.content).not.toContain('see a healthcare professional at the clinic');
+      const actualDecision = buildService().evaluateOutput(inputContent, 'DOCTOR');
+
+      expect(actualDecision.safetyTags).toEqual(['diagnosis_attempt']);
+      expect(actualDecision.content).toContain(inputContent);
+      expect(actualDecision.content).toContain('does not replace your clinical judgement');
+    });
+
+    it('still replaces a doctor-channel prescription assertion', () => {
+      const actualDecision = buildService().evaluateOutput(
+        'Take amoxicillin 500 mg three times a day.',
+        'DOCTOR',
+      );
+
+      expect(actualDecision.safetyTags).toEqual(['prescription_attempt']);
+      expect(actualDecision.content).not.toContain('amoxicillin');
+      expect(actualDecision.content).toContain('cannot prescribe');
+    });
+
+    it('replaces a doctor-channel reply carrying both a diagnosis and a dose', () => {
+      const actualDecision = buildService().evaluateOutput(
+        'You have typhoid. Take ciprofloxacin 500 mg twice a day.',
+        'DOCTOR',
+      );
+
+      expect(actualDecision.safetyTags).toEqual(['diagnosis_attempt', 'prescription_attempt']);
+      expect(actualDecision.content).not.toContain('ciprofloxacin');
+      expect(actualDecision.content).toContain('cannot prescribe');
+    });
+
+    it('leaves the patient channel diagnosis refusal untouched by the doctor exemption', () => {
+      const actualDecision = buildService().evaluateOutput('You have dengue fever.', 'PATIENT');
+
+      expect(actualDecision.safetyTags).toEqual(['diagnosis_attempt']);
+      expect(actualDecision.content).not.toContain('dengue');
+      expect(actualDecision.content).toContain('see a healthcare professional at the clinic');
+    });
+
+    it('stacks the uncertainty notice after the clinical-judgement notice when both fire', () => {
+      const inputContent = 'You have dengue fever, definitely.';
+
+      const actualDecision = buildService().evaluateOutput(inputContent, 'DOCTOR');
+
+      expect(actualDecision.safetyTags).toEqual(['diagnosis_attempt', 'uncertainty_appended']);
+      expect(actualDecision.content).toContain(inputContent);
+      expect(actualDecision.content).toContain('does not replace your clinical judgement');
+      expect(actualDecision.content).toContain('cannot confirm your condition');
     });
 
     it('appends the uncertainty notice to over-confident phrasing', () => {
