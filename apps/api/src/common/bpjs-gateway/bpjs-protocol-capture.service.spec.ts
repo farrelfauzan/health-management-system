@@ -1,7 +1,8 @@
-import { mkdtemp, readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { BpjsProtocolCaptureService } from './bpjs-protocol-capture.service';
@@ -121,7 +122,17 @@ describe('BpjsProtocolCaptureService', () => {
   it('never throws when the directory cannot be written', async () => {
     // Losing a fixture is a bad afternoon; failing a member's booking because
     // a disk was full is a patient standing at a counter.
-    const service = buildService('/proc/definitely-not-writable/bpjs-capture');
+    //
+    // The unwritable path is a directory nested under a regular file, so
+    // mkdir fails with ENOTDIR on every platform. A magic path like /proc
+    // is not portable: on the Linux CI runner mkdir against procfs never
+    // settles, which times the test out and leaves a pending fs request
+    // that keeps the Jest process alive after the run.
+    const scratchDirectory = await mkdtemp(join(tmpdir(), 'bpjs-capture-'));
+    const blockingFilePath = join(scratchDirectory, 'not-a-directory');
+    await writeFile(blockingFilePath, '', 'utf8');
+    const errorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    const service = buildService(join(blockingFilePath, 'bpjs-capture'));
 
     await expect(
       service.record({
@@ -133,5 +144,9 @@ describe('BpjsProtocolCaptureService', () => {
         outcome: 'ACCEPTED',
       }),
     ).resolves.toBeUndefined();
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('bpjs_protocol_capture_failed'),
+    );
+    errorSpy.mockRestore();
   });
 });
