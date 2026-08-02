@@ -47,6 +47,41 @@ export type GetSignedUrlResult = {
   expiresAt: string;
 };
 
+/**
+ * A browser-direct upload. `contentType` and `contentLengthBytes` are
+ * declared up front because both are validated *before* signing and then
+ * signed into the URL — the client cannot widen either afterwards.
+ */
+export type GetSignedUploadUrlRequest = {
+  key: string;
+  contentType: string;
+  contentLengthBytes: number;
+  expiresInSeconds?: number;
+};
+
+/**
+ * `requiredHeaders` must be sent verbatim on the PUT. They are part of the
+ * signature, so a request that omits or changes one is rejected by the
+ * provider rather than silently stored under different metadata.
+ */
+export type GetSignedUploadUrlResult = {
+  url: string;
+  key: string;
+  expiresAt: string;
+  requiredHeaders: Readonly<Record<string, string>>;
+};
+
+export type HeadObjectRequest = {
+  key: string;
+};
+
+export type HeadObjectResult = {
+  key: string;
+  sizeBytes: number;
+  contentType?: string;
+  etag?: string;
+};
+
 export type DeleteObjectRequest = {
   key: string;
 };

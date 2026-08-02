@@ -159,7 +159,7 @@ Versioning rule:
 - Observability: structured logs + request IDs.
 - Data layer: PostgreSQL + Prisma with explicit migrations.
 - AI integration: outbound HTTP client with timeout/retry/circuit-breaker and provider metadata auditing.
-- Object storage: private S3-compatible bucket behind an injectable NestJS common provider with upload, get, signed-URL, and idempotent delete operations; domain modules own all public file workflows.
+- Object storage: private S3-compatible bucket behind an injectable NestJS common provider with upload, get, signed-URL, signed-upload-URL, head, and idempotent delete operations; domain modules own all public file workflows.
 - Clinical relationships: explicit `DoctorPatient` junction with retained assignment lifecycles, append-only assignment activities, service-owned transaction boundaries, activity-log reads, and bounded relation projections.
 
 ## 6. Deployment Topology (MVP)
