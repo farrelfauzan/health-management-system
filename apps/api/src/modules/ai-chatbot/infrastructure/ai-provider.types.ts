@@ -64,11 +64,47 @@ export type ResolvedAiProviderConfig = {
   timeoutMs: number;
 };
 
-export type ChatCompletionRole = 'user' | 'assistant' | 'system';
+export type ChatCompletionRole = 'user' | 'assistant' | 'system' | 'tool';
 
+/**
+ * One tool invocation the model requested, vendor shape normalized away
+ * (P15-T03). `arguments` is the parsed JSON object when the vendor sent
+ * parseable JSON; when it did not, the raw string is passed through on
+ * purpose so the registry's Zod validation refuses it as
+ * `AI_TOOL_INVALID_ARGUMENTS` — the readable failure — instead of the
+ * adapter inventing an empty argument set.
+ */
+export type ChatToolCall = {
+  id: string;
+  name: string;
+  arguments: unknown;
+};
+
+/**
+ * The wire form of one registry tool: name, description, and the argument
+ * schema serialized to JSON Schema. Built by the orchestration layer from
+ * `ChatTool.argumentSchema`; adapters only reshape it per vendor (OpenAI
+ * `function.parameters`, Anthropic `input_schema`).
+ */
+export type ChatToolWireDefinition = {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+};
+
+/**
+ * One conversation turn as adapters accept it. The tool fields are Mode B
+ * replay shapes (ai-chatbot-tools.md §4.6): `toolCalls` belongs on an
+ * `assistant` turn that requested lookups, `toolCallId`/`toolName` on a
+ * `tool` result turn. Plain turns carry neither and serialize exactly as
+ * before.
+ */
 export type ChatCompletionMessage = {
   role: ChatCompletionRole;
   content: string;
+  toolCalls?: ReadonlyArray<ChatToolCall>;
+  toolCallId?: string;
+  toolName?: string;
 };
 
 /**
@@ -78,12 +114,15 @@ export type ChatCompletionMessage = {
  * the field rides along for adapters that gain native structured-context
  * support later. `sessionExternalId` is the upstream thread id when the
  * provider supports one; both v1 adapters are stateless and ignore it.
+ * `tools` is the caller's ability-filtered catalogue: absent or empty means
+ * the request body carries no tools field at all — today's wire exactly.
  */
 export type SendChatCompletionInput = {
   sessionExternalId: string | null;
   channel: ChatChannelValue;
   messages: ReadonlyArray<ChatCompletionMessage>;
   contextPayload: Record<string, unknown>;
+  tools?: ReadonlyArray<ChatToolWireDefinition>;
 };
 
 /**
@@ -91,9 +130,13 @@ export type SendChatCompletionInput = {
  * quote in a support ticket (empty string when the vendor returned none);
  * `rawMetadata` carries whatever non-sensitive diagnostics the vendor
  * returned (usage counts, finish reason) for the message audit columns.
+ * `toolCalls` is empty for a plain answer — including when a router backend
+ * silently ignored the `tools` field, which is a plain answer, not an error
+ * (the §4.7 unsourced-claim guard, not the adapter, judges that reply).
  */
 export type SendChatCompletionResult = {
   content: string;
+  toolCalls: ReadonlyArray<ChatToolCall>;
   providerKind: AiProviderKindValue;
   providerRequestId: string;
   providerMessageId: string | null;

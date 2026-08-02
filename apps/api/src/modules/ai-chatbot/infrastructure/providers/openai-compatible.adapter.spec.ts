@@ -181,6 +181,172 @@ describe('OpenAiCompatibleAdapter', () => {
     expect((actualError as AiChatbotError).message).toContain('unexpected completion shape');
   });
 
+  describe('tool support', () => {
+    const inputWithTools: SendChatCompletionInput = {
+      ...inputMessages,
+      channel: 'DOCTOR',
+      tools: [
+        {
+          name: 'check_medication_stock',
+          description: 'Check current medication stock levels',
+          parameters: {
+            type: 'object',
+            properties: { medicationName: { type: 'string' } },
+          },
+        },
+      ],
+    };
+
+    it('serializes the tool catalogue into the OpenAI function shape', async () => {
+      respondWith({ id: 'x', choices: [{ message: { content: 'ok' } }] });
+
+      await adapter.sendChatCompletion(buildConfig(), inputWithTools);
+
+      const actualRequest = sendJsonRequestMock.mock.calls[0][0] as AiProviderHttpRequest;
+      expect(actualRequest.body.tools).toEqual([
+        {
+          type: 'function',
+          function: {
+            name: 'check_medication_stock',
+            description: 'Check current medication stock levels',
+            parameters: {
+              type: 'object',
+              properties: { medicationName: { type: 'string' } },
+            },
+          },
+        },
+      ]);
+    });
+
+    it('omits the tools field entirely for an empty catalogue', async () => {
+      respondWith({ id: 'x', choices: [{ message: { content: 'ok' } }] });
+
+      await adapter.sendChatCompletion(buildConfig(), { ...inputMessages, tools: [] });
+
+      const actualRequest = sendJsonRequestMock.mock.calls[0][0] as AiProviderHttpRequest;
+      expect(actualRequest.body).not.toHaveProperty('tools');
+    });
+
+    it('normalizes tool_calls and allows empty content on a tool-call turn', async () => {
+      respondWith({
+        id: 'chatcmpl-tool',
+        choices: [
+          {
+            message: {
+              content: null,
+              tool_calls: [
+                {
+                  id: 'call_1',
+                  function: {
+                    name: 'check_medication_stock',
+                    arguments: '{"medicationName":"amoxicillin"}',
+                  },
+                },
+              ],
+            },
+            finish_reason: 'tool_calls',
+          },
+        ],
+      });
+
+      const actualResult = await adapter.sendChatCompletion(buildConfig(), inputWithTools);
+
+      expect(actualResult.content).toBe('');
+      expect(actualResult.toolCalls).toEqual([
+        {
+          id: 'call_1',
+          name: 'check_medication_stock',
+          arguments: { medicationName: 'amoxicillin' },
+        },
+      ]);
+    });
+
+    it('passes unparseable tool arguments through raw for the registry to refuse', async () => {
+      respondWith({
+        id: 'x',
+        choices: [
+          {
+            message: {
+              content: null,
+              tool_calls: [
+                { id: 'call_1', function: { name: 'check_medication_stock', arguments: '{not json' } },
+              ],
+            },
+          },
+        ],
+      });
+
+      const actualResult = await adapter.sendChatCompletion(buildConfig(), inputWithTools);
+
+      expect(actualResult.toolCalls).toEqual([
+        expect.objectContaining({ arguments: '{not json' }),
+      ]);
+    });
+
+    it('treats a reply that ignored the offered tools as a plain answer', async () => {
+      // A router backend without tool support answers in prose; the adapter
+      // reports no tool calls and it is the §4.7 guard's job to judge that.
+      respondWith({ id: 'x', choices: [{ message: { content: 'Stok cukup.' } }] });
+
+      const actualResult = await adapter.sendChatCompletion(buildConfig(), inputWithTools);
+
+      expect(actualResult.content).toBe('Stok cukup.');
+      expect(actualResult.toolCalls).toEqual([]);
+    });
+
+    it('serializes Mode B replay turns into the OpenAI wire shapes', async () => {
+      respondWith({ id: 'x', choices: [{ message: { content: 'Stok amoxicillin: 40.' } }] });
+
+      await adapter.sendChatCompletion(buildConfig(), {
+        ...inputWithTools,
+        messages: [
+          { role: 'user', content: 'Cek stok amoxicillin.' },
+          {
+            role: 'assistant',
+            content: '',
+            toolCalls: [
+              {
+                id: 'call_1',
+                name: 'check_medication_stock',
+                arguments: { medicationName: 'amoxicillin' },
+              },
+            ],
+          },
+          {
+            role: 'tool',
+            content: '{"items":[{"name":"Amoxicillin","stockQty":40}]}',
+            toolCallId: 'call_1',
+            toolName: 'check_medication_stock',
+          },
+        ],
+      });
+
+      const actualRequest = sendJsonRequestMock.mock.calls[0][0] as AiProviderHttpRequest;
+      expect(actualRequest.body.messages).toEqual([
+        { role: 'user', content: 'Cek stok amoxicillin.' },
+        {
+          role: 'assistant',
+          content: null,
+          tool_calls: [
+            {
+              id: 'call_1',
+              type: 'function',
+              function: {
+                name: 'check_medication_stock',
+                arguments: '{"medicationName":"amoxicillin"}',
+              },
+            },
+          ],
+        },
+        {
+          role: 'tool',
+          tool_call_id: 'call_1',
+          content: '{"items":[{"name":"Amoxicillin","stockQty":40}]}',
+        },
+      ]);
+    });
+  });
+
   // A reasoning model bills hidden thinking against max_tokens, so a budget
   // too small for it answers 200 with finish_reason "length" and no content
   // at all. That reads as a broken provider unless the message says budget.
