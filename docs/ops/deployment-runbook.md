@@ -8,8 +8,10 @@ How to deploy the HMS monorepo (NestJS API + Next.js web + PostgreSQL). Written 
 | --- | --- | --- | --- |
 | API | `infra/docker/api/Dockerfile.dev` (dev; production image TODO) | 3001 | `GET /api/v1/health` → `{"status":"ok","service":"api"}` |
 | Web | `infra/docker/web/Dockerfile.dev` (dev; production image TODO) | 3000 | HTTP 200 on `/` (login redirect is fine) |
-| PostgreSQL | `postgres:16-alpine` (compose service `postgres`) | 5432 | `pg_isready` |
+| PostgreSQL | `pgvector/pgvector:pg16` (compose service `postgres`) | 5432 | `pg_isready` |
 | Migrations | compose service `migrate` (`tools` profile) | — | exits 0 |
+
+**PostgreSQL must permit `CREATE EXTENSION vector` (P15-T09).** The compose image ships it; a managed database (RDS, Cloud SQL, etc.) must have pgvector on its allow-list before the `20260817000000_pgvector_extension` migration is deployed — it is a hard prerequisite for every release from Phase 15 on, and `migrate deploy` fails at that migration on a server without it.
 
 ## 2. Required environment
 
