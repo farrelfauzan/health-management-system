@@ -17,6 +17,7 @@ import { AiProviderConfigService } from './service/ai-provider-config.service';
 import { AiProviderResolverService } from './service/ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './service/chat-context-enrichment.service';
 import { SafetyPolicyService } from './service/safety-policy.service';
+import { ChatToolRegistry } from './tools/chat-tool.registry';
 
 /**
  * Feature module for the post-MVP AI chatbot (Phase 13). P13-T03 shipped the
@@ -33,7 +34,10 @@ import { SafetyPolicyService } from './service/safety-policy.service';
  * chatbot reads clinical data — never a foreign repository — and calling
  * them as the authenticated user inherits their `:own` scoping. Repositories
  * are exported for the services of the remaining tasks, never for other
- * modules: cross-module access goes through services.
+ * modules: cross-module access goes through services. P15-T02 adds
+ * `ChatToolRegistry`, the ability-filtered tool catalogue — empty until the
+ * P15-T05/T06 tool definitions register into it, and reached by nothing on
+ * the wire until the P15-T04 dispatch loop lands.
  */
 @Module({
   imports: [
@@ -54,6 +58,7 @@ import { SafetyPolicyService } from './service/safety-policy.service';
     AiProviderConfigService,
     ChatContextEnrichmentService,
     SafetyPolicyService,
+    ChatToolRegistry,
     AiChatbotService,
   ],
   exports: [AiProviderConfigRepository, ChatRepository, AiChatbotService],

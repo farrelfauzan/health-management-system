@@ -10,7 +10,10 @@ import type { AiProviderKindValue, ChatChannelValue } from '@hms/shared-types';
  * Typed failure codes for the chatbot module. `AI_NOT_CONFIGURED` covers
  * every flavour of "chat cannot run on this deployment" (no active config, a
  * disabled config, or a missing encryption key); the provider-prefixed codes
- * are mapped from upstream failures by the P13-T04 adapter layer.
+ * are mapped from upstream failures by the P13-T04 adapter layer. The
+ * tool-prefixed codes are raised by the P15 `ChatToolRegistry`: a
+ * model-requested tool that fails the offering rules, and model-produced
+ * arguments the tool's Zod schema rejects.
  */
 export type AiChatbotErrorCode =
   | 'AI_NOT_CONFIGURED'
@@ -19,7 +22,9 @@ export type AiChatbotErrorCode =
   | 'AI_PROVIDER_UNAUTHORIZED'
   | 'AI_PROVIDER_MODEL_NOT_FOUND'
   | 'AI_SAFETY_BLOCKED'
-  | 'AI_RATE_LIMITED';
+  | 'AI_RATE_LIMITED'
+  | 'AI_TOOL_UNAVAILABLE'
+  | 'AI_TOOL_INVALID_ARGUMENTS';
 
 /**
  * The active provider configuration with its API key decrypted, ready for an
