@@ -4,8 +4,12 @@ import {
   GenerateObjectKeyRequest,
   GetObjectRequest,
   GetObjectResult,
+  GetSignedUploadUrlRequest,
+  GetSignedUploadUrlResult,
   GetSignedUrlRequest,
   GetSignedUrlResult,
+  HeadObjectRequest,
+  HeadObjectResult,
   UploadObjectRequest,
   UploadObjectResult,
 } from './storage.types';
@@ -38,6 +42,29 @@ export abstract class ObjectStorageService {
    * never be persisted.
    */
   abstract getSignedUrl(request: GetSignedUrlRequest): Promise<GetSignedUrlResult>;
+
+  /**
+   * Returns a short-lived signed URL the client PUTs the file to directly,
+   * so large uploads never proxy through the API.
+   *
+   * The declared content type and size are validated against the configured
+   * limits **before** signing and are then signed into the URL, which is what
+   * keeps `uploadObject`'s guarantees intact on a path where the server never
+   * sees the bytes: a client that changes either header gets a rejection from
+   * the provider, not a stored object. The upload is still unconfirmed
+   * afterwards — call {@link headObject} before recording it.
+   */
+  abstract getSignedUploadUrl(
+    request: GetSignedUploadUrlRequest,
+  ): Promise<GetSignedUploadUrlResult>;
+
+  /**
+   * Reads an object's metadata without its bytes. This is the confirmation
+   * step of a direct upload: "the client said it uploaded" is not evidence,
+   * and a row must not be written against an object that is absent or larger
+   * than what was authorized.
+   */
+  abstract headObject(request: HeadObjectRequest): Promise<HeadObjectResult>;
 
   /**
    * Deletes an object idempotently. A missing object is treated as an

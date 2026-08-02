@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 const mockSend = jest.fn();
 const mockGetSignedUrl = jest.fn();
+const mockS3ClientConfigs: Array<Record<string, unknown>> = [];
 
 jest.mock('@aws-sdk/client-s3', () => {
   class MockS3ServiceException extends Error {
@@ -16,10 +17,15 @@ jest.mock('@aws-sdk/client-s3', () => {
   return {
     S3Client: class MockS3Client {
       send = mockSend;
+
+      constructor(readonly config: Record<string, unknown>) {
+        mockS3ClientConfigs.push(config);
+      }
     },
     S3ServiceException: MockS3ServiceException,
     PutObjectCommand: class MockPutObjectCommand extends MockCommand {},
     GetObjectCommand: class MockGetObjectCommand extends MockCommand {},
+    HeadObjectCommand: class MockHeadObjectCommand extends MockCommand {},
     DeleteObjectCommand: class MockDeleteObjectCommand extends MockCommand {},
   };
 });
@@ -51,8 +57,11 @@ function buildConfigService(overrides: Record<string, string> = {}): ConfigServi
 }
 
 describe('S3StorageService', () => {
+  const VALID_OBJECT_KEY = 'documents/clinic/11111111-1111-4111-8111-111111111111.pdf';
+
   beforeEach(() => {
     jest.clearAllMocks();
+    mockS3ClientConfigs.length = 0;
   });
 
   it('throws on invalid signed URL expiry configuration', () => {
@@ -177,6 +186,128 @@ describe('S3StorageService', () => {
       service.getSignedUrl({ key: 'patients/photos/object-key', expiresInSeconds: 600 }),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(mockGetSignedUrl).not.toHaveBeenCalled();
+  });
+
+  it('signs an upload URL with the content type and length bound into it', async () => {
+    // Both are signed on purpose: the server never sees these bytes, so the
+    // MIME allowlist and the size limit only survive if the provider
+    // enforces them. content-type is not signed by the SDK unless asked.
+    mockGetSignedUrl.mockResolvedValue('https://signed.example/upload');
+    const service = new S3StorageService(
+      buildConfigService({ S3_SIGNED_URL_EXPIRES_IN_SECONDS: '120' }),
+    );
+
+    const result = await service.getSignedUploadUrl({
+      key: VALID_OBJECT_KEY,
+      contentType: 'APPLICATION/PDF',
+      contentLengthBytes: 2048,
+    });
+
+    const [, command, options] = mockGetSignedUrl.mock.calls[0];
+    expect(command.input).toEqual(
+      expect.objectContaining({
+        Bucket: 'hms-test-bucket',
+        Key: VALID_OBJECT_KEY,
+        ContentType: 'application/pdf',
+        ContentLength: 2048,
+      }),
+    );
+    expect(options.expiresIn).toBe(120);
+    expect([...options.signableHeaders]).toEqual(['content-type']);
+    expect(result).toEqual({
+      url: 'https://signed.example/upload',
+      key: VALID_OBJECT_KEY,
+      expiresAt: expect.any(String),
+      requiredHeaders: { 'Content-Type': 'application/pdf', 'Content-Length': '2048' },
+    });
+  });
+
+  it('presigns uploads with a client that does not auto-assign a checksum', async () => {
+    // Regression guard for a silent breakage: with the SDK default the
+    // flexible-checksums middleware signs a CRC32 of the (absent) presign
+    // body into the URL, and every real upload is then rejected for a
+    // checksum mismatch. The byte-proxy client must keep the default.
+    new S3StorageService(buildConfigService());
+
+    expect(mockS3ClientConfigs).toHaveLength(2);
+    expect(mockS3ClientConfigs[0]?.requestChecksumCalculation).toBeUndefined();
+    expect(mockS3ClientConfigs[1]?.requestChecksumCalculation).toBe('WHEN_REQUIRED');
+  });
+
+  it('refuses to sign an upload for a key it did not generate', async () => {
+    // A presigned PUT is direct write authority over exactly that key, so a
+    // caller-supplied key would let a client overwrite another object.
+    const service = new S3StorageService(buildConfigService());
+
+    await expect(
+      service.getSignedUploadUrl({
+        key: 'documents/clinic/../../etc/passwd',
+        contentType: 'application/pdf',
+        contentLengthBytes: 2048,
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(mockGetSignedUrl).not.toHaveBeenCalled();
+  });
+
+  it('refuses to sign an upload outside the MIME allowlist or the size limit', async () => {
+    const service = new S3StorageService(buildConfigService({ S3_MAX_UPLOAD_SIZE_BYTES: '1024' }));
+
+    await expect(
+      service.getSignedUploadUrl({
+        key: VALID_OBJECT_KEY,
+        contentType: 'application/zip',
+        contentLengthBytes: 512,
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    await expect(
+      service.getSignedUploadUrl({
+        key: VALID_OBJECT_KEY,
+        contentType: 'application/pdf',
+        contentLengthBytes: 4096,
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    await expect(
+      service.getSignedUploadUrl({
+        key: VALID_OBJECT_KEY,
+        contentType: 'application/pdf',
+        contentLengthBytes: 0,
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(mockGetSignedUrl).not.toHaveBeenCalled();
+  });
+
+  it('reads object metadata for the upload confirmation step', async () => {
+    mockSend.mockResolvedValue({
+      ContentLength: 2048,
+      ContentType: 'application/pdf',
+      ETag: '"etag-value"',
+      $metadata: {},
+    });
+    const service = new S3StorageService(buildConfigService());
+
+    const result = await service.headObject({ key: VALID_OBJECT_KEY });
+
+    expect(result).toEqual({
+      key: VALID_OBJECT_KEY,
+      sizeBytes: 2048,
+      contentType: 'application/pdf',
+      etag: '"etag-value"',
+    });
+  });
+
+  it('throws not found when confirming an upload that never landed', async () => {
+    const missingError = new S3ServiceException({
+      name: 'NotFound',
+      $fault: 'client',
+      $metadata: { httpStatusCode: 404 },
+    } as never);
+    missingError.name = 'NotFound';
+    mockSend.mockRejectedValue(missingError);
+    const service = new S3StorageService(buildConfigService());
+
+    await expect(service.headObject({ key: VALID_OBJECT_KEY })).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 
   it('throws not found when getting a missing object', async () => {
