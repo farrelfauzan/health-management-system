@@ -5,6 +5,8 @@ import type { AiProviderKindValue } from '@hms/shared-types';
 import { AiChatbotError } from '../../ai-chatbot.error';
 import { AiProviderHttpClient } from '../ai-provider-http.client';
 import {
+  ChatCompletionMessage,
+  ChatToolCall,
   ResolvedAiProviderConfig,
   SendChatCompletionInput,
   SendChatCompletionResult,
@@ -52,11 +54,16 @@ const WIRE_STRATEGIES_BY_KIND: Partial<Record<AiProviderKindValue, OpenAiWireStr
   },
 };
 
+type OpenAiWireToolCall = {
+  id?: unknown;
+  function?: { name?: unknown; arguments?: unknown };
+};
+
 type OpenAiChatCompletionResponse = {
   id?: string;
   model?: string;
   choices?: Array<{
-    message?: { content?: unknown };
+    message?: { content?: unknown; tool_calls?: OpenAiWireToolCall[] };
     finish_reason?: string;
   }>;
   usage?: Record<string, unknown>;
@@ -89,11 +96,20 @@ export class OpenAiCompatibleAdapter implements AiChatProvider {
       headers: strategy.buildAuthHeaders(config),
       body: {
         model: config.model,
-        messages: input.messages.map((message) => ({
-          role: message.role,
-          content: message.content,
-        })),
+        messages: input.messages.map((message) => this.toWireMessage(message)),
         max_tokens: config.maxTokens,
+        ...(input.tools === undefined || input.tools.length === 0
+          ? {}
+          : {
+              tools: input.tools.map((tool) => ({
+                type: 'function',
+                function: {
+                  name: tool.name,
+                  description: tool.description,
+                  parameters: tool.parameters,
+                },
+              })),
+            }),
       },
       timeoutMs: config.timeoutMs,
     });
@@ -102,6 +118,34 @@ export class OpenAiCompatibleAdapter implements AiChatProvider {
       throw mapAiProviderResponseError(response.status, this.readErrorDetail(payload));
     }
     return this.toResult(config, response, payload, latencyMs);
+  }
+
+  /**
+   * The Mode B replay shapes (§4.6): a `tool` result turn becomes
+   * `role: 'tool'` with its `tool_call_id`, and an assistant turn that
+   * requested lookups re-serializes its calls with stringified arguments —
+   * the OpenAI wire wants JSON-in-a-string there. Plain turns are unchanged.
+   */
+  private toWireMessage(message: ChatCompletionMessage): Record<string, unknown> {
+    if (message.role === 'tool') {
+      return {
+        role: 'tool',
+        tool_call_id: message.toolCallId ?? '',
+        content: message.content,
+      };
+    }
+    if (message.role === 'assistant' && (message.toolCalls?.length ?? 0) > 0) {
+      return {
+        role: 'assistant',
+        content: message.content === '' ? null : message.content,
+        tool_calls: (message.toolCalls ?? []).map((toolCall) => ({
+          id: toolCall.id,
+          type: 'function',
+          function: { name: toolCall.name, arguments: JSON.stringify(toolCall.arguments) },
+        })),
+      };
+    }
+    return { role: message.role, content: message.content };
   }
 
   private resolveStrategy(kind: AiProviderKindValue): OpenAiWireStrategy {
@@ -139,10 +183,14 @@ export class OpenAiCompatibleAdapter implements AiChatProvider {
   ): SendChatCompletionResult {
     const finishReason = payload.choices?.[0]?.finish_reason;
     const content = payload.choices?.[0]?.message?.content;
-    if (typeof content !== 'string' || content === '') {
+    const toolCalls = this.readToolCalls(payload);
+    const normalizedContent = typeof content === 'string' ? content : '';
+    if (normalizedContent === '' && toolCalls.length === 0) {
       // A truncated-to-nothing answer is a budget problem, not a broken
       // vendor, and the two need different fixes from whoever reads the
       // message — so say which one this was rather than "unexpected shape".
+      // A tool-call-only reply is neither: content is legitimately empty
+      // while the model waits on its lookups.
       throw new AiChatbotError(
         'AI_PROVIDER_UNAVAILABLE',
         finishReason === 'length'
@@ -152,7 +200,8 @@ export class OpenAiCompatibleAdapter implements AiChatProvider {
       );
     }
     return {
-      content,
+      content: normalizedContent,
+      toolCalls,
       providerKind: config.providerKind,
       providerRequestId: response.headers.get('x-request-id') ?? payload.id ?? '',
       providerMessageId: payload.id ?? null,
@@ -165,5 +214,37 @@ export class OpenAiCompatibleAdapter implements AiChatProvider {
           : { finishReason: payload.choices[0].finish_reason }),
       },
     };
+  }
+
+  private readToolCalls(payload: OpenAiChatCompletionResponse): ChatToolCall[] {
+    const wireToolCalls = payload.choices?.[0]?.message?.tool_calls ?? [];
+    return wireToolCalls
+      .filter((wireToolCall) => typeof wireToolCall.function?.name === 'string')
+      .map((wireToolCall, index) => ({
+        id:
+          typeof wireToolCall.id === 'string' && wireToolCall.id !== ''
+            ? wireToolCall.id
+            : `tool-call-${index}`,
+        name: wireToolCall.function?.name as string,
+        arguments: this.parseToolArguments(wireToolCall.function?.arguments),
+      }));
+  }
+
+  /**
+   * OpenAI sends arguments as JSON-in-a-string. Unparseable input is passed
+   * through raw rather than replaced with `{}` — the registry's Zod
+   * validation turns it into `AI_TOOL_INVALID_ARGUMENTS`, which names the
+   * actual problem, where an invented empty object would dispatch a call the
+   * model never made.
+   */
+  private parseToolArguments(rawArguments: unknown): unknown {
+    if (typeof rawArguments !== 'string') {
+      return rawArguments ?? {};
+    }
+    try {
+      return JSON.parse(rawArguments) as unknown;
+    } catch {
+      return rawArguments;
+    }
   }
 }
