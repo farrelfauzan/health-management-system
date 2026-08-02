@@ -29,3 +29,15 @@ export type ChatToolDispatchRequest = {
   readonly toolName: string;
   readonly arguments: unknown;
 };
+
+/**
+ * What a successful dispatch hands back. `validatedArguments` is the
+ * schema-parsed (and defaulted) form, returned because the persisted SYSTEM
+ * turn must record what was actually executed — not the raw string the model
+ * produced.
+ */
+export type ChatToolDispatchOutcome = {
+  readonly toolName: string;
+  readonly validatedArguments: unknown;
+  readonly result: unknown;
+};

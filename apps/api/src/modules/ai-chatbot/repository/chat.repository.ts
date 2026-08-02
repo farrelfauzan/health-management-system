@@ -115,10 +115,15 @@ export class ChatRepository {
   ): Promise<ChatMessageRecord | null> {
     return this.prismaService.$transaction(async (transaction) => {
       await transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${data.authorUserId ?? ''}), ${MESSAGE_QUOTA_LOCK_NAMESPACE})`;
+      // Counted by author rather than by actor: user turns AND the P15-T04
+      // tool-call SYSTEM turns both carry `authorUserId`, so each executed
+      // lookup consumes one slot of the same hourly budget — a message that
+      // triggered three lookups cost four, which is what it cost upstream.
+      // Context-enrichment SYSTEM turns and assistant turns have no author
+      // and stay outside the count.
       const sentInWindow = await transaction.chatMessage.count({
         where: {
           authorUserId: data.authorUserId,
-          actor: 'USER',
           createdAt: { gte: quota.since },
         },
       });

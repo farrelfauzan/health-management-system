@@ -140,6 +140,25 @@ describe('Chat rate limits against Postgres', () => {
       expect(await attemptGuardedTurn(sessionId)).toBe('ALLOWED');
     });
 
+    it('counts authored tool SYSTEM turns against the hourly quota', async () => {
+      // P15-T04 quota accounting: an executed lookup persists a SYSTEM turn
+      // carrying the asking user's id, and each one consumes a slot of the
+      // same hourly budget — a message that triggered three lookups cost
+      // four. Context-enrichment SYSTEM turns (previous test) carry no
+      // author and stay free.
+      const sessionId = await createSession();
+      for (let index = 0; index < MESSAGES_PER_HOUR; index += 1) {
+        await chatRepository.appendMessage({
+          sessionId,
+          authorUserId: ownerUserId,
+          actor: 'SYSTEM',
+          content: `${TEST_MARKER} tool turn ${index}`,
+        });
+      }
+
+      expect(await attemptGuardedTurn(sessionId)).toBe('REFUSED');
+    });
+
     it('lets an emergency through after the quota is exhausted', async () => {
       const sessionId = await createSession();
       await sendTurns(sessionId, MESSAGES_PER_HOUR + 10);

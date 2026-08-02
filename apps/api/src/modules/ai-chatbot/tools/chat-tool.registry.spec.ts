@@ -145,14 +145,18 @@ describe('ChatToolRegistry', () => {
       const registry = buildRegistry([buildListMyPatientsTool(mockExecute)]);
       const doctorCaller = buildCaller(['DOCTOR'], mockDoctorPermissions);
 
-      const actualResult = await registry.dispatchTool({
+      const actualOutcome = await registry.dispatchTool({
         caller: doctorCaller,
         channel: 'DOCTOR',
         toolName: 'list_my_patients',
         arguments: {},
       });
 
-      expect(actualResult).toEqual({ patients: [] });
+      expect(actualOutcome).toEqual({
+        toolName: 'list_my_patients',
+        validatedArguments: { page: 1 },
+        result: { patients: [] },
+      });
       expect(mockExecute).toHaveBeenCalledWith(doctorCaller.user, { page: 1 });
     });
 
