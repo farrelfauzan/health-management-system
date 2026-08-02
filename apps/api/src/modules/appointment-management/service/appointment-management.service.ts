@@ -213,6 +213,10 @@ export class AppointmentManagementService {
       throw new NotFoundException('Doctor not found or inactive');
     }
 
+    if (!readScope.hasAny && doctor.ownerUserId !== currentUser.sub) {
+      throw new ForbiddenException('You are only allowed to read your own sessions');
+    }
+
     const materializedSessions = await this.appointmentManagementRepository.listSessionsWithCounts(
       {
         doctorId,
@@ -243,7 +247,10 @@ export class AppointmentManagementService {
 
     this.assertSessionRangeWithinLimit(query.from, query.to);
 
-    const doctors = await this.appointmentManagementRepository.listActiveDoctorsWithSchedules();
+    const allDoctors = await this.appointmentManagementRepository.listActiveDoctorsWithSchedules();
+    const doctors = readScope.hasAny
+      ? allDoctors
+      : allDoctors.filter((doctor) => doctor.ownerUserId === currentUser.sub);
     const materializedSessions = await this.appointmentManagementRepository.listSessionsWithCounts(
       {
         fromDate: query.from,
@@ -361,6 +368,10 @@ export class AppointmentManagementService {
 
     if (!session) {
       throw new NotFoundException('Session not found');
+    }
+
+    if (!readScope.hasAny && session.doctor.ownerUserId !== currentUser.sub) {
+      throw new ForbiddenException('You are only allowed to read your own sessions');
     }
 
     const queue = await this.appointmentManagementRepository.getSessionQueue(sessionId);

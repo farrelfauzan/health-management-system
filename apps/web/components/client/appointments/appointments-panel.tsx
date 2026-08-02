@@ -49,9 +49,13 @@ const MEDICAL_STAFF_QUERY = { page: 1, limit: 100, isActive: 'true' as const };
 
 type AppointmentsPanelProps = {
   initialQuery: AppointmentsSearchParams;
+  isOwnScheduleView?: boolean;
 };
 
-export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
+export function AppointmentsPanel({
+  initialQuery,
+  isOwnScheduleView = false,
+}: AppointmentsPanelProps) {
   const t = useTranslations('operations.appointments');
   const format = useFormatter();
   const router = useRouter();
@@ -193,6 +197,8 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
           doctors={doctorsQuery.doctors}
           selectedDoctorIds={selectedDoctorIds}
           isDoctorsLoading={doctorsQuery.isPending}
+          showScheduleAction={!isOwnScheduleView}
+          showMedicalStaffFilter={!isOwnScheduleView}
           onToggleDoctor={handleToggleDoctor}
           onSchedule={() => setIsScheduleDialogOpen(true)}
         />
@@ -272,7 +278,7 @@ export function AppointmentsPanel({ initialQuery }: AppointmentsPanelProps) {
         </Card>
       </div>
 
-      {isScheduleDialogOpen ? (
+      {isScheduleDialogOpen && !isOwnScheduleView ? (
         <ScheduleAppointmentDialog
           open={isScheduleDialogOpen}
           onOpenChange={setIsScheduleDialogOpen}

@@ -10,6 +10,7 @@ export default async function DoctorAppointmentsPage({
 }: DoctorAppointmentsPageProps) {
   const query = parseAppointmentsSearchParams(await searchParams);
 
-  // Scoped to the doctor's own appointments by `appointment.read:own`.
-  return <AppointmentsPanel initialQuery={query} />;
+  // Scoped to the doctor's own appointments by `appointment.read:own` and own
+  // sessions by `appointment.session.read:own`; doctors never book here.
+  return <AppointmentsPanel initialQuery={query} isOwnScheduleView />;
 }

@@ -9,6 +9,9 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    # A leaked async handle can keep Jest's process alive after the run
+    # completes; fail the job instead of holding a runner for six hours.
+    timeout-minutes: 30
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public
     services:

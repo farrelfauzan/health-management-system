@@ -22,12 +22,17 @@ import { downloadTextFile } from '#lib/shared/download-text-file';
 
 const CSV_FILE_NAME = 'patients-export.csv';
 const CSV_MIME_TYPE = 'text/csv;charset=utf-8';
+const DEFAULT_PATIENT_DETAIL_BASE_PATH = '/admin/patients';
 
 type PatientsDirectoryPanelProps = {
   initialQuery: PatientsSearchParams;
+  patientDetailBasePath?: string;
 };
 
-export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelProps) {
+export function PatientsDirectoryPanel({
+  initialQuery,
+  patientDetailBasePath = DEFAULT_PATIENT_DETAIL_BASE_PATH,
+}: PatientsDirectoryPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('clinical');
@@ -71,7 +76,7 @@ export function PatientsDirectoryPanel({ initialQuery }: PatientsDirectoryPanelP
   }
 
   function handleViewPatient(patientId: string): void {
-    router.push(`/admin/patients/${patientId}`);
+    router.push(`${patientDetailBasePath}/${patientId}`);
   }
 
   return (

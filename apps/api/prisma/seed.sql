@@ -94,6 +94,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('appointment.cancel:own', 'Appointment', 'cancel', 'OWN', 'Cancel own appointments'),
     ('appointment.approve:any', 'Appointment', 'approve', 'ANY', 'Approve or reject special appointment requests'),
     ('appointment.session.read:any', 'AppointmentSession', 'read', 'ANY', 'Read appointment sessions and queues'),
+    ('appointment.session.read:own', 'AppointmentSession', 'read', 'OWN', 'Read own appointment sessions and queues'),
     ('appointment.session.update:any', 'AppointmentSession', 'update', 'ANY', 'Update appointment session capacity and status'),
     ('registration.read:any', 'Registration', 'read', 'ANY', 'Read all registrations'),
     ('registration.read:own', 'Registration', 'read', 'OWN', 'Read own registrations'),
@@ -286,11 +287,13 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'doctor.read:any'),
     ('DOCTOR', 'doctor.read-identifier:own'),
     ('DOCTOR', 'doctor.schedule.write:own'),
+    -- Doctors consult their agenda; the front desk and patients own booking.
+    -- No create grant: the schedule is read-and-manage-own only, and session
+    -- visibility is OWN so one doctor never browses another doctor's calendar.
     ('DOCTOR', 'appointment.read:own'),
-    ('DOCTOR', 'appointment.create:own'),
     ('DOCTOR', 'appointment.update:own'),
     ('DOCTOR', 'appointment.cancel:own'),
-    ('DOCTOR', 'appointment.session.read:any'),
+    ('DOCTOR', 'appointment.session.read:own'),
     ('DOCTOR', 'registration.read:any'),
     -- OWN for a doctor means the encounters they attended plus those of
     -- patients actively assigned to them: a clinician needs the previous
@@ -384,6 +387,16 @@ WHERE rp."role_id" = r."id"
   AND rp."permission_id" = p."id"
   AND r."code" = 'DOCTOR'
   AND p."permission_key" = 'patient.read:any';
+
+-- Doctors consult their agenda; they do not book it and they do not browse
+-- other doctors' calendars. Revokes the grants earlier seeds handed out so a
+-- re-seeded database converges on the narrowed role.
+DELETE FROM "role_permissions" rp
+USING "roles" r, "permissions" p
+WHERE rp."role_id" = r."id"
+  AND rp."permission_id" = p."id"
+  AND r."code" = 'DOCTOR'
+  AND p."permission_key" IN ('appointment.create:own', 'appointment.session.read:any');
 
 -- Reserved service account for the inbound BPJS Antrean bridge (P14-T04).
 -- Baseline, not demo data: a production deployment needs this row, because a
@@ -1175,5 +1188,318 @@ SELECT
   NOW()
 FROM seed_service_tariffs
 ON CONFLICT ("code") DO NOTHING;
+
+-- =========================================================================
+-- Development demo scheduling and clinical data. Replace or remove for
+-- production seeds. Exercises the doctor shell end to end:
+--   * weekly practice windows so each doctor's calendar shows own sessions,
+--   * doctor-patient assignments so `patient.read:own` and
+--     `prescription.write:own` resolve to someone,
+--   * booked session appointments and one pending special request,
+--   * a checked-in registration with an IN_PROGRESS encounter so a doctor can
+--     write a prescription immediately after logging in.
+-- Dates are CURRENT_DATE-relative so the demo stays in the visible week; a
+-- reseed on a later date adds that week's rows (ids embed the date) and never
+-- rewrites what a clinic user has since touched. Timestamps subtract 7 hours
+-- because `scheduled_at` is stored naive-UTC and the demo clinic runs
+-- Asia/Jakarta (UTC+7, no DST).
+-- =========================================================================
+
+WITH seed_schedules(license_number, day_of_week, start_time, end_time, max_patients) AS (
+  VALUES
+    ('SIP-2026-0001', 1, '08:00', '12:00', 10),
+    ('SIP-2026-0001', 2, '08:00', '12:00', 10),
+    ('SIP-2026-0001', 3, '08:00', '12:00', 10),
+    ('SIP-2026-0001', 4, '08:00', '12:00', 10),
+    ('SIP-2026-0001', 5, '08:00', '12:00', 10),
+    ('SIP-2026-0001', 1, '13:00', '16:00', 8),
+    ('SIP-2026-0001', 3, '13:00', '16:00', 8),
+    ('SIP-2026-0002', 1, '09:00', '13:00', 12),
+    ('SIP-2026-0002', 2, '09:00', '13:00', 12),
+    ('SIP-2026-0002', 3, '09:00', '13:00', 12),
+    ('SIP-2026-0002', 4, '09:00', '13:00', 12),
+    ('SIP-2026-0002', 5, '09:00', '13:00', 12),
+    ('SIP-2026-0002', 6, '09:00', '12:00', 8),
+    ('SIP-2026-0003', 2, '10:00', '14:00', 8),
+    ('SIP-2026-0003', 4, '10:00', '14:00', 8)
+)
+INSERT INTO "doctor_schedules" (
+  "id",
+  "doctor_id",
+  "day_of_week",
+  "start_time",
+  "end_time",
+  "is_available",
+  "max_patients",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('demo-schedule:' || license_number || ':' || day_of_week || ':' || start_time)::uuid,
+  md5('doctor:' || license_number)::uuid,
+  day_of_week,
+  start_time,
+  end_time,
+  true,
+  max_patients,
+  NOW(),
+  NOW()
+FROM seed_schedules
+ON CONFLICT ("id") DO UPDATE
+SET
+  "end_time" = EXCLUDED."end_time",
+  "is_available" = true,
+  "max_patients" = EXCLUDED."max_patients",
+  "updated_at" = NOW();
+
+-- Active assignments: Budi and Siti belong to dr. Andi, Agus to dr. Maya.
+-- These are what the doctor's Patients tab and the prescription OWN-scope
+-- check resolve against. A partial unique index allows one *active* row per
+-- pair, so the insert is guarded by NOT EXISTS rather than ON CONFLICT: a
+-- pair the clinic already assigned through the UI (different id) must be left
+-- alone, not collided with.
+WITH seed_assignments(license_number, mrn) AS (
+  VALUES
+    ('SIP-2026-0001', 'MRN-0001'),
+    ('SIP-2026-0001', 'MRN-0002'),
+    ('SIP-2026-0002', 'MRN-0003')
+)
+INSERT INTO "doctor_patients" (
+  "id",
+  "doctor_id",
+  "patient_id",
+  "assigned_by_id",
+  "assigned_at",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('demo-assignment:' || license_number || ':' || mrn)::uuid,
+  md5('doctor:' || license_number)::uuid,
+  md5('patient:' || mrn)::uuid,
+  md5('user:admin@salingjaga.com')::uuid,
+  NOW(),
+  NOW(),
+  NOW()
+FROM seed_assignments sa
+WHERE NOT EXISTS (
+  SELECT 1 FROM "doctor_patients" dp
+  WHERE dp."doctor_id" = md5('doctor:' || sa.license_number)::uuid
+    AND dp."patient_id" = md5('patient:' || sa.mrn)::uuid
+    AND dp."unassigned_at" IS NULL
+)
+ON CONFLICT ("id") DO NOTHING;
+
+-- Reactivate a previously unassigned demo pair, but only when the pair has no
+-- other active assignment (the partial unique index would reject a second).
+WITH seed_assignments(license_number, mrn) AS (
+  VALUES
+    ('SIP-2026-0001', 'MRN-0001'),
+    ('SIP-2026-0001', 'MRN-0002'),
+    ('SIP-2026-0002', 'MRN-0003')
+)
+UPDATE "doctor_patients" AS dp
+SET
+  "unassigned_at" = NULL,
+  "unassigned_by_id" = NULL,
+  "updated_at" = NOW()
+FROM seed_assignments sa
+WHERE dp."id" = md5('demo-assignment:' || sa.license_number || ':' || sa.mrn)::uuid
+  AND dp."unassigned_at" IS NOT NULL
+  AND NOT EXISTS (
+    SELECT 1 FROM "doctor_patients" active
+    WHERE active."doctor_id" = dp."doctor_id"
+      AND active."patient_id" = dp."patient_id"
+      AND active."unassigned_at" IS NULL
+  );
+
+-- Materialize each booked window's next strictly-future occurrence:
+-- k = ((target_dow - today_dow - 1) mod 7) + 1 days ahead, so a Monday clinic
+-- seeded on Monday lands next Monday, never today (today's queue is the
+-- encounter demo below, not a future booking).
+WITH seed_bookings(license_number, day_of_week, start_time, end_time, max_patients) AS (
+  VALUES
+    ('SIP-2026-0001', 1, '08:00', '12:00', 10),
+    ('SIP-2026-0002', 1, '09:00', '13:00', 12)
+),
+dated AS (
+  SELECT
+    *,
+    (CURRENT_DATE
+      + (((day_of_week - EXTRACT(DOW FROM CURRENT_DATE)::int - 1) % 7 + 7) % 7 + 1)
+    )::date AS session_date
+  FROM seed_bookings
+)
+INSERT INTO "appointment_sessions" (
+  "id",
+  "doctor_id",
+  "schedule_id",
+  "session_date",
+  "start_time",
+  "end_time",
+  "max_patients",
+  "status",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('demo-session:' || license_number || ':' || session_date || ':' || start_time)::uuid,
+  md5('doctor:' || license_number)::uuid,
+  md5('demo-schedule:' || license_number || ':' || day_of_week || ':' || start_time)::uuid,
+  session_date,
+  start_time,
+  end_time,
+  max_patients,
+  'OPEN'::"AppointmentSessionStatus",
+  NOW(),
+  NOW()
+FROM dated
+ON CONFLICT ("doctor_id", "session_date", "start_time") DO NOTHING;
+
+-- Queue entries into those sessions. Joined on the session's natural key
+-- rather than the derived id so a session the clinic already materialized for
+-- the same slot is reused instead of violating the appointment FK.
+WITH seed_session_appointments(license_number, day_of_week, start_time, mrn, queue_number, reason) AS (
+  VALUES
+    ('SIP-2026-0001', 1, '08:00', 'MRN-0001', 1, 'Kontrol tekanan darah'),
+    ('SIP-2026-0001', 1, '08:00', 'MRN-0002', 2, 'Nyeri ulu hati berulang'),
+    ('SIP-2026-0002', 1, '09:00', 'MRN-0003', 1, 'Batuk pilek anak')
+),
+dated AS (
+  SELECT
+    *,
+    (CURRENT_DATE
+      + (((day_of_week - EXTRACT(DOW FROM CURRENT_DATE)::int - 1) % 7 + 7) % 7 + 1)
+    )::date AS session_date
+  FROM seed_session_appointments
+)
+INSERT INTO "appointments" (
+  "id",
+  "patient_id",
+  "doctor_id",
+  "type",
+  "session_id",
+  "queue_number",
+  "scheduled_at",
+  "status",
+  "reason",
+  "created_by_id",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('demo-appointment:' || d.mrn || ':' || d.license_number || ':' || d.session_date || ':' || d.start_time)::uuid,
+  md5('patient:' || d.mrn)::uuid,
+  md5('doctor:' || d.license_number)::uuid,
+  'SESSION'::"AppointmentType",
+  s."id",
+  d.queue_number,
+  ((d.session_date::text || ' ' || d.start_time)::timestamp - interval '7 hours'),
+  'SCHEDULED'::"AppointmentStatus",
+  d.reason,
+  md5('user:admin@salingjaga.com')::uuid,
+  NOW(),
+  NOW(),
+  NULL
+FROM dated d
+JOIN "appointment_sessions" s
+  ON s."doctor_id" = md5('doctor:' || d.license_number)::uuid
+  AND s."session_date" = d.session_date
+  AND s."start_time" = d.start_time
+ON CONFLICT ("id") DO NOTHING;
+
+-- One pending special request for the admin approval queue: Dewi asks
+-- dr. Andi for an exact slot next week. Doctors see it read-only in their own
+-- agenda; only ADMIN holds `appointment.approve:any`.
+INSERT INTO "appointments" (
+  "id",
+  "patient_id",
+  "doctor_id",
+  "type",
+  "session_id",
+  "queue_number",
+  "scheduled_at",
+  "status",
+  "reason",
+  "created_by_id",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('demo-appointment:special:MRN-0004:' || request_date)::uuid,
+  md5('patient:MRN-0004')::uuid,
+  md5('doctor:SIP-2026-0001')::uuid,
+  'SPECIAL_REQUEST'::"AppointmentType",
+  NULL,
+  NULL,
+  ((request_date::text || ' 10:00')::timestamp - interval '7 hours'),
+  'REQUESTED'::"AppointmentStatus",
+  'Konsultasi hasil laboratorium',
+  md5('user:admin@salingjaga.com')::uuid,
+  NOW(),
+  NOW(),
+  NULL
+FROM (SELECT (CURRENT_DATE + 8)::date AS request_date) AS r
+ON CONFLICT ("id") DO NOTHING;
+
+-- A checked-in walk-in for Budi with an IN_PROGRESS encounter under dr. Andi,
+-- so the prescription form is reachable the moment the doctor logs in.
+-- DO NOTHING on both: once the clinic finishes or edits this visit, a reseed
+-- must not reopen it.
+INSERT INTO "registrations" (
+  "id",
+  "patient_id",
+  "appointment_id",
+  "status",
+  "registered_at",
+  "checked_in_at",
+  "created_by_id",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+VALUES (
+  md5('demo-registration:MRN-0001:walk-in')::uuid,
+  md5('patient:MRN-0001')::uuid,
+  NULL,
+  'CHECKED_IN'::"RegistrationStatus",
+  NOW(),
+  NOW(),
+  md5('user:admin@salingjaga.com')::uuid,
+  NOW(),
+  NOW(),
+  NULL
+)
+ON CONFLICT ("id") DO NOTHING;
+
+INSERT INTO "encounters" (
+  "id",
+  "registration_id",
+  "patient_id",
+  "doctor_id",
+  "status",
+  "started_at",
+  "created_by_id",
+  "created_at",
+  "updated_at",
+  "deleted_at",
+  "subjective"
+)
+VALUES (
+  md5('demo-encounter:MRN-0001:walk-in')::uuid,
+  md5('demo-registration:MRN-0001:walk-in')::uuid,
+  md5('patient:MRN-0001')::uuid,
+  md5('doctor:SIP-2026-0001')::uuid,
+  'IN_PROGRESS'::"EncounterStatus",
+  NOW(),
+  md5('user:andi.prasetyo@clinic.local')::uuid,
+  NOW(),
+  NOW(),
+  NULL,
+  'Demam dan batuk sejak dua hari terakhir.'
+)
+ON CONFLICT ("registration_id") DO NOTHING;
 
 COMMIT;
