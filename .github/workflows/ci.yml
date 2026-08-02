@@ -16,7 +16,9 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public
     services:
       postgres:
-        image: postgres:16-alpine
+        # pgvector build of Postgres 16 (P15-T09): migrate deploy runs the
+        # CREATE EXTENSION vector migration, which plain 16-alpine lacks.
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_DB: hms_dev
           POSTGRES_USER: postgres
