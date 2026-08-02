@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { calendarDateSchema } from '#appointment-management/schemas';
+
 /**
  * Upstream vendors the multi-provider gateway can route to. Values mirror the
  * Prisma `AiProviderKind` enum; six of the seven speak the OpenAI wire shape
@@ -169,3 +171,79 @@ export const listChatMessagesQuerySchema = z.object({
 });
 
 export type ListChatMessagesQueryInput = z.infer<typeof listChatMessagesQuerySchema>;
+
+/**
+ * The doctor-channel tool catalogue (Phase 15 tool track). Names are the
+ * wire-visible identifiers a provider's `tools` array will carry; the
+ * argument schemas beside them are the same objects the dispatch loop
+ * validates a model's tool call against — one definition, so what the model
+ * is told and what is enforced on return cannot drift
+ * (ai-chatbot-tools.md §4.2). A hallucinated argument fails Zod validation
+ * here, never inside a repository.
+ */
+export const AI_CHAT_TOOL_NAMES = [
+  'list_my_patients',
+  'get_patient_summary',
+  'list_my_appointments',
+  'check_medication_stock',
+  'check_medication_expiry',
+] as const;
+
+export const chatToolNameSchema = z.enum(AI_CHAT_TOOL_NAMES);
+
+export type ChatToolNameValue = z.infer<typeof chatToolNameSchema>;
+
+/**
+ * What a tool declares as its argument contract. Exported so the API's tool
+ * interface can type the schema without a direct zod dependency — the API
+ * only ever consumes zod through this package.
+ */
+export type ChatToolArgumentSchema = z.ZodType;
+
+/**
+ * §7 minimisation: list tools return at most this many rows per call, so
+ * "list my patients" can never become a bulk export. The cap is part of the
+ * tool contract, not a tuning knob.
+ */
+export const AI_CHAT_TOOL_LIST_PAGE_LIMIT = 20;
+
+export const listMyPatientsToolArgsSchema = z.object({
+  page: z.number().int().min(1).default(1),
+});
+
+export type ListMyPatientsToolArgs = z.infer<typeof listMyPatientsToolArgsSchema>;
+
+export const getPatientSummaryToolArgsSchema = z.object({
+  patientId: z.string().uuid(),
+});
+
+export type GetPatientSummaryToolArgs = z.infer<typeof getPatientSummaryToolArgsSchema>;
+
+/** An omitted date means "today" resolved in the clinic timezone, server-side. */
+export const listMyAppointmentsToolArgsSchema = z.object({
+  date: calendarDateSchema.optional(),
+});
+
+export type ListMyAppointmentsToolArgs = z.infer<typeof listMyAppointmentsToolArgsSchema>;
+
+/** An omitted name means the whole inventory summary, capped like every list. */
+export const checkMedicationStockToolArgsSchema = z.object({
+  medicationName: z.string().trim().min(1).max(120).optional(),
+});
+
+export type CheckMedicationStockToolArgs = z.infer<typeof checkMedicationStockToolArgsSchema>;
+
+export const AI_CHAT_TOOL_EXPIRY_MAX_DAYS = 365;
+
+export const AI_CHAT_TOOL_EXPIRY_DEFAULT_DAYS = 30;
+
+export const checkMedicationExpiryToolArgsSchema = z.object({
+  days: z
+    .number()
+    .int()
+    .min(1)
+    .max(AI_CHAT_TOOL_EXPIRY_MAX_DAYS)
+    .default(AI_CHAT_TOOL_EXPIRY_DEFAULT_DAYS),
+});
+
+export type CheckMedicationExpiryToolArgs = z.infer<typeof checkMedicationExpiryToolArgsSchema>;

@@ -23,6 +23,11 @@ const STATUS_BY_ERROR_CODE: Readonly<Record<AiChatbotErrorCode, number>> = {
   AI_PROVIDER_UNAUTHORIZED: HttpStatus.BAD_GATEWAY,
   AI_PROVIDER_MODEL_NOT_FOUND: HttpStatus.BAD_GATEWAY,
   AI_PROVIDER_TIMEOUT: HttpStatus.GATEWAY_TIMEOUT,
+  // Both tool codes are model misbehaviour (an unoffered tool name, arguments
+  // the schema rejects) — the chat user cannot fix either, so they are 502s
+  // like every other upstream fault if the P15-T04 loop ever lets one surface.
+  AI_TOOL_UNAVAILABLE: HttpStatus.BAD_GATEWAY,
+  AI_TOOL_INVALID_ARGUMENTS: HttpStatus.BAD_GATEWAY,
 };
 
 /**
