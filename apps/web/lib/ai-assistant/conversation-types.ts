@@ -1,3 +1,5 @@
+import type { ParsedToolResult } from '#lib/ai-assistant/parsed-tool-result';
+
 export type ClinicalReference = {
   icon: string;
   label: string;
@@ -16,6 +18,13 @@ export type AssistantMessageBody = {
    * it had been shown.
    */
   disclaimer?: string;
+  /**
+   * The lookups this turn ran (ai-chatbot-tools.md §4.5). In Mode A the model
+   * composes its text *before* the lookups execute and never sees the rows,
+   * so the reply above is an announcement and this is the actual answer —
+   * rendered from data the assistant could not have influenced.
+   */
+  toolResults?: ParsedToolResult[];
 };
 
 export type UserConversationMessage = {

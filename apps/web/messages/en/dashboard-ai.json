@@ -155,6 +155,43 @@
     "notification": {
       "replyReady": "The AI assistant has replied.",
       "open": "Open"
+    },
+    "toolResults": {
+      "stockTitle": "Medication stock",
+      "expiryTitle": "Medication expiry",
+      "searchedFor": "Searched: {medicationName}",
+      "allMedications": "Whole medication catalogue",
+      "throughDate": "Through {throughDate}",
+      "shownOf": "Showing {shown} of {total} results",
+      "sourceNote": "Read directly from HMS data, not from the assistant's answer.",
+      "empty": "No matching data.",
+      "failed": "This lookup could not be run.",
+      "failedCode": "Code: {errorCode}",
+      "unrenderable": "This lookup's result cannot be displayed on this screen yet.",
+      "stockColumns": {
+        "medication": "Medication",
+        "stock": "Stock",
+        "reorder": "Reorder level",
+        "status": "Status"
+      },
+      "stockStatus": {
+        "needsReorder": "Needs reorder",
+        "ok": "In stock"
+      },
+      "expiryColumns": {
+        "medication": "Medication",
+        "batch": "Batch",
+        "expiryDate": "Expires",
+        "remaining": "Remaining",
+        "status": "Status"
+      },
+      "expiryStatus": {
+        "EXPIRED": "Expired",
+        "EXPIRING": "Expiring soon",
+        "UNKNOWN": "No date"
+      },
+      "expirySummary": "{expired} expired · {expiring} expiring soon · {unknown} without a date",
+      "unknownExpiryDate": "—"
     }
   },
   "aiProviders": {

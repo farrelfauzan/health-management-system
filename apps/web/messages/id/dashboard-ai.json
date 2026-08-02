@@ -155,6 +155,43 @@
     "notification": {
       "replyReady": "Asisten AI telah membalas.",
       "open": "Buka"
+    },
+    "toolResults": {
+      "stockTitle": "Stok obat",
+      "expiryTitle": "Obat kedaluwarsa",
+      "searchedFor": "Pencarian: {medicationName}",
+      "allMedications": "Seluruh katalog obat",
+      "throughDate": "Hingga {throughDate}",
+      "shownOf": "Menampilkan {shown} dari {total} hasil",
+      "sourceNote": "Diambil langsung dari data HMS, bukan dari jawaban asisten.",
+      "empty": "Tidak ada data yang cocok.",
+      "failed": "Pencarian ini tidak dapat dijalankan.",
+      "failedCode": "Kode: {errorCode}",
+      "unrenderable": "Hasil pencarian ini belum dapat ditampilkan di layar ini.",
+      "stockColumns": {
+        "medication": "Obat",
+        "stock": "Stok",
+        "reorder": "Titik pesan ulang",
+        "status": "Status"
+      },
+      "stockStatus": {
+        "needsReorder": "Perlu dipesan ulang",
+        "ok": "Aman"
+      },
+      "expiryColumns": {
+        "medication": "Obat",
+        "batch": "Batch",
+        "expiryDate": "Kedaluwarsa",
+        "remaining": "Sisa",
+        "status": "Status"
+      },
+      "expiryStatus": {
+        "EXPIRED": "Kedaluwarsa",
+        "EXPIRING": "Segera kedaluwarsa",
+        "UNKNOWN": "Tanpa tanggal"
+      },
+      "expirySummary": "{expired} kedaluwarsa · {expiring} segera kedaluwarsa · {unknown} tanpa tanggal",
+      "unknownExpiryDate": "—"
     }
   },
   "aiProviders": {

@@ -4,6 +4,7 @@ import { Icon } from '@hms/ui';
 
 import { AssistantDisclaimer } from '#components/client/ai-assistant/assistant-disclaimer';
 import { ClinicalReferenceChips } from '#components/client/ai-assistant/clinical-reference-chips';
+import { ToolResultList } from '#components/client/ai-assistant/tool-result-list';
 import type { AssistantConversationMessage } from '#lib/ai-assistant/conversation-types';
 
 type AssistantMessageProps = {
@@ -33,6 +34,14 @@ export function AssistantMessage({ message }: AssistantMessageProps) {
             </ul>
           ) : null}
         </div>
+        {/*
+          Directly under the text, above references and the disclaimer: in
+          Mode A the reply announces the lookup and this is what it announced,
+          so the two read as one answer rather than as a footnote.
+        */}
+        {message.body.toolResults && message.body.toolResults.length > 0 ? (
+          <ToolResultList toolResults={message.body.toolResults} />
+        ) : null}
         {message.body.references && message.body.references.length > 0 ? (
           <ClinicalReferenceChips references={message.body.references} />
         ) : null}
