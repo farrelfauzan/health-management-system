@@ -2073,6 +2073,13 @@ model Document {
   owner      User?           @relation("DocumentOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   chunks     DocumentChunk[]
 
+  /// One row per stored object. Confirming an upload is the only way a row
+  /// is created, and a client that retries the confirm — or replays it —
+  /// would otherwise attach a second document to the same file, so deleting
+  /// "the" document would leave the other one still serving it. Keys are
+  /// server-minted UUIDs and never reused, so this constrains nothing an
+  /// honest flow does.
+  @@unique([storageKey])
   @@index([ownerType, ownerId])
   @@index([purpose, ingestStatus])
   @@index([uploadedById])

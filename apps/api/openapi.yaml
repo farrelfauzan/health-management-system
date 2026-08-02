@@ -14750,6 +14750,844 @@ paths:
         - bearer: []
       summary: Read a session transcript
       tags: *a24
+  /api/v1/admin/documents/upload-url:
+    post:
+      operationId: DocumentAdminController_createUploadUrl_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClinicDocumentUploadUrlDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  mimeType: application/pdf
+                  sizeBytes: 184320
+      responses:
+        "200":
+          description: "A short-lived signed URL the client PUTs the file to directly, so
+            large documents never proxy through the API. The declared content
+            type and size are validated before signing and then signed into the
+            URL — changing either header is rejected by the storage provider.
+            Nothing is persisted yet: a URL nobody uses leaves no document
+            behind. Send `requiredHeaders` verbatim, then call POST
+            /admin/documents with the returned storageKey."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      storageKey:
+                        type: string
+                      expiresAt:
+                        type: string
+                      requiredHeaders:
+                        type: object
+                        properties:
+                          Content-Type:
+                            type: string
+                          Content-Length:
+                            type: string
+                        required:
+                          - Content-Type
+                          - Content-Length
+                    required:
+                      - url
+                      - storageKey
+                      - expiresAt
+                      - requiredHeaders
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/clinic/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...
+                    storageKey: documents/clinic/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf
+                    expiresAt: 2026-08-03T09:05:00.000Z
+                    requiredHeaders:
+                      Content-Type: application/pdf
+                      Content-Length: "184320"
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Sign a browser-direct upload of a clinic document
+      tags: &a25
+        - Document Management
+  /api/v1/admin/documents:
+    post:
+      operationId: DocumentAdminController_confirmUpload_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmClinicDocumentUploadDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  storageKey: documents/clinic/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf
+                  title: SOP Alur Pendaftaran Pasien BPJS
+                  purpose: FAQ_KNOWLEDGE_BASE
+                  visibility: BOTH
+                  language: ID
+      responses:
+        "201":
+          description: The created document. Size and MIME type are read back from the
+            stored object rather than taken from this request — a client’s claim
+            about what it uploaded is not evidence of what is in the bucket. A
+            knowledge-base purpose rests at ingestStatus PENDING until the
+            ingestion pipeline runs; GENERAL rests at NOT_APPLICABLE and is
+            never embedded. Returns 400 when the key was not issued here or the
+            object is missing, and 409 when the same upload was already
+            recorded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      ownerType:
+                        type: string
+                      ownerId:
+                        nullable: true
+                      purpose:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      visibility:
+                        type: string
+                      language:
+                        type: string
+                      ingestStatus:
+                        type: string
+                      ingestError:
+                        nullable: true
+                      ingestedAt:
+                        nullable: true
+                      chunkCount:
+                        type: integer
+                      uploadedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - ownerType
+                      - ownerId
+                      - purpose
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - visibility
+                      - language
+                      - ingestStatus
+                      - ingestError
+                      - ingestedAt
+                      - chunkCount
+                      - uploadedById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11
+                    ownerType: CLINIC
+                    ownerId: null
+                    purpose: FAQ_KNOWLEDGE_BASE
+                    title: SOP Alur Pendaftaran Pasien BPJS
+                    mimeType: application/pdf
+                    sizeBytes: 184320
+                    visibility: BOTH
+                    language: ID
+                    ingestStatus: PENDING
+                    ingestError: null
+                    ingestedAt: null
+                    chunkCount: 0
+                    uploadedById: a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d
+                    createdAt: 2026-08-03T09:00:00.000Z
+                    updatedAt: 2026-08-03T09:00:00.000Z
+                  message: Document created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Record a completed upload as a clinic document
+      tags: *a25
+    get:
+      operationId: DocumentAdminController_listDocuments_v1
+      parameters:
+        - name: purpose
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - FAQ_KNOWLEDGE_BASE
+              - PERSONAL_KNOWLEDGE_BASE
+              - GENERAL
+        - name: ingestStatus
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - PROCESSING
+              - READY
+              - FAILED
+              - NOT_APPLICABLE
+        - name: visibility
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PATIENT
+              - DOCTOR
+              - BOTH
+        - name: language
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ID
+              - EN
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: "The clinic corpus, newest first, cursor-paginated. Personal
+            knowledge bases are never included: this route is pinned to the
+            shared corpus. chunkCount is what says whether a document is
+            actually searchable — READY with zero chunks is a document that
+            extracted to nothing."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        ownerType:
+                          type: string
+                        ownerId:
+                          nullable: true
+                        purpose:
+                          type: string
+                        title:
+                          type: string
+                        mimeType:
+                          type: string
+                        sizeBytes:
+                          type: integer
+                        visibility:
+                          type: string
+                        language:
+                          type: string
+                        ingestStatus:
+                          type: string
+                        ingestError:
+                          nullable: true
+                        ingestedAt:
+                          nullable: true
+                        chunkCount:
+                          type: integer
+                        uploadedById:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - ownerType
+                        - ownerId
+                        - purpose
+                        - title
+                        - mimeType
+                        - sizeBytes
+                        - visibility
+                        - language
+                        - ingestStatus
+                        - ingestError
+                        - ingestedAt
+                        - chunkCount
+                        - uploadedById
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11
+                      ownerType: CLINIC
+                      ownerId: null
+                      purpose: FAQ_KNOWLEDGE_BASE
+                      title: SOP Alur Pendaftaran Pasien BPJS
+                      mimeType: application/pdf
+                      sizeBytes: 184320
+                      visibility: BOTH
+                      language: ID
+                      ingestStatus: PENDING
+                      ingestError: null
+                      ingestedAt: null
+                      chunkCount: 0
+                      uploadedById: a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d
+                      createdAt: 2026-08-03T09:00:00.000Z
+                      updatedAt: 2026-08-03T09:00:00.000Z
+                    - id: 7c4e9b1d-2a3f-4b5c-8d6e-0f1a2b3c4d5e
+                      ownerType: CLINIC
+                      ownerId: null
+                      purpose: FAQ_KNOWLEDGE_BASE
+                      title: Internal Escalation Protocol
+                      mimeType: text/markdown
+                      sizeBytes: 4096
+                      visibility: DOCTOR
+                      language: EN
+                      ingestStatus: READY
+                      ingestError: null
+                      ingestedAt: 2026-08-03T09:02:00.000Z
+                      chunkCount: 12
+                      uploadedById: a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d
+                      createdAt: 2026-08-02T11:00:00.000Z
+                      updatedAt: 2026-08-03T09:02:00.000Z
+                  meta:
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List clinic documents
+      tags: *a25
+  /api/v1/admin/documents/{id}:
+    get:
+      operationId: DocumentAdminController_getDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The document’s metadata and ingestion state. The storage key is
+            never returned — it is an internal handle, and downloads are signed
+            per request instead.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      ownerType:
+                        type: string
+                      ownerId:
+                        nullable: true
+                      purpose:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      visibility:
+                        type: string
+                      language:
+                        type: string
+                      ingestStatus:
+                        type: string
+                      ingestError:
+                        nullable: true
+                      ingestedAt:
+                        type: string
+                      chunkCount:
+                        type: integer
+                      uploadedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - ownerType
+                      - ownerId
+                      - purpose
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - visibility
+                      - language
+                      - ingestStatus
+                      - ingestError
+                      - ingestedAt
+                      - chunkCount
+                      - uploadedById
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 7c4e9b1d-2a3f-4b5c-8d6e-0f1a2b3c4d5e
+                    ownerType: CLINIC
+                    ownerId: null
+                    purpose: FAQ_KNOWLEDGE_BASE
+                    title: Internal Escalation Protocol
+                    mimeType: text/markdown
+                    sizeBytes: 4096
+                    visibility: DOCTOR
+                    language: EN
+                    ingestStatus: READY
+                    ingestError: null
+                    ingestedAt: 2026-08-03T09:02:00.000Z
+                    chunkCount: 12
+                    uploadedById: a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d
+                    createdAt: 2026-08-02T11:00:00.000Z
+                    updatedAt: 2026-08-03T09:02:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Read one clinic document
+      tags: *a25
+    patch:
+      operationId: DocumentAdminController_updateDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClinicDocumentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  visibility: DOCTOR
+      responses:
+        "200":
+          description: "The updated document. The stored file is immutable — replacing
+            content means uploading a new document. Changing visibility or
+            language discards the document’s chunks and returns it to PENDING,
+            because chunks carry copies of both: a staff-only SOP demoted from
+            BOTH must stop answering patient questions immediately, not once
+            someone remembers to re-ingest."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      ownerType:
+                        type: string
+                      ownerId:
+                        nullable: true
+                      purpose:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      visibility:
+                        type: string
+                      language:
+                        type: string
+                      ingestStatus:
+                        type: string
+                      ingestError:
+                        nullable: true
+                      ingestedAt:
+                        type: string
+                      chunkCount:
+                        type: integer
+                      uploadedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - ownerType
+                      - ownerId
+                      - purpose
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - visibility
+                      - language
+                      - ingestStatus
+                      - ingestError
+                      - ingestedAt
+                      - chunkCount
+                      - uploadedById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7c4e9b1d-2a3f-4b5c-8d6e-0f1a2b3c4d5e
+                    ownerType: CLINIC
+                    ownerId: null
+                    purpose: FAQ_KNOWLEDGE_BASE
+                    title: Internal Escalation Protocol
+                    mimeType: text/markdown
+                    sizeBytes: 4096
+                    visibility: DOCTOR
+                    language: EN
+                    ingestStatus: READY
+                    ingestError: null
+                    ingestedAt: 2026-08-03T09:02:00.000Z
+                    chunkCount: 12
+                    uploadedById: a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d
+                    createdAt: 2026-08-02T11:00:00.000Z
+                    updatedAt: 2026-08-03T09:02:00.000Z
+                  message: Document updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Edit a clinic document’s metadata
+      tags: *a25
+    delete:
+      operationId: DocumentAdminController_deleteDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Soft-deletes the document and hard-deletes its chunks in the same
+            write. Retrieval queries chunks directly, so a soft delete alone
+            would retire the row while leaving the document answering questions;
+            chunksRemoved is the evidence it stopped. The stored file survives
+            the soft delete.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      deletedAt:
+                        type: string
+                      chunksRemoved:
+                        type: integer
+                    required:
+                      - id
+                      - deletedAt
+                      - chunksRemoved
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11
+                    deletedAt: 2026-08-03T10:00:00.000Z
+                    chunksRemoved: 12
+                  message: Document deleted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Retire a clinic document
+      tags: *a25
+  /api/v1/admin/documents/{id}/download:
+    get:
+      operationId: DocumentAdminController_getDownloadUrl_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A short-lived signed URL, issued per request and never persisted —
+            the bucket is private and the API does not stream file bytes through
+            itself.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/clinic/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...
+                    expiresAt: 2026-08-03T09:05:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Mint a signed download URL for a clinic document
+      tags: *a25
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -14805,7 +15643,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a25
+      tags: &a26
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -14898,7 +15736,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a25
+      tags: *a26
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -14990,7 +15828,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a25
+      tags: *a26
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -16744,6 +17582,74 @@ components:
           maxLength: 4000
       required:
         - content
+    CreateClinicDocumentUploadUrlDto:
+      type: object
+      properties:
+        mimeType:
+          type: string
+          enum:
+            - application/pdf
+            - text/markdown
+            - text/plain
+        sizeBytes:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+      required:
+        - mimeType
+        - sizeBytes
+    ConfirmClinicDocumentUploadDto:
+      type: object
+      properties:
+        storageKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        purpose:
+          type: string
+          enum:
+            - FAQ_KNOWLEDGE_BASE
+            - PERSONAL_KNOWLEDGE_BASE
+            - GENERAL
+        visibility:
+          type: string
+          enum:
+            - PATIENT
+            - DOCTOR
+            - BOTH
+        language:
+          type: string
+          enum:
+            - ID
+            - EN
+      required:
+        - storageKey
+        - title
+        - purpose
+        - visibility
+        - language
+    UpdateClinicDocumentDto:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        visibility:
+          type: string
+          enum:
+            - PATIENT
+            - DOCTOR
+            - BOTH
+        language:
+          type: string
+          enum:
+            - ID
+            - EN
     AssignRoleDto:
       type: object
       properties:

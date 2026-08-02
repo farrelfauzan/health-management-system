@@ -351,6 +351,7 @@ export type DocumentOrderByWithRelationInput = {
 
 export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  storageKey?: string
   AND?: Prisma.DocumentWhereInput | Prisma.DocumentWhereInput[]
   OR?: Prisma.DocumentWhereInput[]
   NOT?: Prisma.DocumentWhereInput | Prisma.DocumentWhereInput[]
@@ -358,7 +359,6 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   ownerId?: Prisma.UuidNullableFilter<"Document"> | string | null
   purpose?: Prisma.EnumDocumentPurposeFilter<"Document"> | $Enums.DocumentPurpose
   title?: Prisma.StringFilter<"Document"> | string
-  storageKey?: Prisma.StringFilter<"Document"> | string
   mimeType?: Prisma.StringFilter<"Document"> | string
   sizeBytes?: Prisma.IntFilter<"Document"> | number
   visibility?: Prisma.EnumDocumentVisibilityFilter<"Document"> | $Enums.DocumentVisibility
@@ -373,7 +373,7 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   chunks?: Prisma.DocumentChunkListRelationFilter
-}, "id">
+}, "id" | "storageKey">
 
 export type DocumentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
