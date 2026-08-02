@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ChatChannelValue, ChatSafetyTagValue } from '@hms/shared-types';
 
 import { AiChatbotError } from '../ai-chatbot.error';
+import { AI_CHAT_CLINICAL_JUDGEMENT_NOTICE } from './ai-chat-clinical-judgement-notice';
 import { AI_CHAT_EMERGENCY_TEMPLATE } from './ai-chat-emergency-template';
 import { AI_CHAT_SAFETY_PATTERNS } from './ai-chat-safety-patterns';
 import { AI_CHAT_UNCERTAINTY_NOTICE } from './ai-chat-uncertainty-notice';
@@ -76,7 +77,11 @@ export type ChatOutputDecision = {
  * - **Repair** for output. A reply that asserts a diagnosis or issues a dose
  *   is rewritten to a redirect, over-confident phrasing gains the uncertainty
  *   notice, and markup is stripped — because a patient who asked a real
- *   question is better served by a corrected answer than by an error.
+ *   question is better served by a corrected answer than by an error. One
+ *   exception (ai-chatbot-tools.md §2.3): a doctor-channel diagnosis match
+ *   keeps the reply and appends the clinical-judgement notice — the
+ *   no-diagnosis rule protects laypeople, and a licensed clinician is not
+ *   one. Detection is unchanged; only the remedy differs.
  *
  * Every intervention records a tag on the persisted turn, so the P13-T11
  * review can count what the guards actually caught in production instead of
@@ -167,7 +172,10 @@ export class SafetyPolicyService {
   /**
    * Runs the §3.3 output guards. Ordering matters: markup is stripped first
    * so a reply cannot hide an assertion inside a tag, then the hard rules are
-   * applied to the visible text.
+   * applied to the visible text. A diagnosis match replaces the reply on the
+   * patient channel but only annotates it on the doctor channel
+   * (ai-chatbot-tools.md §2.3) — and the prescription guard still runs on an
+   * annotated doctor reply, so a dose cannot ride along with a diagnosis.
    */
   evaluateOutput(content: string, channel: ChatChannelValue): ChatOutputDecision {
     const safetyTags: ChatSafetyTagValue[] = [];
@@ -176,15 +184,22 @@ export class SafetyPolicyService {
       safetyTags.push('markup_stripped');
     }
     let resultContent = sanitized.content;
-    if (this.matchesAny(resultContent, AI_CHAT_SAFETY_PATTERNS.diagnosisAssertion)) {
+    const hasDiagnosisAssertion = this.matchesAny(
+      resultContent,
+      AI_CHAT_SAFETY_PATTERNS.diagnosisAssertion,
+    );
+    if (hasDiagnosisAssertion) {
       safetyTags.push('diagnosis_attempt');
-      resultContent = this.buildRefusalReply(channel, 'diagnosis');
-      return { content: resultContent, safetyTags };
+    }
+    if (hasDiagnosisAssertion && channel !== 'DOCTOR') {
+      return { content: this.buildRefusalReply(channel, 'diagnosis'), safetyTags };
     }
     if (this.matchesAny(resultContent, AI_CHAT_SAFETY_PATTERNS.prescriptionAssertion)) {
       safetyTags.push('prescription_attempt');
-      resultContent = this.buildRefusalReply(channel, 'prescription');
-      return { content: resultContent, safetyTags };
+      return { content: this.buildRefusalReply(channel, 'prescription'), safetyTags };
+    }
+    if (hasDiagnosisAssertion) {
+      resultContent = `${resultContent}\n\n${AI_CHAT_CLINICAL_JUDGEMENT_NOTICE}`;
     }
     if (this.matchesAny(resultContent, AI_CHAT_SAFETY_PATTERNS.clinicalCertainty)) {
       safetyTags.push('uncertainty_appended');
@@ -197,16 +212,16 @@ export class SafetyPolicyService {
    * Replaces an unsafe reply rather than surfacing an error. The user asked
    * a real question; the honest answer is that this assistant cannot answer
    * it and who can. The doctor channel gets different copy because a
-   * clinician is not being told to see a clinician.
+   * clinician is not being told to see a clinician — and it can only reach
+   * here for a prescription, since a doctor-channel diagnosis match appends
+   * a notice instead of refusing.
    */
   private buildRefusalReply(
     channel: ChatChannelValue,
     kind: 'diagnosis' | 'prescription',
   ): string {
     if (channel === 'DOCTOR') {
-      return kind === 'diagnosis'
-        ? 'Saya tidak dapat menegakkan diagnosis untuk pasien tertentu. Silakan gunakan penilaian klinis Anda; saya dapat membantu meringkas literatur atau pedoman terkait.\n\nI cannot establish a diagnosis for a specific patient. Please rely on your own clinical judgement; I can help summarize the relevant literature or guidelines.'
-        : 'Saya tidak dapat meresepkan atau menentukan dosis untuk pasien tertentu. Saya dapat menjelaskan informasi golongan obat secara umum.\n\nI cannot prescribe or set a dose for a specific patient. I can explain general drug-class information instead.';
+      return 'Saya tidak dapat meresepkan atau menentukan dosis untuk pasien tertentu. Saya dapat menjelaskan informasi golongan obat secara umum.\n\nI cannot prescribe or set a dose for a specific patient. I can explain general drug-class information instead.';
     }
     return kind === 'diagnosis'
       ? 'Maaf, saya tidak dapat memastikan penyakit atau memberikan diagnosis. Untuk mengetahui kondisi Anda, silakan periksakan diri ke tenaga kesehatan di klinik.\n\nSorry, I cannot determine an illness or provide a diagnosis. Please see a healthcare professional at the clinic to find out about your condition.'
