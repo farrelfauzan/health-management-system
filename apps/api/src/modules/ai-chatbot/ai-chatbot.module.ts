@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { AppointmentManagementModule } from '../appointment-management/appointment-management.module';
 import { AuthModule } from '../auth/auth.module';
 import { PatientManagementModule } from '../patient-management/patient-management.module';
+import { PharmacyFlowModule } from '../pharmacy-flow/pharmacy-flow.module';
 import { RegistrationFlowModule } from '../registration-flow/registration-flow.module';
 import { AiProviderController } from './controller/ai-provider.controller';
 import { ChatController } from './controller/chat.controller';
@@ -17,7 +18,10 @@ import { AiProviderConfigService } from './service/ai-provider-config.service';
 import { AiProviderResolverService } from './service/ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './service/chat-context-enrichment.service';
 import { SafetyPolicyService } from './service/safety-policy.service';
+import { ChatToolRegistrarService } from './tools/chat-tool-registrar.service';
 import { ChatToolRegistry } from './tools/chat-tool.registry';
+import { CheckMedicationExpiryTool } from './tools/definitions/check-medication-expiry.tool';
+import { CheckMedicationStockTool } from './tools/definitions/check-medication-stock.tool';
 
 /**
  * Feature module for the post-MVP AI chatbot (Phase 13). P13-T03 shipped the
@@ -35,9 +39,12 @@ import { ChatToolRegistry } from './tools/chat-tool.registry';
  * them as the authenticated user inherits their `:own` scoping. Repositories
  * are exported for the services of the remaining tasks, never for other
  * modules: cross-module access goes through services. P15-T02 adds
- * `ChatToolRegistry`, the ability-filtered tool catalogue — empty until the
- * P15-T05/T06 tool definitions register into it, and reached by nothing on
- * the wire until the P15-T04 dispatch loop lands.
+ * `ChatToolRegistry`, the ability-filtered tool catalogue, and P15-T05 fills
+ * it with the two pharmacy tools — which is why `PharmacyFlowModule` joins
+ * the imported domain modules. Registration runs through
+ * `ChatToolRegistrarService` behind `AI_CHAT_TOOLS_ENABLED`: with the flag
+ * off the registry stays empty and the wire request is byte-identical to
+ * Phase 13.
  */
 @Module({
   imports: [
@@ -45,6 +52,7 @@ import { ChatToolRegistry } from './tools/chat-tool.registry';
     PatientManagementModule,
     AppointmentManagementModule,
     RegistrationFlowModule,
+    PharmacyFlowModule,
   ],
   controllers: [AiProviderController, ChatController],
   providers: [
@@ -59,6 +67,9 @@ import { ChatToolRegistry } from './tools/chat-tool.registry';
     ChatContextEnrichmentService,
     SafetyPolicyService,
     ChatToolRegistry,
+    CheckMedicationStockTool,
+    CheckMedicationExpiryTool,
+    ChatToolRegistrarService,
     AiChatbotService,
   ],
   exports: [AiProviderConfigRepository, ChatRepository, AiChatbotService],

@@ -44,8 +44,15 @@ Every entry's permission column is a **requirement including its scope**, enforc
 | `list_my_patients` | `PatientManagementService` | `patient.read` scope **`OWN`** | Yes — assigned patients only |
 | `get_patient_summary` | `PatientManagementService` | `patient.read` scope **`OWN`** | Yes — one assigned patient |
 | `list_my_appointments` | `AppointmentManagementService` | `appointment.read` scope **`OWN`** | Yes — names in slots |
-| `check_medication_stock` | `PharmacyFlowService.getInventorySummary` | `medication.read:any` | **No** |
-| `check_medication_expiry` | `PharmacyFlowService.getExpiryReport` | `medication.read:any` | **No** |
+| `check_medication_stock` | `PharmacyFlowService.listMedications` | `medication.read:any` | **No** |
+| `check_medication_expiry` | `PharmacyFlowService.getExpiryReport` | `inventory.read:any` | **No** |
+
+**Both pharmacy rows were corrected when `P15-T05` implemented them, and the correction is the §4.1 rule doing its job rather than a typo fix.** The original table paired `getInventorySummary` with `medication.read:any`, but that service asserts `Inventory:read` — and `seed.sql` gives `DOCTOR` `medication.read:any` and **not** `inventory.read:any`. Written as drafted, a doctor would have been offered a tool the domain service then refuses.
+
+The resolution keeps invariant 2 exact — a tool is the same door as the REST route, so it must be the route the caller's own grant opens:
+
+- **Stock** moves to `PharmacyFlowService.listMedications`, which is what `medication.read:any` actually opens (`GET /api/v1/medications`) and which already carries `stockQty`, `reorderLevel`, and `needsReorder`. A doctor gets a real stock answer, and **no permission is seeded to make a tool work**.
+- **Expiry** keeps `getExpiryReport` and declares the permission that service really requires. The consequence is deliberate: in a doctor-channel session the tool is **not offered** unless the caller genuinely holds `inventory.read:any` — a doctor who also holds `PHARMACIST` does, and the admin channel (§2.1.2) does. Fails closed, and the tool goes live there by ability rather than by edit.
 
 #### 2.1.2 Admin channel — aggregates only
 
@@ -58,8 +65,8 @@ The rule for this channel is one line: **a tool returns counts, totals, and stat
 | `get_queue_board_summary` | `RegistrationFlowService.getQueueBoard` | `registration.read:any` | **No** — `counts` and `poli[]` only; `entries[]` dropped |
 | `get_daily_cashier_report` | `CashierReportService.getDailyReport` | `invoice.read:any` | Staff names only — see below |
 | `get_appointment_load` | `AppointmentManagementService.listSessionsCalendar` | `appointment.read:any` | **No** — per-session capacity and booked counts; no attendee rows |
-| `check_medication_stock` | `PharmacyFlowService.getInventorySummary` | `medication.read:any` | **No** — shared with the doctor channel |
-| `check_medication_expiry` | `PharmacyFlowService.getExpiryReport` | `medication.read:any` | **No** — shared with the doctor channel |
+| `check_medication_stock` | `PharmacyFlowService.listMedications` | `medication.read:any` | **No** — shared with the doctor channel |
+| `check_medication_expiry` | `PharmacyFlowService.getExpiryReport` | `inventory.read:any` | **No** — shared with the doctor channel |
 
 **`get_daily_cashier_report` is the one entry that is not free, and it should be labelled rather than waved through.** `CashierDailyReport` is `{ date, totals, byMethod, byDoctor }` — no patient appears, but `byDoctor` names practitioners. That is personal data about *staff*: `data pribadi umum` under UU PDP, not `data pribadi spesifik`, and about someone employed by the controller rather than a patient in their care. A different and much smaller risk than a patient's health data — but not zero, and in Mode B it still crosses a border. The tool ships with `byDoctor` **included** (a revenue-by-doctor question is the point of the report) and the fact recorded here so nobody later discovers it in a payload.
 
