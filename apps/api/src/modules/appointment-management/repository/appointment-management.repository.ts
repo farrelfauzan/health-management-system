@@ -335,6 +335,7 @@ export class AppointmentManagementRepository {
       select: {
         id: true,
         fullName: true,
+        ownerUserId: true,
         specialty: { select: { name: true } },
         schedules: {
           select: {
@@ -402,6 +403,11 @@ export class AppointmentManagementRepository {
         endTime: true,
         maxPatients: true,
         status: true,
+        doctor: {
+          select: {
+            ownerUserId: true,
+          },
+        },
         _count: {
           select: {
             appointments: {

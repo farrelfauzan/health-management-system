@@ -32,6 +32,15 @@ export const DOCTOR_NAV_SECTIONS: AdminNavSection[] = [
         ability: { action: 'read', subject: 'Appointment' },
       },
       {
+        // `patient.read:own` — the API returns only patients actively
+        // assigned to this doctor, so this is their panel, not a directory.
+        href: '/doctor/patients',
+        label: 'Patients',
+        labelKey: 'patients',
+        icon: 'group',
+        ability: { action: 'read', subject: 'Patient' },
+      },
+      {
         // The assistant is an OWN-scoped grant every doctor holds, so it
         // belongs in this shell. It was previously reachable only through the
         // floating launcher, and that pointed at the admin route.

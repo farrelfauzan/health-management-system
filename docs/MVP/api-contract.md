@@ -159,14 +159,14 @@ Assignment contract notes:
 | --------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
 | `GET /api/v1/appointments`              | `appointment.read:any` or `appointment.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
 | `GET /api/v1/appointments/:id`          | `appointment.read:any` or `appointment.read:own`     | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
-| `POST /api/v1/appointments`             | `appointment.create:any` or `appointment.create:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT` (own)                       |
+| `POST /api/v1/appointments`             | `appointment.create:any` or `appointment.create:own` | `SUPER_ADMIN`, `ADMIN`, `PATIENT` (own) — doctors do not book           |
 | `PATCH /api/v1/appointments/:id`        | `appointment.update:any` or `appointment.update:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own, limited fields) |
 | `POST /api/v1/appointments/:id/cancel`  | `appointment.cancel:any` or `appointment.cancel:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT` (own)                 |
 | `POST /api/v1/appointments/:id/approve` | `appointment.approve:any`                            | `SUPER_ADMIN`, `ADMIN`                                                  |
 | `POST /api/v1/appointments/:id/reject`  | `appointment.approve:any`                            | `SUPER_ADMIN`, `ADMIN`                                                  |
-| `GET /api/v1/doctors/:id/sessions`      | `appointment.session.read:any`                       | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT`                             |
-| `GET /api/v1/appointment-sessions`      | `appointment.session.read:any`                       | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT`                             |
-| `GET /api/v1/appointment-sessions/:id/queue` | `appointment.session.read:any`                  | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PATIENT`                             |
+| `GET /api/v1/doctors/:id/sessions`      | `appointment.session.read:any` or `:own`             | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT`                       |
+| `GET /api/v1/appointment-sessions`      | `appointment.session.read:any` or `:own`             | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT`                       |
+| `GET /api/v1/appointment-sessions/:id/queue` | `appointment.session.read:any` or `:own`        | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own), `PATIENT`                       |
 | `PATCH /api/v1/appointment-sessions/:id` | `appointment.session.update:any`                    | `SUPER_ADMIN`, `ADMIN`                                                  |
 
 Appointment scheduling model (session-based — see [docs/revamp/appointment-scheduling.md](../revamp/appointment-scheduling.md)):

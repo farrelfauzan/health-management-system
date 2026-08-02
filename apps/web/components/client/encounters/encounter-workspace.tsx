@@ -144,7 +144,12 @@ export function EncounterWorkspace({
             isEditable={isEditable}
           />
           <EncounterReferralCard encounterId={encounter.id} isEditable={isEditable} />
-          <EncounterPrescriptionsCard prescriptions={encounter.prescriptions} />
+          <EncounterPrescriptionsCard
+            encounterId={encounter.id}
+            patientId={encounter.patientId}
+            prescriptions={encounter.prescriptions}
+            isEditable={isEditable}
+          />
         </div>
       </div>
 

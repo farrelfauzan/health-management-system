@@ -602,6 +602,32 @@ describe('AppointmentManagementService', () => {
         service.listDoctorSessions(doctorId, { from: '2027-01-01', to: '2027-06-01' }, currentUser),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
+
+    it('throws forbidden when an OWN-scoped actor reads another doctor sessions', async () => {
+      mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'OWN' }]);
+      repositoryMock.findActiveDoctorById.mockResolvedValue({
+        id: doctorId,
+        ownerUserId: 'another-user-id',
+        schedules: [scheduleWindow],
+      });
+
+      await expect(
+        service.listDoctorSessions(doctorId, sessionRange, currentUser),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('allows an OWN-scoped actor to read their own sessions', async () => {
+      mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'OWN' }]);
+      repositoryMock.findActiveDoctorById.mockResolvedValue({
+        id: doctorId,
+        ownerUserId: currentUser.sub,
+        schedules: [scheduleWindow],
+      });
+
+      const actualSessions = await service.listDoctorSessions(doctorId, sessionRange, currentUser);
+
+      expect(actualSessions.length).toBeGreaterThan(0);
+    });
   });
 
   describe('listSessionsCalendar', () => {
@@ -649,6 +675,34 @@ describe('AppointmentManagementService', () => {
         service.listSessionsCalendar({ from: '2027-01-04', to: '2027-01-04' }, currentUser),
       ).rejects.toBeInstanceOf(ForbiddenException);
     });
+
+    it('limits an OWN-scoped actor to their own doctor calendar', async () => {
+      mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'OWN' }]);
+      repositoryMock.listActiveDoctorsWithSchedules.mockResolvedValue([
+        {
+          id: doctorId,
+          fullName: 'Dr. First',
+          ownerUserId: currentUser.sub,
+          specialty: { name: 'Cardiology' },
+          schedules: [scheduleWindow],
+        },
+        {
+          id: 'b9c1d2e3-f4a5-4b6c-8d7e-9f0a1b2c3d4e',
+          fullName: 'Dr. Second',
+          ownerUserId: 'another-user-id',
+          specialty: { name: 'Neurology' },
+          schedules: [scheduleWindow],
+        },
+      ]);
+
+      const actualSessions = await service.listSessionsCalendar(
+        { from: '2027-01-04', to: '2027-01-04' },
+        currentUser,
+      );
+
+      expect(actualSessions.length).toBeGreaterThan(0);
+      expect(actualSessions.every((session) => session.doctor.id === doctorId)).toBe(true);
+    });
   });
 
   describe('getSessionQueue', () => {
@@ -687,6 +741,46 @@ describe('AppointmentManagementService', () => {
 
       expect(actualQueue.session.bookedCount).toBe(1);
       expect(actualQueue.queue[0]).toMatchObject({ appointmentId, queueNumber: 1 });
+    });
+
+    it('throws forbidden when an OWN-scoped actor reads another doctor queue', async () => {
+      mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'OWN' }]);
+      repositoryMock.findSessionWithCountById.mockResolvedValue({
+        id: sessionId,
+        doctorId,
+        scheduleId,
+        sessionDate: new Date('2027-01-04T00:00:00.000Z'),
+        startTime: '08:00',
+        endTime: '12:00',
+        maxPatients: 10,
+        status: 'OPEN',
+        doctor: { ownerUserId: 'another-user-id' },
+        _count: { appointments: 1 },
+      });
+
+      await expect(service.getSessionQueue(sessionId, currentUser)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
+
+    it('allows an OWN-scoped actor to read their own session queue', async () => {
+      mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'OWN' }]);
+      repositoryMock.findSessionWithCountById.mockResolvedValue({
+        id: sessionId,
+        doctorId,
+        scheduleId,
+        sessionDate: new Date('2027-01-04T00:00:00.000Z'),
+        startTime: '08:00',
+        endTime: '12:00',
+        maxPatients: 10,
+        status: 'OPEN',
+        doctor: { ownerUserId: currentUser.sub },
+        _count: { appointments: 0 },
+      });
+
+      const actualQueue = await service.getSessionQueue(sessionId, currentUser);
+
+      expect(actualQueue.session.id).toBe(sessionId);
     });
   });
 

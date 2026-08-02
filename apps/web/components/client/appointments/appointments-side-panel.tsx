@@ -11,6 +11,8 @@ type AppointmentsSidePanelProps = {
   doctors: DoctorListItem[];
   selectedDoctorIds: string[] | null;
   isDoctorsLoading: boolean;
+  showScheduleAction?: boolean;
+  showMedicalStaffFilter?: boolean;
   onToggleDoctor: (doctorId: string) => void;
   onSchedule: () => void;
   className?: string;
@@ -20,6 +22,8 @@ export function AppointmentsSidePanel({
   doctors,
   selectedDoctorIds,
   isDoctorsLoading,
+  showScheduleAction = true,
+  showMedicalStaffFilter = true,
   onToggleDoctor,
   onSchedule,
   className,
@@ -27,28 +31,34 @@ export function AppointmentsSidePanel({
   const t = useTranslations('operations.appointments');
   return (
     <aside className={cn('space-y-4', className)}>
-      <Can action="create" subject="Appointment">
-        <Button
-          type="button"
-          className="w-full bg-primary-container hover:bg-primary"
-          onClick={onSchedule}
-        >
-          <Icon name="add" size={18} />
-          {t('schedule')}
-        </Button>
-      </Can>
+      {showScheduleAction ? (
+        <Can action="create" subject="Appointment">
+          <Button
+            type="button"
+            className="w-full bg-primary-container hover:bg-primary"
+            onClick={onSchedule}
+          >
+            <Icon name="add" size={18} />
+            {t('schedule')}
+          </Button>
+        </Can>
+      ) : null}
 
-      <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
-        <CardContent className="space-y-3 p-4">
-          <h3 className="font-heading text-sm font-semibold text-slate-900">{t('medicalStaff')}</h3>
-          <MedicalStaffList
-            doctors={doctors}
-            selectedDoctorIds={selectedDoctorIds}
-            isLoading={isDoctorsLoading}
-            onToggleDoctor={onToggleDoctor}
-          />
-        </CardContent>
-      </Card>
+      {showMedicalStaffFilter ? (
+        <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
+          <CardContent className="space-y-3 p-4">
+            <h3 className="font-heading text-sm font-semibold text-slate-900">
+              {t('medicalStaff')}
+            </h3>
+            <MedicalStaffList
+              doctors={doctors}
+              selectedDoctorIds={selectedDoctorIds}
+              isLoading={isDoctorsLoading}
+              onToggleDoctor={onToggleDoctor}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
         <CardContent className="space-y-3 p-4">
