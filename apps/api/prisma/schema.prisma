@@ -436,6 +436,8 @@ model User {
   chatMessages             ChatMessage[]                @relation("ChatMessageAuthor")
   createdAiProviderConfigs AiProviderConfig[]           @relation("AiProviderConfigCreatedBy")
   updatedAiProviderConfigs AiProviderConfig[]           @relation("AiProviderConfigUpdatedBy")
+  uploadedDocuments        Document[]                   @relation("DocumentUploadedBy")
+  ownedDocuments           Document[]                   @relation("DocumentOwner")
 
   @@map("users")
 }
@@ -1974,4 +1976,149 @@ model ChatMessage {
   @@index([providerRequestId])
   @@index([providerMessageId])
   @@map("chat_messages")
+}
+
+/// Who a document belongs to (ai-chatbot-tools.md §5.5, customer-service
+/// strategy §4.3). `CLINIC` is the admin-managed corpus every channel may
+/// see; `DOCTOR` and `ADMIN` are personal knowledge bases private to their
+/// owner. `PATIENT` exists for the future patient-document feature and is
+/// deliberately never retrievable — a patient has no knowledge base in this
+/// phase, and the value being present now is what keeps that a policy
+/// addition rather than a migration.
+enum DocumentOwnerType {
+  CLINIC
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+/// What a document is for. Only the two knowledge-base purposes are ingested
+/// into chunks; `GENERAL` is stored and served but never embedded, which is
+/// how the future document features share this table without joining the
+/// retrieval corpus by accident.
+enum DocumentPurpose {
+  FAQ_KNOWLEDGE_BASE
+  PERSONAL_KNOWLEDGE_BASE
+  GENERAL
+}
+
+/// Where a document is in the extract → chunk → embed pipeline.
+/// `NOT_APPLICABLE` is the resting state of a `GENERAL` document, and is
+/// distinct from `PENDING` on purpose: "nothing will ever ingest this" and
+/// "ingestion has not run yet" are different facts, and only one of them is a
+/// reason to look at a queue.
+enum DocumentIngestStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+  NOT_APPLICABLE
+}
+
+/// Which chat channel may retrieve a clinic-corpus chunk. A staff-only SOP
+/// must never surface in a patient answer, and this column is the
+/// enforcement. It carries no meaning for a personal knowledge base, where
+/// owner scoping already decides everything.
+enum DocumentVisibility {
+  PATIENT
+  DOCTOR
+  BOTH
+}
+
+/// The language a document is written in. Retrieval is deliberately **not**
+/// filtered by it — cross-lingual matching is the entire reason for vectors
+/// (§5.2) — but it drives citation display, so a reader knows a translation
+/// happened, and it makes evaluation coverage measurable per language.
+enum DocumentLanguage {
+  ID
+  EN
+}
+
+/// One stored file in the shared document store. This table serves the clinic
+/// FAQ corpus, the Phase 15 retrieval corpora, personal knowledge bases, and
+/// the future patient/doctor document features — one ingestion pipeline, one
+/// embedding space, one S3 layout (customer-service strategy D-CS-06).
+///
+/// Only `storageKey` is persisted, never a URL: every download is a
+/// short-lived signed URL minted per response (D-018). Soft delete follows
+/// repo convention; chunks cascade on the hard delete a retention job
+/// performs, and are removed explicitly on soft delete so a deleted document
+/// leaves the retrieval candidate set immediately.
+model Document {
+  id           String               @id @default(uuid()) @db.Uuid
+  ownerType    DocumentOwnerType    @map("owner_type")
+  /// Null for the clinic corpus; the owning user for a personal knowledge
+  /// base. The retrieval query filters on this column rather than trusting
+  /// ranking — another doctor's document is not in the candidate set at all.
+  ownerId      String?              @map("owner_id") @db.Uuid
+  purpose      DocumentPurpose
+  title        String
+  storageKey   String               @map("storage_key")
+  mimeType     String               @map("mime_type")
+  sizeBytes    Int                  @map("size_bytes")
+  visibility   DocumentVisibility   @default(BOTH)
+  language     DocumentLanguage     @default(ID)
+  ingestStatus DocumentIngestStatus @default(NOT_APPLICABLE) @map("ingest_status")
+  /// Why the last ingestion failed, for the admin screen. Never carries file
+  /// content — an extraction error must not become a way to read a document
+  /// the reader could not otherwise open.
+  ingestError  String?              @map("ingest_error")
+  ingestedAt   DateTime?            @map("ingested_at")
+  uploadedById String               @map("uploaded_by_id") @db.Uuid
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+  deletedAt    DateTime?            @map("deleted_at")
+
+  uploadedBy User            @relation("DocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: Restrict)
+  owner      User?           @relation("DocumentOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  chunks     DocumentChunk[]
+
+  @@index([ownerType, ownerId])
+  @@index([purpose, ingestStatus])
+  @@index([uploadedById])
+  @@map("documents")
+}
+
+/// One embedded passage of a document — the unit retrieval actually returns.
+///
+/// `visibility` and `language` are copied from the parent at ingest rather
+/// than joined at query time: the retrieval query filters and ranks in one
+/// pass over this table, and a join to `documents` for every candidate is
+/// what turns an index scan into a plan nobody wants to tune. The parent
+/// remains the source of truth, and re-ingesting is what republishes them.
+///
+/// `embeddingModel` and `embeddingVersion` are not bookkeeping. Without them
+/// a model swap silently mixes incompatible vector spaces and retrieval just
+/// gets worse with no error at all — the worst available failure mode,
+/// because it reads as the feature degrading rather than breaking
+/// (ai-chatbot-tools.md §5.4).
+///
+/// `embedding` and `searchVector` are managed in raw SQL: Prisma can express
+/// neither `vector(1024)` nor `tsvector`, so both are declared `Unsupported`
+/// here — the schema stays honest about which columns exist — and are written
+/// through raw queries in the repository, in the same statement that writes
+/// `content`. A `GENERATED ALWAYS AS` column would keep the two in step
+/// without that discipline, but Prisma models a generated column as a plain
+/// default and CI's `migrate diff --exit-code` drift gate then fails on every
+/// run. Chunks are insert-only — re-ingesting replaces the whole set — so
+/// writing both columns in one statement is sufficient.
+model DocumentChunk {
+  id               String                       @id @default(uuid()) @db.Uuid
+  documentId       String                       @map("document_id") @db.Uuid
+  chunkIndex       Int                          @map("chunk_index")
+  content          String
+  embedding        Unsupported("vector(1024)")?
+  searchVector     Unsupported("tsvector")?     @map("search_vector")
+  embeddingModel   String                       @map("embedding_model")
+  embeddingVersion String                       @map("embedding_version")
+  visibility       DocumentVisibility           @default(BOTH)
+  language         DocumentLanguage             @default(ID)
+  createdAt        DateTime                     @default(now()) @map("created_at")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, chunkIndex])
+  @@index([documentId])
+  @@index([searchVector], type: Gin)
+  @@map("document_chunks")
 }
