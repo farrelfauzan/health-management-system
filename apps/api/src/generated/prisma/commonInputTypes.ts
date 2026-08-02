@@ -1098,6 +1098,91 @@ export type EnumAiProviderKindNullableWithAggregatesFilter<$PrismaModel = never>
   _max?: Prisma.NestedEnumAiProviderKindNullableFilter<$PrismaModel>
 }
 
+export type EnumDocumentOwnerTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentOwnerType | Prisma.EnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentOwnerTypeFilter<$PrismaModel> | $Enums.DocumentOwnerType
+}
+
+export type EnumDocumentPurposeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentPurpose | Prisma.EnumDocumentPurposeFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentPurpose[] | Prisma.ListEnumDocumentPurposeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentPurpose[] | Prisma.ListEnumDocumentPurposeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentPurposeFilter<$PrismaModel> | $Enums.DocumentPurpose
+}
+
+export type EnumDocumentVisibilityFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentVisibility | Prisma.EnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentVisibility[] | Prisma.ListEnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentVisibility[] | Prisma.ListEnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentVisibilityFilter<$PrismaModel> | $Enums.DocumentVisibility
+}
+
+export type EnumDocumentLanguageFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentLanguage | Prisma.EnumDocumentLanguageFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentLanguage[] | Prisma.ListEnumDocumentLanguageFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentLanguage[] | Prisma.ListEnumDocumentLanguageFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentLanguageFilter<$PrismaModel> | $Enums.DocumentLanguage
+}
+
+export type EnumDocumentIngestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentIngestStatus | Prisma.EnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentIngestStatus[] | Prisma.ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentIngestStatus[] | Prisma.ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel> | $Enums.DocumentIngestStatus
+}
+
+export type EnumDocumentOwnerTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentOwnerType | Prisma.EnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentOwnerTypeWithAggregatesFilter<$PrismaModel> | $Enums.DocumentOwnerType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentOwnerTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentOwnerTypeFilter<$PrismaModel>
+}
+
+export type EnumDocumentPurposeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentPurpose | Prisma.EnumDocumentPurposeFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentPurpose[] | Prisma.ListEnumDocumentPurposeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentPurpose[] | Prisma.ListEnumDocumentPurposeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentPurposeWithAggregatesFilter<$PrismaModel> | $Enums.DocumentPurpose
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentPurposeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentPurposeFilter<$PrismaModel>
+}
+
+export type EnumDocumentVisibilityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentVisibility | Prisma.EnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentVisibility[] | Prisma.ListEnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentVisibility[] | Prisma.ListEnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.DocumentVisibility
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentVisibilityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentVisibilityFilter<$PrismaModel>
+}
+
+export type EnumDocumentLanguageWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentLanguage | Prisma.EnumDocumentLanguageFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentLanguage[] | Prisma.ListEnumDocumentLanguageFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentLanguage[] | Prisma.ListEnumDocumentLanguageFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentLanguageWithAggregatesFilter<$PrismaModel> | $Enums.DocumentLanguage
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentLanguageFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentLanguageFilter<$PrismaModel>
+}
+
+export type EnumDocumentIngestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentIngestStatus | Prisma.EnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentIngestStatus[] | Prisma.ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentIngestStatus[] | Prisma.ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentIngestStatusWithAggregatesFilter<$PrismaModel> | $Enums.DocumentIngestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -2162,6 +2247,91 @@ export type NestedEnumAiProviderKindNullableWithAggregatesFilter<$PrismaModel = 
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAiProviderKindNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAiProviderKindNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentOwnerTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentOwnerType | Prisma.EnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentOwnerTypeFilter<$PrismaModel> | $Enums.DocumentOwnerType
+}
+
+export type NestedEnumDocumentPurposeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentPurpose | Prisma.EnumDocumentPurposeFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentPurpose[] | Prisma.ListEnumDocumentPurposeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentPurpose[] | Prisma.ListEnumDocumentPurposeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentPurposeFilter<$PrismaModel> | $Enums.DocumentPurpose
+}
+
+export type NestedEnumDocumentVisibilityFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentVisibility | Prisma.EnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentVisibility[] | Prisma.ListEnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentVisibility[] | Prisma.ListEnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentVisibilityFilter<$PrismaModel> | $Enums.DocumentVisibility
+}
+
+export type NestedEnumDocumentLanguageFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentLanguage | Prisma.EnumDocumentLanguageFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentLanguage[] | Prisma.ListEnumDocumentLanguageFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentLanguage[] | Prisma.ListEnumDocumentLanguageFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentLanguageFilter<$PrismaModel> | $Enums.DocumentLanguage
+}
+
+export type NestedEnumDocumentIngestStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentIngestStatus | Prisma.EnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentIngestStatus[] | Prisma.ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentIngestStatus[] | Prisma.ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel> | $Enums.DocumentIngestStatus
+}
+
+export type NestedEnumDocumentOwnerTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentOwnerType | Prisma.EnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentOwnerTypeWithAggregatesFilter<$PrismaModel> | $Enums.DocumentOwnerType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentOwnerTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentOwnerTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentPurposeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentPurpose | Prisma.EnumDocumentPurposeFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentPurpose[] | Prisma.ListEnumDocumentPurposeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentPurpose[] | Prisma.ListEnumDocumentPurposeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentPurposeWithAggregatesFilter<$PrismaModel> | $Enums.DocumentPurpose
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentPurposeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentPurposeFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentVisibilityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentVisibility | Prisma.EnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentVisibility[] | Prisma.ListEnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentVisibility[] | Prisma.ListEnumDocumentVisibilityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.DocumentVisibility
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentVisibilityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentVisibilityFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentLanguageWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentLanguage | Prisma.EnumDocumentLanguageFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentLanguage[] | Prisma.ListEnumDocumentLanguageFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentLanguage[] | Prisma.ListEnumDocumentLanguageFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentLanguageWithAggregatesFilter<$PrismaModel> | $Enums.DocumentLanguage
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentLanguageFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentLanguageFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentIngestStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentIngestStatus | Prisma.EnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentIngestStatus[] | Prisma.ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentIngestStatus[] | Prisma.ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentIngestStatusWithAggregatesFilter<$PrismaModel> | $Enums.DocumentIngestStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel>
 }
 
 

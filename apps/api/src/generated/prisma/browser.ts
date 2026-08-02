@@ -527,3 +527,44 @@ export type ChatSession = Prisma.ChatSessionModel
  * `safetyTags` records what the guards caught (e.g. `["diagnosis_attempt"]`).
  */
 export type ChatMessage = Prisma.ChatMessageModel
+/**
+ * Model Document
+ * One stored file in the shared document store. This table serves the clinic
+ * FAQ corpus, the Phase 15 retrieval corpora, personal knowledge bases, and
+ * the future patient/doctor document features — one ingestion pipeline, one
+ * embedding space, one S3 layout (customer-service strategy D-CS-06).
+ * 
+ * Only `storageKey` is persisted, never a URL: every download is a
+ * short-lived signed URL minted per response (D-018). Soft delete follows
+ * repo convention; chunks cascade on the hard delete a retention job
+ * performs, and are removed explicitly on soft delete so a deleted document
+ * leaves the retrieval candidate set immediately.
+ */
+export type Document = Prisma.DocumentModel
+/**
+ * Model DocumentChunk
+ * One embedded passage of a document — the unit retrieval actually returns.
+ * 
+ * `visibility` and `language` are copied from the parent at ingest rather
+ * than joined at query time: the retrieval query filters and ranks in one
+ * pass over this table, and a join to `documents` for every candidate is
+ * what turns an index scan into a plan nobody wants to tune. The parent
+ * remains the source of truth, and re-ingesting is what republishes them.
+ * 
+ * `embeddingModel` and `embeddingVersion` are not bookkeeping. Without them
+ * a model swap silently mixes incompatible vector spaces and retrieval just
+ * gets worse with no error at all — the worst available failure mode,
+ * because it reads as the feature degrading rather than breaking
+ * (ai-chatbot-tools.md §5.4).
+ * 
+ * `embedding` and `searchVector` are managed in raw SQL: Prisma can express
+ * neither `vector(1024)` nor `tsvector`, so both are declared `Unsupported`
+ * here — the schema stays honest about which columns exist — and are written
+ * through raw queries in the repository, in the same statement that writes
+ * `content`. A `GENERATED ALWAYS AS` column would keep the two in step
+ * without that discipline, but Prisma models a generated column as a plain
+ * default and CI's `migrate diff --exit-code` drift gate then fails on every
+ * run. Chunks are insert-only — re-ingesting replaces the whole set — so
+ * writing both columns in one statement is sufficient.
+ */
+export type DocumentChunk = Prisma.DocumentChunkModel

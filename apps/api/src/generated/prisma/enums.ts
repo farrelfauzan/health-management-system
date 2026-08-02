@@ -440,3 +440,50 @@ export const ChatActor = {
 } as const
 
 export type ChatActor = (typeof ChatActor)[keyof typeof ChatActor]
+
+
+export const DocumentOwnerType = {
+  CLINIC: 'CLINIC',
+  PATIENT: 'PATIENT',
+  DOCTOR: 'DOCTOR',
+  ADMIN: 'ADMIN'
+} as const
+
+export type DocumentOwnerType = (typeof DocumentOwnerType)[keyof typeof DocumentOwnerType]
+
+
+export const DocumentPurpose = {
+  FAQ_KNOWLEDGE_BASE: 'FAQ_KNOWLEDGE_BASE',
+  PERSONAL_KNOWLEDGE_BASE: 'PERSONAL_KNOWLEDGE_BASE',
+  GENERAL: 'GENERAL'
+} as const
+
+export type DocumentPurpose = (typeof DocumentPurpose)[keyof typeof DocumentPurpose]
+
+
+export const DocumentIngestStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  READY: 'READY',
+  FAILED: 'FAILED',
+  NOT_APPLICABLE: 'NOT_APPLICABLE'
+} as const
+
+export type DocumentIngestStatus = (typeof DocumentIngestStatus)[keyof typeof DocumentIngestStatus]
+
+
+export const DocumentVisibility = {
+  PATIENT: 'PATIENT',
+  DOCTOR: 'DOCTOR',
+  BOTH: 'BOTH'
+} as const
+
+export type DocumentVisibility = (typeof DocumentVisibility)[keyof typeof DocumentVisibility]
+
+
+export const DocumentLanguage = {
+  ID: 'ID',
+  EN: 'EN'
+} as const
+
+export type DocumentLanguage = (typeof DocumentLanguage)[keyof typeof DocumentLanguage]

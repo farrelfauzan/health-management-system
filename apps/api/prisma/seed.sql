@@ -141,7 +141,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('chat.message.read:any', 'ChatMessage', 'read', 'ANY', 'Read all chat messages'),
     ('chat.message.read:own', 'ChatMessage', 'read', 'OWN', 'Read own chat messages'),
     ('ai-provider.read:any', 'AiProviderConfig', 'read', 'ANY', 'Read clinic AI provider configurations without their secrets'),
-    ('ai-provider.write:any', 'AiProviderConfig', 'write', 'ANY', 'Create, rotate, activate, test, and retire AI provider configurations')
+    ('ai-provider.write:any', 'AiProviderConfig', 'write', 'ANY', 'Create, rotate, activate, test, and retire AI provider configurations'),
+    ('document.read:any', 'Document', 'read', 'ANY', 'Read every document in the shared document store'),
+    ('document.write:any', 'Document', 'write', 'ANY', 'Upload, re-ingest, and delete clinic-corpus documents'),
+    ('document.read:own', 'Document', 'read', 'OWN', 'Read documents in own personal knowledge base'),
+    ('document.write:own', 'Document', 'write', 'OWN', 'Upload and delete documents in own personal knowledge base')
 )
 INSERT INTO "permissions" (
   "id",
@@ -282,6 +286,19 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- rotates the key; the stored key is write-only in the API regardless.
     ('ADMIN', 'ai-provider.read:any'),
     ('ADMIN', 'ai-provider.write:any'),
+    -- The clinic corpus is admin-managed: SOPs, the FAQ, price lists, the
+    -- BPJS process. `ANY` is custody of what the assistant is allowed to cite
+    -- as clinic policy, which is why it does not follow the pattern of the
+    -- catalogue grants around it and sits with ADMIN alone.
+    ('ADMIN', 'document.read:any'),
+    ('ADMIN', 'document.write:any'),
+    -- The personal knowledge base is a different grant, not a subset of the
+    -- one above: an admin curating their own operational playbooks is acting
+    -- as an owner, and the P15-T20 routes resolve OWN scope against the
+    -- document's `ownerId`. Holding both is normal here and means the two
+    -- corpora stay distinguishable in the audit trail.
+    ('ADMIN', 'document.read:own'),
+    ('ADMIN', 'document.write:own'),
     ('DOCTOR', 'auth.logout:own'),
     ('DOCTOR', 'patient.read:own'),
     ('DOCTOR', 'doctor.read:any'),
@@ -313,6 +330,15 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'chat.session.delete:own'),
     ('DOCTOR', 'chat.message.create:own'),
     ('DOCTOR', 'chat.message.read:own'),
+    -- A doctor's own reference corpus — guidelines, formularies, papers they
+    -- work from. `OWN` only: a personal knowledge base is private to its
+    -- owner and is filtered by `ownerId` in the repository query, so another
+    -- doctor's documents are not in the candidate set rather than merely
+    -- unlikely to rank (ai-chatbot-tools.md §5.5). No `ANY` grant for DOCTOR
+    -- at any point — that would make every personal corpus readable by every
+    -- clinician.
+    ('DOCTOR', 'document.read:own'),
+    ('DOCTOR', 'document.write:own'),
     ('PHARMACIST', 'auth.logout:own'),
     ('PHARMACIST', 'medication.read:any'),
     ('PHARMACIST', 'medication.create:any'),
