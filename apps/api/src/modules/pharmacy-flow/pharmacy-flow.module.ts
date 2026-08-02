@@ -12,5 +12,9 @@ import { PharmacyFlowService } from './service/pharmacy-flow.service';
   imports: [AuthModule],
   controllers: [MedicationController, PrescriptionController, DispenseController, InventoryController],
   providers: [PharmacyFlowRepository, PharmacyFlowService],
+  // The service only — the AI chatbot's pharmacy tools (P15-T05) call it as
+  // the asking user, exactly as this module's controllers do. Cross-module
+  // access never reaches the repository.
+  exports: [PharmacyFlowService],
 })
 export class PharmacyFlowModule {}

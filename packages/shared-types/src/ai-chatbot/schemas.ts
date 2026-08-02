@@ -201,6 +201,13 @@ export type ChatToolNameValue = z.infer<typeof chatToolNameSchema>;
 export type ChatToolArgumentSchema = z.ZodType;
 
 /**
+ * What a tool declares as its **output** contract — the §4.3 allowlist its
+ * result is parsed against before leaving the tool. Generic in the projected
+ * shape so the API's projection helper stays typed without importing zod.
+ */
+export type ChatToolResultSchema<TResult> = z.ZodType<TResult>;
+
+/**
  * §7 minimisation: list tools return at most this many rows per call, so
  * "list my patients" can never become a bulk export. The cap is part of the
  * tool contract, not a tuning knob.
@@ -247,3 +254,78 @@ export const checkMedicationExpiryToolArgsSchema = z.object({
 });
 
 export type CheckMedicationExpiryToolArgs = z.infer<typeof checkMedicationExpiryToolArgsSchema>;
+
+/**
+ * The per-tool **output allowlist** (ai-chatbot-tools.md §4.3). A tool builds
+ * this object field by field from its backing service's response and parses
+ * it before the result leaves the tool, so a field nobody listed here cannot
+ * appear: a future edit adding an identifier to a domain projection cannot
+ * leak, because the tool never copies it. This is an allowlist rather than
+ * `redactChatContext`'s denylist on purpose — a denylist fails open on what
+ * it did not anticipate, this fails closed.
+ *
+ * In Mode A (§4.5) these schemas are also the **API contract the web client
+ * renders against**, not an internal projection, which is why they live here
+ * beside the argument schemas and not inside the API.
+ */
+export const chatToolMedicationStockItemSchema = z.object({
+  medicationCode: z.string(),
+  medicationName: z.string(),
+  form: z.string().optional(),
+  strength: z.string().optional(),
+  unit: z.string().optional(),
+  stockQty: z.number(),
+  reorderLevel: z.number(),
+  needsReorder: z.boolean(),
+});
+
+export type ChatToolMedicationStockItem = z.infer<typeof chatToolMedicationStockItemSchema>;
+
+/**
+ * `matchCount` is how many medications matched, `items` at most
+ * {@link AI_CHAT_TOOL_LIST_PAGE_LIMIT} of them — the two differ when a search
+ * is broad, and the client must be able to say "20 of 44" rather than imply
+ * the list is complete.
+ */
+export const checkMedicationStockToolResultSchema = z.object({
+  medicationName: z.string().nullable(),
+  matchCount: z.number(),
+  items: z.array(chatToolMedicationStockItemSchema),
+});
+
+export type CheckMedicationStockToolResult = z.infer<typeof checkMedicationStockToolResultSchema>;
+
+export const CHAT_TOOL_EXPIRY_STATUSES = ['EXPIRED', 'EXPIRING', 'UNKNOWN'] as const;
+
+export const chatToolExpiryStatusSchema = z.enum(CHAT_TOOL_EXPIRY_STATUSES);
+
+export type ChatToolExpiryStatusValue = z.infer<typeof chatToolExpiryStatusSchema>;
+
+/**
+ * A batch line of the expiry report. The receipt this is built from also
+ * carries `receivedById` (a staff user id), free-text `notes`, and internal
+ * row ids — none of them named here, so none of them survive the projection.
+ */
+export const chatToolMedicationExpiryItemSchema = z.object({
+  medicationCode: z.string(),
+  medicationName: z.string(),
+  batchNumber: z.string(),
+  expiryDate: z.string().optional(),
+  remainingQty: z.number(),
+  expiryStatus: chatToolExpiryStatusSchema,
+  daysUntilExpiry: z.number().optional(),
+});
+
+export type ChatToolMedicationExpiryItem = z.infer<typeof chatToolMedicationExpiryItemSchema>;
+
+export const checkMedicationExpiryToolResultSchema = z.object({
+  asOfDate: z.string(),
+  throughDate: z.string(),
+  expiredCount: z.number(),
+  expiringCount: z.number(),
+  unknownExpiryCount: z.number(),
+  matchCount: z.number(),
+  items: z.array(chatToolMedicationExpiryItemSchema),
+});
+
+export type CheckMedicationExpiryToolResult = z.infer<typeof checkMedicationExpiryToolResultSchema>;

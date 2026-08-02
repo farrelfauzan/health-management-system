@@ -11,6 +11,7 @@ import { AppModule } from '../../app.module';
 import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { PharmacyFlowService } from '../pharmacy-flow/service/pharmacy-flow.service';
 
 /**
  * P13-T08 chat-surface integration tests. Auth and Prisma are mocked (Prisma
@@ -24,6 +25,10 @@ import { AuthRepository } from '../auth/repository/auth.repository';
 describe('Chat flow integration', () => {
   const TEST_ENV: Record<string, string> = {
     AI_CHAT_ENABLED: 'true',
+    // P15-T05: the tool track on, so the two pharmacy tools are registered at
+    // boot. The patient-channel cases above are unaffected by design — that
+    // channel is offered no tools at all, and one of them asserts it.
+    AI_CHAT_TOOLS_ENABLED: 'true',
     AI_PROVIDER_ENCRYPTION_KEY: Buffer.alloc(32, 0x51).toString('base64'),
     AI_PROVIDER_MAX_RETRY_ATTEMPTS: '0',
     AI_PROVIDER_RETRY_BASE_DELAY_MS: '1',
@@ -65,6 +70,13 @@ describe('Chat flow integration', () => {
 
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
   const auditServiceMock = { record: jest.fn() };
+  /**
+   * The pharmacy tools' backing service. Stubbed at the service boundary
+   * rather than below it because what these cases prove is the chain above
+   * it — catalogue on the wire, dispatch as the asking user, projection,
+   * transcript, and the invariant that nothing comes back to the provider.
+   */
+  const pharmacyFlowServiceMock = { listMedications: jest.fn(), getExpiryReport: jest.fn() };
 
   const originalFetch = global.fetch;
   const fetchMock = jest.fn();
@@ -197,6 +209,14 @@ describe('Chat flow integration', () => {
     return jwtService.signAsync({ sub, email }, { secret: accessTokenSecret });
   }
 
+  const CHAT_PERMISSIONS: Array<{ action: string; resource: string; scope: 'ANY' | 'OWN' }> = [
+    { action: 'create', resource: 'ChatSession', scope: 'OWN' },
+    { action: 'read', resource: 'ChatSession', scope: 'OWN' },
+    { action: 'delete', resource: 'ChatSession', scope: 'OWN' },
+    { action: 'create', resource: 'ChatMessage', scope: 'OWN' },
+    { action: 'read', resource: 'ChatMessage', scope: 'OWN' },
+  ];
+
   function mockActorWithPermissions(
     userId: string,
     permissions: Array<{ action: string; resource: string; scope: 'ANY' | 'OWN' }>,
@@ -208,13 +228,29 @@ describe('Chat flow integration', () => {
   }
 
   function mockPatientPermissions(userId: string = OWNER_USER_ID): void {
-    mockActorWithPermissions(userId, [
-      { action: 'create', resource: 'ChatSession', scope: 'OWN' },
-      { action: 'read', resource: 'ChatSession', scope: 'OWN' },
-      { action: 'delete', resource: 'ChatSession', scope: 'OWN' },
-      { action: 'create', resource: 'ChatMessage', scope: 'OWN' },
-      { action: 'read', resource: 'ChatMessage', scope: 'OWN' },
-    ]);
+    mockActorWithPermissions(userId, [...CHAT_PERMISSIONS]);
+  }
+
+  /**
+   * A doctor with exactly the pharmacy grant `seed.sql` gives the role:
+   * `medication.read:any` and **not** `inventory.read:any`. The offered
+   * catalogue below is therefore the real one, not a convenient one.
+   */
+  function mockDoctorPermissions(): void {
+    authRepositoryMock.findUserById.mockResolvedValue({
+      id: OWNER_USER_ID,
+      roles: [
+        {
+          role: {
+            code: 'DOCTOR',
+            permissions: [
+              ...CHAT_PERMISSIONS,
+              { action: 'read', resource: 'Medication', scope: 'ANY' },
+            ].map((permission) => ({ permission })),
+          },
+        },
+      ],
+    });
   }
 
   function stubOpenAiCompatibleReply(content: string): void {
@@ -229,6 +265,46 @@ describe('Chat flow integration', () => {
             usage: { prompt_tokens: 12, completion_tokens: 8 },
           }),
           { status: 200, headers: { 'x-request-id': 'req_openai_1' } },
+        ),
+      ),
+    );
+  }
+
+  /**
+   * A reply that announces a lookup and requests it — the Mode A shape: the
+   * assistant text is composed *before* any row is read, so it may not assert
+   * what the lookup will find.
+   */
+  function stubOpenAiCompatibleToolCall(
+    content: string,
+    toolName: string,
+    toolArguments: Record<string, unknown>,
+  ): void {
+    providerKind = 'DEEPSEEK';
+    fetchMock.mockImplementation(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            id: 'chatcmpl-int-tool-1',
+            model: 'deepseek-chat',
+            choices: [
+              {
+                message: {
+                  content,
+                  tool_calls: [
+                    {
+                      id: 'call_1',
+                      type: 'function',
+                      function: { name: toolName, arguments: JSON.stringify(toolArguments) },
+                    },
+                  ],
+                },
+                finish_reason: 'tool_calls',
+              },
+            ],
+            usage: { prompt_tokens: 30, completion_tokens: 10 },
+          }),
+          { status: 200, headers: { 'x-request-id': 'req_openai_tool_1' } },
         ),
       ),
     );
@@ -251,11 +327,11 @@ describe('Chat flow integration', () => {
     );
   }
 
-  async function createSession(token: string): Promise<string> {
+  async function createSession(token: string, channel: string = 'PATIENT'): Promise<string> {
     const response = await request(app.getHttpServer())
       .post('/api/v1/chat/sessions')
       .set('Authorization', `Bearer ${token}`)
-      .send({ channel: 'PATIENT' });
+      .send({ channel });
     if (response.status !== 201) {
       throw new Error(`createSession failed: ${response.status} ${JSON.stringify(response.body)}`);
     }
@@ -276,6 +352,8 @@ describe('Chat flow integration', () => {
       .useValue(auditServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
+      .overrideProvider(PharmacyFlowService)
+      .useValue(pharmacyFlowServiceMock)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -382,6 +460,176 @@ describe('Chat flow integration', () => {
         'USER',
         'ASSISTANT',
       ]);
+    });
+  });
+
+  /**
+   * P15-T05. The two pharmacy tools are the first to reach the wire, chosen
+   * because their answers contain **no personal data at all** — so the whole
+   * Mode A loop is proven end to end at zero UU PDP exposure before a
+   * patient's name is ever involved.
+   */
+  describe('pharmacy tools (Mode A)', () => {
+    const MOCK_MEDICATION = {
+      id: '44444444-4444-4444-8444-444444444444',
+      code: 'AMOX500',
+      kfaCode: '93000123',
+      name: 'Amoxicillin 500mg',
+      form: 'CAPSULE',
+      strength: '500 mg',
+      unit: 'TABLET',
+      category: 'ANTIBIOTIC',
+      stockQty: 120,
+      reorderLevel: 50,
+      needsReorder: false,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-07-01T00:00:00.000Z',
+    };
+
+    function stubStockLookup(): void {
+      pharmacyFlowServiceMock.listMedications.mockResolvedValue({
+        items: [MOCK_MEDICATION],
+        meta: { page: 1, limit: 20, total: 1 },
+      });
+    }
+
+    async function sendDoctorMessage(content: string): Promise<request.Response> {
+      const token = await buildToken(OWNER_USER_ID, 'doctor@hms.local');
+      const sessionId = await createSession(token, 'DOCTOR');
+      return request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content });
+    }
+
+    beforeEach(() => {
+      mockDoctorPermissions();
+      stubStockLookup();
+    });
+
+    it('offers only the tools the doctor’s own grants open', async () => {
+      // The doctor holds medication.read:any and not inventory.read:any, so
+      // the catalogue carries the stock tool and not the expiry tool — the
+      // ability filter, proven on the wire rather than in a unit fixture.
+      stubOpenAiCompatibleToolCall('Saya cek stoknya.', 'check_medication_stock', {
+        medicationName: 'amoxicillin',
+      });
+
+      const response = await sendDoctorMessage('Stok obat antibiotik masih ada?');
+
+      expect(response.status).toBe(200);
+      const requestInit = fetchMock.mock.calls[0][1] as RequestInit;
+      const body = JSON.parse(requestInit.body as string) as {
+        tools?: Array<{ type: string; function: { name: string; parameters: unknown } }>;
+      };
+      expect(body.tools?.map((tool) => tool.function.name)).toEqual(['check_medication_stock']);
+      expect(body.tools?.[0]?.function.parameters).toMatchObject({ type: 'object' });
+    });
+
+    it('executes the lookup and returns it to the client, never to the provider', async () => {
+      // Invariant 4: one round trip, and no row the tool read appears in any
+      // outbound body. This is the acceptance test for the whole tool track,
+      // run here on the data that carries no UU PDP exposure.
+      stubOpenAiCompatibleToolCall('Saya cek stoknya sekarang.', 'check_medication_stock', {
+        medicationName: 'amoxicillin',
+      });
+
+      const response = await sendDoctorMessage('Cek stok obat itu ya');
+
+      expect(response.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock.mock.calls[0][1].body as string).not.toContain('Amoxicillin 500mg');
+      expect(fetchMock.mock.calls[0][1].body as string).not.toContain('"role":"tool"');
+      expect(response.body.data.assistantMessage.content).toBe('Saya cek stoknya sekarang.');
+      expect(response.body.meta.toolResults).toEqual([
+        {
+          toolName: 'check_medication_stock',
+          arguments: { medicationName: 'amoxicillin' },
+          outcome: 'SUCCESS',
+          result: {
+            medicationName: 'amoxicillin',
+            matchCount: 1,
+            items: [
+              {
+                medicationCode: 'AMOX500',
+                medicationName: 'Amoxicillin 500mg',
+                form: 'CAPSULE',
+                strength: '500 mg',
+                unit: 'TABLET',
+                stockQty: 120,
+                reorderLevel: 50,
+                needsReorder: false,
+              },
+            ],
+          },
+          errorCode: null,
+        },
+      ]);
+    });
+
+    it('runs the lookup as the asking doctor and records it in the transcript', async () => {
+      stubOpenAiCompatibleToolCall('Saya cek stoknya.', 'check_medication_stock', {
+        medicationName: 'amoxicillin',
+      });
+
+      await sendDoctorMessage('Cek stok obat itu ya');
+
+      expect(pharmacyFlowServiceMock.listMedications).toHaveBeenCalledWith(
+        { page: 1, limit: 20, search: 'amoxicillin' },
+        expect.objectContaining({ sub: OWNER_USER_ID }),
+      );
+      const systemTurns = messageRows.filter((row) => row.actor === 'SYSTEM');
+      expect(systemTurns).toHaveLength(1);
+      // Authored by the asker, which is what makes the lookup count against
+      // the hourly quota, and carrying the exact projected payload.
+      expect(systemTurns[0]?.authorUserId).toBe(OWNER_USER_ID);
+      expect(JSON.parse(String(systemTurns[0]?.content))).toMatchObject({
+        toolName: 'check_medication_stock',
+        outcome: 'SUCCESS',
+      });
+    });
+
+    it('refuses a tool the doctor was never offered', async () => {
+      // The model naming the expiry tool it was not given — or an injected
+      // instruction doing so — gains nothing: the registry re-runs every
+      // offering rule at dispatch, so it fails there rather than reaching
+      // the domain service.
+      stubOpenAiCompatibleToolCall('Saya cek kedaluwarsanya.', 'check_medication_expiry', {
+        days: 30,
+      });
+
+      const response = await sendDoctorMessage('Ada obat yang mau kadaluarsa?');
+
+      expect(response.status).toBe(200);
+      expect(pharmacyFlowServiceMock.getExpiryReport).not.toHaveBeenCalled();
+      expect(response.body.meta.toolResults).toEqual([
+        {
+          toolName: 'check_medication_expiry',
+          arguments: { days: 30 },
+          outcome: 'FAILED',
+          result: null,
+          errorCode: 'AI_TOOL_UNAVAILABLE',
+        },
+      ]);
+    });
+
+    it('sends no tools field in a patient-channel session even with the flag on', async () => {
+      // §2.2: the patient channel gets no tools at all, so its request body
+      // stays byte-identical to Phase 13 while the tool track is enabled.
+      mockPatientPermissions();
+      stubOpenAiCompatibleReply('Klinik buka pukul 08.00 WIB.');
+      const token = await buildToken(OWNER_USER_ID, 'patient@hms.local');
+      const sessionId = await createSession(token);
+
+      await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Kapan klinik buka?' });
+
+      const body = JSON.parse(
+        (fetchMock.mock.calls[0][1] as RequestInit).body as string,
+      ) as Record<string, unknown>;
+      expect(body.tools).toBeUndefined();
     });
   });
 
