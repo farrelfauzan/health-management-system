@@ -11,6 +11,7 @@ import { AppModule } from '../../app.module';
 import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { DocumentRetrievalService } from '../document-management/service/document-retrieval.service';
 import { PharmacyFlowService } from '../pharmacy-flow/service/pharmacy-flow.service';
 
 /**
@@ -77,6 +78,13 @@ describe('Chat flow integration', () => {
    * transcript, and the invariant that nothing comes back to the provider.
    */
   const pharmacyFlowServiceMock = { listMedications: jest.fn(), getExpiryReport: jest.fn() };
+  /**
+   * P15-T11 retrieval, stubbed at the corpus boundary. What these cases prove
+   * is everything above it — scope arguments, the numbered prompt block, the
+   * SYSTEM turn, the citations, and the non-fatal path. The SQL below it needs
+   * real Postgres and is proven in `document-retrieval.integration.spec.ts`.
+   */
+  const documentRetrievalServiceMock = { retrievePassages: jest.fn() };
 
   const originalFetch = global.fetch;
   const fetchMock = jest.fn();
@@ -354,6 +362,8 @@ describe('Chat flow integration', () => {
       .useValue(prismaServiceMock)
       .overrideProvider(PharmacyFlowService)
       .useValue(pharmacyFlowServiceMock)
+      .overrideProvider(DocumentRetrievalService)
+      .useValue(documentRetrievalServiceMock)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -630,6 +640,151 @@ describe('Chat flow integration', () => {
         (fetchMock.mock.calls[0][1] as RequestInit).body as string,
       ) as Record<string, unknown>;
       expect(body.tools).toBeUndefined();
+    });
+  });
+
+  describe('hybrid retrieval (P15-T11)', () => {
+    const CLINIC_PASSAGE = {
+      chunkId: '55555555-5555-4555-8555-555555555555',
+      documentId: '66666666-6666-4666-8666-666666666666',
+      documentTitle: 'SOP Pendaftaran BPJS',
+      chunkIndex: 0,
+      content: 'Pendaftaran pasien BPJS dibuka pukul 07.00 di poliklinik umum.',
+      language: 'ID' as const,
+      sourceTier: 'CLINIC' as const,
+      score: 0.032,
+    };
+
+    function readOutboundBody(): { messages: Array<{ role: string; content: string }> } {
+      return JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string) as {
+        messages: Array<{ role: string; content: string }>;
+      };
+    }
+
+    async function sendPatientMessage(content: string): Promise<request.Response> {
+      const token = await buildToken(OWNER_USER_ID, 'patient@hms.local');
+      const sessionId = await createSession(token);
+      return request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content });
+    }
+
+    beforeEach(() => {
+      process.env.AI_CHAT_RETRIEVAL_ENABLED = 'true';
+      documentRetrievalServiceMock.retrievePassages.mockResolvedValue([]);
+    });
+
+    afterEach(() => {
+      process.env.AI_CHAT_RETRIEVAL_ENABLED = 'false';
+    });
+
+    it('grounds the answer in the clinic corpus and returns the citation with it', async () => {
+      documentRetrievalServiceMock.retrievePassages.mockResolvedValue([CLINIC_PASSAGE]);
+      stubOpenAiCompatibleReply('Pendaftaran BPJS dibuka pukul 07.00 [1].');
+
+      const response = await sendPatientMessage('Jam berapa pendaftaran BPJS dibuka?');
+
+      expect(response.status).toBe(200);
+      // The citation the client renders is built from the row, not parsed out
+      // of the model's prose — a fabricated marker resolves to nothing.
+      expect(response.body.meta.citations).toEqual([
+        {
+          reference: 1,
+          documentId: '66666666-6666-4666-8666-666666666666',
+          title: 'SOP Pendaftaran BPJS',
+          language: 'ID',
+          sourceTier: 'CLINIC',
+        },
+      ]);
+      const retrievalMessage = readOutboundBody().messages.find((message) =>
+        message.content.includes('[1] SOP Pendaftaran BPJS (ID)'),
+      );
+      expect(retrievalMessage?.role).toBe('system');
+      expect(retrievalMessage?.content).toContain(
+        'Pendaftaran pasien BPJS dibuka pukul 07.00 di poliklinik umum.',
+      );
+      // One round trip: retrieval runs before the completion, it is not a
+      // tool the model asks for (§5.5).
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('scopes a patient session to patient-visible clinic documents and no personal corpus', async () => {
+      stubOpenAiCompatibleReply('Klinik buka pukul 08.00.');
+
+      await sendPatientMessage('Kapan klinik buka?');
+
+      // The staff-only SOP is unreachable because of these two arguments, and
+      // the repository query is where that is enforced — proven against
+      // Postgres in document-retrieval.integration.spec.ts.
+      expect(documentRetrievalServiceMock.retrievePassages).toHaveBeenCalledWith({
+        query: 'Kapan klinik buka?',
+        channelVisibility: 'PATIENT',
+        ownerUserId: null,
+      });
+    });
+
+    it('scopes a doctor session to the clinic corpus plus that doctor’s own documents', async () => {
+      mockDoctorPermissions();
+      stubOpenAiCompatibleReply('Formularium klinik mencantumkan amoxicillin.');
+      const token = await buildToken(OWNER_USER_ID, 'doctor@hms.local');
+      const sessionId = await createSession(token, 'DOCTOR');
+
+      await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Apa lini pertama untuk pneumonia?' });
+
+      expect(documentRetrievalServiceMock.retrievePassages).toHaveBeenCalledWith({
+        query: 'Apa lini pertama untuk pneumonia?',
+        channelVisibility: 'DOCTOR',
+        ownerUserId: OWNER_USER_ID,
+      });
+    });
+
+    it('persists the passages that reached the provider as an authorless SYSTEM turn', async () => {
+      documentRetrievalServiceMock.retrievePassages.mockResolvedValue([CLINIC_PASSAGE]);
+      stubOpenAiCompatibleReply('Pendaftaran BPJS dibuka pukul 07.00 [1].');
+
+      await sendPatientMessage('Jam berapa pendaftaran BPJS dibuka?');
+
+      const systemTurn = messageRows.find((row) => row.actor === 'SYSTEM');
+      expect(systemTurn).toBeDefined();
+      expect(systemTurn?.content as string).toContain(
+        'Pendaftaran pasien BPJS dibuka pukul 07.00 di poliklinik umum.',
+      );
+      // Authorless, so a grounded answer costs no extra slot of the hourly
+      // quota — unlike a tool call, which is a lookup the user asked for.
+      expect(systemTurn?.authorUserId).toBeNull();
+    });
+
+    it('answers without grounding rather than failing when retrieval breaks', async () => {
+      documentRetrievalServiceMock.retrievePassages.mockRejectedValue(
+        new Error('Embedding provider is unreachable'),
+      );
+      stubOpenAiCompatibleReply('Klinik buka pukul 08.00 WIB.');
+
+      const response = await sendPatientMessage('Kapan klinik buka?');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.assistantMessage.content).toBe('Klinik buka pukul 08.00 WIB.');
+      expect(response.body.meta.citations).toBeUndefined();
+      expect(messageRows.some((row) => row.actor === 'SYSTEM')).toBe(false);
+    });
+
+    it('sends the Phase 13 body exactly while the flag is off', async () => {
+      process.env.AI_CHAT_RETRIEVAL_ENABLED = 'false';
+      documentRetrievalServiceMock.retrievePassages.mockResolvedValue([CLINIC_PASSAGE]);
+      stubOpenAiCompatibleReply('Klinik buka pukul 08.00 WIB.');
+
+      const response = await sendPatientMessage('Kapan klinik buka?');
+
+      // Not "retrieved and discarded": no corpus is queried at all.
+      expect(documentRetrievalServiceMock.retrievePassages).not.toHaveBeenCalled();
+      expect(response.body.meta.citations).toBeUndefined();
+      expect(readOutboundBody().messages.filter((message) => message.role === 'system')).toHaveLength(
+        1,
+      );
     });
   });
 

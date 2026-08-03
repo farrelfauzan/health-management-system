@@ -171,3 +171,102 @@ export type IngestDocumentResult = {
   chunkCount: number;
   ingestError: string | null;
 };
+
+/**
+ * Which corpus a retrieved passage came from. It is shown to the reader —
+ * "dari dokumen klinik" against "dari dokumen Anda" — because a doctor should
+ * know whether an answer leans on clinic policy or on a paper they uploaded
+ * themselves (ai-chatbot-tools.md §5.5).
+ */
+export const RETRIEVAL_SOURCE_TIERS = ['CLINIC', 'PERSONAL'] as const;
+
+export type RetrievalSourceTierValue = (typeof RETRIEVAL_SOURCE_TIERS)[number];
+
+/**
+ * The candidate set both halves of the hybrid search draw from
+ * (ai-chatbot-tools.md §5.5). Every field is required rather than optional:
+ * a caller who forgets `ownerUserId` must not silently widen the query from
+ * "the clinic corpus plus my own documents" to "everything in the table", and
+ * a caller who forgets `channelVisibility` must not surface a staff-only SOP
+ * in a patient answer.
+ *
+ * `ownerUserId` is `null` for a channel whose users have no personal corpus.
+ * Patients do not have one in this phase, so the patient channel passes null
+ * and the personal half of the union contributes nothing at all — it is not
+ * merely outranked.
+ */
+export type RetrieveDocumentChunksParams = {
+  /** The user's question, verbatim, for the lexical half. */
+  queryText: string;
+  /**
+   * The question's vector, produced by the same model and version the chunks
+   * were written with. Comparing across embedding spaces returns plausible
+   * nonsense rather than an error, so both are matched in the SQL predicate
+   * rather than assumed.
+   */
+  queryEmbedding: readonly number[];
+  embeddingModel: string;
+  embeddingVersion: string;
+  /**
+   * The asking channel's own visibility — `PATIENT` or `DOCTOR`. `BOTH` is
+   * always admitted alongside it, so this is the channel, not a filter list a
+   * caller could widen.
+   */
+  channelVisibility: Exclude<DocumentVisibilityValue, 'BOTH'>;
+  /** The asking user, whose personal knowledge base joins the union. */
+  ownerUserId: string | null;
+  /** How many rows each half of the hybrid returns before fusion. */
+  candidateLimit: number;
+};
+
+/**
+ * One ranked candidate from a single retrieval half, before fusion. `rank` is
+ * 1-based and is what reciprocal rank fusion consumes — the underlying scores
+ * (cosine distance, `ts_rank`) are deliberately not carried across the seam,
+ * because they are on incomparable scales and fusing them numerically is the
+ * mistake RRF exists to avoid.
+ */
+export type RankedDocumentChunkCandidate = {
+  chunkId: string;
+  documentId: string;
+  documentTitle: string;
+  chunkIndex: number;
+  content: string;
+  language: DocumentLanguageValue;
+  sourceTier: RetrievalSourceTierValue;
+  rank: number;
+};
+
+/**
+ * One passage that survived fusion. `score` is the RRF score, which is
+ * meaningful only for ordering within a single query — it is not a relevance
+ * percentage and must not be shown as one.
+ */
+export type RetrievedDocumentChunk = Omit<RankedDocumentChunkCandidate, 'rank'> & {
+  score: number;
+};
+
+/**
+ * Retrieval tuning. `candidateLimit` is per half, `maxPassages` is what
+ * survives fusion and reaches the provider — the second is what bounds the
+ * prompt, and it is deliberately much smaller than the first, because fusion
+ * can only promote a passage one half ranked poorly if that half returned it
+ * at all.
+ */
+export type DocumentRetrievalConfig = {
+  readonly candidateLimit: number;
+  readonly maxPassages: number;
+  /**
+   * RRF's rank constant, conventionally 60. It sets how sharply a top rank
+   * outweighs a lower one: raising it flattens both halves toward equal
+   * influence, lowering it lets a single half's first result dominate.
+   */
+  readonly rankConstant: number;
+  /**
+   * Passages shorter than this are dropped after fusion. A chunk of a dozen
+   * characters — a stray heading, a page number — ranks fine lexically and
+   * grounds nothing, and every one of them spends prompt budget a real
+   * passage could have used.
+   */
+  readonly minPassageCharacters: number;
+};
