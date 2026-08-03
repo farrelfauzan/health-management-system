@@ -570,7 +570,13 @@ describe('AiChatbotService', () => {
       const assistantAppend = findAppendedTurn('ASSISTANT') as Record<string, unknown>;
       expect(assistantAppend.content).toBe('Silakan periksa ke tenaga kesehatan.');
       expect(assistantAppend.safetyTags).toEqual(['diagnosis_attempt']);
-      expect(evaluateOutputMock).toHaveBeenCalledWith('Klinik buka pukul 08.00.', 'PATIENT');
+      // The third argument is P15-T19's sourcing context: with no catalogue
+      // on the wire the unsourced-claim guard has nothing to judge, which is
+      // every patient-channel exchange.
+      expect(evaluateOutputMock).toHaveBeenCalledWith('Klinik buka pukul 08.00.', 'PATIENT', {
+        wasAnyToolOffered: false,
+        requestedToolCount: 0,
+      });
     });
 
     it('reports another owner’s session as not found', async () => {

@@ -319,6 +319,14 @@ export class AiChatbotService {
     const outputDecision = this.safetyPolicyService.evaluateOutput(
       result.content,
       session.channel,
+      // §4.7.2: the catalogue and the model's own call count are what let the
+      // guard tell "answered from the database" from "answered from training
+      // data". Both are known before the lookups run, which is the point —
+      // what matters is whether the model asked, not whether it succeeded.
+      {
+        wasAnyToolOffered: toolDefinitions.length > 0,
+        requestedToolCount: result.toolCalls.length,
+      },
     );
     const assistantMessage = await this.chatRepository.appendMessage({
       sessionId: session.id,

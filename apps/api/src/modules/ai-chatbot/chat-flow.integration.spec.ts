@@ -845,6 +845,38 @@ describe('Chat flow integration', () => {
       expect(systemTurns[0]?.authorUserId).toBe(OWNER_USER_ID);
     });
 
+    it('refuses a count the model asserted without calling any tool', async () => {
+      // §4.7.2 over HTTP. The doctor was offered four tools, the model called
+      // none, and answered with a number — which cannot have come from the
+      // database, because nothing was read from it.
+      stubOpenAiCompatibleReply('Anda punya 3 pasien hari ini.');
+
+      const response = await sendDoctorMessage('Pasien saya ada berapa hari ini?');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.assistantMessage.safetyTags).toEqual(['unsourced_claim']);
+      expect(response.body.data.assistantMessage.content).not.toContain('3 pasien');
+      expect(response.body.data.assistantMessage.content).toContain('tidak melakukan pencarian');
+      expect(response.body.meta.toolResults).toBeUndefined();
+    });
+
+    it('leaves the same reply alone in a patient session, where no tool was offered', async () => {
+      // With an empty catalogue there was no lookup to miss, so the guard is
+      // silent — the patient channel keeps its Phase 13 behaviour exactly.
+      mockPatientPermissions();
+      stubOpenAiCompatibleReply('Anda punya 3 pasien hari ini.');
+      const token = await buildToken(OWNER_USER_ID, 'patient@hms.local');
+      const sessionId = await createSession(token);
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Berapa pasien hari ini?' });
+
+      expect(response.body.data.assistantMessage.safetyTags).toEqual([]);
+      expect(response.body.data.assistantMessage.content).toBe('Anda punya 3 pasien hari ini.');
+    });
+
     it('withholds the patient tools entirely from an ANY-scoped actor', async () => {
       // A supervising clinician who can read every patient is offered the
       // pharmacy tool and none of the three — §4.1.1 rule 2 on the wire.

@@ -59,6 +59,16 @@ export const CHAT_SAFETY_TAGS = [
   'impersonation_attempt',
   'markup_stripped',
   'uncertainty_appended',
+  /**
+   * The §4.7.2 guard: tools were offered, none was called, and the reply
+   * asserted a specific clinic fact anyway — so the number came from the
+   * model's training data rather than the database. Counted separately from
+   * the other tags because it measures a different thing: not a model saying
+   * something unsafe, but a model answering a question it should have looked
+   * up. Its rate is the missed-tool metric of `P15-T19` observed in
+   * production rather than in an eval.
+   */
+  'unsourced_claim',
 ] as const;
 
 export const chatSafetyTagSchema = z.enum(CHAT_SAFETY_TAGS);
@@ -214,28 +224,53 @@ export type ChatToolResultSchema<TResult> = z.ZodType<TResult>;
  */
 export const AI_CHAT_TOOL_LIST_PAGE_LIMIT = 20;
 
+/**
+ * **Every argument field carries `.describe()`** (ai-chatbot-tools.md §4.7.1
+ * lever 3). These strings are not documentation for a reader — they serialize
+ * into the JSON Schema the model reads when choosing a tool, so they are
+ * classifier input in the same way the tool description is. The recurring
+ * theme across them is *removing* decisions from the model: a field it cannot
+ * malformat is half the error space gone, and Zod catches the rest at dispatch
+ * rather than in a repository.
+ */
 export const listMyPatientsToolArgsSchema = z.object({
-  page: z.number().int().min(1).default(1),
+  page: z
+    .number()
+    .int()
+    .min(1)
+    .default(1)
+    .describe('1-based page number. Omit for the first page; only send a value when the user explicitly asks for more results.'),
 });
 
 export type ListMyPatientsToolArgs = z.infer<typeof listMyPatientsToolArgsSchema>;
 
 export const getPatientSummaryToolArgsSchema = z.object({
-  patientId: z.string().uuid(),
+  patientId: z
+    .string()
+    .uuid()
+    .describe('The patient UUID exactly as returned by list_my_patients or list_my_appointments in an earlier turn. Never invent or guess one, and never pass a name here.'),
 });
 
 export type GetPatientSummaryToolArgs = z.infer<typeof getPatientSummaryToolArgsSchema>;
 
 /** An omitted date means "today" resolved in the clinic timezone, server-side. */
 export const listMyAppointmentsToolArgsSchema = z.object({
-  date: calendarDateSchema.optional(),
+  date: calendarDateSchema
+    .optional()
+    .describe('Calendar date as YYYY-MM-DD. OMIT THIS for today or when the user does not name a date — the server resolves today in the clinic timezone. Only send a value for an explicitly named other day.'),
 });
 
 export type ListMyAppointmentsToolArgs = z.infer<typeof listMyAppointmentsToolArgsSchema>;
 
 /** An omitted name means the whole inventory summary, capped like every list. */
 export const checkMedicationStockToolArgsSchema = z.object({
-  medicationName: z.string().trim().min(1).max(120).optional(),
+  medicationName: z
+    .string()
+    .trim()
+    .min(1)
+    .max(120)
+    .optional()
+    .describe('Medication name or fragment to search for, e.g. "amoxicillin" or "paracetamol". Omit to list everything that needs reordering. Do not include a dose or strength.'),
 });
 
 export type CheckMedicationStockToolArgs = z.infer<typeof checkMedicationStockToolArgsSchema>;
@@ -250,7 +285,8 @@ export const checkMedicationExpiryToolArgsSchema = z.object({
     .int()
     .min(1)
     .max(AI_CHAT_TOOL_EXPIRY_MAX_DAYS)
-    .default(AI_CHAT_TOOL_EXPIRY_DEFAULT_DAYS),
+    .default(AI_CHAT_TOOL_EXPIRY_DEFAULT_DAYS)
+    .describe('How many days ahead to look for expiring batches. Omit for the default 30-day window; already-expired batches are always included regardless of this value.'),
 });
 
 export type CheckMedicationExpiryToolArgs = z.infer<typeof checkMedicationExpiryToolArgsSchema>;

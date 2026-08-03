@@ -226,4 +226,174 @@ describe('SafetyPolicyService', () => {
       expect(actualDecision.content).toContain('tidak dapat memastikan');
     });
   });
+
+  describe('unsourced-claim guard (§4.7.2)', () => {
+    const TOOLS_OFFERED_NONE_CALLED = { wasAnyToolOffered: true, requestedToolCount: 0 };
+
+    it('refuses a count asserted when tools were offered and none was called', () => {
+      const actualDecision = buildService().evaluateOutput(
+        'Anda punya 3 pasien hari ini.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      expect(actualDecision.safetyTags).toEqual(['unsourced_claim']);
+      expect(actualDecision.content).toContain('tidak melakukan pencarian data');
+      expect(actualDecision.content).not.toContain('3 pasien');
+    });
+
+    it('refuses the English phrasing of the same claim', () => {
+      const actualDecision = buildService().evaluateOutput(
+        'You have 4 appointments scheduled for today.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      expect(actualDecision.safetyTags).toEqual(['unsourced_claim']);
+      expect(actualDecision.content).toContain('did not look this up');
+    });
+
+    it('refuses a stock level and a currency amount', () => {
+      const service = buildService();
+
+      const stockDecision = service.evaluateOutput(
+        'Stok amoxicillin saat ini 120 kapsul.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+      const moneyDecision = service.evaluateOutput(
+        'Total pendapatan kemarin Rp 4.250.000.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      expect(stockDecision.safetyTags).toEqual(['unsourced_claim']);
+      expect(moneyDecision.safetyTags).toEqual(['unsourced_claim']);
+    });
+
+    it('says nothing when the model did request a lookup', () => {
+      // The rendered result is the answer and the model's text is only the
+      // announcement around it, so a number here is the announcement's
+      // problem, not an unsourced claim.
+      const actualDecision = buildService().evaluateOutput(
+        'Saya cek jadwal Anda hari ini.',
+        'DOCTOR',
+        { wasAnyToolOffered: true, requestedToolCount: 1 },
+      );
+
+      expect(actualDecision.safetyTags).toEqual([]);
+    });
+
+    it('says nothing when no tool was offered at all', () => {
+      // With an empty catalogue there was no lookup to miss — this is the
+      // patient channel, and every Phase 13 exchange.
+      const actualDecision = buildService().evaluateOutput(
+        'Anda punya 3 pasien hari ini.',
+        'DOCTOR',
+        { wasAnyToolOffered: false, requestedToolCount: 0 },
+      );
+
+      expect(actualDecision.safetyTags).toEqual([]);
+      expect(actualDecision.content).toBe('Anda punya 3 pasien hari ini.');
+    });
+
+    it('is inert for a caller that passes no sourcing at all', () => {
+      // The Phase 13 call shape. A caller that has not been taught about
+      // tools must not start refusing replies.
+      const actualDecision = buildService().evaluateOutput(
+        'Anda punya 3 pasien hari ini.',
+        'DOCTOR',
+      );
+
+      expect(actualDecision.safetyTags).toEqual([]);
+    });
+
+    it('leaves a general clinical answer alone', () => {
+      // The false positive that would matter most: guideline knowledge is in
+      // scope for the doctor channel and needs no lookup.
+      const actualDecision = buildService().evaluateOutput(
+        'Amoxicillin dan amoxiclav berbeda pada cakupan beta-laktamase; pilihan lini pertama mengikuti panduan setempat.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      expect(actualDecision.safetyTags).toEqual([]);
+    });
+
+    it('leaves a clinic-hours answer alone despite the clock time', () => {
+      // Bare times are deliberately not matched: "klinik buka pukul 08.00" is
+      // a static fact the assistant is supposed to answer without a lookup,
+      // and matching it would replace correct answers with a refusal.
+      const actualDecision = buildService().evaluateOutput(
+        'Klinik buka pukul 08.00 sampai 14.00 pada hari kerja.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      expect(actualDecision.safetyTags).toEqual([]);
+    });
+
+    it('does match a clock time asserted as the reader’s own schedule', () => {
+      const actualDecision = buildService().evaluateOutput(
+        'Jadwal Anda hari ini dimulai pukul 09.00.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      expect(actualDecision.safetyTags).toEqual(['unsourced_claim']);
+    });
+
+    it('catches the silent-router case, where tools were ignored entirely', () => {
+      // §4.6: a router that falls back to a backend without tool support
+      // produces exactly this signature — a plain answer to a data question.
+      const actualDecision = buildService().evaluateOutput(
+        'There are 12 patients waiting in the queue right now.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      expect(actualDecision.safetyTags).toEqual(['unsourced_claim']);
+    });
+
+    it('refuses for being unsourced rather than appending an uncertainty notice', () => {
+      // A reply that is both unsourced and over-confident is refused for the
+      // reason that applies: there is no point hedging a figure that came
+      // from nowhere.
+      const actualDecision = buildService().evaluateOutput(
+        'Sudah pasti Anda punya 3 pasien hari ini.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      expect(actualDecision.safetyTags).toEqual(['unsourced_claim']);
+      expect(actualDecision.safetyTags).not.toContain('uncertainty_appended');
+    });
+
+    it('strips markup before judging, so a count cannot hide in a tag', () => {
+      const actualDecision = buildService().evaluateOutput(
+        'Anda punya <b>3 pasien</b> hari ini.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      expect(actualDecision.safetyTags).toEqual(['markup_stripped', 'unsourced_claim']);
+    });
+
+    it('replies with copy that cannot itself trip the guard', () => {
+      const actualDecision = buildService().evaluateOutput(
+        'Anda punya 3 pasien hari ini.',
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+      const secondPass = buildService().evaluateOutput(
+        actualDecision.content,
+        'DOCTOR',
+        TOOLS_OFFERED_NONE_CALLED,
+      );
+
+      // The same discipline the clinical-judgement notice follows: the
+      // replacement carries no digit, so it survives its own guard.
+      expect(secondPass.safetyTags).toEqual([]);
+    });
+  });
 });
