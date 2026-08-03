@@ -5335,6 +5335,9 @@ export const ChatSessionScalarFieldEnum = {
   providerSessionId: 'providerSessionId',
   providerMetadata: 'providerMetadata',
   title: 'title',
+  compactedSummary: 'compactedSummary',
+  compactedTurnCount: 'compactedTurnCount',
+  compactedAt: 'compactedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'

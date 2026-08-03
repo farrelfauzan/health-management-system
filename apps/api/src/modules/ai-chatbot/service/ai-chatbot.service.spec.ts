@@ -17,6 +17,7 @@ import { ChatToolRegistry } from '../tools/chat-tool.registry';
 import { AiChatbotService } from './ai-chatbot.service';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
+import { ChatCompactionService } from './chat-compaction.service';
 import { ChatRetrievalService } from './chat-retrieval.service';
 import { SafetyPolicyService } from './safety-policy.service';
 
@@ -31,11 +32,17 @@ describe('AiChatbotService', () => {
     softDeleteSessionForOwner: jest.fn(),
     appendMessage: jest.fn(),
     listMessagesForSession: jest.fn(),
+    listRecentConversationTurns: jest.fn(),
+    countConversationTurns: jest.fn(),
+    listConversationTurnRange: jest.fn(),
+    updateSessionCompaction: jest.fn(),
   };
   const sendChatCompletionMock = jest.fn();
   const resolveActiveProviderMock = jest.fn();
   const buildContextMock = jest.fn();
   const retrieveMock = jest.fn();
+  const buildReplaySummaryMock = jest.fn();
+  const compactIfNeededMock = jest.fn();
   const evaluateInputMock = jest.fn();
   const evaluateOutputMock = jest.fn();
   const messageQuota = { since: new Date('2026-08-14T00:00:00.000Z'), limit: 60 };
@@ -55,6 +62,10 @@ describe('AiChatbotService', () => {
       { resolveActiveProvider: resolveActiveProviderMock } as unknown as AiProviderResolverService,
       { buildContext: buildContextMock } as unknown as ChatContextEnrichmentService,
       { retrieve: retrieveMock } as unknown as ChatRetrievalService,
+      {
+        buildReplaySummary: buildReplaySummaryMock,
+        compactIfNeeded: compactIfNeededMock,
+      } as unknown as ChatCompactionService,
       {
         evaluateInput: evaluateInputMock,
         evaluateOutput: evaluateOutputMock,
@@ -79,6 +90,9 @@ describe('AiChatbotService', () => {
       providerKind: 'DEEPSEEK',
       providerSessionId: null,
       title: null,
+      compactedSummary: null,
+      compactedTurnCount: 0,
+      compactedAt: null,
       createdAt: new Date('2026-08-12T04:00:00.000Z'),
       updatedAt: new Date('2026-08-12T04:00:00.000Z'),
       ...overrides,
@@ -127,6 +141,8 @@ describe('AiChatbotService', () => {
     jest.clearAllMocks();
     buildContextMock.mockResolvedValue({});
     retrieveMock.mockResolvedValue({ promptBlock: '', citations: [] });
+    buildReplaySummaryMock.mockReturnValue(null);
+    compactIfNeededMock.mockImplementation((session: unknown) => Promise.resolve(session));
     evaluateInputMock.mockReturnValue({ outcome: 'ALLOW', safetyTags: [] });
     evaluateOutputMock.mockImplementation((content: string) => ({ content, safetyTags: [] }));
   });
@@ -308,10 +324,7 @@ describe('AiChatbotService', () => {
             }),
           ),
       );
-      chatRepositoryMock.listMessagesForSession.mockResolvedValue({
-        items: [buildMessage()],
-        nextCursor: null,
-      });
+      chatRepositoryMock.listRecentConversationTurns.mockResolvedValue([buildMessage()]);
       sendChatCompletionMock.mockResolvedValue({
         content: 'Klinik buka pukul 08.00.',
         toolCalls: [],
@@ -381,10 +394,7 @@ describe('AiChatbotService', () => {
       stubActiveProvider();
       chatRepositoryMock.findSessionForOwner.mockResolvedValue(buildSession());
       chatRepositoryMock.appendMessage.mockResolvedValue(buildMessage());
-      chatRepositoryMock.listMessagesForSession.mockResolvedValue({
-        items: [buildMessage()],
-        nextCursor: null,
-      });
+      chatRepositoryMock.listRecentConversationTurns.mockResolvedValue([buildMessage()]);
       sendChatCompletionMock.mockRejectedValue(
         new AiChatbotError('AI_PROVIDER_TIMEOUT', 'AI provider request timed out'),
       );
@@ -437,13 +447,10 @@ describe('AiChatbotService', () => {
 
     it('does not replay stored SYSTEM turns — stale context must not be resent', async () => {
       stubExchange();
-      chatRepositoryMock.listMessagesForSession.mockResolvedValue({
-        items: [
+      chatRepositoryMock.listRecentConversationTurns.mockResolvedValue([
           buildMessage({ id: 'old-context', actor: 'SYSTEM', content: '{"activeQueueNumber":3}' }),
           buildMessage(),
-        ],
-        nextCursor: null,
-      });
+        ]);
       buildContextMock.mockResolvedValue({ activeQueueNumber: 12 });
 
       await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
@@ -528,6 +535,8 @@ describe('AiChatbotService', () => {
     it('writes no retrieval turn and no citations when the corpus had nothing', async () => {
       stubExchange();
       retrieveMock.mockResolvedValue({ promptBlock: '', citations: [] });
+    buildReplaySummaryMock.mockReturnValue(null);
+    compactIfNeededMock.mockImplementation((session: unknown) => Promise.resolve(session));
 
       const actualResult = await buildService().sendMessage(
         'session-1',
@@ -559,6 +568,56 @@ describe('AiChatbotService', () => {
         inputActor,
         'Kapan pendaftaran BPJS dibuka?',
       );
+    });
+
+    it('replays the most recent turns, not the oldest — the P15-T13 regression', async () => {
+      stubExchange();
+
+      await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
+
+      // The bug this pins: `listMessagesForSession` orders ascending with a
+      // cursor, which is right for paging a transcript from its start and
+      // wrong for a replay window. Used for replay it returned the *first*
+      // twenty messages of a session forever, so past twenty turns the model
+      // stopped seeing anything recent at all.
+      expect(chatRepositoryMock.listRecentConversationTurns).toHaveBeenCalledWith('session-1', 20);
+      expect(chatRepositoryMock.listMessagesForSession).not.toHaveBeenCalled();
+    });
+
+    it('replays the compaction summary as a system message when one exists', async () => {
+      stubExchange();
+      buildReplaySummaryMock.mockReturnValue('Summary of the earlier part:\nJam buka dibahas.');
+
+      await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
+
+      const actualMessages = (
+        sendChatCompletionMock.mock.calls[0][1] as { messages: ChatCompletionMessage[] }
+      ).messages;
+      // Immediately after the channel prompt: it is the oldest material in
+      // the request and belongs where the turns it summarises would have been.
+      expect(actualMessages[1]?.role).toBe('system');
+      expect(actualMessages[1]?.content).toContain('Jam buka dibahas.');
+    });
+
+    it('compacts before building the request, so the summary serves this turn', async () => {
+      stubExchange();
+      const compactedSession = buildSession({
+        compactedSummary: 'Ringkasan.',
+        compactedTurnCount: 10,
+      });
+      compactIfNeededMock.mockResolvedValue(compactedSession);
+
+      await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
+
+      // A summary written after the reply would leave the turn that needed it
+      // unanswered.
+      expect(compactIfNeededMock).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'session-1' }),
+        expect.anything(),
+        expect.anything(),
+        20,
+      );
+      expect(buildReplaySummaryMock).toHaveBeenCalledWith(compactedSession);
     });
 
     it('answers an emergency from the template without calling the provider', async () => {

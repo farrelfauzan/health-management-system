@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import {
   AppendChatMessageData,
+  ChatCompactionResult,
   ChatMessagePage,
   ChatMessageRecord,
   ChatSessionPage,
@@ -214,6 +215,77 @@ export class ChatRepository {
     };
   }
 
+  /**
+   * The **most recent** conversational turns, returned oldest-first for
+   * replay (P15-T13).
+   *
+   * This exists because `listMessagesForSession` could not do the job and was
+   * silently being asked to. That method orders ascending with a cursor,
+   * which is right for paging a transcript from the beginning — and wrong for
+   * a replay window, which wants the tail. Used for replay it returned the
+   * *first* twenty messages of a session forever, so past twenty turns the
+   * model stopped seeing anything recent at all. The fix is a separate query
+   * rather than a flag on the old one, because the two callers want opposite
+   * ends of the same list and a shared parameter is how that regresses again.
+   *
+   * `SYSTEM` turns are excluded here rather than by the caller: they are the
+   * audit record of context and passages sent on earlier exchanges, replaying
+   * them would hand the provider stale snapshots, and counting them against
+   * the window would silently shrink it.
+   */
+  async listRecentConversationTurns(
+    sessionId: string,
+    limit: number,
+  ): Promise<ChatMessageRecord[]> {
+    const rows = await this.prismaService.chatMessage.findMany({
+      where: { sessionId, actor: { in: ['USER', 'ASSISTANT'] } },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: limit,
+    });
+    return rows.reverse().map((row) => this.toMessageRecord(row));
+  }
+
+  /** How many conversational turns the session holds, SYSTEM excluded. */
+  async countConversationTurns(sessionId: string): Promise<number> {
+    return this.prismaService.chatMessage.count({
+      where: { sessionId, actor: { in: ['USER', 'ASSISTANT'] } },
+    });
+  }
+
+  /**
+   * A slice of the conversation from the oldest end, for summarising. Paged
+   * by `skip` over a stable append-only ordering, which is what lets the
+   * session store a turn *count* rather than a cursor.
+   */
+  async listConversationTurnRange(
+    sessionId: string,
+    skip: number,
+    take: number,
+  ): Promise<ChatMessageRecord[]> {
+    const rows = await this.prismaService.chatMessage.findMany({
+      where: { sessionId, actor: { in: ['USER', 'ASSISTANT'] } },
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      skip,
+      take,
+    });
+    return rows.map((row) => this.toMessageRecord(row));
+  }
+
+  async updateSessionCompaction(
+    sessionId: string,
+    result: ChatCompactionResult,
+  ): Promise<ChatSessionRecord> {
+    const row = await this.prismaService.chatSession.update({
+      where: { id: sessionId },
+      data: {
+        compactedSummary: result.compactedSummary,
+        compactedTurnCount: result.compactedTurnCount,
+        compactedAt: new Date(),
+      },
+    });
+    return this.toSessionRecord(row);
+  }
+
   private async listSessions(params: ListAllChatSessionsParams): Promise<ChatSessionPage> {
     const rows = await this.prismaService.chatSession.findMany({
       where: {
@@ -241,6 +313,9 @@ export class ChatRepository {
       providerKind: row.providerKind,
       providerSessionId: row.providerSessionId,
       title: row.title,
+      compactedSummary: row.compactedSummary,
+      compactedTurnCount: row.compactedTurnCount,
+      compactedAt: row.compactedAt,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     };

@@ -112,8 +112,23 @@ export type ChatSessionRecord = {
   providerKind: AiProviderKindValue;
   providerSessionId: string | null;
   title: string | null;
+  /** P15-T13: the rolling summary of turns past the replay window. */
+  compactedSummary: string | null;
+  /** How many of the session's oldest conversational turns it covers. */
+  compactedTurnCount: number;
+  compactedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+};
+
+/**
+ * What one compaction pass wrote. Separate from the session record because
+ * the caller needs to know whether anything happened at all — a session
+ * short enough to fit the window compacts nothing and pays no provider call.
+ */
+export type ChatCompactionResult = {
+  compactedSummary: string;
+  compactedTurnCount: number;
 };
 
 export type CreateChatSessionData = {
