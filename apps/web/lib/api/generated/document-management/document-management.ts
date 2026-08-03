@@ -30,6 +30,7 @@ import type {
   DocumentAdminControllerGetDownloadUrlV1200,
   DocumentAdminControllerListDocumentsV1200,
   DocumentAdminControllerListDocumentsV1Params,
+  DocumentAdminControllerReingestDocumentV1202,
   DocumentAdminControllerUpdateDocumentV1200,
   UpdateClinicDocumentDto
 } from '../model';
@@ -701,6 +702,98 @@ export function useDocumentAdminControllerGetDownloadUrlV1<TData = Awaited<Retur
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentAdminControllerGetDownloadUrlV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Queue a clinic document for re-ingestion
+ */
+export const documentAdminControllerReingestDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentAdminControllerReingestDocumentV1202>(
+      {url: `/api/v1/admin/documents/${id}/ingest`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentAdminControllerReingestDocumentV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/admin/documents/${id}/ingest`
+    ] as const;
+    }
+
+
+export const getDocumentAdminControllerReingestDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentAdminControllerReingestDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>> = ({ signal }) => documentAdminControllerReingestDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentAdminControllerReingestDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>>
+export type DocumentAdminControllerReingestDocumentV1QueryError = unknown
+
+
+export function useDocumentAdminControllerReingestDocumentV1<TData = Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerReingestDocumentV1<TData = Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerReingestDocumentV1<TData = Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Queue a clinic document for re-ingestion
+ */
+
+export function useDocumentAdminControllerReingestDocumentV1<TData = Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerReingestDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentAdminControllerReingestDocumentV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

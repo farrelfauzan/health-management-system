@@ -15588,6 +15588,136 @@ paths:
         - bearer: []
       summary: Mint a signed download URL for a clinic document
       tags: *a25
+  /api/v1/admin/documents/{id}/ingest:
+    post:
+      operationId: DocumentAdminController_reingestDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: Returns the document at ingestStatus PENDING. Extracting and
+            embedding a long PDF is tens of seconds of work, so this queues
+            rather than ingests inline — the background worker picks it up, and
+            the existing chunks keep answering until the new set replaces them
+            in one transaction. Requires DOCUMENT_INGESTION_ENABLED on the API,
+            or the document waits indefinitely. Returns 400 for a GENERAL
+            document, which is stored and served but never embedded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      ownerType:
+                        type: string
+                      ownerId:
+                        nullable: true
+                      purpose:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      visibility:
+                        type: string
+                      language:
+                        type: string
+                      ingestStatus:
+                        type: string
+                      ingestError:
+                        nullable: true
+                      ingestedAt:
+                        nullable: true
+                      chunkCount:
+                        type: integer
+                      uploadedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - ownerType
+                      - ownerId
+                      - purpose
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - visibility
+                      - language
+                      - ingestStatus
+                      - ingestError
+                      - ingestedAt
+                      - chunkCount
+                      - uploadedById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11
+                    ownerType: CLINIC
+                    ownerId: null
+                    purpose: FAQ_KNOWLEDGE_BASE
+                    title: SOP Alur Pendaftaran Pasien BPJS
+                    mimeType: application/pdf
+                    sizeBytes: 184320
+                    visibility: BOTH
+                    language: ID
+                    ingestStatus: PENDING
+                    ingestError: null
+                    ingestedAt: null
+                    chunkCount: 0
+                    uploadedById: a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d
+                    createdAt: 2026-08-03T09:00:00.000Z
+                    updatedAt: 2026-08-03T09:00:00.000Z
+                  message: Document queued for ingestion
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Queue a clinic document for re-ingestion
+      tags: *a25
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1

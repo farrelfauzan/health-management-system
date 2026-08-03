@@ -164,6 +164,30 @@ export class DocumentAdminController {
     return { data: view, message: 'Document updated' };
   }
 
+  @Post(':id/ingest')
+  @HttpCode(202)
+  @Auth([{ action: 'write', subject: 'Document' }])
+  @ApiEndpoint({
+    summary: 'Queue a clinic document for re-ingestion',
+    responseDescription:
+      'Returns the document at ingestStatus PENDING. Extracting and embedding a long PDF is tens of seconds of work, so this queues rather than ingests inline — the background worker picks it up, and the existing chunks keep answering until the new set replaces them in one transaction. Requires DOCUMENT_INGESTION_ENABLED on the API, or the document waits indefinitely. Returns 400 for a GENERAL document, which is stored and served but never embedded.',
+    responseExample: {
+      data: DOCUMENT_MANAGEMENT_EXAMPLES.pendingDocument,
+      message: 'Document queued for ingestion',
+    },
+    successStatus: 202,
+    notFoundDescription: 'Document not found.',
+  })
+  async reingestDocument(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const view = await this.documentService.reingestDocument(id, actor);
+
+    return { data: view, message: 'Document queued for ingestion' };
+  }
+
   @Delete(':id')
   @Auth([{ action: 'write', subject: 'Document' }])
   @ApiEndpoint({
