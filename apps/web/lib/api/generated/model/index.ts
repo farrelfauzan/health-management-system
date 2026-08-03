@@ -265,6 +265,8 @@ export * from './documentAdminControllerListDocumentsV1Visibility';
 export * from './documentAdminControllerListDocumentsV1200';
 export * from './documentAdminControllerListDocumentsV1200DataItem';
 export * from './documentAdminControllerListDocumentsV1200Meta';
+export * from './documentAdminControllerReingestDocumentV1202';
+export * from './documentAdminControllerReingestDocumentV1202Data';
 export * from './documentAdminControllerUpdateDocumentV1200';
 export * from './documentAdminControllerUpdateDocumentV1200Data';
 export * from './encounterClinicalDataControllerAddDiagnosisV1201';

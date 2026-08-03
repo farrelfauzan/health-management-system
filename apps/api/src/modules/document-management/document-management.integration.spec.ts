@@ -135,6 +135,31 @@ describe('Document management integration', () => {
     return chunkRows.filter((row) => row.documentId === documentId).length;
   }
 
+  function buildStoredDocumentRow(
+    overrides: Record<string, unknown> = {},
+  ): Record<string, unknown> {
+    return {
+      id: DOCUMENT_ID,
+      ownerType: 'CLINIC',
+      ownerId: null,
+      purpose: 'FAQ_KNOWLEDGE_BASE',
+      title: 'Internal Escalation Protocol',
+      storageKey: CLINIC_KEY,
+      mimeType: 'text/markdown',
+      sizeBytes: 4096,
+      visibility: 'BOTH',
+      language: 'ID',
+      ingestStatus: 'READY',
+      ingestError: null,
+      ingestedAt: new Date('2026-08-03T09:02:00.000Z'),
+      uploadedById: ADMIN_USER_ID,
+      createdAt: new Date('2026-08-02T11:00:00.000Z'),
+      updatedAt: new Date('2026-08-03T09:02:00.000Z'),
+      deletedAt: null,
+      ...overrides,
+    };
+  }
+
   function buildToken(sub: string, email: string): Promise<string> {
     return jwtService.signAsync({ sub, email }, { secret: accessTokenSecret });
   }
@@ -368,12 +393,47 @@ describe('Document management integration', () => {
       .send({ title: 'Renamed' })
       .expect(403);
     await request(server)
+      .post(`/api/v1/admin/documents/${DOCUMENT_ID}/ingest`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(403);
+    await request(server)
       .delete(`/api/v1/admin/documents/${DOCUMENT_ID}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(403);
 
     expect(objectStorageServiceMock.getSignedUploadUrl).not.toHaveBeenCalled();
     expect(objectStorageServiceMock.getSignedUrl).not.toHaveBeenCalled();
+  });
+
+  it('queues a re-ingest rather than embedding inline, keeping the old chunks answering', async () => {
+    mockAdmin();
+    const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+    documentRows.push(buildStoredDocumentRow({ ingestStatus: 'READY', ingestError: 'stale' }));
+    chunkRows.push({ documentId: DOCUMENT_ID }, { documentId: DOCUMENT_ID });
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/admin/documents/${DOCUMENT_ID}/ingest`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(202);
+
+    expect(response.body.data).toMatchObject({ ingestStatus: 'PENDING', ingestError: null });
+    // Unlike a visibility change, a re-ingest of a working document must not
+    // make it temporarily unanswerable — the new set replaces the old in one
+    // transaction when the worker gets to it.
+    expect(chunkRows).toHaveLength(2);
+  });
+
+  it('refuses to queue a document that is stored but never embedded', async () => {
+    mockAdmin();
+    const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+    documentRows.push(
+      buildStoredDocumentRow({ purpose: 'GENERAL', ingestStatus: 'NOT_APPLICABLE' }),
+    );
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/admin/documents/${DOCUMENT_ID}/ingest`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
   });
 
   it('refuses an actor with no document grant at the guard', async () => {

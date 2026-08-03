@@ -207,6 +207,31 @@ export class DocumentService {
     };
   }
 
+  /**
+   * Returns a document to the ingestion queue.
+   *
+   * Queueing rather than ingesting inline: extracting and embedding a long
+   * PDF is tens of seconds of work, and an admin screen must not hold a
+   * request open for it. The existing chunks are deliberately left in place
+   * until the new set replaces them in one transaction, so a re-ingest of a
+   * working document never makes it temporarily unanswerable — unlike a
+   * visibility change, where discarding immediately is the safer failure.
+   *
+   * A `GENERAL` document is refused: it is stored and served but never
+   * embedded, and queueing one would put a row in a queue the pipeline is
+   * built to reject.
+   */
+  async reingestDocument(id: string, actor: CurrentUser): Promise<ClinicDocumentView> {
+    await this.assertClinicCorpusScope(actor, 'write');
+    const record = await this.requireClinicDocument(id);
+    if (this.resolveInitialIngestStatus(record.purpose) !== 'PENDING') {
+      throw new BadRequestException(
+        `Documents with purpose ${record.purpose} are stored but never ingested`,
+      );
+    }
+    return this.toView(await this.documentRepository.markDocumentPending(id));
+  }
+
   private async readUploadedObject(storageKey: string): Promise<HeadObjectResult> {
     try {
       return await this.objectStorageService.headObject({ key: storageKey });

@@ -1,3 +1,10 @@
+// The `test`, `integration:test`, and `database:test` scripts run jest with
+// NODE_OPTIONS=--experimental-vm-modules. It is not about writing ESM specs:
+// pdf-parse's pdfjs backend sets up its worker with a dynamic import, which
+// jest's CJS VM refuses, so P15-T10's PDF extraction cases fail with "a
+// dynamic import callback was invoked without --experimental-vm-modules"
+// while the same code works in plain Node. The whole suite was re-run under
+// the flag before it was added — 102 suites, 1118 tests, unchanged.
 /** @type {import('jest').Config} */
 module.exports = {
   rootDir: '.',

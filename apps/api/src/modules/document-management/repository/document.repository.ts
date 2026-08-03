@@ -61,6 +61,83 @@ export class DocumentRepository {
     return row === null ? null : this.toRecord(row, row._count.chunks);
   }
 
+  /**
+   * Reads a document for the ingestion pipeline, which is deliberately
+   * **owner-blind**: the worker embeds the clinic corpus and every personal
+   * knowledge base with the same pipeline, and an owner filter here would
+   * quietly leave one of them unindexed. Owner scoping is an access-control
+   * question and belongs on the routes that answer to a user.
+   */
+  async findDocumentForIngestion(id: string): Promise<DocumentRecord | null> {
+    const row = await this.prismaService.document.findFirst({
+      where: { id, deletedAt: null },
+      include: { _count: { select: { chunks: true } } },
+    });
+    return row === null ? null : this.toRecord(row, row._count.chunks);
+  }
+
+  /**
+   * Claims up to `limit` pending documents by moving them to `PROCESSING` in
+   * one statement per row, and returns only the rows this call actually won.
+   *
+   * The `ingestStatus: 'PENDING'` predicate on the update is the claim: two
+   * workers racing for the same document produce one winner and one
+   * zero-count update, so the loser skips it rather than embedding it twice.
+   * That matters even in a single-instance deployment, because a re-ingest
+   * request and a poll cycle can arrive together.
+   */
+  async claimPendingDocuments(limit: number): Promise<DocumentRecord[]> {
+    const candidates = await this.prismaService.document.findMany({
+      where: { ingestStatus: 'PENDING', deletedAt: null },
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      take: limit,
+      select: { id: true },
+    });
+    const claimed: DocumentRecord[] = [];
+    for (const candidate of candidates) {
+      const result = await this.prismaService.document.updateMany({
+        where: { id: candidate.id, ingestStatus: 'PENDING', deletedAt: null },
+        data: { ingestStatus: 'PROCESSING' },
+      });
+      if (result.count === 0) {
+        continue;
+      }
+      const record = await this.findDocumentForIngestion(candidate.id);
+      if (record !== null) {
+        claimed.push(record);
+      }
+    }
+    return claimed;
+  }
+
+  /**
+   * Returns a document to the queue. Used by the re-ingest route and by a
+   * worker that claimed a row it then could not process — a document left in
+   * `PROCESSING` after a crash is invisible to every later poll.
+   */
+  async markDocumentPending(id: string): Promise<DocumentRecord> {
+    const row = await this.prismaService.document.update({
+      where: { id, deletedAt: null },
+      data: { ingestStatus: 'PENDING', ingestError: null },
+    });
+    return this.toRecord(row, await this.countChunks(id));
+  }
+
+  /**
+   * Records a failed attempt. The reason is stored verbatim as given by the
+   * pipeline, which is why the pipeline is the layer responsible for keeping
+   * file content out of it: this column is readable by anyone who can list
+   * documents, and an extraction error quoting the document would be a way to
+   * read a file through an error message.
+   */
+  async markDocumentFailed(id: string, ingestError: string): Promise<DocumentRecord> {
+    const row = await this.prismaService.document.update({
+      where: { id, deletedAt: null },
+      data: { ingestStatus: 'FAILED', ingestError },
+    });
+    return this.toRecord(row, await this.countChunks(id));
+  }
+
   async listDocuments(params: ListDocumentsParams): Promise<DocumentPage> {
     const rows = await this.prismaService.document.findMany({
       where: {
@@ -144,6 +221,10 @@ export class DocumentRepository {
       });
       return { document: this.toRecord(row, 0), deletedAt, chunksRemoved: removed.count };
     });
+  }
+
+  private async countChunks(documentId: string): Promise<number> {
+    return this.prismaService.documentChunk.count({ where: { documentId } });
   }
 
   private toRecord(row: Document, chunkCount: number): DocumentRecord {
