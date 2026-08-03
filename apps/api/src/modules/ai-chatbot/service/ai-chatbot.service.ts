@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -30,9 +31,17 @@ import {
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { AiChatbotError } from '../ai-chatbot.error';
-import { ChatCompletionMessage, ChatToolCall } from '../infrastructure/ai-provider.types';
+import {
+  ChatCompletionMessage,
+  ChatToolCall,
+  ChatToolWireDefinition,
+  ResolvedAiProviderConfig,
+  SendChatCompletionResult,
+} from '../infrastructure/ai-provider.types';
+import { AiChatProvider } from '../infrastructure/providers/ai-chat-provider.interface';
 import { buildChatToolCaller } from '../tools/build-chat-tool-caller';
 import { buildChatToolWireDefinitions } from '../tools/build-chat-tool-wire-definitions';
 import { ChatToolRegistry } from '../tools/chat-tool.registry';
@@ -75,6 +84,15 @@ const MAX_TOOL_CALLS_PER_MESSAGE = 3;
 const ADMIN_CHANNEL_ROLE_CODES: readonly string[] = ['ADMIN', 'SUPER_ADMIN'];
 
 /**
+ * Provider kinds that hide the eventual backend behind a router (§4.6). Mode
+ * B is refused for these: the recorded `providerKind` is the router, not
+ * whatever answered, so the transfer destination is unknown — tolerable when
+ * nothing personal is transmitted, and not tolerable under Pasal 56 when
+ * patient fields are.
+ */
+const ROUTER_PROVIDER_KINDS: readonly string[] = ['OPENAI_COMPATIBLE'];
+
+/**
  * Orchestrates a chat exchange end to end: ownership check, provider
  * resolution, history replay, retrieval, the upstream call, the Mode A tool
  * loop (P15-T04 — the model chooses lookups, HMS executes them as the asking
@@ -98,6 +116,8 @@ const ADMIN_CHANNEL_ROLE_CODES: readonly string[] = ['ADMIN', 'SUPER_ADMIN'];
  */
 @Injectable()
 export class AiChatbotService {
+  private readonly logger = new Logger(AiChatbotService.name);
+
   constructor(
     private readonly chatRepository: ChatRepository,
     private readonly authRepository: AuthRepository,
@@ -376,16 +396,17 @@ export class AiChatbotService {
         createdAt: exchangeStartedAt,
       });
     }
+    const baseMessages = this.buildCompletionMessages(
+      compactedSession,
+      history,
+      contextPayload,
+      retrieval,
+      preferences,
+    );
     const result = await adapter.sendChatCompletion(config, {
       sessionExternalId: session.providerSessionId,
       channel: session.channel,
-      messages: this.buildCompletionMessages(
-        compactedSession,
-        history,
-        contextPayload,
-        retrieval,
-        preferences,
-      ),
+      messages: baseMessages,
       contextPayload,
       ...(toolDefinitions.length === 0 ? {} : { tools: toolDefinitions }),
     });
@@ -421,19 +442,60 @@ export class AiChatbotService {
       // order, which would let the transcript render the reply first.
       createdAt: new Date(exchangeStartedAt.getTime() + 1),
     });
-    // Mode A (ai-chatbot-tools.md §4.4): the lookups the model requested run
-    // now, as the asking user, and stop here — nothing is sent back to the
-    // provider, so a result can never carry an instruction into the model's
-    // context. Each executed call is persisted as its own SYSTEM turn before
-    // the response leaves the service.
+    // The lookups the model requested run now, as the asking user. Each is
+    // persisted as its own SYSTEM turn **before** any decision about
+    // transmission, which is step 4 of §4.4 and is unconditional in both
+    // modes.
     const toolResults =
       toolCaller === null || result.toolCalls.length === 0
         ? []
         : await this.executeToolCalls(session, toolCaller, result.toolCalls, exchangeStartedAt);
+    // Mode B (§4.4 step 5, P15-T07): the projected results go back to the
+    // provider so it can compose prose over them. Mode A stops above, and a
+    // result that never re-enters the model's context cannot carry an
+    // instruction into it — which is why Mode A is structurally immune to
+    // injection-through-tool-result and this path is not.
+    const modeBReply =
+      toolResults.length === 0
+        ? null
+        : await this.composeOverToolResults({
+            session,
+            adapter,
+            config,
+            baseMessages,
+            assistantContent: outputDecision.content,
+            toolCalls: result.toolCalls,
+            toolResults,
+            toolDefinitions,
+          });
+    const composedMessage =
+      modeBReply === null
+        ? null
+        : await this.chatRepository.appendMessage({
+            sessionId: session.id,
+            actor: 'ASSISTANT',
+            content: modeBReply.content,
+            providerKind: modeBReply.providerKind,
+            providerRequestId:
+              modeBReply.providerRequestId === '' ? null : modeBReply.providerRequestId,
+            providerMessageId: modeBReply.providerMessageId,
+            providerModel: modeBReply.model,
+            providerLatencyMs: modeBReply.latencyMs,
+            disclaimerShown: true,
+            safetyTags: modeBReply.safetyTags,
+        // After every tool turn, so the transcript reads announce → look up →
+        // answer, which is the order the exchange actually happened in.
+            createdAt: new Date(
+              exchangeStartedAt.getTime() + 2 + MAX_TOOL_CALLS_PER_MESSAGE + 1,
+            ),
+          });
     return {
       data: {
         userMessage: this.toMessageView(userMessage),
-        assistantMessage: this.toMessageView(assistantMessage),
+        // In Mode B the composed reply is the answer; the announcement turn
+        // above stays in the transcript because it is what the model actually
+        // said first, and an auditor reading the session sees both.
+        assistantMessage: this.toMessageView(composedMessage ?? assistantMessage),
       },
       meta: {
         disclaimer: AI_CHAT_DISCLAIMER,
@@ -515,6 +577,119 @@ export class AiChatbotService {
           caughtError instanceof AiChatbotError ? caughtError.code : 'AI_TOOL_EXECUTION_FAILED',
       };
     }
+  }
+
+  /**
+   * Mode B's second round trip (§4.4 step 5), or null when Mode B is off or
+   * refused.
+   *
+   * **Three refusals, all before any patient field reaches the wire.**
+   * `AI_CHAT_TOOL_RESULT_TO_PROVIDER` must be on; the active provider must
+   * not be a router kind (§4.6 — behind `OPENAI_COMPATIBLE` the recorded
+   * `providerKind` is the router rather than whatever answered, so the
+   * transfer destination is unknown, which is tolerable when nothing personal
+   * is transmitted and not tolerable under Pasal 56 when it is); and at least
+   * one lookup must have succeeded, since replaying only failures asks the
+   * model to narrate errors.
+   *
+   * **The replay carries projected results and nothing else.** Each `tool`
+   * turn holds the same allowlisted object the client received — never the
+   * domain service's response — so the §4.3 allowlist is the last thing
+   * standing between a domain service and a foreign processor, which is
+   * exactly the weight §4.3 says it carries in this mode.
+   *
+   * **The catalogue is deliberately not re-sent.** The cap is three lookups
+   * per user message and they have already run; re-offering the tools would
+   * invite a second round of calls this loop has no budget to execute, and
+   * "answer from what was gathered" is what §4.4 step 6 asks for.
+   *
+   * A failure here degrades to Mode A rather than failing the exchange: the
+   * announcement turn and the rendered results are already persisted and
+   * already a usable answer.
+   */
+  private async composeOverToolResults(params: {
+    session: ChatSessionRecord;
+    adapter: AiChatProvider;
+    config: ResolvedAiProviderConfig;
+    baseMessages: ChatCompletionMessage[];
+    assistantContent: string;
+    toolCalls: ReadonlyArray<ChatToolCall>;
+    toolResults: ChatToolResultView[];
+    toolDefinitions: ReadonlyArray<ChatToolWireDefinition>;
+  }): Promise<(SendChatCompletionResult & { safetyTags: ChatSafetyTagValue[] }) | null> {
+    if (!this.isToolResultToProviderEnabled()) {
+      return null;
+    }
+    if (ROUTER_PROVIDER_KINDS.includes(params.config.providerKind)) {
+      this.logger.warn(
+        buildSafeErrorLog('chat_mode_b_refused_router_kind', {
+          providerKind: params.config.providerKind,
+        }),
+      );
+      return null;
+    }
+    const executedCalls = params.toolCalls.slice(0, MAX_TOOL_CALLS_PER_MESSAGE);
+    const successfulResults = params.toolResults.filter((result) => result.outcome === 'SUCCESS');
+    if (successfulResults.length === 0) {
+      return null;
+    }
+    try {
+      const replayMessages: ChatCompletionMessage[] = [
+        ...params.baseMessages,
+        {
+          role: 'assistant',
+          content: params.assistantContent,
+          toolCalls: executedCalls,
+        },
+        ...params.toolResults.map((result, index) => ({
+          role: 'tool' as const,
+          // The projected result, which is what the client got — never the
+          // domain service's own response.
+          content: JSON.stringify(result.result ?? { error: result.errorCode }),
+          toolCallId: executedCalls[index]?.id ?? '',
+          toolName: result.toolName,
+        })),
+      ];
+      const composed = await params.adapter.sendChatCompletion(params.config, {
+        sessionExternalId: params.session.providerSessionId,
+        channel: params.session.channel,
+        messages: replayMessages,
+        contextPayload: {},
+      });
+      // The composed prose runs the output guards exactly like the first
+      // reply. The sourcing argument says a lookup did happen, so the §4.7.2
+      // guard stays silent — this text is grounded by construction.
+      const decision = this.safetyPolicyService.evaluateOutput(
+        composed.content,
+        params.session.channel,
+        { wasAnyToolOffered: params.toolDefinitions.length > 0, requestedToolCount: 1 },
+      );
+      return { ...composed, content: decision.content, safetyTags: decision.safetyTags };
+    } catch (caughtError) {
+      this.logger.warn(
+        buildSafeErrorLog('chat_mode_b_compose_failed', {
+          sessionId: params.session.id,
+          reason: caughtError instanceof Error ? caughtError.name : 'unknown',
+        }),
+      );
+      return null;
+    }
+  }
+
+  /**
+   * `AI_CHAT_TOOL_RESULT_TO_PROVIDER` (§7.4), default off, and **it must not
+   * be enabled in any environment until §7.4's four conditions are met** —
+   * an explicit-consent model, a `transferBasis` column on the provider
+   * config, a DPIA, and a signed DPA. The code merges before they do so that
+   * enabling is a flag flip rather than a re-implementation.
+   */
+  private isToolResultToProviderEnabled(): boolean {
+    return (
+      this.configService
+        .get<string>('AI_CHAT_TOOL_RESULT_TO_PROVIDER')
+        ?.trim()
+        .toLowerCase() === 'true'
+    );
   }
 
   private async buildToolCaller(actor: CurrentUser): Promise<ChatToolCaller> {
