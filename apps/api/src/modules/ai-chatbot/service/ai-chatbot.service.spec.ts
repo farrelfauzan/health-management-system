@@ -317,6 +317,193 @@ describe('AiChatbotService', () => {
     });
   });
 
+  describe('Mode B (P15-T07)', () => {
+    const MODE_B_ENV = {
+      AI_CHAT_ENABLED: 'true',
+      AI_CHAT_TOOL_RESULT_TO_PROVIDER: 'true',
+    };
+
+    function buildToolRegistry(): ChatToolRegistry {
+      const registry = new ChatToolRegistry();
+      registry.registerTool({
+        name: 'check_medication_stock',
+        description: 'stock',
+        channels: ['DOCTOR'],
+        allowedRoleCodes: ['DOCTOR'],
+        requiredPermission: { resource: 'Medication', action: 'read', scope: 'ANY' },
+        argumentSchema: checkMedicationStockToolArgsSchema,
+        execute: () => Promise.resolve({ matchCount: 1, items: [{ medicationName: 'Amoxicillin' }] }),
+      } as unknown as ChatTool);
+      return registry;
+    }
+
+    function stubToolExchange(providerKind = 'DEEPSEEK'): void {
+      resolveActiveProviderMock.mockResolvedValue({
+        adapter: { supports: () => true, sendChatCompletion: sendChatCompletionMock },
+        config: { configId: 'config-1', providerKind },
+      });
+      chatRepositoryMock.findSessionForOwner.mockResolvedValue(buildSession({ channel: 'DOCTOR' }));
+      chatRepositoryMock.appendUserMessageWithinQuota.mockResolvedValue(buildMessage());
+      chatRepositoryMock.appendMessage.mockImplementation(
+        (data: { actor: string; content: string }) =>
+          Promise.resolve(buildMessage({ actor: data.actor as 'ASSISTANT', content: data.content })),
+      );
+      chatRepositoryMock.listRecentConversationTurns.mockResolvedValue([buildMessage()]);
+      findUserByIdMock.mockResolvedValue({
+        id: 'user-patient',
+        roles: [
+          {
+            role: {
+              code: 'DOCTOR',
+              permissions: [
+                { permission: { resource: 'Medication', action: 'read', scope: 'ANY' } },
+              ],
+            },
+          },
+        ],
+      });
+      sendChatCompletionMock
+        .mockResolvedValueOnce({
+          content: 'Saya cek stoknya.',
+          toolCalls: [{ id: 'call_1', name: 'check_medication_stock', arguments: {} }],
+          providerKind,
+          providerRequestId: 'req-1',
+          providerMessageId: null,
+          model: 'deepseek-chat',
+          latencyMs: 10,
+        })
+        .mockResolvedValue({
+          content: 'Stok amoxicillin tersedia.',
+          toolCalls: [],
+          providerKind,
+          providerRequestId: 'req-2',
+          providerMessageId: null,
+          model: 'deepseek-chat',
+          latencyMs: 12,
+        });
+    }
+
+    it('sends the projected results back and returns the composed reply', async () => {
+      stubToolExchange();
+
+      const actualResult = await buildService(MODE_B_ENV, buildToolRegistry()).sendMessage(
+        'session-1',
+        { content: 'Stok amoxicillin?' },
+        inputActor,
+      );
+
+      expect(sendChatCompletionMock).toHaveBeenCalledTimes(2);
+      const replay = sendChatCompletionMock.mock.calls[1][1] as {
+        messages: ChatCompletionMessage[];
+        tools?: unknown;
+      };
+      const toolTurn = replay.messages.find((message) => message.role === 'tool');
+      expect(toolTurn?.toolCallId).toBe('call_1');
+      expect(toolTurn?.content).toContain('Amoxicillin');
+      // The catalogue is not re-sent: the three-call cap is spent, and
+      // re-offering invites a round this loop has no budget to execute.
+      expect(replay.tools).toBeUndefined();
+      expect(actualResult.data.assistantMessage.content).toBe('Stok amoxicillin tersedia.');
+    });
+
+    it('sends nothing back and stays at one round trip with the flag off', async () => {
+      stubToolExchange();
+
+      const actualResult = await buildService(
+        { AI_CHAT_ENABLED: 'true' },
+        buildToolRegistry(),
+      ).sendMessage('session-1', { content: 'Stok amoxicillin?' }, inputActor);
+
+      // The invariant-4 regression, still holding: one call, and the reply is
+      // the announcement rather than a composition over rows.
+      expect(sendChatCompletionMock).toHaveBeenCalledTimes(1);
+      expect(actualResult.data.assistantMessage.content).toBe('Saya cek stoknya.');
+      expect(JSON.stringify(sendChatCompletionMock.mock.calls)).not.toContain('"role":"tool"');
+    });
+
+    it('refuses Mode B for a router provider kind', async () => {
+      // §4.6: behind OPENAI_COMPATIBLE the recorded providerKind is the
+      // router, so the transfer destination is unknown — tolerable when
+      // nothing personal is transmitted, not under Pasal 56 when it is.
+      stubToolExchange('OPENAI_COMPATIBLE');
+
+      await buildService(MODE_B_ENV, buildToolRegistry()).sendMessage(
+        'session-1',
+        { content: 'Stok amoxicillin?' },
+        inputActor,
+      );
+
+      expect(sendChatCompletionMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not replay when every lookup failed', async () => {
+      stubToolExchange();
+      const registry = new ChatToolRegistry();
+      registry.registerTool({
+        name: 'check_medication_stock',
+        description: 'stock',
+        channels: ['DOCTOR'],
+        allowedRoleCodes: ['DOCTOR'],
+        requiredPermission: { resource: 'Medication', action: 'read', scope: 'ANY' },
+        argumentSchema: checkMedicationStockToolArgsSchema,
+        execute: () => Promise.reject(new Error('domain failure')),
+      } as unknown as ChatTool);
+
+      await buildService(MODE_B_ENV, registry).sendMessage(
+        'session-1',
+        { content: 'Stok amoxicillin?' },
+        inputActor,
+      );
+
+      // Replaying only failures asks the model to narrate errors.
+      expect(sendChatCompletionMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('degrades to Mode A when the second call fails', async () => {
+      stubToolExchange();
+      sendChatCompletionMock.mockReset();
+      sendChatCompletionMock
+        .mockResolvedValueOnce({
+          content: 'Saya cek stoknya.',
+          toolCalls: [{ id: 'call_1', name: 'check_medication_stock', arguments: {} }],
+          providerKind: 'DEEPSEEK',
+          providerRequestId: 'req-1',
+          providerMessageId: null,
+          model: 'deepseek-chat',
+          latencyMs: 10,
+        })
+        .mockRejectedValue(new Error('upstream timeout'));
+
+      const actualResult = await buildService(MODE_B_ENV, buildToolRegistry()).sendMessage(
+        'session-1',
+        { content: 'Stok amoxicillin?' },
+        inputActor,
+      );
+
+      // The announcement turn and the rendered results are already persisted
+      // and already a usable answer.
+      expect(actualResult.data.assistantMessage.content).toBe('Saya cek stoknya.');
+      expect(actualResult.meta.toolResults).toHaveLength(1);
+    });
+
+    it('runs the output guards over the composed prose too', async () => {
+      stubToolExchange();
+      evaluateOutputMock.mockImplementation((content: string) =>
+        content === 'Stok amoxicillin tersedia.'
+          ? { content: 'REPLACED', safetyTags: ['prescription_attempt'] }
+          : { content, safetyTags: [] },
+      );
+
+      const actualResult = await buildService(MODE_B_ENV, buildToolRegistry()).sendMessage(
+        'session-1',
+        { content: 'Stok amoxicillin?' },
+        inputActor,
+      );
+
+      expect(actualResult.data.assistantMessage.content).toBe('REPLACED');
+    });
+  });
+
   describe('preferences (P15-T14)', () => {
     const STORED_PREFERENCES = {
       preferredLanguage: 'ID' as const,
