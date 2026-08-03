@@ -50,9 +50,14 @@ export class CheckMedicationStockTool implements ChatTool {
     'Do NOT use for: tanggal kedaluwarsa atau batch obat (pakai check_medication_expiry), resep pasien tertentu, atau dosis.',
   ].join('\n');
 
-  readonly channels: readonly ChatChannelValue[] = ['DOCTOR'];
+  /**
+   * Shared with the admin channel (P15-T18) rather than duplicated: stock
+   * carries no personal data at all, so the same tool answers both audiences
+   * and there is one projection to review instead of two that could drift.
+   */
+  readonly channels: readonly ChatChannelValue[] = ['DOCTOR', 'ADMIN'];
 
-  readonly allowedRoleCodes: readonly string[] = ['DOCTOR'];
+  readonly allowedRoleCodes: readonly string[] = ['DOCTOR', 'ADMIN', 'SUPER_ADMIN'];
 
   readonly requiredPermission: {
     readonly resource: string;

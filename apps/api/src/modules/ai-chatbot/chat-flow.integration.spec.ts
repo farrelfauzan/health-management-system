@@ -12,9 +12,11 @@ import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AppointmentManagementService } from '../appointment-management/service/appointment-management.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { CashierReportService } from '../billing/service/cashier-report.service';
 import { DocumentRetrievalService } from '../document-management/service/document-retrieval.service';
 import { PatientManagementService } from '../patient-management/service/patient-management.service';
 import { PharmacyFlowService } from '../pharmacy-flow/service/pharmacy-flow.service';
+import { RegistrationFlowService } from '../registration-flow/service/registration-flow.service';
 
 /**
  * P13-T08 chat-surface integration tests. Auth and Prisma are mocked (Prisma
@@ -82,7 +84,13 @@ describe('Chat flow integration', () => {
   const pharmacyFlowServiceMock = { listMedications: jest.fn(), getExpiryReport: jest.fn() };
   /** P15-T06's backing services, stubbed at the same boundary. */
   const patientManagementServiceMock = { listPatients: jest.fn(), getPatientById: jest.fn() };
-  const appointmentManagementServiceMock = { listAppointments: jest.fn() };
+  const appointmentManagementServiceMock = {
+    listAppointments: jest.fn(),
+    listSessionsCalendar: jest.fn(),
+  };
+  /** P15-T18's backing services for the admin channel. */
+  const registrationFlowServiceMock = { getQueueBoard: jest.fn() };
+  const cashierReportServiceMock = { getDailyReport: jest.fn() };
   /**
    * P15-T11 retrieval, stubbed at the corpus boundary. What these cases prove
    * is everything above it — scope arguments, the numbered prompt block, the
@@ -376,6 +384,10 @@ describe('Chat flow integration', () => {
       .useValue(patientManagementServiceMock)
       .overrideProvider(AppointmentManagementService)
       .useValue(appointmentManagementServiceMock)
+      .overrideProvider(RegistrationFlowService)
+      .useValue(registrationFlowServiceMock)
+      .overrideProvider(CashierReportService)
+      .useValue(cashierReportServiceMock)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -910,6 +922,149 @@ describe('Chat flow integration', () => {
         tools?: Array<{ function: { name: string } }>;
       };
       expect(body.tools?.map((tool) => tool.function.name)).toEqual(['check_medication_stock']);
+    });
+  });
+
+  describe('admin channel and its tools — P15-T17 / P15-T18', () => {
+    function mockAdminPermissions(): void {
+      authRepositoryMock.findUserById.mockResolvedValue({
+        id: OWNER_USER_ID,
+        roles: [
+          {
+            role: {
+              code: 'ADMIN',
+              permissions: [
+                ...CHAT_PERMISSIONS,
+                { action: 'read', resource: 'Registration', scope: 'ANY' },
+                { action: 'read', resource: 'Invoice', scope: 'ANY' },
+                { action: 'read', resource: 'AppointmentSession', scope: 'ANY' },
+                { action: 'read', resource: 'Medication', scope: 'ANY' },
+                { action: 'read', resource: 'Inventory', scope: 'ANY' },
+              ].map((permission) => ({ permission })),
+            },
+          },
+        ],
+      });
+    }
+
+    beforeEach(() => {
+      mockAdminPermissions();
+      registrationFlowServiceMock.getQueueBoard.mockResolvedValue({
+        date: '2026-08-03',
+        counts: { pending: 7, checkedIn: 5, completed: 12, cancelled: 1 },
+        poli: [
+          {
+            poli: { id: 'poli-1', name: 'Poli Umum' },
+            waiting: 8,
+            counts: { pending: 5, checkedIn: 3, completed: 9, cancelled: 1 },
+            lastIssuedNumber: 18,
+          },
+        ],
+        entries: [
+          {
+            registrationId: 'registration-1',
+            queueNumber: 4,
+            status: 'CHECKED_IN',
+            patient: { id: 'patient-1', mrn: 'MRN00000042', fullName: 'Budi Santoso' },
+            poli: { id: 'poli-1', name: 'Poli Umum' },
+          },
+        ],
+      });
+    });
+
+    it('refuses an admin session to a non-admin', async () => {
+      mockDoctorPermissions();
+      const token = await buildToken(OWNER_USER_ID, 'doctor@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/chat/sessions')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ channel: 'ADMIN' });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('offers an admin exactly the five admin tools on the wire', async () => {
+      stubOpenAiCompatibleToolCall('Saya cek papan antrean.', 'get_queue_board_summary', {});
+      const token = await buildToken(OWNER_USER_ID, 'admin@hms.local');
+      const sessionId = await createSession(token, 'ADMIN');
+
+      await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Berapa yang antre sekarang?' });
+
+      const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string) as {
+        tools?: Array<{ function: { name: string } }>;
+        messages: Array<{ role: string; content: string }>;
+      };
+      expect(body.tools?.map((tool) => tool.function.name).sort()).toEqual([
+        'check_medication_expiry',
+        'check_medication_stock',
+        'get_appointment_load',
+        'get_daily_cashier_report',
+        'get_queue_board_summary',
+      ]);
+      // The admin prompt, not the clinician's.
+      expect(body.messages[0]?.content).toContain('operations assistant');
+      expect(body.messages[0]?.content).not.toContain('clinical reference assistant');
+    });
+
+    it('answers the queue question with counts and no patient row anywhere', async () => {
+      stubOpenAiCompatibleToolCall('Saya cek papan antrean.', 'get_queue_board_summary', {});
+      const token = await buildToken(OWNER_USER_ID, 'admin@hms.local');
+      const sessionId = await createSession(token, 'ADMIN');
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Berapa yang antre sekarang?' });
+
+      expect(response.body.meta.toolResults[0].result).toEqual({
+        date: '2026-08-03',
+        waiting: 12,
+        pending: 7,
+        checkedIn: 5,
+        completed: 12,
+        cancelled: 1,
+        poli: [
+          {
+            poliName: 'Poli Umum',
+            waiting: 8,
+            pending: 5,
+            checkedIn: 3,
+            completed: 9,
+            cancelled: 1,
+          },
+        ],
+      });
+      // The board carried a named, MRN-bearing patient row and none of it
+      // reached the client or the provider.
+      const wholeResponse = JSON.stringify(response.body);
+      expect(wholeResponse).not.toContain('Budi Santoso');
+      expect(wholeResponse).not.toContain('MRN00000042');
+      expect((fetchMock.mock.calls[0][1] as RequestInit).body as string).not.toContain(
+        'Budi Santoso',
+      );
+    });
+
+    it('sends the admin no context-enrichment payload at all', async () => {
+      stubOpenAiCompatibleReply('Baik.');
+      const token = await buildToken(OWNER_USER_ID, 'admin@hms.local');
+      const sessionId = await createSession(token, 'ADMIN');
+
+      await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Halo' });
+
+      const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string) as {
+        messages: Array<{ role: string }>;
+      };
+      // One system message — the channel prompt. Every §5.3 field is about
+      // the asking user as a patient or a clinician.
+      expect(body.messages.filter((message) => message.role === 'system')).toHaveLength(1);
+      expect(messageRows.some((row) => row.actor === 'SYSTEM')).toBe(false);
     });
   });
 

@@ -2,6 +2,8 @@ import { ConfigService } from '@nestjs/config';
 
 import { ActorPermission } from '../../../common/authorization/actor.types';
 import { AppointmentManagementService } from '../../appointment-management/service/appointment-management.service';
+import { CashierReportService } from '../../billing/service/cashier-report.service';
+import { RegistrationFlowService } from '../../registration-flow/service/registration-flow.service';
 import { PatientManagementService } from '../../patient-management/service/patient-management.service';
 import { PharmacyFlowService } from '../../pharmacy-flow/service/pharmacy-flow.service';
 import { ChatToolRegistrarService } from './chat-tool-registrar.service';
@@ -9,7 +11,10 @@ import { ChatToolRegistry } from './chat-tool.registry';
 import { ChatToolCaller } from './chat-tool.types';
 import { CheckMedicationExpiryTool } from './definitions/check-medication-expiry.tool';
 import { CheckMedicationStockTool } from './definitions/check-medication-stock.tool';
+import { GetAppointmentLoadTool } from './definitions/get-appointment-load.tool';
+import { GetDailyCashierReportTool } from './definitions/get-daily-cashier-report.tool';
 import { GetPatientSummaryTool } from './definitions/get-patient-summary.tool';
+import { GetQueueBoardSummaryTool } from './definitions/get-queue-board-summary.tool';
 import { ListMyAppointmentsTool } from './definitions/list-my-appointments.tool';
 import { ListMyPatientsTool } from './definitions/list-my-patients.tool';
 
@@ -24,7 +29,23 @@ describe('ChatToolRegistrarService', () => {
   } as unknown as PatientManagementService;
   const mockAppointmentManagementService = {
     listAppointments: jest.fn(),
+    listSessionsCalendar: jest.fn(),
   } as unknown as AppointmentManagementService;
+  const mockRegistrationFlowService = {
+    getQueueBoard: jest.fn(),
+  } as unknown as RegistrationFlowService;
+  const mockCashierReportService = {
+    getDailyReport: jest.fn(),
+  } as unknown as CashierReportService;
+
+  /** The grants seed.sql gives ADMIN for the three admin-channel tools. */
+  const mockAdminPermissions: ActorPermission[] = [
+    { resource: 'Registration', action: 'read', scope: 'ANY' },
+    { resource: 'Invoice', action: 'read', scope: 'ANY' },
+    { resource: 'AppointmentSession', action: 'read', scope: 'ANY' },
+    { resource: 'Medication', action: 'read', scope: 'ANY' },
+    { resource: 'Inventory', action: 'read', scope: 'ANY' },
+  ];
 
   /**
    * The grants seed.sql actually gives DOCTOR: `medication.read:any`, and the
@@ -55,6 +76,9 @@ describe('ChatToolRegistrarService', () => {
         new ListMyPatientsTool(mockPatientManagementService),
         new GetPatientSummaryTool(mockPatientManagementService),
         new ListMyAppointmentsTool(mockAppointmentManagementService, new ConfigService({})),
+        new GetQueueBoardSummaryTool(mockRegistrationFlowService),
+        new GetDailyCashierReportTool(mockCashierReportService),
+        new GetAppointmentLoadTool(mockAppointmentManagementService, new ConfigService({})),
       ),
     };
   }
@@ -179,6 +203,84 @@ describe('ChatToolRegistrarService', () => {
         arguments: { page: 1 },
       }),
     ).rejects.toThrow('Tool is not available to this session: list_my_patients');
+  });
+
+  it('offers an admin their five tools — three own plus the two shared pharmacy ones', () => {
+    const { registry, registrar } = buildRegistrar('true');
+    registrar.onModuleInit();
+
+    const adminCaller: ChatToolCaller = {
+      user: { sub: 'admin-user-1', email: 'admin@clinic.local' },
+      roleCodes: ['ADMIN'],
+      permissions: mockAdminPermissions,
+    };
+
+    expect(
+      registry
+        .listOfferedTools(adminCaller, 'ADMIN')
+        .map((tool) => tool.name)
+        .sort(),
+    ).toEqual([
+      'check_medication_expiry',
+      'check_medication_stock',
+      'get_appointment_load',
+      'get_daily_cashier_report',
+      'get_queue_board_summary',
+    ]);
+  });
+
+  it('never offers an admin a patient tool, even holding every grant', () => {
+    // The three patient tools require `Patient:read` resolved to OWN, which an
+    // admin's ANY grant disqualifies, and their channel list excludes ADMIN.
+    // Both rules point the same way, which is the intent.
+    const { registry, registrar } = buildRegistrar('true');
+    registrar.onModuleInit();
+
+    const adminCaller: ChatToolCaller = {
+      user: { sub: 'admin-user-1', email: 'admin@clinic.local' },
+      roleCodes: ['ADMIN'],
+      permissions: [
+        ...mockAdminPermissions,
+        { resource: 'Patient', action: 'read', scope: 'OWN' },
+        { resource: 'Appointment', action: 'read', scope: 'OWN' },
+      ],
+    };
+
+    const actualNames = registry.listOfferedTools(adminCaller, 'ADMIN').map((tool) => tool.name);
+
+    expect(actualNames).not.toContain('list_my_patients');
+    expect(actualNames).not.toContain('get_patient_summary');
+    expect(actualNames).not.toContain('list_my_appointments');
+  });
+
+  it('offers SUPER_ADMIN the same admin catalogue', () => {
+    const { registry, registrar } = buildRegistrar('true');
+    registrar.onModuleInit();
+
+    const superAdminCaller: ChatToolCaller = {
+      user: { sub: 'super-1', email: 'super@clinic.local' },
+      roleCodes: ['SUPER_ADMIN'],
+      permissions: mockAdminPermissions,
+    };
+
+    expect(registry.listOfferedTools(superAdminCaller, 'ADMIN')).toHaveLength(5);
+  });
+
+  it('withholds the cashier report from an admin without the invoice grant', () => {
+    const { registry, registrar } = buildRegistrar('true');
+    registrar.onModuleInit();
+
+    const adminCaller: ChatToolCaller = {
+      user: { sub: 'admin-user-1', email: 'admin@clinic.local' },
+      roleCodes: ['ADMIN'],
+      permissions: mockAdminPermissions.filter(
+        (permission) => permission.resource !== 'Invoice',
+      ),
+    };
+
+    expect(
+      registry.listOfferedTools(adminCaller, 'ADMIN').map((tool) => tool.name),
+    ).not.toContain('get_daily_cashier_report');
   });
 
   it('offers a doctor-channel session nothing to an ADMIN, whatever they hold', () => {

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AppointmentManagementModule } from '../appointment-management/appointment-management.module';
 import { AuthModule } from '../auth/auth.module';
+import { BillingModule } from '../billing/billing.module';
 import { DocumentManagementModule } from '../document-management/document-management.module';
 import { PatientManagementModule } from '../patient-management/patient-management.module';
 import { PharmacyFlowModule } from '../pharmacy-flow/pharmacy-flow.module';
@@ -24,7 +25,10 @@ import { ChatToolRegistrarService } from './tools/chat-tool-registrar.service';
 import { ChatToolRegistry } from './tools/chat-tool.registry';
 import { CheckMedicationExpiryTool } from './tools/definitions/check-medication-expiry.tool';
 import { CheckMedicationStockTool } from './tools/definitions/check-medication-stock.tool';
+import { GetAppointmentLoadTool } from './tools/definitions/get-appointment-load.tool';
+import { GetDailyCashierReportTool } from './tools/definitions/get-daily-cashier-report.tool';
 import { GetPatientSummaryTool } from './tools/definitions/get-patient-summary.tool';
+import { GetQueueBoardSummaryTool } from './tools/definitions/get-queue-board-summary.tool';
 import { ListMyAppointmentsTool } from './tools/definitions/list-my-appointments.tool';
 import { ListMyPatientsTool } from './tools/definitions/list-my-patients.tool';
 
@@ -63,6 +67,7 @@ import { ListMyPatientsTool } from './tools/definitions/list-my-patients.tool';
     RegistrationFlowModule,
     PharmacyFlowModule,
     DocumentManagementModule,
+    BillingModule,
   ],
   controllers: [AiProviderController, ChatController],
   providers: [
@@ -83,6 +88,9 @@ import { ListMyPatientsTool } from './tools/definitions/list-my-patients.tool';
     ListMyPatientsTool,
     GetPatientSummaryTool,
     ListMyAppointmentsTool,
+    GetQueueBoardSummaryTool,
+    GetDailyCashierReportTool,
+    GetAppointmentLoadTool,
     ChatToolRegistrarService,
     AiChatbotService,
   ],

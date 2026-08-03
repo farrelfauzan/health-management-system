@@ -48,9 +48,15 @@ export class CheckMedicationExpiryTool implements ChatTool {
     'Do NOT use for: jumlah stok yang tersedia (pakai check_medication_stock), penerimaan barang, atau resep pasien.',
   ].join('\n');
 
-  readonly channels: readonly ChatChannelValue[] = ['DOCTOR'];
+  /**
+   * Shared with the admin channel (P15-T18). This is where the §2.1.1 note
+   * about expiry "going live by ability rather than by edit" pays off: the
+   * tool already declared `inventory.read:any`, `ADMIN` holds it, and the
+   * channel list is the only line that changed.
+   */
+  readonly channels: readonly ChatChannelValue[] = ['DOCTOR', 'ADMIN'];
 
-  readonly allowedRoleCodes: readonly string[] = ['DOCTOR'];
+  readonly allowedRoleCodes: readonly string[] = ['DOCTOR', 'ADMIN', 'SUPER_ADMIN'];
 
   readonly requiredPermission: {
     readonly resource: string;

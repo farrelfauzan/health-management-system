@@ -22,5 +22,10 @@ import { ServiceTariffService } from './service/service-tariff.service';
     BillingService,
     CashierReportService,
   ],
+  // Exported for `P15-T18`'s `get_daily_cashier_report` chat tool. A service
+  // rather than a repository, deliberately: cross-module access goes through
+  // the layer that owns the rules, so the tool cannot assemble a report the
+  // REST route would not have produced.
+  exports: [CashierReportService],
 })
 export class BillingModule {}
