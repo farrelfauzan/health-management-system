@@ -39,6 +39,7 @@ import { AI_CHAT_DISCLAIMER } from './ai-chat-disclaimer';
 import { AI_CHAT_RETRIEVAL_PREAMBLE } from './ai-chat-retrieval-preamble';
 import { AI_CHAT_SYSTEM_PROMPTS } from './ai-chat-system-prompts';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
+import { ChatCompactionService } from './chat-compaction.service';
 import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
 import { ChatRetrievalResult, ChatRetrievalService } from './chat-retrieval.service';
 import { SafetyPolicyService } from './safety-policy.service';
@@ -99,6 +100,7 @@ export class AiChatbotService {
     private readonly resolverService: AiProviderResolverService,
     private readonly contextEnrichmentService: ChatContextEnrichmentService,
     private readonly chatRetrievalService: ChatRetrievalService,
+    private readonly chatCompactionService: ChatCompactionService,
     private readonly safetyPolicyService: SafetyPolicyService,
     private readonly chatToolRegistry: ChatToolRegistry,
     private readonly configService: ConfigService,
@@ -283,11 +285,17 @@ export class AiChatbotService {
         ? []
         : this.chatToolRegistry.listOfferedTools(toolCaller, session.channel);
     const toolDefinitions = buildChatToolWireDefinitions(offeredTools);
+    // Compaction runs first because its output feeds this very request: a
+    // summary written after the reply would leave the turn that needed it
+    // unanswered. It is a no-op on all but roughly one message in ten.
+    const compactedSession = await this.chatCompactionService.compactIfNeeded(
+      session,
+      adapter,
+      config,
+      REPLAYED_HISTORY_TURN_LIMIT,
+    );
     const [history, contextPayload, retrieval] = await Promise.all([
-      this.chatRepository.listMessagesForSession({
-        sessionId: session.id,
-        limit: REPLAYED_HISTORY_TURN_LIMIT,
-      }),
+      this.chatRepository.listRecentConversationTurns(session.id, REPLAYED_HISTORY_TURN_LIMIT),
       this.contextEnrichmentService.buildContext(session.channel, actor),
       this.chatRetrievalService.retrieve(session.channel, actor, input.content),
     ]);
@@ -320,7 +328,12 @@ export class AiChatbotService {
     const result = await adapter.sendChatCompletion(config, {
       sessionExternalId: session.providerSessionId,
       channel: session.channel,
-      messages: this.buildCompletionMessages(session, history.items, contextPayload, retrieval),
+      messages: this.buildCompletionMessages(
+        compactedSession,
+        history,
+        contextPayload,
+        retrieval,
+      ),
       contextPayload,
       ...(toolDefinitions.length === 0 ? {} : { tools: toolDefinitions }),
     });
@@ -519,8 +532,15 @@ export class AiChatbotService {
     retrieval: ChatRetrievalResult,
   ): ChatCompletionMessage[] {
     const hasContext = Object.keys(contextPayload).length > 0;
+    const compactionSummary = this.chatCompactionService.buildReplaySummary(session);
     return [
       { role: 'system', content: AI_CHAT_SYSTEM_PROMPTS[session.channel] },
+      // Before context and passages: it is the oldest material in the
+      // request and belongs where the conversation it summarises would have
+      // been, so the model reads the whole thing in chronological order.
+      ...(compactionSummary === null
+        ? []
+        : [{ role: 'system' as const, content: compactionSummary }]),
       ...(hasContext
         ? [
             {
@@ -537,12 +557,12 @@ export class AiChatbotService {
               content: `${AI_CHAT_RETRIEVAL_PREAMBLE}\n\n${retrieval.promptBlock}`,
             },
           ]),
-      ...history
-        .filter((message) => message.actor !== 'SYSTEM')
-        .map((message) => ({
-          role: message.actor === 'ASSISTANT' ? ('assistant' as const) : ('user' as const),
-          content: message.content,
-        })),
+      // No SYSTEM filter here: `listRecentConversationTurns` excludes them at
+      // the query, so they never count against the replay window either.
+      ...history.map((message) => ({
+        role: message.actor === 'ASSISTANT' ? ('assistant' as const) : ('user' as const),
+        content: message.content,
+      })),
     ];
   }
 

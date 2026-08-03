@@ -1926,6 +1926,17 @@ model ChatSession {
   /// Auto-generated from the first user message; optional so a session exists
   /// before anything has been said.
   title             String?
+  /// P15-T13 rolling summary of the turns that have fallen out of the replay
+  /// window, replayed as one SYSTEM message so a long conversation stops
+  /// contradicting its own earlier answers. Null until a session is long
+  /// enough to have dropped anything.
+  compactedSummary  String?        @map("compacted_summary")
+  /// How many of this session's oldest conversational turns the summary
+  /// covers. A count rather than a message id or timestamp on purpose:
+  /// messages are append-only and never deleted, so the count is stable, and
+  /// integer arithmetic cannot be confused by two turns sharing a millisecond.
+  compactedTurnCount Int           @default(0) @map("compacted_turn_count")
+  compactedAt       DateTime?      @map("compacted_at")
   createdAt         DateTime       @default(now()) @map("created_at")
   updatedAt         DateTime       @updatedAt @map("updated_at")
   deletedAt         DateTime?      @map("deleted_at")

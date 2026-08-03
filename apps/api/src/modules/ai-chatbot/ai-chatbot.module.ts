@@ -18,6 +18,7 @@ import { ChatRepository } from './repository/chat.repository';
 import { AiChatbotService } from './service/ai-chatbot.service';
 import { AiProviderConfigService } from './service/ai-provider-config.service';
 import { AiProviderResolverService } from './service/ai-provider-resolver.service';
+import { ChatCompactionService } from './service/chat-compaction.service';
 import { ChatContextEnrichmentService } from './service/chat-context-enrichment.service';
 import { ChatRetrievalService } from './service/chat-retrieval.service';
 import { SafetyPolicyService } from './service/safety-policy.service';
@@ -79,6 +80,7 @@ import { ListMyPatientsTool } from './tools/definitions/list-my-patients.tool';
     AiProviderRegistry,
     AiProviderResolverService,
     AiProviderConfigService,
+    ChatCompactionService,
     ChatContextEnrichmentService,
     ChatRetrievalService,
     SafetyPolicyService,

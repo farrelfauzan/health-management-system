@@ -31,8 +31,18 @@ export type ChatSessionModel = runtime.Types.Result.DefaultSelection<Prisma.$Cha
 
 export type AggregateChatSession = {
   _count: ChatSessionCountAggregateOutputType | null
+  _avg: ChatSessionAvgAggregateOutputType | null
+  _sum: ChatSessionSumAggregateOutputType | null
   _min: ChatSessionMinAggregateOutputType | null
   _max: ChatSessionMaxAggregateOutputType | null
+}
+
+export type ChatSessionAvgAggregateOutputType = {
+  compactedTurnCount: number | null
+}
+
+export type ChatSessionSumAggregateOutputType = {
+  compactedTurnCount: number | null
 }
 
 export type ChatSessionMinAggregateOutputType = {
@@ -43,6 +53,9 @@ export type ChatSessionMinAggregateOutputType = {
   providerKind: $Enums.AiProviderKind | null
   providerSessionId: string | null
   title: string | null
+  compactedSummary: string | null
+  compactedTurnCount: number | null
+  compactedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -56,6 +69,9 @@ export type ChatSessionMaxAggregateOutputType = {
   providerKind: $Enums.AiProviderKind | null
   providerSessionId: string | null
   title: string | null
+  compactedSummary: string | null
+  compactedTurnCount: number | null
+  compactedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -70,12 +86,23 @@ export type ChatSessionCountAggregateOutputType = {
   providerSessionId: number
   providerMetadata: number
   title: number
+  compactedSummary: number
+  compactedTurnCount: number
+  compactedAt: number
   createdAt: number
   updatedAt: number
   deletedAt: number
   _all: number
 }
 
+
+export type ChatSessionAvgAggregateInputType = {
+  compactedTurnCount?: true
+}
+
+export type ChatSessionSumAggregateInputType = {
+  compactedTurnCount?: true
+}
 
 export type ChatSessionMinAggregateInputType = {
   id?: true
@@ -85,6 +112,9 @@ export type ChatSessionMinAggregateInputType = {
   providerKind?: true
   providerSessionId?: true
   title?: true
+  compactedSummary?: true
+  compactedTurnCount?: true
+  compactedAt?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -98,6 +128,9 @@ export type ChatSessionMaxAggregateInputType = {
   providerKind?: true
   providerSessionId?: true
   title?: true
+  compactedSummary?: true
+  compactedTurnCount?: true
+  compactedAt?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -112,6 +145,9 @@ export type ChatSessionCountAggregateInputType = {
   providerSessionId?: true
   providerMetadata?: true
   title?: true
+  compactedSummary?: true
+  compactedTurnCount?: true
+  compactedAt?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -156,6 +192,18 @@ export type ChatSessionAggregateArgs<ExtArgs extends runtime.Types.Extensions.In
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ChatSessionAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ChatSessionSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ChatSessionMinAggregateInputType
@@ -186,6 +234,8 @@ export type ChatSessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   _count?: ChatSessionCountAggregateInputType | true
+  _avg?: ChatSessionAvgAggregateInputType
+  _sum?: ChatSessionSumAggregateInputType
   _min?: ChatSessionMinAggregateInputType
   _max?: ChatSessionMaxAggregateInputType
 }
@@ -199,10 +249,15 @@ export type ChatSessionGroupByOutputType = {
   providerSessionId: string | null
   providerMetadata: runtime.JsonValue | null
   title: string | null
+  compactedSummary: string | null
+  compactedTurnCount: number
+  compactedAt: Date | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
   _count: ChatSessionCountAggregateOutputType | null
+  _avg: ChatSessionAvgAggregateOutputType | null
+  _sum: ChatSessionSumAggregateOutputType | null
   _min: ChatSessionMinAggregateOutputType | null
   _max: ChatSessionMaxAggregateOutputType | null
 }
@@ -234,6 +289,9 @@ export type ChatSessionWhereInput = {
   providerSessionId?: Prisma.StringNullableFilter<"ChatSession"> | string | null
   providerMetadata?: Prisma.JsonNullableFilter<"ChatSession">
   title?: Prisma.StringNullableFilter<"ChatSession"> | string | null
+  compactedSummary?: Prisma.StringNullableFilter<"ChatSession"> | string | null
+  compactedTurnCount?: Prisma.IntFilter<"ChatSession"> | number
+  compactedAt?: Prisma.DateTimeNullableFilter<"ChatSession"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ChatSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ChatSession"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"ChatSession"> | Date | string | null
@@ -250,6 +308,9 @@ export type ChatSessionOrderByWithRelationInput = {
   providerSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   providerMetadata?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
+  compactedSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  compactedTurnCount?: Prisma.SortOrder
+  compactedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -269,6 +330,9 @@ export type ChatSessionWhereUniqueInput = Prisma.AtLeast<{
   providerSessionId?: Prisma.StringNullableFilter<"ChatSession"> | string | null
   providerMetadata?: Prisma.JsonNullableFilter<"ChatSession">
   title?: Prisma.StringNullableFilter<"ChatSession"> | string | null
+  compactedSummary?: Prisma.StringNullableFilter<"ChatSession"> | string | null
+  compactedTurnCount?: Prisma.IntFilter<"ChatSession"> | number
+  compactedAt?: Prisma.DateTimeNullableFilter<"ChatSession"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ChatSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ChatSession"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"ChatSession"> | Date | string | null
@@ -285,12 +349,17 @@ export type ChatSessionOrderByWithAggregationInput = {
   providerSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   providerMetadata?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
+  compactedSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  compactedTurnCount?: Prisma.SortOrder
+  compactedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ChatSessionCountOrderByAggregateInput
+  _avg?: Prisma.ChatSessionAvgOrderByAggregateInput
   _max?: Prisma.ChatSessionMaxOrderByAggregateInput
   _min?: Prisma.ChatSessionMinOrderByAggregateInput
+  _sum?: Prisma.ChatSessionSumOrderByAggregateInput
 }
 
 export type ChatSessionScalarWhereWithAggregatesInput = {
@@ -305,6 +374,9 @@ export type ChatSessionScalarWhereWithAggregatesInput = {
   providerSessionId?: Prisma.StringNullableWithAggregatesFilter<"ChatSession"> | string | null
   providerMetadata?: Prisma.JsonNullableWithAggregatesFilter<"ChatSession">
   title?: Prisma.StringNullableWithAggregatesFilter<"ChatSession"> | string | null
+  compactedSummary?: Prisma.StringNullableWithAggregatesFilter<"ChatSession"> | string | null
+  compactedTurnCount?: Prisma.IntWithAggregatesFilter<"ChatSession"> | number
+  compactedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ChatSession"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ChatSession"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ChatSession"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ChatSession"> | Date | string | null
@@ -318,6 +390,9 @@ export type ChatSessionCreateInput = {
   providerSessionId?: string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: string | null
+  compactedSummary?: string | null
+  compactedTurnCount?: number
+  compactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -334,6 +409,9 @@ export type ChatSessionUncheckedCreateInput = {
   providerSessionId?: string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: string | null
+  compactedSummary?: string | null
+  compactedTurnCount?: number
+  compactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -348,6 +426,9 @@ export type ChatSessionUpdateInput = {
   providerSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  compactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -364,6 +445,9 @@ export type ChatSessionUncheckedUpdateInput = {
   providerSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  compactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -379,6 +463,9 @@ export type ChatSessionCreateManyInput = {
   providerSessionId?: string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: string | null
+  compactedSummary?: string | null
+  compactedTurnCount?: number
+  compactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -392,6 +479,9 @@ export type ChatSessionUpdateManyMutationInput = {
   providerSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  compactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -406,6 +496,9 @@ export type ChatSessionUncheckedUpdateManyInput = {
   providerSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  compactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -430,9 +523,16 @@ export type ChatSessionCountOrderByAggregateInput = {
   providerSessionId?: Prisma.SortOrder
   providerMetadata?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  compactedSummary?: Prisma.SortOrder
+  compactedTurnCount?: Prisma.SortOrder
+  compactedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+}
+
+export type ChatSessionAvgOrderByAggregateInput = {
+  compactedTurnCount?: Prisma.SortOrder
 }
 
 export type ChatSessionMaxOrderByAggregateInput = {
@@ -443,6 +543,9 @@ export type ChatSessionMaxOrderByAggregateInput = {
   providerKind?: Prisma.SortOrder
   providerSessionId?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  compactedSummary?: Prisma.SortOrder
+  compactedTurnCount?: Prisma.SortOrder
+  compactedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -456,9 +559,16 @@ export type ChatSessionMinOrderByAggregateInput = {
   providerKind?: Prisma.SortOrder
   providerSessionId?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  compactedSummary?: Prisma.SortOrder
+  compactedTurnCount?: Prisma.SortOrder
+  compactedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+}
+
+export type ChatSessionSumOrderByAggregateInput = {
+  compactedTurnCount?: Prisma.SortOrder
 }
 
 export type ChatSessionScalarRelationFilter = {
@@ -534,6 +644,9 @@ export type ChatSessionCreateWithoutOwnerUserInput = {
   providerSessionId?: string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: string | null
+  compactedSummary?: string | null
+  compactedTurnCount?: number
+  compactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -548,6 +661,9 @@ export type ChatSessionUncheckedCreateWithoutOwnerUserInput = {
   providerSessionId?: string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: string | null
+  compactedSummary?: string | null
+  compactedTurnCount?: number
+  compactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -592,6 +708,9 @@ export type ChatSessionScalarWhereInput = {
   providerSessionId?: Prisma.StringNullableFilter<"ChatSession"> | string | null
   providerMetadata?: Prisma.JsonNullableFilter<"ChatSession">
   title?: Prisma.StringNullableFilter<"ChatSession"> | string | null
+  compactedSummary?: Prisma.StringNullableFilter<"ChatSession"> | string | null
+  compactedTurnCount?: Prisma.IntFilter<"ChatSession"> | number
+  compactedAt?: Prisma.DateTimeNullableFilter<"ChatSession"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ChatSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ChatSession"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"ChatSession"> | Date | string | null
@@ -605,6 +724,9 @@ export type ChatSessionCreateWithoutMessagesInput = {
   providerSessionId?: string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: string | null
+  compactedSummary?: string | null
+  compactedTurnCount?: number
+  compactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -620,6 +742,9 @@ export type ChatSessionUncheckedCreateWithoutMessagesInput = {
   providerSessionId?: string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: string | null
+  compactedSummary?: string | null
+  compactedTurnCount?: number
+  compactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -649,6 +774,9 @@ export type ChatSessionUpdateWithoutMessagesInput = {
   providerSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  compactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -664,6 +792,9 @@ export type ChatSessionUncheckedUpdateWithoutMessagesInput = {
   providerSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  compactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -677,6 +808,9 @@ export type ChatSessionCreateManyOwnerUserInput = {
   providerSessionId?: string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: string | null
+  compactedSummary?: string | null
+  compactedTurnCount?: number
+  compactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -690,6 +824,9 @@ export type ChatSessionUpdateWithoutOwnerUserInput = {
   providerSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  compactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -704,6 +841,9 @@ export type ChatSessionUncheckedUpdateWithoutOwnerUserInput = {
   providerSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  compactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -718,6 +858,9 @@ export type ChatSessionUncheckedUpdateManyWithoutOwnerUserInput = {
   providerSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   providerMetadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compactedTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  compactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -763,6 +906,9 @@ export type ChatSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   providerSessionId?: boolean
   providerMetadata?: boolean
   title?: boolean
+  compactedSummary?: boolean
+  compactedTurnCount?: boolean
+  compactedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -780,6 +926,9 @@ export type ChatSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   providerSessionId?: boolean
   providerMetadata?: boolean
   title?: boolean
+  compactedSummary?: boolean
+  compactedTurnCount?: boolean
+  compactedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -795,6 +944,9 @@ export type ChatSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   providerSessionId?: boolean
   providerMetadata?: boolean
   title?: boolean
+  compactedSummary?: boolean
+  compactedTurnCount?: boolean
+  compactedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -810,12 +962,15 @@ export type ChatSessionSelectScalar = {
   providerSessionId?: boolean
   providerMetadata?: boolean
   title?: boolean
+  compactedSummary?: boolean
+  compactedTurnCount?: boolean
+  compactedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type ChatSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerUserId" | "channel" | "providerKey" | "providerKind" | "providerSessionId" | "providerMetadata" | "title" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["chatSession"]>
+export type ChatSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerUserId" | "channel" | "providerKey" | "providerKind" | "providerSessionId" | "providerMetadata" | "title" | "compactedSummary" | "compactedTurnCount" | "compactedAt" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["chatSession"]>
 export type ChatSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownerUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   messages?: boolean | Prisma.ChatSession$messagesArgs<ExtArgs>
@@ -847,6 +1002,21 @@ export type $ChatSessionPayload<ExtArgs extends runtime.Types.Extensions.Interna
      * before anything has been said.
      */
     title: string | null
+    /**
+     * P15-T13 rolling summary of the turns that have fallen out of the replay
+     * window, replayed as one SYSTEM message so a long conversation stops
+     * contradicting its own earlier answers. Null until a session is long
+     * enough to have dropped anything.
+     */
+    compactedSummary: string | null
+    /**
+     * How many of this session's oldest conversational turns the summary
+     * covers. A count rather than a message id or timestamp on purpose:
+     * messages are append-only and never deleted, so the count is stable, and
+     * integer arithmetic cannot be confused by two turns sharing a millisecond.
+     */
+    compactedTurnCount: number
+    compactedAt: Date | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -1283,6 +1453,9 @@ export interface ChatSessionFieldRefs {
   readonly providerSessionId: Prisma.FieldRef<"ChatSession", 'String'>
   readonly providerMetadata: Prisma.FieldRef<"ChatSession", 'Json'>
   readonly title: Prisma.FieldRef<"ChatSession", 'String'>
+  readonly compactedSummary: Prisma.FieldRef<"ChatSession", 'String'>
+  readonly compactedTurnCount: Prisma.FieldRef<"ChatSession", 'Int'>
+  readonly compactedAt: Prisma.FieldRef<"ChatSession", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ChatSession", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ChatSession", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"ChatSession", 'DateTime'>
