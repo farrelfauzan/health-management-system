@@ -36,6 +36,17 @@ describe('AiChatbotService', () => {
     countConversationTurns: jest.fn(),
     listConversationTurnRange: jest.fn(),
     updateSessionCompaction: jest.fn(),
+    findPreferencesForUser: jest.fn(),
+    upsertPreferencesForUser: jest.fn(),
+    deletePreferencesForUser: jest.fn(),
+  };
+
+  const EMPTY_PREFERENCES = {
+    preferredLanguage: null,
+    responseLength: null,
+    defaultSpecialtyId: null,
+    defaultSpecialtyName: null,
+    updatedAt: null,
   };
   const sendChatCompletionMock = jest.fn();
   const resolveActiveProviderMock = jest.fn();
@@ -142,6 +153,7 @@ describe('AiChatbotService', () => {
     buildContextMock.mockResolvedValue({});
     retrieveMock.mockResolvedValue({ promptBlock: '', citations: [] });
     buildReplaySummaryMock.mockReturnValue(null);
+    chatRepositoryMock.findPreferencesForUser.mockResolvedValue(EMPTY_PREFERENCES);
     compactIfNeededMock.mockImplementation((session: unknown) => Promise.resolve(session));
     evaluateInputMock.mockReturnValue({ outcome: 'ALLOW', safetyTags: [] });
     evaluateOutputMock.mockImplementation((content: string) => ({ content, safetyTags: [] }));
@@ -302,6 +314,55 @@ describe('AiChatbotService', () => {
       // legitimate reason to open a patient session about their own care.
       expect(findUserByIdMock).not.toHaveBeenCalled();
       expect(chatRepositoryMock.createSessionWithinQuota).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('preferences (P15-T14)', () => {
+    const STORED_PREFERENCES = {
+      preferredLanguage: 'ID' as const,
+      responseLength: 'SHORT' as const,
+      defaultSpecialtyId: 'specialty-1',
+      defaultSpecialtyName: 'Poli Umum',
+      updatedAt: new Date('2026-08-03T02:00:00.000Z'),
+    };
+
+    it('shows the subject the complete record, serialized', async () => {
+      chatRepositoryMock.findPreferencesForUser.mockResolvedValue(STORED_PREFERENCES);
+
+      const actual = await buildService().getOwnPreferences(inputActor);
+
+      expect(actual).toEqual({
+        preferredLanguage: 'ID',
+        responseLength: 'SHORT',
+        defaultSpecialtyId: 'specialty-1',
+        defaultSpecialtyName: 'Poli Umum',
+        updatedAt: '2026-08-03T02:00:00.000Z',
+      });
+    });
+
+    it('writes only for the asking subject, never for an id in the payload', async () => {
+      chatRepositoryMock.upsertPreferencesForUser.mockResolvedValue(STORED_PREFERENCES);
+
+      await buildService().updateOwnPreferences({ responseLength: 'SHORT' }, inputActor);
+
+      expect(chatRepositoryMock.upsertPreferencesForUser).toHaveBeenCalledWith('user-patient', {
+        responseLength: 'SHORT',
+      });
+    });
+
+    it('erases the row and returns the now-empty record', async () => {
+      chatRepositoryMock.findPreferencesForUser.mockResolvedValue(EMPTY_PREFERENCES);
+
+      const actual = await buildService().deleteOwnPreferences(inputActor);
+
+      expect(chatRepositoryMock.deletePreferencesForUser).toHaveBeenCalledWith('user-patient');
+      expect(actual).toEqual({
+        preferredLanguage: null,
+        responseLength: null,
+        defaultSpecialtyId: null,
+        defaultSpecialtyName: null,
+        updatedAt: null,
+      });
     });
   });
 
@@ -536,6 +597,7 @@ describe('AiChatbotService', () => {
       stubExchange();
       retrieveMock.mockResolvedValue({ promptBlock: '', citations: [] });
     buildReplaySummaryMock.mockReturnValue(null);
+    chatRepositoryMock.findPreferencesForUser.mockResolvedValue(EMPTY_PREFERENCES);
     compactIfNeededMock.mockImplementation((session: unknown) => Promise.resolve(session));
 
       const actualResult = await buildService().sendMessage(
@@ -618,6 +680,46 @@ describe('AiChatbotService', () => {
         20,
       );
       expect(buildReplaySummaryMock).toHaveBeenCalledWith(compactedSession);
+    });
+
+    it('applies the subject’s stored preferences as a system directive', async () => {
+      stubExchange();
+      chatRepositoryMock.findPreferencesForUser.mockResolvedValue({
+        ...EMPTY_PREFERENCES,
+        preferredLanguage: 'ID',
+        responseLength: 'SHORT',
+      });
+
+      await buildService().sendMessage('session-1', { content: 'Hello' }, inputActor);
+
+      const actualMessages = (
+        sendChatCompletionMock.mock.calls[0][1] as { messages: ChatCompletionMessage[] }
+      ).messages;
+      // Straight after the channel prompt: these modify how it is followed.
+      expect(actualMessages[1]?.role).toBe('system');
+      expect(actualMessages[1]?.content).toContain('Always answer in Bahasa Indonesia');
+      expect(actualMessages[1]?.content).toContain('Keep answers to a few sentences');
+    });
+
+    it('reads preferences every exchange rather than caching them on the session', async () => {
+      stubExchange();
+
+      await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
+
+      // A preference changed mid-conversation should take effect on the next
+      // message, not the next session.
+      expect(chatRepositoryMock.findPreferencesForUser).toHaveBeenCalledWith('user-patient');
+    });
+
+    it('adds no system message when the subject has no preferences', async () => {
+      stubExchange();
+
+      await buildService().sendMessage('session-1', { content: 'Halo' }, inputActor);
+
+      const actualMessages = (
+        sendChatCompletionMock.mock.calls[0][1] as { messages: ChatCompletionMessage[] }
+      ).messages;
+      expect(actualMessages.filter((message) => message.role === 'system')).toHaveLength(1);
     });
 
     it('answers an emergency from the template without calling the provider', async () => {

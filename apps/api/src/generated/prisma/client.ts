@@ -29,8 +29,8 @@ export * from "./enums"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more ChatUserPreferences
+ * const chatUserPreferences = await prisma.chatUserPreference.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -39,6 +39,27 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
+/**
+ * Model ChatUserPreference
+ * Which audience a chat session serves. The channel decides the system
+ * prompt, the context-enrichment policy, and the safety copy — a patient
+ * asking about symptoms and a doctor looking up a guideline are answered
+ * under different rules, so the value is fixed at session creation and never
+ * changes.
+ * P15-T14 cross-session chat preferences. **Migration-defined fields only,
+ * and that is the whole design.** A free-text store of model-written facts
+ * about users is the wrong implementation of "remember me": under UU PDP it
+ * is personal data with no stated purpose, no retention limit and no subject
+ * visibility, and if a doctor discussed a patient it would become a shadow
+ * EMR outside the retention regime governing the real one. Three typed
+ * columns cannot become that, whatever a model proposes.
+ * 
+ * Every field is about the **asking user only** and every field is
+ * nullable — "no preference" is the default and is distinct from any
+ * particular preference. The subject can read and erase the row through
+ * their own chat API; nothing else writes it, and no tool can.
+ */
+export type ChatUserPreference = Prisma.ChatUserPreferenceModel
 /**
  * Model User
  * 

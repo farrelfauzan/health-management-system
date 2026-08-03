@@ -15,7 +15,10 @@ import {
   ChatMessageRecord,
   ChatSafetyTagValue,
   ChatMessageView,
+  ChatPreferencesRecord,
+  ChatPreferencesView,
   ChatToolResultView,
+  UpdateChatPreferencesInput,
   AdminChatSessionListView,
   ChatSessionListView,
   ChatSessionRecord,
@@ -38,6 +41,7 @@ import { AI_CHAT_CONTEXT_PREAMBLE } from './ai-chat-context-preamble';
 import { AI_CHAT_DISCLAIMER } from './ai-chat-disclaimer';
 import { AI_CHAT_RETRIEVAL_PREAMBLE } from './ai-chat-retrieval-preamble';
 import { AI_CHAT_SYSTEM_PROMPTS } from './ai-chat-system-prompts';
+import { buildChatPreferenceDirectives } from './build-chat-preference-directives';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
 import { ChatCompactionService } from './chat-compaction.service';
 import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
@@ -156,6 +160,49 @@ export class AiChatbotService {
       throw this.safetyPolicyService.buildSessionQuotaError();
     }
     return this.toSessionView(session);
+  }
+
+  /**
+   * The subject's own view of what HMS remembers about them across sessions
+   * (P15-T14). Deliberately the **complete** record — there is no other store
+   * of cross-session facts, so a subject asking "what do you remember about
+   * me" gets a true and exhaustive answer rather than a curated one.
+   */
+  async getOwnPreferences(actor: CurrentUser): Promise<ChatPreferencesView> {
+    return this.toPreferencesView(await this.chatRepository.findPreferencesForUser(actor.sub));
+  }
+
+  /**
+   * Written by the subject and **only** by the subject. There is no tool and
+   * no code path by which a model's output reaches these columns: the model
+   * may suggest a preference in prose, and a human then sets it here. That is
+   * the difference between model-*proposed* and model-*written*, and it is
+   * what keeps this from becoming a store of things a model decided about
+   * someone.
+   */
+  async updateOwnPreferences(
+    input: UpdateChatPreferencesInput,
+    actor: CurrentUser,
+  ): Promise<ChatPreferencesView> {
+    return this.toPreferencesView(
+      await this.chatRepository.upsertPreferencesForUser(actor.sub, input),
+    );
+  }
+
+  /** Erasure by the subject: the row is gone, not flagged. */
+  async deleteOwnPreferences(actor: CurrentUser): Promise<ChatPreferencesView> {
+    await this.chatRepository.deletePreferencesForUser(actor.sub);
+    return this.toPreferencesView(await this.chatRepository.findPreferencesForUser(actor.sub));
+  }
+
+  private toPreferencesView(record: ChatPreferencesRecord): ChatPreferencesView {
+    return {
+      preferredLanguage: record.preferredLanguage,
+      responseLength: record.responseLength,
+      defaultSpecialtyId: record.defaultSpecialtyId,
+      defaultSpecialtyName: record.defaultSpecialtyName,
+      updatedAt: record.updatedAt?.toISOString() ?? null,
+    };
   }
 
   async listOwnSessions(
@@ -294,10 +341,14 @@ export class AiChatbotService {
       config,
       REPLAYED_HISTORY_TURN_LIMIT,
     );
-    const [history, contextPayload, retrieval] = await Promise.all([
+    const [history, contextPayload, retrieval, preferences] = await Promise.all([
       this.chatRepository.listRecentConversationTurns(session.id, REPLAYED_HISTORY_TURN_LIMIT),
       this.contextEnrichmentService.buildContext(session.channel, actor),
       this.chatRetrievalService.retrieve(session.channel, actor, input.content),
+      // P15-T14. Read every exchange rather than cached on the session: a
+      // preference changed mid-conversation should take effect on the next
+      // message, not the next session.
+      this.chatRepository.findPreferencesForUser(actor.sub),
     ]);
     // The context that is about to reach a third party is persisted as its
     // own SYSTEM turn before the call: the UU PDP audit question is "what
@@ -333,6 +384,7 @@ export class AiChatbotService {
         history,
         contextPayload,
         retrieval,
+        preferences,
       ),
       contextPayload,
       ...(toolDefinitions.length === 0 ? {} : { tools: toolDefinitions }),
@@ -530,11 +582,19 @@ export class AiChatbotService {
     history: ChatMessageRecord[],
     contextPayload: Record<string, unknown>,
     retrieval: ChatRetrievalResult,
+    preferences: ChatPreferencesRecord,
   ): ChatCompletionMessage[] {
     const hasContext = Object.keys(contextPayload).length > 0;
     const compactionSummary = this.chatCompactionService.buildReplaySummary(session);
+    const preferenceDirectives = buildChatPreferenceDirectives(preferences);
     return [
       { role: 'system', content: AI_CHAT_SYSTEM_PROMPTS[session.channel] },
+      // Straight after the channel prompt, because these modify how it is
+      // followed. Never later than the conversation: a preference is a
+      // standing setting, not a fact about this turn.
+      ...(preferenceDirectives === null
+        ? []
+        : [{ role: 'system' as const, content: preferenceDirectives }]),
       // Before context and passages: it is the oldest material in the
       // request and belongs where the conversation it summarises would have
       // been, so the model reads the whole thing in chronological order.

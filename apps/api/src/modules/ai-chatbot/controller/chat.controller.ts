@@ -6,6 +6,7 @@ import {
   HttpCode,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   UnauthorizedException,
@@ -22,6 +23,7 @@ import { CreateChatSessionDto } from '../dto/create-chat-session.dto';
 import { ListChatMessagesQueryDto } from '../dto/list-chat-messages-query.dto';
 import { ListChatSessionsQueryDto } from '../dto/list-chat-sessions-query.dto';
 import { SendChatMessageDto } from '../dto/send-chat-message.dto';
+import { UpdateChatPreferencesDto } from '../dto/update-chat-preferences.dto';
 import { AiChatbotService } from '../service/ai-chatbot.service';
 import { AiChatbotExceptionFilter } from './ai-chatbot-exception.filter';
 
@@ -53,6 +55,63 @@ export class ChatController {
     const view = await this.chatbotService.getAvailability();
 
     return { data: view };
+  }
+
+  /**
+   * P15-T14. The subject's own cross-session preferences — the complete
+   * record, because there is no other store of cross-session facts about a
+   * user and "what do you remember about me" deserves an exhaustive answer.
+   *
+   * Behind `chat.session.read:own` rather than a permission of its own: this
+   * is the same subject reading their own chat settings, and a separate grant
+   * would be one more thing to seed and forget.
+   */
+  @Get('preferences')
+  @Auth([{ action: 'read', subject: 'ChatSession' }])
+  @ApiEndpoint({
+    summary: 'Read your own chat preferences',
+    responseDescription:
+      'Everything HMS remembers about you across chat sessions: three typed, migration-defined fields and nothing else. A null field means no preference, which is distinct from any particular value. There is no free-text store and nothing a model wrote.',
+    responseExample: { data: AI_CHAT_EXAMPLES.preferences },
+  })
+  async getPreferences(@AuthUser() currentUser?: CurrentUser) {
+    const actor = this.assertAuthenticated(currentUser);
+
+    return { data: await this.chatbotService.getOwnPreferences(actor) };
+  }
+
+  @Patch('preferences')
+  @Auth([{ action: 'create', subject: 'ChatMessage' }])
+  @ApiEndpoint({
+    summary: 'Set your own chat preferences',
+    responseDescription:
+      'Only the fields you send are changed; send null to clear one. Preferences are set by you and never by the assistant — the model may suggest one in conversation, but nothing it writes reaches these columns.',
+    responseExample: { data: AI_CHAT_EXAMPLES.preferences },
+    requestType: UpdateChatPreferencesDto,
+    requestExample: AI_CHAT_EXAMPLES.updatePreferencesRequest,
+  })
+  async updatePreferences(
+    @Body() body: UpdateChatPreferencesDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+
+    return { data: await this.chatbotService.updateOwnPreferences(body, actor) };
+  }
+
+  @Delete('preferences')
+  @HttpCode(200)
+  @Auth([{ action: 'delete', subject: 'ChatSession' }])
+  @ApiEndpoint({
+    summary: 'Erase your own chat preferences',
+    responseDescription:
+      'Deletes the row outright rather than flagging it — a preference is a setting, not a record of what a patient was told, so erasure by its subject means gone. Returns the now-empty preferences.',
+    responseExample: { data: AI_CHAT_EXAMPLES.emptyPreferences },
+  })
+  async deletePreferences(@AuthUser() currentUser?: CurrentUser) {
+    const actor = this.assertAuthenticated(currentUser);
+
+    return { data: await this.chatbotService.deleteOwnPreferences(actor) };
   }
 
   @Post('sessions')

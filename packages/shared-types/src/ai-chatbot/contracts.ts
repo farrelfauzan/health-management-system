@@ -3,6 +3,10 @@ import type {
   ChatActorValue,
   ChatChannelValue,
 } from '#ai-chatbot/schemas';
+import type {
+  ChatPreferredLanguageValue,
+  ChatResponseLengthValue,
+} from '#ai-chatbot/schemas';
 import type { DocumentLanguageValue } from '#document-management/schemas';
 import type { RetrievalSourceTierValue } from '#document-management/types';
 
@@ -171,4 +175,21 @@ export type ChatExchangeMeta = {
   providerRequestId: string | null;
   toolResults?: ChatToolResultView[];
   citations?: ChatCitationView[];
+};
+
+/**
+ * The subject's own view of what HMS remembers about them across sessions
+ * (P15-T14). Deliberately the **complete** record: there is no other store of
+ * cross-session facts, so what is shown here is everything, and a subject
+ * asking "what do you remember about me" gets a true and exhaustive answer.
+ *
+ * `defaultSpecialtyName` accompanies the id so the screen can render it
+ * without a second lookup; it is derived, not stored.
+ */
+export type ChatPreferencesView = {
+  preferredLanguage: ChatPreferredLanguageValue | null;
+  responseLength: ChatResponseLengthValue | null;
+  defaultSpecialtyId: string | null;
+  defaultSpecialtyName: string | null;
+  updatedAt: string | null;
 };

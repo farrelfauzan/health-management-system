@@ -64,6 +64,24 @@ export const AI_CHAT_EXAMPLES = {
   sessionListMeta: {
     nextCursor: '7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a',
   },
+  preferences: {
+    preferredLanguage: 'ID',
+    responseLength: 'SHORT',
+    defaultSpecialtyId: '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d',
+    defaultSpecialtyName: 'Poli Umum',
+    updatedAt: '2026-08-03T02:00:00.000Z',
+  },
+  emptyPreferences: {
+    preferredLanguage: null,
+    responseLength: null,
+    defaultSpecialtyId: null,
+    defaultSpecialtyName: null,
+    updatedAt: null,
+  },
+  updatePreferencesRequest: {
+    preferredLanguage: 'ID',
+    responseLength: 'SHORT',
+  },
   deletedSession: {
     id: '7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a',
   },
