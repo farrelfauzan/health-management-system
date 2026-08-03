@@ -384,6 +384,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  ChatUserPreference: 'ChatUserPreference',
   User: 'User',
   RefreshToken: 'RefreshToken',
   MrnCounter: 'MrnCounter',
@@ -453,10 +454,84 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk"
+    modelProps: "chatUserPreference" | "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    ChatUserPreference: {
+      payload: Prisma.$ChatUserPreferencePayload<ExtArgs>
+      fields: Prisma.ChatUserPreferenceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ChatUserPreferenceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ChatUserPreferenceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload>
+        }
+        findFirst: {
+          args: Prisma.ChatUserPreferenceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ChatUserPreferenceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload>
+        }
+        findMany: {
+          args: Prisma.ChatUserPreferenceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload>[]
+        }
+        create: {
+          args: Prisma.ChatUserPreferenceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload>
+        }
+        createMany: {
+          args: Prisma.ChatUserPreferenceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ChatUserPreferenceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload>[]
+        }
+        delete: {
+          args: Prisma.ChatUserPreferenceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload>
+        }
+        update: {
+          args: Prisma.ChatUserPreferenceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload>
+        }
+        deleteMany: {
+          args: Prisma.ChatUserPreferenceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ChatUserPreferenceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ChatUserPreferenceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload>[]
+        }
+        upsert: {
+          args: Prisma.ChatUserPreferenceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatUserPreferencePayload>
+        }
+        aggregate: {
+          args: Prisma.ChatUserPreferenceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateChatUserPreference>
+        }
+        groupBy: {
+          args: Prisma.ChatUserPreferenceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChatUserPreferenceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ChatUserPreferenceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChatUserPreferenceCountAggregateOutputType> | number
+        }
+      }
+    }
     User: {
       payload: Prisma.$UserPayload<ExtArgs>
       fields: Prisma.UserFieldRefs
@@ -4492,6 +4567,18 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const ChatUserPreferenceScalarFieldEnum = {
+  userId: 'userId',
+  preferredLanguage: 'preferredLanguage',
+  responseLength: 'responseLength',
+  defaultSpecialtyId: 'defaultSpecialtyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChatUserPreferenceScalarFieldEnum = (typeof ChatUserPreferenceScalarFieldEnum)[keyof typeof ChatUserPreferenceScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -5467,9 +5554,30 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'Boolean'
+ * Reference to a field of type 'ChatPreferredLanguage'
  */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+export type EnumChatPreferredLanguageFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChatPreferredLanguage'>
+    
+
+
+/**
+ * Reference to a field of type 'ChatPreferredLanguage[]'
+ */
+export type ListEnumChatPreferredLanguageFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChatPreferredLanguage[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ChatResponseLength'
+ */
+export type EnumChatResponseLengthFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChatResponseLength'>
+    
+
+
+/**
+ * Reference to a field of type 'ChatResponseLength[]'
+ */
+export type ListEnumChatResponseLengthFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChatResponseLength[]'>
     
 
 
@@ -5484,6 +5592,13 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -6296,6 +6411,7 @@ export type PrismaClientOptions = ({
   queryPlanCacheMaxSize?: number
 }
 export type GlobalOmitConfig = {
+  chatUserPreference?: Prisma.ChatUserPreferenceOmit
   user?: Prisma.UserOmit
   refreshToken?: Prisma.RefreshTokenOmit
   mrnCounter?: Prisma.MrnCounterOmit

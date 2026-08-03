@@ -51,6 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  ChatUserPreference: 'ChatUserPreference',
   User: 'User',
   RefreshToken: 'RefreshToken',
   MrnCounter: 'MrnCounter',
@@ -121,6 +122,18 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const ChatUserPreferenceScalarFieldEnum = {
+  userId: 'userId',
+  preferredLanguage: 'preferredLanguage',
+  responseLength: 'responseLength',
+  defaultSpecialtyId: 'defaultSpecialtyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChatUserPreferenceScalarFieldEnum = (typeof ChatUserPreferenceScalarFieldEnum)[keyof typeof ChatUserPreferenceScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {

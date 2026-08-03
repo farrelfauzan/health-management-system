@@ -1143,10 +1143,6 @@ export type PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput = {
   deleteMany?: Prisma.PatientProfileScalarWhereInput | Prisma.PatientProfileScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type NullableEnumPatientSexFieldUpdateOperationsInput = {
   set?: $Enums.PatientSex | null
 }

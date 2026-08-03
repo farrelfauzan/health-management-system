@@ -425,6 +425,23 @@ export const AiProviderKind = {
 export type AiProviderKind = (typeof AiProviderKind)[keyof typeof AiProviderKind]
 
 
+export const ChatPreferredLanguage = {
+  ID: 'ID',
+  EN: 'EN'
+} as const
+
+export type ChatPreferredLanguage = (typeof ChatPreferredLanguage)[keyof typeof ChatPreferredLanguage]
+
+
+export const ChatResponseLength = {
+  SHORT: 'SHORT',
+  STANDARD: 'STANDARD',
+  DETAILED: 'DETAILED'
+} as const
+
+export type ChatResponseLength = (typeof ChatResponseLength)[keyof typeof ChatResponseLength]
+
+
 export const ChatChannel = {
   PATIENT: 'PATIENT',
   DOCTOR: 'DOCTOR',

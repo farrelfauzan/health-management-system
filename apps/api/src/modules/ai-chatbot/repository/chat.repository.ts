@@ -5,12 +5,14 @@ import {
   ChatCompactionResult,
   ChatMessagePage,
   ChatMessageRecord,
+  ChatPreferencesRecord,
   ChatSessionPage,
   ChatSessionRecord,
   CreateChatSessionData,
   ListAllChatSessionsParams,
   ListChatMessagesParams,
   ListOwnChatSessionsParams,
+  UpdateChatPreferencesData,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
@@ -284,6 +286,76 @@ export class ChatRepository {
       },
     });
     return this.toSessionRecord(row);
+  }
+
+  /**
+   * One subject's preferences (P15-T14). An absent row and an all-null row
+   * mean the same thing to every reader — "no preference recorded" — so this
+   * returns an all-null record rather than making callers branch on
+   * existence.
+   */
+  async findPreferencesForUser(userId: string): Promise<ChatPreferencesRecord> {
+    const row = await this.prismaService.chatUserPreference.findUnique({
+      where: { userId },
+      include: { defaultSpecialty: { select: { name: true } } },
+    });
+    if (row === null) {
+      return {
+        preferredLanguage: null,
+        responseLength: null,
+        defaultSpecialtyId: null,
+        defaultSpecialtyName: null,
+        updatedAt: null,
+      };
+    }
+    return {
+      preferredLanguage: row.preferredLanguage,
+      responseLength: row.responseLength,
+      defaultSpecialtyId: row.defaultSpecialtyId,
+      defaultSpecialtyName: row.defaultSpecialty?.name ?? null,
+      updatedAt: row.updatedAt,
+    };
+  }
+
+  /**
+   * Upserts the subject's own preferences. Only the fields the caller named
+   * are touched, so clearing one preference never disturbs the others —
+   * erasing everything is {@link deletePreferencesForUser}, and the two exist
+   * because they answer different asks.
+   */
+  async upsertPreferencesForUser(
+    userId: string,
+    data: UpdateChatPreferencesData,
+  ): Promise<ChatPreferencesRecord> {
+    await this.prismaService.chatUserPreference.upsert({
+      where: { userId },
+      create: {
+        userId,
+        preferredLanguage: data.preferredLanguage ?? null,
+        responseLength: data.responseLength ?? null,
+        defaultSpecialtyId: data.defaultSpecialtyId ?? null,
+      },
+      update: {
+        ...(data.preferredLanguage === undefined
+          ? {}
+          : { preferredLanguage: data.preferredLanguage }),
+        ...(data.responseLength === undefined ? {} : { responseLength: data.responseLength }),
+        ...(data.defaultSpecialtyId === undefined
+          ? {}
+          : { defaultSpecialtyId: data.defaultSpecialtyId }),
+      },
+    });
+    return this.findPreferencesForUser(userId);
+  }
+
+  /**
+   * Erasure by the subject. A hard delete rather than a soft one, and the
+   * only hard delete in this repository: a preference is not a record of what
+   * a patient was told, it is a setting, and "erasable by its subject" means
+   * the row is gone rather than flagged.
+   */
+  async deletePreferencesForUser(userId: string): Promise<void> {
+    await this.prismaService.chatUserPreference.deleteMany({ where: { userId } });
   }
 
   private async listSessions(params: ListAllChatSessionsParams): Promise<ChatSessionPage> {

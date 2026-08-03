@@ -82,6 +82,51 @@ export const chatSafetyTagSchema = z.enum(CHAT_SAFETY_TAGS);
 
 export type ChatSafetyTagValue = z.infer<typeof chatSafetyTagSchema>;
 
+
+/**
+ * P15-T14 cross-session preferences. **Migration-defined fields only** — a
+ * free-text store of model-written facts about users is the wrong
+ * implementation of "remember me" (§6.2), and three typed fields cannot
+ * become one whatever a model proposes.
+ *
+ * Every field is nullable and `null` means "no preference", which is a
+ * distinct state from any particular value: null language means "answer in
+ * whatever language this message was typed in", which is Phase 13 behaviour.
+ */
+export const CHAT_PREFERRED_LANGUAGES = ['ID', 'EN'] as const;
+
+export const chatPreferredLanguageSchema = z.enum(CHAT_PREFERRED_LANGUAGES);
+
+export type ChatPreferredLanguageValue = z.infer<typeof chatPreferredLanguageSchema>;
+
+export const CHAT_RESPONSE_LENGTHS = ['SHORT', 'STANDARD', 'DETAILED'] as const;
+
+export const chatResponseLengthSchema = z.enum(CHAT_RESPONSE_LENGTHS);
+
+export type ChatResponseLengthValue = z.infer<typeof chatResponseLengthSchema>;
+
+/**
+ * The update payload. Each field is optional (absent = leave alone) and
+ * explicitly nullable (null = clear this one), which is what lets a subject
+ * erase a single preference without erasing the rest — `DELETE` erases the
+ * whole row, and both paths exist because they answer different asks.
+ */
+export const updateChatPreferencesSchema = z
+  .object({
+    preferredLanguage: chatPreferredLanguageSchema.nullable().optional(),
+    responseLength: chatResponseLengthSchema.nullable().optional(),
+    defaultSpecialtyId: z.string().uuid().nullable().optional(),
+  })
+  .refine(
+    (value) =>
+      value.preferredLanguage !== undefined ||
+      value.responseLength !== undefined ||
+      value.defaultSpecialtyId !== undefined,
+    { message: 'At least one preference must be provided' },
+  );
+
+export type UpdateChatPreferencesInput = z.infer<typeof updateChatPreferencesSchema>;
+
 export const AI_PROVIDER_MODEL_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._/:-]{0,127}$/;
 
 export const AI_CHAT_MESSAGE_MAX_LENGTH = 4000;

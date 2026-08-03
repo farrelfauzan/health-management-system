@@ -217,12 +217,49 @@ describe('Chat flow integration', () => {
         messageRows.push(row);
         return Promise.resolve({ ...row });
       }),
-      findMany: jest.fn(({ where }: { where: Record<string, unknown> }) =>
-        Promise.resolve(
-          messageRows.filter((row) => row.sessionId === where.sessionId).map((row) => ({ ...row })),
-        ),
+      /**
+       * Honours the actor filter and the sort direction, because P15-T13's
+       * replay query depends on both: it asks for USER/ASSISTANT turns newest
+       * first and then reverses. A mock that ignored them would return SYSTEM
+       * rows in the wrong order and prove nothing about the fix.
+       */
+      findMany: jest.fn(
+        ({
+          where,
+          orderBy,
+          take,
+          skip,
+        }: {
+          where: Record<string, unknown>;
+          orderBy?: Array<Record<string, string>>;
+          take?: number;
+          skip?: number;
+        }) => {
+          const actorFilter = where.actor as { in?: string[] } | undefined;
+          let rows = messageRows.filter(
+            (row) =>
+              row.sessionId === where.sessionId &&
+              (actorFilter?.in === undefined || actorFilter.in.includes(String(row.actor))),
+          );
+          if (orderBy?.[0]?.createdAt === 'desc') {
+            rows = [...rows].reverse();
+          }
+          if (skip !== undefined) {
+            rows = rows.slice(skip);
+          }
+          if (take !== undefined) {
+            rows = rows.slice(0, take);
+          }
+          return Promise.resolve(rows.map((row) => ({ ...row })));
+        },
       ),
       count: jest.fn(() => Promise.resolve(0)),
+    },
+    /** P15-T14: no preference row exists in these cases. */
+    chatUserPreference: {
+      findUnique: jest.fn(() => Promise.resolve(null)),
+      upsert: jest.fn(() => Promise.resolve({})),
+      deleteMany: jest.fn(() => Promise.resolve({ count: 0 })),
     },
   };
 

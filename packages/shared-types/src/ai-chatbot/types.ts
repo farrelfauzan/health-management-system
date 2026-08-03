@@ -1,4 +1,10 @@
-import type { AiProviderKindValue, ChatActorValue, ChatChannelValue } from '#ai-chatbot/schemas';
+import type {
+  AiProviderKindValue,
+  ChatActorValue,
+  ChatChannelValue,
+  ChatPreferredLanguageValue,
+  ChatResponseLengthValue,
+} from '#ai-chatbot/schemas';
 
 /**
  * Repository projection of a stored provider configuration. Deliberately
@@ -224,4 +230,28 @@ export type ChatSessionPage = {
 export type ChatMessagePage = {
   items: ChatMessageRecord[];
   nextCursor: string | null;
+};
+
+/**
+ * Repository projection of one subject's preferences. Absent row and
+ * all-null row are the same thing to every reader, so the repository returns
+ * an all-null record rather than making callers branch on existence.
+ */
+export type ChatPreferencesRecord = {
+  preferredLanguage: ChatPreferredLanguageValue | null;
+  responseLength: ChatResponseLengthValue | null;
+  defaultSpecialtyId: string | null;
+  defaultSpecialtyName: string | null;
+  updatedAt: Date | null;
+};
+
+/**
+ * Preference update payload. `undefined` leaves a field alone, `null` clears
+ * it — the distinction is what lets a subject erase one preference without
+ * erasing the rest.
+ */
+export type UpdateChatPreferencesData = {
+  preferredLanguage?: ChatPreferredLanguageValue | null;
+  responseLength?: ChatResponseLengthValue | null;
+  defaultSpecialtyId?: string | null;
 };

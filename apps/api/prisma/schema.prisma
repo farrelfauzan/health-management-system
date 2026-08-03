@@ -379,6 +379,50 @@ enum AiProviderKind {
 /// asking about symptoms and a doctor looking up a guideline are answered
 /// under different rules, so the value is fixed at session creation and never
 /// changes.
+/// P15-T14 cross-session chat preferences. **Migration-defined fields only,
+/// and that is the whole design.** A free-text store of model-written facts
+/// about users is the wrong implementation of "remember me": under UU PDP it
+/// is personal data with no stated purpose, no retention limit and no subject
+/// visibility, and if a doctor discussed a patient it would become a shadow
+/// EMR outside the retention regime governing the real one. Three typed
+/// columns cannot become that, whatever a model proposes.
+///
+/// Every field is about the **asking user only** and every field is
+/// nullable — "no preference" is the default and is distinct from any
+/// particular preference. The subject can read and erase the row through
+/// their own chat API; nothing else writes it, and no tool can.
+model ChatUserPreference {
+  userId            String              @id @map("user_id") @db.Uuid
+  /// The language the assistant should answer in regardless of the language
+  /// a given message happened to be typed in. Null means "follow the
+  /// message", which is Phase 13's behaviour.
+  preferredLanguage ChatPreferredLanguage? @map("preferred_language")
+  responseLength    ChatResponseLength?    @map("response_length")
+  /// The specialty (poli) this user usually attends. Specialty is the
+  /// clinic's closest structural equivalent to a poli, so "default location"
+  /// is expressed as a real foreign key rather than as a typed-in string
+  /// that could hold anything.
+  defaultSpecialtyId String?            @map("default_specialty_id") @db.Uuid
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+
+  user             User       @relation("ChatUserPreferenceSubject", fields: [userId], references: [id], onDelete: Cascade)
+  defaultSpecialty Specialty? @relation("ChatUserPreferenceSpecialty", fields: [defaultSpecialtyId], references: [id], onDelete: SetNull)
+
+  @@map("chat_user_preferences")
+}
+
+enum ChatPreferredLanguage {
+  ID
+  EN
+}
+
+enum ChatResponseLength {
+  SHORT
+  STANDARD
+  DETAILED
+}
+
 enum ChatChannel {
   PATIENT
   DOCTOR
@@ -434,6 +478,7 @@ model User {
   auditLogs                AuditLog[]                   @relation("AuditLogActor")
   privacyNoticeRecords     PatientPrivacyNoticeRecord[] @relation("PrivacyNoticeActor")
   chatSessions             ChatSession[]                @relation("ChatSessionOwner")
+  chatPreference           ChatUserPreference?          @relation("ChatUserPreferenceSubject")
   chatMessages             ChatMessage[]                @relation("ChatMessageAuthor")
   createdAiProviderConfigs AiProviderConfig[]           @relation("AiProviderConfigCreatedBy")
   updatedAiProviderConfigs AiProviderConfig[]           @relation("AiProviderConfigUpdatedBy")
@@ -638,6 +683,7 @@ model Specialty {
   @@index([deletedAt])
   @@index([isActive])
   @@map("specialties")
+  chatUserPreferences ChatUserPreference[] @relation("ChatUserPreferenceSpecialty")
 }
 
 model DoctorProfile {
