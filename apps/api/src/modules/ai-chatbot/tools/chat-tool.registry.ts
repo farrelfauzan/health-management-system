@@ -20,6 +20,10 @@ import {
 const CHANNEL_ROLE_CODES: Record<ChatChannelValue, readonly string[]> = {
   PATIENT: ['PATIENT'],
   DOCTOR: ['DOCTOR'],
+  // SUPER_ADMIN is admitted alongside ADMIN because it is a superset role in
+  // seed.sql, and an operator who can do everything being unable to ask how
+  // long the queue is would read as a bug rather than as a control.
+  ADMIN: ['ADMIN', 'SUPER_ADMIN'],
 };
 
 /**

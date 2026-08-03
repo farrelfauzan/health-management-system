@@ -181,6 +181,30 @@ describe('ChatToolRegistrarService', () => {
     ).rejects.toThrow('Tool is not available to this session: list_my_patients');
   });
 
+  it('offers a doctor-channel session nothing to an ADMIN, whatever they hold', () => {
+    // §4.1.1 rule 1, and the reason ADMIN needed its own channel value: the
+    // channel a session claims is chosen by the client and is not evidence
+    // about who opened it. This actor holds the grant the stock tool
+    // requires and is still offered zero tools.
+    const { registry, registrar } = buildRegistrar('true');
+    registrar.onModuleInit();
+
+    const adminCaller: ChatToolCaller = {
+      user: { sub: 'admin-user-1', email: 'admin@clinic.local' },
+      roleCodes: ['ADMIN'],
+      permissions: [{ resource: 'Medication', action: 'read', scope: 'ANY' }],
+    };
+
+    expect(registry.listOfferedTools(adminCaller, 'DOCTOR')).toEqual([]);
+  });
+
+  it('offers no doctor tool to a DOCTOR who opened an admin-channel session', () => {
+    const { registry, registrar } = buildRegistrar('true');
+    registrar.onModuleInit();
+
+    expect(registry.listOfferedTools(buildCaller(mockDoctorPermissions), 'ADMIN')).toEqual([]);
+  });
+
   it('offers no tool at all in a patient-channel session', () => {
     // §2.2: the patient channel gets no tools at all, and the cheapest way to
     // guarantee a patient cannot ask about clinic stock — or about anyone's

@@ -80,6 +80,22 @@ describe('ChatRetrievalService', () => {
     });
   });
 
+  it('gives an admin session the staff-facing corpus plus their own documents', async () => {
+    // DOCTOR visibility is the store's name for "staff-only", not for
+    // "clinicians only" — an SOP is written for the people running the clinic.
+    await buildService().retrieve(
+      'ADMIN',
+      { sub: 'admin-1', email: 'admin@hms.local' },
+      'prosedur klaim BPJS',
+    );
+
+    expect(retrievePassagesMock).toHaveBeenCalledWith({
+      query: 'prosedur klaim BPJS',
+      channelVisibility: 'DOCTOR',
+      ownerUserId: 'admin-1',
+    });
+  });
+
   it('numbers passages once and uses the same number in the prompt and the citation', async () => {
     retrievePassagesMock.mockResolvedValue([
       buildPassage({ chunkId: 'chunk-1', documentId: 'document-1', documentTitle: 'SOP Pendaftaran' }),

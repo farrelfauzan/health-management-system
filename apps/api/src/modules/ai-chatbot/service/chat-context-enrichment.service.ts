@@ -76,6 +76,15 @@ export class ChatContextEnrichmentService {
     if (!this.isEnrichmentEnabled()) {
       return {};
     }
+    // The admin channel enriches with nothing (P15-T17). Every field §5.3
+    // allows is *about the asking user as a patient or a clinician* — their
+    // next appointment, their queue number, their assigned-patient count —
+    // and none of it means anything for someone running the clinic. An admin
+    // asks aggregate questions, and those are answered by tools that run on
+    // request, not by a payload sent before anyone asked for it.
+    if (channel === 'ADMIN') {
+      return {};
+    }
     const context =
       channel === 'PATIENT'
         ? await this.buildPatientContext(actor)

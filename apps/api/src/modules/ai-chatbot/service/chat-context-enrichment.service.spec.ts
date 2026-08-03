@@ -178,5 +178,18 @@ describe('ChatContextEnrichmentService', () => {
       expect(listAppointmentsMock).toHaveBeenCalledWith(expect.anything(), inputActor);
       expect(listRegistrationsMock).toHaveBeenCalledWith(expect.anything(), inputActor);
     });
+
+    it('enriches an admin session with nothing at all', async () => {
+      // Every field §5.3 allows is about the asking user as a patient or a
+      // clinician; none of it means anything for someone running the clinic.
+      // An admin's questions are aggregates, answered by tools on request
+      // rather than by a payload sent before anyone asked.
+      const actualContext = await buildService().buildContext('ADMIN', inputActor);
+
+      expect(actualContext).toEqual({});
+      expect(listPatientsMock).not.toHaveBeenCalled();
+      expect(listAppointmentsMock).not.toHaveBeenCalled();
+      expect(listRegistrationsMock).not.toHaveBeenCalled();
+    });
   });
 });

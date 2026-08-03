@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 
 import {
   ChatAvailabilityView,
+  ChatChannelValue,
   ChatExchangeMeta,
   ChatExchangeView,
   ChatMessageListView,
@@ -59,6 +60,14 @@ const REPLAYED_HISTORY_TURN_LIMIT = 20;
  * counter.
  */
 const MAX_TOOL_CALLS_PER_MESSAGE = 3;
+
+/**
+ * The roles that may open a `channel: 'ADMIN'` session (P15-T17). Kept beside
+ * the registry's own channel/role map rather than derived from it, because
+ * they answer different questions: this one gates *creating* the session, and
+ * that one gates *what it may look up*.
+ */
+const ADMIN_CHANNEL_ROLE_CODES: readonly string[] = ['ADMIN', 'SUPER_ADMIN'];
 
 /**
  * Orchestrates a chat exchange end to end: ownership check, provider
@@ -124,6 +133,7 @@ export class AiChatbotService {
     actor: CurrentUser,
   ): Promise<ChatSessionView> {
     this.assertChatEnabled();
+    await this.assertChannelAllowed(input.channel, actor);
     // Resolving at creation is what stamps the audit columns: the session
     // records which credential set answered it, and P13-T01 made those plain
     // columns precisely so they survive the config being rotated away.
@@ -534,6 +544,42 @@ export class AiChatbotService {
           content: message.content,
         })),
     ];
+  }
+
+  /**
+   * P15-T17. The admin channel is bound to the admin roles at session
+   * creation, not at message time: the channel decides the system prompt, the
+   * context policy and the tool catalogue, so a session opened in the wrong
+   * channel is a mis-shaped conversation from its first turn, and refusing it
+   * once beats filtering its consequences on every message.
+   *
+   * The other two channels are deliberately unbound. `chat.session.create:own`
+   * is what opens them, and a doctor with a personal patient record has a
+   * legitimate reason to open a patient session about their own care —
+   * restricting that would be a policy nobody asked for.
+   *
+   * Note this is **not** the tool gate. `ChatToolRegistry` re-derives the
+   * channel/role agreement for every offer and every dispatch (§4.1.1 rule 1),
+   * so an admin who somehow held a doctor-channel session would still be
+   * offered nothing. This check is what stops that session existing.
+   */
+  private async assertChannelAllowed(
+    channel: ChatChannelValue,
+    actor: CurrentUser,
+  ): Promise<void> {
+    if (channel !== 'ADMIN') {
+      return;
+    }
+    const actorRecord = await this.authRepository.findUserById(actor.sub);
+    if (!actorRecord) {
+      throw new UnauthorizedException('User not found');
+    }
+    const hasAdminRole = actorRecord.roles.some((userRole) =>
+      ADMIN_CHANNEL_ROLE_CODES.includes(userRole.role.code),
+    );
+    if (!hasAdminRole) {
+      throw new ForbiddenException('You are not allowed to open an admin chat session');
+    }
   }
 
   private async assertAnyScope(

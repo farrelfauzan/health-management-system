@@ -382,6 +382,7 @@ enum AiProviderKind {
 enum ChatChannel {
   PATIENT
   DOCTOR
+  ADMIN
 }
 
 /// Who produced a chat message. SYSTEM covers prompts and policy notices HMS

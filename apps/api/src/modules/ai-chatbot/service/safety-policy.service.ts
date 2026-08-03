@@ -250,6 +250,14 @@ export class SafetyPolicyService {
     if (channel === 'DOCTOR') {
       return 'Saya tidak dapat meresepkan atau menentukan dosis untuk pasien tertentu. Saya dapat menjelaskan informasi golongan obat secara umum.\n\nI cannot prescribe or set a dose for a specific patient. I can explain general drug-class information instead.';
     }
+    // The admin channel takes the patient channel's *treatment* — replace, not
+    // annotate, because an administrator holds no clinical responsibility to
+    // exercise — but not its copy. Telling an operations user to see a
+    // clinician about their own condition is nonsense that teaches them to
+    // skim the safety lines that do matter.
+    if (channel === 'ADMIN') {
+      return 'Saya asisten operasional dan tidak dapat menjawab pertanyaan klinis, diagnosis, atau dosis obat. Silakan arahkan pertanyaan ini ke dokter atau apoteker klinik.\n\nI am an operations assistant and cannot answer clinical, diagnostic, or dosing questions. Please direct this to a clinic doctor or pharmacist.';
+    }
     return kind === 'diagnosis'
       ? 'Maaf, saya tidak dapat memastikan penyakit atau memberikan diagnosis. Untuk mengetahui kondisi Anda, silakan periksakan diri ke tenaga kesehatan di klinik.\n\nSorry, I cannot determine an illness or provide a diagnosis. Please see a healthcare professional at the clinic to find out about your condition.'
       : 'Maaf, saya tidak dapat meresepkan obat atau menentukan dosis. Silakan konsultasikan dengan dokter atau apoteker di klinik.\n\nSorry, I cannot prescribe medication or set a dose. Please consult a doctor or pharmacist at the clinic.';

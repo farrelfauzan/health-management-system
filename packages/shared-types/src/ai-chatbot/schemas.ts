@@ -25,10 +25,17 @@ export type AiProviderKindValue = z.infer<typeof aiProviderKindSchema>;
 
 /**
  * Which audience a chat session serves. The channel decides the system
- * prompt, the context-enrichment policy, and the safety copy — mirrors the
- * Prisma `ChatChannel` enum.
+ * prompt, the context-enrichment policy, the tool catalogue and the safety
+ * copy — mirrors the Prisma `ChatChannel` enum.
+ *
+ * `ADMIN` is its own value rather than a reuse of `DOCTOR` (P15-T17): an
+ * admin runs the clinic and asks aggregate questions, and a prompt carrying
+ * clinical-safety framing written for a clinician is the wrong instrument for
+ * them. It is also what lets §4.1.1 rule 1 hold — the registry maps a channel
+ * to the role codes allowed to open it, so an admin who opens a doctor-channel
+ * session is offered zero tools rather than a reduced set.
  */
-export const CHAT_CHANNELS = ['PATIENT', 'DOCTOR'] as const;
+export const CHAT_CHANNELS = ['PATIENT', 'DOCTOR', 'ADMIN'] as const;
 
 export const chatChannelSchema = z.enum(CHAT_CHANNELS);
 

@@ -227,6 +227,35 @@ describe('SafetyPolicyService', () => {
     });
   });
 
+  describe('admin channel (P15-T17)', () => {
+    it('replaces a diagnosis assertion rather than annotating it', () => {
+      // The patient channel's *treatment* — an administrator holds no
+      // clinical responsibility to exercise, so the doctor-channel exemption
+      // of §2.3 does not apply to them.
+      const actualDecision = buildService().evaluateOutput('Anda menderita tifus.', 'ADMIN');
+
+      expect(actualDecision.safetyTags).toEqual(['diagnosis_attempt']);
+      expect(actualDecision.content).not.toContain('menderita tifus');
+    });
+
+    it('uses operational copy rather than telling an admin to see a clinician', () => {
+      const actualDecision = buildService().evaluateOutput('Anda menderita tifus.', 'ADMIN');
+
+      expect(actualDecision.content).toContain('asisten operasional');
+      expect(actualDecision.content).not.toContain('periksakan diri');
+    });
+
+    it('still replaces a prescription assertion', () => {
+      const actualDecision = buildService().evaluateOutput(
+        'Minum amoxicillin 500mg 3x sehari.',
+        'ADMIN',
+      );
+
+      expect(actualDecision.safetyTags).toContain('prescription_attempt');
+      expect(actualDecision.content).toContain('asisten operasional');
+    });
+  });
+
   describe('unsourced-claim guard (§4.7.2)', () => {
     const TOOLS_OFFERED_NONE_CALLED = { wasAnyToolOffered: true, requestedToolCount: 0 };
 
