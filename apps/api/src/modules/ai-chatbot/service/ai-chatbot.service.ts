@@ -35,9 +35,11 @@ import { ChatToolRegistry } from '../tools/chat-tool.registry';
 import { ChatToolCaller } from '../tools/chat-tool.types';
 import { AI_CHAT_CONTEXT_PREAMBLE } from './ai-chat-context-preamble';
 import { AI_CHAT_DISCLAIMER } from './ai-chat-disclaimer';
+import { AI_CHAT_RETRIEVAL_PREAMBLE } from './ai-chat-retrieval-preamble';
 import { AI_CHAT_SYSTEM_PROMPTS } from './ai-chat-system-prompts';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
+import { ChatRetrievalResult, ChatRetrievalService } from './chat-retrieval.service';
 import { SafetyPolicyService } from './safety-policy.service';
 import { ChatRepository } from '../repository/chat.repository';
 
@@ -60,10 +62,16 @@ const MAX_TOOL_CALLS_PER_MESSAGE = 3;
 
 /**
  * Orchestrates a chat exchange end to end: ownership check, provider
- * resolution, history replay, the upstream call, the Mode A tool loop
- * (P15-T04 — the model chooses lookups, HMS executes them as the asking
+ * resolution, history replay, retrieval, the upstream call, the Mode A tool
+ * loop (P15-T04 — the model chooses lookups, HMS executes them as the asking
  * user, and the results go to the client, never back to the provider), and
  * persistence of every turn with its audit trail.
+ *
+ * Retrieval (P15-T11) sits on the other side of that line from tools on
+ * purpose: it is **not** something the model asks for, it runs before the
+ * completion like context enrichment. That is what keeps a grounded answer
+ * to one round trip, and what lets the retrieved text be persisted before it
+ * is transmitted rather than after the model has already seen it.
  *
  * Two boundaries are deliberate. The **disclaimer is structural** — every
  * assistant turn persists `disclaimerShown: true` and the text rides in the
@@ -81,6 +89,7 @@ export class AiChatbotService {
     private readonly authRepository: AuthRepository,
     private readonly resolverService: AiProviderResolverService,
     private readonly contextEnrichmentService: ChatContextEnrichmentService,
+    private readonly chatRetrievalService: ChatRetrievalService,
     private readonly safetyPolicyService: SafetyPolicyService,
     private readonly chatToolRegistry: ChatToolRegistry,
     private readonly configService: ConfigService,
@@ -264,12 +273,13 @@ export class AiChatbotService {
         ? []
         : this.chatToolRegistry.listOfferedTools(toolCaller, session.channel);
     const toolDefinitions = buildChatToolWireDefinitions(offeredTools);
-    const [history, contextPayload] = await Promise.all([
+    const [history, contextPayload, retrieval] = await Promise.all([
       this.chatRepository.listMessagesForSession({
         sessionId: session.id,
         limit: REPLAYED_HISTORY_TURN_LIMIT,
       }),
       this.contextEnrichmentService.buildContext(session.channel, actor),
+      this.chatRetrievalService.retrieve(session.channel, actor, input.content),
     ]);
     // The context that is about to reach a third party is persisted as its
     // own SYSTEM turn before the call: the UU PDP audit question is "what
@@ -283,10 +293,24 @@ export class AiChatbotService {
         createdAt: exchangeStartedAt,
       });
     }
+    // Retrieved passages are recorded before transmission for the same
+    // reason and in its own turn, kept separate from the context payload
+    // because they answer a different audit question — this is clinic
+    // documents, not personal data, and the readiness review reads the two
+    // as different risk classes. Authorless like the context turn, so a
+    // grounded answer costs the user no extra quota slot.
+    if (retrieval.promptBlock !== '') {
+      await this.chatRepository.appendMessage({
+        sessionId: session.id,
+        actor: 'SYSTEM',
+        content: JSON.stringify(retrieval),
+        createdAt: exchangeStartedAt,
+      });
+    }
     const result = await adapter.sendChatCompletion(config, {
       sessionExternalId: session.providerSessionId,
       channel: session.channel,
-      messages: this.buildCompletionMessages(session, history.items, contextPayload),
+      messages: this.buildCompletionMessages(session, history.items, contextPayload, retrieval),
       contextPayload,
       ...(toolDefinitions.length === 0 ? {} : { tools: toolDefinitions }),
     });
@@ -334,6 +358,10 @@ export class AiChatbotService {
         model: result.model,
         providerRequestId: result.providerRequestId === '' ? null : result.providerRequestId,
         ...(toolResults.length === 0 ? {} : { toolResults }),
+        // Returned even when the reply cites none of them: the client renders
+        // what the answer was *allowed* to draw on, and an answer that ignored
+        // its sources is a fact worth being able to see.
+        ...(retrieval.citations.length === 0 ? {} : { citations: retrieval.citations }),
       },
     };
   }
@@ -450,19 +478,27 @@ export class AiChatbotService {
   }
 
   /**
-   * Builds the completion request: the channel's system prompt, then the
-   * freshly built context, then the replayed conversation oldest-first.
+   * Builds the completion request: the channel's system prompt, the freshly
+   * built context, the retrieved passages, then the replayed conversation
+   * oldest-first.
    *
    * Stored SYSTEM turns are **excluded from the replay** on purpose. They
-   * are the audit record of the context sent on earlier exchanges; replaying
-   * them would hand the provider several stale snapshots of the patient's
-   * appointments alongside the current one, which is both confusing to the
-   * model and more personal data than this turn needs.
+   * are the audit record of the context and passages sent on earlier
+   * exchanges; replaying them would hand the provider several stale snapshots
+   * of the patient's appointments alongside the current one, and every
+   * document the conversation has ever touched — both confusing to the model
+   * and more data than this turn needs.
+   *
+   * Retrieval comes **after** context and **before** the conversation: the
+   * passages are the more voluminous of the two system payloads, and putting
+   * them next to the user's question is what keeps the model reading them as
+   * material for *this* question rather than as standing background.
    */
   private buildCompletionMessages(
     session: ChatSessionRecord,
     history: ChatMessageRecord[],
     contextPayload: Record<string, unknown>,
+    retrieval: ChatRetrievalResult,
   ): ChatCompletionMessage[] {
     const hasContext = Object.keys(contextPayload).length > 0;
     return [
@@ -475,6 +511,14 @@ export class AiChatbotService {
             },
           ]
         : []),
+      ...(retrieval.promptBlock === ''
+        ? []
+        : [
+            {
+              role: 'system' as const,
+              content: `${AI_CHAT_RETRIEVAL_PREAMBLE}\n\n${retrieval.promptBlock}`,
+            },
+          ]),
       ...history
         .filter((message) => message.actor !== 'SYSTEM')
         .map((message) => ({

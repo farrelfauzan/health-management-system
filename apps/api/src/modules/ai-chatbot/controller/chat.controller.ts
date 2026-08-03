@@ -166,7 +166,7 @@ export class ChatController {
   @ApiEndpoint({
     summary: 'Send a message and receive the assistant’s reply',
     responseDescription:
-      'Returns both persisted turns. The mandatory disclaimer is in meta, never inside the assistant content — render the reply only together with it. Emergency messages are answered from a fixed escalation template without contacting any provider. Returns 422 when the safety guards refuse the message, 429 on the hourly limit, 502/504 when the provider fails, and 503 when chat is disabled or unconfigured.',
+      'Returns both persisted turns. The mandatory disclaimer is in meta, never inside the assistant content — render the reply only together with it. When retrieval is enabled and the clinic corpus had something to say, meta.citations names the documents the reply was allowed to draw on, numbered to match the [n] markers in the reply text; a marker with no matching citation was invented by the model and resolves to nothing. Emergency messages are answered from a fixed escalation template without contacting any provider. Returns 422 when the safety guards refuse the message, 429 on the hourly limit, 502/504 when the provider fails, and 503 when chat is disabled or unconfigured.',
     responseExample: {
       data: {
         userMessage: AI_CHAT_EXAMPLES.userMessage,

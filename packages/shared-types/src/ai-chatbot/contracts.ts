@@ -3,6 +3,8 @@ import type {
   ChatActorValue,
   ChatChannelValue,
 } from '#ai-chatbot/schemas';
+import type { DocumentLanguageValue } from '#document-management/schemas';
+import type { RetrievalSourceTierValue } from '#document-management/types';
 
 /**
  * Admin-facing view of one provider configuration. The API key is write-only:
@@ -131,11 +133,36 @@ export type ChatToolResultView = {
 };
 
 /**
+ * One document the reply was allowed to draw on (ai-chatbot-tools.md §5.5).
+ *
+ * `reference` is the number the passage carried in the retrieval SYSTEM turn
+ * and the number the assistant was instructed to cite as `[1]`, so a marker
+ * in the reply text resolves to a real document rather than to whatever the
+ * model decided to call it. The citation is built from the database row, not
+ * parsed out of the model's prose: a fabricated `[4]` in a reply with three
+ * citations resolves to nothing, which is the point.
+ *
+ * `language` is the *document's* language, which can differ from the answer's
+ * — the answer follows the question — so the reader knows a translation
+ * happened. `sourceTier` says whether the clinic published this or the asking
+ * user uploaded it.
+ */
+export type ChatCitationView = {
+  reference: number;
+  documentId: string;
+  title: string;
+  language: DocumentLanguageValue;
+  sourceTier: RetrievalSourceTierValue;
+};
+
+/**
  * Envelope `meta` for a send-message response. The disclaimer text rides
  * here (never inside the assistant content) so a client cannot render the
  * reply without it, and the provider identifiers give support a thread to
  * pull without exposing the transcript. `toolResults` is present only on an
- * exchange where the assistant requested lookups.
+ * exchange where the assistant requested lookups, and `citations` only on one
+ * where retrieval found something — an answer with neither came from the
+ * conversation alone.
  */
 export type ChatExchangeMeta = {
   disclaimer: string;
@@ -143,4 +170,5 @@ export type ChatExchangeMeta = {
   model: string;
   providerRequestId: string | null;
   toolResults?: ChatToolResultView[];
+  citations?: ChatCitationView[];
 };

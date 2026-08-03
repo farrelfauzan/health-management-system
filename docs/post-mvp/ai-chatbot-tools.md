@@ -355,6 +355,16 @@ So each retrieval mode covers the other's failure:
 
 Both are cheap in Postgres: a generated `tsvector` column with a GIN index, a `vector` column with an HNSW index, and a fusion step of roughly twenty lines. Building both at once is materially less work than building one, tuning it, and retrofitting the other — which means tuning ranking twice.
 
+**Amended at `P15-T11` — three details of the lexical half that the sketch above got wrong, recorded because each was found by a failing test rather than by reading.**
+
+*One `simple` configuration, not "both Indonesian and English configurations".* `search_vector` is a single column over a corpus where the two languages are mixed at document level, so there is no per-row configuration to choose; `simple` neither stems nor drops stopwords, which is exactly right for the terms this half exists to catch — `amoxicillin` stemmed under `indonesian` is not a word anyone searches for. Settled at `P15-T10` and unchanged here.
+
+*The query must OR its terms, not AND them.* Every query builder Postgres ships for untrusted text — `plainto_tsquery`, `phraseto_tsquery`, `websearch_to_tsquery` — combines terms with AND. That is right for a search box and wrong for a chat message: "do we have amoxicillin 500mg in stock?" would demand a passage containing *do*, *we*, *have*, *in* and *stock* as well, and under `simple` those are not dropped as stopwords. The lexical half would answer almost nothing on real questions and would do it silently. So the question is lexed with `to_tsvector` — which emits lexemes and never operators, and is therefore what makes arbitrary user text safe without a sanitiser of our own — and the lexemes are re-joined with `|`.
+
+*Postgres has an Indonesian stemmer and no Indonesian stopword list.* This is the detail that bites, and it bites only after the OR above. `to_tsvector('english', 'the')` is empty; `to_tsvector('indonesian', 'yang')` is not. Left unfiltered, `ts_rank` — which weighs term frequency and has no notion of a term being rare — ranks a passage that merely repeats *kami punya … kami punya* above the one naming the drug, and at corpus scale the drug passage stops being a candidate rather than merely ranking below it. HMS therefore carries a small curated list of Indonesian closed-class words, applied to the **query only**; the index still holds every word, so revising the list is a tuning change and never a re-ingest.
+
+**No HNSW index, deliberately** — settled at `P15-T10` and re-confirmed here. Prisma cannot express one and CI's `migrate diff --exit-code` drift gate fails on any object only the database knows about. A sequential scan over a clinic corpus is milliseconds and, unlike HNSW, **exact** — perfect recall is worth more than latency while `P15-T12` is establishing the recall baseline that later judgements are made against. Revisit with a measurement; the honest fix is to teach the drift gate about objects Prisma cannot model, not to skip indexing forever.
+
 ### 5.4 Embedding provider: local
 
 **Decided: local embeddings via Ollama.** Two independent reasons, either sufficient.

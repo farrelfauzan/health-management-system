@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AppointmentManagementModule } from '../appointment-management/appointment-management.module';
 import { AuthModule } from '../auth/auth.module';
+import { DocumentManagementModule } from '../document-management/document-management.module';
 import { PatientManagementModule } from '../patient-management/patient-management.module';
 import { PharmacyFlowModule } from '../pharmacy-flow/pharmacy-flow.module';
 import { RegistrationFlowModule } from '../registration-flow/registration-flow.module';
@@ -17,6 +18,7 @@ import { AiChatbotService } from './service/ai-chatbot.service';
 import { AiProviderConfigService } from './service/ai-provider-config.service';
 import { AiProviderResolverService } from './service/ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './service/chat-context-enrichment.service';
+import { ChatRetrievalService } from './service/chat-retrieval.service';
 import { SafetyPolicyService } from './service/safety-policy.service';
 import { ChatToolRegistrarService } from './tools/chat-tool-registrar.service';
 import { ChatToolRegistry } from './tools/chat-tool.registry';
@@ -44,7 +46,11 @@ import { CheckMedicationStockTool } from './tools/definitions/check-medication-s
  * the imported domain modules. Registration runs through
  * `ChatToolRegistrarService` behind `AI_CHAT_TOOLS_ENABLED`: with the flag
  * off the registry stays empty and the wire request is byte-identical to
- * Phase 13.
+ * Phase 13. P15-T11 adds `ChatRetrievalService` and with it
+ * `DocumentManagementModule` — the retrieval mechanics stay in the document
+ * store that owns the corpus, and this module only decides whether an
+ * exchange uses them (`AI_CHAT_RETRIEVAL_ENABLED`, default off) and how the
+ * passages and citations are shaped for the exchange.
  */
 @Module({
   imports: [
@@ -53,6 +59,7 @@ import { CheckMedicationStockTool } from './tools/definitions/check-medication-s
     AppointmentManagementModule,
     RegistrationFlowModule,
     PharmacyFlowModule,
+    DocumentManagementModule,
   ],
   controllers: [AiProviderController, ChatController],
   providers: [
@@ -65,6 +72,7 @@ import { CheckMedicationStockTool } from './tools/definitions/check-medication-s
     AiProviderResolverService,
     AiProviderConfigService,
     ChatContextEnrichmentService,
+    ChatRetrievalService,
     SafetyPolicyService,
     ChatToolRegistry,
     CheckMedicationStockTool,
