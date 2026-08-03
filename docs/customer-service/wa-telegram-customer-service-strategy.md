@@ -220,8 +220,8 @@ apps/api/src/modules/document-management/
 **Storage decisions:**
 
 - **S3-compatible via one adapter**: AWS S3 in cloud production, **MinIO** in Docker dev/self-hosted deployments — the AWS SDK v3 client covers both with a `forcePathStyle` + endpoint config switch. Add MinIO to `infra/docker/docker-compose.dev.yml`.
-- Bucket layout: `{env}/{facilityId|_}/{ownerType}/{documentId}/{filename}` — `ownerType ∈ CLINIC | PATIENT | DOCTOR | ADMIN`. v1 uses only `CLINIC` (FAQ corpus); the layout means patient lab results or doctor documents later are a policy addition, not a migration.
-- All downloads via **short-lived presigned URLs**; the bucket is private; the API never streams file bytes through itself except during ingestion.
+- Bucket layout: `documents/{ownerType}/{uuid}.{ext}` — `ownerType ∈ clinic | patient | doctor | admin`. The clinic corpus (`documents/clinic`) shipped with Phase 15 `P15-T10`; the layout means patient lab results or doctor documents later are a policy addition, not a migration. **This supersedes the earlier `{env}/{facilityId|_}/{ownerType}/{documentId}/{filename}` sketch, and the reasons are worth keeping:** a caller-supplied `{filename}` would put a human-chosen string — potentially a patient's name — into an object key, `{documentId}` is not known until after the upload it would have to name, `{env}` is already the bucket, and `{facilityId}` is a constant in a single-tenant deployment. The key that ships is opaque and server-minted, which is also the only shape the presigned-upload guard will sign: a key that arrived in a request body can never be handed write authority.
+- All downloads via **short-lived presigned URLs**; the bucket is private; the API never streams file bytes through itself except during ingestion. Uploads are presigned the same way and go browser-direct — the API sees only the object's metadata, read back at confirm time, because a client's claim about what it uploaded is not evidence of what is in the bucket.
 
 **Data model:**
 
@@ -380,8 +380,8 @@ At the clinic, the admin's existing check-in flow gains a worklist: channel-sour
 Phases assume ai-chatbot Phase 13 (provider layer) is merged. Branch naming `feature/pcs-t<task>-<short-desc>`.
 
 **Phase CS-1 — Document service + FAQ corpus (no channels yet)**
-1. `PCS-T01` `document-management` schema (Document, DocumentChunk + pgvector), MinIO in compose, S3 adapter, RBAC seed.
-2. `PCS-T02` Admin upload/list/delete API + ingestion pipeline (MD + PDF) + presigned downloads.
+1. `PCS-T01` `document-management` schema (Document, DocumentChunk + pgvector), MinIO in compose, S3 adapter, RBAC seed. **Landed with Phase 15 `P15-T10`** — schema, migration, and the four `document.*` grants — plus the S3 adapter, which shipped earlier with presigned upload/download. MinIO in compose is still outstanding and belongs with the ingestion slice, since that is the first thing that needs a local bucket.
+2. `PCS-T02` Admin upload/list/delete API + ingestion pipeline (MD + PDF) + presigned downloads. **Admin API landed with Phase 15 `P15-T10`**: presigned upload → confirm-from-stored-object → list/read/edit/retire over the clinic corpus, all behind `document.*:any` with the `ANY`-scope check in the service, because the guard cannot distinguish it from a doctor's `OWN` grant. The MD + PDF ingestion pipeline is what remains of both tasks.
 3. `PCS-T03` Admin dashboard page: FAQ corpus management (upload, ingest status, delete). Orval sync.
 4. `PCS-T04` `search_faq` retrieval service + eval harness (golden Q→chunk set from the clinic's real FAQ).
 

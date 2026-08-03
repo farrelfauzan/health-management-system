@@ -1,0 +1,14 @@
+-- One document row per stored object.
+--
+-- Confirming an upload is the only path that creates a document, and it names
+-- a storage key the client received from the sign step. A retried or replayed
+-- confirm would otherwise create a second row against the same file, and
+-- deleting "the" document would leave the other one still serving it — and,
+-- once the ingestion pipeline lands, still answering questions from chunks
+-- nobody can see a document for.
+--
+-- Keys are server-minted UUIDs and never reused, so this constrains nothing
+-- an honest flow does. The index covers soft-deleted rows deliberately: a
+-- retired document keeps its object until retention removes it, and a new row
+-- must not point at a file that is already spoken for.
+CREATE UNIQUE INDEX "documents_storage_key_key" ON "documents"("storage_key");

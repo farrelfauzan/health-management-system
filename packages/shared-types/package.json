@@ -57,7 +57,10 @@
     "#rbac/types": "./src/rbac/types.ts",
     "#ai-chatbot/schemas": "./src/ai-chatbot/schemas.ts",
     "#ai-chatbot/contracts": "./src/ai-chatbot/contracts.ts",
-    "#ai-chatbot/types": "./src/ai-chatbot/types.ts"
+    "#ai-chatbot/types": "./src/ai-chatbot/types.ts",
+    "#document-management/schemas": "./src/document-management/schemas.ts",
+    "#document-management/contracts": "./src/document-management/contracts.ts",
+    "#document-management/types": "./src/document-management/types.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

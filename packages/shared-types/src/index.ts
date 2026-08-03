@@ -66,3 +66,6 @@ export * from '#rbac/types';
 export * from '#ai-chatbot/schemas';
 export * from '#ai-chatbot/contracts';
 export * from '#ai-chatbot/types';
+export * from '#document-management/schemas';
+export * from '#document-management/contracts';
+export * from '#document-management/types';

@@ -21,6 +21,7 @@ import { BpjsAntreanWsModule } from './modules/bpjs-antrean-ws/bpjs-antrean-ws.m
 import { BpjsPcareIntegrationModule } from './modules/bpjs-pcare/bpjs-pcare-integration.module';
 import { DoctorManagementModule } from './modules/doctor-management/doctor-management.module';
 import { DoctorPatientModule } from './modules/doctor-patient/doctor-patient.module';
+import { DocumentManagementModule } from './modules/document-management/document-management.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { EmrModule } from './modules/emr/emr.module';
 import { HealthModule } from './modules/health/health.module';
@@ -69,6 +70,7 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     BpjsAntreanIntegrationModule,
     BpjsAntreanWsModule,
     AiChatbotModule,
+    DocumentManagementModule,
     AuthModule,
     RbacModule,
     HealthModule,
