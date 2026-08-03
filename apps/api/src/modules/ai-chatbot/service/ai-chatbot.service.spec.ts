@@ -225,6 +225,68 @@ describe('AiChatbotService', () => {
       expect((actualError as AiChatbotError).code).toBe('AI_NOT_CONFIGURED');
       expect(chatRepositoryMock.createSessionWithinQuota).not.toHaveBeenCalled();
     });
+
+    it('opens an admin session for an ADMIN role', async () => {
+      stubActiveProvider();
+      findUserByIdMock.mockResolvedValue({
+        id: 'user-patient',
+        roles: [{ role: { code: 'ADMIN', permissions: [] } }],
+      });
+      chatRepositoryMock.createSessionWithinQuota.mockResolvedValue(
+        buildSession({ channel: 'ADMIN' }),
+      );
+
+      const actualSession = await buildService().createSession({ channel: 'ADMIN' }, inputActor);
+
+      expect(actualSession.channel).toBe('ADMIN');
+    });
+
+    it('opens an admin session for SUPER_ADMIN too', async () => {
+      stubActiveProvider();
+      findUserByIdMock.mockResolvedValue({
+        id: 'user-patient',
+        roles: [{ role: { code: 'SUPER_ADMIN', permissions: [] } }],
+      });
+      chatRepositoryMock.createSessionWithinQuota.mockResolvedValue(
+        buildSession({ channel: 'ADMIN' }),
+      );
+
+      await expect(
+        buildService().createSession({ channel: 'ADMIN' }, inputActor),
+      ).resolves.toMatchObject({ channel: 'ADMIN' });
+    });
+
+    it('refuses an admin session to a doctor, before any provider is resolved', async () => {
+      stubActiveProvider();
+      findUserByIdMock.mockResolvedValue({
+        id: 'user-patient',
+        roles: [{ role: { code: 'DOCTOR', permissions: [] } }],
+      });
+
+      const actualError = await buildService()
+        .createSession({ channel: 'ADMIN' }, inputActor)
+        .catch((err: unknown) => err);
+
+      // Bound at creation rather than at message time: the channel decides
+      // the prompt, the context policy and the tool catalogue, so a session in
+      // the wrong channel is mis-shaped from its first turn.
+      expect(actualError).toBeInstanceOf(ForbiddenException);
+      expect(chatRepositoryMock.createSessionWithinQuota).not.toHaveBeenCalled();
+    });
+
+    it('leaves the other two channels unbound', async () => {
+      stubActiveProvider();
+      chatRepositoryMock.createSessionWithinQuota.mockResolvedValue(buildSession());
+
+      await buildService().createSession({ channel: 'PATIENT' }, inputActor);
+      await buildService().createSession({ channel: 'DOCTOR' }, inputActor);
+
+      // `chat.session.create:own` is what opens these, and the actor fetch is
+      // skipped entirely — a doctor with their own patient record has a
+      // legitimate reason to open a patient session about their own care.
+      expect(findUserByIdMock).not.toHaveBeenCalled();
+      expect(chatRepositoryMock.createSessionWithinQuota).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('sendMessage', () => {
@@ -570,7 +632,13 @@ describe('AiChatbotService', () => {
       const assistantAppend = findAppendedTurn('ASSISTANT') as Record<string, unknown>;
       expect(assistantAppend.content).toBe('Silakan periksa ke tenaga kesehatan.');
       expect(assistantAppend.safetyTags).toEqual(['diagnosis_attempt']);
-      expect(evaluateOutputMock).toHaveBeenCalledWith('Klinik buka pukul 08.00.', 'PATIENT');
+      // The third argument is P15-T19's sourcing context: with no catalogue
+      // on the wire the unsourced-claim guard has nothing to judge, which is
+      // every patient-channel exchange.
+      expect(evaluateOutputMock).toHaveBeenCalledWith('Klinik buka pukul 08.00.', 'PATIENT', {
+        wasAnyToolOffered: false,
+        requestedToolCount: 0,
+      });
     });
 
     it('reports another owner’s session as not found', async () => {

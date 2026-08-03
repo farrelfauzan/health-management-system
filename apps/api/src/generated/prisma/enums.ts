@@ -427,7 +427,8 @@ export type AiProviderKind = (typeof AiProviderKind)[keyof typeof AiProviderKind
 
 export const ChatChannel = {
   PATIENT: 'PATIENT',
-  DOCTOR: 'DOCTOR'
+  DOCTOR: 'DOCTOR',
+  ADMIN: 'ADMIN'
 } as const
 
 export type ChatChannel = (typeof ChatChannel)[keyof typeof ChatChannel]

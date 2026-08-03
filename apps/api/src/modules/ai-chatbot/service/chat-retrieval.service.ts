@@ -39,6 +39,10 @@ const CHANNEL_VISIBILITY: Readonly<
 > = {
   PATIENT: 'PATIENT',
   DOCTOR: 'DOCTOR',
+  // An admin reads the staff-facing corpus: SOPs and operational playbooks
+  // are written for the people running the clinic, and `DOCTOR` visibility is
+  // the store's name for "staff-only" rather than for "clinicians only".
+  ADMIN: 'DOCTOR',
 };
 
 /**
@@ -48,7 +52,7 @@ const CHANNEL_VISIBILITY: Readonly<
  * patient channel passes no owner and the personal half of the union
  * contributes nothing at all.
  */
-const CHANNELS_WITH_PERSONAL_CORPUS: ReadonlySet<ChatChannelValue> = new Set(['DOCTOR']);
+const CHANNELS_WITH_PERSONAL_CORPUS: ReadonlySet<ChatChannelValue> = new Set(['DOCTOR', 'ADMIN']);
 
 /**
  * The chatbot's half of `P15-T11`: decides **whether** an exchange retrieves,

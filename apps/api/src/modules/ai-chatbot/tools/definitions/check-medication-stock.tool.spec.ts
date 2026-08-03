@@ -50,8 +50,11 @@ describe('CheckMedicationStockTool', () => {
       action: 'read',
       scope: 'ANY',
     });
-    expect(actualTool.channels).toEqual(['DOCTOR']);
-    expect(actualTool.allowedRoleCodes).toEqual(['DOCTOR']);
+    // Shared with the admin channel at P15-T18: stock and expiry carry no
+    // personal data, so one tool answers both audiences rather than two
+    // projections that could drift apart.
+    expect(actualTool.channels).toEqual(['DOCTOR', 'ADMIN']);
+    expect(actualTool.allowedRoleCodes).toEqual(['DOCTOR', 'ADMIN', 'SUPER_ADMIN']);
   });
 
   it('searches by the requested name as the asking user, capped at the list page limit', async () => {

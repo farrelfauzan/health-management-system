@@ -1,0 +1,14 @@
+-- P15-T17: the ADMIN chat channel (ai-chatbot-tools.md §2.1.2).
+--
+-- Admins get their own channel rather than reusing DOCTOR, because the channel
+-- is what decides the system prompt, the context-enrichment policy, and the
+-- safety copy — and an admin prompt must not carry clinical-safety framing
+-- written for a clinician. Reusing DOCTOR is also exactly the confusion
+-- §4.1.1 rule 1 exists to prevent: the tool registry maps a channel to the
+-- role codes allowed to open it, so an admin in a doctor-channel session is
+-- offered zero tools by design.
+--
+-- Additive only. Postgres cannot drop an enum value, so this is one-way — but
+-- adding a value neither rewrites rows nor invalidates an index, and every
+-- existing session keeps its PATIENT or DOCTOR value untouched.
+ALTER TYPE "ChatChannel" ADD VALUE IF NOT EXISTS 'ADMIN';

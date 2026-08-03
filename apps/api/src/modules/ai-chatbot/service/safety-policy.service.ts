@@ -8,6 +8,7 @@ import { AI_CHAT_CLINICAL_JUDGEMENT_NOTICE } from './ai-chat-clinical-judgement-
 import { AI_CHAT_EMERGENCY_TEMPLATE } from './ai-chat-emergency-template';
 import { AI_CHAT_SAFETY_PATTERNS } from './ai-chat-safety-patterns';
 import { AI_CHAT_UNCERTAINTY_NOTICE } from './ai-chat-uncertainty-notice';
+import { AI_CHAT_UNSOURCED_CLAIM_REPLY } from './ai-chat-unsourced-claim-reply';
 import { sanitizeChatMarkup } from './sanitize-chat-markup';
 
 const DEFAULT_MESSAGES_PER_HOUR = 60;
@@ -57,6 +58,20 @@ export type ChatInputDecision =
 export type ChatOutputDecision = {
   content: string;
   safetyTags: ChatSafetyTagValue[];
+};
+
+/**
+ * What the exchange knows about whether this reply had a database behind it
+ * (ai-chatbot-tools.md §4.7.2). Both numbers are known **before** the tools
+ * run, because what matters is whether the model *asked* for a lookup, not
+ * whether the lookup then succeeded — a failed lookup renders as failed, but
+ * a reply composed without requesting one is asserting from training data.
+ */
+export type ChatOutputSourcing = {
+  /** Whether the catalogue sent to the provider was non-empty. */
+  wasAnyToolOffered: boolean;
+  /** How many lookups the model asked for in this reply. */
+  requestedToolCount: number;
 };
 
 /**
@@ -177,13 +192,25 @@ export class SafetyPolicyService {
    * (ai-chatbot-tools.md §2.3) — and the prescription guard still runs on an
    * annotated doctor reply, so a dose cannot ride along with a diagnosis.
    */
-  evaluateOutput(content: string, channel: ChatChannelValue): ChatOutputDecision {
+  evaluateOutput(
+    content: string,
+    channel: ChatChannelValue,
+    sourcing?: ChatOutputSourcing,
+  ): ChatOutputDecision {
     const safetyTags: ChatSafetyTagValue[] = [];
     const sanitized = sanitizeChatMarkup(content);
     if (sanitized.wasModified) {
       safetyTags.push('markup_stripped');
     }
     let resultContent = sanitized.content;
+    // Runs on the sanitized text and before the clinical guards, so a reply
+    // that is both unsourced and unsafe is refused for the reason that
+    // actually applies: there is no point appending an uncertainty notice to
+    // a figure that came from nowhere.
+    if (this.isUnsourcedClaim(resultContent, sourcing)) {
+      safetyTags.push('unsourced_claim');
+      return { content: AI_CHAT_UNSOURCED_CLAIM_REPLY, safetyTags };
+    }
     const hasDiagnosisAssertion = this.matchesAny(
       resultContent,
       AI_CHAT_SAFETY_PATTERNS.diagnosisAssertion,
@@ -223,9 +250,39 @@ export class SafetyPolicyService {
     if (channel === 'DOCTOR') {
       return 'Saya tidak dapat meresepkan atau menentukan dosis untuk pasien tertentu. Saya dapat menjelaskan informasi golongan obat secara umum.\n\nI cannot prescribe or set a dose for a specific patient. I can explain general drug-class information instead.';
     }
+    // The admin channel takes the patient channel's *treatment* — replace, not
+    // annotate, because an administrator holds no clinical responsibility to
+    // exercise — but not its copy. Telling an operations user to see a
+    // clinician about their own condition is nonsense that teaches them to
+    // skim the safety lines that do matter.
+    if (channel === 'ADMIN') {
+      return 'Saya asisten operasional dan tidak dapat menjawab pertanyaan klinis, diagnosis, atau dosis obat. Silakan arahkan pertanyaan ini ke dokter atau apoteker klinik.\n\nI am an operations assistant and cannot answer clinical, diagnostic, or dosing questions. Please direct this to a clinic doctor or pharmacist.';
+    }
     return kind === 'diagnosis'
       ? 'Maaf, saya tidak dapat memastikan penyakit atau memberikan diagnosis. Untuk mengetahui kondisi Anda, silakan periksakan diri ke tenaga kesehatan di klinik.\n\nSorry, I cannot determine an illness or provide a diagnosis. Please see a healthcare professional at the clinic to find out about your condition.'
       : 'Maaf, saya tidak dapat meresepkan obat atau menentukan dosis. Silakan konsultasikan dengan dokter atau apoteker di klinik.\n\nSorry, I cannot prescribe medication or set a dose. Please consult a doctor or pharmacist at the clinic.';
+  }
+
+  /**
+   * The §4.7.2 guard's precondition, kept separate from its patterns because
+   * the precondition is the part that makes it sound.
+   *
+   * It fires **only** when the catalogue was non-empty and the model asked
+   * for nothing from it. Absent that state the guard says nothing: with no
+   * tools offered there was no lookup to miss, and with a lookup requested
+   * the rendered result is the answer and the model's own text is only the
+   * announcement around it. Without a sourcing argument at all — the Phase 13
+   * call shape — the guard is inert, so a caller that has not been taught
+   * about tools cannot accidentally start refusing replies.
+   */
+  private isUnsourcedClaim(content: string, sourcing: ChatOutputSourcing | undefined): boolean {
+    if (sourcing === undefined || !sourcing.wasAnyToolOffered) {
+      return false;
+    }
+    if (sourcing.requestedToolCount > 0) {
+      return false;
+    }
+    return this.matchesAny(content, AI_CHAT_SAFETY_PATTERNS.unsourcedClaim);
   }
 
   private matchesAny(content: string, patterns: readonly RegExp[]): boolean {

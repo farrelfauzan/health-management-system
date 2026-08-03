@@ -25,10 +25,17 @@ export type AiProviderKindValue = z.infer<typeof aiProviderKindSchema>;
 
 /**
  * Which audience a chat session serves. The channel decides the system
- * prompt, the context-enrichment policy, and the safety copy — mirrors the
- * Prisma `ChatChannel` enum.
+ * prompt, the context-enrichment policy, the tool catalogue and the safety
+ * copy — mirrors the Prisma `ChatChannel` enum.
+ *
+ * `ADMIN` is its own value rather than a reuse of `DOCTOR` (P15-T17): an
+ * admin runs the clinic and asks aggregate questions, and a prompt carrying
+ * clinical-safety framing written for a clinician is the wrong instrument for
+ * them. It is also what lets §4.1.1 rule 1 hold — the registry maps a channel
+ * to the role codes allowed to open it, so an admin who opens a doctor-channel
+ * session is offered zero tools rather than a reduced set.
  */
-export const CHAT_CHANNELS = ['PATIENT', 'DOCTOR'] as const;
+export const CHAT_CHANNELS = ['PATIENT', 'DOCTOR', 'ADMIN'] as const;
 
 export const chatChannelSchema = z.enum(CHAT_CHANNELS);
 
@@ -59,6 +66,16 @@ export const CHAT_SAFETY_TAGS = [
   'impersonation_attempt',
   'markup_stripped',
   'uncertainty_appended',
+  /**
+   * The §4.7.2 guard: tools were offered, none was called, and the reply
+   * asserted a specific clinic fact anyway — so the number came from the
+   * model's training data rather than the database. Counted separately from
+   * the other tags because it measures a different thing: not a model saying
+   * something unsafe, but a model answering a question it should have looked
+   * up. Its rate is the missed-tool metric of `P15-T19` observed in
+   * production rather than in an eval.
+   */
+  'unsourced_claim',
 ] as const;
 
 export const chatSafetyTagSchema = z.enum(CHAT_SAFETY_TAGS);
@@ -187,6 +204,9 @@ export const AI_CHAT_TOOL_NAMES = [
   'list_my_appointments',
   'check_medication_stock',
   'check_medication_expiry',
+  'get_queue_board_summary',
+  'get_daily_cashier_report',
+  'get_appointment_load',
 ] as const;
 
 export const chatToolNameSchema = z.enum(AI_CHAT_TOOL_NAMES);
@@ -214,28 +234,53 @@ export type ChatToolResultSchema<TResult> = z.ZodType<TResult>;
  */
 export const AI_CHAT_TOOL_LIST_PAGE_LIMIT = 20;
 
+/**
+ * **Every argument field carries `.describe()`** (ai-chatbot-tools.md §4.7.1
+ * lever 3). These strings are not documentation for a reader — they serialize
+ * into the JSON Schema the model reads when choosing a tool, so they are
+ * classifier input in the same way the tool description is. The recurring
+ * theme across them is *removing* decisions from the model: a field it cannot
+ * malformat is half the error space gone, and Zod catches the rest at dispatch
+ * rather than in a repository.
+ */
 export const listMyPatientsToolArgsSchema = z.object({
-  page: z.number().int().min(1).default(1),
+  page: z
+    .number()
+    .int()
+    .min(1)
+    .default(1)
+    .describe('1-based page number. Omit for the first page; only send a value when the user explicitly asks for more results.'),
 });
 
 export type ListMyPatientsToolArgs = z.infer<typeof listMyPatientsToolArgsSchema>;
 
 export const getPatientSummaryToolArgsSchema = z.object({
-  patientId: z.string().uuid(),
+  patientId: z
+    .string()
+    .uuid()
+    .describe('The patient UUID exactly as returned by list_my_patients or list_my_appointments in an earlier turn. Never invent or guess one, and never pass a name here.'),
 });
 
 export type GetPatientSummaryToolArgs = z.infer<typeof getPatientSummaryToolArgsSchema>;
 
 /** An omitted date means "today" resolved in the clinic timezone, server-side. */
 export const listMyAppointmentsToolArgsSchema = z.object({
-  date: calendarDateSchema.optional(),
+  date: calendarDateSchema
+    .optional()
+    .describe('Calendar date as YYYY-MM-DD. OMIT THIS for today or when the user does not name a date — the server resolves today in the clinic timezone. Only send a value for an explicitly named other day.'),
 });
 
 export type ListMyAppointmentsToolArgs = z.infer<typeof listMyAppointmentsToolArgsSchema>;
 
 /** An omitted name means the whole inventory summary, capped like every list. */
 export const checkMedicationStockToolArgsSchema = z.object({
-  medicationName: z.string().trim().min(1).max(120).optional(),
+  medicationName: z
+    .string()
+    .trim()
+    .min(1)
+    .max(120)
+    .optional()
+    .describe('Medication name or fragment to search for, e.g. "amoxicillin" or "paracetamol". Omit to list everything that needs reordering. Do not include a dose or strength.'),
 });
 
 export type CheckMedicationStockToolArgs = z.infer<typeof checkMedicationStockToolArgsSchema>;
@@ -250,7 +295,8 @@ export const checkMedicationExpiryToolArgsSchema = z.object({
     .int()
     .min(1)
     .max(AI_CHAT_TOOL_EXPIRY_MAX_DAYS)
-    .default(AI_CHAT_TOOL_EXPIRY_DEFAULT_DAYS),
+    .default(AI_CHAT_TOOL_EXPIRY_DEFAULT_DAYS)
+    .describe('How many days ahead to look for expiring batches. Omit for the default 30-day window; already-expired batches are always included regardless of this value.'),
 });
 
 export type CheckMedicationExpiryToolArgs = z.infer<typeof checkMedicationExpiryToolArgsSchema>;
@@ -268,6 +314,248 @@ export type CheckMedicationExpiryToolArgs = z.infer<typeof checkMedicationExpiry
  * renders against**, not an internal projection, which is why they live here
  * beside the argument schemas and not inside the API.
  */
+/**
+ * The admin-channel argument schemas (P15-T18). All three take an optional
+ * calendar date and nothing else: the questions an administrator asks are
+ * about a day, the clinic has exactly one queue and one cash drawer, and an
+ * argument the model cannot get wrong is an argument that cannot be got
+ * wrong (§4.7.1 lever 3).
+ */
+export const getQueueBoardSummaryToolArgsSchema = z.object({
+  date: calendarDateSchema
+    .optional()
+    .describe('Calendar date as YYYY-MM-DD. OMIT for today — the server resolves today in the clinic timezone. Only send a value for an explicitly named other day.'),
+});
+
+export type GetQueueBoardSummaryToolArgs = z.infer<typeof getQueueBoardSummaryToolArgsSchema>;
+
+export const getDailyCashierReportToolArgsSchema = z.object({
+  date: calendarDateSchema
+    .optional()
+    .describe('Calendar date as YYYY-MM-DD. OMIT for today. Only settled payments are counted; unpaid and voided invoices never appear.'),
+});
+
+export type GetDailyCashierReportToolArgs = z.infer<typeof getDailyCashierReportToolArgsSchema>;
+
+export const AI_CHAT_TOOL_APPOINTMENT_LOAD_MAX_DAYS = 31;
+
+export const getAppointmentLoadToolArgsSchema = z.object({
+  from: calendarDateSchema
+    .optional()
+    .describe('First calendar date of the window, YYYY-MM-DD. OMIT for today.'),
+  to: calendarDateSchema
+    .optional()
+    .describe('Last calendar date of the window, YYYY-MM-DD, inclusive. OMIT for the same day as `from`. The window may not exceed 31 days.'),
+});
+
+export type GetAppointmentLoadToolArgs = z.infer<typeof getAppointmentLoadToolArgsSchema>;
+
+/**
+ * One poli's slice of the queue. `QueueBoardPoliSummary` carries the same
+ * shape and no patient data, so this is a copy rather than a reduction — but
+ * it is still written out field by field, because the value of an allowlist
+ * is that it does not track upstream changes.
+ */
+export const chatToolQueuePoliSummarySchema = z.object({
+  poliName: z.string(),
+  waiting: z.number(),
+  pending: z.number(),
+  checkedIn: z.number(),
+  completed: z.number(),
+  cancelled: z.number(),
+});
+
+export type ChatToolQueuePoliSummary = z.infer<typeof chatToolQueuePoliSummarySchema>;
+
+/**
+ * The queue board as an aggregate. **`entries[]` is the whole point of this
+ * schema**: `QueueBoardResponse` carries one row per queued patient, by name,
+ * and none of that is named here — §2.1.2's rule is that an admin tool
+ * returns counts and never a row about an identified patient, and this is
+ * where that rule is mechanical rather than remembered.
+ */
+export const getQueueBoardSummaryToolResultSchema = z.object({
+  date: z.string(),
+  waiting: z.number(),
+  pending: z.number(),
+  checkedIn: z.number(),
+  completed: z.number(),
+  cancelled: z.number(),
+  poli: z.array(chatToolQueuePoliSummarySchema),
+});
+
+export type GetQueueBoardSummaryToolResult = z.infer<typeof getQueueBoardSummaryToolResultSchema>;
+
+export const chatToolCashierMethodLineSchema = z.object({
+  method: z.string(),
+  count: z.number(),
+  totalAmount: z.number(),
+});
+
+export type ChatToolCashierMethodLine = z.infer<typeof chatToolCashierMethodLineSchema>;
+
+/**
+ * Revenue attributed to one practitioner. **This is the one admin-channel
+ * field that is not free, and it ships deliberately rather than by
+ * oversight** (§2.1.2): a doctor's name here is personal data about *staff* —
+ * `data pribadi umum` under UU PDP, about someone employed by the controller
+ * rather than a patient in their care. A different and much smaller risk than
+ * patient health data, but not zero, and in Mode B it still crosses a border.
+ * `doctorId` is dropped; the name is what makes the line readable and the id
+ * adds nothing the answer needs.
+ */
+export const chatToolCashierDoctorLineSchema = z.object({
+  doctorName: z.string(),
+  count: z.number(),
+  totalAmount: z.number(),
+});
+
+export type ChatToolCashierDoctorLine = z.infer<typeof chatToolCashierDoctorLineSchema>;
+
+export const getDailyCashierReportToolResultSchema = z.object({
+  date: z.string(),
+  paymentCount: z.number(),
+  totalAmount: z.number(),
+  byMethod: z.array(chatToolCashierMethodLineSchema),
+  byDoctor: z.array(chatToolCashierDoctorLineSchema),
+});
+
+export type GetDailyCashierReportToolResult = z.infer<
+  typeof getDailyCashierReportToolResultSchema
+>;
+
+/**
+ * One practice session's capacity and how much of it is taken. No attendee
+ * rows: `bookedCount` is the answer to "how busy", and the roster behind it
+ * is a REST screen with its own audit trail.
+ */
+export const chatToolAppointmentLoadSessionSchema = z.object({
+  sessionDate: z.string(),
+  startTime: z.string(),
+  endTime: z.string(),
+  doctorName: z.string(),
+  specialty: z.string().optional(),
+  status: z.string(),
+  maxPatients: z.number().nullable(),
+  bookedCount: z.number(),
+  remaining: z.number().nullable(),
+});
+
+export type ChatToolAppointmentLoadSession = z.infer<
+  typeof chatToolAppointmentLoadSessionSchema
+>;
+
+export const getAppointmentLoadToolResultSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  sessionCount: z.number(),
+  totalBooked: z.number(),
+  items: z.array(chatToolAppointmentLoadSessionSchema),
+});
+
+export type GetAppointmentLoadToolResult = z.infer<typeof getAppointmentLoadToolResultSchema>;
+
+/**
+ * One row of "who are my patients". Three fields, and the shortlist is the
+ * argument: a name answers the question, a status qualifies it, and
+ * `patientId` is the opaque handle `get_patient_summary` needs on the next
+ * turn — §4.3 calls that handle out specifically, because a list carrying no
+ * stable reference forces the model to identify a patient by name, which is
+ * both unreliable and a worse thing to put on the wire.
+ *
+ * `mrn`, `nikMasked`, `bpjsNumberMasked`, contact details and the assigned
+ * doctors' names are all present on the backing projection and none of them
+ * are named here, so none of them can appear. The masked identifiers are
+ * dropped **even though they are masked**: minimisation is about whether a
+ * field is needed to answer, not about how readable it is.
+ */
+export const chatToolPatientListItemSchema = z.object({
+  patientId: z.string(),
+  fullName: z.string(),
+  status: z.string(),
+});
+
+export type ChatToolPatientListItem = z.infer<typeof chatToolPatientListItemSchema>;
+
+export const listMyPatientsToolResultSchema = z.object({
+  page: z.number(),
+  /** Total assigned patients, which is not the length of `items`. */
+  matchCount: z.number(),
+  items: z.array(chatToolPatientListItemSchema),
+});
+
+export type ListMyPatientsToolResult = z.infer<typeof listMyPatientsToolResultSchema>;
+
+/**
+ * One allergy line of a patient summary. `substance` and `severity` are
+ * coded-ish clinical facts a clinician needs at a glance; the allergy's
+ * free-text `reaction` is deliberately **not** copied, because §8's line on
+ * free-text clinical narrative applies to it exactly as it applies to a SOAP
+ * note — a coded allergen is a different risk class from a sentence someone
+ * typed about a patient.
+ */
+export const chatToolPatientAllergySchema = z.object({
+  substance: z.string(),
+  severity: z.string(),
+});
+
+export type ChatToolPatientAllergy = z.infer<typeof chatToolPatientAllergySchema>;
+
+/**
+ * The summary of one assigned patient. Everything identifying is absent by
+ * construction rather than by removal: `mrn`, `nikMasked`,
+ * `bpjsNumberMasked`, `phoneNumber`, `address`, `email`, `placeOfBirth`, the
+ * guardian and emergency-contact fields, `ownerUserId` and
+ * `hasSatusehatPatientId` are all on `getPatientById`'s response and none is
+ * named here.
+ *
+ * `ageYears` rather than `dateOfBirth` is a deliberate downgrade: age answers
+ * every clinical question a date of birth would, and a birth date is a
+ * standard re-identification key where an age in years is not.
+ */
+export const getPatientSummaryToolResultSchema = z.object({
+  patientId: z.string(),
+  fullName: z.string(),
+  sex: z.string().optional(),
+  ageYears: z.number().optional(),
+  status: z.string(),
+  isActive: z.boolean(),
+  assignedDoctorCount: z.number(),
+  allergyCount: z.number(),
+  allergies: z.array(chatToolPatientAllergySchema),
+  lastVisitAt: z.string().optional(),
+});
+
+export type GetPatientSummaryToolResult = z.infer<typeof getPatientSummaryToolResultSchema>;
+
+/**
+ * One slot of the doctor's own day. The backing appointment projection also
+ * carries the patient's `mrn`, and free-text `reason` and `notes` — the two
+ * fields most likely to hold a clinical narrative someone typed in a hurry.
+ * None is named here, which is what makes "a future edit to the appointment
+ * projection cannot leak" a property of the allowlist rather than a promise.
+ */
+export const chatToolAppointmentItemSchema = z.object({
+  appointmentId: z.string(),
+  patientId: z.string(),
+  patientName: z.string(),
+  scheduledAt: z.string(),
+  status: z.string(),
+  type: z.string(),
+  queueNumber: z.number().optional(),
+});
+
+export type ChatToolAppointmentItem = z.infer<typeof chatToolAppointmentItemSchema>;
+
+export const listMyAppointmentsToolResultSchema = z.object({
+  /** The calendar date the list covers, resolved server-side. */
+  date: z.string(),
+  matchCount: z.number(),
+  items: z.array(chatToolAppointmentItemSchema),
+});
+
+export type ListMyAppointmentsToolResult = z.infer<typeof listMyAppointmentsToolResultSchema>;
+
 export const chatToolMedicationStockItemSchema = z.object({
   medicationCode: z.string(),
   medicationName: z.string(),

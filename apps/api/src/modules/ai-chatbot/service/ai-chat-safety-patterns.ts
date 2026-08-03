@@ -86,4 +86,51 @@ export const AI_CHAT_SAFETY_PATTERNS = {
     /\b(definitely|certainly|guaranteed|no\s+need\s+to\s+see\s+a\s+doctor)\b/i,
     /\b(100|seratus)\s*%\s*(pasti|yakin|sure|certain)\b/i,
   ],
+  /**
+   * The §4.7.2 unsourced-claim guard. Applied **only** when tools were
+   * offered and the model called none of them: in that state a specific
+   * clinic fact in the reply cannot have come from the database, because
+   * nothing was read from it.
+   *
+   * Picking the wrong tool is visible — the rendered card names it. Picking
+   * *none* and answering "you have 3 patients today" from training data is
+   * not, and it is indistinguishable from a real answer until someone checks.
+   * This closes that path, and catches §4.6's silent-router case for free,
+   * since a backend that ignores `tools` produces exactly this signature.
+   *
+   * **Counts and money only, and that is a deliberate narrowing of §4.7.2's
+   * "a count, a name, a date, a currency amount".**
+   *
+   * *Names* are not matched. A pattern for "asserts a patient's name" is a
+   * pattern for capitalised words, which would flag every mention of a drug,
+   * a guideline, or a hospital — the false-positive rate would make the guard
+   * unusable, and an unusable guard gets disabled.
+   *
+   * *Bare dates and times* are not matched either. "Klinik buka pukul 08.00"
+   * is a static fact the assistant is supposed to answer without a lookup, so
+   * matching clock times would replace correct answers with a refusal. Only
+   * a time asserted as *the reader's own schedule* is matched, because that
+   * is the claim that needs a database behind it.
+   *
+   * Like every pattern list here it is a control over the clear cases, not a
+   * proof. `safetyTags` is what says whether these patterns are adequate.
+   */
+  unsourcedClaim: [
+    // A count of a clinic entity, in either word order.
+    /\b\d+\s+(pasien|janji\s+temu|antrean|kunjungan|resep|kapsul|tablet|butir|item|dokumen|slot)\b/i,
+    /\b(pasien|janji\s+temu|antrean|kunjungan|resep)\s+(anda|kamu)\s+(ada|berjumlah|sebanyak|sekitar)\s+\d+/i,
+    /\byou\s+have\s+\d+\s+(patients?|appointments?|visits?|prescriptions?|items?)\b/i,
+    /\bthere\s+(are|is)\s+\d+\s+(patients?|appointments?|people\s+waiting|items?|units?)\b/i,
+    /\b\d+\s+(patients?|appointments?|visits?|prescriptions?)\s+(are\s+)?(scheduled|booked|assigned|waiting|today)\b/i,
+    // Stock levels, which are the pharmacy tools' whole answer.
+    /\b(stok|stock|sisa|tersisa|remaining)\b[^.]{0,40}\b\d+\b/i,
+    /\b\d+\b[^.]{0,20}\b(in\s+stock|tersedia\s+di\s+(apotek|gudang))\b/i,
+    // Currency, which can only come from the cashier report.
+    /\bRp\.?\s?\d/i,
+    /\b\d[\d.,]*\s*rupiah\b/i,
+    // The reader's own schedule asserted with a clock time — the one date
+    // shape that genuinely requires a lookup.
+    /\b(jadwal|janji\s+temu)\s+(anda|kamu)\b[^.]{0,60}\b(pukul|jam)\s*\d{1,2}[.:]\d{2}\b/i,
+    /\byour\s+(schedule|appointment)\b[^.]{0,60}\b(at\s*)?\d{1,2}[.:]\d{2}\b/i,
+  ],
 } as const;
