@@ -24,6 +24,9 @@ import { ChatToolRegistrarService } from './tools/chat-tool-registrar.service';
 import { ChatToolRegistry } from './tools/chat-tool.registry';
 import { CheckMedicationExpiryTool } from './tools/definitions/check-medication-expiry.tool';
 import { CheckMedicationStockTool } from './tools/definitions/check-medication-stock.tool';
+import { GetPatientSummaryTool } from './tools/definitions/get-patient-summary.tool';
+import { ListMyAppointmentsTool } from './tools/definitions/list-my-appointments.tool';
+import { ListMyPatientsTool } from './tools/definitions/list-my-patients.tool';
 
 /**
  * Feature module for the post-MVP AI chatbot (Phase 13). P13-T03 shipped the
@@ -77,6 +80,9 @@ import { CheckMedicationStockTool } from './tools/definitions/check-medication-s
     ChatToolRegistry,
     CheckMedicationStockTool,
     CheckMedicationExpiryTool,
+    ListMyPatientsTool,
+    GetPatientSummaryTool,
+    ListMyAppointmentsTool,
     ChatToolRegistrarService,
     AiChatbotService,
   ],

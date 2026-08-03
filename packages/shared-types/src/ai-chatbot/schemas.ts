@@ -268,6 +268,107 @@ export type CheckMedicationExpiryToolArgs = z.infer<typeof checkMedicationExpiry
  * renders against**, not an internal projection, which is why they live here
  * beside the argument schemas and not inside the API.
  */
+/**
+ * One row of "who are my patients". Three fields, and the shortlist is the
+ * argument: a name answers the question, a status qualifies it, and
+ * `patientId` is the opaque handle `get_patient_summary` needs on the next
+ * turn — §4.3 calls that handle out specifically, because a list carrying no
+ * stable reference forces the model to identify a patient by name, which is
+ * both unreliable and a worse thing to put on the wire.
+ *
+ * `mrn`, `nikMasked`, `bpjsNumberMasked`, contact details and the assigned
+ * doctors' names are all present on the backing projection and none of them
+ * are named here, so none of them can appear. The masked identifiers are
+ * dropped **even though they are masked**: minimisation is about whether a
+ * field is needed to answer, not about how readable it is.
+ */
+export const chatToolPatientListItemSchema = z.object({
+  patientId: z.string(),
+  fullName: z.string(),
+  status: z.string(),
+});
+
+export type ChatToolPatientListItem = z.infer<typeof chatToolPatientListItemSchema>;
+
+export const listMyPatientsToolResultSchema = z.object({
+  page: z.number(),
+  /** Total assigned patients, which is not the length of `items`. */
+  matchCount: z.number(),
+  items: z.array(chatToolPatientListItemSchema),
+});
+
+export type ListMyPatientsToolResult = z.infer<typeof listMyPatientsToolResultSchema>;
+
+/**
+ * One allergy line of a patient summary. `substance` and `severity` are
+ * coded-ish clinical facts a clinician needs at a glance; the allergy's
+ * free-text `reaction` is deliberately **not** copied, because §8's line on
+ * free-text clinical narrative applies to it exactly as it applies to a SOAP
+ * note — a coded allergen is a different risk class from a sentence someone
+ * typed about a patient.
+ */
+export const chatToolPatientAllergySchema = z.object({
+  substance: z.string(),
+  severity: z.string(),
+});
+
+export type ChatToolPatientAllergy = z.infer<typeof chatToolPatientAllergySchema>;
+
+/**
+ * The summary of one assigned patient. Everything identifying is absent by
+ * construction rather than by removal: `mrn`, `nikMasked`,
+ * `bpjsNumberMasked`, `phoneNumber`, `address`, `email`, `placeOfBirth`, the
+ * guardian and emergency-contact fields, `ownerUserId` and
+ * `hasSatusehatPatientId` are all on `getPatientById`'s response and none is
+ * named here.
+ *
+ * `ageYears` rather than `dateOfBirth` is a deliberate downgrade: age answers
+ * every clinical question a date of birth would, and a birth date is a
+ * standard re-identification key where an age in years is not.
+ */
+export const getPatientSummaryToolResultSchema = z.object({
+  patientId: z.string(),
+  fullName: z.string(),
+  sex: z.string().optional(),
+  ageYears: z.number().optional(),
+  status: z.string(),
+  isActive: z.boolean(),
+  assignedDoctorCount: z.number(),
+  allergyCount: z.number(),
+  allergies: z.array(chatToolPatientAllergySchema),
+  lastVisitAt: z.string().optional(),
+});
+
+export type GetPatientSummaryToolResult = z.infer<typeof getPatientSummaryToolResultSchema>;
+
+/**
+ * One slot of the doctor's own day. The backing appointment projection also
+ * carries the patient's `mrn`, and free-text `reason` and `notes` — the two
+ * fields most likely to hold a clinical narrative someone typed in a hurry.
+ * None is named here, which is what makes "a future edit to the appointment
+ * projection cannot leak" a property of the allowlist rather than a promise.
+ */
+export const chatToolAppointmentItemSchema = z.object({
+  appointmentId: z.string(),
+  patientId: z.string(),
+  patientName: z.string(),
+  scheduledAt: z.string(),
+  status: z.string(),
+  type: z.string(),
+  queueNumber: z.number().optional(),
+});
+
+export type ChatToolAppointmentItem = z.infer<typeof chatToolAppointmentItemSchema>;
+
+export const listMyAppointmentsToolResultSchema = z.object({
+  /** The calendar date the list covers, resolved server-side. */
+  date: z.string(),
+  matchCount: z.number(),
+  items: z.array(chatToolAppointmentItemSchema),
+});
+
+export type ListMyAppointmentsToolResult = z.infer<typeof listMyAppointmentsToolResultSchema>;
+
 export const chatToolMedicationStockItemSchema = z.object({
   medicationCode: z.string(),
   medicationName: z.string(),
