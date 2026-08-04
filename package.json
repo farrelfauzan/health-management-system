@@ -25,7 +25,7 @@
     "api:openapi:export": "pnpm --filter @hms/api openapi:export",
     "web:api:generate": "pnpm --filter @hms/web orval:generate",
     "api:contract:sync": "pnpm api:openapi:export && pnpm web:api:generate",
-    "docker:dev:up": "docker compose -f infra/docker/docker-compose.dev.yml up -d postgres",
+    "docker:dev:up": "docker compose -f infra/docker/docker-compose.dev.yml up -d postgres minio minio-init",
     "docker:dev:migrate": "docker compose -f infra/docker/docker-compose.dev.yml --profile tools run --rm migrate",
     "docker:dev:start": "docker compose -f infra/docker/docker-compose.dev.yml up -d api web",
     "docker:dev:down": "docker compose -f infra/docker/docker-compose.dev.yml down"

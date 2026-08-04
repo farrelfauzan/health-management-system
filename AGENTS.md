@@ -10,7 +10,7 @@ Treat this file as the implementation contract for all AI coding sessions. The r
 - Before editing `packages/ui`, read and follow `packages/ui/AGENTS.md`.
 - Reusable Codex workflows live in `.agents/skills/` and may be invoked explicitly with `$<skill-name>`.
 - Existing modules may use the current `controller/`, `service/`, `repository/`, and `dto/` layout. Preserve the local layout unless the task explicitly includes an architecture migration, while maintaining the dependency rules in this file.
-- Use pnpm from the repository root. Common verification commands are `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm integration:test`, and `pnpm build`; scope them with `pnpm --filter <package> <script>` when appropriate.
+- Use pnpm from the repository root. Common verification commands are `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm integration:test`, and `pnpm build`; scope them with `pnpm --filter <package> <script>` when appropriate. `pnpm integration:test` needs the dev backing services running — `pnpm docker:dev:up` starts Postgres and the MinIO object store the document-store suite uploads against.
 - Inspect `git status` before editing and preserve unrelated user changes. Do not commit, push, or create a pull request unless the user explicitly asks.
 
 ## 1) Product Scope (MVP First)
