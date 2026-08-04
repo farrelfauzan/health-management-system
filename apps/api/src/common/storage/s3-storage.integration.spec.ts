@@ -42,7 +42,10 @@ describeWhenConfigured('S3 storage integration', () => {
   const TEST_KEY_PREFIX = 'documents/clinic';
   const MARKDOWN_CONTENT_TYPE = 'text/markdown';
   const PROVIDER_TIMEOUT_MS = 30_000;
-  const region = process.env.S3_REGION ?? 'us-east-1';
+  // `||`, not `??`: CI expands an unconfigured secret to an empty string, and
+  // an empty region is a startup error in `resolveStorageConfig` rather than
+  // a request to use the default.
+  const region = process.env.S3_REGION || 'us-east-1';
   const endpoint = process.env.S3_ENDPOINT ?? '';
   const accessKeyId = process.env.S3_ACCESS_KEY_ID ?? '';
   const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY ?? '';

@@ -14,17 +14,12 @@ jobs:
     timeout-minutes: 30
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public
-      # Object storage for the document-store round-trip (PCS-T01), run
-      # against real AWS S3. The suite is opt-in on
-      # S3_INTEGRATION_TEST_BUCKET: where these secrets are not configured
-      # the variables resolve empty and the suite skips rather than fails, so
-      # forks and secret-less runs stay green. Point the secret at a
-      # dedicated test bucket with a short lifecycle rule — the suite writes
-      # and deletes its own fixtures, but a crashed run can leave objects.
-      S3_INTEGRATION_TEST_BUCKET: ${{ secrets.S3_INTEGRATION_TEST_BUCKET }}
-      S3_REGION: ${{ secrets.S3_INTEGRATION_TEST_REGION }}
-      S3_ACCESS_KEY_ID: ${{ secrets.S3_INTEGRATION_TEST_ACCESS_KEY_ID }}
-      S3_SECRET_ACCESS_KEY: ${{ secrets.S3_INTEGRATION_TEST_SECRET_ACCESS_KEY }}
+      # NOTE: storage configuration is deliberately NOT set here. An
+      # unconfigured secret expands to an empty string, and `S3_REGION=""` is
+      # a hard startup error in `resolveStorageConfig` (`??` falls back on
+      # undefined, not on empty), which takes down AppModule for every
+      # integration test rather than just the storage suite. It is scoped to
+      # the one step that needs it instead.
     services:
       postgres:
         # pgvector build of Postgres 16 (P15-T09): migrate deploy runs the
@@ -101,6 +96,21 @@ jobs:
       # additionally needs the S3 secrets above, and skips without them.
       - name: Integration tests
         run: pnpm integration:test
+        env:
+          # The storage round-trip is opt-in on S3_INTEGRATION_TEST_BUCKET:
+          # unset, that one suite skips and the rest of the integration run
+          # is unaffected. Point the secret at a dedicated test bucket with a
+          # short lifecycle rule — the suite deletes its own fixtures, but a
+          # crashed run can leave objects behind.
+          S3_INTEGRATION_TEST_BUCKET: ${{ secrets.S3_INTEGRATION_TEST_BUCKET }}
+          # Falls back rather than expanding empty: an empty region is a
+          # startup error, not a "use the default" signal.
+          S3_REGION: ${{ secrets.S3_INTEGRATION_TEST_REGION || 'us-east-1' }}
+          # Empty is safe here — `resolveStorageConfig` reads an empty pair as
+          # "no static credentials" and hands over to the default AWS
+          # provider chain.
+          S3_ACCESS_KEY_ID: ${{ secrets.S3_INTEGRATION_TEST_ACCESS_KEY_ID }}
+          S3_SECRET_ACCESS_KEY: ${{ secrets.S3_INTEGRATION_TEST_SECRET_ACCESS_KEY }}
 
       - name: Build
         run: pnpm build
