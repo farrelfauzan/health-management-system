@@ -1,10 +1,11 @@
-import type { ChatMessageView } from '@hms/shared-types';
+import type { ChatCitationView, ChatMessageView } from '@hms/shared-types';
 
 import type {
   AssistantConversationMessage,
   ConversationMessage,
 } from '#lib/ai-assistant/conversation-types';
 import { toAssistantMessageBody } from '#lib/ai-assistant/to-assistant-message-body';
+import { toReplayedCitations } from '#lib/ai-assistant/to-replayed-citations';
 import { toReplayedToolResult } from '#lib/ai-assistant/to-replayed-tool-result';
 
 type ToConversationMessagesInput = {
@@ -44,8 +45,20 @@ export function toConversationMessages({
 }: ToConversationMessagesInput): ConversationMessage[] {
   const messages: ConversationMessage[] = [];
   let lastAssistantMessage: AssistantConversationMessage | null = null;
+  // Citations attach *forward*, tool results attach *backward*, and that
+  // asymmetry is in the data rather than a choice made here: the retrieval
+  // turn is written before the provider call (it is the record of what was
+  // about to be sent), while a tool turn is written after the reply it
+  // explains. So a retrieval turn is held until the assistant turn it belongs
+  // to arrives.
+  let pendingCitations: ChatCitationView[] | null = null;
   for (const turn of turns) {
     if (turn.actor === 'SYSTEM') {
+      const citations = toReplayedCitations(turn.content);
+      if (citations !== null) {
+        pendingCitations = citations;
+        continue;
+      }
       attachReplayedToolResult(lastAssistantMessage, turn.content);
       continue;
     }
@@ -65,8 +78,12 @@ export function toConversationMessages({
       role: 'assistant',
       authorName: assistantName,
       sentAtLabel: formatSentAt(turn.createdAt),
-      body: toAssistantMessageBody(turn.content),
+      body: toAssistantMessageBody(turn.content, pendingCitations === null ? undefined : { citations: pendingCitations }),
     };
+    // Cleared on consumption rather than at the user turn: the user turn and
+    // the retrieval turn share a timestamp and are ordered by id, so the user
+    // turn is not a reliable boundary between exchanges.
+    pendingCitations = null;
     messages.push(lastAssistantMessage);
   }
   return messages;
