@@ -61,6 +61,30 @@ export const AI_CHAT_EXAMPLES = {
     model: 'deepseek-chat',
     providerRequestId: 'req_abc123',
     sessionTitle: 'Jam buka klinik hari Sabtu',
+    // Present only on a grounded exchange, and the reason it is in the example
+    // at all: the field ships on real responses, so a contract that omits it
+    // understates the endpoint and leaves generated clients unable to read it
+    // without hand-declaring the shape.
+    //
+    // Two entries rather than one because `sourceTier` is the load-bearing
+    // field — an answer can draw on the clinic corpus and on the asking user's
+    // own documents in the same breath, and those carry different authority.
+    citations: [
+      {
+        reference: 1,
+        documentId: '2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11',
+        title: 'SOP Jam Operasional Klinik',
+        language: 'ID',
+        sourceTier: 'CLINIC',
+      },
+      {
+        reference: 2,
+        documentId: '7b3f2c19-5d84-4a6e-9c02-1f8ad7c35e60',
+        title: 'Panduan Tatalaksana Hipertensi 2026',
+        language: 'ID',
+        sourceTier: 'PERSONAL',
+      },
+    ],
   },
   sessionListMeta: {
     nextCursor: '7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a',

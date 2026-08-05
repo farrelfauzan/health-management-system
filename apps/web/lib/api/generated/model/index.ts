@@ -165,6 +165,7 @@ export * from './chatControllerSendMessageV1200Data';
 export * from './chatControllerSendMessageV1200DataAssistantMessage';
 export * from './chatControllerSendMessageV1200DataUserMessage';
 export * from './chatControllerSendMessageV1200Meta';
+export * from './chatControllerSendMessageV1200MetaCitationsItem';
 export * from './checkBpjsEligibilityDto';
 export * from './confirmClinicDocumentUploadDto';
 export * from './confirmClinicDocumentUploadDtoLanguage';
