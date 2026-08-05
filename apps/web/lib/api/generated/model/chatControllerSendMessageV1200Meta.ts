@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { ChatControllerSendMessageV1200MetaCitationsItem } from './chatControllerSendMessageV1200MetaCitationsItem';
 
 export type ChatControllerSendMessageV1200Meta = {
   disclaimer: string;
@@ -12,4 +13,5 @@ export type ChatControllerSendMessageV1200Meta = {
   model: string;
   providerRequestId: string;
   sessionTitle: string;
+  citations: ChatControllerSendMessageV1200MetaCitationsItem[];
 };

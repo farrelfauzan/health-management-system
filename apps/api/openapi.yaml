@@ -14561,12 +14561,34 @@ paths:
                         type: string
                       sessionTitle:
                         type: string
+                      citations:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            reference:
+                              type: integer
+                            documentId:
+                              type: string
+                            title:
+                              type: string
+                            language:
+                              type: string
+                            sourceTier:
+                              type: string
+                          required:
+                            - reference
+                            - documentId
+                            - title
+                            - language
+                            - sourceTier
                     required:
                       - disclaimer
                       - providerKind
                       - model
                       - providerRequestId
                       - sessionTitle
+                      - citations
                 required:
                   - data
                   - meta
@@ -14598,6 +14620,17 @@ paths:
                     model: deepseek-chat
                     providerRequestId: req_abc123
                     sessionTitle: Jam buka klinik hari Sabtu
+                    citations:
+                      - reference: 1
+                        documentId: 2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11
+                        title: SOP Jam Operasional Klinik
+                        language: ID
+                        sourceTier: CLINIC
+                      - reference: 2
+                        documentId: 7b3f2c19-5d84-4a6e-9c02-1f8ad7c35e60
+                        title: Panduan Tatalaksana Hipertensi 2026
+                        language: ID
+                        sourceTier: PERSONAL
         "400":
           description: Request validation failed.
           content:
