@@ -234,6 +234,41 @@ describe('S3StorageService', () => {
     expect(mockS3ClientConfigs[1]?.requestChecksumCalculation).toBe('WHEN_REQUIRED');
   });
 
+  it('targets real AWS S3 when no endpoint is configured', () => {
+    // Production runs against AWS, dev against MinIO, and one adapter serves
+    // both. AWS mode is the *absence* of three settings, which is exactly the
+    // kind of default that breaks silently: an endpoint left in place sends
+    // production traffic to a dev host, `forcePathStyle` on gets a bucket
+    // AWS no longer path-addresses, and hardcoded credentials defeat the
+    // instance role. Pin all three.
+    new S3StorageService(buildConfigService());
+
+    expect(mockS3ClientConfigs[0]).not.toHaveProperty('endpoint');
+    expect(mockS3ClientConfigs[0]?.forcePathStyle).toBe(false);
+    expect(mockS3ClientConfigs[0]?.region).toBe('ap-southeast-1');
+    // Omitted, not empty: this is what hands credential resolution to the
+    // default provider chain (IAM instance/task role) rather than to nothing.
+    expect(mockS3ClientConfigs[0]).not.toHaveProperty('credentials');
+  });
+
+  it('targets an S3-compatible endpoint with path-style addressing when configured', () => {
+    new S3StorageService(
+      buildConfigService({
+        S3_ENDPOINT: 'http://127.0.0.1:9000',
+        S3_FORCE_PATH_STYLE: 'true',
+        S3_ACCESS_KEY_ID: 'devaccess',
+        S3_SECRET_ACCESS_KEY: 'devsecret',
+      }),
+    );
+
+    expect(mockS3ClientConfigs[0]?.endpoint).toBe('http://127.0.0.1:9000/');
+    expect(mockS3ClientConfigs[0]?.forcePathStyle).toBe(true);
+    expect(mockS3ClientConfigs[0]?.credentials).toEqual({
+      accessKeyId: 'devaccess',
+      secretAccessKey: 'devsecret',
+    });
+  });
+
   it('refuses to sign an upload for a key it did not generate', async () => {
     // A presigned PUT is direct write authority over exactly that key, so a
     // caller-supplied key would let a client overwrite another object.
