@@ -23,7 +23,12 @@ import { parseToolResult } from '#lib/ai-assistant/parse-tool-result';
  */
 export function toAssistantMessageBody(
   content: string,
-  meta?: Pick<ChatExchangeMeta, 'disclaimer' | 'toolResults' | 'citations'>,
+  // `Partial`, because the two callers carry different subsets: the live path
+  // passes the whole envelope meta, while replay reconstructs citations from a
+  // stored SYSTEM turn and deliberately has no disclaimer — the wording
+  // belongs to the server and inventing it would be the "render as if it had
+  // been shown" failure this module is written to avoid.
+  meta?: Partial<Pick<ChatExchangeMeta, 'disclaimer' | 'toolResults' | 'citations'>>,
 ): AssistantMessageBody {
   const toolResults = (meta?.toolResults ?? []).map((view) => parseToolResult(view));
   return {
