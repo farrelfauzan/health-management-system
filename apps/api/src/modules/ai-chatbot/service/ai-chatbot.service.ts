@@ -19,6 +19,7 @@ import {
   AdminChatSessionListView,
   ChatSessionListView,
   ChatSessionRecord,
+  ChatSessionTitleInput,
   ChatSessionView,
   CreateChatSessionInput,
   ListChatMessagesQueryInput,
@@ -29,18 +30,25 @@ import {
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { AiChatbotError } from '../ai-chatbot.error';
-import { ChatCompletionMessage, ChatToolCall } from '../infrastructure/ai-provider.types';
+import {
+  ChatCompletionMessage,
+  ChatToolCall,
+  ResolvedAiProviderConfig,
+} from '../infrastructure/ai-provider.types';
+import { AiChatProvider } from '../infrastructure/providers/ai-chat-provider.interface';
 import { buildChatToolCaller } from '../tools/build-chat-tool-caller';
 import { buildChatToolWireDefinitions } from '../tools/build-chat-tool-wire-definitions';
 import { ChatToolRegistry } from '../tools/chat-tool.registry';
 import { ChatToolCaller } from '../tools/chat-tool.types';
 import { AI_CHAT_CONTEXT_PREAMBLE } from './ai-chat-context-preamble';
-import { AI_CHAT_DISCLAIMER } from './ai-chat-disclaimer';
+import { AI_CHAT_DISCLAIMERS } from './ai-chat-disclaimer';
 import { AI_CHAT_RETRIEVAL_PREAMBLE } from './ai-chat-retrieval-preamble';
 import { AI_CHAT_SYSTEM_PROMPTS } from './ai-chat-system-prompts';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
 import { ChatRetrievalResult, ChatRetrievalService } from './chat-retrieval.service';
+import { ChatSessionTitleService } from './chat-session-title.service';
+import { normalizeChatSessionTitle } from './normalize-chat-session-title';
 import { SafetyPolicyService } from './safety-policy.service';
 import { ChatRepository } from '../repository/chat.repository';
 
@@ -101,6 +109,7 @@ export class AiChatbotService {
     private readonly chatRetrievalService: ChatRetrievalService,
     private readonly safetyPolicyService: SafetyPolicyService,
     private readonly chatToolRegistry: ChatToolRegistry,
+    private readonly chatSessionTitleService: ChatSessionTitleService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -365,23 +374,60 @@ export class AiChatbotService {
       toolCaller === null || result.toolCalls.length === 0
         ? []
         : await this.executeToolCalls(session, toolCaller, result.toolCalls, exchangeStartedAt);
+    // Named from the finished exchange, never from the question alone: the
+    // sidebar is supposed to say what a past consultation was about, and the
+    // first thing the user typed is already the first bubble of the thread.
+    const sessionTitle = await this.nameSessionIfUnnamed(session, adapter, config, {
+      channel: session.channel,
+      question: input.content,
+      answer: outputDecision.content,
+    });
     return {
       data: {
         userMessage: this.toMessageView(userMessage),
         assistantMessage: this.toMessageView(assistantMessage),
       },
       meta: {
-        disclaimer: AI_CHAT_DISCLAIMER,
+        disclaimer: AI_CHAT_DISCLAIMERS[session.channel],
         providerKind: result.providerKind,
         model: result.model,
         providerRequestId: result.providerRequestId === '' ? null : result.providerRequestId,
         ...(toolResults.length === 0 ? {} : { toolResults }),
+        ...(sessionTitle === null ? {} : { sessionTitle }),
         // Returned even when the reply cites none of them: the client renders
         // what the answer was *allowed* to draw on, and an answer that ignored
         // its sources is a fact worth being able to see.
         ...(retrieval.citations.length === 0 ? {} : { citations: retrieval.citations }),
       },
     };
+  }
+
+  /**
+   * Gives a nameless session its title, once, and returns it so the exchange
+   * that named it can tell the client to refresh its history list. Returns
+   * null for a session that already has a title — the first exchange names a
+   * conversation and later ones must not rewrite what the user has learned to
+   * recognize in the sidebar.
+   *
+   * A title that loses the race against a concurrent exchange is discarded
+   * rather than written: the repository's guarded update is what decides, so
+   * the client is never told about a title that is not in the database.
+   */
+  private async nameSessionIfUnnamed(
+    session: ChatSessionRecord,
+    adapter: AiChatProvider,
+    config: ResolvedAiProviderConfig,
+    input: ChatSessionTitleInput,
+  ): Promise<string | null> {
+    if (session.title !== null) {
+      return null;
+    }
+    const title = await this.chatSessionTitleService.generateTitle(adapter, config, input);
+    if (title === null) {
+      return null;
+    }
+    const wasStored = await this.chatRepository.setSessionTitleIfUnset(session.id, title);
+    return wasStored ? title : null;
   }
 
   /**
@@ -481,18 +527,38 @@ export class AiChatbotService {
       safetyTags: decision.safetyTags,
       createdAt: new Date(exchangeStartedAt.getTime() + 1),
     });
+    // No provider ran, so there is nothing to summarize the exchange with —
+    // the user's own words are the title. Worth doing anyway: an escalated
+    // first message is exactly the conversation someone comes back looking
+    // for, and it must not sit in the history list as "untitled".
+    const sessionTitle =
+      session.title === null ? await this.nameSessionLocally(session, userMessage.content) : null;
     return {
       data: {
         userMessage: this.toMessageView(userMessage),
         assistantMessage: this.toMessageView(assistantMessage),
       },
       meta: {
-        disclaimer: AI_CHAT_DISCLAIMER,
+        disclaimer: AI_CHAT_DISCLAIMERS[session.channel],
         providerKind: session.providerKind,
         model: '',
         providerRequestId: null,
+        ...(sessionTitle === null ? {} : { sessionTitle }),
       },
     };
+  }
+
+  /** The provider-free half of {@link nameSessionIfUnnamed}. */
+  private async nameSessionLocally(
+    session: ChatSessionRecord,
+    question: string,
+  ): Promise<string | null> {
+    const title = normalizeChatSessionTitle(question);
+    if (title === null) {
+      return null;
+    }
+    const wasStored = await this.chatRepository.setSessionTitleIfUnset(session.id, title);
+    return wasStored ? title : null;
   }
 
   /**

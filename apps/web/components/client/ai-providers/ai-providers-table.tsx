@@ -41,7 +41,10 @@ export function AiProvidersTable({
           <TableHead>{t('apiKey')}</TableHead>
           <TableHead>{t('status')}</TableHead>
           <TableHead>{t('lastTest')}</TableHead>
-          <TableHead className="text-right">{t('actions')}</TableHead>
+          {/* Start-aligned like every other header in this table: with the
+              actions rendered as compact icons, a right-aligned title sat far
+              from the buttons it names. */}
+          <TableHead className="text-start">{t('actions')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

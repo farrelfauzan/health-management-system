@@ -82,6 +82,20 @@ export class ChatRepository {
   }
 
   /**
+   * Names a session that has none. The `title: null` guard is in the WHERE
+   * clause rather than in the caller: the title is written after an exchange
+   * completes, and two exchanges finishing at once must not let the second
+   * one rename a conversation the first already named.
+   */
+  async setSessionTitleIfUnset(id: string, title: string): Promise<boolean> {
+    const result = await this.prismaService.chatSession.updateMany({
+      where: { id, title: null, deletedAt: null },
+      data: { title },
+    });
+    return result.count > 0;
+  }
+
+  /**
    * Soft delete scoped to the owner in one statement: the count tells the
    * caller whether the session existed and was theirs, without a separate
    * read racing the write.

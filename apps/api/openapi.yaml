@@ -14002,10 +14002,13 @@ paths:
                   title: Jam buka klinik
       responses:
         "201":
-          description: The created session, stamped with the provider configuration that
+          description: "The created session, stamped with the provider configuration that
             will answer it so the transcript stays auditable after a credential
-            rotation. Returns 503 when chat is disabled or no provider is
-            configured, and 429 once the daily session quota is reached.
+            rotation. Leave title unset unless the caller has a real one: a
+            session without a title is named from its first completed exchange,
+            and a title sent here is kept as-is and suppresses that. Returns 503
+            when chat is disabled or no provider is configured, and 429 once the
+            daily session quota is reached."
           content:
             application/json:
               schema:
@@ -14089,6 +14092,7 @@ paths:
             enum:
               - PATIENT
               - DOCTOR
+              - ADMIN
         - name: cursor
           required: false
           in: query
@@ -14193,6 +14197,7 @@ paths:
             enum:
               - PATIENT
               - DOCTOR
+              - ADMIN
         - name: cursor
           required: false
           in: query
@@ -14467,11 +14472,13 @@ paths:
             something to say, meta.citations names the documents the reply was
             allowed to draw on, numbered to match the [n] markers in the reply
             text; a marker with no matching citation was invented by the model
-            and resolves to nothing. Emergency messages are answered from a
-            fixed escalation template without contacting any provider. Returns
-            422 when the safety guards refuse the message, 429 on the hourly
-            limit, 502/504 when the provider fails, and 503 when chat is
-            disabled or unconfigured.
+            and resolves to nothing. A session with no title yet is named from
+            this exchange and the title comes back as meta.sessionTitle, present
+            only on that one exchange — refresh the session list when you see
+            it. Emergency messages are answered from a fixed escalation template
+            without contacting any provider. Returns 422 when the safety guards
+            refuse the message, 429 on the hourly limit, 502/504 when the
+            provider fails, and 503 when chat is disabled or unconfigured.
           content:
             application/json:
               schema:
@@ -14552,11 +14559,14 @@ paths:
                         type: string
                       providerRequestId:
                         type: string
+                      sessionTitle:
+                        type: string
                     required:
                       - disclaimer
                       - providerKind
                       - model
                       - providerRequestId
+                      - sessionTitle
                 required:
                   - data
                   - meta
@@ -14587,6 +14597,7 @@ paths:
                     providerKind: DEEPSEEK
                     model: deepseek-chat
                     providerRequestId: req_abc123
+                    sessionTitle: Jam buka klinik hari Sabtu
         "400":
           description: Request validation failed.
           content:
@@ -17702,6 +17713,7 @@ components:
           enum:
             - PATIENT
             - DOCTOR
+            - ADMIN
           default: PATIENT
         title:
           type: string

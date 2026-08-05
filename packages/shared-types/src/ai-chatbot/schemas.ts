@@ -289,14 +289,22 @@ export const AI_CHAT_TOOL_EXPIRY_MAX_DAYS = 365;
 
 export const AI_CHAT_TOOL_EXPIRY_DEFAULT_DAYS = 30;
 
+/**
+ * Zero is a real window, not a mistake: "obat apa yang sudah kadaluarsa"
+ * asks for no look-ahead at all, and a model expressing that as `days: 0` was
+ * being refused as invalid — the failure that made the question unanswerable
+ * in the admin channel. The REST route this tool is a door to
+ * (`expiryReportQuerySchema`) has always accepted 0; the tool being stricter
+ * than the route it opens was the bug.
+ */
 export const checkMedicationExpiryToolArgsSchema = z.object({
   days: z
     .number()
     .int()
-    .min(1)
+    .min(0)
     .max(AI_CHAT_TOOL_EXPIRY_MAX_DAYS)
     .default(AI_CHAT_TOOL_EXPIRY_DEFAULT_DAYS)
-    .describe('How many days ahead to look for expiring batches. Omit for the default 30-day window; already-expired batches are always included regardless of this value.'),
+    .describe('How many days ahead to look for expiring batches. Use 0 for "only what has already expired". Omit for the default 30-day window; already-expired batches are included whatever the value.'),
 });
 
 export type CheckMedicationExpiryToolArgs = z.infer<typeof checkMedicationExpiryToolArgsSchema>;

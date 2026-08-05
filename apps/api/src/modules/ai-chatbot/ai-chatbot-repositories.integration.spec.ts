@@ -247,6 +247,32 @@ describe('AI chatbot repositories against Postgres', () => {
       expect(actualOwnRead?.id).toBe(session.id);
     });
 
+    it('names a session once, and refuses to rename one that already has a title', async () => {
+      const ownerId = await createUser('owner');
+      const session = await chatRepository.createSession({
+        ownerUserId: ownerId,
+        channel: 'PATIENT',
+        providerKey: `${TEST_MARKER}-config-1`,
+        providerKind: 'DEEPSEEK',
+      });
+
+      const actualFirstWrite = await chatRepository.setSessionTitleIfUnset(
+        session.id,
+        'Jam buka klinik',
+      );
+      const actualSecondWrite = await chatRepository.setSessionTitleIfUnset(
+        session.id,
+        'Jadwal dokter',
+      );
+      const actualStored = await chatRepository.findSessionForOwner(session.id, ownerId);
+
+      // The guard lives in the WHERE clause, so two exchanges finishing at
+      // once cannot leave the second one's title on the row.
+      expect(actualFirstWrite).toBe(true);
+      expect(actualSecondWrite).toBe(false);
+      expect(actualStored?.title).toBe('Jam buka klinik');
+    });
+
     it("lists only the owner's live sessions, while the support view sees everyone", async () => {
       const ownerId = await createUser('owner');
       const otherId = await createUser('other');

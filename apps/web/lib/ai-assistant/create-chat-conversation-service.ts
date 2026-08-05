@@ -1,11 +1,10 @@
-import type { ChatExchangeMeta, ChatExchangeView } from '@hms/shared-types';
+import type { ChatChannelValue, ChatExchangeMeta, ChatExchangeView } from '@hms/shared-types';
 
 import {
   chatControllerCreateSessionV1,
   chatControllerSendMessageV1,
 } from '#lib/api/generated/ai-chatbot/ai-chatbot';
 import { parseApiSuccess } from '#lib/api/response';
-import { buildSessionTitle } from '#lib/ai-assistant/build-session-title';
 import type {
   AssistantMessageBody,
   ConversationReplyRequest,
@@ -17,7 +16,14 @@ import { toAssistantMessageBody } from '#lib/ai-assistant/to-assistant-message-b
 
 type CreateChatConversationServiceInput = {
   locale: AppLocale;
-  channel?: 'PATIENT' | 'DOCTOR';
+  /**
+   * Which conversation this is. The channel decides the system prompt, the
+   * context policy, and — the part that is felt — the tool catalogue: the
+   * server offers no lookup at all unless the caller's role matches the
+   * channel, so an administrator on a doctor-channel session is answered by a
+   * model that has nothing to look anything up with.
+   */
+  channel?: ChatChannelValue;
   /**
    * An existing session to continue. Supplied when the user reopens a past
    * consultation from the sidebar; omitted for a new one, which is created
@@ -31,6 +37,13 @@ type CreateChatConversationServiceInput = {
    * to mark the new session active in the sidebar.
    */
   onSessionCreated?: (sessionId: string) => void;
+  /**
+   * Fires when a reply carried the title the server gave the session. The
+   * title is written from the completed exchange, so it does not exist yet
+   * when {@link onSessionCreated} fires — without this the sidebar keeps
+   * showing the freshly created consultation as untitled until a reload.
+   */
+  onSessionTitled?: (title: string) => void;
 };
 
 type ChatSessionEnvelope = { id: string };
@@ -59,18 +72,15 @@ export function createChatConversationService({
   channel = 'PATIENT',
   sessionId,
   onSessionCreated,
+  onSessionTitled,
 }: CreateChatConversationServiceInput): ConversationService {
   const t = createAiAssistantTranslator(locale);
   let sessionIdPromise: Promise<string> | null =
     sessionId === undefined ? null : Promise.resolve(sessionId);
 
-  async function resolveSessionId(firstMessage: string): Promise<string> {
+  async function resolveSessionId(): Promise<string> {
     if (sessionIdPromise === null) {
-      const title = buildSessionTitle(firstMessage);
-      sessionIdPromise = chatControllerCreateSessionV1({
-        channel,
-        ...(title === undefined ? {} : { title }),
-      })
+      sessionIdPromise = chatControllerCreateSessionV1({ channel })
         .then((response) => {
           const createdId = parseApiSuccess<ChatSessionEnvelope>(
             response,
@@ -94,18 +104,19 @@ export function createChatConversationService({
       return { paragraphs: [t('greeting.intro', { displayName }), t('greeting.scope')] };
     },
     async requestReply(request: ConversationReplyRequest): Promise<AssistantMessageBody> {
-      // The first message doubles as the session's title; a session created
-      // without one shows up in the sidebar as "untitled" forever, because
-      // nothing else ever names it.
-      const resolvedSessionId = await resolveSessionId(request.text);
+      const resolvedSessionId = await resolveSessionId();
       const response = await chatControllerSendMessageV1(resolvedSessionId, {
         content: request.text,
       });
       const envelope = parseApiSuccess<ChatExchangeView>(response, t('errors.replyFailed'));
-      return toAssistantMessageBody(
-        envelope.data.assistantMessage.content,
-        envelope.meta as ChatExchangeMeta | undefined,
-      );
+      const meta = envelope.meta as ChatExchangeMeta | undefined;
+      // The server names a session from the exchange that finished it, and
+      // says so once, on that exchange — this is the only moment the sidebar
+      // has to be told the title exists.
+      if (meta?.sessionTitle !== undefined) {
+        onSessionTitled?.(meta.sessionTitle);
+      }
+      return toAssistantMessageBody(envelope.data.assistantMessage.content, meta);
     },
   };
 }

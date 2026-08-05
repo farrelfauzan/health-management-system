@@ -60,7 +60,7 @@ export class ChatController {
   @ApiEndpoint({
     summary: 'Start a chat session',
     responseDescription:
-      'The created session, stamped with the provider configuration that will answer it so the transcript stays auditable after a credential rotation. Returns 503 when chat is disabled or no provider is configured, and 429 once the daily session quota is reached.',
+      'The created session, stamped with the provider configuration that will answer it so the transcript stays auditable after a credential rotation. Leave title unset unless the caller has a real one: a session without a title is named from its first completed exchange, and a title sent here is kept as-is and suppresses that. Returns 503 when chat is disabled or no provider is configured, and 429 once the daily session quota is reached.',
     responseExample: { data: AI_CHAT_EXAMPLES.session, message: 'Chat session created' },
     requestType: CreateChatSessionDto,
     requestExample: AI_CHAT_EXAMPLES.createSessionRequest,
@@ -166,7 +166,7 @@ export class ChatController {
   @ApiEndpoint({
     summary: 'Send a message and receive the assistant’s reply',
     responseDescription:
-      'Returns both persisted turns. The mandatory disclaimer is in meta, never inside the assistant content — render the reply only together with it. When retrieval is enabled and the clinic corpus had something to say, meta.citations names the documents the reply was allowed to draw on, numbered to match the [n] markers in the reply text; a marker with no matching citation was invented by the model and resolves to nothing. Emergency messages are answered from a fixed escalation template without contacting any provider. Returns 422 when the safety guards refuse the message, 429 on the hourly limit, 502/504 when the provider fails, and 503 when chat is disabled or unconfigured.',
+      'Returns both persisted turns. The mandatory disclaimer is in meta, never inside the assistant content — render the reply only together with it. When retrieval is enabled and the clinic corpus had something to say, meta.citations names the documents the reply was allowed to draw on, numbered to match the [n] markers in the reply text; a marker with no matching citation was invented by the model and resolves to nothing. A session with no title yet is named from this exchange and the title comes back as meta.sessionTitle, present only on that one exchange — refresh the session list when you see it. Emergency messages are answered from a fixed escalation template without contacting any provider. Returns 422 when the safety guards refuse the message, 429 on the hourly limit, 502/504 when the provider fails, and 503 when chat is disabled or unconfigured.',
     responseExample: {
       data: {
         userMessage: AI_CHAT_EXAMPLES.userMessage,

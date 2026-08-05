@@ -84,6 +84,104 @@ describe('ToolResultCard', () => {
 
     expect(screen.getByText('Pencarian ini tidak dapat dijalankan.')).toBeInTheDocument();
     expect(screen.getByText('Kode: AI_TOOL_UNAVAILABLE')).toBeInTheDocument();
+    // Headed by the lookup's readable name, never by its wire name.
+    expect(screen.getByText('Obat kedaluwarsa')).toBeInTheDocument();
+    expect(screen.queryByText('check_medication_expiry')).not.toBeInTheDocument();
+  });
+
+  it('answers the queue question in words before the per-poli table', () => {
+    renderCard({
+      kind: 'QUEUE',
+      result: {
+        date: '2026-08-04',
+        waiting: 7,
+        pending: 2,
+        checkedIn: 3,
+        completed: 11,
+        cancelled: 1,
+        poli: [
+          {
+            poliName: 'Poli Umum',
+            waiting: 5,
+            pending: 1,
+            checkedIn: 2,
+            completed: 8,
+            cancelled: 1,
+          },
+        ],
+      },
+    });
+
+    // Mode A forbids the reply text from stating the numbers, so if the card
+    // does not say it in words, nothing does.
+    expect(
+      screen.getByText('12 pasien dalam antrean (7 menunggu) · 11 selesai'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Tanggal 2026-08-04')).toBeInTheDocument();
+    expect(screen.getByText('Poli Umum')).toBeInTheDocument();
+  });
+
+  it('renders the cashier report as money, split by method and doctor', () => {
+    renderCard({
+      kind: 'CASHIER',
+      result: {
+        date: '2026-08-04',
+        paymentCount: 12,
+        totalAmount: 1_850_000,
+        byMethod: [{ method: 'CASH', count: 9, totalAmount: 1_250_000 }],
+        byDoctor: [{ doctorName: 'dr. Siti', count: 6, totalAmount: 900_000 }],
+      },
+    });
+
+    expect(screen.getByText('Kas harian')).toBeInTheDocument();
+    expect(screen.getByText(/dari 12 pembayaran lunas/)).toBeInTheDocument();
+    expect(screen.getByText('CASH')).toBeInTheDocument();
+    expect(screen.getByText('dr. Siti')).toBeInTheDocument();
+  });
+
+  it('says a session is uncapped rather than rendering it as full', () => {
+    renderCard({
+      kind: 'APPOINTMENT_LOAD',
+      result: {
+        from: '2026-08-04',
+        to: '2026-08-10',
+        sessionCount: 1,
+        totalBooked: 9,
+        items: [
+          {
+            sessionDate: '2026-08-04',
+            startTime: '08:00',
+            endTime: '12:00',
+            doctorName: 'dr. Siti',
+            status: 'OPEN',
+            maxPatients: null,
+            bookedCount: 9,
+            remaining: null,
+          },
+        ],
+      },
+    });
+
+    expect(screen.getByText('9 janji temu pada 1 sesi praktik')).toBeInTheDocument();
+    expect(screen.getByText('2026-08-04 s.d. 2026-08-10')).toBeInTheDocument();
+    // A session with no ceiling is not a session with no room.
+    expect(screen.getAllByText('Tanpa batas')).toHaveLength(2);
+  });
+
+  it('renders a cashier day with no settled payment as exactly that', () => {
+    renderCard({
+      kind: 'CASHIER',
+      result: {
+        date: '2026-08-04',
+        paymentCount: 0,
+        totalAmount: 0,
+        byMethod: [],
+        byDoctor: [],
+      },
+    });
+
+    expect(screen.getByText('Belum ada pembayaran lunas pada 2026-08-04.')).toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
   it('renders an expiry lookup with counts taken over the whole report', () => {

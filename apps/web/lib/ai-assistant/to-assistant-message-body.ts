@@ -4,10 +4,14 @@ import type { AssistantMessageBody } from '#lib/ai-assistant/conversation-types'
 import { parseToolResult } from '#lib/ai-assistant/parse-tool-result';
 
 /**
- * Splits an assistant reply into the paragraph shape the thread renders.
- * The API returns plain text — deliberately, since anything richer would be
- * markup a provider could smuggle instructions through — so paragraphs are
- * blank-line separated and nothing is parsed as markdown.
+ * Splits an assistant reply into the paragraph shape the thread renders:
+ * blank-line separated chunks, each kept exactly as the model wrote it.
+ *
+ * The markdown a model emits is resolved at **render** time
+ * (`parseMarkdownBlock`), not here, and only for a closed subset — emphasis,
+ * code, headings, lists. Keeping the raw text on the body is what lets the
+ * stored transcript and the replayed one stay the same string, and keeping
+ * the subset closed is what stops a reply carrying markup a provider chose.
  *
  * Shared by the live send path and the transcript-replay path so a reopened
  * consultation is laid out exactly as it was when it arrived.

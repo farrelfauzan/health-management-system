@@ -76,6 +76,17 @@ describe('CheckMedicationExpiryTool', () => {
     expect(mockGetExpiryReport).toHaveBeenCalledWith({ days: 7 }, mockUser);
   });
 
+  it('accepts a zero window as "only what has already expired"', async () => {
+    const mockGetExpiryReport = jest.fn().mockResolvedValue(buildReport([]));
+
+    await buildTool(mockGetExpiryReport).execute(mockUser, { days: 0 });
+
+    // "Obat apa yang sudah kadaluarsa" is the question this tool exists for,
+    // and no look-ahead is how a model states it — refusing 0 as invalid
+    // made that question unanswerable.
+    expect(mockGetExpiryReport).toHaveBeenCalledWith({ days: 0 }, mockUser);
+  });
+
   it('drops the staff identifier and the free-text note from every batch line', async () => {
     const mockGetExpiryReport = jest.fn().mockResolvedValue(buildReport([buildExpiryItem()]));
 

@@ -131,6 +131,21 @@
         "title": "Buat draf pemulangan Kamar 402",
         "description": "Berdasarkan hasil lab terbaru.",
         "message": "Buat draf ringkasan pemulangan untuk Kamar 402."
+      },
+      "queueVolume": {
+        "title": "Seberapa ramai antrean hari ini?",
+        "description": "Jumlah per poli, tanpa nama pasien.",
+        "message": "Berapa banyak pasien yang mengantre hari ini, per poli?"
+      },
+      "appointmentLoad": {
+        "title": "Seberapa penuh jadwal minggu ini?",
+        "description": "Kapasitas sesi praktik dibanding yang sudah terisi.",
+        "message": "Seberapa penuh jadwal praktik minggu ini?"
+      },
+      "medicationExpiry": {
+        "title": "Obat apa yang akan kedaluwarsa?",
+        "description": "Batch yang sudah dan akan kedaluwarsa.",
+        "message": "Obat apa saja yang sudah atau akan kedaluwarsa dalam 30 hari?"
       }
     },
     "errors": {
@@ -191,7 +206,44 @@
         "UNKNOWN": "Tanpa tanggal"
       },
       "expirySummary": "{expired} kedaluwarsa · {expiring} segera kedaluwarsa · {unknown} tanpa tanggal",
-      "unknownExpiryDate": "—"
+      "unknownExpiryDate": "—",
+      "queueTitle": "Antrean klinik",
+      "cashierTitle": "Kas harian",
+      "loadTitle": "Beban jadwal praktik",
+      "patientsTitle": "Daftar pasien",
+      "patientSummaryTitle": "Ringkasan pasien",
+      "appointmentsTitle": "Jadwal janji temu",
+      "genericTitle": "Pencarian data HMS",
+      "onDate": "Tanggal {date}",
+      "dateRange": "{from} s.d. {to}",
+      "queueHeadline": "{total} pasien dalam antrean ({waiting} menunggu) · {completed} selesai",
+      "queueNoPoli": "Belum ada antrean per poli untuk tanggal ini.",
+      "queueColumns": {
+        "poli": "Poli",
+        "waiting": "Menunggu",
+        "pending": "Belum hadir",
+        "checkedIn": "Sudah hadir",
+        "completed": "Selesai",
+        "cancelled": "Batal"
+      },
+      "cashierHeadline": "{total} dari {count} pembayaran lunas",
+      "cashierEmpty": "Belum ada pembayaran lunas pada {date}.",
+      "cashierColumns": {
+        "method": "Metode",
+        "doctor": "Dokter",
+        "count": "Transaksi",
+        "amount": "Jumlah"
+      },
+      "loadHeadline": "{booked} janji temu pada {sessions} sesi praktik",
+      "loadEmpty": "Tidak ada sesi praktik pada rentang tanggal ini.",
+      "loadUncapped": "Tanpa batas",
+      "loadColumns": {
+        "session": "Sesi",
+        "doctor": "Dokter",
+        "booked": "Terisi",
+        "capacity": "Kapasitas",
+        "remaining": "Sisa"
+      }
     }
   },
   "aiProviders": {

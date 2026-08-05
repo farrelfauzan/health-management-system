@@ -4,6 +4,7 @@ import type { CheckMedicationExpiryToolResult } from '@hms/shared-types';
 import { Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ToolResultHeadline } from '#components/client/ai-assistant/tool-result-headline';
 import { ToolResultNotice } from '#components/client/ai-assistant/tool-result-notice';
 
 type MedicationExpiryResultProps = {
@@ -28,13 +29,13 @@ export function MedicationExpiryResult({ result }: MedicationExpiryResultProps) 
   }
   return (
     <div className="space-y-2">
-      <p className="text-xs text-slate-500">
-        {t('expirySummary', {
+      <ToolResultHeadline
+        text={t('expirySummary', {
           expired: result.expiredCount,
           expiring: result.expiringCount,
           unknown: result.unknownExpiryCount,
         })}
-      </p>
+      />
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
@@ -47,8 +48,10 @@ export function MedicationExpiryResult({ result }: MedicationExpiryResultProps) 
             </TableRow>
           </TableHeader>
           <TableBody>
-            {result.items.map((item) => (
-              <TableRow key={`${item.medicationCode}-${item.batchNumber}`}>
+            {/* Two receipts of the same batch are two rows; see the note in
+                appointment-load-result.tsx on why position is the key here. */}
+            {result.items.map((item, index) => (
+              <TableRow key={index}>
                 <TableCell className="font-medium text-slate-900">{item.medicationName}</TableCell>
                 <TableCell className="font-mono text-xs">{item.batchNumber}</TableCell>
                 <TableCell className="tabular-nums">

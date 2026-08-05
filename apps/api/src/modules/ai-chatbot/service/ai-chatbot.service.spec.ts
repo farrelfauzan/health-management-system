@@ -18,6 +18,7 @@ import { AiChatbotService } from './ai-chatbot.service';
 import { AiProviderResolverService } from './ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
 import { ChatRetrievalService } from './chat-retrieval.service';
+import { ChatSessionTitleService } from './chat-session-title.service';
 import { SafetyPolicyService } from './safety-policy.service';
 
 describe('AiChatbotService', () => {
@@ -31,7 +32,9 @@ describe('AiChatbotService', () => {
     softDeleteSessionForOwner: jest.fn(),
     appendMessage: jest.fn(),
     listMessagesForSession: jest.fn(),
+    setSessionTitleIfUnset: jest.fn(),
   };
+  const generateTitleMock = jest.fn();
   const sendChatCompletionMock = jest.fn();
   const resolveActiveProviderMock = jest.fn();
   const buildContextMock = jest.fn();
@@ -66,6 +69,7 @@ describe('AiChatbotService', () => {
           new AiChatbotError('AI_RATE_LIMITED', 'Chat session limit reached'),
       } as unknown as SafetyPolicyService,
       toolRegistry,
+      { generateTitle: generateTitleMock } as unknown as ChatSessionTitleService,
       new ConfigService(env),
     );
   }
@@ -129,6 +133,8 @@ describe('AiChatbotService', () => {
     retrieveMock.mockResolvedValue({ promptBlock: '', citations: [] });
     evaluateInputMock.mockReturnValue({ outcome: 'ALLOW', safetyTags: [] });
     evaluateOutputMock.mockImplementation((content: string) => ({ content, safetyTags: [] }));
+    generateTitleMock.mockResolvedValue('Jam buka klinik');
+    chatRepositoryMock.setSessionTitleIfUnset.mockResolvedValue(true);
   });
 
   describe('getAvailability', () => {
@@ -339,6 +345,66 @@ describe('AiChatbotService', () => {
       expect(actualResult.data.assistantMessage.content).not.toContain('bukan diagnosis medis');
       expect(actualResult.meta.model).toBe('deepseek-chat');
       expect(actualResult.meta.providerRequestId).toBe('req-1');
+    });
+
+    it('names an unnamed session from the finished exchange, not from the question', async () => {
+      stubExchange();
+
+      const actualResult = await buildService().sendMessage(
+        'session-1',
+        { content: 'Kapan jam buka klinik?' },
+        inputActor,
+      );
+
+      expect(generateTitleMock).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        {
+          channel: 'PATIENT',
+          question: 'Kapan jam buka klinik?',
+          answer: 'Klinik buka pukul 08.00.',
+        },
+      );
+      expect(chatRepositoryMock.setSessionTitleIfUnset).toHaveBeenCalledWith(
+        'session-1',
+        'Jam buka klinik',
+      );
+      // The client learns the title here or not at all — the history list has
+      // no other signal that the session it just created stopped being
+      // untitled.
+      expect(actualResult.meta.sessionTitle).toBe('Jam buka klinik');
+    });
+
+    it('leaves an already named session alone rather than retitling it every turn', async () => {
+      stubExchange();
+      chatRepositoryMock.findSessionForOwner.mockResolvedValue(
+        buildSession({ title: 'Jam buka klinik' }),
+      );
+
+      const actualResult = await buildService().sendMessage(
+        'session-1',
+        { content: 'Kalau hari Minggu?' },
+        inputActor,
+      );
+
+      expect(generateTitleMock).not.toHaveBeenCalled();
+      expect(chatRepositoryMock.setSessionTitleIfUnset).not.toHaveBeenCalled();
+      expect(actualResult.meta.sessionTitle).toBeUndefined();
+    });
+
+    it('reports no title when a concurrent exchange named the session first', async () => {
+      stubExchange();
+      chatRepositoryMock.setSessionTitleIfUnset.mockResolvedValue(false);
+
+      const actualResult = await buildService().sendMessage(
+        'session-1',
+        { content: 'Kapan jam buka klinik?' },
+        inputActor,
+      );
+
+      // Announcing a title the database refused would leave the sidebar
+      // showing something no other client will ever see.
+      expect(actualResult.meta.sessionTitle).toBeUndefined();
     });
 
     it('persists the assistant turn with disclaimerShown and the provider audit trail', async () => {
@@ -583,6 +649,30 @@ describe('AiChatbotService', () => {
       expect(assistantAppend.safetyTags).toEqual(['emergency_escalation']);
       expect(assistantAppend.disclaimerShown).toBe(true);
       expect(actualResult.meta.disclaimer).toContain('bukan diagnosis medis');
+    });
+
+    it('names an escalated session locally, since no provider ran to summarize it', async () => {
+      stubExchange();
+      evaluateInputMock.mockReturnValue({
+        outcome: 'ESCALATE',
+        safetyTags: ['emergency_escalation'],
+        replyContent: 'Hubungi 119 sekarang.',
+      });
+
+      const actualResult = await buildService().sendMessage(
+        'session-1',
+        { content: 'nyeri dada' },
+        inputActor,
+      );
+
+      // An emergency is exactly the conversation someone comes back looking
+      // for; it must not sit in the history list as "untitled".
+      expect(generateTitleMock).not.toHaveBeenCalled();
+      expect(chatRepositoryMock.setSessionTitleIfUnset).toHaveBeenCalledWith(
+        'session-1',
+        'nyeri dada',
+      );
+      expect(actualResult.meta.sessionTitle).toBe('nyeri dada');
     });
 
     it('still records the user turn when the input guard escalates', async () => {

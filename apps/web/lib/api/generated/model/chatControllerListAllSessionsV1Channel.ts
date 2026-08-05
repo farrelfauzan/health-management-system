@@ -12,4 +12,5 @@ export type ChatControllerListAllSessionsV1Channel = typeof ChatControllerListAl
 export const ChatControllerListAllSessionsV1Channel = {
   PATIENT: 'PATIENT',
   DOCTOR: 'DOCTOR',
+  ADMIN: 'ADMIN',
 } as const;

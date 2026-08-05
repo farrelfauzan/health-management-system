@@ -131,6 +131,21 @@
         "title": "Draft discharge for Room 402",
         "description": "Based on recent lab results.",
         "message": "Draft a discharge summary for Room 402."
+      },
+      "queueVolume": {
+        "title": "How busy is the queue today?",
+        "description": "Counts per poli, no patient names.",
+        "message": "Berapa banyak pasien yang mengantre hari ini, per poli?"
+      },
+      "appointmentLoad": {
+        "title": "How booked is this week?",
+        "description": "Practice-session capacity versus bookings.",
+        "message": "Seberapa penuh jadwal praktik minggu ini?"
+      },
+      "medicationExpiry": {
+        "title": "Which medications expire soon?",
+        "description": "Expired and expiring batches.",
+        "message": "Obat apa saja yang sudah atau akan kedaluwarsa dalam 30 hari?"
       }
     },
     "errors": {
@@ -191,7 +206,44 @@
         "UNKNOWN": "No date"
       },
       "expirySummary": "{expired} expired · {expiring} expiring soon · {unknown} without a date",
-      "unknownExpiryDate": "—"
+      "unknownExpiryDate": "—",
+      "queueTitle": "Clinic queue",
+      "cashierTitle": "Daily cash",
+      "loadTitle": "Practice-session load",
+      "patientsTitle": "Patient list",
+      "patientSummaryTitle": "Patient summary",
+      "appointmentsTitle": "Appointment schedule",
+      "genericTitle": "HMS lookup",
+      "onDate": "On {date}",
+      "dateRange": "{from} to {to}",
+      "queueHeadline": "{total} patients in the queue ({waiting} waiting) · {completed} completed",
+      "queueNoPoli": "No per-poli queue for this date yet.",
+      "queueColumns": {
+        "poli": "Poli",
+        "waiting": "Waiting",
+        "pending": "Not arrived",
+        "checkedIn": "Checked in",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "cashierHeadline": "{total} across {count} settled payments",
+      "cashierEmpty": "No settled payments on {date}.",
+      "cashierColumns": {
+        "method": "Method",
+        "doctor": "Doctor",
+        "count": "Transactions",
+        "amount": "Amount"
+      },
+      "loadHeadline": "{booked} bookings across {sessions} practice sessions",
+      "loadEmpty": "No practice sessions in this date range.",
+      "loadUncapped": "Uncapped",
+      "loadColumns": {
+        "session": "Session",
+        "doctor": "Doctor",
+        "booked": "Booked",
+        "capacity": "Capacity",
+        "remaining": "Remaining"
+      }
     }
   },
   "aiProviders": {

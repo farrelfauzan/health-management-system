@@ -163,6 +163,11 @@ export type ChatCitationView = {
  * exchange where the assistant requested lookups, and `citations` only on one
  * where retrieval found something — an answer with neither came from the
  * conversation alone.
+ *
+ * `sessionTitle` is present only on the exchange that *named* the session —
+ * the server derives a topic title from the first completed exchange, so the
+ * client knows to refresh its history list at the one moment the title
+ * changed instead of polling for it.
  */
 export type ChatExchangeMeta = {
   disclaimer: string;
@@ -171,4 +176,5 @@ export type ChatExchangeMeta = {
   providerRequestId: string | null;
   toolResults?: ChatToolResultView[];
   citations?: ChatCitationView[];
+  sessionTitle?: string;
 };

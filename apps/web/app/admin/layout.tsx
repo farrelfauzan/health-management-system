@@ -42,7 +42,20 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         The conversation lives here, above the route, so it survives navigation
         — and so the sidebar entry and top bar can read its unread count.
       */}
-      <AiAssistantProvider displayName={profile.displayName} assistantPath={ADMIN_ASSISTANT_PATH}>
+      {/*
+        The channel follows the role, because the server withholds every
+        lookup when the two disagree: an admin left on the default DOCTOR
+        channel got a clinical assistant with an empty tool catalogue, which
+        answered "Saya tidak memiliki akses alat HMS" to questions the ADMIN
+        channel has a tool for. A pharmacist-only user holds neither channel's
+        role, so they stay where they were rather than being 403'd out of a
+        session they cannot open.
+      */}
+      <AiAssistantProvider
+        displayName={profile.displayName}
+        channel={isAdmin ? 'ADMIN' : 'DOCTOR'}
+        assistantPath={ADMIN_ASSISTANT_PATH}
+      >
         <SidebarProvider style={SIDEBAR_STYLE}>
           <AppSidebar sections={sections} />
           {/*
