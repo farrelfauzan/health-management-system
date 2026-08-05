@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { resolveDocumentIngestState } from '#lib/documents/document-ingest-state';
 
-type PersonalDocumentIngestBadgeProps = {
+type ClinicDocumentIngestBadgeProps = {
   status: DocumentIngestStatusValue;
   ingestError: string | null;
 };
@@ -18,24 +18,26 @@ const TONE_CLASS_NAME: Record<string, string> = {
 };
 
 /**
- * The document's ingest state, and — when it is not `READY` — the fact that
- * the assistant cannot answer from it yet.
+ * A clinic document's ingest state, and — when it is not `READY` — the fact
+ * that nothing can be answered from it yet.
  *
- * The "not answerable yet" line is the honest part. Upload succeeding and the
- * document being retrievable are different events separated by a background
- * worker, and an owner who uploaded a guideline this morning has every reason
- * to assume the assistant is using it. Saying so explicitly costs one line and
- * prevents a clinician relying on guidance the model has never seen.
+ * The stakes are higher here than on a personal knowledge base. An admin who
+ * uploads the clinic's opening hours has every reason to assume the assistant
+ * and the WhatsApp channel started using them; until the worker finishes there
+ * are no chunks and no vectors, and the bot will keep answering from whatever
+ * it had before. Saying so on the row costs one line and prevents a corpus
+ * that looks published and is not.
  *
  * A failure shows `ingestError` verbatim rather than a generic message: the
- * API never puts file content in that field, and it is the only thing that
- * tells the owner whether to re-ingest or re-upload a different file.
+ * API never puts file content in that field — it is an authored category
+ * string — and it is the only thing that tells an admin whether to re-ingest
+ * or to upload a different file.
  */
-export function PersonalDocumentIngestBadge({
+export function ClinicDocumentIngestBadge({
   status,
   ingestError,
-}: PersonalDocumentIngestBadgeProps) {
-  const t = useTranslations('personalKnowledgeBase.ingest');
+}: ClinicDocumentIngestBadgeProps) {
+  const t = useTranslations('clinicCorpus.ingest');
   const state = resolveDocumentIngestState(status);
 
   return (

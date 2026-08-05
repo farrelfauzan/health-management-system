@@ -5,7 +5,7 @@ import {
   personalDocumentControllerListDocumentsV1,
 } from '#lib/api/generated/document-management/document-management';
 import { useApiQuery } from '#lib/api/use-api-query';
-import { resolvePersonalDocumentIngestState } from '#lib/personal-documents/personal-document-ingest-state';
+import { resolveDocumentIngestState } from '#lib/documents/document-ingest-state';
 
 /** How often to re-check while the worker is still embedding something. */
 const INGEST_POLL_INTERVAL_MS = 5_000;
@@ -35,7 +35,7 @@ export function usePersonalDocuments() {
       refetchInterval: (query) => {
         const envelope = query.state.data as ApiSuccess<PersonalDocumentView[]> | undefined;
         const isAnyIngesting = (envelope?.data ?? []).some(
-          (document) => !resolvePersonalDocumentIngestState(document.ingestStatus).isAnswerable,
+          (document) => !resolveDocumentIngestState(document.ingestStatus).isAnswerable,
         );
         return isAnyIngesting ? INGEST_POLL_INTERVAL_MS : false;
       },
