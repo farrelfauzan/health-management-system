@@ -78,3 +78,52 @@ export type DeletedClinicDocumentView = {
   deletedAt: string;
   chunksRemoved: number;
 };
+
+/**
+ * A document in a user's own knowledge base (`P15-T20`).
+ *
+ * `visibility` is absent by design — the clinic view carries it because a
+ * clinic document's channel visibility is what decides whether a patient can
+ * be shown it, whereas a personal document is only ever retrieved in its
+ * owner's own sessions. Surfacing the column here would invite a client to
+ * offer a control that changes nothing.
+ */
+export type PersonalDocumentView = {
+  id: string;
+  ownerType: DocumentOwnerTypeValue;
+  ownerId: string;
+  purpose: DocumentPurposeValue;
+  title: string;
+  mimeType: string;
+  sizeBytes: number;
+  language: DocumentLanguageValue;
+  ingestStatus: DocumentIngestStatusValue;
+  ingestError: string | null;
+  ingestedAt: string | null;
+  chunkCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PersonalDocumentListView = {
+  items: PersonalDocumentView[];
+  nextCursor: string | null;
+};
+
+export type PersonalDocumentUploadUrlView = {
+  url: string;
+  storageKey: string;
+  expiresAt: string;
+  requiredHeaders: Readonly<Record<string, string>>;
+};
+
+export type PersonalDocumentDownloadView = {
+  url: string;
+  expiresAt: string;
+};
+
+export type DeletedPersonalDocumentView = {
+  id: string;
+  deletedAt: string;
+  chunksRemoved: number;
+};
