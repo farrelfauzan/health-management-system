@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext } from 'react';
+import type { ChatChannelValue } from '@hms/shared-types';
 
 import type { ConsultationHistoryEntry } from '#lib/ai-assistant/consultation-history-entry';
 import type { ConversationMessage } from '#lib/ai-assistant/conversation-types';
@@ -13,6 +14,11 @@ export type AiAssistantContextValue = {
    * `proxy.ts` will bounce the current user away from.
    */
   assistantPath: string | null;
+  /**
+   * The channel this shell's sessions are opened on. The panel reads it to
+   * offer starters the channel's tools can actually answer.
+   */
+  channel: ChatChannelValue;
   messages: ConversationMessage[];
   isReplying: boolean;
   /** The session the thread is currently attached to, once one exists. */

@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AiProviderConfigView, AiProviderConnectionTestResult } from '@hms/shared-types';
-import { Button } from '@hms/ui';
+import { Button, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -71,42 +71,63 @@ export function AiProviderRowActions({
     return null;
   }
 
+  // Icon-only, so every button keeps its wording as its accessible name and
+  // its tooltip: the glyph is the affordance, the label is still what a
+  // screen reader announces and what a hover confirms before a click that
+  // switches which provider answers the clinic's questions.
   return (
-    <div className="flex flex-wrap justify-end gap-2">
-      <Button type="button" variant="outline" size="sm" onClick={() => onEdit(config)}>
-        {t('edit')}
+    <div className="flex justify-start gap-1">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        onClick={() => onEdit(config)}
+        aria-label={t('edit')}
+        title={t('edit')}
+      >
+        <Icon name="edit" size={18} className="text-slate-500" />
       </Button>
       {config.isActive ? (
         <Button
           type="button"
-          variant="outline"
-          size="sm"
+          variant="ghost"
+          size="icon-sm"
           disabled={isBusy}
           onClick={() => testMutation.mutate()}
+          aria-label={testMutation.isPending ? t('testing') : t('test')}
+          title={testMutation.isPending ? t('testing') : t('test')}
         >
-          {testMutation.isPending ? t('testing') : t('test')}
+          <Icon
+            name={testMutation.isPending ? 'progress_activity' : 'network_check'}
+            size={18}
+            className={testMutation.isPending ? 'animate-spin text-slate-400' : 'text-slate-500'}
+          />
         </Button>
       ) : (
         <Button
           type="button"
-          variant="outline"
-          size="sm"
+          variant="ghost"
+          size="icon-sm"
           disabled={isBusy}
           onClick={() => activateMutation.mutate()}
+          aria-label={t('activate')}
+          title={t('activate')}
         >
-          {t('activate')}
+          <Icon name="check_circle" size={18} className="text-slate-500" />
         </Button>
       )}
       <Button
         type="button"
-        variant="outline"
-        size="sm"
+        variant="ghost"
+        size="icon-sm"
         // The active configuration cannot be deleted — the API refuses it, so
         // the button is disabled rather than offering a guaranteed failure.
         disabled={isBusy || config.isActive}
         onClick={() => deleteMutation.mutate()}
+        aria-label={t('delete')}
+        title={t('delete')}
       >
-        {t('delete')}
+        <Icon name="delete" size={18} className="text-slate-400 hover:text-destructive" />
       </Button>
     </div>
   );

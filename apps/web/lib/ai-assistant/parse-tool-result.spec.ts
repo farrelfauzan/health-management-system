@@ -66,6 +66,56 @@ describe('parseToolResult', () => {
     expect(actual).toEqual({ kind: 'EXPIRY', result: expiryResult });
   });
 
+  it('narrows the three admin lookups to their typed results', () => {
+    const queueResult = {
+      date: '2026-08-04',
+      waiting: 7,
+      pending: 2,
+      checkedIn: 3,
+      completed: 11,
+      cancelled: 1,
+      poli: [
+        { poliName: 'Poli Umum', waiting: 5, pending: 1, checkedIn: 2, completed: 8, cancelled: 1 },
+      ],
+    };
+    const cashierResult = {
+      date: '2026-08-04',
+      paymentCount: 12,
+      totalAmount: 1_850_000,
+      byMethod: [{ method: 'CASH', count: 9, totalAmount: 1_250_000 }],
+      byDoctor: [{ doctorName: 'dr. Siti', count: 6, totalAmount: 900_000 }],
+    };
+    const loadResult = {
+      from: '2026-08-04',
+      to: '2026-08-10',
+      sessionCount: 2,
+      totalBooked: 14,
+      items: [
+        {
+          sessionDate: '2026-08-04',
+          startTime: '08:00',
+          endTime: '12:00',
+          doctorName: 'dr. Siti',
+          specialty: 'Umum',
+          status: 'OPEN',
+          maxPatients: 20,
+          bookedCount: 9,
+          remaining: 11,
+        },
+      ],
+    };
+
+    expect(
+      parseToolResult(buildView({ toolName: 'get_queue_board_summary', result: queueResult })),
+    ).toEqual({ kind: 'QUEUE', result: queueResult });
+    expect(
+      parseToolResult(buildView({ toolName: 'get_daily_cashier_report', result: cashierResult })),
+    ).toEqual({ kind: 'CASHIER', result: cashierResult });
+    expect(
+      parseToolResult(buildView({ toolName: 'get_appointment_load', result: loadResult })),
+    ).toEqual({ kind: 'APPOINTMENT_LOAD', result: loadResult });
+  });
+
   it('keeps a failed lookup failed, carrying its typed code', () => {
     // §4.5: a refused lookup renders as refused. Turning it into an empty
     // table would read as "we checked, there is none".

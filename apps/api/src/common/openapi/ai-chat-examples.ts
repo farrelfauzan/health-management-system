@@ -60,6 +60,7 @@ export const AI_CHAT_EXAMPLES = {
     providerKind: 'DEEPSEEK',
     model: 'deepseek-chat',
     providerRequestId: 'req_abc123',
+    sessionTitle: 'Jam buka klinik hari Sabtu',
   },
   sessionListMeta: {
     nextCursor: '7d3e4f5a-6b7c-4d8e-9f0a-1b2c3d4e5f6a',

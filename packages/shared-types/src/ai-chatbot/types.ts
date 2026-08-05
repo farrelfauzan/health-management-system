@@ -116,6 +116,22 @@ export type ChatSessionRecord = {
   updatedAt: Date;
 };
 
+/**
+ * The material a session title is written from: the first question and the
+ * answer it produced. Both are needed — "Ringkas beban pasien" and the reply
+ * that turned out to be about tomorrow's schedule are different topics, and a
+ * title taken from the question alone cannot tell them apart.
+ *
+ * Deliberately carries no user id and no session id: naming a conversation is
+ * a text-summarization job, and giving it identifiers would only widen what
+ * can reach the provider.
+ */
+export type ChatSessionTitleInput = {
+  channel: ChatChannelValue;
+  question: string;
+  answer: string;
+};
+
 export type CreateChatSessionData = {
   ownerUserId: string;
   channel: ChatChannelValue;

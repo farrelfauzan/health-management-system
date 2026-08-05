@@ -12,4 +12,5 @@ export type CreateChatSessionDtoChannel = typeof CreateChatSessionDtoChannel[key
 export const CreateChatSessionDtoChannel = {
   PATIENT: 'PATIENT',
   DOCTOR: 'DOCTOR',
+  ADMIN: 'ADMIN',
 } as const;

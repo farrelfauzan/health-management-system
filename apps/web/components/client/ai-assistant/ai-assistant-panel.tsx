@@ -34,7 +34,10 @@ export function AiAssistantPanel() {
   const tSidebar = useTranslations('aiAssistant.sidebar');
   const tConversation = useTranslations('aiAssistant.conversation');
   const assistant = useAiAssistant();
-  const prompts = useMemo(() => buildSuggestedPrompts(locale), [locale]);
+  const prompts = useMemo(
+    () => buildSuggestedPrompts(locale, assistant.channel),
+    [locale, assistant.channel],
+  );
   const [isSidebarCollapsed, setIsSidebarCollapsed] = usePersistedBoolean(
     SIDEBAR_COLLAPSED_STORAGE_KEY,
     false,

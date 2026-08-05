@@ -50,7 +50,7 @@ describe('ChatComposer', () => {
     expect(textarea).toHaveValue('');
   });
 
-  it('keeps the draft on Shift+Enter', async () => {
+  it('keeps the draft on Shift+Enter and takes the new line', async () => {
     const user = userEvent.setup();
     const onSend = vi.fn();
     renderComposer({ isBusy: false, onSend });
@@ -58,8 +58,25 @@ describe('ChatComposer', () => {
     const textarea = screen.getByRole('textbox', { name: 'Kirim pesan ke Asisten Klinis AI' });
     await user.type(textarea, 'Line one');
     await user.keyboard('{Shift>}{Enter}{/Shift}');
+    await user.type(textarea, 'Line two');
 
     expect(onSend).not.toHaveBeenCalled();
+    expect(textarea).toHaveValue('Line one\nLine two');
+  });
+
+  it('starts one row tall and sizes itself to the draft', async () => {
+    const user = userEvent.setup();
+    renderComposer({ isBusy: false, onSend: vi.fn() });
+
+    const textarea = screen.getByRole('textbox', { name: 'Kirim pesan ke Asisten Klinis AI' });
+    // A composer that opens six rows tall spends the transcript's space on an
+    // empty box; the height is the hook's to decide from here on.
+    expect(textarea).toHaveAttribute('rows', '1');
+    expect(textarea.className).not.toContain('min-h-24');
+
+    await user.type(textarea, 'Halo');
+
+    expect(textarea.style.height).not.toBe('');
   });
 
   it('disables send while a reply is in flight', async () => {

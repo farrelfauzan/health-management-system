@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { usePathname, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from '@hms/ui';
+import type { ChatChannelValue } from '@hms/shared-types';
 import { useLocale, useTranslations } from 'next-intl';
 
 import {
@@ -21,7 +22,13 @@ import type { AppLocale } from '../../../i18n/config';
 
 type AiAssistantProviderProps = {
   displayName: string;
-  channel?: 'PATIENT' | 'DOCTOR';
+  /**
+   * The channel every session this shell opens is created on. It must match
+   * the signed-in user's role: the tool catalogue is withheld entirely when
+   * channel and role disagree, and the ADMIN channel is refused outright to a
+   * non-admin.
+   */
+  channel?: ChatChannelValue;
   /**
    * This shell's assistant route. Omitted by shells that have no assistant
    * screen, which hides their entry points rather than pointing them at a
@@ -83,6 +90,12 @@ export function AiAssistantProvider({
     },
     [queryClient],
   );
+  // The title lands one request after the session row does, so the list is
+  // refreshed twice: once so the consultation exists in the sidebar at all,
+  // and once so it stops reading "untitled".
+  const handleSessionTitled = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: getChatControllerListSessionsV1QueryKey() });
+  }, [queryClient]);
   const handleUnavailable = useCallback(() => {
     void queryClient.invalidateQueries({
       queryKey: getChatControllerGetAvailabilityV1QueryKey(),
@@ -108,8 +121,9 @@ export function AiAssistantProvider({
         channel,
         ...(source.sessionId === null ? {} : { sessionId: source.sessionId }),
         onSessionCreated: handleSessionCreated,
+        onSessionTitled: handleSessionTitled,
       }),
-    [locale, channel, source, handleSessionCreated],
+    [locale, channel, source, handleSessionCreated, handleSessionTitled],
   );
   const transcriptQuery = useSessionTranscript(source.sessionId);
   const transcript = transcriptQuery.data;
@@ -151,6 +165,7 @@ export function AiAssistantProvider({
   const value = useMemo(
     () => ({
       assistantPath,
+      channel,
       messages: conversation.messages,
       isReplying: conversation.isReplying,
       activeSessionId,
@@ -164,6 +179,7 @@ export function AiAssistantProvider({
     }),
     [
       assistantPath,
+      channel,
       conversation.messages,
       conversation.isReplying,
       conversation.sendUserMessage,

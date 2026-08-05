@@ -4,8 +4,11 @@ import { Icon } from '@hms/ui';
 
 import { AssistantDisclaimer } from '#components/client/ai-assistant/assistant-disclaimer';
 import { ClinicalReferenceChips } from '#components/client/ai-assistant/clinical-reference-chips';
+import { MarkdownBlockView } from '#components/client/ai-assistant/markdown-block-view';
+import { MarkdownInline } from '#components/client/ai-assistant/markdown-inline';
 import { ToolResultList } from '#components/client/ai-assistant/tool-result-list';
 import type { AssistantConversationMessage } from '#lib/ai-assistant/conversation-types';
+import { parseMarkdownBlock } from '#lib/ai-assistant/parse-markdown-block';
 
 type AssistantMessageProps = {
   message: AssistantConversationMessage;
@@ -23,13 +26,22 @@ export function AssistantMessage({ message }: AssistantMessageProps) {
           <span className="text-xs text-slate-400">{message.sentAtLabel}</span>
         </div>
         <div className="max-w-prose space-y-3 text-[15px] leading-relaxed text-slate-800">
-          {message.body.paragraphs.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+          {/*
+            Each paragraph is a blank-line chunk of the reply, classified on
+            render: models write markdown whatever the prompt asks for, and
+            rendering it verbatim put "**Dokter**" on screen, asterisks and
+            all. Parsing here rather than at the boundary keeps the stored
+            transcript exactly as the model wrote it.
+          */}
+          {message.body.paragraphs.map((paragraph, index) => (
+            <MarkdownBlockView key={index} block={parseMarkdownBlock(paragraph)} />
           ))}
           {message.body.bullets && message.body.bullets.length > 0 ? (
             <ul className="list-disc space-y-2 pl-5">
-              {message.body.bullets.map((bullet) => (
-                <li key={bullet}>{bullet}</li>
+              {message.body.bullets.map((bullet, index) => (
+                <li key={index}>
+                  <MarkdownInline text={bullet} />
+                </li>
               ))}
             </ul>
           ) : null}

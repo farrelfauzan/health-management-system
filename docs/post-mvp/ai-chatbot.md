@@ -342,7 +342,7 @@ Schema baseline for chat messages lives in [docs/MVP/database.md](../MVP/databas
 - `providerKey` — active `AiProviderConfig.id` at session creation time
 - `providerKind` — denormalized `AiProviderKind` for filtering/analytics
 - `providerSessionId` — external thread id when the upstream supports it
-- `title` — optional, auto-generated from first user message
+- `title` — optional at creation; a session left untitled is named by the server from its **first completed exchange** (question + reply, summarized by the same provider that answered), not from the first message alone — a title taken from the question is just the first bubble of the thread repeated in the sidebar. The naming call never fails an exchange: an unreachable provider, an emergency answered from the template, or an unusable summary falls back to the user's own question. Written once, under a `title IS NULL` guard, and returned as `meta.sessionTitle` on the exchange that wrote it
 
 **ChatMessage**
 

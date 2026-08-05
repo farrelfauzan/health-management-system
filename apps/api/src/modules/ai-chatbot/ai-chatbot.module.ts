@@ -20,6 +20,7 @@ import { AiProviderConfigService } from './service/ai-provider-config.service';
 import { AiProviderResolverService } from './service/ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './service/chat-context-enrichment.service';
 import { ChatRetrievalService } from './service/chat-retrieval.service';
+import { ChatSessionTitleService } from './service/chat-session-title.service';
 import { SafetyPolicyService } from './service/safety-policy.service';
 import { ChatToolRegistrarService } from './tools/chat-tool-registrar.service';
 import { ChatToolRegistry } from './tools/chat-tool.registry';
@@ -81,6 +82,7 @@ import { ListMyPatientsTool } from './tools/definitions/list-my-patients.tool';
     AiProviderConfigService,
     ChatContextEnrichmentService,
     ChatRetrievalService,
+    ChatSessionTitleService,
     SafetyPolicyService,
     ChatToolRegistry,
     CheckMedicationStockTool,

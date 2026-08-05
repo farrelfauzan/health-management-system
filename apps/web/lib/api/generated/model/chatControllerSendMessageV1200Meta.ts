@@ -11,4 +11,5 @@ export type ChatControllerSendMessageV1200Meta = {
   providerKind: string;
   model: string;
   providerRequestId: string;
+  sessionTitle: string;
 };

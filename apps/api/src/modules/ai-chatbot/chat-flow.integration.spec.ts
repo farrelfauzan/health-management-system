@@ -183,17 +183,25 @@ describe('Chat flow integration', () => {
             .map((row) => ({ ...row })),
         ),
       ),
-      updateMany: jest.fn(({ where }: { where: Record<string, unknown> }) => {
-        const target = sessionRows.find(
-          (row) =>
-            row.id === where.id && row.ownerUserId === where.ownerUserId && row.deletedAt === null,
-        );
-        if (target === undefined) {
-          return Promise.resolve({ count: 0 });
-        }
-        target.deletedAt = new Date();
-        return Promise.resolve({ count: 1 });
-      }),
+      // Serves both guarded updates — the owner-scoped soft delete and the
+      // title write that only lands on a session with no title — so the
+      // filter is read from `where` rather than assumed.
+      updateMany: jest.fn(
+        ({ where, data }: { where: Record<string, unknown>; data: Record<string, unknown> }) => {
+          const target = sessionRows.find(
+            (row) =>
+              row.id === where.id &&
+              row.deletedAt === null &&
+              (where.ownerUserId === undefined || row.ownerUserId === where.ownerUserId) &&
+              (where.title === undefined || row.title === where.title),
+          );
+          if (target === undefined) {
+            return Promise.resolve({ count: 0 });
+          }
+          Object.assign(target, data);
+          return Promise.resolve({ count: 1 });
+        },
+      ),
       count: jest.fn(() => Promise.resolve(sessionRows.length)),
     },
     chatMessage: {
@@ -351,6 +359,17 @@ describe('Chat flow integration', () => {
     );
   }
 
+  /**
+   * Every body that left the process, not only the answering one: an exchange
+   * also names its session upstream, and a leak check that reads one call
+   * would not see the second way out.
+   */
+  function readAllOutboundBodies(): string[] {
+    return (fetchMock.mock.calls as Array<[string, RequestInit]>).map(
+      ([, requestInit]) => requestInit.body as string,
+    );
+  }
+
   async function createSession(token: string, channel: string = 'PATIENT'): Promise<string> {
     const response = await request(app.getHttpServer())
       .post('/api/v1/chat/sessions')
@@ -450,6 +469,30 @@ describe('Chat flow integration', () => {
       expect((requestInit.headers as Record<string, string>).Authorization).toBe(
         `Bearer ${PLAINTEXT_API_KEY}`,
       );
+    });
+
+    it('names the session from the exchange, once, and shows it in the list', async () => {
+      stubOpenAiCompatibleReply('Jadwal praktik dokter umum');
+      const token = await buildToken(OWNER_USER_ID, 'patient@hms.local');
+      const sessionId = await createSession(token);
+
+      const firstResponse = await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Dokter umum praktik jam berapa?' });
+
+      expect(firstResponse.body.meta.sessionTitle).toBe('Jadwal praktik dokter umum');
+      const listResponse = await request(app.getHttpServer())
+        .get('/api/v1/chat/sessions')
+        .set('Authorization', `Bearer ${token}`);
+      expect(listResponse.body.data[0].title).toBe('Jadwal praktik dokter umum');
+      const secondResponse = await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Kalau hari Sabtu?' });
+      // A conversation is named by its first exchange and keeps that name:
+      // renaming it every turn would move the row the user is looking for.
+      expect(secondResponse.body.meta.sessionTitle).toBeUndefined();
     });
 
     it('completes an exchange through the Anthropic adapter', async () => {
@@ -567,9 +610,12 @@ describe('Chat flow integration', () => {
     });
 
     it('executes the lookup and returns it to the client, never to the provider', async () => {
-      // Invariant 4: one round trip, and no row the tool read appears in any
-      // outbound body. This is the acceptance test for the whole tool track,
-      // run here on the data that carries no UU PDP exposure.
+      // Invariant 4: one answering round trip, and no row the tool read
+      // appears in any outbound body. This is the acceptance test for the
+      // whole tool track, run here on the data that carries no UU PDP
+      // exposure. The second call is the session-naming one, which sees the
+      // question and the announcement — the assertion loops over both bodies
+      // precisely because it is a second way out.
       stubOpenAiCompatibleToolCall('Saya cek stoknya sekarang.', 'check_medication_stock', {
         medicationName: 'amoxicillin',
       });
@@ -577,9 +623,11 @@ describe('Chat flow integration', () => {
       const response = await sendDoctorMessage('Cek stok obat itu ya');
 
       expect(response.status).toBe(200);
-      expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(fetchMock.mock.calls[0][1].body as string).not.toContain('Amoxicillin 500mg');
-      expect(fetchMock.mock.calls[0][1].body as string).not.toContain('"role":"tool"');
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      for (const outboundBody of readAllOutboundBodies()) {
+        expect(outboundBody).not.toContain('Amoxicillin 500mg');
+        expect(outboundBody).not.toContain('"role":"tool"');
+      }
       expect(response.body.data.assistantMessage.content).toBe('Saya cek stoknya sekarang.');
       expect(response.body.meta.toolResults).toEqual([
         {
@@ -749,15 +797,17 @@ describe('Chat flow integration', () => {
       const response = await sendDoctorMessage('Pasien saya siapa saja?');
 
       expect(response.status).toBe(200);
-      // One round trip, and a captured outbound body carrying no patient
-      // field — the §10 Definition of Done item this whole mode exists for.
-      expect(fetchMock).toHaveBeenCalledTimes(1);
-      const outbound = readOutboundBody();
-      expect(outbound).not.toContain('Budi Santoso');
-      expect(outbound).not.toContain('MRN00000042');
-      expect(outbound).not.toContain('3456');
-      expect(outbound).not.toContain(PATIENT_ID);
-      expect(outbound).not.toContain('"role":"tool"');
+      // One answering round trip plus the session-naming call, and not one
+      // captured body carrying a patient field — the §10 Definition of Done
+      // item this whole mode exists for.
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      for (const outbound of readAllOutboundBodies()) {
+        expect(outbound).not.toContain('Budi Santoso');
+        expect(outbound).not.toContain('MRN00000042');
+        expect(outbound).not.toContain('3456');
+        expect(outbound).not.toContain(PATIENT_ID);
+        expect(outbound).not.toContain('"role":"tool"');
+      }
     });
 
     it('returns the projected roster to the client with no identifier in it', async () => {
@@ -1048,6 +1098,24 @@ describe('Chat flow integration', () => {
       );
     });
 
+    it('qualifies an operations answer by freshness, not by clinical advice', async () => {
+      stubOpenAiCompatibleReply('Baik.');
+      const token = await buildToken(OWNER_USER_ID, 'admin@hms.local');
+      const sessionId = await createSession(token, 'ADMIN');
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Berapa yang antre sekarang?' });
+
+      // Telling an administrator to consult a healthcare professional about a
+      // queue count is the noise that teaches people to skip disclaimers.
+      expect(response.body.meta.disclaimer).not.toContain('bukan diagnosis medis');
+      expect(response.body.meta.disclaimer).toContain('Angka operasional');
+      // Still structural: present on every turn, and still proven per message.
+      expect(response.body.data.assistantMessage.disclaimerShown).toBe(true);
+    });
+
     it('sends the admin no context-enrichment payload at all', async () => {
       stubOpenAiCompatibleReply('Baik.');
       const token = await buildToken(OWNER_USER_ID, 'admin@hms.local');
@@ -1129,9 +1197,13 @@ describe('Chat flow integration', () => {
       expect(retrievalMessage?.content).toContain(
         'Pendaftaran pasien BPJS dibuka pukul 07.00 di poliklinik umum.',
       );
-      // One round trip: retrieval runs before the completion, it is not a
-      // tool the model asks for (§5.5).
-      expect(fetchMock).toHaveBeenCalledTimes(1);
+      // One answering round trip: retrieval runs before the completion, it is
+      // not a tool the model asks for (§5.5). The second call is the
+      // session-naming one, which carries no passage.
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect((fetchMock.mock.calls[1][1] as RequestInit).body as string).not.toContain(
+        'SOP Pendaftaran BPJS',
+      );
     });
 
     it('scopes a patient session to patient-visible clinic documents and no personal corpus', async () => {

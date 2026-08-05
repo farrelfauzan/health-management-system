@@ -34,7 +34,7 @@ vi.mock('next/navigation', () => ({
 const { AiAssistantProvider } = await import('./ai-assistant-provider');
 const { AiAssistantPanel } = await import('./ai-assistant-panel');
 
-function renderPanel(canDelete = true): void {
+function renderPanel(canDelete = true, channel: 'PATIENT' | 'DOCTOR' | 'ADMIN' = 'DOCTOR'): void {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
@@ -42,7 +42,11 @@ function renderPanel(canDelete = true): void {
     <QueryClientProvider client={queryClient}>
       <AppAbilityProvider rules={canDelete ? [{ action: 'delete', subject: 'ChatSession' }] : []}>
         <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
-          <AiAssistantProvider displayName="Dr. Sarah" assistantPath="/admin/ai-assistant">
+          <AiAssistantProvider
+            displayName="Dr. Sarah"
+            channel={channel}
+            assistantPath="/admin/ai-assistant"
+          >
             <AiAssistantPanel />
           </AiAssistantProvider>
         </NextIntlClientProvider>
@@ -111,6 +115,45 @@ describe('AiAssistantPanel', () => {
     expect(await screen.findByText('Klinik buka pukul 08.00-20.00 WIB.')).toBeInTheDocument();
     expect(createSessionMock).toHaveBeenCalledTimes(1);
     expect(sendMessageMock).toHaveBeenCalledWith('session-1', expect.any(Object));
+  });
+
+  it('opens an admin session on the admin channel, with starters that channel can answer', async () => {
+    const user = userEvent.setup();
+    renderPanel(true, 'ADMIN');
+
+    // The clinical starters promise lookups the admin channel has no tool
+    // for; its own three name the ones it does.
+    expect(screen.queryByRole('button', { name: /Buat draf pemulangan/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /Seberapa ramai antrean hari ini/ }));
+
+    // On the DOCTOR channel the server withholds every tool from an admin, so
+    // the channel is what makes the lookup possible at all.
+    await waitFor(() => expect(createSessionMock).toHaveBeenCalledWith({ channel: 'ADMIN' }));
+  });
+
+  it('renders the markdown a model writes instead of its asterisks', async () => {
+    const user = userEvent.setup();
+    sendMessageMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: {
+          userMessage: { id: 'm1', actor: 'USER', content: 'Halo' },
+          assistantMessage: {
+            id: 'm2',
+            actor: 'ASSISTANT',
+            content: 'Hubungi **Dokter** dulu.\n\n- Cek stok\n- Cek kedaluwarsa',
+          },
+        },
+        meta: { disclaimer: 'Informasi ini bukan diagnosis medis.' },
+      },
+    });
+    renderPanel();
+
+    await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+
+    expect((await screen.findByText('Dokter')).tagName).toBe('STRONG');
+    const bullets = screen.getAllByRole('listitem').map((item) => item.textContent);
+    expect(bullets).toContain('Cek kedaluwarsa');
   });
 
   it('renders the disclaimer the server returned in meta', async () => {
@@ -327,20 +370,44 @@ describe('AiAssistantPanel', () => {
       expect(screen.queryByText(/Belum ada konsultasi/)).not.toBeInTheDocument();
     });
 
-    it('names a new session after the question that started it', async () => {
+    it('leaves the naming to the server instead of sending the question as a title', async () => {
       const user = userEvent.setup();
       renderPanel();
 
       await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
 
-      // Nothing else ever names a session, so without this every entry in
-      // the history list reads "untitled".
-      await waitFor(() =>
-        expect(createSessionMock).toHaveBeenCalledWith({
-          channel: 'DOCTOR',
-          title: 'Ringkas beban pasien hari ini.',
-        }),
-      );
+      // A title built from the first message is just the first bubble again;
+      // the server writes one from the finished exchange instead.
+      await waitFor(() => expect(createSessionMock).toHaveBeenCalledWith({ channel: 'DOCTOR' }));
+    });
+
+    it('refreshes the list once the server has named the session', async () => {
+      const user = userEvent.setup();
+      renderPanel();
+      sendMessageMock.mockResolvedValue({
+        status: 200,
+        data: {
+          data: {
+            userMessage: { id: 'm1', actor: 'USER', content: 'Halo' },
+            assistantMessage: { id: 'm2', actor: 'ASSISTANT', content: 'Beban Anda ringan.' },
+          },
+          meta: {
+            disclaimer: 'Informasi ini bukan diagnosis medis.',
+            sessionTitle: 'Beban pasien hari ini',
+          },
+        },
+      });
+
+      await waitFor(() => expect(listSessionsMock).toHaveBeenCalledTimes(1));
+      listSessionsMock.mockResolvedValue({
+        status: 200,
+        data: { data: [{ id: 'session-1', title: 'Beban pasien hari ini', channel: 'DOCTOR' }] },
+      });
+      await user.click(screen.getByRole('button', { name: /Ringkas beban pasien hari ini/ }));
+
+      // The title exists one request after the session does, so without this
+      // refresh the sidebar reads "untitled" until a reload.
+      expect(await screen.findByText('Beban pasien hari ini')).toBeInTheDocument();
     });
 
     it('removes a consultation after the confirmation is accepted', async () => {

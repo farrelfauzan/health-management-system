@@ -28,6 +28,7 @@ const { ChatLauncher } = await import('./chat-launcher');
 function buildAssistantContext(assistantPath: string | null): AiAssistantContextValue {
   return {
     assistantPath,
+    channel: 'DOCTOR',
     messages: [],
     isReplying: false,
     activeSessionId: null,
