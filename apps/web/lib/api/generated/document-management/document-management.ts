@@ -22,7 +22,9 @@ import type {
 
 import type {
   ConfirmClinicDocumentUploadDto,
+  ConfirmPersonalDocumentUploadDto,
   CreateClinicDocumentUploadUrlDto,
+  CreatePersonalDocumentUploadUrlDto,
   DocumentAdminControllerConfirmUploadV1201,
   DocumentAdminControllerCreateUploadUrlV1200,
   DocumentAdminControllerDeleteDocumentV1200,
@@ -32,7 +34,17 @@ import type {
   DocumentAdminControllerListDocumentsV1Params,
   DocumentAdminControllerReingestDocumentV1202,
   DocumentAdminControllerUpdateDocumentV1200,
-  UpdateClinicDocumentDto
+  PersonalDocumentControllerConfirmUploadV1200,
+  PersonalDocumentControllerCreateUploadUrlV1200,
+  PersonalDocumentControllerDeleteDocumentV1200,
+  PersonalDocumentControllerGetDocumentV1200,
+  PersonalDocumentControllerGetDownloadUrlV1200,
+  PersonalDocumentControllerListDocumentsV1200,
+  PersonalDocumentControllerListDocumentsV1Params,
+  PersonalDocumentControllerReingestDocumentV1202,
+  PersonalDocumentControllerUpdateDocumentV1200,
+  UpdateClinicDocumentDto,
+  UpdatePersonalDocumentDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -794,6 +806,756 @@ export function useDocumentAdminControllerReingestDocumentV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentAdminControllerReingestDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Sign a browser-direct upload into your own knowledge base
+ */
+export const personalDocumentControllerCreateUploadUrlV1 = (
+    createPersonalDocumentUploadUrlDto: CreatePersonalDocumentUploadUrlDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PersonalDocumentControllerCreateUploadUrlV1200>(
+      {url: `/api/v1/me/documents/upload-url`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPersonalDocumentUploadUrlDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPersonalDocumentControllerCreateUploadUrlV1QueryKey = (createPersonalDocumentUploadUrlDto?: CreatePersonalDocumentUploadUrlDto,) => {
+    return [
+    'POST', `/api/v1/me/documents/upload-url`, createPersonalDocumentUploadUrlDto
+    ] as const;
+    }
+
+
+export const getPersonalDocumentControllerCreateUploadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError = unknown>(createPersonalDocumentUploadUrlDto: CreatePersonalDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPersonalDocumentControllerCreateUploadUrlV1QueryKey(createPersonalDocumentUploadUrlDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>> = ({ signal }) => personalDocumentControllerCreateUploadUrlV1(createPersonalDocumentUploadUrlDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PersonalDocumentControllerCreateUploadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>>
+export type PersonalDocumentControllerCreateUploadUrlV1QueryError = unknown
+
+
+export function usePersonalDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createPersonalDocumentUploadUrlDto: CreatePersonalDocumentUploadUrlDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createPersonalDocumentUploadUrlDto: CreatePersonalDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createPersonalDocumentUploadUrlDto: CreatePersonalDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Sign a browser-direct upload into your own knowledge base
+ */
+
+export function usePersonalDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createPersonalDocumentUploadUrlDto: CreatePersonalDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPersonalDocumentControllerCreateUploadUrlV1QueryOptions(createPersonalDocumentUploadUrlDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record a completed upload in your own knowledge base
+ */
+export const personalDocumentControllerConfirmUploadV1 = (
+    confirmPersonalDocumentUploadDto: ConfirmPersonalDocumentUploadDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PersonalDocumentControllerConfirmUploadV1200>(
+      {url: `/api/v1/me/documents`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: confirmPersonalDocumentUploadDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPersonalDocumentControllerConfirmUploadV1QueryKey = (confirmPersonalDocumentUploadDto?: ConfirmPersonalDocumentUploadDto,) => {
+    return [
+    'POST', `/api/v1/me/documents`, confirmPersonalDocumentUploadDto
+    ] as const;
+    }
+
+
+export const getPersonalDocumentControllerConfirmUploadV1QueryOptions = <TData = Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError = unknown>(confirmPersonalDocumentUploadDto: ConfirmPersonalDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPersonalDocumentControllerConfirmUploadV1QueryKey(confirmPersonalDocumentUploadDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>> = ({ signal }) => personalDocumentControllerConfirmUploadV1(confirmPersonalDocumentUploadDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PersonalDocumentControllerConfirmUploadV1QueryResult = NonNullable<Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>>
+export type PersonalDocumentControllerConfirmUploadV1QueryError = unknown
+
+
+export function usePersonalDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ confirmPersonalDocumentUploadDto: ConfirmPersonalDocumentUploadDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ confirmPersonalDocumentUploadDto: ConfirmPersonalDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ confirmPersonalDocumentUploadDto: ConfirmPersonalDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record a completed upload in your own knowledge base
+ */
+
+export function usePersonalDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ confirmPersonalDocumentUploadDto: ConfirmPersonalDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerConfirmUploadV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPersonalDocumentControllerConfirmUploadV1QueryOptions(confirmPersonalDocumentUploadDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List the documents in your own knowledge base
+ */
+export const personalDocumentControllerListDocumentsV1 = (
+    params?: PersonalDocumentControllerListDocumentsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PersonalDocumentControllerListDocumentsV1200>(
+      {url: `/api/v1/me/documents`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getPersonalDocumentControllerListDocumentsV1QueryKey = (params?: PersonalDocumentControllerListDocumentsV1Params,) => {
+    return [
+    `/api/v1/me/documents`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getPersonalDocumentControllerListDocumentsV1QueryOptions = <TData = Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError = unknown>(params?: PersonalDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPersonalDocumentControllerListDocumentsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>> = ({ signal }) => personalDocumentControllerListDocumentsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PersonalDocumentControllerListDocumentsV1QueryResult = NonNullable<Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>>
+export type PersonalDocumentControllerListDocumentsV1QueryError = unknown
+
+
+export function usePersonalDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError = unknown>(
+ params: undefined |  PersonalDocumentControllerListDocumentsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError = unknown>(
+ params?: PersonalDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError = unknown>(
+ params?: PersonalDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List the documents in your own knowledge base
+ */
+
+export function usePersonalDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError = unknown>(
+ params?: PersonalDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerListDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPersonalDocumentControllerListDocumentsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read one document from your own knowledge base
+ */
+export const personalDocumentControllerGetDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PersonalDocumentControllerGetDocumentV1200>(
+      {url: `/api/v1/me/documents/${id}`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPersonalDocumentControllerGetDocumentV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/me/documents/${id}`
+    ] as const;
+    }
+
+
+export const getPersonalDocumentControllerGetDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPersonalDocumentControllerGetDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>> = ({ signal }) => personalDocumentControllerGetDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PersonalDocumentControllerGetDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>>
+export type PersonalDocumentControllerGetDocumentV1QueryError = unknown
+
+
+export function usePersonalDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read one document from your own knowledge base
+ */
+
+export function usePersonalDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPersonalDocumentControllerGetDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Edit one of your documents’ metadata
+ */
+export const personalDocumentControllerUpdateDocumentV1 = (
+    id: string,
+    updatePersonalDocumentDto: UpdatePersonalDocumentDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PersonalDocumentControllerUpdateDocumentV1200>(
+      {url: `/api/v1/me/documents/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updatePersonalDocumentDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPersonalDocumentControllerUpdateDocumentV1QueryKey = (id: string,
+    updatePersonalDocumentDto?: UpdatePersonalDocumentDto,) => {
+    return [
+    'PATCH', `/api/v1/me/documents/${id}`, updatePersonalDocumentDto
+    ] as const;
+    }
+
+
+export const getPersonalDocumentControllerUpdateDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError = unknown>(id: string,
+    updatePersonalDocumentDto: UpdatePersonalDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPersonalDocumentControllerUpdateDocumentV1QueryKey(id,updatePersonalDocumentDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>> = ({ signal }) => personalDocumentControllerUpdateDocumentV1(id,updatePersonalDocumentDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PersonalDocumentControllerUpdateDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>>
+export type PersonalDocumentControllerUpdateDocumentV1QueryError = unknown
+
+
+export function usePersonalDocumentControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updatePersonalDocumentDto: UpdatePersonalDocumentDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updatePersonalDocumentDto: UpdatePersonalDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updatePersonalDocumentDto: UpdatePersonalDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Edit one of your documents’ metadata
+ */
+
+export function usePersonalDocumentControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updatePersonalDocumentDto: UpdatePersonalDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerUpdateDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPersonalDocumentControllerUpdateDocumentV1QueryOptions(id,updatePersonalDocumentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Remove a document from your own knowledge base
+ */
+export const personalDocumentControllerDeleteDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PersonalDocumentControllerDeleteDocumentV1200>(
+      {url: `/api/v1/me/documents/${id}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getPersonalDocumentControllerDeleteDocumentV1QueryKey = (id: string,) => {
+    return [
+    'DELETE', `/api/v1/me/documents/${id}`
+    ] as const;
+    }
+
+
+export const getPersonalDocumentControllerDeleteDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPersonalDocumentControllerDeleteDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>> = ({ signal }) => personalDocumentControllerDeleteDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PersonalDocumentControllerDeleteDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>>
+export type PersonalDocumentControllerDeleteDocumentV1QueryError = unknown
+
+
+export function usePersonalDocumentControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Remove a document from your own knowledge base
+ */
+
+export function usePersonalDocumentControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerDeleteDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPersonalDocumentControllerDeleteDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Mint a signed download URL for one of your documents
+ */
+export const personalDocumentControllerGetDownloadUrlV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PersonalDocumentControllerGetDownloadUrlV1200>(
+      {url: `/api/v1/me/documents/${id}/download`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPersonalDocumentControllerGetDownloadUrlV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/me/documents/${id}/download`
+    ] as const;
+    }
+
+
+export const getPersonalDocumentControllerGetDownloadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPersonalDocumentControllerGetDownloadUrlV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>> = ({ signal }) => personalDocumentControllerGetDownloadUrlV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PersonalDocumentControllerGetDownloadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>>
+export type PersonalDocumentControllerGetDownloadUrlV1QueryError = unknown
+
+
+export function usePersonalDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Mint a signed download URL for one of your documents
+ */
+
+export function usePersonalDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPersonalDocumentControllerGetDownloadUrlV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Queue one of your documents for re-ingestion
+ */
+export const personalDocumentControllerReingestDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PersonalDocumentControllerReingestDocumentV1202>(
+      {url: `/api/v1/me/documents/${id}/ingest`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getPersonalDocumentControllerReingestDocumentV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/me/documents/${id}/ingest`
+    ] as const;
+    }
+
+
+export const getPersonalDocumentControllerReingestDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPersonalDocumentControllerReingestDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>> = ({ signal }) => personalDocumentControllerReingestDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PersonalDocumentControllerReingestDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>>
+export type PersonalDocumentControllerReingestDocumentV1QueryError = unknown
+
+
+export function usePersonalDocumentControllerReingestDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerReingestDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerReingestDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Queue one of your documents for re-ingestion
+ */
+
+export function usePersonalDocumentControllerReingestDocumentV1<TData = Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerReingestDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPersonalDocumentControllerReingestDocumentV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
