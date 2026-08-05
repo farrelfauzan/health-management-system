@@ -23,7 +23,7 @@ import { parseToolResult } from '#lib/ai-assistant/parse-tool-result';
  */
 export function toAssistantMessageBody(
   content: string,
-  meta?: Pick<ChatExchangeMeta, 'disclaimer' | 'toolResults'>,
+  meta?: Pick<ChatExchangeMeta, 'disclaimer' | 'toolResults' | 'citations'>,
 ): AssistantMessageBody {
   const toolResults = (meta?.toolResults ?? []).map((view) => parseToolResult(view));
   return {
@@ -33,5 +33,10 @@ export function toAssistantMessageBody(
       .filter((paragraph) => paragraph.length > 0),
     ...(meta?.disclaimer === undefined ? {} : { disclaimer: meta.disclaimer }),
     ...(toolResults.length === 0 ? {} : { toolResults }),
+    // Passed through unparsed: unlike tool results, a citation is already a
+    // typed row the API built from the database, not an opaque payload.
+    ...(meta?.citations === undefined || meta.citations.length === 0
+      ? {}
+      : { citations: meta.citations }),
   };
 }

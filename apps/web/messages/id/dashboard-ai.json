@@ -244,6 +244,13 @@
         "capacity": "Kapasitas",
         "remaining": "Sisa"
       }
+    },
+    "citations": {
+      "heading": "Berdasarkan",
+      "source": {
+        "clinic": "dari dokumen klinik",
+        "personal": "dari dokumen Anda"
+      }
     }
   },
   "aiProviders": {
