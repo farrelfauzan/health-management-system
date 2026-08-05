@@ -51,6 +51,15 @@ export const DOCTOR_NAV_SECTIONS: AdminNavSection[] = [
         ability: { action: 'create', subject: 'ChatSession' },
         badgeKey: 'aiAssistantUnread',
       },
+      {
+        // Sits beside the assistant because that is what it feeds: documents
+        // here are retrieved only in this doctor's own sessions.
+        href: '/doctor/knowledge-base',
+        label: 'Knowledge Base',
+        labelKey: 'knowledgeBase',
+        icon: 'library_books',
+        ability: { action: 'read', subject: 'Document' },
+      },
     ],
   },
 ];

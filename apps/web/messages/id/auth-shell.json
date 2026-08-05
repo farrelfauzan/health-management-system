@@ -48,7 +48,8 @@
         "integrations": "Integrasi",
         "administration": "Administrasi",
         "today": "Hari ini",
-        "aiProviders": "Penyedia AI"
+        "aiProviders": "Penyedia AI",
+        "knowledgeBase": "Basis Pengetahuan"
       },
       "search": {
         "label": "Cari pasien",

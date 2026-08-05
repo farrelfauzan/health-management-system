@@ -306,5 +306,96 @@
       "updated": "Penyedia diperbarui.",
       "saveFailed": "Tidak dapat menyimpan penyedia ini."
     }
+  },
+  "personalKnowledgeBase": {
+    "header": {
+      "title": "Basis pengetahuan Anda",
+      "subtitle": "Panduan, formularium, dan bahan rujukan yang boleh dipakai asisten saat menjawab Anda. Bersifat pribadi — tidak ada orang lain yang dapat melihat atau mengambil dokumen ini.",
+      "upload": "Unggah dokumen",
+      "breadcrumbs": {
+        "assistant": "Asisten",
+        "knowledgeBase": "Basis pengetahuan"
+      }
+    },
+    "notice": {
+      "title": "Jangan simpan data pasien di basis pengetahuan",
+      "body": "Cuplikan dari dokumen ini dikirim ke penyedia AI ketika membantu menjawab pertanyaan. Jangan pernah mengunggah catatan pasien, identitas pasien, atau apa pun dari rekam medis."
+    },
+    "states": {
+      "loading": "Memuat dokumen Anda…",
+      "error": "Tidak dapat memuat basis pengetahuan Anda.",
+      "empty": "Anda belum mengunggah dokumen apa pun."
+    },
+    "table": {
+      "columns": {
+        "title": "Dokumen",
+        "status": "Status",
+        "chunks": "Cuplikan",
+        "size": "Ukuran",
+        "actions": "Aksi"
+      }
+    },
+    "ingest": {
+      "status": {
+        "pending": "Menunggu diproses",
+        "processing": "Sedang diproses",
+        "ready": "Siap",
+        "failed": "Gagal",
+        "notApplicable": "Tidak diproses"
+      },
+      "notAnswerableYet": "Asisten belum bisa menjawab dari dokumen ini."
+    },
+    "upload": {
+      "title": "Unggah ke basis pengetahuan Anda",
+      "description": "Berkas langsung masuk ke penyimpanan aman. Dokumen baru bisa dipakai menjawab setelah pemrosesan selesai.",
+      "fields": {
+        "file": "Berkas",
+        "fileHint": "PDF, Markdown, atau teks biasa.",
+        "title": "Judul",
+        "language": "Bahasa"
+      },
+      "languages": {
+        "ID": "Indonesia",
+        "EN": "Inggris"
+      },
+      "actions": {
+        "cancel": "Batal",
+        "upload": "Unggah",
+        "uploading": "Mengunggah…"
+      },
+      "errors": {
+        "noFile": "Pilih berkas terlebih dahulu.",
+        "unsupportedType": "Jenis berkas itu tidak diterima. Gunakan PDF, Markdown, atau teks biasa.",
+        "failed": "Unggahan tidak selesai."
+      },
+      "success": "Dokumen terunggah. Akan bisa dipakai menjawab setelah pemrosesan selesai."
+    },
+    "rename": {
+      "title": "Ubah nama dokumen",
+      "description": "Hanya judul yang berubah. Berkas yang tersimpan tetap sama.",
+      "field": "Judul",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "success": "Nama dokumen diubah.",
+      "error": "Tidak dapat mengubah nama dokumen ini."
+    },
+    "actions": {
+      "download": "Unduh",
+      "rename": "Ubah nama",
+      "reingest": "Proses ulang",
+      "delete": "Hapus",
+      "confirm": {
+        "delete": "Hapus \"{title}\"? Cuplikannya ikut terhapus dan asisten berhenti memakainya."
+      },
+      "success": {
+        "reingest": "Dokumen dimasukkan ke antrean pemrosesan ulang.",
+        "delete": "Dokumen dihapus."
+      },
+      "errors": {
+        "download": "Tidak dapat membuat tautan unduhan.",
+        "reingest": "Tidak dapat memasukkan dokumen ini ke antrean pemrosesan ulang.",
+        "delete": "Tidak dapat menghapus dokumen ini."
+      }
+    }
   }
 }
