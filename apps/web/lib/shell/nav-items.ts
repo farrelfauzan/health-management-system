@@ -17,6 +17,7 @@ export type ShellNavigationKey =
   | 'advanced'
   | 'aiAssistant'
   | 'aiProviders'
+  | 'knowledgeBase'
   | 'integrations'
   | 'administration'
   | 'today';
@@ -119,6 +120,13 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         icon: 'psychology',
         ability: { action: 'create', subject: 'ChatSession' },
         badgeKey: 'aiAssistantUnread',
+      },
+      {
+        href: '/admin/knowledge-base',
+        label: 'Knowledge Base',
+        labelKey: 'knowledgeBase',
+        icon: 'library_books',
+        ability: { action: 'read', subject: 'Document' },
       },
       {
         href: '/admin/ai-providers',

@@ -48,7 +48,8 @@
         "integrations": "Integrations",
         "administration": "Administration",
         "today": "Today",
-        "aiProviders": "AI Providers"
+        "aiProviders": "AI Providers",
+        "knowledgeBase": "Knowledge Base"
       },
       "search": {
         "label": "Search patients",

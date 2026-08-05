@@ -306,5 +306,96 @@
       "updated": "Provider updated.",
       "saveFailed": "Unable to save this provider."
     }
+  },
+  "personalKnowledgeBase": {
+    "header": {
+      "title": "Your knowledge base",
+      "subtitle": "Guidelines, formularies and reference material the assistant may use when answering you. Private to you — nobody else can see or retrieve these documents.",
+      "upload": "Upload document",
+      "breadcrumbs": {
+        "assistant": "Assistant",
+        "knowledgeBase": "Knowledge base"
+      }
+    },
+    "notice": {
+      "title": "No patient data in your knowledge base",
+      "body": "Passages from these documents are sent to the AI provider when they help answer a question. Never upload patient notes, identifiers, or anything from a medical record."
+    },
+    "states": {
+      "loading": "Loading your documents…",
+      "error": "Unable to load your knowledge base.",
+      "empty": "You have not uploaded any documents yet."
+    },
+    "table": {
+      "columns": {
+        "title": "Document",
+        "status": "Status",
+        "chunks": "Passages",
+        "size": "Size",
+        "actions": "Actions"
+      }
+    },
+    "ingest": {
+      "status": {
+        "pending": "Waiting to process",
+        "processing": "Processing",
+        "ready": "Ready",
+        "failed": "Failed",
+        "notApplicable": "Not processed"
+      },
+      "notAnswerableYet": "The assistant cannot answer from this document yet."
+    },
+    "upload": {
+      "title": "Upload to your knowledge base",
+      "description": "The file goes straight to secure storage. It becomes answerable once processing finishes.",
+      "fields": {
+        "file": "File",
+        "fileHint": "PDF, Markdown or plain text.",
+        "title": "Title",
+        "language": "Language"
+      },
+      "languages": {
+        "ID": "Indonesian",
+        "EN": "English"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "upload": "Upload",
+        "uploading": "Uploading…"
+      },
+      "errors": {
+        "noFile": "Choose a file first.",
+        "unsupportedType": "That file type is not accepted. Use PDF, Markdown or plain text.",
+        "failed": "The upload did not complete."
+      },
+      "success": "Document uploaded. It will be answerable once processing finishes."
+    },
+    "rename": {
+      "title": "Rename document",
+      "description": "Only the title changes. The stored file stays as it is.",
+      "field": "Title",
+      "cancel": "Cancel",
+      "save": "Save",
+      "success": "Document renamed.",
+      "error": "Unable to rename this document."
+    },
+    "actions": {
+      "download": "Download",
+      "rename": "Rename",
+      "reingest": "Reprocess",
+      "delete": "Delete",
+      "confirm": {
+        "delete": "Delete \"{title}\"? Its passages are removed with it and the assistant will stop using it."
+      },
+      "success": {
+        "reingest": "Document queued for reprocessing.",
+        "delete": "Document deleted."
+      },
+      "errors": {
+        "download": "Unable to create a download link.",
+        "reingest": "Unable to queue this document for reprocessing.",
+        "delete": "Unable to delete this document."
+      }
+    }
   }
 }

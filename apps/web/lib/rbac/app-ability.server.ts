@@ -45,6 +45,12 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'chat.session': 'ChatSession',
   'chat.message': 'ChatMessage',
   'ai-provider': 'AiProviderConfig',
+  // Both scopes collapse to one subject here. `permissionToRule` drops the
+  // `:own` / `:any` suffix, so this cannot distinguish an admin's clinic-corpus
+  // grant from a clinician's personal one — and must not try to. It decides
+  // whether the knowledge-base nav entry is visible; the API decides whose
+  // documents come back.
+  document: 'Document',
   'bpjs.config': 'BpjsConfig',
   'bpjs.reference': 'BpjsReference',
   'bpjs.mapping': 'BpjsMapping',

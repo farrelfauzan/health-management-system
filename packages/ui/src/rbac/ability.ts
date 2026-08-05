@@ -41,6 +41,7 @@ export type AppSubject =
   | 'ChatSession'
   | 'ChatMessage'
   | 'AiProviderConfig'
+  | 'Document'
   | 'BpjsConfig'
   | 'BpjsReference'
   | 'BpjsMapping'
