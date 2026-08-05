@@ -15733,6 +15733,887 @@ paths:
         - bearer: []
       summary: Queue a clinic document for re-ingestion
       tags: *a25
+  /api/v1/me/documents/upload-url:
+    post:
+      operationId: PersonalDocumentController_createUploadUrl_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePersonalDocumentUploadUrlDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  mimeType: application/pdf
+                  sizeBytes: 96256
+      responses:
+        "200":
+          description: "A short-lived signed URL the client PUTs the file to directly. The
+            declared content type and size are validated before signing and then
+            signed into the URL, so changing either header is rejected by the
+            storage provider. Nothing is persisted yet — call POST /me/documents
+            with the returned storageKey to record it. A personal knowledge base
+            must contain no patient data: retrieved chunks are sent to the AI
+            provider."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      storageKey:
+                        type: string
+                      expiresAt:
+                        type: string
+                      requiredHeaders:
+                        type: object
+                        properties:
+                          Content-Type:
+                            type: string
+                          Content-Length:
+                            type: string
+                        required:
+                          - Content-Type
+                          - Content-Length
+                    required:
+                      - url
+                      - storageKey
+                      - expiresAt
+                      - requiredHeaders
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/doctor/4c1e8b90-72da-4f3a-8f21-6b90ad5e4412.pdf?X-Amz-Signature=...
+                    storageKey: documents/doctor/4c1e8b90-72da-4f3a-8f21-6b90ad5e4412.pdf
+                    expiresAt: 2026-08-05T09:05:00.000Z
+                    requiredHeaders:
+                      Content-Type: application/pdf
+                      Content-Length: "96256"
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Sign a browser-direct upload into your own knowledge base
+      tags: &a26
+        - Document Management
+  /api/v1/me/documents:
+    post:
+      operationId: PersonalDocumentController_confirmUpload_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmPersonalDocumentUploadDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  storageKey: documents/doctor/4c1e8b90-72da-4f3a-8f21-6b90ad5e4412.pdf
+                  title: Panduan Tatalaksana Hipertensi 2026
+                  language: ID
+      responses:
+        "200":
+          description: Records the uploaded object as a document you own, queued for
+            ingestion. Owner and purpose are derived from your identity, never
+            from the body — the storage key must be one issued to you by the
+            upload-url route, so a key minted for the clinic corpus is refused
+            here.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      ownerType:
+                        type: string
+                      ownerId:
+                        type: string
+                      purpose:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      ingestStatus:
+                        type: string
+                      ingestError:
+                        nullable: true
+                      ingestedAt:
+                        type: string
+                      chunkCount:
+                        type: integer
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - ownerType
+                      - ownerId
+                      - purpose
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - ingestStatus
+                      - ingestError
+                      - ingestedAt
+                      - chunkCount
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7b3f2c19-5d84-4a6e-9c02-1f8ad7c35e60
+                    ownerType: DOCTOR
+                    ownerId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                    purpose: PERSONAL_KNOWLEDGE_BASE
+                    title: Panduan Tatalaksana Hipertensi 2026
+                    mimeType: application/pdf
+                    sizeBytes: 96256
+                    language: ID
+                    ingestStatus: READY
+                    ingestError: null
+                    ingestedAt: 2026-08-05T09:07:41.000Z
+                    chunkCount: 24
+                    createdAt: 2026-08-05T09:05:12.000Z
+                    updatedAt: 2026-08-05T09:07:41.000Z
+                  message: Document added to your knowledge base
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Record a completed upload in your own knowledge base
+      tags: *a26
+    get:
+      operationId: PersonalDocumentController_listDocuments_v1
+      parameters:
+        - name: ingestStatus
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - PROCESSING
+              - READY
+              - FAILED
+              - NOT_APPLICABLE
+        - name: language
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ID
+              - EN
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: Your documents only. Ownership is a predicate of the query rather
+            than a filter on the result, so another user’s document is never in
+            the returned set.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        ownerType:
+                          type: string
+                        ownerId:
+                          type: string
+                        purpose:
+                          type: string
+                        title:
+                          type: string
+                        mimeType:
+                          type: string
+                        sizeBytes:
+                          type: integer
+                        language:
+                          type: string
+                        ingestStatus:
+                          type: string
+                        ingestError:
+                          nullable: true
+                        ingestedAt:
+                          type: string
+                        chunkCount:
+                          type: integer
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - ownerType
+                        - ownerId
+                        - purpose
+                        - title
+                        - mimeType
+                        - sizeBytes
+                        - language
+                        - ingestStatus
+                        - ingestError
+                        - ingestedAt
+                        - chunkCount
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 7b3f2c19-5d84-4a6e-9c02-1f8ad7c35e60
+                      ownerType: DOCTOR
+                      ownerId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                      purpose: PERSONAL_KNOWLEDGE_BASE
+                      title: Panduan Tatalaksana Hipertensi 2026
+                      mimeType: application/pdf
+                      sizeBytes: 96256
+                      language: ID
+                      ingestStatus: READY
+                      ingestError: null
+                      ingestedAt: 2026-08-05T09:07:41.000Z
+                      chunkCount: 24
+                      createdAt: 2026-08-05T09:05:12.000Z
+                      updatedAt: 2026-08-05T09:07:41.000Z
+                  meta:
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List the documents in your own knowledge base
+      tags: *a26
+  /api/v1/me/documents/{id}:
+    get:
+      operationId: PersonalDocumentController_getDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The document’s metadata and ingestion state. A document you do not
+            own reports as not found rather than forbidden — distinguishing the
+            two would confirm that the id exists.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      ownerType:
+                        type: string
+                      ownerId:
+                        type: string
+                      purpose:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      ingestStatus:
+                        type: string
+                      ingestError:
+                        nullable: true
+                      ingestedAt:
+                        type: string
+                      chunkCount:
+                        type: integer
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - ownerType
+                      - ownerId
+                      - purpose
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - ingestStatus
+                      - ingestError
+                      - ingestedAt
+                      - chunkCount
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 7b3f2c19-5d84-4a6e-9c02-1f8ad7c35e60
+                    ownerType: DOCTOR
+                    ownerId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                    purpose: PERSONAL_KNOWLEDGE_BASE
+                    title: Panduan Tatalaksana Hipertensi 2026
+                    mimeType: application/pdf
+                    sizeBytes: 96256
+                    language: ID
+                    ingestStatus: READY
+                    ingestError: null
+                    ingestedAt: 2026-08-05T09:07:41.000Z
+                    chunkCount: 24
+                    createdAt: 2026-08-05T09:05:12.000Z
+                    updatedAt: 2026-08-05T09:07:41.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your knowledge base.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your knowledge base.
+      security:
+        - bearer: []
+      summary: Read one document from your own knowledge base
+      tags: *a26
+    patch:
+      operationId: PersonalDocumentController_updateDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePersonalDocumentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  title: Panduan Tatalaksana Hipertensi 2026 (revisi)
+      responses:
+        "200":
+          description: The updated document. The stored file is immutable — replacing
+            content means uploading a new document. Changing language discards
+            the document’s chunks and returns it to PENDING, because chunks
+            carry a copy of it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      ownerType:
+                        type: string
+                      ownerId:
+                        type: string
+                      purpose:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      ingestStatus:
+                        type: string
+                      ingestError:
+                        nullable: true
+                      ingestedAt:
+                        type: string
+                      chunkCount:
+                        type: integer
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - ownerType
+                      - ownerId
+                      - purpose
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - ingestStatus
+                      - ingestError
+                      - ingestedAt
+                      - chunkCount
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7b3f2c19-5d84-4a6e-9c02-1f8ad7c35e60
+                    ownerType: DOCTOR
+                    ownerId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                    purpose: PERSONAL_KNOWLEDGE_BASE
+                    title: Panduan Tatalaksana Hipertensi 2026
+                    mimeType: application/pdf
+                    sizeBytes: 96256
+                    language: ID
+                    ingestStatus: READY
+                    ingestError: null
+                    ingestedAt: 2026-08-05T09:07:41.000Z
+                    chunkCount: 24
+                    createdAt: 2026-08-05T09:05:12.000Z
+                    updatedAt: 2026-08-05T09:07:41.000Z
+                  message: Document updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your knowledge base.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your knowledge base.
+      security:
+        - bearer: []
+      summary: Edit one of your documents’ metadata
+      tags: *a26
+    delete:
+      operationId: PersonalDocumentController_deleteDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Soft-deletes the document and hard-deletes its chunks in the same
+            write. Retrieval queries chunks directly, so a soft delete alone
+            would retire the row while leaving the document answering your
+            questions; chunksRemoved is the evidence it stopped.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      deletedAt:
+                        type: string
+                      chunksRemoved:
+                        type: integer
+                    required:
+                      - id
+                      - deletedAt
+                      - chunksRemoved
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7b3f2c19-5d84-4a6e-9c02-1f8ad7c35e60
+                    deletedAt: 2026-08-05T10:22:03.000Z
+                    chunksRemoved: 24
+                  message: Document deleted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your knowledge base.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your knowledge base.
+      security:
+        - bearer: []
+      summary: Remove a document from your own knowledge base
+      tags: *a26
+  /api/v1/me/documents/{id}/download:
+    get:
+      operationId: PersonalDocumentController_getDownloadUrl_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A short-lived signed URL, issued per request and never persisted —
+            the bucket is private and the API does not stream file bytes through
+            itself.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/doctor/4c1e8b90-72da-4f3a-8f21-6b90ad5e4412.pdf?X-Amz-Signature=...
+                    expiresAt: 2026-08-05T09:12:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your knowledge base.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your knowledge base.
+      security:
+        - bearer: []
+      summary: Mint a signed download URL for one of your documents
+      tags: *a26
+  /api/v1/me/documents/{id}/ingest:
+    post:
+      operationId: PersonalDocumentController_reingestDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "202":
+          description: Returns the document at ingestStatus PENDING. Queued rather than
+            ingested inline, because extracting and embedding a long PDF is tens
+            of seconds of work. Requires DOCUMENT_INGESTION_ENABLED on the API,
+            or the document waits indefinitely.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      ownerType:
+                        type: string
+                      ownerId:
+                        type: string
+                      purpose:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      ingestStatus:
+                        type: string
+                      ingestError:
+                        nullable: true
+                      ingestedAt:
+                        nullable: true
+                      chunkCount:
+                        type: integer
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - ownerType
+                      - ownerId
+                      - purpose
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - ingestStatus
+                      - ingestError
+                      - ingestedAt
+                      - chunkCount
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7b3f2c19-5d84-4a6e-9c02-1f8ad7c35e60
+                    ownerType: DOCTOR
+                    ownerId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                    purpose: PERSONAL_KNOWLEDGE_BASE
+                    title: Panduan Tatalaksana Hipertensi 2026
+                    mimeType: application/pdf
+                    sizeBytes: 96256
+                    language: ID
+                    ingestStatus: PENDING
+                    ingestError: null
+                    ingestedAt: null
+                    chunkCount: 0
+                    createdAt: 2026-08-05T09:05:12.000Z
+                    updatedAt: 2026-08-05T09:05:12.000Z
+                  message: Document queued for ingestion
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your knowledge base.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your knowledge base.
+      security:
+        - bearer: []
+      summary: Queue one of your documents for re-ingestion
+      tags: *a26
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -15788,7 +16669,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a26
+      tags: &a27
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -15881,7 +16762,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a26
+      tags: *a27
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -15973,7 +16854,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a26
+      tags: *a27
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -17791,6 +18672,54 @@ components:
             - PATIENT
             - DOCTOR
             - BOTH
+        language:
+          type: string
+          enum:
+            - ID
+            - EN
+    CreatePersonalDocumentUploadUrlDto:
+      type: object
+      properties:
+        mimeType:
+          type: string
+          enum:
+            - application/pdf
+            - text/markdown
+            - text/plain
+        sizeBytes:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+      required:
+        - mimeType
+        - sizeBytes
+    ConfirmPersonalDocumentUploadDto:
+      type: object
+      properties:
+        storageKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        language:
+          type: string
+          enum:
+            - ID
+            - EN
+      required:
+        - storageKey
+        - title
+        - language
+    UpdatePersonalDocumentDto:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
         language:
           type: string
           enum:

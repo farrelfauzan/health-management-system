@@ -193,3 +193,81 @@ export const listClinicDocumentsQuerySchema = z.object({
 });
 
 export type ListClinicDocumentsQueryInput = z.infer<typeof listClinicDocumentsQuerySchema>;
+
+/**
+ * Signs one browser-direct upload into the caller's **own** knowledge base
+ * (`P15-T20`).
+ *
+ * Identical in shape to the clinic equivalent and deliberately kept separate:
+ * these two flows mint keys under different prefixes and are reachable with
+ * different permission scopes, so one schema serving both would make the
+ * difference between them a runtime argument rather than a route.
+ */
+export const createPersonalDocumentUploadUrlSchema = z.object({
+  mimeType: documentUploadMimeTypeSchema,
+  sizeBytes: z.coerce.number().int().positive(),
+});
+
+export type CreatePersonalDocumentUploadUrlInput = z.infer<
+  typeof createPersonalDocumentUploadUrlSchema
+>;
+
+/**
+ * Records a completed upload as a document in the caller's own knowledge base.
+ *
+ * Neither `purpose`, `ownerType` nor `ownerId` is accepted. All three are
+ * derived from the authenticated actor, because a personal corpus that let its
+ * owner be named in a request body would be a clinic-corpus write with extra
+ * steps — and `purpose` is what the public channel's retrieval filter keys on
+ * (`ownerType = CLINIC` + `purpose = FAQ_KNOWLEDGE_BASE`), so a caller able to
+ * set it could publish into the channel patients read.
+ *
+ * `visibility` is absent for the same reason it would be meaningless: a
+ * personal document is retrieved only in its owner's own sessions, never by
+ * channel.
+ */
+export const confirmPersonalDocumentUploadSchema = z.object({
+  storageKey: z.string().min(1).max(512),
+  title: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX_LENGTH),
+  language: documentLanguageSchema,
+});
+
+export type ConfirmPersonalDocumentUploadInput = z.infer<
+  typeof confirmPersonalDocumentUploadSchema
+>;
+
+/**
+ * Edits a personal document's metadata. The stored file is immutable, and
+ * `language` is copied onto chunks, so the service discards chunks when it
+ * changes rather than leaving stale copies searchable.
+ */
+export const updatePersonalDocumentSchema = z
+  .object({
+    title: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX_LENGTH).optional(),
+    language: documentLanguageSchema.optional(),
+  })
+  .refine(
+    (value) => value.title !== undefined || value.language !== undefined,
+    { message: 'At least one field must be provided' },
+  );
+
+export type UpdatePersonalDocumentInput = z.infer<typeof updatePersonalDocumentSchema>;
+
+/**
+ * Lists the caller's own knowledge base. There is no `purpose` filter: this
+ * corpus has exactly one purpose, and offering the field would imply the route
+ * could return something else.
+ */
+export const listPersonalDocumentsQuerySchema = z.object({
+  ingestStatus: documentIngestStatusSchema.optional(),
+  language: documentLanguageSchema.optional(),
+  cursor: z.string().uuid().optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(DOCUMENT_PAGE_MAX_LIMIT)
+    .default(DOCUMENT_PAGE_DEFAULT_LIMIT),
+});
+
+export type ListPersonalDocumentsQueryInput = z.infer<typeof listPersonalDocumentsQuerySchema>;

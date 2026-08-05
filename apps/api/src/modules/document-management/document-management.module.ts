@@ -4,6 +4,7 @@ import { EmbeddingModule } from '../../common/embedding/embedding.module';
 import { StorageModule } from '../../common/storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
 import { DocumentAdminController } from './controller/document-admin.controller';
+import { PersonalDocumentController } from './controller/personal-document.controller';
 import { DocumentChunkRepository } from './repository/document-chunk.repository';
 import { DocumentRetrievalRepository } from './repository/document-retrieval.repository';
 import { DocumentRepository } from './repository/document.repository';
@@ -11,6 +12,7 @@ import { DocumentIngestionService } from './service/document-ingestion.service';
 import { DocumentIngestionWorker } from './service/document-ingestion.worker';
 import { DocumentRetrievalService } from './service/document-retrieval.service';
 import { DocumentService } from './service/document.service';
+import { PersonalDocumentService } from './service/personal-document.service';
 
 /**
  * The shared document store (P15-T10). One module holds the clinic FAQ/SOP
@@ -28,10 +30,12 @@ import { DocumentService } from './service/document.service';
  * `P15-T11` adds the read side — `DocumentRetrievalService`, the hybrid
  * vector-plus-lexical search fused by reciprocal rank — and exports it, so
  * the chatbot and the future WA/Telegram channel share **one** scope
- * predicate rather than each writing their own. The owner-scoped personal
- * routes (`P15-T20`) remain; the repositories already take `ownerType`/
- * `ownerId` as required arguments, so they are not a widening of any query
- * written here.
+ * predicate rather than each writing their own. `P15-T20` adds the last
+ * piece: `PersonalDocumentService` over the same repositories, scoped to the
+ * caller. It is a second controller rather than a mode of the admin one
+ * because the two differ in the only way that matters — who owns the rows
+ * they may touch — and a shared route with a scope branch would put that
+ * difference inside a conditional instead of in the URL.
  *
  * `AuthModule` is imported for `AuthRepository`: the global guard proves the
  * actor may act on *some* document, and only a scope check in the service can
@@ -39,12 +43,13 @@ import { DocumentService } from './service/document.service';
  */
 @Module({
   imports: [AuthModule, StorageModule, EmbeddingModule],
-  controllers: [DocumentAdminController],
+  controllers: [DocumentAdminController, PersonalDocumentController],
   providers: [
     DocumentRepository,
     DocumentChunkRepository,
     DocumentRetrievalRepository,
     DocumentService,
+    PersonalDocumentService,
     DocumentIngestionService,
     DocumentIngestionWorker,
     DocumentRetrievalService,
