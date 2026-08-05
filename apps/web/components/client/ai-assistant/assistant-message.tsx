@@ -3,6 +3,7 @@
 import { Icon } from '@hms/ui';
 
 import { AssistantDisclaimer } from '#components/client/ai-assistant/assistant-disclaimer';
+import { ChatCitationList } from '#components/client/ai-assistant/chat-citation-list';
 import { ClinicalReferenceChips } from '#components/client/ai-assistant/clinical-reference-chips';
 import { MarkdownBlockView } from '#components/client/ai-assistant/markdown-block-view';
 import { MarkdownInline } from '#components/client/ai-assistant/markdown-inline';
@@ -53,6 +54,14 @@ export function AssistantMessage({ message }: AssistantMessageProps) {
         */}
         {message.body.toolResults && message.body.toolResults.length > 0 ? (
           <ToolResultList toolResults={message.body.toolResults} />
+        ) : null}
+        {/*
+          Between the lookups and the clinical reference chips: citations are
+          what the reply was *grounded* in, so they belong with the answer
+          rather than beside the disclaimer.
+        */}
+        {message.body.citations && message.body.citations.length > 0 ? (
+          <ChatCitationList citations={message.body.citations} />
         ) : null}
         {message.body.references && message.body.references.length > 0 ? (
           <ClinicalReferenceChips references={message.body.references} />

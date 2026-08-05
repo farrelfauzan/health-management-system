@@ -1,3 +1,5 @@
+import type { ChatCitationView } from '@hms/shared-types';
+
 import type { ParsedToolResult } from '#lib/ai-assistant/parsed-tool-result';
 
 export type ClinicalReference = {
@@ -25,6 +27,17 @@ export type AssistantMessageBody = {
    * rendered from data the assistant could not have influenced.
    */
   toolResults?: ParsedToolResult[];
+  /**
+   * The documents this reply was allowed to draw on (ai-chatbot-tools.md
+   * §5.5), numbered to match the `[n]` markers in the text above.
+   *
+   * Each carries its own `sourceTier`, and the list is rendered per citation
+   * rather than summarised on the message: one answer can be grounded in
+   * clinic policy *and* in something the reader uploaded themselves, and those
+   * carry different authority. Labelling the message as a whole would average
+   * the two and lose exactly the distinction that matters.
+   */
+  citations?: ChatCitationView[];
 };
 
 export type UserConversationMessage = {

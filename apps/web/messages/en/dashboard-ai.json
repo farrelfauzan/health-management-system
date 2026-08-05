@@ -244,6 +244,13 @@
         "capacity": "Capacity",
         "remaining": "Remaining"
       }
+    },
+    "citations": {
+      "heading": "Grounded in",
+      "source": {
+        "clinic": "from a clinic document",
+        "personal": "from your document"
+      }
     }
   },
   "aiProviders": {
