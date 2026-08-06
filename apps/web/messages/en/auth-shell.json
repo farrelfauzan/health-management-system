@@ -49,7 +49,8 @@
         "administration": "Administration",
         "today": "Today",
         "aiProviders": "AI Providers",
-        "knowledgeBase": "Knowledge Base"
+        "knowledgeBase": "Knowledge Base",
+        "clinicCorpus": "Clinic Corpus"
       },
       "search": {
         "label": "Search patients",

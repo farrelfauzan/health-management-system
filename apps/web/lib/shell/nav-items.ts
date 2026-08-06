@@ -18,6 +18,7 @@ export type ShellNavigationKey =
   | 'aiAssistant'
   | 'aiProviders'
   | 'knowledgeBase'
+  | 'clinicCorpus'
   | 'integrations'
   | 'administration'
   | 'today';
@@ -126,6 +127,17 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         label: 'Knowledge Base',
         labelKey: 'knowledgeBase',
         icon: 'library_books',
+        ability: { action: 'read', subject: 'Document' },
+      },
+      {
+        // The shared, patient-reachable corpus. Sits next to the personal
+        // knowledge base above and carries the same ability, because the
+        // frontend cannot tell the `:any` grant from the `:own` one — the
+        // API does, on every route.
+        href: '/admin/clinic-corpus',
+        label: 'Clinic Corpus',
+        labelKey: 'clinicCorpus',
+        icon: 'menu_book',
         ability: { action: 'read', subject: 'Document' },
       },
       {

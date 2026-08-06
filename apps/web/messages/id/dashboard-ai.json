@@ -404,5 +404,134 @@
         "delete": "Tidak dapat menghapus dokumen ini."
       }
     }
+  },
+  "clinicCorpus": {
+    "header": {
+      "title": "Korpus klinik",
+      "subtitle": "Dokumen FAQ dan SOP bersama yang dipakai asisten untuk menjawab. Dokumen yang ditandai untuk pasien bisa dikutip ke siapa pun yang menghubungi klinik.",
+      "upload": "Unggah dokumen",
+      "breadcrumbs": {
+        "assistant": "Asisten",
+        "clinicCorpus": "Korpus klinik"
+      }
+    },
+    "states": {
+      "loading": "Memuat korpus…",
+      "error": "Tidak dapat memuat korpus klinik.",
+      "empty": "Tidak ada dokumen yang cocok dengan filter ini."
+    },
+    "filters": {
+      "status": "Status pemrosesan",
+      "visibility": "Boleh ditunjukkan ke",
+      "all": "Semua",
+      "statuses": {
+        "PENDING": "Menunggu diproses",
+        "PROCESSING": "Sedang diproses",
+        "READY": "Siap",
+        "FAILED": "Gagal",
+        "NOT_APPLICABLE": "Tidak diproses"
+      },
+      "visibilities": {
+        "PATIENT": "Pasien saja",
+        "DOCTOR": "Staf saja",
+        "BOTH": "Pasien dan staf"
+      }
+    },
+    "table": {
+      "columns": {
+        "title": "Dokumen",
+        "visibility": "Ditunjukkan ke",
+        "status": "Status",
+        "chunks": "Cuplikan",
+        "size": "Ukuran",
+        "actions": "Tindakan"
+      }
+    },
+    "visibility": {
+      "labels": {
+        "PATIENT": "Pasien saja",
+        "DOCTOR": "Staf saja",
+        "BOTH": "Pasien dan staf"
+      }
+    },
+    "ingest": {
+      "status": {
+        "pending": "Menunggu diproses",
+        "processing": "Sedang diproses",
+        "ready": "Siap",
+        "failed": "Gagal",
+        "notApplicable": "Tidak diproses"
+      },
+      "notAnswerableYet": "Dokumen ini belum bisa dipakai menjawab."
+    },
+    "upload": {
+      "title": "Unggah ke korpus klinik",
+      "description": "Berkas langsung masuk ke penyimpanan aman. Bisa dipakai menjawab setelah pemrosesan selesai.",
+      "fields": {
+        "file": "Berkas",
+        "fileHint": "PDF, Markdown, atau teks biasa.",
+        "title": "Judul",
+        "visibility": "Boleh ditunjukkan ke",
+        "visibilityHint": "Staf saja adalah pilihan paling aman. Memilih pasien berarti cuplikan dokumen ini bisa dikutip ke siapa pun yang menghubungi klinik.",
+        "language": "Bahasa"
+      },
+      "visibilities": {
+        "PATIENT": "Pasien saja",
+        "DOCTOR": "Staf saja",
+        "BOTH": "Pasien dan staf"
+      },
+      "languages": {
+        "ID": "Indonesia",
+        "EN": "Inggris"
+      },
+      "actions": {
+        "cancel": "Batal",
+        "upload": "Unggah",
+        "uploading": "Mengunggah…"
+      },
+      "errors": {
+        "noFile": "Pilih berkas terlebih dahulu.",
+        "unsupportedType": "Jenis berkas itu tidak diterima. Gunakan PDF, Markdown, atau teks biasa.",
+        "failed": "Unggahan tidak selesai."
+      },
+      "success": "Dokumen terunggah. Akan bisa dipakai menjawab setelah pemrosesan selesai."
+    },
+    "edit": {
+      "title": "Ubah dokumen",
+      "description": "Berkas yang tersimpan tetap sama. Untuk mengganti isinya, unggah dokumen baru.",
+      "fields": {
+        "title": "Judul",
+        "visibility": "Boleh ditunjukkan ke"
+      },
+      "visibilities": {
+        "PATIENT": "Pasien saja",
+        "DOCTOR": "Staf saja",
+        "BOTH": "Pasien dan staf"
+      },
+      "reingestWarning": "Mengubah siapa yang boleh ditunjukkan dokumen ini akan menghapus cuplikannya dan memprosesnya ulang. Dokumen tidak menjawab apa pun sampai proses itu selesai.",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "success": "Dokumen diperbarui.",
+      "successWithReingest": "Dokumen diperbarui. Sedang diproses ulang dan tidak menjawab apa pun sampai selesai.",
+      "error": "Tidak dapat memperbarui dokumen ini."
+    },
+    "actions": {
+      "download": "Unduh",
+      "edit": "Ubah",
+      "reingest": "Proses ulang",
+      "delete": "Pensiunkan",
+      "confirm": {
+        "delete": "Pensiunkan \"{title}\"? Cuplikannya ikut terhapus dan asisten berhenti memakainya."
+      },
+      "success": {
+        "reingest": "Dokumen dimasukkan ke antrean pemrosesan ulang.",
+        "delete": "Dokumen dipensiunkan."
+      },
+      "errors": {
+        "download": "Tidak dapat membuat tautan unduhan.",
+        "reingest": "Tidak dapat memasukkan dokumen ini ke antrean pemrosesan ulang.",
+        "delete": "Tidak dapat memensiunkan dokumen ini."
+      }
+    }
   }
 }

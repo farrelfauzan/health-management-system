@@ -404,5 +404,134 @@
         "delete": "Unable to delete this document."
       }
     }
+  },
+  "clinicCorpus": {
+    "header": {
+      "title": "Clinic corpus",
+      "subtitle": "The shared FAQ and SOP documents the assistant answers from. Documents marked for patients can be quoted to anyone who messages the clinic.",
+      "upload": "Upload document",
+      "breadcrumbs": {
+        "assistant": "Assistant",
+        "clinicCorpus": "Clinic corpus"
+      }
+    },
+    "states": {
+      "loading": "Loading the corpus…",
+      "error": "Unable to load the clinic corpus.",
+      "empty": "No documents match these filters."
+    },
+    "filters": {
+      "status": "Processing status",
+      "visibility": "Who can be shown this",
+      "all": "All",
+      "statuses": {
+        "PENDING": "Waiting to process",
+        "PROCESSING": "Processing",
+        "READY": "Ready",
+        "FAILED": "Failed",
+        "NOT_APPLICABLE": "Not processed"
+      },
+      "visibilities": {
+        "PATIENT": "Patients only",
+        "DOCTOR": "Staff only",
+        "BOTH": "Patients and staff"
+      }
+    },
+    "table": {
+      "columns": {
+        "title": "Document",
+        "visibility": "Shown to",
+        "status": "Status",
+        "chunks": "Passages",
+        "size": "Size",
+        "actions": "Actions"
+      }
+    },
+    "visibility": {
+      "labels": {
+        "PATIENT": "Patients only",
+        "DOCTOR": "Staff only",
+        "BOTH": "Patients and staff"
+      }
+    },
+    "ingest": {
+      "status": {
+        "pending": "Waiting to process",
+        "processing": "Processing",
+        "ready": "Ready",
+        "failed": "Failed",
+        "notApplicable": "Not processed"
+      },
+      "notAnswerableYet": "Nothing can be answered from this document yet."
+    },
+    "upload": {
+      "title": "Upload to the clinic corpus",
+      "description": "The file goes straight to secure storage. It becomes answerable once processing finishes.",
+      "fields": {
+        "file": "File",
+        "fileHint": "PDF, Markdown or plain text.",
+        "title": "Title",
+        "visibility": "Who can be shown this",
+        "visibilityHint": "Staff only is the safe default. Choosing patients means passages from this document can be quoted to anyone who messages the clinic.",
+        "language": "Language"
+      },
+      "visibilities": {
+        "PATIENT": "Patients only",
+        "DOCTOR": "Staff only",
+        "BOTH": "Patients and staff"
+      },
+      "languages": {
+        "ID": "Indonesian",
+        "EN": "English"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "upload": "Upload",
+        "uploading": "Uploading…"
+      },
+      "errors": {
+        "noFile": "Choose a file first.",
+        "unsupportedType": "That file type is not accepted. Use PDF, Markdown or plain text.",
+        "failed": "The upload did not complete."
+      },
+      "success": "Document uploaded. It will be answerable once processing finishes."
+    },
+    "edit": {
+      "title": "Edit document",
+      "description": "The stored file stays as it is. To replace the content, upload a new document.",
+      "fields": {
+        "title": "Title",
+        "visibility": "Who can be shown this"
+      },
+      "visibilities": {
+        "PATIENT": "Patients only",
+        "DOCTOR": "Staff only",
+        "BOTH": "Patients and staff"
+      },
+      "reingestWarning": "Changing who can be shown this document removes its passages and reprocesses it. It will answer nothing until that finishes.",
+      "cancel": "Cancel",
+      "save": "Save",
+      "success": "Document updated.",
+      "successWithReingest": "Document updated. It is being reprocessed and will answer nothing until that finishes.",
+      "error": "Unable to update this document."
+    },
+    "actions": {
+      "download": "Download",
+      "edit": "Edit",
+      "reingest": "Reprocess",
+      "delete": "Retire",
+      "confirm": {
+        "delete": "Retire \"{title}\"? Its passages are removed with it and the assistant will stop using it."
+      },
+      "success": {
+        "reingest": "Document queued for reprocessing.",
+        "delete": "Document retired."
+      },
+      "errors": {
+        "download": "Unable to create a download link.",
+        "reingest": "Unable to queue this document for reprocessing.",
+        "delete": "Unable to retire this document."
+      }
+    }
   }
 }
