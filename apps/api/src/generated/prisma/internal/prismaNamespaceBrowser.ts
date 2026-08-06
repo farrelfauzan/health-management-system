@@ -104,7 +104,8 @@ export const ModelName = {
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
   Document: 'Document',
-  DocumentChunk: 'DocumentChunk'
+  DocumentChunk: 'DocumentChunk',
+  ChannelInboundReceipt: 'ChannelInboundReceipt'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1031,6 +1032,18 @@ export const DocumentChunkScalarFieldEnum = {
 } as const
 
 export type DocumentChunkScalarFieldEnum = (typeof DocumentChunkScalarFieldEnum)[keyof typeof DocumentChunkScalarFieldEnum]
+
+
+export const ChannelInboundReceiptScalarFieldEnum = {
+  id: 'id',
+  channel: 'channel',
+  externalChatId: 'externalChatId',
+  externalMessageId: 'externalMessageId',
+  sentAt: 'sentAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ChannelInboundReceiptScalarFieldEnum = (typeof ChannelInboundReceiptScalarFieldEnum)[keyof typeof ChannelInboundReceiptScalarFieldEnum]
 
 
 export const SortOrder = {

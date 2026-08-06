@@ -60,7 +60,9 @@
     "#ai-chatbot/types": "./src/ai-chatbot/types.ts",
     "#document-management/schemas": "./src/document-management/schemas.ts",
     "#document-management/contracts": "./src/document-management/contracts.ts",
-    "#document-management/types": "./src/document-management/types.ts"
+    "#document-management/types": "./src/document-management/types.ts",
+    "#customer-service/schemas": "./src/customer-service/schemas.ts",
+    "#customer-service/types": "./src/customer-service/types.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

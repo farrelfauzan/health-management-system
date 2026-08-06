@@ -488,3 +488,11 @@ export const DocumentLanguage = {
 } as const
 
 export type DocumentLanguage = (typeof DocumentLanguage)[keyof typeof DocumentLanguage]
+
+
+export const ChannelKind = {
+  WHATSAPP: 'WHATSAPP',
+  TELEGRAM: 'TELEGRAM'
+} as const
+
+export type ChannelKind = (typeof ChannelKind)[keyof typeof ChannelKind]

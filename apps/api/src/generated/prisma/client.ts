@@ -590,3 +590,26 @@ export type Document = Prisma.DocumentModel
  * writing both columns in one statement is sufficient.
  */
 export type DocumentChunk = Prisma.DocumentChunkModel
+/**
+ * Model ChannelInboundReceipt
+ * Proof that one inbound gateway message has already been taken in.
+ * 
+ * **Dedup is mandatory and it lives at the edge** (strategy §4.1): every
+ * gateway here retries a webhook it did not get a 2xx for, and a retried
+ * booking message that reached the tool loop twice books twice. The row is
+ * written before any business logic runs, so the second delivery is refused
+ * by the database rather than by a check somebody has to remember to write.
+ * 
+ * The unique key is over **three** columns, not the two §4.1 sketched.
+ * Telegram's `message_id` counts up per chat rather than per bot, so two
+ * customers hold the same id within minutes of each other, and
+ * `(channel, externalMessageId)` would drop the second customer's message as
+ * a duplicate of the first's. Including the chat is what makes the constraint
+ * mean "this message, from this conversation" — see the amendment note in
+ * §4.1.
+ * 
+ * Rows are insert-only and carry **no message body**: this table answers "did
+ * we already handle this?" and nothing else, so a retention sweep can drop it
+ * on a much shorter clock than the transcript without losing anything.
+ */
+export type ChannelInboundReceipt = Prisma.ChannelInboundReceiptModel
