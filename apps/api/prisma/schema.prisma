@@ -830,12 +830,12 @@ model DoctorPatientActivity {
 }
 
 model Appointment {
-  id          String            @id @default(uuid()) @db.Uuid
-  patientId   String            @map("patient_id") @db.Uuid
-  doctorId    String            @map("doctor_id") @db.Uuid
-  type        AppointmentType   @default(SESSION)
-  sessionId   String?           @map("session_id") @db.Uuid
-  queueNumber Int?              @map("queue_number")
+  id              String            @id @default(uuid()) @db.Uuid
+  patientId       String            @map("patient_id") @db.Uuid
+  doctorId        String            @map("doctor_id") @db.Uuid
+  type            AppointmentType   @default(SESSION)
+  sessionId       String?           @map("session_id") @db.Uuid
+  queueNumber     Int?              @map("queue_number")
   /// BPJS's own identifier for a Mobile JKN booking (`kodebooking`), set only
   /// by the inbound Antrean bridge (P14-T04) and null for every appointment a
   /// human made. This column *is* the provenance marker the phase needs, and
@@ -848,15 +848,15 @@ model Appointment {
   /// retried `ambil antrean` must collide rather than create a second
   /// appointment for the same member. Whether `kodebooking` is genuinely the
   /// identifier BPJS carries is spike question Q10.
-  bpjsBookingCode String?        @unique @map("bpjs_booking_code")
-  scheduledAt DateTime          @map("scheduled_at")
-  status      AppointmentStatus @default(SCHEDULED)
-  reason      String?
-  notes       String?
-  createdById String?           @map("created_by_id") @db.Uuid
-  createdAt   DateTime          @default(now()) @map("created_at")
-  updatedAt   DateTime          @updatedAt @map("updated_at")
-  deletedAt   DateTime?         @map("deleted_at")
+  bpjsBookingCode String?           @unique @map("bpjs_booking_code")
+  scheduledAt     DateTime          @map("scheduled_at")
+  status          AppointmentStatus @default(SCHEDULED)
+  reason          String?
+  notes           String?
+  createdById     String?           @map("created_by_id") @db.Uuid
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  deletedAt       DateTime?         @map("deleted_at")
 
   patient      PatientProfile      @relation(fields: [patientId], references: [id], onDelete: Restrict)
   doctor       DoctorProfile       @relation(fields: [doctorId], references: [id], onDelete: Restrict)
@@ -918,19 +918,19 @@ model PoliQueueCounter {
 }
 
 model Registration {
-  id            String             @id @default(uuid()) @db.Uuid
-  patientId     String             @map("patient_id") @db.Uuid
-  appointmentId String?            @unique @map("appointment_id") @db.Uuid
-  status        RegistrationStatus @default(PENDING)
+  id              String             @id @default(uuid()) @db.Uuid
+  patientId       String             @map("patient_id") @db.Uuid
+  appointmentId   String?            @unique @map("appointment_id") @db.Uuid
+  status          RegistrationStatus @default(PENDING)
   /// Daily antrian ticket, allocated from `QueueCounter` when the
   /// registration is created. Nullable only because rows predate the queue;
   /// never renumbered and never reissued — a cancellation leaves a gap, which
   /// is what a paper ticket roll does too.
-  queueNumber   Int?               @map("queue_number")
+  queueNumber     Int?               @map("queue_number")
   /// The clinic-local (`CLINIC_TIMEZONE`) calendar day the ticket belongs to.
   /// Stored explicitly rather than derived from `registeredAt` so the board
   /// query never re-does timezone arithmetic over UTC timestamps.
-  queueDate     DateTime?          @map("queue_date") @db.Date
+  queueDate       DateTime?          @map("queue_date") @db.Date
   /// The poli (`Specialty`) this visit is booked into, resolved from the
   /// linked appointment's doctor when the ticket is issued. Null for a
   /// walk-in registered without an appointment: the poli is genuinely not
@@ -941,18 +941,18 @@ model Registration {
   /// `appointment.doctor.specialtyId` because it is the anchor of the
   /// allocated number: a doctor who later moves specialty must not
   /// retroactively move yesterday's tickets into another poli's sequence.
-  specialtyId     String?          @map("specialty_id") @db.Uuid
+  specialtyId     String?            @map("specialty_id") @db.Uuid
   /// The poli's own daily ticket, allocated from `PoliQueueCounter`
   /// alongside `queueNumber` (P14-T01). Set exactly when `specialtyId` is,
   /// and governed by the same never-renumbered, never-reissued rule.
-  poliQueueNumber Int?             @map("poli_queue_number")
-  registeredAt  DateTime           @default(now()) @map("registered_at")
-  checkedInAt   DateTime?          @map("checked_in_at")
-  completedAt   DateTime?          @map("completed_at")
-  createdById   String?            @map("created_by_id") @db.Uuid
-  createdAt     DateTime           @default(now()) @map("created_at")
-  updatedAt     DateTime           @updatedAt @map("updated_at")
-  deletedAt     DateTime?          @map("deleted_at")
+  poliQueueNumber Int?               @map("poli_queue_number")
+  registeredAt    DateTime           @default(now()) @map("registered_at")
+  checkedInAt     DateTime?          @map("checked_in_at")
+  completedAt     DateTime?          @map("completed_at")
+  createdById     String?            @map("created_by_id") @db.Uuid
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+  deletedAt       DateTime?          @map("deleted_at")
 
   patient         PatientProfile   @relation(fields: [patientId], references: [id], onDelete: Restrict)
   appointment     Appointment?     @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
@@ -2129,4 +2129,49 @@ model DocumentChunk {
   @@index([documentId])
   @@index([searchVector], type: Gin)
   @@map("document_chunks")
+}
+
+/// Which messaging channel a customer-service conversation runs on
+/// (customer-service strategy §4.1). Telegram ships first as the pilot
+/// (D-CS-05); WhatsApp joins at `PCS-T09`.
+enum ChannelKind {
+  WHATSAPP
+  TELEGRAM
+
+  @@map("channel_kind")
+}
+
+/// Proof that one inbound gateway message has already been taken in.
+///
+/// **Dedup is mandatory and it lives at the edge** (strategy §4.1): every
+/// gateway here retries a webhook it did not get a 2xx for, and a retried
+/// booking message that reached the tool loop twice books twice. The row is
+/// written before any business logic runs, so the second delivery is refused
+/// by the database rather than by a check somebody has to remember to write.
+///
+/// The unique key is over **three** columns, not the two §4.1 sketched.
+/// Telegram's `message_id` counts up per chat rather than per bot, so two
+/// customers hold the same id within minutes of each other, and
+/// `(channel, externalMessageId)` would drop the second customer's message as
+/// a duplicate of the first's. Including the chat is what makes the constraint
+/// mean "this message, from this conversation" — see the amendment note in
+/// §4.1.
+///
+/// Rows are insert-only and carry **no message body**: this table answers "did
+/// we already handle this?" and nothing else, so a retention sweep can drop it
+/// on a much shorter clock than the transcript without losing anything.
+model ChannelInboundReceipt {
+  id                String      @id @default(uuid()) @db.Uuid
+  channel           ChannelKind
+  externalChatId    String      @map("external_chat_id")
+  externalMessageId String      @map("external_message_id")
+  /// The channel's own timestamp, not arrival time — a gateway that buffers
+  /// during an outage delivers old messages, and ordering by arrival would
+  /// reorder a conversation.
+  sentAt            DateTime    @map("sent_at")
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  @@unique([channel, externalChatId, externalMessageId])
+  @@index([createdAt])
+  @@map("channel_inbound_receipts")
 }

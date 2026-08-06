@@ -437,7 +437,8 @@ export const ModelName = {
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
   Document: 'Document',
-  DocumentChunk: 'DocumentChunk'
+  DocumentChunk: 'DocumentChunk',
+  ChannelInboundReceipt: 'ChannelInboundReceipt'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -453,7 +454,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4453,6 +4454,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ChannelInboundReceipt: {
+      payload: Prisma.$ChannelInboundReceiptPayload<ExtArgs>
+      fields: Prisma.ChannelInboundReceiptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ChannelInboundReceiptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ChannelInboundReceiptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload>
+        }
+        findFirst: {
+          args: Prisma.ChannelInboundReceiptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ChannelInboundReceiptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload>
+        }
+        findMany: {
+          args: Prisma.ChannelInboundReceiptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload>[]
+        }
+        create: {
+          args: Prisma.ChannelInboundReceiptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload>
+        }
+        createMany: {
+          args: Prisma.ChannelInboundReceiptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ChannelInboundReceiptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload>[]
+        }
+        delete: {
+          args: Prisma.ChannelInboundReceiptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload>
+        }
+        update: {
+          args: Prisma.ChannelInboundReceiptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload>
+        }
+        deleteMany: {
+          args: Prisma.ChannelInboundReceiptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ChannelInboundReceiptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ChannelInboundReceiptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload>[]
+        }
+        upsert: {
+          args: Prisma.ChannelInboundReceiptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelInboundReceiptPayload>
+        }
+        aggregate: {
+          args: Prisma.ChannelInboundReceiptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateChannelInboundReceipt>
+        }
+        groupBy: {
+          args: Prisma.ChannelInboundReceiptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChannelInboundReceiptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ChannelInboundReceiptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChannelInboundReceiptCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -5402,6 +5477,18 @@ export const DocumentChunkScalarFieldEnum = {
 export type DocumentChunkScalarFieldEnum = (typeof DocumentChunkScalarFieldEnum)[keyof typeof DocumentChunkScalarFieldEnum]
 
 
+export const ChannelInboundReceiptScalarFieldEnum = {
+  id: 'id',
+  channel: 'channel',
+  externalChatId: 'externalChatId',
+  externalMessageId: 'externalMessageId',
+  sentAt: 'sentAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ChannelInboundReceiptScalarFieldEnum = (typeof ChannelInboundReceiptScalarFieldEnum)[keyof typeof ChannelInboundReceiptScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -6171,6 +6258,20 @@ export type ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel> = FieldRefIn
 
 
 /**
+ * Reference to a field of type 'ChannelKind'
+ */
+export type EnumChannelKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelKind'>
+    
+
+
+/**
+ * Reference to a field of type 'ChannelKind[]'
+ */
+export type ListEnumChannelKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -6347,6 +6448,7 @@ export type GlobalOmitConfig = {
   chatMessage?: Prisma.ChatMessageOmit
   document?: Prisma.DocumentOmit
   documentChunk?: Prisma.DocumentChunkOmit
+  channelInboundReceipt?: Prisma.ChannelInboundReceiptOmit
 }
 
 /* Types for Logging */
