@@ -21,7 +21,9 @@
     "backfill:doctor-nik": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/backfill-doctor-nik.js",
     "icd10:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-terminology-codes.js icd10",
     "icd9cm:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-terminology-codes.js icd9cm",
-    "openapi:export": "curl -fsS \"${OPENAPI_URL:-http://localhost:3001/api/openapi.yaml}\" -o ./openapi.yaml"
+    "openapi:export": "curl -fsS \"${OPENAPI_URL:-http://localhost:3001/api/openapi.yaml}\" -o ./openapi.yaml",
+    "eval:faq-retrieval": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/run-faq-retrieval-eval.js",
+    "eval:tool-selection": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/run-tool-selection-eval.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1090.0",

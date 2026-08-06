@@ -12,6 +12,7 @@ import { DocumentIngestionService } from './service/document-ingestion.service';
 import { DocumentIngestionWorker } from './service/document-ingestion.worker';
 import { DocumentRetrievalService } from './service/document-retrieval.service';
 import { DocumentService } from './service/document.service';
+import { FaqSearchService } from './service/faq-search.service';
 import { PersonalDocumentService } from './service/personal-document.service';
 
 /**
@@ -53,12 +54,19 @@ import { PersonalDocumentService } from './service/personal-document.service';
     DocumentIngestionService,
     DocumentIngestionWorker,
     DocumentRetrievalService,
+    FaqSearchService,
   ],
   exports: [
     DocumentRepository,
     DocumentChunkRepository,
     DocumentService,
     DocumentRetrievalService,
+    // Exported for the WA/Telegram tool registry at `PCS-T07`. It is the
+    // channel's *only* sanctioned read of the corpus: `DocumentRetrievalService`
+    // is exported too, but a caller reaching for that one on this channel can
+    // name a visibility and an owner, which is the whole thing `PCS-T04`
+    // removed.
+    FaqSearchService,
   ],
 })
 export class DocumentManagementModule {}
