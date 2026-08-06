@@ -31,9 +31,13 @@ scorer that turns observations into the five metrics
 ## 2. How to run it
 
 ```bash
-AI_CHAT_ENABLED=true AI_CHAT_TOOLS_ENABLED=true \
-  pnpm --filter @hms/api exec ts-node src/scripts/run-tool-selection-eval.ts
+AI_CHAT_ENABLED=true AI_CHAT_TOOLS_ENABLED=true pnpm --filter @hms/api eval:tool-selection
 ```
+
+(This previously documented a `ts-node` invocation. `ts-node` is not a
+dependency of this workspace and never was, so the command could not have
+run; the script now builds and runs the compiled output, which is how every
+other script in `apps/api` is invoked.)
 
 It measures whichever `AiProviderConfig` is **active**. To compare providers,
 activate each in turn through the admin provider API and re-run; record every

@@ -127,3 +127,28 @@ export type DeletedPersonalDocumentView = {
   deletedAt: string;
   chunksRemoved: number;
 };
+
+/**
+ * One passage `search_faq` may return to the public WhatsApp/Telegram channel
+ * (`PCS-T04`; customer-service strategy §4.2).
+ *
+ * **This type is the output allowlist**, and the two fields it has are the
+ * two the strategy permits: the passage text and the title of the document it
+ * came from. Everything else on a retrieved chunk is withheld deliberately.
+ * `documentId` and `chunkId` are internal handles that would let a caller
+ * correlate answers across conversations; `sourceTier` can only ever say
+ * `CLINIC` on this channel, so returning it would be a field that exists to
+ * describe a distinction the channel cannot observe; and `score` is an RRF
+ * value meaningful only for ordering within one query, which is exactly the
+ * kind of number a model will happily present to a customer as a confidence
+ * percentage.
+ *
+ * A narrower type is not a cosmetic choice here. Principle 2 of the strategy
+ * is that the channel's tools are *structurally* incapable of returning
+ * sensitive fields rather than instructed not to, and a projection at the
+ * service boundary is what makes that true of the corpus.
+ */
+export type FaqSearchPassage = {
+  documentTitle: string;
+  content: string;
+};
