@@ -96,6 +96,17 @@ import { ListMyPatientsTool } from './tools/definitions/list-my-patients.tool';
     ChatToolRegistrarService,
     AiChatbotService,
   ],
-  exports: [AiProviderConfigRepository, ChatRepository, AiChatbotService],
+  // `AiProviderResolverService` is exported for the WhatsApp/Telegram channel
+  // (`PCS-T06`), which composes its replies on the clinic's one configured
+  // provider (customer-service strategy §6). Exporting the resolver rather
+  // than letting that module build its own is the whole point: one encrypted
+  // key, one place to rotate it, and one answer to "which vendor is this
+  // clinic using".
+  exports: [
+    AiProviderConfigRepository,
+    ChatRepository,
+    AiChatbotService,
+    AiProviderResolverService,
+  ],
 })
 export class AiChatbotModule {}

@@ -105,7 +105,9 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   Document: 'Document',
   DocumentChunk: 'DocumentChunk',
-  ChannelInboundReceipt: 'ChannelInboundReceipt'
+  ChannelInboundReceipt: 'ChannelInboundReceipt',
+  Conversation: 'Conversation',
+  ConversationMessage: 'ConversationMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1044,6 +1046,33 @@ export const ChannelInboundReceiptScalarFieldEnum = {
 } as const
 
 export type ChannelInboundReceiptScalarFieldEnum = (typeof ChannelInboundReceiptScalarFieldEnum)[keyof typeof ChannelInboundReceiptScalarFieldEnum]
+
+
+export const ConversationScalarFieldEnum = {
+  id: 'id',
+  channel: 'channel',
+  externalChatId: 'externalChatId',
+  senderDisplayName: 'senderDisplayName',
+  state: 'state',
+  hasSentNotice: 'hasSentNotice',
+  lastMessageAt: 'lastMessageAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
+
+
+export const ConversationMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  role: 'role',
+  content: 'content',
+  safetyTags: 'safetyTags',
+  createdAt: 'createdAt'
+} as const
+
+export type ConversationMessageScalarFieldEnum = (typeof ConversationMessageScalarFieldEnum)[keyof typeof ConversationMessageScalarFieldEnum]
 
 
 export const SortOrder = {

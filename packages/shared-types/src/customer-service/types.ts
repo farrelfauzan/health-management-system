@@ -1,4 +1,9 @@
-import { ChannelKindValue } from '#customer-service/schemas';
+import {
+  ChannelKindValue,
+  ConversationMessageRoleValue,
+  ConversationStateValue,
+  CsSafetyTagValue,
+} from '#customer-service/schemas';
 
 /**
  * One inbound customer message, normalized off whichever wire it arrived on
@@ -75,4 +80,59 @@ export type ChannelGatewayConfig = {
      */
     readonly webhookSecret: string;
   };
+};
+
+/**
+ * One persisted conversation, as the service layer sees it.
+ *
+ * Carries no user id and must not until §5.1.1 verification supplies one:
+ * `(channel, externalChatId)` *is* the customer as far as this channel knows.
+ */
+export type ConversationRecord = {
+  id: string;
+  channel: ChannelKindValue;
+  externalChatId: string;
+  senderDisplayName: string | null;
+  state: ConversationStateValue;
+  hasSentNotice: boolean;
+  lastMessageAt: string;
+};
+
+/** One transcript turn, already redacted. */
+export type ConversationTurn = {
+  role: ConversationMessageRoleValue;
+  content: string;
+};
+
+/**
+ * What the safety layer decided about one inbound message.
+ *
+ * `ANSWER_LOCALLY` is not a failure: the message is accepted and answered
+ * from a template this codebase authored, without ever reaching a provider —
+ * which is exactly what must happen for an emergency, where the right
+ * response cannot depend on an upstream API being reachable.
+ */
+export type CsInputDecision =
+  | { outcome: 'SEND_TO_MODEL'; content: string; safetyTags: CsSafetyTagValue[] }
+  | {
+      outcome: 'ANSWER_LOCALLY';
+      content: string;
+      safetyTags: CsSafetyTagValue[];
+      replyContent: string;
+      shouldHandOff: boolean;
+    };
+
+/** Customer-service channel configuration (strategy §6, §8.3, §8.5). */
+export type CustomerServiceConfig = {
+  /** How many prior turns are replayed to the provider. */
+  readonly historyTurnLimit: number;
+  /** Inbound messages allowed per chat per hour before the polite template. */
+  readonly rateLimitPerChatHour: number;
+  readonly clinicName: string;
+};
+
+/** What redaction did to one message body. */
+export type RedactCustomerMessageResult = {
+  content: string;
+  wasRedacted: boolean;
 };

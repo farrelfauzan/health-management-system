@@ -613,3 +613,28 @@ export type DocumentChunk = Prisma.DocumentChunkModel
  * on a much shorter clock than the transcript without losing anything.
  */
 export type ChannelInboundReceipt = Prisma.ChannelInboundReceiptModel
+/**
+ * Model Conversation
+ * One customer's conversation on one channel.
+ * 
+ * Keyed by `(channel, externalChatId)` because that pair *is* the customer
+ * as far as this channel knows — principle 1: a WhatsApp number identifies a
+ * conversation, not a verified person. There is no user id here and there
+ * must not be one until §5.1.1 verification supplies it.
+ */
+export type Conversation = Prisma.ConversationModel
+/**
+ * Model ConversationMessage
+ * One turn of a conversation transcript.
+ * 
+ * **Append-only, with the same discipline as `ChatMessage`** (§8.2): no
+ * update and no delete on message rows, because a transcript that can be
+ * edited is not evidence of what was said. Retention is handled by dropping
+ * whole conversations on the §8.5 clock, not by rewriting turns.
+ * 
+ * `content` is stored **post-redaction**. If a customer volunteers a NIK,
+ * the digits never reach this table — redaction happens before persistence
+ * and before the provider, so the transcript cannot become the copy of the
+ * identifier that outlives the message (§5.3).
+ */
+export type ConversationMessage = Prisma.ConversationMessageModel

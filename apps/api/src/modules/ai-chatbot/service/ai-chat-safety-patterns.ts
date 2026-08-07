@@ -33,7 +33,12 @@ export const AI_CHAT_SAFETY_PATTERNS = {
   ],
   /** Attempts to talk the model out of its instructions. */
   promptInjection: [
-    /\bignore\s+(all\s+|any\s+|the\s+)?(previous|prior|above|earlier)\s+(instruction|prompt|rule|message)/i,
+    // `your\s+` belongs here for the same reason it is in the `disregard`
+    // pattern below: "ignore your previous instructions" is the single most
+    // common phrasing of this attack, and omitting the determiner from one
+    // rule while allowing it in its sibling let that phrasing through both
+    // channels. Found by a customer-service test at PCS-T06.
+    /\bignore\s+(all\s+|any\s+|the\s+|your\s+)?(previous|prior|above|earlier)\s+(instruction|prompt|rule|message)/i,
     /\b(disregard|forget|override)\s+(all\s+|any\s+|the\s+|your\s+)?(previous|prior|above|system|safety)\s+(instruction|prompt|rule|polic)/i,
     /\bsystem\s+prompt\b/i,
     /\b(developer|admin|root)\s+mode\b/i,
