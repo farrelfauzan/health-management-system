@@ -496,3 +496,24 @@ export const ChannelKind = {
 } as const
 
 export type ChannelKind = (typeof ChannelKind)[keyof typeof ChannelKind]
+
+
+export const ConversationState = {
+  BOT_ACTIVE: 'BOT_ACTIVE',
+  NEEDS_HUMAN: 'NEEDS_HUMAN',
+  HUMAN_ACTIVE: 'HUMAN_ACTIVE',
+  AWAITING_OTP: 'AWAITING_OTP',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type ConversationState = (typeof ConversationState)[keyof typeof ConversationState]
+
+
+export const ConversationMessageRole = {
+  CUSTOMER: 'CUSTOMER',
+  BOT: 'BOT',
+  ADMIN: 'ADMIN',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type ConversationMessageRole = (typeof ConversationMessageRole)[keyof typeof ConversationMessageRole]

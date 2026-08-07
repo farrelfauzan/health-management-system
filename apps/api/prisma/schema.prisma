@@ -2175,3 +2175,94 @@ model ChannelInboundReceipt {
   @@index([createdAt])
   @@map("channel_inbound_receipts")
 }
+
+/// Where a customer-service conversation is in its lifecycle
+/// (customer-service strategy §4.2).
+///
+/// The states exist to answer one question on every inbound message: **may
+/// the LLM see this?** Only `BOT_ACTIVE` says yes. While a conversation waits
+/// for a human, or waits for an OTP, messages are still persisted — the
+/// transcript stays complete — but they are never sent to a provider, which
+/// is what makes "prompt injection cannot talk its way past a handoff" true
+/// by construction rather than by prompt.
+enum ConversationState {
+  BOT_ACTIVE
+  NEEDS_HUMAN
+  HUMAN_ACTIVE
+  AWAITING_OTP
+  ARCHIVED
+
+  @@map("conversation_state")
+}
+
+/// Who produced one transcript turn. `SYSTEM` covers the deterministic
+/// templates this codebase authored — emergency, medical referral, redaction
+/// notice — which are deliberately distinguished from `BOT`: a reply that
+/// never reached a provider is a different fact for an auditor than one the
+/// model composed.
+enum ConversationMessageRole {
+  CUSTOMER
+  BOT
+  ADMIN
+  SYSTEM
+
+  @@map("conversation_message_role")
+}
+
+/// One customer's conversation on one channel.
+///
+/// Keyed by `(channel, externalChatId)` because that pair *is* the customer
+/// as far as this channel knows — principle 1: a WhatsApp number identifies a
+/// conversation, not a verified person. There is no user id here and there
+/// must not be one until §5.1.1 verification supplies it.
+model Conversation {
+  id                String            @id @default(uuid()) @db.Uuid
+  channel           ChannelKind
+  externalChatId    String            @map("external_chat_id")
+  /// Whatever the channel offered as a name, never trusted as identity — it
+  /// exists so an admin reading the handoff queue sees something other than
+  /// a number.
+  senderDisplayName String?           @map("sender_display_name")
+  state             ConversationState @default(BOT_ACTIVE)
+  /// Whether the one-time automated-assistant notice (§8.2) has been sent.
+  /// A column rather than a scan of the transcript: the check runs on every
+  /// inbound message, and "has this conversation ever seen the notice" must
+  /// not get slower as the conversation grows.
+  hasSentNotice     Boolean           @default(false) @map("has_sent_notice")
+  lastMessageAt     DateTime          @map("last_message_at")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  messages ConversationMessage[]
+
+  @@unique([channel, externalChatId])
+  @@index([state, lastMessageAt])
+  @@map("conversations")
+}
+
+/// One turn of a conversation transcript.
+///
+/// **Append-only, with the same discipline as `ChatMessage`** (§8.2): no
+/// update and no delete on message rows, because a transcript that can be
+/// edited is not evidence of what was said. Retention is handled by dropping
+/// whole conversations on the §8.5 clock, not by rewriting turns.
+///
+/// `content` is stored **post-redaction**. If a customer volunteers a NIK,
+/// the digits never reach this table — redaction happens before persistence
+/// and before the provider, so the transcript cannot become the copy of the
+/// identifier that outlives the message (§5.3).
+model ConversationMessage {
+  id             String                  @id @default(uuid()) @db.Uuid
+  conversationId String                  @map("conversation_id") @db.Uuid
+  role           ConversationMessageRole
+  content        String
+  /// Which guards fired on this turn, so the §8.4 review can count what was
+  /// actually caught in production rather than trusting it was never needed.
+  safetyTags     String[]                @default([]) @map("safety_tags")
+  createdAt      DateTime                @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@map("conversation_messages")
+}

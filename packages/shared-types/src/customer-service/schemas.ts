@@ -69,3 +69,58 @@ export const telegramWebhookUpdateSchema = z.object({
 });
 
 export type TelegramWebhookUpdateInput = z.infer<typeof telegramWebhookUpdateSchema>;
+
+/**
+ * Where a conversation is in its lifecycle (strategy §4.2). Mirrors the
+ * Prisma `ConversationState` enum.
+ *
+ * The set exists to answer one question on every inbound message: **may the
+ * LLM see this?** Only `BOT_ACTIVE` says yes.
+ */
+export const CONVERSATION_STATES = [
+  'BOT_ACTIVE',
+  'NEEDS_HUMAN',
+  'HUMAN_ACTIVE',
+  'AWAITING_OTP',
+  'ARCHIVED',
+] as const;
+
+export const conversationStateSchema = z.enum(CONVERSATION_STATES);
+
+export type ConversationStateValue = z.infer<typeof conversationStateSchema>;
+
+/**
+ * The states in which an inbound message is persisted but **never sent to a
+ * provider**. Derived from the list rather than written as a branch, so a
+ * state added later must be classified deliberately instead of defaulting
+ * into the half that reaches the model.
+ */
+export const LLM_PAUSED_CONVERSATION_STATES = [
+  'NEEDS_HUMAN',
+  'HUMAN_ACTIVE',
+  'AWAITING_OTP',
+  'ARCHIVED',
+] as const satisfies readonly ConversationStateValue[];
+
+export const CONVERSATION_MESSAGE_ROLES = ['CUSTOMER', 'BOT', 'ADMIN', 'SYSTEM'] as const;
+
+export const conversationMessageRoleSchema = z.enum(CONVERSATION_MESSAGE_ROLES);
+
+export type ConversationMessageRoleValue = z.infer<typeof conversationMessageRoleSchema>;
+
+/**
+ * What a guard did to a turn, recorded on the persisted row so the §8.4
+ * review can count what was actually caught rather than trusting it was
+ * never needed.
+ */
+export const CS_SAFETY_TAGS = [
+  'sensitive_data_redacted',
+  'prompt_injection_blocked',
+  'emergency_escalation',
+  'medical_question_referred',
+  'handoff_requested',
+  'rate_limited',
+  'provider_unavailable',
+] as const;
+
+export type CsSafetyTagValue = (typeof CS_SAFETY_TAGS)[number];

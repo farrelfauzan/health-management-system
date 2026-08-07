@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import {
@@ -38,7 +38,15 @@ export class InboundMessageNormalizerService {
   constructor(
     configService: ConfigService,
     private readonly receiptRepository: ChannelInboundReceiptRepository,
-    private readonly inboundMessageSink: InboundMessageSink,
+    // Optional and forward-referenced: the sink is implemented by
+    // `customer-service`, which imports this module back for the outbound
+    // dispatcher. Optional so the gateway still boots — recording and
+    // dropping — if the conversational half is removed or fails to load, and
+    // so a message is never lost to a DI error the customer would see as
+    // silence.
+    @Optional()
+    @Inject(forwardRef(() => InboundMessageSink))
+    private readonly inboundMessageSink: InboundMessageSink | null = null,
   ) {
     this.gatewayConfig = resolveChannelGatewayConfig(configService);
   }
@@ -70,6 +78,15 @@ export class InboundMessageNormalizerService {
     const isFirstDelivery = await this.receiptRepository.claimInboundMessage(message);
     if (!isFirstDelivery) {
       return 'DUPLICATE';
+    }
+    if (this.inboundMessageSink === null) {
+      // No conversational half registered. Recorded and dropped, with no
+      // message text in the log (§8.4) — the character count separates a real
+      // message from an empty probe while carrying nothing of what was said.
+      this.logger.log(
+        `Inbound ${message.channel} message accepted with no handler registered (chat=${message.externalChatId}, chars=${message.text.length})`,
+      );
+      return 'ACCEPTED';
     }
     try {
       await this.inboundMessageSink.handleInboundMessage(message);
