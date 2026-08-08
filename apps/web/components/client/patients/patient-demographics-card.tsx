@@ -26,12 +26,18 @@ export function PatientDemographicsCard({ patient }: PatientDemographicsCardProp
     { label: t('patients.demographics.sex'), value: t(`patients.sex.${patient.sex ?? 'UNKNOWN'}`) },
     {
       label: t('patients.demographics.birthDate'),
-      value: `${formatDate(patient.dateOfBirth)} (${t('common.years', { count: computePatientAge(patient.dateOfBirth) })})`,
+      // Absent on a chat-created draft, which the front desk completes at
+      // arrival. Rendered as the empty marker rather than as a formatted
+      // `undefined`, which would read as a real — and wrong — birth date.
+      value:
+        patient.dateOfBirth === undefined
+          ? EMPTY_VALUE
+          : `${formatDate(patient.dateOfBirth)} (${t('common.years', { count: computePatientAge(patient.dateOfBirth) })})`,
     },
     { label: t('patients.demographics.birthPlace'), value: patient.placeOfBirth ?? EMPTY_VALUE },
     { label: t('patients.demographics.phone'), value: patient.phoneNumber, isMono: true },
     { label: t('patients.demographics.email'), value: patient.email ?? EMPTY_VALUE },
-    { label: t('patients.demographics.address'), value: patient.address },
+    { label: t('patients.demographics.address'), value: patient.address ?? EMPTY_VALUE },
     {
       label: t('patients.demographics.bloodType'),
       value: formatBloodType(patient.bloodType, patient.rhesusFactor),

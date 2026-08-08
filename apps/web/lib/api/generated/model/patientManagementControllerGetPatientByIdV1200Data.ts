@@ -11,13 +11,14 @@ import type { PatientManagementControllerGetPatientByIdV1200DataDoctorsItem } fr
 export type PatientManagementControllerGetPatientByIdV1200Data = {
   id: string;
   mrn: string;
+  source: string;
   fullName: string;
-  dateOfBirth: string;
+  dateOfBirth?: string;
   placeOfBirth: string;
   sex: string;
   status: string;
   phoneNumber: string;
-  address: string;
+  address?: string;
   nikMasked: string;
   bpjsNumberMasked: string;
   hasSatusehatPatientId: boolean;

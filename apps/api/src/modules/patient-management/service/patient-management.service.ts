@@ -10,11 +10,15 @@ import {
 import {
   Actor,
   collectNikDemographicWarnings,
+  CreateChannelDraftPatientInput,
+  CreatePatientRecordPayload,
   maskIdentifierLast4,
   PatientIdentifierPlaintext,
   PatientIdentifiers,
+  PatientPhoneMatch,
   PatientRecord,
   PatientSexValue,
+  REMOTE_REGISTRATION_PROVENANCES,
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -201,6 +205,91 @@ export class PatientManagementService {
   }
 
   /**
+   * Creates the draft a WhatsApp/Telegram customer's booking hangs off
+   * (`PCS-T07`, strategy §5.1).
+   *
+   * Separate from {@link createPatient} rather than a flag on it, because the
+   * two accept different things and must keep accepting different things: the
+   * counter path requires a date of birth and an address, and this one has no
+   * parameter that could carry either. A shared entry point with optional
+   * fields would let a future caller create an incomplete record from a
+   * surface where someone *was* standing there to be asked.
+   *
+   * **System actors only.** The record it writes is marked as still owing its
+   * subject a privacy notice, and that deferral is only true because the
+   * channel had nobody present to receive one — a human caller claiming it
+   * would be fabricating legal evidence.
+   */
+  async createChannelDraftPatient(
+    payload: CreateChannelDraftPatientInput,
+    currentUser: CurrentUser,
+  ): Promise<{ id: string; mrn: string; fullName: string }> {
+    const actor = await this.getActorOrThrow(currentUser);
+
+    if (!this.resolveScope(actor, 'Patient', 'create').hasAny) {
+      throw new ForbiddenException('You are not allowed to create patients');
+    }
+
+    if (actor.isSystem !== true) {
+      throw new ForbiddenException('Channel draft patients are created by system integrations only');
+    }
+
+    const currentNotice = await this.privacyNoticeRepository.findCurrentVersion();
+
+    if (currentNotice === null) {
+      throw new BadRequestException('No current privacy notice version is published');
+    }
+
+    const created = await this.runPatientCreate({
+      fullName: payload.fullName,
+      // The three nulls are the point. See the schema's note.
+      dateOfBirth: null,
+      sex: null,
+      address: null,
+      status: 'OUT_PATIENT',
+      phoneNumber: payload.phoneNumber,
+      source: 'CHANNEL_BOOKING',
+      isActive: true,
+      actorUserId: currentUser.sub,
+      privacyNotice: {
+        privacyNoticeVersionId: currentNotice.id,
+        locale: 'id',
+        outcome: 'DEFERRED_REMOTE_REGISTRATION',
+        subjectType: 'SELF',
+        provenance: 'CHANNEL_BOOKING',
+      },
+    });
+
+    return { id: created.id, mrn: created.mrn, fullName: created.fullName };
+  }
+
+  /**
+   * Every active patient whose registered number is the one a chat customer
+   * typed (`PCS-T07`, strategy §5.1).
+   *
+   * **The result never leaves the API.** It exists so the booking flow can
+   * decide whether a possession challenge is needed, and §5.1.1 is explicit
+   * that neither the reply nor the tool result may reveal what it found — a
+   * "welcome back, we found your record" would hand an unverified caller a
+   * lookup oracle over the registry. Hence the projection: ids and names for
+   * an internal decision, never a patient record.
+   */
+  async findChannelPhoneMatches(
+    normalisedPhoneNumber: string,
+    currentUser: CurrentUser,
+  ): Promise<PatientPhoneMatch[]> {
+    const actor = await this.getActorOrThrow(currentUser);
+
+    if (!this.resolveScope(actor, 'Patient', 'read').hasAny) {
+      throw new ForbiddenException('You are not allowed to read patients');
+    }
+
+    return this.patientManagementRepository.findActivePatientsByNormalisedPhoneNumber(
+      normalisedPhoneNumber,
+    );
+  }
+
+  /**
    * Registers a patient whose MRN comes from the clinic's previous system.
    * Separate from {@link createPatient} and separately permissioned, because
    * accepting a caller-supplied MRN is exactly what the generated path exists to
@@ -351,7 +440,9 @@ export class PatientManagementService {
       patient: this.toPatientResponse(updated),
       identifierWarnings: this.collectIdentifierWarnings({
         nik: payload.nik,
-        dateOfBirth: payload.dateOfBirth ?? toDateOnly(patient.dateOfBirth),
+        dateOfBirth:
+          payload.dateOfBirth ??
+          (patient.dateOfBirth === null ? undefined : toDateOnly(patient.dateOfBirth)),
         sex: payload.sex ?? patient.sex ?? undefined,
       }),
     };
@@ -416,47 +507,56 @@ export class PatientManagementService {
     };
   }
 
-  private async createPatientRecord(
-    payload: CreatePatientDto & { mrn?: string },
-    currentUser: CurrentUser,
-  ): Promise<PatientRecord> {
+  /**
+   * The one place a create reaches the repository, so the two failures worth
+   * translating — a missing current privacy notice, and an identifier already
+   * on another record — are translated once rather than per caller.
+   */
+  private async runPatientCreate(payload: CreatePatientRecordPayload): Promise<PatientRecord> {
     try {
-      return await this.patientManagementRepository.createPatient({
-        // Absent on the ordinary create path, where the repository allocates
-        // the next number from the counter.
-        mrn: payload.mrn,
-        fullName: payload.fullName,
-        dateOfBirth: parseDateOnly(payload.dateOfBirth),
-        placeOfBirth: payload.placeOfBirth,
-        sex: payload.sex,
-        status: payload.status,
-        phoneNumber: payload.phoneNumber,
-        address: payload.address,
-        nik: payload.nik,
-        bpjsNumber: payload.bpjsNumber,
-        email: payload.email,
-        bloodType: payload.bloodType,
-        rhesusFactor: payload.rhesusFactor,
-        maritalStatus: payload.maritalStatus,
-        occupation: payload.occupation,
-        religion: payload.religion,
-        emergencyContactName: payload.emergencyContactName,
-        emergencyContactPhone: payload.emergencyContactPhone,
-        guardianName: payload.guardianName,
-        guardianRelation: payload.guardianRelation,
-        allergies: payload.allergies,
-        ownerUserId: payload.ownerUserId,
-        isActive: payload.isActive,
-        doctorIds: payload.doctorIds,
-        actorUserId: currentUser.sub,
-        privacyNotice: payload.privacyNotice,
-      });
+      return await this.patientManagementRepository.createPatient(payload);
     } catch (err) {
       if (err instanceof CurrentPrivacyNoticeEvidenceRequiredError) {
         throw new BadRequestException(err.message);
       }
       throw this.toIdentifierConflictException(err);
     }
+  }
+
+  private async createPatientRecord(
+    payload: CreatePatientDto & { mrn?: string },
+    currentUser: CurrentUser,
+  ): Promise<PatientRecord> {
+    return this.runPatientCreate({
+      // Absent on the ordinary create path, where the repository allocates
+      // the next number from the counter.
+      mrn: payload.mrn,
+      fullName: payload.fullName,
+      dateOfBirth: parseDateOnly(payload.dateOfBirth),
+      placeOfBirth: payload.placeOfBirth,
+      sex: payload.sex,
+      status: payload.status,
+      phoneNumber: payload.phoneNumber,
+      address: payload.address,
+      nik: payload.nik,
+      bpjsNumber: payload.bpjsNumber,
+      email: payload.email,
+      bloodType: payload.bloodType,
+      rhesusFactor: payload.rhesusFactor,
+      maritalStatus: payload.maritalStatus,
+      occupation: payload.occupation,
+      religion: payload.religion,
+      emergencyContactName: payload.emergencyContactName,
+      emergencyContactPhone: payload.emergencyContactPhone,
+      guardianName: payload.guardianName,
+      guardianRelation: payload.guardianRelation,
+      allergies: payload.allergies,
+      ownerUserId: payload.ownerUserId,
+      isActive: payload.isActive,
+      doctorIds: payload.doctorIds,
+      actorUserId: currentUser.sub,
+      privacyNotice: payload.privacyNotice,
+    });
   }
 
   private async updatePatientRecord(
@@ -627,13 +727,14 @@ export class PatientManagementService {
     return {
       id: patient.id,
       mrn: patient.mrn,
+      source: patient.source,
       fullName: patient.fullName,
-      dateOfBirth: toDateOnly(patient.dateOfBirth),
+      dateOfBirth: patient.dateOfBirth === null ? undefined : toDateOnly(patient.dateOfBirth),
       placeOfBirth: patient.placeOfBirth ?? undefined,
       sex: patient.sex ?? undefined,
       status: patient.status,
       phoneNumber: patient.phoneNumber,
-      address: patient.address,
+      address: patient.address ?? undefined,
       nikMasked: maskIdentifierLast4(patient.nikLast4),
       bpjsNumberMasked: maskIdentifierLast4(patient.bpjsNumberLast4),
       hasSatusehatPatientId: patient.hasSatusehatPatientId,
@@ -666,14 +767,17 @@ export class PatientManagementService {
     if (isOwnPatient && evidence.outcome === 'DEFERRED_EMERGENCY') {
       throw new ForbiddenException('Emergency privacy notice deferral is staff-only');
     }
-    // `BPJS_ANTREAN` provenance says "a machine created this record and nobody
-    // was present to receive the notice". A human at a counter *was* present,
-    // so a staff or patient caller claiming it would be recording a deferral
-    // they are not entitled to — and would leave a patient permanently marked
-    // as still owed a notice they were in fact given.
-    if (evidence.provenance === 'BPJS_ANTREAN' && !isSystemActor) {
+    // The remote provenances say "a machine created this record and nobody was
+    // present to receive the notice". A human at a counter *was* present, so a
+    // staff or patient caller claiming one would be recording a deferral they
+    // are not entitled to — and would leave a patient permanently marked as
+    // still owed a notice they were in fact given.
+    const isRemoteProvenance = REMOTE_REGISTRATION_PROVENANCES.some(
+      (provenance) => provenance === evidence.provenance,
+    );
+    if (isRemoteProvenance && !isSystemActor) {
       throw new ForbiddenException(
-        'BPJS Antrean provenance is reserved for the inbound Antrean bridge',
+        'Remote-registration provenance is reserved for system integrations',
       );
     }
   }

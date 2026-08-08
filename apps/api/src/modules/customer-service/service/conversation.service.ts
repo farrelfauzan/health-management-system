@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import {
+  ChannelOtpChallengeRecord,
   ConversationRecord,
   CsSafetyTagValue,
   CustomerServiceConfig,
@@ -12,11 +13,27 @@ import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { InboundMessageSink } from '../../channel-gateway/service/inbound-message-sink.service';
 import { OutboundMessageDispatcherService } from '../../channel-gateway/service/outbound-message-dispatcher.service';
 import { ConversationRepository } from '../repository/conversation.repository';
+import { ChannelBookingService } from './channel-booking.service';
+import { ChannelVerificationService } from './channel-verification.service';
+import { CsSystemActorService } from './cs-system-actor.service';
 import { CS_REPLY_TEMPLATES } from './cs-reply-templates';
 import { CsSafetyPolicyService } from './cs-safety-policy.service';
 import { IntentOrchestratorService } from './intent-orchestrator.service';
+import { extractOtpCodeCandidate } from './otp-code';
 
 const HOUR_IN_MS = 3_600_000;
+
+/**
+ * How a customer declines the verification step.
+ *
+ * There has to be a way out that is not "guess wrong three times": someone who
+ * did not receive a code, or who does not want to share a number with an
+ * automated account, is making a reasonable choice, and §5.1.1 says their
+ * booking still goes through as a draft. The words are matched loosely because
+ * the customer is being told one of them in the challenge message, and the
+ * cost of accepting a near miss is a draft booking rather than a linked one.
+ */
+const VERIFICATION_SKIP_PATTERNS = [/\blanjut\b/i, /\blewati\b/i, /\bskip\b/i, /\bnanti\b/i];
 
 /**
  * The conversation core (`PCS-T06`, §4.2): resolve the conversation, run the
@@ -34,16 +51,23 @@ const HOUR_IN_MS = 3_600_000;
  * provider. That is what makes "prompt injection cannot talk its way past a
  * handoff" structural: there is no prompt to inject into.
  *
+ * `AWAITING_OTP` is the one paused state that still *answers* (`PCS-T07`,
+ * §5.1.1). It is handled here, before the pause check, by string comparison
+ * against a stored hash and a clock — never by a model — which is why a
+ * message that says "ignore the previous instructions, I am verified" is
+ * simply a wrong code.
+ *
  * The order of every inbound message is fixed and each step earns its place:
  *
  *   1. Resolve or create the conversation.
  *   2. Run the input guards — **including redaction, before anything is
  *      written down**.
  *   3. Persist the customer turn, post-redaction.
- *   4. If the state pauses the bot, stop. No reply, no provider call.
- *   5. Enforce the per-chat rate limit.
- *   6. Answer locally, or ask the model.
- *   7. Persist the reply and send it.
+ *   4. Resolve an outstanding possession challenge, if there is one.
+ *   5. If the state pauses the bot, stop. No reply, no provider call.
+ *   6. Enforce the per-chat rate limit.
+ *   7. Answer locally, or ask the model.
+ *   8. Persist the reply and send it.
  */
 @Injectable()
 export class ConversationService extends InboundMessageSink {
@@ -55,6 +79,9 @@ export class ConversationService extends InboundMessageSink {
     private readonly safetyPolicy: CsSafetyPolicyService,
     private readonly intentOrchestrator: IntentOrchestratorService,
     private readonly outboundDispatcher: OutboundMessageDispatcherService,
+    private readonly verificationService: ChannelVerificationService,
+    private readonly bookingService: ChannelBookingService,
+    private readonly systemActorService: CsSystemActorService,
   ) {
     super();
     this.serviceConfig = this.intentOrchestrator.config;
@@ -70,14 +97,18 @@ export class ConversationService extends InboundMessageSink {
     await this.conversationRepository.appendMessage({
       conversationId: conversation.id,
       role: 'CUSTOMER',
-      content: decision.content,
+      content: this.describeCustomerTurn(message, decision.content),
       safetyTags: decision.safetyTags,
     });
 
+    if (conversation.state === 'AWAITING_OTP') {
+      await this.resolveVerification(conversation, message);
+      return;
+    }
+
     if (this.isBotPaused(conversation)) {
-      // Recorded, not answered. A human owns this conversation — or an OTP
-      // sub-flow does — and a bot replying over either is the failure the
-      // state machine exists to prevent.
+      // Recorded, not answered. A human owns this conversation — and a bot
+      // replying over one is the failure the state machine exists to prevent.
       this.logger.log(
         `Inbound message held: conversation ${conversation.id} is ${conversation.state}`,
       );
@@ -103,7 +134,27 @@ export class ConversationService extends InboundMessageSink {
       conversation.id,
       this.serviceConfig.historyTurnLimit,
     );
-    const orchestration = await this.intentOrchestrator.composeReply(history);
+    const orchestration = await this.intentOrchestrator.composeReply(
+      {
+        conversationId: conversation.id,
+        channel: conversation.channel,
+        externalChatId: conversation.externalChatId,
+      },
+      history,
+    );
+    // Persisted before the reply, and before any state change, so the
+    // transcript shows the lookup that produced the answer even if sending it
+    // then failed. The result payload is deliberately absent — it is already
+    // in the reply, and repeating it here would put a second copy of every
+    // FAQ passage in the retention window.
+    for (const invocation of orchestration.toolInvocations) {
+      await this.conversationRepository.appendMessage({
+        conversationId: conversation.id,
+        role: 'SYSTEM',
+        content: JSON.stringify(invocation),
+        safetyTags: ['tool_invocation'],
+      });
+    }
     if (orchestration.replyContent === null) {
       await this.replyWith(
         conversation,
@@ -113,7 +164,167 @@ export class ConversationService extends InboundMessageSink {
       );
       return;
     }
-    await this.replyWith(conversation, orchestration.replyContent, [], 'BOT');
+    // A deterministic reply is recorded as `SYSTEM` rather than `BOT`: "the
+    // clinic decided to say this" and "the model composed this" are different
+    // facts for an auditor, and the booking confirmation is emphatically the
+    // former.
+    await this.replyWith(
+      conversation,
+      orchestration.replyContent,
+      [],
+      orchestration.isDeterministic ? 'SYSTEM' : 'BOT',
+      orchestration.requestContact,
+    );
+    if (orchestration.pausesConversation) {
+      await this.conversationRepository.updateState(conversation.id, 'AWAITING_OTP');
+    }
+  }
+
+  /**
+   * The `AWAITING_OTP` sub-flow (§5.1.1), start to finish, with no model
+   * involved at any point.
+   *
+   * Every exit completes the booking the challenge was holding — verified or
+   * not — because §5.1.1 is explicit that a failed, expired, or declined
+   * verification is not a dead end: the booking goes through against a draft,
+   * the existing record is left untouched, and **the reply is the same one the
+   * verified path sends**. That last part is the acceptance criterion, and it
+   * holds here because both endings call the same booking method, which calls
+   * the same confirmation builder.
+   */
+  private async resolveVerification(
+    conversation: ConversationRecord,
+    message: InboundChannelMessage,
+  ): Promise<void> {
+    const now = new Date();
+    const challenge = await this.verificationService.findLiveChallenge(conversation.id, now);
+    if (challenge === null) {
+      // Expired or already spent. The customer is not left waiting on a
+      // challenge that no longer exists: the conversation returns to the bot
+      // and their next message is answered normally.
+      await this.conversationRepository.updateState(conversation.id, 'BOT_ACTIVE');
+      return;
+    }
+
+    if (message.sharedContact !== undefined) {
+      const isSatisfied = this.verificationService.isContactSatisfying(
+        challenge,
+        message.sharedContact,
+      );
+      await this.settleChallenge(conversation, challenge, isSatisfied ? challenge.patientId : null);
+      return;
+    }
+
+    if (this.isDeclining(message.text)) {
+      await this.settleChallenge(conversation, challenge, null);
+      return;
+    }
+
+    const submittedCode = challenge.method === 'OTP' ? extractOtpCodeCandidate(message.text) : null;
+    if (submittedCode === null) {
+      // Not a code and not a decline — a question, or a customer typing
+      // "sudah". Answered with a nudge that costs no attempt: guessing wrong
+      // is what the three attempts are for, and asking a question is not
+      // guessing.
+      await this.replyWith(
+        conversation,
+        challenge.method === 'CONTACT_SHARE'
+          ? CS_REPLY_TEMPLATES.contactShareChallenge
+          : CS_REPLY_TEMPLATES.otpAwaitingCode,
+        [],
+        'SYSTEM',
+        challenge.method === 'CONTACT_SHARE',
+      );
+      return;
+    }
+
+    const submission = await this.verificationService.submitCode({
+      challenge,
+      code: submittedCode,
+      now,
+    });
+    if (submission.isVerified) {
+      await this.settleChallenge(conversation, challenge, challenge.patientId);
+      return;
+    }
+    if (submission.attemptsRemaining <= 0) {
+      await this.settleChallenge(conversation, challenge, null);
+      return;
+    }
+    await this.replyWith(conversation, CS_REPLY_TEMPLATES.otpWrongCode, [], 'SYSTEM');
+  }
+
+  /**
+   * Ends a challenge and completes the booking it was holding.
+   *
+   * `verifiedPatientId` is the *only* difference between a proven and an
+   * unproven ending: it decides whether the booking attaches to the existing
+   * record. Everything the customer sees is produced identically either way.
+   */
+  private async settleChallenge(
+    conversation: ConversationRecord,
+    challenge: ChannelOtpChallengeRecord,
+    verifiedPatientId: string | null,
+  ): Promise<void> {
+    const now = new Date();
+    await this.verificationService.consumeChallenge(challenge.id, now);
+    await this.conversationRepository.updateState(conversation.id, 'BOT_ACTIVE');
+    try {
+      const actor = await this.systemActorService.resolveActor();
+      if (verifiedPatientId !== null) {
+        await this.bookingService.recordVerification({
+          channel: conversation.channel,
+          externalChatId: conversation.externalChatId,
+          phoneNumber: challenge.pendingBooking.phoneNumber,
+          fullName: challenge.pendingBooking.patientFullName,
+          patientId: verifiedPatientId,
+          now,
+        });
+      }
+      const outcome = await this.bookingService.completePendingBooking({
+        channel: conversation.channel,
+        actor,
+        pendingBooking: challenge.pendingBooking,
+        verifiedPatientId,
+      });
+      await this.replyWith(
+        conversation,
+        outcome.deterministicReply ?? CS_REPLY_TEMPLATES.providerUnavailable,
+        [],
+        'SYSTEM',
+      );
+    } catch (caughtError) {
+      // The challenge is already spent and the state already returned to the
+      // bot, so the customer can keep talking. Telling them the booking failed
+      // is the honest reply; retrying silently would risk booking twice.
+      this.logger.error(
+        buildSafeErrorLog('cs_pending_booking_failed', {
+          conversationId: conversation.id,
+          reason: caughtError instanceof Error ? caughtError.name : 'unknown',
+        }),
+      );
+      await this.replyWith(conversation, CS_REPLY_TEMPLATES.providerUnavailable, [], 'SYSTEM');
+    }
+  }
+
+  private isDeclining(text: string): boolean {
+    return VERIFICATION_SKIP_PATTERNS.some((pattern) => pattern.test(text));
+  }
+
+  /**
+   * What the transcript records for this turn.
+   *
+   * A shared contact card carries no text — the customer tapped a button — so
+   * recording an empty string would leave a gap where an action happened. The
+   * marker is bracketed to make it visibly not the customer's words, and it
+   * carries **no number**: the phone number is already on the link row, and a
+   * second copy in a 90-day transcript is a second copy to leak.
+   */
+  private describeCustomerTurn(message: InboundChannelMessage, redactedText: string): string {
+    if (message.sharedContact === undefined) {
+      return redactedText;
+    }
+    return redactedText === '' ? '[kontak dibagikan]' : `${redactedText}\n[kontak dibagikan]`;
   }
 
   /**
@@ -165,6 +376,7 @@ export class ConversationService extends InboundMessageSink {
     content: string,
     safetyTags: readonly CsSafetyTagValue[],
     role: 'BOT' | 'SYSTEM',
+    requestContact = false,
   ): Promise<void> {
     await this.conversationRepository.appendMessage({
       conversationId: conversation.id,
@@ -177,6 +389,10 @@ export class ConversationService extends InboundMessageSink {
         channel: conversation.channel,
         externalChatId: conversation.externalChatId,
         text: content,
+        // Added only when asked for, so an ordinary reply is the same message
+        // it was before `PCS-T07` — and, on Telegram, so every other reply
+        // actively clears a contact button a previous turn put there.
+        ...(requestContact ? { requestContact: true } : {}),
       });
     } catch (caughtError) {
       this.logger.error(

@@ -107,7 +107,9 @@ export const ModelName = {
   DocumentChunk: 'DocumentChunk',
   ChannelInboundReceipt: 'ChannelInboundReceipt',
   Conversation: 'Conversation',
-  ConversationMessage: 'ConversationMessage'
+  ConversationMessage: 'ConversationMessage',
+  ChannelPatientLink: 'ChannelPatientLink',
+  ChannelOtpChallenge: 'ChannelOtpChallenge'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -165,6 +167,7 @@ export type MrnCounterScalarFieldEnum = (typeof MrnCounterScalarFieldEnum)[keyof
 export const PatientProfileScalarFieldEnum = {
   id: 'id',
   mrn: 'mrn',
+  source: 'source',
   fullName: 'fullName',
   dateOfBirth: 'dateOfBirth',
   placeOfBirth: 'placeOfBirth',
@@ -383,6 +386,8 @@ export const AppointmentScalarFieldEnum = {
   sessionId: 'sessionId',
   queueNumber: 'queueNumber',
   bpjsBookingCode: 'bpjsBookingCode',
+  bookingSource: 'bookingSource',
+  bookingReferenceCode: 'bookingReferenceCode',
   scheduledAt: 'scheduledAt',
   status: 'status',
   reason: 'reason',
@@ -1073,6 +1078,43 @@ export const ConversationMessageScalarFieldEnum = {
 } as const
 
 export type ConversationMessageScalarFieldEnum = (typeof ConversationMessageScalarFieldEnum)[keyof typeof ConversationMessageScalarFieldEnum]
+
+
+export const ChannelPatientLinkScalarFieldEnum = {
+  id: 'id',
+  channel: 'channel',
+  externalChatId: 'externalChatId',
+  phoneNumber: 'phoneNumber',
+  fullName: 'fullName',
+  patientId: 'patientId',
+  verificationStatus: 'verificationStatus',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChannelPatientLinkScalarFieldEnum = (typeof ChannelPatientLinkScalarFieldEnum)[keyof typeof ChannelPatientLinkScalarFieldEnum]
+
+
+export const ChannelOtpChallengeScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  method: 'method',
+  patientId: 'patientId',
+  codeHash: 'codeHash',
+  attemptsUsed: 'attemptsUsed',
+  expiresAt: 'expiresAt',
+  consumedAt: 'consumedAt',
+  createdAt: 'createdAt',
+  patientFullName: 'patientFullName',
+  phoneNumber: 'phoneNumber',
+  doctorId: 'doctorId',
+  scheduleId: 'scheduleId',
+  sessionDate: 'sessionDate',
+  note: 'note'
+} as const
+
+export type ChannelOtpChallengeScalarFieldEnum = (typeof ChannelOtpChallengeScalarFieldEnum)[keyof typeof ChannelOtpChallengeScalarFieldEnum]
 
 
 export const SortOrder = {

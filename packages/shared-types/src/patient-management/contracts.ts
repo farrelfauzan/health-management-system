@@ -2,8 +2,10 @@ import type {
   AllergySeverityValue,
   BloodTypeValue,
   MaritalStatusValue,
+  PatientRecordSourceValue,
   PatientSexValue,
   PatientStatusValue,
+  PrivacyNoticeEvidenceInput,
   ReligionValue,
   RhesusFactorValue,
 } from '#patient-management/schemas';
@@ -37,7 +39,7 @@ export type PatientPrivacyNoticeHistoryItem = {
   representativeName?: string;
   representativeRelation?: string;
   actorUserId: string;
-  provenance: 'FRONT_DESK' | 'PATIENT_PORTAL' | 'LEGACY_IMPORT' | 'EMERGENCY';
+  provenance: PrivacyNoticeEvidenceInput['provenance'];
   recordedAt: string;
 };
 
@@ -53,12 +55,21 @@ export type PatientProfile = {
   id: string;
   mrn: string;
   fullName: string;
-  dateOfBirth: string;
+  /**
+   * How this record was created (`PCS-T07`). `CHANNEL_BOOKING` is a chat-made
+   * draft the front desk still has to complete, and it is what tells a client
+   * that the absent fields below are absent *by design* rather than by
+   * omission.
+   */
+  source: PatientRecordSourceValue;
+  /** Absent on a `CHANNEL_BOOKING` draft until the counter completes it. */
+  dateOfBirth?: string;
   placeOfBirth?: string;
   sex?: PatientSexValue;
   status: PatientStatusValue;
   phoneNumber: string;
-  address: string;
+  /** Absent on a `CHANNEL_BOOKING` draft until the counter completes it. */
+  address?: string;
   /**
    * Masked NIK (`••••••••7890`), rendered from the stored last four digits
    * without decrypting a row. Absent when no NIK is on file. Full values come

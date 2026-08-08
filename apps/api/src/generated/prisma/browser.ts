@@ -616,3 +616,24 @@ export type Conversation = Prisma.ConversationModel
  * identifier that outlives the message (§5.3).
  */
 export type ConversationMessage = Prisma.ConversationMessageModel
+/**
+ * Model ChannelPatientLink
+ * What one chat has told us about who it belongs to (strategy §5.1).
+ * 
+ * The name and phone number here are **customer-typed**, never registry data.
+ * `patientId` is null until §5.1.1 verification succeeds, and that is the
+ * whole point of the table: the link between a chat and a real record is a
+ * thing that has to be *earned*, and having a row to hold the unearned state
+ * is what keeps the earned one from being assumed.
+ * 
+ * **Verification unlocks linkage only, not data access.** A verified
+ * customer's bookings attach to their real record; the chat still cannot read
+ * anything from it, because the tool surface (§4.2) has no tool that reads a
+ * patient.
+ */
+export type ChannelPatientLink = Prisma.ChannelPatientLinkModel
+/**
+ * Model ChannelOtpChallenge
+ * 
+ */
+export type ChannelOtpChallenge = Prisma.ChannelOtpChallengeModel

@@ -95,6 +95,56 @@ describe('normalizeTelegramUpdate', () => {
     expect(actualMessage?.senderDisplayName).toBeNull();
   });
 
+  describe('shared contact cards (PCS-T07, §5.1.1 tier 2)', () => {
+    it('accepts a contact-only message even though it carries no text', () => {
+      const actualMessage = normalizeTelegramUpdate(
+        buildUpdate({
+          text: undefined,
+          contact: { phone_number: '+62 812-3456-789', first_name: 'Siti', user_id: 12_345 },
+        }),
+      );
+
+      // A tap is an action, not an utterance: rejecting it as "empty text"
+      // would lose the one piece of evidence the verification step exists for.
+      expect(actualMessage?.text).toBe('');
+      expect(actualMessage?.sharedContact).toEqual({
+        phoneNumber: '+62 812-3456-789',
+        isSelfShared: true,
+      });
+    });
+
+    it('marks a card forwarded from the address book as not the sender own', () => {
+      const actualMessage = normalizeTelegramUpdate(
+        buildUpdate({
+          text: undefined,
+          contact: { phone_number: '+62 899-0000-000', first_name: 'Ibu', user_id: 99_999 },
+        }),
+      );
+
+      // Same wire shape, no evidence at all — anyone can share anyone's
+      // contact, and the verification service refuses on this flag.
+      expect(actualMessage?.sharedContact?.isSelfShared).toBe(false);
+    });
+
+    it('marks a card with no Telegram account as not the sender own', () => {
+      const actualMessage = normalizeTelegramUpdate(
+        buildUpdate({ text: undefined, contact: { phone_number: '+62 899-0000-000' } }),
+      );
+
+      expect(actualMessage?.sharedContact?.isSelfShared).toBe(false);
+    });
+
+    it('ignores a contact card carrying no number', () => {
+      expect(
+        normalizeTelegramUpdate(buildUpdate({ text: undefined, contact: { phone_number: '  ' } })),
+      ).toBeNull();
+    });
+
+    it('carries no sharedContact on an ordinary text message', () => {
+      expect(normalizeTelegramUpdate(buildUpdate())?.sharedContact).toBeUndefined();
+    });
+  });
+
   it('keeps the chat id and message id as separate fields', () => {
     const actualMessage = normalizeTelegramUpdate(buildUpdate({ message_id: 1 }));
 

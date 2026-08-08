@@ -41,6 +41,7 @@ export type PatientProfileSumAggregateOutputType = {
 export type PatientProfileMinAggregateOutputType = {
   id: string | null
   mrn: string | null
+  source: $Enums.PatientRecordSource | null
   fullName: string | null
   dateOfBirth: Date | null
   placeOfBirth: string | null
@@ -79,6 +80,7 @@ export type PatientProfileMinAggregateOutputType = {
 export type PatientProfileMaxAggregateOutputType = {
   id: string | null
   mrn: string | null
+  source: $Enums.PatientRecordSource | null
   fullName: string | null
   dateOfBirth: Date | null
   placeOfBirth: string | null
@@ -117,6 +119,7 @@ export type PatientProfileMaxAggregateOutputType = {
 export type PatientProfileCountAggregateOutputType = {
   id: number
   mrn: number
+  source: number
   fullName: number
   dateOfBirth: number
   placeOfBirth: number
@@ -169,6 +172,7 @@ export type PatientProfileSumAggregateInputType = {
 export type PatientProfileMinAggregateInputType = {
   id?: true
   mrn?: true
+  source?: true
   fullName?: true
   dateOfBirth?: true
   placeOfBirth?: true
@@ -207,6 +211,7 @@ export type PatientProfileMinAggregateInputType = {
 export type PatientProfileMaxAggregateInputType = {
   id?: true
   mrn?: true
+  source?: true
   fullName?: true
   dateOfBirth?: true
   placeOfBirth?: true
@@ -245,6 +250,7 @@ export type PatientProfileMaxAggregateInputType = {
 export type PatientProfileCountAggregateInputType = {
   id?: true
   mrn?: true
+  source?: true
   fullName?: true
   dateOfBirth?: true
   placeOfBirth?: true
@@ -370,13 +376,14 @@ export type PatientProfileGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type PatientProfileGroupByOutputType = {
   id: string
   mrn: string
+  source: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date
+  dateOfBirth: Date | null
   placeOfBirth: string | null
   sex: $Enums.PatientSex | null
   status: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address: string | null
   ownerUserId: string | null
   isActive: boolean
   createdAt: Date
@@ -431,13 +438,14 @@ export type PatientProfileWhereInput = {
   NOT?: Prisma.PatientProfileWhereInput | Prisma.PatientProfileWhereInput[]
   id?: Prisma.UuidFilter<"PatientProfile"> | string
   mrn?: Prisma.StringFilter<"PatientProfile"> | string
+  source?: Prisma.EnumPatientRecordSourceFilter<"PatientProfile"> | $Enums.PatientRecordSource
   fullName?: Prisma.StringFilter<"PatientProfile"> | string
-  dateOfBirth?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
+  dateOfBirth?: Prisma.DateTimeNullableFilter<"PatientProfile"> | Date | string | null
   placeOfBirth?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   sex?: Prisma.EnumPatientSexNullableFilter<"PatientProfile"> | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFilter<"PatientProfile"> | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFilter<"PatientProfile"> | string
-  address?: Prisma.StringFilter<"PatientProfile"> | string
+  address?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   ownerUserId?: Prisma.UuidNullableFilter<"PatientProfile"> | string | null
   isActive?: Prisma.BoolFilter<"PatientProfile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
@@ -474,18 +482,20 @@ export type PatientProfileWhereInput = {
   invoices?: Prisma.InvoiceListRelationFilter
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckListRelationFilter
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
+  channelLinks?: Prisma.ChannelPatientLinkListRelationFilter
 }
 
 export type PatientProfileOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   mrn?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
-  dateOfBirth?: Prisma.SortOrder
+  dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   sex?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
-  address?: Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -522,6 +532,7 @@ export type PatientProfileOrderByWithRelationInput = {
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckOrderByRelationAggregateInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordOrderByRelationAggregateInput
+  channelLinks?: Prisma.ChannelPatientLinkOrderByRelationAggregateInput
 }
 
 export type PatientProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -532,13 +543,14 @@ export type PatientProfileWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PatientProfileWhereInput | Prisma.PatientProfileWhereInput[]
   OR?: Prisma.PatientProfileWhereInput[]
   NOT?: Prisma.PatientProfileWhereInput | Prisma.PatientProfileWhereInput[]
+  source?: Prisma.EnumPatientRecordSourceFilter<"PatientProfile"> | $Enums.PatientRecordSource
   fullName?: Prisma.StringFilter<"PatientProfile"> | string
-  dateOfBirth?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
+  dateOfBirth?: Prisma.DateTimeNullableFilter<"PatientProfile"> | Date | string | null
   placeOfBirth?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   sex?: Prisma.EnumPatientSexNullableFilter<"PatientProfile"> | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFilter<"PatientProfile"> | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFilter<"PatientProfile"> | string
-  address?: Prisma.StringFilter<"PatientProfile"> | string
+  address?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   ownerUserId?: Prisma.UuidNullableFilter<"PatientProfile"> | string | null
   isActive?: Prisma.BoolFilter<"PatientProfile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
@@ -573,18 +585,20 @@ export type PatientProfileWhereUniqueInput = Prisma.AtLeast<{
   invoices?: Prisma.InvoiceListRelationFilter
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckListRelationFilter
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
+  channelLinks?: Prisma.ChannelPatientLinkListRelationFilter
 }, "id" | "mrn" | "nikIndex" | "bpjsNumberIndex">
 
 export type PatientProfileOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   mrn?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
-  dateOfBirth?: Prisma.SortOrder
+  dateOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrderInput | Prisma.SortOrder
   sex?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
-  address?: Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -624,13 +638,14 @@ export type PatientProfileScalarWhereWithAggregatesInput = {
   NOT?: Prisma.PatientProfileScalarWhereWithAggregatesInput | Prisma.PatientProfileScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"PatientProfile"> | string
   mrn?: Prisma.StringWithAggregatesFilter<"PatientProfile"> | string
+  source?: Prisma.EnumPatientRecordSourceWithAggregatesFilter<"PatientProfile"> | $Enums.PatientRecordSource
   fullName?: Prisma.StringWithAggregatesFilter<"PatientProfile"> | string
-  dateOfBirth?: Prisma.DateTimeWithAggregatesFilter<"PatientProfile"> | Date | string
+  dateOfBirth?: Prisma.DateTimeNullableWithAggregatesFilter<"PatientProfile"> | Date | string | null
   placeOfBirth?: Prisma.StringNullableWithAggregatesFilter<"PatientProfile"> | string | null
   sex?: Prisma.EnumPatientSexNullableWithAggregatesFilter<"PatientProfile"> | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusWithAggregatesFilter<"PatientProfile"> | $Enums.PatientStatus
   phoneNumber?: Prisma.StringWithAggregatesFilter<"PatientProfile"> | string
-  address?: Prisma.StringWithAggregatesFilter<"PatientProfile"> | string
+  address?: Prisma.StringNullableWithAggregatesFilter<"PatientProfile"> | string | null
   ownerUserId?: Prisma.UuidNullableWithAggregatesFilter<"PatientProfile"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"PatientProfile"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PatientProfile"> | Date | string
@@ -662,13 +677,14 @@ export type PatientProfileScalarWhereWithAggregatesInput = {
 export type PatientProfileCreateInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -704,18 +720,20 @@ export type PatientProfileCreateInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -751,18 +769,20 @@ export type PatientProfileUncheckedCreateInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -798,18 +818,20 @@ export type PatientProfileUpdateInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -845,18 +867,20 @@ export type PatientProfileUncheckedUpdateInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateManyInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -888,13 +912,14 @@ export type PatientProfileCreateManyInput = {
 export type PatientProfileUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -925,13 +950,14 @@ export type PatientProfileUpdateManyMutationInput = {
 export type PatientProfileUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -973,6 +999,7 @@ export type PatientProfileOrderByRelationAggregateInput = {
 export type PatientProfileCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   mrn?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
   dateOfBirth?: Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrder
@@ -1017,6 +1044,7 @@ export type PatientProfileAvgOrderByAggregateInput = {
 export type PatientProfileMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   mrn?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
   dateOfBirth?: Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrder
@@ -1055,6 +1083,7 @@ export type PatientProfileMaxOrderByAggregateInput = {
 export type PatientProfileMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   mrn?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
   dateOfBirth?: Prisma.SortOrder
   placeOfBirth?: Prisma.SortOrder
@@ -1101,6 +1130,11 @@ export type PatientProfileScalarRelationFilter = {
   isNot?: Prisma.PatientProfileWhereInput
 }
 
+export type PatientProfileNullableScalarRelationFilter = {
+  is?: Prisma.PatientProfileWhereInput | null
+  isNot?: Prisma.PatientProfileWhereInput | null
+}
+
 export type PatientProfileCreateNestedManyWithoutOwnerUserInput = {
   create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutOwnerUserInput, Prisma.PatientProfileUncheckedCreateWithoutOwnerUserInput> | Prisma.PatientProfileCreateWithoutOwnerUserInput[] | Prisma.PatientProfileUncheckedCreateWithoutOwnerUserInput[]
   connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutOwnerUserInput | Prisma.PatientProfileCreateOrConnectWithoutOwnerUserInput[]
@@ -1141,6 +1175,10 @@ export type PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput = {
   update?: Prisma.PatientProfileUpdateWithWhereUniqueWithoutOwnerUserInput | Prisma.PatientProfileUpdateWithWhereUniqueWithoutOwnerUserInput[]
   updateMany?: Prisma.PatientProfileUpdateManyWithWhereWithoutOwnerUserInput | Prisma.PatientProfileUpdateManyWithWhereWithoutOwnerUserInput[]
   deleteMany?: Prisma.PatientProfileScalarWhereInput | Prisma.PatientProfileScalarWhereInput[]
+}
+
+export type EnumPatientRecordSourceFieldUpdateOperationsInput = {
+  set?: $Enums.PatientRecordSource
 }
 
 export type NullableStringFieldUpdateOperationsInput = {
@@ -1305,16 +1343,33 @@ export type PatientProfileUpdateOneRequiredWithoutBpjsEligibilityChecksNestedInp
   update?: Prisma.XOR<Prisma.XOR<Prisma.PatientProfileUpdateToOneWithWhereWithoutBpjsEligibilityChecksInput, Prisma.PatientProfileUpdateWithoutBpjsEligibilityChecksInput>, Prisma.PatientProfileUncheckedUpdateWithoutBpjsEligibilityChecksInput>
 }
 
+export type PatientProfileCreateNestedOneWithoutChannelLinksInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutChannelLinksInput, Prisma.PatientProfileUncheckedCreateWithoutChannelLinksInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutChannelLinksInput
+  connect?: Prisma.PatientProfileWhereUniqueInput
+}
+
+export type PatientProfileUpdateOneWithoutChannelLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutChannelLinksInput, Prisma.PatientProfileUncheckedCreateWithoutChannelLinksInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutChannelLinksInput
+  upsert?: Prisma.PatientProfileUpsertWithoutChannelLinksInput
+  disconnect?: Prisma.PatientProfileWhereInput | boolean
+  delete?: Prisma.PatientProfileWhereInput | boolean
+  connect?: Prisma.PatientProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientProfileUpdateToOneWithWhereWithoutChannelLinksInput, Prisma.PatientProfileUpdateWithoutChannelLinksInput>, Prisma.PatientProfileUncheckedUpdateWithoutChannelLinksInput>
+}
+
 export type PatientProfileCreateWithoutOwnerUserInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1349,18 +1404,20 @@ export type PatientProfileCreateWithoutOwnerUserInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutOwnerUserInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1395,6 +1452,7 @@ export type PatientProfileUncheckedCreateWithoutOwnerUserInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutOwnerUserInput = {
@@ -1429,13 +1487,14 @@ export type PatientProfileScalarWhereInput = {
   NOT?: Prisma.PatientProfileScalarWhereInput | Prisma.PatientProfileScalarWhereInput[]
   id?: Prisma.UuidFilter<"PatientProfile"> | string
   mrn?: Prisma.StringFilter<"PatientProfile"> | string
+  source?: Prisma.EnumPatientRecordSourceFilter<"PatientProfile"> | $Enums.PatientRecordSource
   fullName?: Prisma.StringFilter<"PatientProfile"> | string
-  dateOfBirth?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
+  dateOfBirth?: Prisma.DateTimeNullableFilter<"PatientProfile"> | Date | string | null
   placeOfBirth?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   sex?: Prisma.EnumPatientSexNullableFilter<"PatientProfile"> | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFilter<"PatientProfile"> | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFilter<"PatientProfile"> | string
-  address?: Prisma.StringFilter<"PatientProfile"> | string
+  address?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   ownerUserId?: Prisma.UuidNullableFilter<"PatientProfile"> | string | null
   isActive?: Prisma.BoolFilter<"PatientProfile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PatientProfile"> | Date | string
@@ -1467,13 +1526,14 @@ export type PatientProfileScalarWhereInput = {
 export type PatientProfileCreateWithoutPrivacyNoticeRecordsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1508,18 +1568,20 @@ export type PatientProfileCreateWithoutPrivacyNoticeRecordsInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1554,6 +1616,7 @@ export type PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutPrivacyNoticeRecordsInput = {
@@ -1575,13 +1638,14 @@ export type PatientProfileUpdateToOneWithWhereWithoutPrivacyNoticeRecordsInput =
 export type PatientProfileUpdateWithoutPrivacyNoticeRecordsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1616,18 +1680,20 @@ export type PatientProfileUpdateWithoutPrivacyNoticeRecordsInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1662,18 +1728,20 @@ export type PatientProfileUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutAllergiesInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1708,18 +1776,20 @@ export type PatientProfileCreateWithoutAllergiesInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutAllergiesInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1754,6 +1824,7 @@ export type PatientProfileUncheckedCreateWithoutAllergiesInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutAllergiesInput = {
@@ -1775,13 +1846,14 @@ export type PatientProfileUpdateToOneWithWhereWithoutAllergiesInput = {
 export type PatientProfileUpdateWithoutAllergiesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1816,18 +1888,20 @@ export type PatientProfileUpdateWithoutAllergiesInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutAllergiesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1862,18 +1936,20 @@ export type PatientProfileUncheckedUpdateWithoutAllergiesInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutDoctorsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1908,18 +1984,20 @@ export type PatientProfileCreateWithoutDoctorsInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutDoctorsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1954,6 +2032,7 @@ export type PatientProfileUncheckedCreateWithoutDoctorsInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutDoctorsInput = {
@@ -1975,13 +2054,14 @@ export type PatientProfileUpdateToOneWithWhereWithoutDoctorsInput = {
 export type PatientProfileUpdateWithoutDoctorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2016,18 +2096,20 @@ export type PatientProfileUpdateWithoutDoctorsInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutDoctorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2062,18 +2144,20 @@ export type PatientProfileUncheckedUpdateWithoutDoctorsInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutAppointmentsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2108,18 +2192,20 @@ export type PatientProfileCreateWithoutAppointmentsInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutAppointmentsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2154,6 +2240,7 @@ export type PatientProfileUncheckedCreateWithoutAppointmentsInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutAppointmentsInput = {
@@ -2175,13 +2262,14 @@ export type PatientProfileUpdateToOneWithWhereWithoutAppointmentsInput = {
 export type PatientProfileUpdateWithoutAppointmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2216,18 +2304,20 @@ export type PatientProfileUpdateWithoutAppointmentsInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutAppointmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2262,18 +2352,20 @@ export type PatientProfileUncheckedUpdateWithoutAppointmentsInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutRegistrationsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2308,18 +2400,20 @@ export type PatientProfileCreateWithoutRegistrationsInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutRegistrationsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2354,6 +2448,7 @@ export type PatientProfileUncheckedCreateWithoutRegistrationsInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutRegistrationsInput = {
@@ -2375,13 +2470,14 @@ export type PatientProfileUpdateToOneWithWhereWithoutRegistrationsInput = {
 export type PatientProfileUpdateWithoutRegistrationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2416,18 +2512,20 @@ export type PatientProfileUpdateWithoutRegistrationsInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutRegistrationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2462,18 +2560,20 @@ export type PatientProfileUncheckedUpdateWithoutRegistrationsInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutEncountersInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2508,18 +2608,20 @@ export type PatientProfileCreateWithoutEncountersInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutEncountersInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2554,6 +2656,7 @@ export type PatientProfileUncheckedCreateWithoutEncountersInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutEncountersInput = {
@@ -2575,13 +2678,14 @@ export type PatientProfileUpdateToOneWithWhereWithoutEncountersInput = {
 export type PatientProfileUpdateWithoutEncountersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2616,18 +2720,20 @@ export type PatientProfileUpdateWithoutEncountersInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutEncountersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2662,18 +2768,20 @@ export type PatientProfileUncheckedUpdateWithoutEncountersInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutPrescriptionsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2708,18 +2816,20 @@ export type PatientProfileCreateWithoutPrescriptionsInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutPrescriptionsInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2754,6 +2864,7 @@ export type PatientProfileUncheckedCreateWithoutPrescriptionsInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutPrescriptionsInput = {
@@ -2775,13 +2886,14 @@ export type PatientProfileUpdateToOneWithWhereWithoutPrescriptionsInput = {
 export type PatientProfileUpdateWithoutPrescriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2816,18 +2928,20 @@ export type PatientProfileUpdateWithoutPrescriptionsInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutPrescriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2862,18 +2976,20 @@ export type PatientProfileUncheckedUpdateWithoutPrescriptionsInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutInvoicesInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2908,18 +3024,20 @@ export type PatientProfileCreateWithoutInvoicesInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutInvoicesInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2954,6 +3072,7 @@ export type PatientProfileUncheckedCreateWithoutInvoicesInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutInvoicesInput = {
@@ -2975,13 +3094,14 @@ export type PatientProfileUpdateToOneWithWhereWithoutInvoicesInput = {
 export type PatientProfileUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3016,18 +3136,20 @@ export type PatientProfileUpdateWithoutInvoicesInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3062,18 +3184,20 @@ export type PatientProfileUncheckedUpdateWithoutInvoicesInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateWithoutBpjsEligibilityChecksInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3108,18 +3232,20 @@ export type PatientProfileCreateWithoutBpjsEligibilityChecksInput = {
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileUncheckedCreateWithoutBpjsEligibilityChecksInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   ownerUserId?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -3154,6 +3280,7 @@ export type PatientProfileUncheckedCreateWithoutBpjsEligibilityChecksInput = {
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type PatientProfileCreateOrConnectWithoutBpjsEligibilityChecksInput = {
@@ -3175,13 +3302,14 @@ export type PatientProfileUpdateToOneWithWhereWithoutBpjsEligibilityChecksInput 
 export type PatientProfileUpdateWithoutBpjsEligibilityChecksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3216,18 +3344,20 @@ export type PatientProfileUpdateWithoutBpjsEligibilityChecksInput = {
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutBpjsEligibilityChecksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3262,18 +3392,228 @@ export type PatientProfileUncheckedUpdateWithoutBpjsEligibilityChecksInput = {
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientProfileCreateWithoutChannelLinksInput = {
+  id?: string
+  mrn: string
+  source?: $Enums.PatientRecordSource
+  fullName: string
+  dateOfBirth?: Date | string | null
+  placeOfBirth?: string | null
+  sex?: $Enums.PatientSex | null
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
+  doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+}
+
+export type PatientProfileUncheckedCreateWithoutChannelLinksInput = {
+  id?: string
+  mrn: string
+  source?: $Enums.PatientRecordSource
+  fullName: string
+  dateOfBirth?: Date | string | null
+  placeOfBirth?: string | null
+  sex?: $Enums.PatientSex | null
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address?: string | null
+  ownerUserId?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type PatientProfileCreateOrConnectWithoutChannelLinksInput = {
+  where: Prisma.PatientProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutChannelLinksInput, Prisma.PatientProfileUncheckedCreateWithoutChannelLinksInput>
+}
+
+export type PatientProfileUpsertWithoutChannelLinksInput = {
+  update: Prisma.XOR<Prisma.PatientProfileUpdateWithoutChannelLinksInput, Prisma.PatientProfileUncheckedUpdateWithoutChannelLinksInput>
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutChannelLinksInput, Prisma.PatientProfileUncheckedCreateWithoutChannelLinksInput>
+  where?: Prisma.PatientProfileWhereInput
+}
+
+export type PatientProfileUpdateToOneWithWhereWithoutChannelLinksInput = {
+  where?: Prisma.PatientProfileWhereInput
+  data: Prisma.XOR<Prisma.PatientProfileUpdateWithoutChannelLinksInput, Prisma.PatientProfileUncheckedUpdateWithoutChannelLinksInput>
+}
+
+export type PatientProfileUpdateWithoutChannelLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
+  doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientProfileUncheckedUpdateWithoutChannelLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileCreateManyOwnerUserInput = {
   id?: string
   mrn: string
+  source?: $Enums.PatientRecordSource
   fullName: string
-  dateOfBirth: Date | string
+  dateOfBirth?: Date | string | null
   placeOfBirth?: string | null
   sex?: $Enums.PatientSex | null
   status?: $Enums.PatientStatus
   phoneNumber: string
-  address: string
+  address?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -3304,13 +3644,14 @@ export type PatientProfileCreateManyOwnerUserInput = {
 export type PatientProfileUpdateWithoutOwnerUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3345,18 +3686,20 @@ export type PatientProfileUpdateWithoutOwnerUserInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateWithoutOwnerUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3391,18 +3734,20 @@ export type PatientProfileUncheckedUpdateWithoutOwnerUserInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type PatientProfileUncheckedUpdateManyWithoutOwnerUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
-  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sex?: Prisma.NullableEnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex | null
   status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3445,6 +3790,7 @@ export type PatientProfileCountOutputType = {
   invoices: number
   bpjsEligibilityChecks: number
   privacyNoticeRecords: number
+  channelLinks: number
 }
 
 export type PatientProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3457,6 +3803,7 @@ export type PatientProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Ex
   invoices?: boolean | PatientProfileCountOutputTypeCountInvoicesArgs
   bpjsEligibilityChecks?: boolean | PatientProfileCountOutputTypeCountBpjsEligibilityChecksArgs
   privacyNoticeRecords?: boolean | PatientProfileCountOutputTypeCountPrivacyNoticeRecordsArgs
+  channelLinks?: boolean | PatientProfileCountOutputTypeCountChannelLinksArgs
 }
 
 /**
@@ -3532,10 +3879,18 @@ export type PatientProfileCountOutputTypeCountPrivacyNoticeRecordsArgs<ExtArgs e
   where?: Prisma.PatientPrivacyNoticeRecordWhereInput
 }
 
+/**
+ * PatientProfileCountOutputType without action
+ */
+export type PatientProfileCountOutputTypeCountChannelLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChannelPatientLinkWhereInput
+}
+
 
 export type PatientProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   mrn?: boolean
+  source?: boolean
   fullName?: boolean
   dateOfBirth?: boolean
   placeOfBirth?: boolean
@@ -3579,12 +3934,14 @@ export type PatientProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   invoices?: boolean | Prisma.PatientProfile$invoicesArgs<ExtArgs>
   bpjsEligibilityChecks?: boolean | Prisma.PatientProfile$bpjsEligibilityChecksArgs<ExtArgs>
   privacyNoticeRecords?: boolean | Prisma.PatientProfile$privacyNoticeRecordsArgs<ExtArgs>
+  channelLinks?: boolean | Prisma.PatientProfile$channelLinksArgs<ExtArgs>
   _count?: boolean | Prisma.PatientProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["patientProfile"]>
 
 export type PatientProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   mrn?: boolean
+  source?: boolean
   fullName?: boolean
   dateOfBirth?: boolean
   placeOfBirth?: boolean
@@ -3624,6 +3981,7 @@ export type PatientProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Type
 export type PatientProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   mrn?: boolean
+  source?: boolean
   fullName?: boolean
   dateOfBirth?: boolean
   placeOfBirth?: boolean
@@ -3663,6 +4021,7 @@ export type PatientProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
 export type PatientProfileSelectScalar = {
   id?: boolean
   mrn?: boolean
+  source?: boolean
   fullName?: boolean
   dateOfBirth?: boolean
   placeOfBirth?: boolean
@@ -3698,7 +4057,7 @@ export type PatientProfileSelectScalar = {
   satusehatPatientIdKeyVersion?: boolean
 }
 
-export type PatientProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mrn" | "fullName" | "dateOfBirth" | "placeOfBirth" | "sex" | "status" | "phoneNumber" | "address" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "lastVisitAt" | "email" | "bloodType" | "rhesusFactor" | "maritalStatus" | "occupation" | "religion" | "emergencyContactName" | "emergencyContactPhone" | "guardianName" | "guardianRelation" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "bpjsNumberCiphertext" | "bpjsNumberIndex" | "bpjsNumberLast4" | "bpjsNumberKeyVersion" | "satusehatPatientIdCiphertext" | "satusehatPatientIdKeyVersion", ExtArgs["result"]["patientProfile"]>
+export type PatientProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mrn" | "source" | "fullName" | "dateOfBirth" | "placeOfBirth" | "sex" | "status" | "phoneNumber" | "address" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "lastVisitAt" | "email" | "bloodType" | "rhesusFactor" | "maritalStatus" | "occupation" | "religion" | "emergencyContactName" | "emergencyContactPhone" | "guardianName" | "guardianRelation" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "bpjsNumberCiphertext" | "bpjsNumberIndex" | "bpjsNumberLast4" | "bpjsNumberKeyVersion" | "satusehatPatientIdCiphertext" | "satusehatPatientIdKeyVersion", ExtArgs["result"]["patientProfile"]>
 export type PatientProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownerUser?: boolean | Prisma.PatientProfile$ownerUserArgs<ExtArgs>
   doctors?: boolean | Prisma.PatientProfile$doctorsArgs<ExtArgs>
@@ -3710,6 +4069,7 @@ export type PatientProfileInclude<ExtArgs extends runtime.Types.Extensions.Inter
   invoices?: boolean | Prisma.PatientProfile$invoicesArgs<ExtArgs>
   bpjsEligibilityChecks?: boolean | Prisma.PatientProfile$bpjsEligibilityChecksArgs<ExtArgs>
   privacyNoticeRecords?: boolean | Prisma.PatientProfile$privacyNoticeRecordsArgs<ExtArgs>
+  channelLinks?: boolean | Prisma.PatientProfile$channelLinksArgs<ExtArgs>
   _count?: boolean | Prisma.PatientProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PatientProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3732,17 +4092,30 @@ export type $PatientProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
     bpjsEligibilityChecks: Prisma.$BpjsEligibilityCheckPayload<ExtArgs>[]
     privacyNoticeRecords: Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>[]
+    channelLinks: Prisma.$ChannelPatientLinkPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     mrn: string
+    source: $Enums.PatientRecordSource
     fullName: string
-    dateOfBirth: Date
+    /**
+     * Nullable since `PCS-T07`. Every record a human creates still supplies it
+     * — `createPatientSchema` keeps it required — but a chat-created draft
+     * genuinely does not have one, and the alternatives were both worse than a
+     * null: refusing to book, or writing a placeholder date into a record that
+     * PMK 24/2022 says is kept for 25 years.
+     */
+    dateOfBirth: Date | null
     placeOfBirth: string | null
     sex: $Enums.PatientSex | null
     status: $Enums.PatientStatus
     phoneNumber: string
-    address: string
+    /**
+     * Nullable for the same reason as {@link dateOfBirth}, and only for
+     * chat-created drafts.
+     */
+    address: string | null
     ownerUserId: string | null
     isActive: boolean
     createdAt: Date
@@ -4173,6 +4546,7 @@ export interface Prisma__PatientProfileClient<T, Null = never, ExtArgs extends r
   invoices<T extends Prisma.PatientProfile$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bpjsEligibilityChecks<T extends Prisma.PatientProfile$bpjsEligibilityChecksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$bpjsEligibilityChecksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BpjsEligibilityCheckPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   privacyNoticeRecords<T extends Prisma.PatientProfile$privacyNoticeRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$privacyNoticeRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  channelLinks<T extends Prisma.PatientProfile$channelLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$channelLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChannelPatientLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4204,6 +4578,7 @@ export interface Prisma__PatientProfileClient<T, Null = never, ExtArgs extends r
 export interface PatientProfileFieldRefs {
   readonly id: Prisma.FieldRef<"PatientProfile", 'String'>
   readonly mrn: Prisma.FieldRef<"PatientProfile", 'String'>
+  readonly source: Prisma.FieldRef<"PatientProfile", 'PatientRecordSource'>
   readonly fullName: Prisma.FieldRef<"PatientProfile", 'String'>
   readonly dateOfBirth: Prisma.FieldRef<"PatientProfile", 'DateTime'>
   readonly placeOfBirth: Prisma.FieldRef<"PatientProfile", 'String'>
@@ -4870,6 +5245,30 @@ export type PatientProfile$privacyNoticeRecordsArgs<ExtArgs extends runtime.Type
   take?: number
   skip?: number
   distinct?: Prisma.PatientPrivacyNoticeRecordScalarFieldEnum | Prisma.PatientPrivacyNoticeRecordScalarFieldEnum[]
+}
+
+/**
+ * PatientProfile.channelLinks
+ */
+export type PatientProfile$channelLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChannelPatientLink
+   */
+  select?: Prisma.ChannelPatientLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChannelPatientLink
+   */
+  omit?: Prisma.ChannelPatientLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChannelPatientLinkInclude<ExtArgs> | null
+  where?: Prisma.ChannelPatientLinkWhereInput
+  orderBy?: Prisma.ChannelPatientLinkOrderByWithRelationInput | Prisma.ChannelPatientLinkOrderByWithRelationInput[]
+  cursor?: Prisma.ChannelPatientLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChannelPatientLinkScalarFieldEnum | Prisma.ChannelPatientLinkScalarFieldEnum[]
 }
 
 /**

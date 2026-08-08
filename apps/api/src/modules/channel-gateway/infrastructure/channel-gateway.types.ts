@@ -12,4 +12,13 @@ export type SendChannelTextRequest = {
   /** Telegram chat id or WhatsApp JID, as a string on both channels. */
   externalChatId: string;
   text: string;
+  /**
+   * Ask for the sender's own contact card with this message (§5.1.1 tier 2).
+   *
+   * A hint the adapter is free to ignore: Telegram renders a one-tap button,
+   * and a gateway with no equivalent affordance sends the text alone. The
+   * conversation core stays text-first precisely so that degradation is
+   * automatic rather than a second code path (§7).
+   */
+  requestContact?: boolean;
 };

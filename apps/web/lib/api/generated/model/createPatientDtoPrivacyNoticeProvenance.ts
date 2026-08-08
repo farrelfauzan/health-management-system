@@ -15,4 +15,5 @@ export const CreatePatientDtoPrivacyNoticeProvenance = {
   LEGACY_IMPORT: 'LEGACY_IMPORT',
   EMERGENCY: 'EMERGENCY',
   BPJS_ANTREAN: 'BPJS_ANTREAN',
+  CHANNEL_BOOKING: 'CHANNEL_BOOKING',
 } as const;

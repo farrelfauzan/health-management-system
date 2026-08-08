@@ -28,7 +28,61 @@ type OpenApiSchema = {
 
 const DEFAULT_SUCCESS_STATUS = 200;
 
+const OPTIONAL_EXAMPLE_MARKER = Symbol('optionalExampleValue');
+
+type OptionalExample = { readonly [OPTIONAL_EXAMPLE_MARKER]: true; readonly value: unknown };
+
+/**
+ * Marks an example field as **present in this example but absent from some
+ * real responses**, so the generated schema documents it as optional.
+ *
+ * Every response schema in this file is inferred from a canonical example, and
+ * inference has no way to see a field that a *different* response would omit —
+ * so without this, every documented field is `required`, and a genuinely
+ * optional one becomes a lie the frontend's generated types then enforce. The
+ * case that forced it is `PCS-T07`'s chat-created patient draft, which has no
+ * date of birth and no address because §5.3 forbids asking for them over an
+ * unauthenticated channel.
+ *
+ * The example payload still renders the value: what changes is only whether
+ * the key appears in `required`. A reader of the docs should see a realistic
+ * patient, not a hole.
+ */
+export function optionalExample<TValue>(value: TValue): TValue {
+  return { [OPTIONAL_EXAMPLE_MARKER]: true, value } as unknown as TValue;
+}
+
+function isOptionalExample(value: unknown): value is OptionalExample {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as Record<symbol, unknown>)[OPTIONAL_EXAMPLE_MARKER] === true
+  );
+}
+
+/** Strips the optional markers so the rendered example is ordinary JSON. */
+function unwrapExample(value: unknown): unknown {
+  if (isOptionalExample(value)) {
+    return unwrapExample(value.value);
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => unwrapExample(item));
+  }
+  if (typeof value === 'object' && value !== null) {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, propertyValue]) => [
+        key,
+        unwrapExample(propertyValue),
+      ]),
+    );
+  }
+  return value;
+}
+
 function inferSchema(value: unknown): OpenApiSchema {
+  if (isOptionalExample(value)) {
+    return inferSchema(value.value);
+  }
   if (Array.isArray(value)) {
     return {
       type: 'array',
@@ -45,7 +99,9 @@ function inferSchema(value: unknown): OpenApiSchema {
       properties: Object.fromEntries(
         entries.map(([key, propertyValue]) => [key, inferSchema(propertyValue)]),
       ),
-      required: entries.map(([key]) => key),
+      required: entries
+        .filter(([, propertyValue]) => !isOptionalExample(propertyValue))
+        .map(([key]) => key),
     };
   }
   if (typeof value === 'number') {
@@ -68,7 +124,7 @@ export function ApiEndpoint(options: ApiEndpointOptions): MethodDecorator {
       description: options.responseDescription,
       schema: {
         ...inferSchema(options.responseExample),
-        example: options.responseExample,
+        example: unwrapExample(options.responseExample),
       },
     }),
   ];

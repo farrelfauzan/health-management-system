@@ -32,7 +32,15 @@ export class OutboundMessageDispatcherService {
   ) {}
 
   async sendMessage(message: OutboundChannelMessage): Promise<void> {
-    const request = { externalChatId: message.externalChatId, text: message.text };
+    // The flag is added only when it is set, so an ordinary reply reaches an
+    // adapter as exactly the request it did before `PCS-T07` — the WhatsApp
+    // adapters at `PCS-T09`/`PCS-T10` are written against this shape, and a
+    // field that is always present is a field they have to think about.
+    const request = {
+      externalChatId: message.externalChatId,
+      text: message.text,
+      ...(message.requestContact === true ? { requestContact: true } : {}),
+    };
     if (message.channel === 'TELEGRAM') {
       await this.telegramGateway.sendText(request);
       return;

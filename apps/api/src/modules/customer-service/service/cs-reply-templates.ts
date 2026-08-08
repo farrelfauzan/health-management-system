@@ -82,4 +82,40 @@ export const CS_REPLY_TEMPLATES = {
     'Maaf, saya sedang tidak dapat memproses pesan Anda saat ini.',
     'Silakan coba lagi beberapa saat lagi, atau hubungi loket klinik langsung.',
   ].join('\n\n'),
+
+  /**
+   * The Telegram contact-share challenge (§5.1.1 tier 2), sent with a
+   * `request_contact` button.
+   *
+   * It says what is being asked and what happens if the customer would rather
+   * not — because "share your phone number" from an automated account is a
+   * reasonable thing to refuse, and a customer who refuses must be able to see
+   * that their booking still goes through.
+   */
+  contactShareChallenge: [
+    'Sebelum saya selesaikan pemesanan, mohon konfirmasi nomor Anda dengan menekan tombol di bawah.',
+    'Jika Anda tidak ingin membagikan nomor, ketik saja "lanjut" — janji temu tetap dibuat dan petugas akan melengkapi datanya saat Anda datang.',
+  ].join('\n\n'),
+
+  /**
+   * The code challenge (§5.1.1 tier 3). It never says whose record the code
+   * went to, or that a record was found at all — the customer already knows
+   * their own number, and anyone else must learn nothing.
+   */
+  otpChallenge: [
+    'Untuk melanjutkan, saya sudah mengirimkan kode 6 digit ke nomor yang terdaftar di klinik.',
+    'Silakan balas dengan kodenya. Kode berlaku 5 menit.',
+    'Jika Anda tidak menerima kode atau tidak ingin melanjutkan, ketik "lanjut" — janji temu tetap dibuat dan datanya dilengkapi di klinik.',
+  ].join('\n\n'),
+
+  /** A wrong code, with the count left deliberately vague about what happens at zero. */
+  otpWrongCode: 'Kode yang Anda masukkan belum cocok. Silakan coba lagi, atau ketik "lanjut" untuk melewati langkah ini.',
+
+  /**
+   * While a challenge is outstanding, anything that is not a code and not the
+   * skip word gets this. Short, and it does not spend an attempt — a customer
+   * asking a question mid-verification has not guessed wrong at anything.
+   */
+  otpAwaitingCode:
+    'Saya masih menunggu kode 6 digit yang dikirim ke nomor Anda. Balas kodenya, atau ketik "lanjut" untuk melewati langkah ini.',
 } as const;
