@@ -77,6 +77,7 @@ describe('ConversationService', () => {
       senderDisplayName: 'Siti',
       state: 'BOT_ACTIVE',
       hasSentNotice: true,
+      blockedAt: null,
       lastMessageAt: '2026-08-07T09:00:00.000Z',
       ...overrides,
     };
@@ -189,6 +190,37 @@ describe('ConversationService', () => {
     );
     expect(mockOrchestrator.composeReply).not.toHaveBeenCalled();
     expect(mockDispatcher.sendMessage).not.toHaveBeenCalled();
+  });
+
+  it('drops a blocked chat before it is written down or answered', async () => {
+    mockRepository.findOrCreateConversation.mockResolvedValue(
+      buildConversation({ blockedAt: '2026-08-08T11:02:00.000Z' }),
+    );
+
+    await conversationService.handleInboundMessage(buildMessage());
+
+    // Stricter than the paused states above, and deliberately so: those keep
+    // the transcript complete because a human is going to read it, while a
+    // block (§8.3) exists to stop this chat costing anything at all. A block
+    // that still wrote a row per message would move the flood from tokens to
+    // storage rather than ending it.
+    expect(mockRepository.appendMessage).not.toHaveBeenCalled();
+    expect(mockOrchestrator.composeReply).not.toHaveBeenCalled();
+    expect(mockDispatcher.sendMessage).not.toHaveBeenCalled();
+  });
+
+  it('checks the block before the verification sub-flow, not after it', async () => {
+    mockRepository.findOrCreateConversation.mockResolvedValue(
+      buildConversation({ state: 'AWAITING_OTP', blockedAt: '2026-08-08T11:02:00.000Z' }),
+    );
+
+    await conversationService.handleInboundMessage(buildMessage('123456'));
+
+    // A chat blocked mid-challenge must not be able to keep guessing codes
+    // against someone else's record — which is exactly what an order that
+    // resolved verification first would allow.
+    expect(mockVerification.findLiveChallenge).not.toHaveBeenCalled();
+    expect(mockBooking.completePendingBooking).not.toHaveBeenCalled();
   });
 
   it('persists the customer turn already redacted', async () => {

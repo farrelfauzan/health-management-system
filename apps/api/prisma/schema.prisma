@@ -446,6 +446,8 @@ model User {
   updatedAiProviderConfigs AiProviderConfig[]           @relation("AiProviderConfigUpdatedBy")
   uploadedDocuments        Document[]                   @relation("DocumentUploadedBy")
   ownedDocuments           Document[]                   @relation("DocumentOwner")
+  blockedConversations     Conversation[]               @relation("ConversationBlockedBy")
+  conversationMessages     ConversationMessage[]        @relation("ConversationMessageAuthor")
 
   @@map("users")
 }
@@ -2285,15 +2287,31 @@ model Conversation {
   /// inbound message, and "has this conversation ever seen the notice" must
   /// not get slower as the conversation grows.
   hasSentNotice     Boolean           @default(false) @map("has_sent_notice")
+  /// When an admin blocked this chat (`PCS-T08`, §8.3). Non-null means every
+  /// further inbound message is dropped before persistence and before any
+  /// provider call.
+  ///
+  /// A nullable column rather than a sixth `ConversationState`, because a
+  /// block is a policy overlay and a state is a position in a lifecycle: an
+  /// admin who blocks a `HUMAN_ACTIVE` chat must not lose the fact that a
+  /// colleague was mid-conversation, and unblocking must return the chat to
+  /// where it was rather than to a guess. The pair also answers "who decided
+  /// this", which a state transition on an append-only-free table cannot.
+  blockedAt         DateTime?         @map("blocked_at")
+  blockedById       String?           @map("blocked_by_id") @db.Uuid
   lastMessageAt     DateTime          @map("last_message_at")
   createdAt         DateTime          @default(now()) @map("created_at")
   updatedAt         DateTime          @updatedAt @map("updated_at")
 
   messages      ConversationMessage[]
   otpChallenges ChannelOtpChallenge[]
+  blockedBy     User?                 @relation("ConversationBlockedBy", fields: [blockedById], references: [id], onDelete: SetNull)
 
   @@unique([channel, externalChatId])
   @@index([state, lastMessageAt])
+  /// The inbox's default ordering, and the only query the list screen runs
+  /// when no state filter is applied.
+  @@index([lastMessageAt])
   @@map("conversations")
 }
 
@@ -2313,12 +2331,22 @@ model ConversationMessage {
   conversationId String                  @map("conversation_id") @db.Uuid
   role           ConversationMessageRole
   content        String
+  /// Which staff member wrote an `ADMIN` turn (`PCS-T08`). Null on every
+  /// other role, because nobody wrote them.
+  ///
+  /// `SetNull` rather than `Restrict`: the transcript must survive a leaver,
+  /// and a turn whose author left is still an accurate record of what the
+  /// customer was told. The name is resolved at read time from the user row
+  /// rather than copied here, so an admin who is renamed is not shown under
+  /// two names across one conversation.
+  authorUserId   String?                 @map("author_user_id") @db.Uuid
   /// Which guards fired on this turn, so the §8.4 review can count what was
   /// actually caught in production rather than trusting it was never needed.
   safetyTags     String[]                @default([]) @map("safety_tags")
   createdAt      DateTime                @default(now()) @map("created_at")
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  author       User?        @relation("ConversationMessageAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
 
   @@index([conversationId, createdAt])
   @@map("conversation_messages")

@@ -7,10 +7,16 @@ import { ChannelGatewayModule } from '../channel-gateway/channel-gateway.module'
 import { InboundMessageSink } from '../channel-gateway/service/inbound-message-sink.service';
 import { DocumentManagementModule } from '../document-management/document-management.module';
 import { PatientManagementModule } from '../patient-management/patient-management.module';
+import { ChannelArrivalController } from './controller/channel-arrival.controller';
+import { CsAdminController } from './controller/cs-admin.controller';
+import { AdminConversationRepository } from './repository/admin-conversation.repository';
+import { ChannelArrivalRepository } from './repository/channel-arrival.repository';
 import { ChannelOtpChallengeRepository } from './repository/channel-otp-challenge.repository';
 import { ChannelPatientLinkRepository } from './repository/channel-patient-link.repository';
 import { ConversationRepository } from './repository/conversation.repository';
+import { ChannelArrivalService } from './service/channel-arrival.service';
 import { ChannelBookingService } from './service/channel-booking.service';
+import { CsAdminService } from './service/cs-admin.service';
 import { ChannelVerificationService } from './service/channel-verification.service';
 import { ConversationService } from './service/conversation.service';
 import { CsSafetyPolicyService } from './service/cs-safety-policy.service';
@@ -65,10 +71,15 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
     DocumentManagementModule,
     PatientManagementModule,
   ],
+  controllers: [CsAdminController, ChannelArrivalController],
   providers: [
+    AdminConversationRepository,
+    ChannelArrivalRepository,
     ChannelOtpChallengeRepository,
     ChannelPatientLinkRepository,
     ConversationRepository,
+    ChannelArrivalService,
+    CsAdminService,
     CsSafetyPolicyService,
     CsSystemActorService,
     ChannelVerificationService,

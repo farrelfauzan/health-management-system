@@ -39,6 +39,7 @@ export type ConversationMessageMinAggregateOutputType = {
   conversationId: string | null
   role: $Enums.ConversationMessageRole | null
   content: string | null
+  authorUserId: string | null
   createdAt: Date | null
 }
 
@@ -47,6 +48,7 @@ export type ConversationMessageMaxAggregateOutputType = {
   conversationId: string | null
   role: $Enums.ConversationMessageRole | null
   content: string | null
+  authorUserId: string | null
   createdAt: Date | null
 }
 
@@ -55,6 +57,7 @@ export type ConversationMessageCountAggregateOutputType = {
   conversationId: number
   role: number
   content: number
+  authorUserId: number
   safetyTags: number
   createdAt: number
   _all: number
@@ -66,6 +69,7 @@ export type ConversationMessageMinAggregateInputType = {
   conversationId?: true
   role?: true
   content?: true
+  authorUserId?: true
   createdAt?: true
 }
 
@@ -74,6 +78,7 @@ export type ConversationMessageMaxAggregateInputType = {
   conversationId?: true
   role?: true
   content?: true
+  authorUserId?: true
   createdAt?: true
 }
 
@@ -82,6 +87,7 @@ export type ConversationMessageCountAggregateInputType = {
   conversationId?: true
   role?: true
   content?: true
+  authorUserId?: true
   safetyTags?: true
   createdAt?: true
   _all?: true
@@ -164,6 +170,7 @@ export type ConversationMessageGroupByOutputType = {
   conversationId: string
   role: $Enums.ConversationMessageRole
   content: string
+  authorUserId: string | null
   safetyTags: string[]
   createdAt: Date
   _count: ConversationMessageCountAggregateOutputType | null
@@ -194,9 +201,11 @@ export type ConversationMessageWhereInput = {
   conversationId?: Prisma.UuidFilter<"ConversationMessage"> | string
   role?: Prisma.EnumConversationMessageRoleFilter<"ConversationMessage"> | $Enums.ConversationMessageRole
   content?: Prisma.StringFilter<"ConversationMessage"> | string
+  authorUserId?: Prisma.UuidNullableFilter<"ConversationMessage"> | string | null
   safetyTags?: Prisma.StringNullableListFilter<"ConversationMessage">
   createdAt?: Prisma.DateTimeFilter<"ConversationMessage"> | Date | string
   conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>
+  author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type ConversationMessageOrderByWithRelationInput = {
@@ -204,9 +213,11 @@ export type ConversationMessageOrderByWithRelationInput = {
   conversationId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  authorUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   safetyTags?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   conversation?: Prisma.ConversationOrderByWithRelationInput
+  author?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ConversationMessageWhereUniqueInput = Prisma.AtLeast<{
@@ -217,9 +228,11 @@ export type ConversationMessageWhereUniqueInput = Prisma.AtLeast<{
   conversationId?: Prisma.UuidFilter<"ConversationMessage"> | string
   role?: Prisma.EnumConversationMessageRoleFilter<"ConversationMessage"> | $Enums.ConversationMessageRole
   content?: Prisma.StringFilter<"ConversationMessage"> | string
+  authorUserId?: Prisma.UuidNullableFilter<"ConversationMessage"> | string | null
   safetyTags?: Prisma.StringNullableListFilter<"ConversationMessage">
   createdAt?: Prisma.DateTimeFilter<"ConversationMessage"> | Date | string
   conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>
+  author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
 export type ConversationMessageOrderByWithAggregationInput = {
@@ -227,6 +240,7 @@ export type ConversationMessageOrderByWithAggregationInput = {
   conversationId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  authorUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   safetyTags?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ConversationMessageCountOrderByAggregateInput
@@ -242,6 +256,7 @@ export type ConversationMessageScalarWhereWithAggregatesInput = {
   conversationId?: Prisma.UuidWithAggregatesFilter<"ConversationMessage"> | string
   role?: Prisma.EnumConversationMessageRoleWithAggregatesFilter<"ConversationMessage"> | $Enums.ConversationMessageRole
   content?: Prisma.StringWithAggregatesFilter<"ConversationMessage"> | string
+  authorUserId?: Prisma.UuidNullableWithAggregatesFilter<"ConversationMessage"> | string | null
   safetyTags?: Prisma.StringNullableListFilter<"ConversationMessage">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ConversationMessage"> | Date | string
 }
@@ -253,6 +268,7 @@ export type ConversationMessageCreateInput = {
   safetyTags?: Prisma.ConversationMessageCreatesafetyTagsInput | string[]
   createdAt?: Date | string
   conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
+  author?: Prisma.UserCreateNestedOneWithoutConversationMessagesInput
 }
 
 export type ConversationMessageUncheckedCreateInput = {
@@ -260,6 +276,7 @@ export type ConversationMessageUncheckedCreateInput = {
   conversationId: string
   role: $Enums.ConversationMessageRole
   content: string
+  authorUserId?: string | null
   safetyTags?: Prisma.ConversationMessageCreatesafetyTagsInput | string[]
   createdAt?: Date | string
 }
@@ -271,6 +288,7 @@ export type ConversationMessageUpdateInput = {
   safetyTags?: Prisma.ConversationMessageUpdatesafetyTagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
+  author?: Prisma.UserUpdateOneWithoutConversationMessagesNestedInput
 }
 
 export type ConversationMessageUncheckedUpdateInput = {
@@ -278,6 +296,7 @@ export type ConversationMessageUncheckedUpdateInput = {
   conversationId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumConversationMessageRoleFieldUpdateOperationsInput | $Enums.ConversationMessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   safetyTags?: Prisma.ConversationMessageUpdatesafetyTagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -287,6 +306,7 @@ export type ConversationMessageCreateManyInput = {
   conversationId: string
   role: $Enums.ConversationMessageRole
   content: string
+  authorUserId?: string | null
   safetyTags?: Prisma.ConversationMessageCreatesafetyTagsInput | string[]
   createdAt?: Date | string
 }
@@ -304,6 +324,7 @@ export type ConversationMessageUncheckedUpdateManyInput = {
   conversationId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumConversationMessageRoleFieldUpdateOperationsInput | $Enums.ConversationMessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   safetyTags?: Prisma.ConversationMessageUpdatesafetyTagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -331,6 +352,7 @@ export type ConversationMessageCountOrderByAggregateInput = {
   conversationId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  authorUserId?: Prisma.SortOrder
   safetyTags?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -340,6 +362,7 @@ export type ConversationMessageMaxOrderByAggregateInput = {
   conversationId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  authorUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -348,7 +371,50 @@ export type ConversationMessageMinOrderByAggregateInput = {
   conversationId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  authorUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type ConversationMessageCreateNestedManyWithoutAuthorInput = {
+  create?: Prisma.XOR<Prisma.ConversationMessageCreateWithoutAuthorInput, Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput> | Prisma.ConversationMessageCreateWithoutAuthorInput[] | Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput[]
+  connectOrCreate?: Prisma.ConversationMessageCreateOrConnectWithoutAuthorInput | Prisma.ConversationMessageCreateOrConnectWithoutAuthorInput[]
+  createMany?: Prisma.ConversationMessageCreateManyAuthorInputEnvelope
+  connect?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+}
+
+export type ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput = {
+  create?: Prisma.XOR<Prisma.ConversationMessageCreateWithoutAuthorInput, Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput> | Prisma.ConversationMessageCreateWithoutAuthorInput[] | Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput[]
+  connectOrCreate?: Prisma.ConversationMessageCreateOrConnectWithoutAuthorInput | Prisma.ConversationMessageCreateOrConnectWithoutAuthorInput[]
+  createMany?: Prisma.ConversationMessageCreateManyAuthorInputEnvelope
+  connect?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+}
+
+export type ConversationMessageUpdateManyWithoutAuthorNestedInput = {
+  create?: Prisma.XOR<Prisma.ConversationMessageCreateWithoutAuthorInput, Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput> | Prisma.ConversationMessageCreateWithoutAuthorInput[] | Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput[]
+  connectOrCreate?: Prisma.ConversationMessageCreateOrConnectWithoutAuthorInput | Prisma.ConversationMessageCreateOrConnectWithoutAuthorInput[]
+  upsert?: Prisma.ConversationMessageUpsertWithWhereUniqueWithoutAuthorInput | Prisma.ConversationMessageUpsertWithWhereUniqueWithoutAuthorInput[]
+  createMany?: Prisma.ConversationMessageCreateManyAuthorInputEnvelope
+  set?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+  disconnect?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+  delete?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+  connect?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+  update?: Prisma.ConversationMessageUpdateWithWhereUniqueWithoutAuthorInput | Prisma.ConversationMessageUpdateWithWhereUniqueWithoutAuthorInput[]
+  updateMany?: Prisma.ConversationMessageUpdateManyWithWhereWithoutAuthorInput | Prisma.ConversationMessageUpdateManyWithWhereWithoutAuthorInput[]
+  deleteMany?: Prisma.ConversationMessageScalarWhereInput | Prisma.ConversationMessageScalarWhereInput[]
+}
+
+export type ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput = {
+  create?: Prisma.XOR<Prisma.ConversationMessageCreateWithoutAuthorInput, Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput> | Prisma.ConversationMessageCreateWithoutAuthorInput[] | Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput[]
+  connectOrCreate?: Prisma.ConversationMessageCreateOrConnectWithoutAuthorInput | Prisma.ConversationMessageCreateOrConnectWithoutAuthorInput[]
+  upsert?: Prisma.ConversationMessageUpsertWithWhereUniqueWithoutAuthorInput | Prisma.ConversationMessageUpsertWithWhereUniqueWithoutAuthorInput[]
+  createMany?: Prisma.ConversationMessageCreateManyAuthorInputEnvelope
+  set?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+  disconnect?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+  delete?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+  connect?: Prisma.ConversationMessageWhereUniqueInput | Prisma.ConversationMessageWhereUniqueInput[]
+  update?: Prisma.ConversationMessageUpdateWithWhereUniqueWithoutAuthorInput | Prisma.ConversationMessageUpdateWithWhereUniqueWithoutAuthorInput[]
+  updateMany?: Prisma.ConversationMessageUpdateManyWithWhereWithoutAuthorInput | Prisma.ConversationMessageUpdateManyWithWhereWithoutAuthorInput[]
+  deleteMany?: Prisma.ConversationMessageScalarWhereInput | Prisma.ConversationMessageScalarWhereInput[]
 }
 
 export type ConversationMessageCreateNestedManyWithoutConversationInput = {
@@ -406,18 +472,77 @@ export type ConversationMessageUpdatesafetyTagsInput = {
   push?: string | string[]
 }
 
-export type ConversationMessageCreateWithoutConversationInput = {
+export type ConversationMessageCreateWithoutAuthorInput = {
   id?: string
+  role: $Enums.ConversationMessageRole
+  content: string
+  safetyTags?: Prisma.ConversationMessageCreatesafetyTagsInput | string[]
+  createdAt?: Date | string
+  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
+}
+
+export type ConversationMessageUncheckedCreateWithoutAuthorInput = {
+  id?: string
+  conversationId: string
   role: $Enums.ConversationMessageRole
   content: string
   safetyTags?: Prisma.ConversationMessageCreatesafetyTagsInput | string[]
   createdAt?: Date | string
 }
 
+export type ConversationMessageCreateOrConnectWithoutAuthorInput = {
+  where: Prisma.ConversationMessageWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConversationMessageCreateWithoutAuthorInput, Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput>
+}
+
+export type ConversationMessageCreateManyAuthorInputEnvelope = {
+  data: Prisma.ConversationMessageCreateManyAuthorInput | Prisma.ConversationMessageCreateManyAuthorInput[]
+  skipDuplicates?: boolean
+}
+
+export type ConversationMessageUpsertWithWhereUniqueWithoutAuthorInput = {
+  where: Prisma.ConversationMessageWhereUniqueInput
+  update: Prisma.XOR<Prisma.ConversationMessageUpdateWithoutAuthorInput, Prisma.ConversationMessageUncheckedUpdateWithoutAuthorInput>
+  create: Prisma.XOR<Prisma.ConversationMessageCreateWithoutAuthorInput, Prisma.ConversationMessageUncheckedCreateWithoutAuthorInput>
+}
+
+export type ConversationMessageUpdateWithWhereUniqueWithoutAuthorInput = {
+  where: Prisma.ConversationMessageWhereUniqueInput
+  data: Prisma.XOR<Prisma.ConversationMessageUpdateWithoutAuthorInput, Prisma.ConversationMessageUncheckedUpdateWithoutAuthorInput>
+}
+
+export type ConversationMessageUpdateManyWithWhereWithoutAuthorInput = {
+  where: Prisma.ConversationMessageScalarWhereInput
+  data: Prisma.XOR<Prisma.ConversationMessageUpdateManyMutationInput, Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorInput>
+}
+
+export type ConversationMessageScalarWhereInput = {
+  AND?: Prisma.ConversationMessageScalarWhereInput | Prisma.ConversationMessageScalarWhereInput[]
+  OR?: Prisma.ConversationMessageScalarWhereInput[]
+  NOT?: Prisma.ConversationMessageScalarWhereInput | Prisma.ConversationMessageScalarWhereInput[]
+  id?: Prisma.UuidFilter<"ConversationMessage"> | string
+  conversationId?: Prisma.UuidFilter<"ConversationMessage"> | string
+  role?: Prisma.EnumConversationMessageRoleFilter<"ConversationMessage"> | $Enums.ConversationMessageRole
+  content?: Prisma.StringFilter<"ConversationMessage"> | string
+  authorUserId?: Prisma.UuidNullableFilter<"ConversationMessage"> | string | null
+  safetyTags?: Prisma.StringNullableListFilter<"ConversationMessage">
+  createdAt?: Prisma.DateTimeFilter<"ConversationMessage"> | Date | string
+}
+
+export type ConversationMessageCreateWithoutConversationInput = {
+  id?: string
+  role: $Enums.ConversationMessageRole
+  content: string
+  safetyTags?: Prisma.ConversationMessageCreatesafetyTagsInput | string[]
+  createdAt?: Date | string
+  author?: Prisma.UserCreateNestedOneWithoutConversationMessagesInput
+}
+
 export type ConversationMessageUncheckedCreateWithoutConversationInput = {
   id?: string
   role: $Enums.ConversationMessageRole
   content: string
+  authorUserId?: string | null
   safetyTags?: Prisma.ConversationMessageCreatesafetyTagsInput | string[]
   createdAt?: Date | string
 }
@@ -448,22 +573,47 @@ export type ConversationMessageUpdateManyWithWhereWithoutConversationInput = {
   data: Prisma.XOR<Prisma.ConversationMessageUpdateManyMutationInput, Prisma.ConversationMessageUncheckedUpdateManyWithoutConversationInput>
 }
 
-export type ConversationMessageScalarWhereInput = {
-  AND?: Prisma.ConversationMessageScalarWhereInput | Prisma.ConversationMessageScalarWhereInput[]
-  OR?: Prisma.ConversationMessageScalarWhereInput[]
-  NOT?: Prisma.ConversationMessageScalarWhereInput | Prisma.ConversationMessageScalarWhereInput[]
-  id?: Prisma.UuidFilter<"ConversationMessage"> | string
-  conversationId?: Prisma.UuidFilter<"ConversationMessage"> | string
-  role?: Prisma.EnumConversationMessageRoleFilter<"ConversationMessage"> | $Enums.ConversationMessageRole
-  content?: Prisma.StringFilter<"ConversationMessage"> | string
-  safetyTags?: Prisma.StringNullableListFilter<"ConversationMessage">
-  createdAt?: Prisma.DateTimeFilter<"ConversationMessage"> | Date | string
+export type ConversationMessageCreateManyAuthorInput = {
+  id?: string
+  conversationId: string
+  role: $Enums.ConversationMessageRole
+  content: string
+  safetyTags?: Prisma.ConversationMessageCreatesafetyTagsInput | string[]
+  createdAt?: Date | string
+}
+
+export type ConversationMessageUpdateWithoutAuthorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumConversationMessageRoleFieldUpdateOperationsInput | $Enums.ConversationMessageRole
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  safetyTags?: Prisma.ConversationMessageUpdatesafetyTagsInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
+}
+
+export type ConversationMessageUncheckedUpdateWithoutAuthorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumConversationMessageRoleFieldUpdateOperationsInput | $Enums.ConversationMessageRole
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  safetyTags?: Prisma.ConversationMessageUpdatesafetyTagsInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ConversationMessageUncheckedUpdateManyWithoutAuthorInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumConversationMessageRoleFieldUpdateOperationsInput | $Enums.ConversationMessageRole
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  safetyTags?: Prisma.ConversationMessageUpdatesafetyTagsInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ConversationMessageCreateManyConversationInput = {
   id?: string
   role: $Enums.ConversationMessageRole
   content: string
+  authorUserId?: string | null
   safetyTags?: Prisma.ConversationMessageCreatesafetyTagsInput | string[]
   createdAt?: Date | string
 }
@@ -474,12 +624,14 @@ export type ConversationMessageUpdateWithoutConversationInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   safetyTags?: Prisma.ConversationMessageUpdatesafetyTagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  author?: Prisma.UserUpdateOneWithoutConversationMessagesNestedInput
 }
 
 export type ConversationMessageUncheckedUpdateWithoutConversationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumConversationMessageRoleFieldUpdateOperationsInput | $Enums.ConversationMessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   safetyTags?: Prisma.ConversationMessageUpdatesafetyTagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -488,6 +640,7 @@ export type ConversationMessageUncheckedUpdateManyWithoutConversationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumConversationMessageRoleFieldUpdateOperationsInput | $Enums.ConversationMessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  authorUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   safetyTags?: Prisma.ConversationMessageUpdatesafetyTagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -499,9 +652,11 @@ export type ConversationMessageSelect<ExtArgs extends runtime.Types.Extensions.I
   conversationId?: boolean
   role?: boolean
   content?: boolean
+  authorUserId?: boolean
   safetyTags?: boolean
   createdAt?: boolean
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.ConversationMessage$authorArgs<ExtArgs>
 }, ExtArgs["result"]["conversationMessage"]>
 
 export type ConversationMessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -509,9 +664,11 @@ export type ConversationMessageSelectCreateManyAndReturn<ExtArgs extends runtime
   conversationId?: boolean
   role?: boolean
   content?: boolean
+  authorUserId?: boolean
   safetyTags?: boolean
   createdAt?: boolean
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.ConversationMessage$authorArgs<ExtArgs>
 }, ExtArgs["result"]["conversationMessage"]>
 
 export type ConversationMessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -519,9 +676,11 @@ export type ConversationMessageSelectUpdateManyAndReturn<ExtArgs extends runtime
   conversationId?: boolean
   role?: boolean
   content?: boolean
+  authorUserId?: boolean
   safetyTags?: boolean
   createdAt?: boolean
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.ConversationMessage$authorArgs<ExtArgs>
 }, ExtArgs["result"]["conversationMessage"]>
 
 export type ConversationMessageSelectScalar = {
@@ -529,31 +688,47 @@ export type ConversationMessageSelectScalar = {
   conversationId?: boolean
   role?: boolean
   content?: boolean
+  authorUserId?: boolean
   safetyTags?: boolean
   createdAt?: boolean
 }
 
-export type ConversationMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "conversationId" | "role" | "content" | "safetyTags" | "createdAt", ExtArgs["result"]["conversationMessage"]>
+export type ConversationMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "conversationId" | "role" | "content" | "authorUserId" | "safetyTags" | "createdAt", ExtArgs["result"]["conversationMessage"]>
 export type ConversationMessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.ConversationMessage$authorArgs<ExtArgs>
 }
 export type ConversationMessageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.ConversationMessage$authorArgs<ExtArgs>
 }
 export type ConversationMessageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.ConversationMessage$authorArgs<ExtArgs>
 }
 
 export type $ConversationMessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ConversationMessage"
   objects: {
     conversation: Prisma.$ConversationPayload<ExtArgs>
+    author: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     conversationId: string
     role: $Enums.ConversationMessageRole
     content: string
+    /**
+     * Which staff member wrote an `ADMIN` turn (`PCS-T08`). Null on every
+     * other role, because nobody wrote them.
+     * 
+     * `SetNull` rather than `Restrict`: the transcript must survive a leaver,
+     * and a turn whose author left is still an accurate record of what the
+     * customer was told. The name is resolved at read time from the user row
+     * rather than copied here, so an admin who is renamed is not shown under
+     * two names across one conversation.
+     */
+    authorUserId: string | null
     /**
      * Which guards fired on this turn, so the §8.4 review can count what was
      * actually caught in production rather than trusting it was never needed.
@@ -955,6 +1130,7 @@ readonly fields: ConversationMessageFieldRefs;
 export interface Prisma__ConversationMessageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   conversation<T extends Prisma.ConversationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConversationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConversationClient<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  author<T extends Prisma.ConversationMessage$authorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConversationMessage$authorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -988,6 +1164,7 @@ export interface ConversationMessageFieldRefs {
   readonly conversationId: Prisma.FieldRef<"ConversationMessage", 'String'>
   readonly role: Prisma.FieldRef<"ConversationMessage", 'ConversationMessageRole'>
   readonly content: Prisma.FieldRef<"ConversationMessage", 'String'>
+  readonly authorUserId: Prisma.FieldRef<"ConversationMessage", 'String'>
   readonly safetyTags: Prisma.FieldRef<"ConversationMessage", 'String[]'>
   readonly createdAt: Prisma.FieldRef<"ConversationMessage", 'DateTime'>
 }
@@ -1388,6 +1565,25 @@ export type ConversationMessageDeleteManyArgs<ExtArgs extends runtime.Types.Exte
    * Limit how many ConversationMessages to delete.
    */
   limit?: number
+}
+
+/**
+ * ConversationMessage.author
+ */
+export type ConversationMessage$authorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

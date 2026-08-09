@@ -1,4 +1,5 @@
 import {
+  ChannelDraftMissingFieldValue,
   ChannelKindValue,
   ChannelVerificationMethodValue,
   ChannelVerificationStatusValue,
@@ -111,6 +112,15 @@ export type ConversationRecord = {
   senderDisplayName: string | null;
   state: ConversationStateValue;
   hasSentNotice: boolean;
+  /**
+   * When an admin blocked this chat (`PCS-T08`, §8.3), or null.
+   *
+   * On the record rather than only on the admin projection because the inbound
+   * path is the one that has to honour it, and it must do so from the row it
+   * already read — a second query per message to ask "is this chat blocked"
+   * would put the abuse control's cost on the traffic it exists to stop.
+   */
+  blockedAt: string | null;
   lastMessageAt: string;
 };
 
@@ -261,4 +271,96 @@ export type ChannelSessionReference = {
   scheduleId: string;
   /** ISO calendar date in the clinic timezone. */
   sessionDate: string;
+};
+
+/**
+ * A conversation row as the admin repository projects it (`PCS-T08`).
+ *
+ * Wider than {@link ConversationRecord}, which the runtime state machine uses:
+ * the inbox needs the block columns and a message count that the message path
+ * has no reason to pay for on every inbound turn.
+ */
+export type AdminConversationRecord = {
+  id: string;
+  channel: ChannelKindValue;
+  externalChatId: string;
+  senderDisplayName: string | null;
+  state: ConversationStateValue;
+  blockedAt: string | null;
+  blockedById: string | null;
+  messageCount: number;
+  lastMessageAt: string;
+  createdAt: string;
+};
+
+/** What the inbox query filters and pages on. */
+export type ListAdminConversationsParams = {
+  states?: readonly ConversationStateValue[];
+  channel?: ChannelKindValue;
+  /** True lists only blocked chats, false only unblocked, undefined both. */
+  isBlocked?: boolean;
+  search?: string;
+  cursor?: string;
+  limit: number;
+};
+
+/** One transcript row with its author already joined. */
+export type AdminConversationMessageRecord = {
+  id: string;
+  role: ConversationMessageRoleValue;
+  content: string;
+  authorUserId: string | null;
+  authorEmail: string | null;
+  safetyTags: string[];
+  createdAt: string;
+};
+
+/** The two counts and the clock behind the handoff badge. */
+export type ConversationHandoffCounts = {
+  needsHumanCount: number;
+  humanActiveCount: number;
+  oldestWaitingSince: string | null;
+};
+
+
+/** What the arrival worklist query filters and pages on. */
+export type ListChannelArrivalsParams = {
+  /** Inclusive clinic-local calendar dates. */
+  from: string;
+  to: string;
+  channel?: ChannelKindValue;
+  referenceCode?: string;
+  cursor?: string;
+  limit: number;
+};
+
+/** One arrival row as the repository projects it, before completeness is judged. */
+export type ChannelArrivalRecord = {
+  appointmentId: string;
+  bookingReferenceCode: string | null;
+  channel: ChannelKindValue;
+  scheduledAt: string;
+  appointmentStatus: string;
+  doctorName: string;
+  specialty: string | null;
+  patientId: string;
+  patientMrn: string;
+  patientFullName: string;
+  patientPhoneNumber: string;
+  patientSource: 'FRONT_DESK' | 'CHANNEL_BOOKING';
+  missingFields: ChannelDraftMissingFieldValue[];
+  createdAt: string;
+};
+
+/** What a draft merge moved, as the transaction reports it. */
+export type ChannelDraftMergeResult = {
+  movedAppointments: number;
+  movedRegistrations: number;
+  movedChannelLinks: number;
+};
+
+/** What the merge-candidate lookup filters and caps on. */
+export type ListChannelMergeCandidatesParams = {
+  search: string;
+  limit: number;
 };

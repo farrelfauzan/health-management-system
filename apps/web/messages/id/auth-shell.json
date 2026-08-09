@@ -50,7 +50,8 @@
         "today": "Hari ini",
         "aiProviders": "Penyedia AI",
         "knowledgeBase": "Basis Pengetahuan",
-        "clinicCorpus": "Korpus Klinik"
+        "clinicCorpus": "Korpus Klinik",
+        "conversations": "Percakapan"
       },
       "search": {
         "label": "Cari pasien",

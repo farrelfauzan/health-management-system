@@ -533,5 +533,119 @@
         "delete": "Unable to retire this document."
       }
     }
+  },
+  "conversations": {
+    "header": {
+      "title": "Channel conversations",
+      "subtitle": "WhatsApp and Telegram conversations, the handoff queue, and takeover.",
+      "breadcrumbs": {
+        "assistant": "Assistant",
+        "conversations": "Conversations"
+      }
+    },
+    "badge": {
+      "label": "{count, plural, one {# conversation waiting} other {# conversations waiting}}"
+    },
+    "summary": {
+      "needsHuman": "Waiting for a human",
+      "humanActive": "Handled by staff",
+      "oldestWaiting": "Longest wait since",
+      "nobodyWaiting": "Nobody is waiting"
+    },
+    "filters": {
+      "queue": "Queue",
+      "channel": "Channel",
+      "allChannels": "All channels",
+      "search": "Search",
+      "searchPlaceholder": "Name or chat ID",
+      "queues": {
+        "ALL": "All conversations",
+        "HANDOFF": "Needs a human",
+        "NEEDS_HUMAN": "Waiting",
+        "HUMAN_ACTIVE": "Handled by staff",
+        "BOT_ACTIVE": "Handled by the bot",
+        "AWAITING_OTP": "Verifying",
+        "ARCHIVED": "Archived",
+        "BLOCKED": "Blocked"
+      }
+    },
+    "states": {
+      "BOT_ACTIVE": "Bot",
+      "NEEDS_HUMAN": "Needs a human",
+      "HUMAN_ACTIVE": "With staff",
+      "AWAITING_OTP": "Verifying",
+      "ARCHIVED": "Archived",
+      "BLOCKED": "Blocked",
+      "loading": "Loading conversations…",
+      "error": "Unable to load conversations.",
+      "empty": "No conversations match this filter."
+    },
+    "wait": {
+      "underAMinute": "Just now",
+      "minutes": "{count, plural, one {# min} other {# min}}",
+      "hours": "{count, plural, one {# hr} other {# hrs}}"
+    },
+    "table": {
+      "unnamed": "Unnamed customer",
+      "columns": {
+        "customer": "Customer",
+        "channel": "Channel",
+        "state": "State",
+        "waiting": "Waiting",
+        "messages": "Messages",
+        "lastMessage": "Last message"
+      }
+    },
+    "transcript": {
+      "loading": "Loading the transcript…",
+      "error": "Unable to load the transcript.",
+      "empty": "Nothing has been said yet.",
+      "unnamed": "Unnamed customer",
+      "backToInbox": "Back to the inbox",
+      "olderTurnsHidden": "Older turns are not shown.",
+      "breadcrumbs": {
+        "assistant": "Assistant",
+        "conversations": "Conversations"
+      },
+      "roles": {
+        "CUSTOMER": "Customer",
+        "BOT": "Assistant",
+        "ADMIN": "Staff",
+        "SYSTEM": "Clinic"
+      }
+    },
+    "reply": {
+      "placeholder": "Write a reply to the customer…",
+      "send": "Send reply",
+      "sending": "Sending…",
+      "takesOver": "Sending takes the conversation over from the bot.",
+      "failed": "The reply could not be sent.",
+      "blocked": "This chat is blocked. Unblock it before replying.",
+      "awaitingOtp": "This customer is completing a verification step. Replies are paused until it resolves."
+    },
+    "actions": {
+      "takeOver": "Take over",
+      "release": "Hand back to the bot",
+      "block": "Block chat",
+      "unblock": "Unblock chat",
+      "takenOver": "You are now handling this conversation.",
+      "released": "The assistant is handling this conversation again.",
+      "unblocked": "The chat is unblocked.",
+      "takeOverFailed": "The conversation could not be taken over.",
+      "releaseFailed": "The conversation could not be handed back.",
+      "unblockFailed": "The chat could not be unblocked."
+    },
+    "block": {
+      "title": "Block this chat?",
+      "description": "Every further message from this chat is dropped before it is recorded, and no reply is sent. The customer is not told.",
+      "reason": "Reason (optional)",
+      "reasonPlaceholder": "e.g. repeated automated messages",
+      "reasonHint": "Recorded in the audit log only. It is never sent to the customer.",
+      "cancel": "Cancel",
+      "confirm": "Block chat",
+      "blocking": "Blocking…",
+      "blocked": "The chat is blocked.",
+      "failed": "The chat could not be blocked."
+    }
   }
 }

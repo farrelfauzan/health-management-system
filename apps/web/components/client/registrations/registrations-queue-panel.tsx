@@ -6,6 +6,7 @@ import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
+import { ChannelArrivalsPanel } from '#components/client/channel-arrivals/channel-arrivals-panel';
 import { EncounterOpenDialog } from '#components/client/encounters/encounter-open-dialog';
 import { RegistrationCreateDialog } from '#components/client/registrations/registration-create-dialog';
 import { RegistrationTransitionDialog } from '#components/client/registrations/registration-transition-dialog';
@@ -92,6 +93,16 @@ export function RegistrationsQueuePanel({
           </Can>
         }
       />
+
+      {/* §5.2's arrival worklist, above the queue rather than beside it: the
+          desk has to complete a chat-created record *before* checking the
+          person in, so it belongs on the way to the queue. Admin-only, and it
+          renders nothing when no chat booking is outstanding. */}
+      {variant === 'admin' ? (
+        <Can action="merge" subject="Patient">
+          <ChannelArrivalsPanel />
+        </Can>
+      ) : null}
 
       <RegistrationsFilterCard
         key={`${initialQuery.search ?? ''}|${initialQuery.status ?? ''}|${initialQuery.doctorId ?? ''}|${initialQuery.registeredFrom ?? ''}|${initialQuery.registeredTo ?? ''}`}

@@ -19,6 +19,7 @@ type ConversationRow = {
   senderDisplayName: string | null;
   state: ConversationStateValue;
   hasSentNotice: boolean;
+  blockedAt: Date | null;
   lastMessageAt: Date;
 };
 
@@ -144,6 +145,7 @@ export class ConversationRepository {
       senderDisplayName: row.senderDisplayName,
       state: row.state,
       hasSentNotice: row.hasSentNotice,
+      blockedAt: row.blockedAt?.toISOString() ?? null,
       lastMessageAt: row.lastMessageAt.toISOString(),
     };
   }

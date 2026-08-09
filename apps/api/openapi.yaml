@@ -16657,6 +16657,1320 @@ paths:
         - bearer: []
       summary: Queue one of your documents for re-ingestion
       tags: *a26
+  /api/v1/admin/conversations:
+    get:
+      operationId: CsAdminController_listConversations_v1
+      parameters:
+        - name: filter
+          required: false
+          in: query
+          schema:
+            default: ALL
+            type: string
+            enum:
+              - ALL
+              - HANDOFF
+              - NEEDS_HUMAN
+              - HUMAN_ACTIVE
+              - BOT_ACTIVE
+              - AWAITING_OTP
+              - ARCHIVED
+              - BLOCKED
+        - name: channel
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - WHATSAPP
+              - TELEGRAM
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 2
+            maxLength: 120
+            type: string
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 25
+            type: integer
+      responses:
+        "200":
+          description: "The inbox, most recent activity first, cursor-paginated.
+            `filter=HANDOFF` is the queue an admin works from — NEEDS_HUMAN plus
+            HUMAN_ACTIVE — and `filter=BLOCKED` is the only one that returns
+            blocked chats; every other filter hides them, so a queue never hands
+            back a conversation the clinic has stopped answering. No message
+            bodies appear here: a preview line would put customer text into
+            every cached list response for conversations nobody opened."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        channel:
+                          type: string
+                        externalChatId:
+                          type: string
+                        senderDisplayName:
+                          type: string
+                        state:
+                          type: string
+                        isBlocked:
+                          type: boolean
+                        blockedAt:
+                          nullable: true
+                        waitingForSeconds:
+                          type: integer
+                        messageCount:
+                          type: integer
+                        lastMessageAt:
+                          type: string
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - channel
+                        - externalChatId
+                        - senderDisplayName
+                        - state
+                        - isBlocked
+                        - blockedAt
+                        - waitingForSeconds
+                        - messageCount
+                        - lastMessageAt
+                        - createdAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: a4d1f0b2-6c3e-4f79-9a10-2b8d5c7e1f34
+                      channel: TELEGRAM
+                      externalChatId: "184920371"
+                      senderDisplayName: Rina
+                      state: NEEDS_HUMAN
+                      isBlocked: false
+                      blockedAt: null
+                      waitingForSeconds: 412
+                      messageCount: 14
+                      lastMessageAt: 2026-08-09T02:41:00.000Z
+                      createdAt: 2026-08-09T02:18:00.000Z
+                  meta:
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List channel conversations
+      tags: &a27
+        - Customer Service
+  /api/v1/admin/conversations/handoff-summary:
+    get:
+      operationId: CsAdminController_getHandoffSummary_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Counts and the oldest wait, for the notification badge.
+            Deliberately not a list: this endpoint is polled, and returning
+            conversations would fetch the whole queue on every interval to
+            render one number. `oldestWaitingSince` is what turns the badge into
+            a priority — three customers waiting two minutes and one waiting
+            forty are very different afternoons. Blocked chats are excluded from
+            both counts."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      needsHumanCount:
+                        type: integer
+                      humanActiveCount:
+                        type: integer
+                      oldestWaitingSince:
+                        type: string
+                    required:
+                      - needsHumanCount
+                      - humanActiveCount
+                      - oldestWaitingSince
+                required:
+                  - data
+                example:
+                  data:
+                    needsHumanCount: 3
+                    humanActiveCount: 1
+                    oldestWaitingSince: 2026-08-09T02:34:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Count the conversations waiting for a human
+      tags: *a27
+  /api/v1/admin/conversations/{id}:
+    get:
+      operationId: CsAdminController_getTranscript_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 200
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 50
+            type: integer
+      responses:
+        "200":
+          description: "The conversation plus a page of turns, newest first with a cursor
+            onto older ones. Content is post-redaction: an identifier a customer
+            volunteered never reached this table (§5.3), so it cannot be read
+            back here either. `safetyTags` are surfaced on purpose — an admin
+            taking over needs to see that the previous turn was an emergency
+            escalation or a redaction rather than ordinary text."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      conversation:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          channel:
+                            type: string
+                          externalChatId:
+                            type: string
+                          senderDisplayName:
+                            type: string
+                          state:
+                            type: string
+                          isBlocked:
+                            type: boolean
+                          blockedAt:
+                            nullable: true
+                          waitingForSeconds:
+                            type: integer
+                          messageCount:
+                            type: integer
+                          lastMessageAt:
+                            type: string
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - channel
+                          - externalChatId
+                          - senderDisplayName
+                          - state
+                          - isBlocked
+                          - blockedAt
+                          - waitingForSeconds
+                          - messageCount
+                          - lastMessageAt
+                          - createdAt
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            role:
+                              type: string
+                            content:
+                              type: string
+                            authorUserId:
+                              type: string
+                            authorEmail:
+                              type: string
+                            safetyTags:
+                              type: array
+                              items: {}
+                            createdAt:
+                              type: string
+                          required:
+                            - id
+                            - role
+                            - content
+                            - authorUserId
+                            - authorEmail
+                            - safetyTags
+                            - createdAt
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - conversation
+                      - items
+                      - nextCursor
+                required:
+                  - data
+                example:
+                  data:
+                    conversation:
+                      id: a4d1f0b2-6c3e-4f79-9a10-2b8d5c7e1f34
+                      channel: TELEGRAM
+                      externalChatId: "184920371"
+                      senderDisplayName: Rina
+                      state: NEEDS_HUMAN
+                      isBlocked: false
+                      blockedAt: null
+                      waitingForSeconds: 412
+                      messageCount: 14
+                      lastMessageAt: 2026-08-09T02:41:00.000Z
+                      createdAt: 2026-08-09T02:18:00.000Z
+                    items:
+                      - id: e1a90c47-73f2-4de6-8b15-6c2f0a8d95b3
+                        role: ADMIN
+                        content: Selamat siang Bu Rina, dokter umum praktik Sabtu pukul 08.00–12.00.
+                        authorUserId: 5b2c8f01-9d3a-4e67-a1c0-7f4b6e2d8039
+                        authorEmail: admin@salingjaga.com
+                        safetyTags: []
+                        createdAt: 2026-08-09T02:42:00.000Z
+                      - id: d7f4a913-2b58-4c0e-b6a7-91e0c4d3f228
+                        role: CUSTOMER
+                        content: Halo, saya mau tanya jam praktik dokter umum hari Sabtu
+                        authorUserId: null
+                        authorEmail: null
+                        safetyTags: []
+                        createdAt: 2026-08-09T02:34:00.000Z
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Conversation not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Conversation not found.
+      security:
+        - bearer: []
+      summary: Read one conversation transcript
+      tags: *a27
+  /api/v1/admin/conversations/{id}/takeover:
+    post:
+      operationId: CsAdminController_takeOver_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Moves the conversation to HUMAN_ACTIVE, which is what pauses the
+            bot: inbound messages are still recorded but never reach a provider.
+            Returns 409 for a conversation in AWAITING_OTP, which is holding a
+            live possession challenge and a booking that has not happened yet —
+            taking it over would strand the booking and turn the customer’s code
+            into a message a person reads. That state resolves itself within the
+            OTP TTL."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      channel:
+                        type: string
+                      externalChatId:
+                        type: string
+                      senderDisplayName:
+                        type: string
+                      state:
+                        type: string
+                      isBlocked:
+                        type: boolean
+                      blockedAt:
+                        nullable: true
+                      waitingForSeconds:
+                        type: integer
+                      messageCount:
+                        type: integer
+                      lastMessageAt:
+                        type: string
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - channel
+                      - externalChatId
+                      - senderDisplayName
+                      - state
+                      - isBlocked
+                      - blockedAt
+                      - waitingForSeconds
+                      - messageCount
+                      - lastMessageAt
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: a4d1f0b2-6c3e-4f79-9a10-2b8d5c7e1f34
+                    channel: TELEGRAM
+                    externalChatId: "184920371"
+                    senderDisplayName: Rina
+                    state: NEEDS_HUMAN
+                    isBlocked: false
+                    blockedAt: null
+                    waitingForSeconds: 412
+                    messageCount: 14
+                    lastMessageAt: 2026-08-09T02:41:00.000Z
+                    createdAt: 2026-08-09T02:18:00.000Z
+                  message: Conversation taken over
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Conversation not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Conversation not found.
+      security:
+        - bearer: []
+      summary: Take a conversation over from the bot
+      tags: *a27
+  /api/v1/admin/conversations/{id}/release:
+    post:
+      operationId: CsAdminController_release_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Returns the conversation to BOT_ACTIVE. The human turns stay in the
+            transcript and therefore in the model’s replay window, so the next
+            bot reply is composed knowing what the admin already answered.
+            Allowed on a blocked conversation — releasing is the narrowing move,
+            and refusing it would strand a blocked chat in HUMAN_ACTIVE.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      channel:
+                        type: string
+                      externalChatId:
+                        type: string
+                      senderDisplayName:
+                        type: string
+                      state:
+                        type: string
+                      isBlocked:
+                        type: boolean
+                      blockedAt:
+                        nullable: true
+                      waitingForSeconds:
+                        type: integer
+                      messageCount:
+                        type: integer
+                      lastMessageAt:
+                        type: string
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - channel
+                      - externalChatId
+                      - senderDisplayName
+                      - state
+                      - isBlocked
+                      - blockedAt
+                      - waitingForSeconds
+                      - messageCount
+                      - lastMessageAt
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: a4d1f0b2-6c3e-4f79-9a10-2b8d5c7e1f34
+                    channel: TELEGRAM
+                    externalChatId: "184920371"
+                    senderDisplayName: Rina
+                    state: NEEDS_HUMAN
+                    isBlocked: false
+                    blockedAt: null
+                    waitingForSeconds: 412
+                    messageCount: 14
+                    lastMessageAt: 2026-08-09T02:41:00.000Z
+                    createdAt: 2026-08-09T02:18:00.000Z
+                  message: Conversation released to the assistant
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Conversation not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Conversation not found.
+      security:
+        - bearer: []
+      summary: Hand a conversation back to the bot
+      tags: *a27
+  /api/v1/admin/conversations/{id}/reply:
+    post:
+      operationId: CsAdminController_reply_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplyToConversationDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  text: Selamat siang Bu Rina, dokter umum praktik Sabtu pukul 08.00–12.00.
+      responses:
+        "201":
+          description: "Sends through the same outbound dispatcher the bot uses, so the
+            customer sees one clinic rather than two systems. Replying takes the
+            conversation over: a reply from BOT_ACTIVE moves it to HUMAN_ACTIVE
+            in the same call, because leaving the bot free to answer the next
+            message over the top of a person is the failure the state machine
+            exists to prevent. The turn is persisted before dispatch, so the
+            transcript records what the clinic said even if delivery then
+            failed."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      role:
+                        type: string
+                      content:
+                        type: string
+                      authorUserId:
+                        type: string
+                      authorEmail:
+                        type: string
+                      safetyTags:
+                        type: array
+                        items: {}
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - role
+                      - content
+                      - authorUserId
+                      - authorEmail
+                      - safetyTags
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: e1a90c47-73f2-4de6-8b15-6c2f0a8d95b3
+                    role: ADMIN
+                    content: Selamat siang Bu Rina, dokter umum praktik Sabtu pukul 08.00–12.00.
+                    authorUserId: 5b2c8f01-9d3a-4e67-a1c0-7f4b6e2d8039
+                    authorEmail: admin@salingjaga.com
+                    safetyTags: []
+                    createdAt: 2026-08-09T02:42:00.000Z
+                  message: Reply sent
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Conversation not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Conversation not found.
+      security:
+        - bearer: []
+      summary: Reply to the customer on their original channel
+      tags: *a27
+  /api/v1/admin/conversations/{id}/block:
+    post:
+      operationId: CsAdminController_block_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlockConversationDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  reason: Pesan berulang otomatis, 200+ dalam satu jam
+      responses:
+        "200":
+          description: Every further inbound message from this externalChatId is dropped
+            before persistence and before any provider call, and the chat
+            disappears from every filter but BLOCKED. The customer is told
+            nothing — an abuser who learns they were blocked has a signal to
+            tune against. The reason is logged, not stored and not sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      channel:
+                        type: string
+                      externalChatId:
+                        type: string
+                      senderDisplayName:
+                        nullable: true
+                      state:
+                        type: string
+                      isBlocked:
+                        type: boolean
+                      blockedAt:
+                        type: string
+                      waitingForSeconds:
+                        nullable: true
+                      messageCount:
+                        type: integer
+                      lastMessageAt:
+                        type: string
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - channel
+                      - externalChatId
+                      - senderDisplayName
+                      - state
+                      - isBlocked
+                      - blockedAt
+                      - waitingForSeconds
+                      - messageCount
+                      - lastMessageAt
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: c9b7e21a-5d40-4b8a-8f21-0a6c3d9e4b57
+                    channel: TELEGRAM
+                    externalChatId: "772310884"
+                    senderDisplayName: null
+                    state: BOT_ACTIVE
+                    isBlocked: true
+                    blockedAt: 2026-08-08T11:02:00.000Z
+                    waitingForSeconds: null
+                    messageCount: 231
+                    lastMessageAt: 2026-08-08T11:01:00.000Z
+                    createdAt: 2026-08-08T09:55:00.000Z
+                  message: Conversation blocked
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Conversation not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Conversation not found.
+      security:
+        - bearer: []
+      summary: Block a chat (§8.3 abuse control)
+      tags: *a27
+    delete:
+      operationId: CsAdminController_unblock_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The conversation resumes in whatever state it was in when it was
+            blocked, which is why the block is a column rather than a state: an
+            admin who blocks a chat a colleague was mid-conversation on has not
+            erased HUMAN_ACTIVE."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      channel:
+                        type: string
+                      externalChatId:
+                        type: string
+                      senderDisplayName:
+                        type: string
+                      state:
+                        type: string
+                      isBlocked:
+                        type: boolean
+                      blockedAt:
+                        nullable: true
+                      waitingForSeconds:
+                        type: integer
+                      messageCount:
+                        type: integer
+                      lastMessageAt:
+                        type: string
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - channel
+                      - externalChatId
+                      - senderDisplayName
+                      - state
+                      - isBlocked
+                      - blockedAt
+                      - waitingForSeconds
+                      - messageCount
+                      - lastMessageAt
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: a4d1f0b2-6c3e-4f79-9a10-2b8d5c7e1f34
+                    channel: TELEGRAM
+                    externalChatId: "184920371"
+                    senderDisplayName: Rina
+                    state: NEEDS_HUMAN
+                    isBlocked: false
+                    blockedAt: null
+                    waitingForSeconds: 412
+                    messageCount: 14
+                    lastMessageAt: 2026-08-09T02:41:00.000Z
+                    createdAt: 2026-08-09T02:18:00.000Z
+                  message: Conversation unblocked
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Conversation not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Conversation not found.
+      security:
+        - bearer: []
+      summary: Unblock a chat
+      tags: *a27
+  /api/v1/admin/channel-arrivals:
+    get:
+      operationId: ChannelArrivalController_listArrivals_v1
+      parameters:
+        - name: from
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+        - name: to
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+        - name: channel
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - WHATSAPP
+              - TELEGRAM
+        - name: referenceCode
+          required: false
+          in: query
+          schema:
+            minLength: 3
+            maxLength: 32
+            type: string
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 25
+            type: integer
+      responses:
+        "200":
+          description: "Bookings made from WhatsApp/Telegram in the window, soonest first,
+            defaulting to the clinic’s today in CLINIC_TIMEZONE.
+            `patientIsDraft` marks the rows that need work: a chat-created
+            record still missing a date of birth or an address. `missingFields`
+            also reports absent identifiers so the desk knows to ask for them,
+            but their absence alone does not keep a row on the worklist — a
+            patient may genuinely have no BPJS coverage, and a list that never
+            clears is a list nobody reads. No identifier value appears here,
+            only whether one exists."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        appointmentId:
+                          type: string
+                        bookingReferenceCode:
+                          type: string
+                        channel:
+                          type: string
+                        scheduledAt:
+                          type: string
+                        appointmentStatus:
+                          type: string
+                        doctorName:
+                          type: string
+                        specialty:
+                          type: string
+                        patientId:
+                          type: string
+                        patientMrn:
+                          type: string
+                        patientFullName:
+                          type: string
+                        patientPhoneNumber:
+                          type: string
+                        patientIsDraft:
+                          type: boolean
+                        missingFields:
+                          type: array
+                          items:
+                            type: string
+                        createdAt:
+                          type: string
+                      required:
+                        - appointmentId
+                        - bookingReferenceCode
+                        - channel
+                        - scheduledAt
+                        - appointmentStatus
+                        - doctorName
+                        - patientId
+                        - patientMrn
+                        - patientFullName
+                        - patientPhoneNumber
+                        - patientIsDraft
+                        - missingFields
+                        - createdAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - appointmentId: f3c8b0d5-41e7-4a92-9b6d-8e05c7a2f194
+                      bookingReferenceCode: SJ-7QK4M2
+                      channel: TELEGRAM
+                      scheduledAt: 2026-08-09T01:00:00.000Z
+                      appointmentStatus: SCHEDULED
+                      doctorName: dr. Andi Pratama
+                      specialty: Dokter Umum
+                      patientId: 6d90a1c3-2f84-4b57-8e10-3c7f5a9d0b28
+                      patientMrn: RM-000482
+                      patientFullName: Rina Kusuma
+                      patientPhoneNumber: "628123456789"
+                      patientIsDraft: true
+                      missingFields:
+                        - dateOfBirth
+                        - address
+                        - nik
+                      createdAt: 2026-08-08T14:22:00.000Z
+                  meta:
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List channel-sourced bookings for the check-in desk
+      tags: &a28
+        - Customer Service
+  /api/v1/admin/channel-arrivals/merge-candidates:
+    get:
+      operationId: ChannelArrivalController_listMergeCandidates_v1
+      parameters:
+        - name: search
+          required: true
+          in: query
+          schema:
+            minLength: 2
+            maxLength: 120
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 25
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 8
+            type: integer
+      responses:
+        "200":
+          description: "Active front-desk patients matching the search, capped and ordered
+            by name. Drafts are excluded by the query: merging one incomplete
+            record into another clears nothing and costs an MRN. The five fields
+            are what a person at a counter checks against the card in the
+            patient’s hand — a name alone is not enough to merge on. No
+            identifier value is returned; confirming a NIK is the patient-edit
+            screen’s job, behind its own audited grant."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        mrn:
+                          type: string
+                        fullName:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        dateOfBirth:
+                          type: string
+                      required:
+                        - id
+                        - mrn
+                        - fullName
+                        - phoneNumber
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77
+                      mrn: RM-000119
+                      fullName: Rina Kusumawardani
+                      phoneNumber: "628123456789"
+                      dateOfBirth: 1991-03-14
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Find the records a chat-created draft could be merged into
+      tags: *a28
+  /api/v1/admin/channel-arrivals/patients/{draftPatientId}/merge:
+    post:
+      operationId: ChannelArrivalController_mergeDraftPatient_v1
+      parameters:
+        - name: draftPatientId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MergeChannelDraftPatientDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  targetPatientId: 2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77
+      responses:
+        "200":
+          description: "Moves the draft’s appointments, registrations, and channel links
+            onto the existing record in one transaction, then retires the draft
+            with a soft delete — never a hard one, because its MRN was quoted to
+            a customer and its deferred privacy-notice record is legal evidence
+            about a real person. Returns 400 when the draft is not a
+            CHANNEL_BOOKING record, when the target is itself a draft or the
+            same record, or when the draft has already acquired encounters,
+            prescriptions, or invoices: moving clinical history between patients
+            is not a front-desk button."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      draftPatientId:
+                        type: string
+                      targetPatientId:
+                        type: string
+                      movedAppointments:
+                        type: integer
+                      movedRegistrations:
+                        type: integer
+                      movedChannelLinks:
+                        type: integer
+                    required:
+                      - draftPatientId
+                      - targetPatientId
+                      - movedAppointments
+                      - movedRegistrations
+                      - movedChannelLinks
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    draftPatientId: 6d90a1c3-2f84-4b57-8e10-3c7f5a9d0b28
+                    targetPatientId: 2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77
+                    movedAppointments: 1
+                    movedRegistrations: 0
+                    movedChannelLinks: 1
+                  message: Draft patient merged
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Draft or target patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Draft or target patient not found.
+      security:
+        - bearer: []
+      summary: Merge a chat-created draft into an existing patient
+      tags: *a28
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -16712,7 +18026,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a27
+      tags: &a29
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -16805,7 +18119,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a27
+      tags: *a29
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -16897,7 +18211,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a27
+      tags: *a29
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -18771,6 +20085,30 @@ components:
           enum:
             - ID
             - EN
+    ReplyToConversationDto:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+        - text
+    BlockConversationDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 300
+    MergeChannelDraftPatientDto:
+      type: object
+      properties:
+        targetPatientId:
+          type: string
+          format: uuid
+      required:
+        - targetPatientId
     AssignRoleDto:
       type: object
       properties:

@@ -89,6 +89,18 @@ export class ConversationService extends InboundMessageSink {
 
   async handleInboundMessage(message: InboundChannelMessage): Promise<void> {
     const conversation = await this.conversationRepository.findOrCreateConversation(message);
+
+    // §8.3's block, checked before redaction and before persistence — earlier
+    // than any other guard, because it is the only one whose purpose is to stop
+    // this chat costing anything. A block that still wrote a transcript row per
+    // message would leave the flood it exists to end paying for storage
+    // instead of tokens. The turns received before the block are kept; the
+    // ones after it are not written, and no reply is composed or sent.
+    if (conversation.blockedAt !== null) {
+      this.logger.log(`Inbound message dropped: conversation ${conversation.id} is blocked`);
+      return;
+    }
+
     const decision = this.safetyPolicy.evaluateInput(message.text);
 
     // Persisted post-redaction and before any branch: a message that is about

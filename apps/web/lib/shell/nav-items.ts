@@ -19,6 +19,7 @@ export type ShellNavigationKey =
   | 'aiProviders'
   | 'knowledgeBase'
   | 'clinicCorpus'
+  | 'conversations'
   | 'integrations'
   | 'administration'
   | 'today';
@@ -28,7 +29,7 @@ export type ShellNavigationKey =
  * number because this table is static data read on the server, while every
  * count it can name is client state.
  */
-export type ShellNavBadgeKey = 'aiAssistantUnread';
+export type ShellNavBadgeKey = 'aiAssistantUnread' | 'conversationHandoff';
 
 export type AdminNavItem = {
   href: string;
@@ -139,6 +140,19 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         labelKey: 'clinicCorpus',
         icon: 'menu_book',
         ability: { action: 'read', subject: 'Document' },
+      },
+      {
+        // The WhatsApp/Telegram inbox. It carries the badge because this is
+        // the one screen in the app whose work arrives from outside it: a
+        // customer waiting for a person generates no other signal, and a queue
+        // nobody is told about is a queue that gets checked at the end of the
+        // shift.
+        href: '/admin/conversations',
+        label: 'Conversations',
+        labelKey: 'conversations',
+        icon: 'forum',
+        ability: { action: 'read', subject: 'Conversation' },
+        badgeKey: 'conversationHandoff',
       },
       {
         href: '/admin/ai-providers',
