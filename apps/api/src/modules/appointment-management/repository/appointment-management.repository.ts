@@ -317,6 +317,8 @@ export class AppointmentManagementRepository {
           notes: payload.notes,
           createdById: payload.createdById,
           bpjsBookingCode: payload.bpjsBookingCode ?? null,
+          bookingSource: payload.bookingSource ?? null,
+          bookingReferenceCode: payload.bookingReferenceCode ?? null,
         },
         select: {
           id: true,
@@ -324,6 +326,51 @@ export class AppointmentManagementRepository {
       });
 
       return { outcome: 'BOOKED', appointmentId: created.id, queueNumber };
+    });
+  }
+
+  /**
+   * How many active future appointments these patients already hold, for
+   * §8.3's per-number booking cap (`PCS-T07`).
+   *
+   * Counted across *every* record the phone number resolved to rather than the
+   * one being booked against, because a customer who books three times under
+   * three spellings of their name creates three drafts, and a cap that counted
+   * one of them at a time would not be a cap.
+   */
+  async countActiveFutureAppointments(patientIds: readonly string[], from: Date): Promise<number> {
+    if (patientIds.length === 0) {
+      return 0;
+    }
+    return this.prisma.appointment.count({
+      where: {
+        patientId: { in: [...patientIds] },
+        deletedAt: null,
+        scheduledAt: { gte: from },
+        status: { in: [...OPEN_APPOINTMENT_STATUSES] },
+      },
+    });
+  }
+
+  /**
+   * How many bookings the channel has made today for numbers that matched no
+   * existing record — §8.3's clinic-wide daily valve on unknown-number
+   * bookings.
+   *
+   * Clinic-wide rather than per-chat on purpose: a per-chat cap is defeated by
+   * opening a second chat, which on Telegram costs nothing. This one bounds
+   * the damage regardless of how many identities the sender invents, at the
+   * price of a busy legitimate day being able to reach it — which is why it is
+   * configurable and why hitting it is logged.
+   */
+  async countChannelDraftBookingsSince(since: Date): Promise<number> {
+    return this.prisma.appointment.count({
+      where: {
+        bookingSource: { not: null },
+        createdAt: { gte: since },
+        deletedAt: null,
+        patient: { source: 'CHANNEL_BOOKING' },
+      },
     });
   }
 

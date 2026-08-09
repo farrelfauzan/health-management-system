@@ -26,7 +26,14 @@ WITH seed_roles(code, name, description) AS (
     -- has an actor whose reach is written down in the same table as everyone
     -- else's, instead of a code path that skips the permission check. Its
     -- grants below are exactly the six inbound services and nothing more.
-    ('BPJS_ANTREAN_SYSTEM', 'BPJS Antrean Bridge', 'Reserved service account for inbound Mobile JKN queue calls')
+    ('BPJS_ANTREAN_SYSTEM', 'BPJS Antrean Bridge', 'Reserved service account for inbound Mobile JKN queue calls'),
+    -- Also not a human role. The WhatsApp/Telegram customer-service channel
+    -- (PCS-T07) writes appointments and draft patients on behalf of people who
+    -- have no HMS account at all, and every one of those rows needs an actor.
+    -- Its grants below are the shortest list in this file, deliberately: this
+    -- is the reach an anonymous member of the public gets if the webhook's
+    -- secret-token check is ever defeated.
+    ('CUSTOMER_SERVICE_CHANNEL', 'Customer Service Channel', 'Reserved service account for WhatsApp/Telegram chat bookings')
 )
 INSERT INTO "roles" (
   "id",
@@ -382,7 +389,29 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('BPJS_ANTREAN_SYSTEM', 'appointment.read:any'),
     ('BPJS_ANTREAN_SYSTEM', 'appointment.create:any'),
     ('BPJS_ANTREAN_SYSTEM', 'appointment.cancel:any'),
-    ('BPJS_ANTREAN_SYSTEM', 'appointment.session.read:any')
+    ('BPJS_ANTREAN_SYSTEM', 'appointment.session.read:any'),
+    -- The WA/Telegram customer-service channel (PCS-T07). Five grants, and the
+    -- absences are the design:
+    --   * no `patient.update`, because the channel never edits a record it did
+    --     not create — §5.2 has the front desk complete a draft, and a chat
+    --     that could write to an existing patient would make the §5.1.1
+    --     verification pointless;
+    --   * no `patient.read-identifier`, because no tool returns an identifier
+    --     and the phone match runs on a normalised digit comparison;
+    --   * no `appointment.cancel`, because cancelling by chat is out of scope
+    --     until a confirmation-code lookup exists (§1.3);
+    --   * no `registration.*`, because a chat booking is an appointment — the
+    --     patient is still checked in at the counter by a human.
+    -- `patient.read:any` is the one worth pausing on. The channel needs it for
+    -- exactly one question — does this typed number match a record, so §5.1.1
+    -- knows whether to challenge — and the mitigation is that the tool
+    -- catalogue has nowhere to spend it: none of the three tools returns a
+    -- patient.
+    ('CUSTOMER_SERVICE_CHANNEL', 'patient.read:any'),
+    ('CUSTOMER_SERVICE_CHANNEL', 'patient.create:any'),
+    ('CUSTOMER_SERVICE_CHANNEL', 'appointment.read:any'),
+    ('CUSTOMER_SERVICE_CHANNEL', 'appointment.create:any'),
+    ('CUSTOMER_SERVICE_CHANNEL', 'appointment.session.read:any')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"
@@ -482,6 +511,71 @@ SELECT
 FROM "users" u
 JOIN "roles" r ON r."code" = 'BPJS_ANTREAN_SYSTEM'
 WHERE u."email" = 'bpjs-antrean-bridge@system.hms.local'
+ON CONFLICT ("user_id", "role_id") DO UPDATE
+SET
+  "unassigned_at" = NULL,
+  "unassigned_by_id" = NULL,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
+-- Reserved service account for the WhatsApp/Telegram customer-service channel
+-- (PCS-T07). Baseline, not demo data: a production deployment running the
+-- channel needs this row, because a chat booking has to be attributable to
+-- something and `created_by_id` is how every other write in HMS records who
+-- did it.
+--
+-- `password_hash` is deliberately not a hash, for the same two independent
+-- reasons as the BPJS account above: bcrypt rejects a malformed digest, so no
+-- password can ever verify against it, and the login path refuses `is_system`
+-- accounts before it gets that far.
+INSERT INTO "users" (
+  "id",
+  "email",
+  "password_hash",
+  "is_active",
+  "is_system",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+VALUES (
+  md5('user:customer-service-channel@system.hms.local')::uuid,
+  'customer-service-channel@system.hms.local',
+  '!no-login:customer-service-channel',
+  true,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+)
+ON CONFLICT ("email") DO UPDATE
+SET
+  "password_hash" = EXCLUDED."password_hash",
+  "is_active" = true,
+  "is_system" = true,
+  "updated_at" = NOW(),
+  "deleted_at" = NULL;
+
+INSERT INTO "user_roles" (
+  "id",
+  "user_id",
+  "role_id",
+  "assigned_at",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('user_role:customer-service-channel@system.hms.local:CUSTOMER_SERVICE_CHANNEL')::uuid,
+  u."id",
+  r."id",
+  NOW(),
+  NOW(),
+  NOW(),
+  NULL
+FROM "users" u
+JOIN "roles" r ON r."code" = 'CUSTOMER_SERVICE_CHANNEL'
+WHERE u."email" = 'customer-service-channel@system.hms.local'
 ON CONFLICT ("user_id", "role_id") DO UPDATE
 SET
   "unassigned_at" = NULL,

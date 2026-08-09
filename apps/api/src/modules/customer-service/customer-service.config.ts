@@ -5,6 +5,12 @@ import { CustomerServiceConfig } from '@hms/shared-types';
 const DEFAULT_HISTORY_TURN_LIMIT = 20;
 const DEFAULT_RATE_LIMIT_PER_CHAT_HOUR = 20;
 const DEFAULT_CLINIC_NAME = 'klinik kami';
+const DEFAULT_OTP_TTL_SECONDS = 300;
+const DEFAULT_OTP_MAX_ATTEMPTS = 3;
+const DEFAULT_OTP_MAX_CHALLENGES_PER_DAY = 3;
+const DEFAULT_LINK_REVERIFY_DAYS = 180;
+const DEFAULT_MAX_ACTIVE_BOOKINGS_PER_PHONE = 3;
+const DEFAULT_MAX_DRAFT_BOOKINGS_PER_DAY = 50;
 
 function readPositiveInteger(configService: ConfigService, key: string, fallback: number): number {
   const rawValue = configService.get<string>(key)?.trim();
@@ -44,5 +50,37 @@ export function resolveCustomerServiceConfig(configService: ConfigService): Cust
       DEFAULT_RATE_LIMIT_PER_CHAT_HOUR,
     ),
     clinicName: configService.get<string>('CS_CLINIC_NAME')?.trim() || DEFAULT_CLINIC_NAME,
+    booking: {
+      otpTtlSeconds: readPositiveInteger(
+        configService,
+        'CS_OTP_TTL_SECONDS',
+        DEFAULT_OTP_TTL_SECONDS,
+      ),
+      otpMaxAttempts: readPositiveInteger(
+        configService,
+        'CS_OTP_MAX_ATTEMPTS',
+        DEFAULT_OTP_MAX_ATTEMPTS,
+      ),
+      otpMaxChallengesPerDay: readPositiveInteger(
+        configService,
+        'CS_OTP_MAX_CHALLENGES_PER_DAY',
+        DEFAULT_OTP_MAX_CHALLENGES_PER_DAY,
+      ),
+      linkReverifyDays: readPositiveInteger(
+        configService,
+        'CS_LINK_REVERIFY_DAYS',
+        DEFAULT_LINK_REVERIFY_DAYS,
+      ),
+      maxActiveBookingsPerPhone: readPositiveInteger(
+        configService,
+        'CS_MAX_ACTIVE_BOOKINGS_PER_PHONE',
+        DEFAULT_MAX_ACTIVE_BOOKINGS_PER_PHONE,
+      ),
+      maxDraftBookingsPerDay: readPositiveInteger(
+        configService,
+        'CS_MAX_DRAFT_BOOKINGS_PER_DAY',
+        DEFAULT_MAX_DRAFT_BOOKINGS_PER_DAY,
+      ),
+    },
   };
 }

@@ -247,6 +247,13 @@ enum PrivacyNoticeProvenance {
   /// PATIENT_PORTAL: the patient never touched an HMS surface, and the only
   /// actor on the row is the reserved system account.
   BPJS_ANTREAN
+  /// Created by the WhatsApp/Telegram customer-service channel (`PCS-T07`).
+  /// Kept distinct from BPJS_ANTREAN even though both are machine-created
+  /// deferrals: the two are owed the notice by different routes — a BPJS
+  /// member arrives with a Mobile JKN booking, a channel customer arrives
+  /// from a chat — and an auditor asking "which unnotified records came from
+  /// the public chat channel" must not have to guess.
+  CHANNEL_BOOKING
 }
 
 /// Lifecycle of a clinical encounter (the PMK 24/2022 medical record for one
@@ -481,22 +488,47 @@ model MrnCounter {
   @@map("mrn_counters")
 }
 
+/// How a patient record came into existence, and therefore how much of it can
+/// be trusted to be there (`PCS-T07`).
+///
+/// `CHANNEL_BOOKING` is the draft a WhatsApp/Telegram customer creates by
+/// booking in chat (strategy §5.1). It carries a name and a phone number and
+/// nothing else, because §5.3 forbids collecting anything else over an
+/// unauthenticated channel — the admin completes it at the counter when the
+/// person arrives (§5.2). It exists as a column rather than as an inference
+/// from missing fields because "we never asked" and "someone left it blank"
+/// are different facts, and only the first one has a worklist.
+enum PatientRecordSource {
+  FRONT_DESK
+  CHANNEL_BOOKING
+
+  @@map("patient_record_source")
+}
+
 model PatientProfile {
-  id           String        @id @default(uuid()) @db.Uuid
-  mrn          String        @unique
-  fullName     String        @map("full_name")
-  dateOfBirth  DateTime      @map("date_of_birth") @db.Date
-  placeOfBirth String?       @map("place_of_birth")
+  id           String              @id @default(uuid()) @db.Uuid
+  mrn          String              @unique
+  source       PatientRecordSource @default(FRONT_DESK)
+  fullName     String              @map("full_name")
+  /// Nullable since `PCS-T07`. Every record a human creates still supplies it
+  /// — `createPatientSchema` keeps it required — but a chat-created draft
+  /// genuinely does not have one, and the alternatives were both worse than a
+  /// null: refusing to book, or writing a placeholder date into a record that
+  /// PMK 24/2022 says is kept for 25 years.
+  dateOfBirth  DateTime?           @map("date_of_birth") @db.Date
+  placeOfBirth String?             @map("place_of_birth")
   sex          PatientSex?
-  status       PatientStatus @default(OUT_PATIENT)
-  phoneNumber  String        @map("phone_number")
-  address      String
-  ownerUserId  String?       @map("owner_user_id") @db.Uuid
-  isActive     Boolean       @default(true) @map("is_active")
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
-  deletedAt    DateTime?     @map("deleted_at")
-  lastVisitAt  DateTime?     @map("last_visit_at")
+  status       PatientStatus       @default(OUT_PATIENT)
+  phoneNumber  String              @map("phone_number")
+  /// Nullable for the same reason as {@link dateOfBirth}, and only for
+  /// chat-created drafts.
+  address      String?
+  ownerUserId  String?             @map("owner_user_id") @db.Uuid
+  isActive     Boolean             @default(true) @map("is_active")
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
+  deletedAt    DateTime?           @map("deleted_at")
+  lastVisitAt  DateTime?           @map("last_visit_at")
 
   // Demographic and clinical-safety identity fields required by PMK 24/2022
   // and expected on Indonesian registration forms. All optional so existing
@@ -542,6 +574,7 @@ model PatientProfile {
   invoices              Invoice[]
   bpjsEligibilityChecks BpjsEligibilityCheck[]
   privacyNoticeRecords  PatientPrivacyNoticeRecord[]
+  channelLinks          ChannelPatientLink[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -549,6 +582,15 @@ model PatientProfile {
   @@index([fullName])
   @@index([status])
   @@index([lastVisitAt])
+  /// The arrival worklist (§5.2) asks exactly this question: which records did
+  /// the chat channel create that a human has not completed yet.
+  ///
+  /// There is deliberately **no index on `phoneNumber`**. The channel's
+  /// phone match (§5.1) compares digits after normalisation — `0812…` and
+  /// `+62812…` are the same number written two ways — so a plain b-tree on the
+  /// stored text could never serve it, and carrying one would be an index that
+  /// costs every write and answers no query anyone asks.
+  @@index([source])
   @@map("patient_profiles")
 }
 
@@ -830,12 +872,12 @@ model DoctorPatientActivity {
 }
 
 model Appointment {
-  id              String            @id @default(uuid()) @db.Uuid
-  patientId       String            @map("patient_id") @db.Uuid
-  doctorId        String            @map("doctor_id") @db.Uuid
-  type            AppointmentType   @default(SESSION)
-  sessionId       String?           @map("session_id") @db.Uuid
-  queueNumber     Int?              @map("queue_number")
+  id                   String            @id @default(uuid()) @db.Uuid
+  patientId            String            @map("patient_id") @db.Uuid
+  doctorId             String            @map("doctor_id") @db.Uuid
+  type                 AppointmentType   @default(SESSION)
+  sessionId            String?           @map("session_id") @db.Uuid
+  queueNumber          Int?              @map("queue_number")
   /// BPJS's own identifier for a Mobile JKN booking (`kodebooking`), set only
   /// by the inbound Antrean bridge (P14-T04) and null for every appointment a
   /// human made. This column *is* the provenance marker the phase needs, and
@@ -848,15 +890,28 @@ model Appointment {
   /// retried `ambil antrean` must collide rather than create a second
   /// appointment for the same member. Whether `kodebooking` is genuinely the
   /// identifier BPJS carries is spike question Q10.
-  bpjsBookingCode String?           @unique @map("bpjs_booking_code")
-  scheduledAt     DateTime          @map("scheduled_at")
-  status          AppointmentStatus @default(SCHEDULED)
-  reason          String?
-  notes           String?
-  createdById     String?           @map("created_by_id") @db.Uuid
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @updatedAt @map("updated_at")
-  deletedAt       DateTime?         @map("deleted_at")
+  bpjsBookingCode      String?           @unique @map("bpjs_booking_code")
+  /// Which messaging channel booked this appointment, null for every booking
+  /// a human made at the counter or in the portal (`PCS-T07`, strategy §5.1).
+  ///
+  /// Analytics and the arrival worklist both need it, and neither can be
+  /// derived from the patient record: a *verified* customer's booking attaches
+  /// to a long-standing front-desk patient, so `PatientProfile.source` would
+  /// call it a walk-in. The provenance belongs to the booking, not the person.
+  bookingSource        ChannelKind?      @map("booking_source")
+  /// The short code quoted back to the customer in the confirmation reply
+  /// (§4.2 output allowlist). Unique because it is what an admin types to find
+  /// the booking, and two bookings answering to one code would be worse than
+  /// no code at all.
+  bookingReferenceCode String?           @unique @map("booking_reference_code")
+  scheduledAt          DateTime          @map("scheduled_at")
+  status               AppointmentStatus @default(SCHEDULED)
+  reason               String?
+  notes                String?
+  createdById          String?           @map("created_by_id") @db.Uuid
+  createdAt            DateTime          @default(now()) @map("created_at")
+  updatedAt            DateTime          @updatedAt @map("updated_at")
+  deletedAt            DateTime?         @map("deleted_at")
 
   patient      PatientProfile      @relation(fields: [patientId], references: [id], onDelete: Restrict)
   doctor       DoctorProfile       @relation(fields: [doctorId], references: [id], onDelete: Restrict)
@@ -865,6 +920,7 @@ model Appointment {
   registration Registration?
 
   @@unique([sessionId, queueNumber])
+  @@index([bookingSource, scheduledAt])
   @@index([doctorId, scheduledAt])
   @@index([patientId, scheduledAt])
   @@index([status, scheduledAt])
@@ -2233,7 +2289,8 @@ model Conversation {
   createdAt         DateTime          @default(now()) @map("created_at")
   updatedAt         DateTime          @updatedAt @map("updated_at")
 
-  messages ConversationMessage[]
+  messages      ConversationMessage[]
+  otpChallenges ChannelOtpChallenge[]
 
   @@unique([channel, externalChatId])
   @@index([state, lastMessageAt])
@@ -2265,4 +2322,126 @@ model ConversationMessage {
 
   @@index([conversationId, createdAt])
   @@map("conversation_messages")
+}
+
+/// How firmly a chat is tied to the patient record it claims (strategy
+/// §5.1.1, D-CS-08).
+///
+/// A phone-number match is a *claim*, not proof: anyone who knows a patient's
+/// number could otherwise book against — and later probe — their record. The
+/// three values are the three tiers of possession proof, cheapest first.
+enum ChannelVerificationStatus {
+  /// The customer gave a number; nothing has proved they hold it. A booking
+  /// under this status never attaches to an existing patient.
+  UNVERIFIED
+  /// The channel identity *is* the number: a WhatsApp JID that equals the
+  /// registered number, proved by WhatsApp itself. Lands with `PCS-T09`.
+  CHANNEL_VERIFIED
+  /// Proved by typing back a code sent to the registered number, or by
+  /// sharing a Telegram-verified contact card.
+  OTP_VERIFIED
+
+  @@map("channel_verification_status")
+}
+
+/// What one chat has told us about who it belongs to (strategy §5.1).
+///
+/// The name and phone number here are **customer-typed**, never registry data.
+/// `patientId` is null until §5.1.1 verification succeeds, and that is the
+/// whole point of the table: the link between a chat and a real record is a
+/// thing that has to be *earned*, and having a row to hold the unearned state
+/// is what keeps the earned one from being assumed.
+///
+/// **Verification unlocks linkage only, not data access.** A verified
+/// customer's bookings attach to their real record; the chat still cannot read
+/// anything from it, because the tool surface (§4.2) has no tool that reads a
+/// patient.
+model ChannelPatientLink {
+  id                 String                    @id @default(uuid()) @db.Uuid
+  channel            ChannelKind
+  externalChatId     String                    @map("external_chat_id")
+  /// Normalized to E.164-ish digits before storage, because a match against
+  /// the registry is an exact string comparison and `0812…` / `+62812…` are
+  /// the same number written two ways.
+  phoneNumber        String                    @map("phone_number")
+  fullName           String                    @map("full_name")
+  patientId          String?                   @map("patient_id") @db.Uuid
+  verificationStatus ChannelVerificationStatus @default(UNVERIFIED) @map("verification_status")
+  verifiedAt         DateTime?                 @map("verified_at")
+  createdAt          DateTime                  @default(now()) @map("created_at")
+  updatedAt          DateTime                  @updatedAt @map("updated_at")
+
+  patient PatientProfile? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+
+  /// One row per (chat, claimed number): the same customer may legitimately
+  /// book for themselves and for a family member from one chat, and those are
+  /// two different claims about two different people.
+  @@unique([channel, externalChatId, phoneNumber])
+  @@index([patientId])
+  @@map("channel_patient_links")
+}
+
+/// One outstanding possession challenge and the booking it is holding open
+/// (strategy §5.1.1, §8.3).
+///
+/// **The code is never stored in the clear** — only a salted hash — for the
+/// same reason a password is not: this row is readable by anything that can
+/// read the database, and a live code is a working credential against someone
+/// else's patient record for the next five minutes.
+///
+/// The pending booking rides on the challenge as explicit columns rather than
+/// a JSON blob. The customer must not have to retype their choice after
+/// verifying, and the fields are exactly the ones `book_appointment` accepts,
+/// so a typed column per field is what stops a schema change to the tool from
+/// silently leaving a stale shape in this table.
+/// Which of §5.1.1's proofs a challenge is waiting for.
+///
+/// Both pause the conversation in `AWAITING_OTP` and both are resolved by a
+/// comparison rather than by a model, which is why they share a state and a
+/// table: the state's meaning is "waiting for possession proof", and the tier
+/// only decides what arriving evidence looks like.
+enum ChannelVerificationMethod {
+  /// Telegram's `request_contact` card — one tap, no code, no delivery
+  /// dependency. The only tier that works on the Telegram pilot.
+  CONTACT_SHARE
+  /// A code sent to the registered number. Needs a delivery transport, which
+  /// `PCS-T09` binds.
+  OTP
+
+  @@map("channel_verification_method")
+}
+
+model ChannelOtpChallenge {
+  id             String                    @id @default(uuid()) @db.Uuid
+  conversationId String                    @map("conversation_id") @db.Uuid
+  method         ChannelVerificationMethod @default(OTP)
+  /// The record the challenge is trying to prove possession of. Never told to
+  /// the customer, and never revealed by a reply (§5.1.1 — no registry
+  /// oracle).
+  patientId      String                    @map("patient_id") @db.Uuid
+  /// Null for `CONTACT_SHARE`, where there is no code to hash — the evidence
+  /// is a card Telegram signed, not a secret this clinic minted.
+  codeHash       String?                   @map("code_hash")
+  attemptsUsed   Int                       @default(0) @map("attempts_used")
+  expiresAt      DateTime                  @map("expires_at")
+  /// Set when the challenge is spent — verified, exhausted, or abandoned — so
+  /// a conversation has at most one live challenge and a spent code can never
+  /// be replayed.
+  consumedAt     DateTime?                 @map("consumed_at")
+  createdAt      DateTime                  @default(now()) @map("created_at")
+
+  // The booking held open while the customer proves possession.
+  patientFullName String   @map("patient_full_name")
+  phoneNumber     String   @map("phone_number")
+  doctorId        String   @map("doctor_id") @db.Uuid
+  scheduleId      String   @map("schedule_id") @db.Uuid
+  sessionDate     DateTime @map("session_date") @db.Date
+  note            String?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  /// Answers both live-challenge lookup and §8.3's "max 3 challenges per chat
+  /// per day" count from one index.
+  @@index([conversationId, createdAt])
+  @@map("channel_otp_challenges")
 }

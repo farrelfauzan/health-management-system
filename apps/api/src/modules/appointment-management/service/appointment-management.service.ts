@@ -3,6 +3,7 @@ import {
   AppointmentListItem,
   AppointmentWithRelationsRecord,
   BookBpjsAntreanSessionInput,
+  BookChannelSessionInput,
   BookSessionSlotResult,
   CreateAppointmentInput,
   CreateSessionAppointmentInput,
@@ -573,6 +574,105 @@ export class AppointmentManagementService {
       appointment,
       queueNumber: result.outcome === 'BOOKED' ? result.queueNumber : 0,
     };
+  }
+
+  /**
+   * Books a session from the WhatsApp/Telegram channel (`PCS-T07`, strategy
+   * §5.1).
+   *
+   * A sibling of {@link bookSessionForBpjsAntrean} and, like it, **no
+   * shortcuts**: the same permission check, the same window validation, the
+   * same 60-minute cutoff, the same capacity lock. What the channel gets is
+   * two extra columns — the provenance and the reference code the customer is
+   * quoted — not a relaxed rule. The clinic's calendar does not care that a
+   * booking arrived by chat, and a path that bent for it would be the one
+   * place double-booking got in.
+   *
+   * The failure outcomes are returned rather than thrown, because every one of
+   * them has to become a sentence a customer reads. `SESSION_FULL` at the end
+   * of a chat about that session is an ordinary conversational turn, not an
+   * exception.
+   */
+  async bookSessionForChannel(
+    input: BookChannelSessionInput,
+    currentUser: CurrentUser,
+  ): Promise<
+    | { outcome: 'BOOKED'; appointment: AppointmentListItem }
+    | { outcome: 'SESSION_NOT_OPEN' | 'SESSION_FULL' | 'ALREADY_BOOKED' | 'CUTOFF_PASSED' }
+  > {
+    const actor = await this.getActorOrThrow(currentUser);
+    if (!this.resolveScope(actor, 'Appointment', 'create').hasAny) {
+      throw new ForbiddenException('You are not allowed to create appointments');
+    }
+    const window = await this.appointmentManagementRepository.findScheduleWindowById(
+      input.scheduleId,
+    );
+    if (!window || window.doctorId !== input.doctorId || !window.isAvailable) {
+      throw new BadRequestException('Schedule window not found for this doctor');
+    }
+    if (getDayOfWeekForDate(input.sessionDate) !== window.dayOfWeek) {
+      throw new BadRequestException('sessionDate does not fall on the schedule day');
+    }
+    const sessionStart = buildZonedDateTime({
+      date: input.sessionDate,
+      time: window.startTime,
+      timeZone: this.clinicTimeZone,
+    });
+    // Returned rather than thrown: a customer who spent three turns choosing a
+    // session and then crossed the cutoff needs to be told that, and an
+    // exception here would surface as the generic unavailable template.
+    if (Date.now() >= sessionStart.getTime() - SESSION_BOOKING_CUTOFF_MINUTES * 60_000) {
+      return { outcome: 'CUTOFF_PASSED' };
+    }
+    const result = await this.appointmentManagementRepository.bookSessionSlot({
+      patientId: input.patientId,
+      doctorId: input.doctorId,
+      scheduleId: window.id,
+      sessionDate: input.sessionDate,
+      startTime: window.startTime,
+      endTime: window.endTime,
+      maxPatients: window.maxPatients,
+      scheduledAt: sessionStart,
+      notes: input.note,
+      createdById: currentUser.sub,
+      bookingSource: input.channel,
+      bookingReferenceCode: input.bookingReferenceCode,
+    });
+    if (result.outcome !== 'BOOKED') {
+      // `DUPLICATE_BOOKING_CODE` is unreachable here — it is checked only when
+      // a BPJS code is supplied, and this path supplies none — so the three
+      // remaining outcomes are the whole set.
+      return {
+        outcome:
+          result.outcome === 'DUPLICATE_BOOKING_CODE' ? 'SESSION_NOT_OPEN' : result.outcome,
+      };
+    }
+    return { outcome: 'BOOKED', appointment: await this.resolveBookedAppointment(result) };
+  }
+
+  /**
+   * §8.3's two booking-abuse counts, behind the ordinary read permission.
+   *
+   * They live here rather than in the customer-service module because they
+   * count appointments, and the repo contract is explicit that a module reads
+   * another module's tables through its service and never its repository.
+   */
+  async countChannelBookingLimits(
+    params: { patientIds: readonly string[]; activeFrom: Date; draftsSince: Date },
+    currentUser: CurrentUser,
+  ): Promise<{ activeFutureBookings: number; draftBookingsToday: number }> {
+    const actor = await this.getActorOrThrow(currentUser);
+    if (!this.resolveScope(actor, 'Appointment', 'read').hasAny) {
+      throw new ForbiddenException('You are not allowed to read appointments');
+    }
+    const [activeFutureBookings, draftBookingsToday] = await Promise.all([
+      this.appointmentManagementRepository.countActiveFutureAppointments(
+        params.patientIds,
+        params.activeFrom,
+      ),
+      this.appointmentManagementRepository.countChannelDraftBookingsSince(params.draftsSince),
+    ]);
+    return { activeFutureBookings, draftBookingsToday };
   }
 
   /**

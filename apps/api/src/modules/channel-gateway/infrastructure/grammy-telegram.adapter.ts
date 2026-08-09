@@ -11,6 +11,14 @@ import { SendChannelTextRequest } from './channel-gateway.types';
 import { TelegramGatewayService } from './telegram-gateway.service';
 
 /**
+ * Label on the contact-share button. Bahasa Indonesia, like every other
+ * customer-facing string on this channel, and phrased as the action rather
+ * than the mechanism — "verify my number" would invite the question of what is
+ * being verified against.
+ */
+const CONTACT_SHARE_BUTTON_LABEL = '📱 Bagikan nomor saya';
+
+/**
  * Telegram Bot API adapter built on grammY.
  *
  * **grammY is used as an API client and nothing more.** The library's headline
@@ -56,7 +64,9 @@ export class GrammyTelegramAdapter extends TelegramGatewayService {
       throw new ServiceUnavailableException('Telegram channel is not configured');
     }
     try {
-      await this.api.sendMessage(request.externalChatId, request.text);
+      await this.api.sendMessage(request.externalChatId, request.text, {
+        reply_markup: this.buildReplyMarkup(request.requestContact === true),
+      });
     } catch (caughtError) {
       // The log carries Telegram's numeric code and nothing else. A
       // `GrammyError`'s description quotes the request that produced it, and
@@ -68,5 +78,30 @@ export class GrammyTelegramAdapter extends TelegramGatewayService {
       );
       throw new ServiceUnavailableException('Telegram rejected the message');
     }
+  }
+
+  /**
+   * The `request_contact` button (§5.1.1 tier 2), or the instruction to take
+   * a previous one away.
+   *
+   * **Every other message removes the keyboard**, and that is not tidiness.
+   * Telegram's reply keyboards persist until something replaces them, so a
+   * button left standing after verification finished would sit under the chat
+   * offering to share a phone number at any later moment — including on a
+   * conversation a human has since taken over. `one_time_keyboard` is not
+   * enough on its own: clients hide it after a tap but the keyboard remains
+   * available, so the removal is explicit.
+   */
+  private buildReplyMarkup(
+    isContactRequested: boolean,
+  ): { keyboard: Array<Array<{ text: string; request_contact: true }>>; one_time_keyboard: true; resize_keyboard: true } | { remove_keyboard: true } {
+    if (!isContactRequested) {
+      return { remove_keyboard: true };
+    }
+    return {
+      keyboard: [[{ text: CONTACT_SHARE_BUTTON_LABEL, request_contact: true }]],
+      one_time_keyboard: true,
+      resize_keyboard: true,
+    };
   }
 }

@@ -4,6 +4,7 @@ import {
   PatientAllergyInput,
   PatientDemographicFields,
   PatientIdentifierPlaintext,
+  PatientPhoneMatch,
   PatientRecord,
   UpdatePatientRecordPayload,
 } from '@hms/shared-types';
@@ -30,6 +31,7 @@ const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
 const PATIENT_RECORD_SELECT = {
   id: true,
   mrn: true,
+  source: true,
   fullName: true,
   dateOfBirth: true,
   placeOfBirth: true,
@@ -408,6 +410,50 @@ export class PatientManagementRepository {
   }
 
   /**
+   * Resolves active patients whose registered phone number is the one given,
+   * compared as normalised digits (`PCS-T07`, strategy §5.1).
+   *
+   * Raw SQL because the comparison is on a *derived* value: the registry holds
+   * whatever the front desk typed — `+62-812-1000-0001`, `0812 1000 0001`,
+   * `62812…` — and all three are the same number. Prisma's query builder has
+   * no way to express "strip the punctuation, then canonicalise the leading
+   * zero", so a generated equality on the stored text would silently miss most
+   * real matches, which on this path means a returning patient quietly getting
+   * a second, duplicate record.
+   *
+   * The scan is deliberate and sized: a single clinic's patient table is tens
+   * of thousands of rows, and this runs once per chat booking. A functional
+   * index is the answer if that ever stops being true.
+   *
+   * The class is written `[^0-9]` rather than `\D` on purpose. This SQL lives
+   * in a template literal, where `\D` is not a recognised escape and collapses
+   * to a bare `D` — which would strip the letter D from phone numbers and
+   * match nothing, silently, on a path whose failure mode is a duplicate
+   * patient record rather than an error anyone would see.
+   *
+   * Returns **every** match rather than the first, and carries each record's
+   * `source`. Two active records sharing one phone number is a real situation
+   * — a family sharing a handset — and it is the caller's business to refuse
+   * to guess between them. `source` is what lets it tell the two kinds apart:
+   * a `FRONT_DESK` record is somebody the clinic knows and whose booking must
+   * be earned, a `CHANNEL_BOOKING` record is a draft this chat itself created
+   * and can simply reuse.
+   */
+  async findActivePatientsByNormalisedPhoneNumber(
+    normalisedPhoneNumber: string,
+  ): Promise<PatientPhoneMatch[]> {
+    return this.prisma.$queryRaw<PatientPhoneMatch[]>`
+      SELECT "id", "full_name" AS "fullName", "source"
+      FROM "patient_profiles"
+      WHERE "deleted_at" IS NULL
+        AND "is_active" = true
+        AND regexp_replace(regexp_replace("phone_number", '[^0-9]', '', 'g'), '^0', '62')
+            = ${normalisedPhoneNumber}
+      ORDER BY "created_at" ASC
+    `;
+  }
+
+  /**
    * Resolves a patient by exact NIK. Normalisation happens in the schema layer;
    * this hashes with the secret pepper and queries the blind index.
    */
@@ -528,6 +574,7 @@ export class PatientManagementRepository {
             status: payload.status,
             phoneNumber: payload.phoneNumber,
             address: payload.address,
+            ...(payload.source === undefined ? {} : { source: payload.source }),
             ownerUserId: payload.ownerUserId ?? null,
             isActive: payload.isActive,
             ...this.buildIdentifierColumns({

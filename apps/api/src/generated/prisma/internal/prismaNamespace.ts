@@ -440,7 +440,9 @@ export const ModelName = {
   DocumentChunk: 'DocumentChunk',
   ChannelInboundReceipt: 'ChannelInboundReceipt',
   Conversation: 'Conversation',
-  ConversationMessage: 'ConversationMessage'
+  ConversationMessage: 'ConversationMessage',
+  ChannelPatientLink: 'ChannelPatientLink',
+  ChannelOtpChallenge: 'ChannelOtpChallenge'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -456,7 +458,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage"
+    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "channelOtpChallenge"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4678,6 +4680,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ChannelPatientLink: {
+      payload: Prisma.$ChannelPatientLinkPayload<ExtArgs>
+      fields: Prisma.ChannelPatientLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ChannelPatientLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ChannelPatientLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.ChannelPatientLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ChannelPatientLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload>
+        }
+        findMany: {
+          args: Prisma.ChannelPatientLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload>[]
+        }
+        create: {
+          args: Prisma.ChannelPatientLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload>
+        }
+        createMany: {
+          args: Prisma.ChannelPatientLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ChannelPatientLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.ChannelPatientLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload>
+        }
+        update: {
+          args: Prisma.ChannelPatientLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.ChannelPatientLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ChannelPatientLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ChannelPatientLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.ChannelPatientLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelPatientLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.ChannelPatientLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateChannelPatientLink>
+        }
+        groupBy: {
+          args: Prisma.ChannelPatientLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChannelPatientLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ChannelPatientLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChannelPatientLinkCountAggregateOutputType> | number
+        }
+      }
+    }
+    ChannelOtpChallenge: {
+      payload: Prisma.$ChannelOtpChallengePayload<ExtArgs>
+      fields: Prisma.ChannelOtpChallengeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ChannelOtpChallengeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ChannelOtpChallengeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload>
+        }
+        findFirst: {
+          args: Prisma.ChannelOtpChallengeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ChannelOtpChallengeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload>
+        }
+        findMany: {
+          args: Prisma.ChannelOtpChallengeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload>[]
+        }
+        create: {
+          args: Prisma.ChannelOtpChallengeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload>
+        }
+        createMany: {
+          args: Prisma.ChannelOtpChallengeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ChannelOtpChallengeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload>[]
+        }
+        delete: {
+          args: Prisma.ChannelOtpChallengeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload>
+        }
+        update: {
+          args: Prisma.ChannelOtpChallengeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload>
+        }
+        deleteMany: {
+          args: Prisma.ChannelOtpChallengeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ChannelOtpChallengeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ChannelOtpChallengeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload>[]
+        }
+        upsert: {
+          args: Prisma.ChannelOtpChallengeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChannelOtpChallengePayload>
+        }
+        aggregate: {
+          args: Prisma.ChannelOtpChallengeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateChannelOtpChallenge>
+        }
+        groupBy: {
+          args: Prisma.ChannelOtpChallengeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChannelOtpChallengeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ChannelOtpChallengeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChannelOtpChallengeCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4756,6 +4906,7 @@ export type MrnCounterScalarFieldEnum = (typeof MrnCounterScalarFieldEnum)[keyof
 export const PatientProfileScalarFieldEnum = {
   id: 'id',
   mrn: 'mrn',
+  source: 'source',
   fullName: 'fullName',
   dateOfBirth: 'dateOfBirth',
   placeOfBirth: 'placeOfBirth',
@@ -4974,6 +5125,8 @@ export const AppointmentScalarFieldEnum = {
   sessionId: 'sessionId',
   queueNumber: 'queueNumber',
   bpjsBookingCode: 'bpjsBookingCode',
+  bookingSource: 'bookingSource',
+  bookingReferenceCode: 'bookingReferenceCode',
   scheduledAt: 'scheduledAt',
   status: 'status',
   reason: 'reason',
@@ -5666,6 +5819,43 @@ export const ConversationMessageScalarFieldEnum = {
 export type ConversationMessageScalarFieldEnum = (typeof ConversationMessageScalarFieldEnum)[keyof typeof ConversationMessageScalarFieldEnum]
 
 
+export const ChannelPatientLinkScalarFieldEnum = {
+  id: 'id',
+  channel: 'channel',
+  externalChatId: 'externalChatId',
+  phoneNumber: 'phoneNumber',
+  fullName: 'fullName',
+  patientId: 'patientId',
+  verificationStatus: 'verificationStatus',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChannelPatientLinkScalarFieldEnum = (typeof ChannelPatientLinkScalarFieldEnum)[keyof typeof ChannelPatientLinkScalarFieldEnum]
+
+
+export const ChannelOtpChallengeScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  method: 'method',
+  patientId: 'patientId',
+  codeHash: 'codeHash',
+  attemptsUsed: 'attemptsUsed',
+  expiresAt: 'expiresAt',
+  consumedAt: 'consumedAt',
+  createdAt: 'createdAt',
+  patientFullName: 'patientFullName',
+  phoneNumber: 'phoneNumber',
+  doctorId: 'doctorId',
+  scheduleId: 'scheduleId',
+  sessionDate: 'sessionDate',
+  note: 'note'
+} as const
+
+export type ChannelOtpChallengeScalarFieldEnum = (typeof ChannelOtpChallengeScalarFieldEnum)[keyof typeof ChannelOtpChallengeScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -5759,6 +5949,20 @@ export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'BigInt[]'
  */
 export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PatientRecordSource'
+ */
+export type EnumPatientRecordSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PatientRecordSource'>
+    
+
+
+/**
+ * Reference to a field of type 'PatientRecordSource[]'
+ */
+export type ListEnumPatientRecordSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PatientRecordSource[]'>
     
 
 
@@ -5983,6 +6187,20 @@ export type EnumAppointmentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$
  * Reference to a field of type 'AppointmentType[]'
  */
 export type ListEnumAppointmentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ChannelKind'
+ */
+export type EnumChannelKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelKind'>
+    
+
+
+/**
+ * Reference to a field of type 'ChannelKind[]'
+ */
+export type ListEnumChannelKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelKind[]'>
     
 
 
@@ -6435,20 +6653,6 @@ export type ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel> = FieldRefIn
 
 
 /**
- * Reference to a field of type 'ChannelKind'
- */
-export type EnumChannelKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelKind'>
-    
-
-
-/**
- * Reference to a field of type 'ChannelKind[]'
- */
-export type ListEnumChannelKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelKind[]'>
-    
-
-
-/**
  * Reference to a field of type 'ConversationState'
  */
 export type EnumConversationStateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConversationState'>
@@ -6473,6 +6677,34 @@ export type EnumConversationMessageRoleFieldRefInput<$PrismaModel> = FieldRefInp
  * Reference to a field of type 'ConversationMessageRole[]'
  */
 export type ListEnumConversationMessageRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConversationMessageRole[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ChannelVerificationStatus'
+ */
+export type EnumChannelVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelVerificationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ChannelVerificationStatus[]'
+ */
+export type ListEnumChannelVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelVerificationStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ChannelVerificationMethod'
+ */
+export type EnumChannelVerificationMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelVerificationMethod'>
+    
+
+
+/**
+ * Reference to a field of type 'ChannelVerificationMethod[]'
+ */
+export type ListEnumChannelVerificationMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelVerificationMethod[]'>
     
 
 
@@ -6656,6 +6888,8 @@ export type GlobalOmitConfig = {
   channelInboundReceipt?: Prisma.ChannelInboundReceiptOmit
   conversation?: Prisma.ConversationOmit
   conversationMessage?: Prisma.ConversationMessageOmit
+  channelPatientLink?: Prisma.ChannelPatientLinkOmit
+  channelOtpChallenge?: Prisma.ChannelOtpChallengeOmit
 }
 
 /* Types for Logging */

@@ -284,7 +284,8 @@ export const PrivacyNoticeProvenance = {
   PATIENT_PORTAL: 'PATIENT_PORTAL',
   LEGACY_IMPORT: 'LEGACY_IMPORT',
   EMERGENCY: 'EMERGENCY',
-  BPJS_ANTREAN: 'BPJS_ANTREAN'
+  BPJS_ANTREAN: 'BPJS_ANTREAN',
+  CHANNEL_BOOKING: 'CHANNEL_BOOKING'
 } as const
 
 export type PrivacyNoticeProvenance = (typeof PrivacyNoticeProvenance)[keyof typeof PrivacyNoticeProvenance]
@@ -443,6 +444,14 @@ export const ChatActor = {
 export type ChatActor = (typeof ChatActor)[keyof typeof ChatActor]
 
 
+export const PatientRecordSource = {
+  FRONT_DESK: 'FRONT_DESK',
+  CHANNEL_BOOKING: 'CHANNEL_BOOKING'
+} as const
+
+export type PatientRecordSource = (typeof PatientRecordSource)[keyof typeof PatientRecordSource]
+
+
 export const DocumentOwnerType = {
   CLINIC: 'CLINIC',
   PATIENT: 'PATIENT',
@@ -517,3 +526,20 @@ export const ConversationMessageRole = {
 } as const
 
 export type ConversationMessageRole = (typeof ConversationMessageRole)[keyof typeof ConversationMessageRole]
+
+
+export const ChannelVerificationStatus = {
+  UNVERIFIED: 'UNVERIFIED',
+  CHANNEL_VERIFIED: 'CHANNEL_VERIFIED',
+  OTP_VERIFIED: 'OTP_VERIFIED'
+} as const
+
+export type ChannelVerificationStatus = (typeof ChannelVerificationStatus)[keyof typeof ChannelVerificationStatus]
+
+
+export const ChannelVerificationMethod = {
+  CONTACT_SHARE: 'CONTACT_SHARE',
+  OTP: 'OTP'
+} as const
+
+export type ChannelVerificationMethod = (typeof ChannelVerificationMethod)[keyof typeof ChannelVerificationMethod]

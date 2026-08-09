@@ -3,6 +3,7 @@ import type {
   BloodTypeValue,
   MaritalStatusValue,
   PatientAllergyInput,
+  PatientRecordSourceValue,
   PatientSexValue,
   PatientStatusValue,
   PrivacyNoticeEvidenceInput,
@@ -58,12 +59,26 @@ export type CreatePatientRecordPayload = {
    */
   mrn?: string;
   fullName: string;
-  dateOfBirth: Date;
+  /**
+   * Null only on the chat-created draft path (`PCS-T07`): §5.3 forbids asking
+   * for a date of birth over an unauthenticated channel, and a placeholder
+   * date in a 25-year clinical record is worse than an absence. Every
+   * human-facing create still supplies it — `createPatientSchema` keeps it
+   * required.
+   */
+  dateOfBirth: Date | null;
   placeOfBirth?: string;
-  sex: PatientSexValue;
+  /** Null on the draft path, for the same reason as {@link dateOfBirth}. */
+  sex: PatientSexValue | null;
   status: PatientStatusValue;
   phoneNumber: string;
-  address: string;
+  /** Null on the draft path, for the same reason as {@link dateOfBirth}. */
+  address: string | null;
+  /**
+   * Defaults to `FRONT_DESK` at the database, so only the channel path names
+   * it.
+   */
+  source?: PatientRecordSourceValue;
   nik?: string;
   bpjsNumber?: string;
   ownerUserId?: string;
@@ -99,12 +114,15 @@ export type PatientRecord = {
   id: string;
   mrn: string;
   fullName: string;
-  dateOfBirth: Date;
+  /** Absent on a chat-created draft until the counter completes it (§5.2). */
+  dateOfBirth: Date | null;
   placeOfBirth: string | null;
   sex: PatientSexValue | null;
   status: PatientStatusValue;
   phoneNumber: string;
-  address: string;
+  /** Absent on a chat-created draft until the counter completes it (§5.2). */
+  address: string | null;
+  source: PatientRecordSourceValue;
   nikLast4: string | null;
   bpjsNumberLast4: string | null;
   hasSatusehatPatientId: boolean;
@@ -123,6 +141,20 @@ export type PatientRecord = {
   lastVisitAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+};
+
+/**
+ * One registry record a chat customer's typed phone number resolved to
+ * (`PCS-T07`, strategy §5.1).
+ *
+ * **This projection never leaves the API.** §5.1.1 forbids the reply or the
+ * tool result revealing whether a number matched anything, so what a match
+ * produces is three fields for an internal decision — never a patient record.
+ */
+export type PatientPhoneMatch = {
+  id: string;
+  fullName: string;
+  source: PatientRecordSourceValue;
 };
 
 export type PrivacyNoticeVersionRecord = {

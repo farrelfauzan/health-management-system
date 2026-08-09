@@ -1,3 +1,5 @@
+import { optionalExample } from './api-endpoint.decorator';
+
 const patientId = '11111111-1111-4111-8111-111111111111';
 const doctorId = '22222222-2222-4222-8222-222222222222';
 const userId = '33333333-3333-4333-8333-333333333333';
@@ -17,13 +19,20 @@ const patient = {
   id: patientId,
   // Server-allocated: zero-padded to PATIENT_MRN_WIDTH, never client-supplied.
   mrn: '00000001',
+  // A counter-created record: `CHANNEL_BOOKING` marks the chat-made drafts the
+  // front desk still has to complete (`PCS-T07`).
+  source: 'FRONT_DESK',
   fullName: 'Aisha Rahman',
-  dateOfBirth: '1990-05-12',
+  // Optional in the response, not in the example: a chat-created draft
+  // (`source: CHANNEL_BOOKING`) carries a name and a phone number and nothing
+  // else, because §5.3 forbids collecting the rest over an unauthenticated
+  // channel. The front desk fills them in when the patient arrives.
+  dateOfBirth: optionalExample('1990-05-12'),
   placeOfBirth: 'Bandung',
   sex: 'FEMALE',
   status: 'OUT_PATIENT',
   phoneNumber: '+628123456789',
-  address: 'Jakarta',
+  address: optionalExample('Jakarta'),
   nikMasked: '••••••••0001',
   bpjsNumberMasked: '••••••••7890',
   hasSatusehatPatientId: false,

@@ -16,6 +16,14 @@
  * the no-answering-from-memory rule is enforced by the unsourced-claim guard.
  * The prompt exists so the model's *first* attempt is usually right, not
  * because the model is trusted to be.
+ *
+ * The tools are named here as well as declared on the wire, because a model
+ * reads a workflow better as prose than as three JSON schemas: what it needs
+ * to know is the *order* — look up sessions, then book — and a schema cannot
+ * say that. What it must not be told is what to do when a booking succeeds:
+ * the confirmation is written by `buildBookingConfirmationReply`, and the
+ * prompt says so, so a model that has already seen the result does not
+ * paraphrase it into a promise about queue numbers.
  */
 export function buildCsSystemPrompt(clinicName: string): string {
   return [
@@ -24,6 +32,13 @@ export function buildCsSystemPrompt(clinicName: string): string {
     'TUGAS ANDA HANYA DUA:',
     '1. Menjawab pertanyaan seputar layanan klinik (jam buka, syarat, biaya, prosedur) berdasarkan dokumen klinik yang tersedia.',
     '2. Membantu pelanggan membuat janji temu.',
+    '',
+    'CARA MEMAKAI ALAT:',
+    '- Pertanyaan fakta tentang klinik: panggil search_faq lebih dulu, lalu jawab hanya dari kutipan yang dikembalikan.',
+    '- Pelanggan ingin membuat janji temu: panggil list_available_sessions, tampilkan pilihannya sebagai daftar bernomor, lalu tanyakan nama lengkap dan nomor telepon.',
+    '- Setelah pelanggan memilih sesi dan memberikan nama serta nomor telepon: panggil book_appointment dengan sessionId persis seperti yang dikembalikan list_available_sessions.',
+    '- Jangan menyusun sendiri nilai sessionId. Jika Anda tidak memilikinya, panggil list_available_sessions lagi.',
+    '- Jika book_appointment berhasil, sistem yang mengirimkan konfirmasi resminya. Jangan menuliskan ulang kode booking atau nomor antrean.',
     '',
     'ATURAN YANG TIDAK BOLEH DILANGGAR:',
     '- Jangan pernah menjawab pertanyaan fakta tentang klinik dari ingatan Anda. Jika tidak ada informasi dari dokumen klinik, katakan Anda tidak memiliki informasi tersebut dan arahkan ke loket klinik.',

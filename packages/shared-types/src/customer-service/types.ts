@@ -1,5 +1,7 @@
 import {
   ChannelKindValue,
+  ChannelVerificationMethodValue,
+  ChannelVerificationStatusValue,
   ConversationMessageRoleValue,
   ConversationStateValue,
   CsSafetyTagValue,
@@ -41,6 +43,12 @@ export type InboundChannelMessage = {
   text: string;
   /** ISO 8601, from the channel's own timestamp rather than arrival time. */
   receivedAt: string;
+  /**
+   * The contact card the customer shared, when the update carried one
+   * (§5.1.1 tier 2). Absent on every ordinary text message, which is all this
+   * channel sees outside a verification step.
+   */
+  sharedContact?: SharedContact;
 };
 
 /**
@@ -51,6 +59,14 @@ export type OutboundChannelMessage = {
   channel: ChannelKindValue;
   externalChatId: string;
   text: string;
+  /**
+   * Ask the customer to share their own contact card alongside this message
+   * (§5.1.1 tier 2). A *presentation* hint, not content: Telegram renders it
+   * as a one-tap button, and a gateway with no equivalent affordance sends the
+   * text alone — which is why §7 keeps the conversation core text-first and
+   * lets the adapter decide how a request is shown.
+   */
+  requestContact?: boolean;
 };
 
 /**
@@ -129,10 +145,120 @@ export type CustomerServiceConfig = {
   /** Inbound messages allowed per chat per hour before the polite template. */
   readonly rateLimitPerChatHour: number;
   readonly clinicName: string;
+  /** The booking and verification half (`PCS-T07`). */
+  readonly booking: CustomerServiceBookingConfig;
 };
 
 /** What redaction did to one message body. */
 export type RedactCustomerMessageResult = {
   content: string;
   wasRedacted: boolean;
+};
+
+/**
+ * A Telegram contact card the customer tapped to share (§5.1.1 tier 2).
+ *
+ * Present only when the update carried one, and it is the one piece of
+ * inbound data on this channel that *is* evidence of identity: the Bot API
+ * only fills `contact.user_id` with the sharer's own account when they used
+ * the `request_contact` button, so a number arriving this way was verified by
+ * Telegram rather than typed by whoever holds the phone.
+ */
+export type SharedContact = {
+  /** Digits as Telegram supplied them; normalised before any comparison. */
+  phoneNumber: string;
+  /**
+   * True only when the card is the sender's own account. A customer can also
+   * forward *somebody else's* contact from their address book, and that proves
+   * nothing at all — it must never be treated as possession.
+   */
+  isSelfShared: boolean;
+};
+
+/**
+ * Configuration of the booking and verification half of the channel
+ * (strategy §5.1.1, §8.3, §8.5).
+ */
+export type CustomerServiceBookingConfig = {
+  /** §8.5 `CS_OTP_TTL_SECONDS`, default 300. */
+  readonly otpTtlSeconds: number;
+  /** §8.5 `CS_OTP_MAX_ATTEMPTS`, default 3. */
+  readonly otpMaxAttempts: number;
+  /** §8.3's "max 3 challenges per chat per day". */
+  readonly otpMaxChallengesPerDay: number;
+  /** §8.5 `CS_LINK_REVERIFY_DAYS`, default 180. */
+  readonly linkReverifyDays: number;
+  /** §8.3's per-number cap on active future bookings. */
+  readonly maxActiveBookingsPerPhone: number;
+  /** §8.3's clinic-wide daily cap on bookings for numbers matching no record. */
+  readonly maxDraftBookingsPerDay: number;
+};
+
+/**
+ * What one chat has claimed and how far it has proved it (§5.1).
+ */
+export type ChannelPatientLinkRecord = {
+  id: string;
+  channel: ChannelKindValue;
+  externalChatId: string;
+  phoneNumber: string;
+  fullName: string;
+  patientId: string | null;
+  verificationStatus: ChannelVerificationStatusValue;
+  verifiedAt: string | null;
+};
+
+/**
+ * The booking a possession challenge is holding open, so the customer does not
+ * have to retype their choice after verifying.
+ */
+export type PendingChannelBooking = {
+  patientFullName: string;
+  phoneNumber: string;
+  doctorId: string;
+  scheduleId: string;
+  /** ISO calendar date, clinic timezone. */
+  sessionDate: string;
+  note: string | null;
+};
+
+/** One live possession challenge as the service layer sees it. */
+export type ChannelOtpChallengeRecord = {
+  id: string;
+  conversationId: string;
+  method: ChannelVerificationMethodValue;
+  patientId: string;
+  attemptsUsed: number;
+  expiresAt: string;
+  pendingBooking: PendingChannelBooking;
+};
+
+/**
+ * How an inbound message was resolved while a conversation sits in
+ * `AWAITING_OTP` (§5.1.1).
+ *
+ * Every value here is produced by a string comparison and a clock, never by a
+ * model — which is what makes "prompt injection cannot talk its way past
+ * verification" true rather than hoped for.
+ */
+export type ChannelOtpVerificationOutcome =
+  | { outcome: 'VERIFIED' }
+  | { outcome: 'WRONG_CODE'; attemptsRemaining: number }
+  | { outcome: 'EXHAUSTED' }
+  | { outcome: 'EXPIRED' }
+  | { outcome: 'NO_CHALLENGE' };
+
+/**
+ * A session as the channel addresses it.
+ *
+ * Sessions are materialised lazily (revamp §3.2) — a window nobody has booked
+ * yet has no row and therefore no id — so the channel cannot address one by
+ * primary key. This triple is what a booking actually needs, and the opaque
+ * `sessionId` the tools pass around is exactly its encoding.
+ */
+export type ChannelSessionReference = {
+  doctorId: string;
+  scheduleId: string;
+  /** ISO calendar date in the clinic timezone. */
+  sessionDate: string;
 };

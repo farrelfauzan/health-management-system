@@ -49,6 +49,26 @@ export const telegramMessageSenderSchema = z.object({
 
 export type TelegramMessageSenderInput = z.infer<typeof telegramMessageSenderSchema>;
 
+/**
+ * The contact card produced by tapping a `request_contact` button (§5.1.1
+ * tier 2).
+ *
+ * `user_id` is the field that carries the meaning. Telegram fills it with the
+ * Telegram account the card belongs to, so a card whose `user_id` equals the
+ * sender's own id is a number Telegram itself verified for that account —
+ * evidence of possession. A card forwarded from the sender's address book
+ * arrives through the same field with somebody else's id, or none, and proves
+ * nothing.
+ */
+export const telegramContactSchema = z.object({
+  phone_number: z.string(),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+  user_id: z.number().int().optional(),
+});
+
+export type TelegramContactInput = z.infer<typeof telegramContactSchema>;
+
 export const telegramWebhookUpdateSchema = z.object({
   update_id: z.number().int(),
   message: z
@@ -64,6 +84,7 @@ export const telegramWebhookUpdateSchema = z.object({
       }),
       from: telegramMessageSenderSchema.optional(),
       text: z.string().optional(),
+      contact: telegramContactSchema.optional(),
     })
     .optional(),
 });
@@ -121,6 +142,280 @@ export const CS_SAFETY_TAGS = [
   'handoff_requested',
   'rate_limited',
   'provider_unavailable',
+  /**
+   * A tool-call turn (`PCS-T07`). Also the marker that keeps these rows out of
+   * the replay window: what a lookup returned is already reflected in the
+   * reply, and replaying its JSON on every later turn would spend the token
+   * budget re-reading answers the model has already given.
+   */
+  'tool_invocation',
 ] as const;
 
 export type CsSafetyTagValue = (typeof CS_SAFETY_TAGS)[number];
+
+/**
+ * The complete tool surface of the public channel (`PCS-T07`, strategy §4.2).
+ *
+ * **That this list has three entries is itself the security boundary.** There
+ * is no tool that reads a patient record, an appointment history, a bill, or
+ * an identifier — so no prompt injection can ask for one, and the question
+ * "what could a hostile message reach?" is answered by reading three names
+ * rather than by auditing a prompt.
+ */
+export const CS_TOOL_NAMES = ['search_faq', 'list_available_sessions', 'book_appointment'] as const;
+
+export const csToolNameSchema = z.enum(CS_TOOL_NAMES);
+
+export type CsToolNameValue = z.infer<typeof csToolNameSchema>;
+
+/** Longest FAQ question accepted, well under the inbound message cap. */
+export const CS_FAQ_QUERY_MAX_LENGTH = 300;
+
+export const searchFaqArgumentsSchema = z.object({
+  query: z
+    .string()
+    .trim()
+    .min(3)
+    .max(CS_FAQ_QUERY_MAX_LENGTH)
+    .describe('Pertanyaan pelanggan tentang layanan klinik, dalam bahasa aslinya.'),
+});
+
+export type SearchFaqArgumentsInput = z.infer<typeof searchFaqArgumentsSchema>;
+
+/**
+ * The `search_faq` allowlist: passage text and the title of the document it
+ * came from, and nothing else.
+ *
+ * The retrieval score is the omission worth naming. It is a number, and a
+ * model handed a number will present it to a customer as a confidence
+ * percentage — an invented one, since a reciprocal-rank score is not a
+ * probability of anything.
+ */
+export const searchFaqResultSchema = z.object({
+  passages: z.array(
+    z.object({
+      documentTitle: z.string(),
+      content: z.string(),
+    }),
+  ),
+});
+
+export type SearchFaqResult = z.infer<typeof searchFaqResultSchema>;
+
+/**
+ * How far ahead the channel will look (§4.2). Fourteen days rather than the
+ * 92 the staff calendar allows: a chat customer asking "kapan dokter praktik?"
+ * wants this week, and a three-month answer is both unreadable on a phone and
+ * a much larger extract of the clinic's roster to hand an anonymous caller.
+ */
+export const CS_SESSION_RANGE_MAX_DAYS = 14;
+
+const isoDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Tanggal harus dalam format YYYY-MM-DD');
+
+export const listAvailableSessionsArgumentsSchema = z
+  .object({
+    poliOrDoctorName: z
+      .string()
+      .trim()
+      .min(2)
+      .max(120)
+      .optional()
+      .describe('Nama dokter atau poli yang diminta pelanggan. Kosongkan jika tidak disebut.'),
+    dateFrom: isoDateSchema.describe('Tanggal awal pencarian (YYYY-MM-DD).'),
+    dateTo: isoDateSchema.describe('Tanggal akhir pencarian (YYYY-MM-DD), maksimal 14 hari.'),
+  })
+  .refine((value) => value.dateFrom <= value.dateTo, {
+    message: 'dateFrom must be on or before dateTo',
+    path: ['dateTo'],
+  })
+  .refine((value) => countInclusiveDays(value.dateFrom, value.dateTo) <= CS_SESSION_RANGE_MAX_DAYS, {
+    message: `Range must not exceed ${CS_SESSION_RANGE_MAX_DAYS} days`,
+    path: ['dateTo'],
+  });
+
+export type ListAvailableSessionsArgumentsInput = z.infer<
+  typeof listAvailableSessionsArgumentsSchema
+>;
+
+/**
+ * Inclusive day count between two ISO dates. Written against UTC midnights
+ * rather than local time so a clinic whose timezone crosses a DST boundary
+ * cannot make a 14-day range parse as 15.
+ */
+function countInclusiveDays(fromDate: string, toDate: string): number {
+  const MILLISECONDS_PER_DAY = 86_400_000;
+  const from = Date.parse(`${fromDate}T00:00:00.000Z`);
+  const to = Date.parse(`${toDate}T00:00:00.000Z`);
+  if (Number.isNaN(from) || Number.isNaN(to)) {
+    return Number.POSITIVE_INFINITY;
+  }
+  return Math.round((to - from) / MILLISECONDS_PER_DAY) + 1;
+}
+
+/**
+ * The `list_available_sessions` allowlist (§4.2): who practises, when the
+ * window is, and whether there is room. **No attendee data** — not a count of
+ * who booked by name, not a queue position, not a patient id. The clinic's
+ * capacity is operational information; who is in the room is not.
+ *
+ * `sessionId` is opaque on purpose. It is the token `book_appointment` accepts
+ * back, and making it meaningless to the model is what stops a booking from
+ * being assembled out of guessed identifiers.
+ */
+export const listAvailableSessionsResultSchema = z.object({
+  sessions: z.array(
+    z.object({
+      sessionId: z.string(),
+      doctorName: z.string(),
+      specialty: z.string(),
+      sessionDate: z.string(),
+      startTime: z.string(),
+      endTime: z.string(),
+      /** Null means the session has no attendance cap, not "unknown". */
+      remaining: z.number().int().nullable(),
+      isFull: z.boolean(),
+    }),
+  ),
+});
+
+export type ListAvailableSessionsResult = z.infer<typeof listAvailableSessionsResultSchema>;
+
+/** Schema cap from §4.2 — a note, not a medical history. */
+export const CS_BOOKING_NOTE_MAX_LENGTH = 200;
+
+/**
+ * `book_appointment` (D-CS-03).
+ *
+ * **Read this schema for what it does not have.** There is no `nik`, no
+ * `bpjsNumber`, no `dateOfBirth`, no `address`, and no field a complaint could
+ * be typed into beyond a 200-character note. The system prompt also says not
+ * to ask for those — but a prompt is a request and this is a wall: even a
+ * model that decided to collect a NIK would have nowhere to put it, and the
+ * redaction layer would already have removed it from the turn.
+ */
+export const bookAppointmentArgumentsSchema = z.object({
+  patientFullName: z
+    .string()
+    .trim()
+    .min(2)
+    .max(120)
+    .describe('Nama lengkap pasien seperti yang pelanggan tuliskan.'),
+  phoneNumber: z
+    .string()
+    .trim()
+    .min(6)
+    .max(32)
+    .describe('Nomor telepon yang bisa dihubungi, seperti yang pelanggan tuliskan.'),
+  sessionId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(80)
+    .describe('Nilai sessionId persis seperti yang dikembalikan list_available_sessions.'),
+  note: z
+    .string()
+    .trim()
+    .max(CS_BOOKING_NOTE_MAX_LENGTH)
+    .optional()
+    .describe('Catatan singkat opsional. Jangan pernah isi dengan data medis atau nomor identitas.'),
+});
+
+export type BookAppointmentArgumentsInput = z.infer<typeof bookAppointmentArgumentsSchema>;
+
+/**
+ * Why a booking could not be made, as a closed set.
+ *
+ * Closed because the model composes the customer-facing sentence from it, and
+ * a free-text reason is a channel through which a backing service's error
+ * message — table names, ids, another patient's data in a constraint
+ * violation — reaches a stranger on WhatsApp.
+ */
+export const CS_BOOKING_REJECTION_REASONS = [
+  'SESSION_NOT_FOUND',
+  'SESSION_FULL',
+  'SESSION_CLOSED',
+  'BOOKING_CUTOFF_PASSED',
+  'ALREADY_BOOKED',
+  'TOO_MANY_ACTIVE_BOOKINGS',
+  'DAILY_BOOKING_LIMIT_REACHED',
+  'TEMPORARILY_UNAVAILABLE',
+] as const;
+
+export const csBookingRejectionReasonSchema = z.enum(CS_BOOKING_REJECTION_REASONS);
+
+export type CsBookingRejectionReasonValue = z.infer<typeof csBookingRejectionReasonSchema>;
+
+/**
+ * The `book_appointment` allowlist (§4.2).
+ *
+ * Three shapes, and the boundaries between them matter more than the fields:
+ *
+ * - `CONFIRMED` carries the reference code, the doctor, and the window —
+ *   **never a queue position**, because the session model assigns those at
+ *   check-in and a promised number is a promise the clinic cannot keep. It is
+ *   also byte-identical in shape whether the booking attached to a real
+ *   patient record or created a draft, which is §5.1.1's no-registry-oracle
+ *   rule made structural: there is no field in which "we found you" could be
+ *   said.
+ * - `VERIFICATION_REQUIRED` says a possession challenge is now outstanding and
+ *   carries nothing about whose record prompted it.
+ * - `REJECTED` carries a reason from the closed set above.
+ */
+export const bookAppointmentResultSchema = z.discriminatedUnion('outcome', [
+  z.object({
+    outcome: z.literal('CONFIRMED'),
+    referenceCode: z.string(),
+    doctorName: z.string(),
+    specialty: z.string(),
+    sessionDate: z.string(),
+    startTime: z.string(),
+    endTime: z.string(),
+    arrivalInstruction: z.string(),
+  }),
+  z.object({
+    outcome: z.literal('VERIFICATION_REQUIRED'),
+  }),
+  z.object({
+    outcome: z.literal('REJECTED'),
+    reason: csBookingRejectionReasonSchema,
+  }),
+]);
+
+export type BookAppointmentResult = z.infer<typeof bookAppointmentResultSchema>;
+
+/**
+ * How firmly a chat is tied to the patient record it claims (§5.1.1,
+ * D-CS-08). Mirrors the Prisma `ChannelVerificationStatus` enum.
+ */
+export const CHANNEL_VERIFICATION_STATUSES = [
+  'UNVERIFIED',
+  'CHANNEL_VERIFIED',
+  'OTP_VERIFIED',
+] as const;
+
+export const channelVerificationStatusSchema = z.enum(CHANNEL_VERIFICATION_STATUSES);
+
+export type ChannelVerificationStatusValue = z.infer<typeof channelVerificationStatusSchema>;
+
+/**
+ * The statuses that permit a booking to attach to an existing patient record.
+ * Derived from the list rather than written as `!== 'UNVERIFIED'` so a status
+ * added later has to be classified deliberately instead of defaulting into the
+ * half that grants linkage.
+ */
+/**
+ * Which of §5.1.1's proofs a challenge is waiting for. Mirrors the Prisma
+ * `ChannelVerificationMethod` enum.
+ */
+export const CHANNEL_VERIFICATION_METHODS = ['CONTACT_SHARE', 'OTP'] as const;
+
+export const channelVerificationMethodSchema = z.enum(CHANNEL_VERIFICATION_METHODS);
+
+export type ChannelVerificationMethodValue = z.infer<typeof channelVerificationMethodSchema>;
+
+export const LINKABLE_VERIFICATION_STATUSES = [
+  'CHANNEL_VERIFIED',
+  'OTP_VERIFIED',
+] as const satisfies readonly ChannelVerificationStatusValue[];

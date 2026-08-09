@@ -85,10 +85,18 @@ export class ConversationRepository {
    * Selected newest-first and reversed rather than ordered ascending with an
    * offset: the window is the *last* N turns, and an ascending query would
    * have to count the whole conversation to find where they start.
+   *
+   * **Tool-invocation turns are excluded** (`PCS-T07`). They are persisted for
+   * audit — §3's message lifecycle wants the whole turn on record — but they
+   * are not conversation: what a lookup returned is already reflected in the
+   * reply that followed it, and replaying the JSON would spend a growing share
+   * of every later prompt re-reading answers the model has already given. The
+   * filter is on the safety tag rather than on the role, because `SYSTEM` also
+   * carries the emergency and privacy templates, which the model *should* see.
    */
   async listRecentTurns(conversationId: string, limit: number): Promise<ConversationTurn[]> {
     const rows = await this.prismaService.conversationMessage.findMany({
-      where: { conversationId },
+      where: { conversationId, NOT: { safetyTags: { has: 'tool_invocation' } } },
       orderBy: { createdAt: 'desc' },
       take: limit,
       select: { role: true, content: true },

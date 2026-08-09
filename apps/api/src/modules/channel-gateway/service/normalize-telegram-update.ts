@@ -1,6 +1,8 @@
 import {
   INBOUND_MESSAGE_MAX_LENGTH,
   InboundChannelMessage,
+  SharedContact,
+  TelegramContactInput,
   TelegramMessageSenderInput,
   TelegramWebhookUpdateInput,
 } from '@hms/shared-types';
@@ -33,7 +35,9 @@ const PRIVATE_CHAT_TYPE = 'private';
  *   indefinitely, and the customer-facing cost of that is a rate limit and a
  *   banned number.
  * - **Empty or whitespace-only text.** There is nothing to classify, and an
- *   empty string would still occupy a dedup row and a transcript turn.
+ *   empty string would still occupy a dedup row and a transcript turn. The one
+ *   exception is a shared contact card, which is an *action* rather than an
+ *   utterance and carries no text by design (§5.1.1 tier 2).
  * - **Text past {@link INBOUND_MESSAGE_MAX_LENGTH}.** Telegram cannot itself
  *   produce one, so anything longer did not come from the client it claims to.
  */
@@ -48,7 +52,11 @@ export function normalizeTelegramUpdate(
     return null;
   }
   const text = message.text?.trim() ?? '';
-  if (text === '' || text.length > INBOUND_MESSAGE_MAX_LENGTH) {
+  const sharedContact = buildSharedContact(message.contact, message.from);
+  if (text.length > INBOUND_MESSAGE_MAX_LENGTH) {
+    return null;
+  }
+  if (text === '' && sharedContact === undefined) {
     return null;
   }
   return {
@@ -63,6 +71,36 @@ export function normalizeTelegramUpdate(
     // is used rather than arrival time so a gateway that buffered during an
     // outage does not reorder a conversation on delivery.
     receivedAt: new Date(message.date * 1000).toISOString(),
+    ...(sharedContact === undefined ? {} : { sharedContact }),
+  };
+}
+
+/**
+ * Reduces a Telegram contact card to the two facts verification needs: the
+ * number, and whether it is the sender's own.
+ *
+ * **`isSelfShared` is the whole point.** A customer can share any contact from
+ * their address book, and the wire shape is identical — same field, same
+ * `phone_number`. Only a card whose `user_id` is the sender's own account is
+ * evidence that this person holds that number, because that is the card
+ * Telegram fills in itself when the `request_contact` button is tapped. Every
+ * other card is data the sender chose, which is exactly what a phone number
+ * typed into the chat already was.
+ */
+function buildSharedContact(
+  contact: TelegramContactInput | undefined,
+  from: TelegramMessageSenderInput | undefined,
+): SharedContact | undefined {
+  if (contact === undefined) {
+    return undefined;
+  }
+  const phoneNumber = contact.phone_number.trim();
+  if (phoneNumber === '') {
+    return undefined;
+  }
+  return {
+    phoneNumber,
+    isSelfShared: from !== undefined && contact.user_id === from.id,
   };
 }
 

@@ -145,6 +145,22 @@ export const PATIENT_STATUSES = ['IN_PATIENT', 'OUT_PATIENT', 'DISCHARGED'] as c
 
 export const patientStatusSchema = z.enum(PATIENT_STATUSES);
 
+/**
+ * How a patient record came into existence (`PCS-T07`). Mirrors the Prisma
+ * `PatientRecordSource` enum.
+ *
+ * `CHANNEL_BOOKING` marks the draft a WhatsApp/Telegram customer created by
+ * booking in chat: a name and a phone number, and nothing else, because §5.3
+ * forbids collecting anything else over an unauthenticated channel. Read it as
+ * "a human has not completed this record yet" — that is the arrival worklist's
+ * whole query (§5.2).
+ */
+export const PATIENT_RECORD_SOURCES = ['FRONT_DESK', 'CHANNEL_BOOKING'] as const;
+
+export const patientRecordSourceSchema = z.enum(PATIENT_RECORD_SOURCES);
+
+export type PatientRecordSourceValue = z.infer<typeof patientRecordSourceSchema>;
+
 export type PatientStatusValue = z.infer<typeof patientStatusSchema>;
 
 export const PATIENT_SEXES = ['MALE', 'FEMALE'] as const;
@@ -228,6 +244,33 @@ export const PRIVACY_NOTICE_OUTCOMES = [
 export const privacyNoticeOutcomeSchema = z.enum(PRIVACY_NOTICE_OUTCOMES);
 export type PrivacyNoticeOutcomeValue = z.infer<typeof privacyNoticeOutcomeSchema>;
 
+/**
+ * Where a privacy-notice record came from.
+ *
+ * The last two are the machine-to-machine deferrals, and they stay separate
+ * values rather than one `REMOTE`: a BPJS member and a chat customer are owed
+ * the notice by different routes and are chased down by different worklists,
+ * and an auditor asking "which unnotified records came from the public chat
+ * channel" must not have to guess.
+ */
+export const PRIVACY_NOTICE_PROVENANCES = [
+  'FRONT_DESK',
+  'PATIENT_PORTAL',
+  'LEGACY_IMPORT',
+  'EMERGENCY',
+  'BPJS_ANTREAN',
+  'CHANNEL_BOOKING',
+] as const;
+
+/**
+ * The provenances that mean "nobody was present to receive the notice", which
+ * is the only condition under which `DEFERRED_REMOTE_REGISTRATION` is honest.
+ */
+export const REMOTE_REGISTRATION_PROVENANCES = [
+  'BPJS_ANTREAN',
+  'CHANNEL_BOOKING',
+] as const satisfies readonly (typeof PRIVACY_NOTICE_PROVENANCES)[number][];
+
 export const privacyNoticeEvidenceSchema = z
   .object({
     privacyNoticeVersionId: z.string().uuid(),
@@ -236,13 +279,7 @@ export const privacyNoticeEvidenceSchema = z
     subjectType: z.enum(['SELF', 'REPRESENTATIVE']),
     representativeName: z.string().trim().min(2).max(120).optional(),
     representativeRelation: z.string().trim().min(2).max(60).optional(),
-    provenance: z.enum([
-      'FRONT_DESK',
-      'PATIENT_PORTAL',
-      'LEGACY_IMPORT',
-      'EMERGENCY',
-      'BPJS_ANTREAN',
-    ]),
+    provenance: z.enum(PRIVACY_NOTICE_PROVENANCES),
   })
   .superRefine((value, context) => {
     const hasRepresentative =
@@ -275,28 +312,26 @@ export const privacyNoticeEvidenceSchema = z
         path: ['provenance'],
       });
     }
-    // The remote-registration pair is bound in both directions. A BPJS-created
-    // record must not claim any outcome that implies a person received the
-    // notice, and no human-facing surface may borrow the deferral that exists
-    // because nobody was there — either half alone would turn an append-only
-    // legal record into a place where consent evidence can be invented.
-    if (
-      value.outcome === 'DEFERRED_REMOTE_REGISTRATION' &&
-      value.provenance !== 'BPJS_ANTREAN'
-    ) {
+    // The remote-registration pair is bound in both directions. A
+    // machine-created record must not claim any outcome that implies a person
+    // received the notice, and no human-facing surface may borrow the deferral
+    // that exists because nobody was there — either half alone would turn an
+    // append-only legal record into a place where consent evidence can be
+    // invented.
+    const isRemoteProvenance = REMOTE_REGISTRATION_PROVENANCES.some(
+      (provenance) => provenance === value.provenance,
+    );
+    if (value.outcome === 'DEFERRED_REMOTE_REGISTRATION' && !isRemoteProvenance) {
       context.addIssue({
         code: 'custom',
-        message: 'Remote-registration deferral must use BPJS_ANTREAN provenance',
+        message: `Remote-registration deferral must use one of: ${REMOTE_REGISTRATION_PROVENANCES.join(', ')}`,
         path: ['provenance'],
       });
     }
-    if (
-      value.provenance === 'BPJS_ANTREAN' &&
-      value.outcome !== 'DEFERRED_REMOTE_REGISTRATION'
-    ) {
+    if (isRemoteProvenance && value.outcome !== 'DEFERRED_REMOTE_REGISTRATION') {
       context.addIssue({
         code: 'custom',
-        message: 'A BPJS Antrean registration can only defer the privacy notice',
+        message: 'A remote registration can only defer the privacy notice',
         path: ['outcome'],
       });
     }
@@ -373,6 +408,28 @@ export const createPatientSchema = z.object({
     .optional(),
   privacyNotice: privacyNoticeEvidenceSchema,
 });
+
+/**
+ * The chat-created draft (`PCS-T07`, strategy §5.1).
+ *
+ * **What is absent is the design.** There is no `nik`, no `bpjsNumber`, no
+ * `dateOfBirth`, no `address` and no `sex` — not because the prompt tells the
+ * model not to ask, but because there is nowhere to put an answer if it did
+ * (D-CS-03). §5.2 has the front desk complete the record when the person
+ * arrives, and until then a null is the truthful representation of "we have
+ * not asked".
+ *
+ * `privacyNotice` is absent for a different reason: it is not the caller's to
+ * choose. Nobody was present to receive the notice, so the only honest
+ * evidence is the remote-registration deferral, and the service supplies it
+ * rather than accepting one.
+ */
+export const createChannelDraftPatientSchema = z.object({
+  fullName: z.string().trim().min(2).max(120),
+  phoneNumber: z.string().trim().min(6).max(32),
+});
+
+export type CreateChannelDraftPatientInput = z.infer<typeof createChannelDraftPatientSchema>;
 
 /**
  * Legacy import. Identical to a create except that the MRN comes from the

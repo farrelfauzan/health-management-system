@@ -3,6 +3,7 @@ import type {
   AppointmentStatusValue,
   AppointmentTypeValue,
 } from '#appointment-management/schemas';
+import type { ChannelKindValue } from '#customer-service/schemas';
 
 export type ListAppointmentsParams = {
   page: number;
@@ -44,6 +45,36 @@ export type BookSessionSlotPayload = {
    * row back to BPJS as though it were a walk-in.
    */
   bpjsBookingCode?: string;
+  /**
+   * Which messaging channel booked this, absent for every booking a human made
+   * (`PCS-T07`, strategy §5.1). Analytics and the arrival worklist both read
+   * it, and neither can derive it from the patient: a *verified* customer's
+   * booking attaches to a long-standing front-desk record.
+   */
+  bookingSource?: ChannelKindValue;
+  /** The short code quoted back to the customer in the confirmation reply. */
+  bookingReferenceCode?: string;
+};
+
+/**
+ * A session booking made from the WhatsApp/Telegram channel (`PCS-T07`).
+ *
+ * Deliberately shaped like {@link BookBpjsAntreanSessionInput} rather than
+ * like the tool's arguments: by the time this is built, the phone number has
+ * been resolved to a patient — draft or real — and the opaque session token
+ * has been decoded. What crosses this boundary is a booking, not a chat
+ * message.
+ */
+export type BookChannelSessionInput = {
+  patientId: string;
+  doctorId: string;
+  scheduleId: string;
+  /** ISO calendar date in the clinic timezone. */
+  sessionDate: string;
+  channel: ChannelKindValue;
+  bookingReferenceCode: string;
+  /** The customer's own note, schema-capped at 200 characters upstream. */
+  note?: string;
 };
 
 export type BookSessionSlotResult =
