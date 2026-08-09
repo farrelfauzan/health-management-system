@@ -6,6 +6,7 @@ import {
   ChannelOtpChallengeRecord,
   ChannelVerificationMethodValue,
   CustomerServiceConfig,
+  extractPhoneNumberFromJid,
   PendingChannelBooking,
   SharedContact,
 } from '@hms/shared-types';
@@ -157,6 +158,45 @@ export class ChannelVerificationService {
    * their own, real, but *different* number: that proves they hold a phone,
    * not that they hold the one on the clinic's record.
    */
+  /**
+   * §5.1.1 **tier 1**: the channel identity already proves possession
+   * (`PCS-T09`).
+   *
+   * On WhatsApp a sender's JID *is* a phone number, and WhatsApp verified that
+   * this device owns it before the message could be sent. So when the number a
+   * customer typed is the number they are messaging from, there is nothing
+   * left to prove — issuing a code would send it to the very chat that asked,
+   * which proves only that a chat can read its own messages.
+   *
+   * The comparison is against the **chat JID**, and that is safe for exactly
+   * one reason: the normalizer refuses any chat id that is not a one-to-one
+   * `@s.whatsapp.net` address, so the chat and the sender are the same person
+   * by the time a booking can happen. On a group — which never reaches here —
+   * the chat id is a room and would prove nothing about who typed.
+   *
+   * Numbers are normalised on both sides before comparing, because `0812…`
+   * and `+62812…` are the same number written two ways and a customer typing
+   * their own number in the other format must not be challenged for it.
+   *
+   * A false is not a failure: it means the ordinary challenge path runs.
+   */
+  isChannelPossessionProven(params: {
+    channel: ChannelKindValue;
+    externalChatId: string;
+    claimedPhoneNumber: string;
+  }): boolean {
+    if (params.channel !== 'WHATSAPP') {
+      // A Telegram chat id is not a phone number, so no comparison against it
+      // means anything — that channel uses the contact-share tier instead.
+      return false;
+    }
+    const senderNumber = normalizePhoneNumber(extractPhoneNumberFromJid(params.externalChatId));
+    if (senderNumber === '') {
+      return false;
+    }
+    return senderNumber === normalizePhoneNumber(params.claimedPhoneNumber);
+  }
+
   isContactSatisfying(
     challenge: ChannelOtpChallengeRecord,
     sharedContact: SharedContact,

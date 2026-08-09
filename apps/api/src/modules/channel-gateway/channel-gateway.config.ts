@@ -1,9 +1,33 @@
 import { ConfigService } from '@nestjs/config';
 
-import { ChannelGatewayConfig } from '@hms/shared-types';
+import { ChannelGatewayConfig, WA_GATEWAY_KINDS, WaGatewayKindValue } from '@hms/shared-types';
 
 function readTrimmed(configService: ConfigService, key: string): string {
   return configService.get<string>(key)?.trim() ?? '';
+}
+
+function readPositiveInteger(configService: ConfigService, key: string, fallback: number): number {
+  const parsed = Number(readTrimmed(configService, key));
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
+/**
+ * §2.1's human-like send pacing, in milliseconds.
+ *
+ * One second between consecutive outbound messages. Not tuned to a measured
+ * limit, because WhatsApp publishes none for the unofficial protocol — it is
+ * chosen to be visibly unlike a machine, which is the property that matters
+ * for a ban heuristic. Configurable so a clinic warming a brand-new number can
+ * slow it further without a code change.
+ */
+const DEFAULT_SEND_PACING_MS = 1_000;
+
+function readGatewayKind(configService: ConfigService): WaGatewayKindValue {
+  const configured = readTrimmed(configService, 'WA_GATEWAY_KIND').toUpperCase();
+  // Falls back rather than throwing, for the same reason nothing else here
+  // throws: a typo in an optional feature's variable must not stop the API
+  // from booting. GOWA is the documented default (D-CS-01).
+  return WA_GATEWAY_KINDS.find((kind) => kind === configured) ?? 'GOWA';
 }
 
 /**
@@ -19,10 +43,10 @@ function readTrimmed(configService: ConfigService, key: string): string {
  * `resolveStorageConfig` and deliberate. Those configurations are required for
  * the app to function at all, so failing at boot is the right, loud outcome.
  * This one is optional by design — most deployments will never run the
- * WhatsApp/Telegram channel — and an empty `TELEGRAM_WEBHOOK_SECRET` is
- * handled where it matters instead: the guard refuses **every** request when
- * the secret is empty, so an unconfigured channel is closed rather than open.
- * A boot-time throw would make an unused feature able to take down the API.
+ * WhatsApp/Telegram channel — and an empty secret is handled where it matters
+ * instead: both webhook guards refuse **every** request when their secret is
+ * empty, so an unconfigured channel is closed rather than open. A boot-time
+ * throw would make an unused feature able to take down the API.
  */
 export function resolveChannelGatewayConfig(configService: ConfigService): ChannelGatewayConfig {
   return {
@@ -30,6 +54,19 @@ export function resolveChannelGatewayConfig(configService: ConfigService): Chann
     telegram: {
       botToken: readTrimmed(configService, 'TELEGRAM_BOT_TOKEN'),
       webhookSecret: readTrimmed(configService, 'TELEGRAM_WEBHOOK_SECRET'),
+    },
+    whatsapp: {
+      kind: readGatewayKind(configService),
+      baseUrl: readTrimmed(configService, 'WA_GATEWAY_BASE_URL').replace(/\/+$/, ''),
+      basicAuthUsername: readTrimmed(configService, 'WA_GATEWAY_BASIC_AUTH_USERNAME'),
+      basicAuthPassword: readTrimmed(configService, 'WA_GATEWAY_BASIC_AUTH_PASSWORD'),
+      webhookSecret: readTrimmed(configService, 'WA_GATEWAY_WEBHOOK_SECRET'),
+      deviceId: readTrimmed(configService, 'WA_GATEWAY_DEVICE_ID'),
+      sendPacingMs: readPositiveInteger(
+        configService,
+        'WA_GATEWAY_SEND_PACING_MS',
+        DEFAULT_SEND_PACING_MS,
+      ),
     },
   };
 }

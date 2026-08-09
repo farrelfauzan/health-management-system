@@ -7,6 +7,64 @@ import { ChannelVerificationService } from './channel-verification.service';
 import { OtpDeliveryService } from './otp-delivery.service';
 
 describe('ChannelVerificationService', () => {
+
+  describe('channel possession (§5.1.1 tier 1)', () => {
+    it.each([
+      ['the same digits', '628123456789@s.whatsapp.net', '628123456789'],
+      ['a national-format claim', '628123456789@s.whatsapp.net', '081234 56789'],
+      ['a linked-device JID', '628123456789:12@s.whatsapp.net', '+62 812-3456-789'],
+    ])('accepts %s', (_label, externalChatId, claimedPhoneNumber) => {
+      const service = buildService();
+
+      // `0812…` and `+62812…` are the same number written two ways, and a
+      // customer typing their own number in the other format must not be
+      // challenged for it.
+      expect(
+        service.isChannelPossessionProven({
+          channel: 'WHATSAPP',
+          externalChatId,
+          claimedPhoneNumber,
+        }),
+      ).toBe(true);
+    });
+
+    it('refuses when the claimed number is not the sender', () => {
+      const service = buildService();
+
+      expect(
+        service.isChannelPossessionProven({
+          channel: 'WHATSAPP',
+          externalChatId: '628123456789@s.whatsapp.net',
+          claimedPhoneNumber: '628999888777',
+        }),
+      ).toBe(false);
+    });
+
+    it('refuses on Telegram, where a chat id is not a phone number', () => {
+      const service = buildService();
+
+      expect(
+        service.isChannelPossessionProven({
+          channel: 'TELEGRAM',
+          externalChatId: '628123456789',
+          claimedPhoneNumber: '628123456789',
+        }),
+      ).toBe(false);
+    });
+
+    it('refuses an empty sender', () => {
+      const service = buildService();
+
+      expect(
+        service.isChannelPossessionProven({
+          channel: 'WHATSAPP',
+          externalChatId: '@s.whatsapp.net',
+          claimedPhoneNumber: '628123456789',
+        }),
+      ).toBe(false);
+    });
+  });
+
   const inputNow = new Date('2026-08-08T09:00:00.000Z');
 
   let mockChallengeRepository: jest.Mocked<

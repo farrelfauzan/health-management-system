@@ -57,6 +57,51 @@ services:
         mc alias set local http://minio:9000 "${S3_ACCESS_KEY_ID:-hmsdevaccess}" "${S3_SECRET_ACCESS_KEY:-hmsdevsecret}" &&
         mc mb --ignore-existing local/"${S3_BUCKET:-hms-dev-objects}"
 
+  # The self-hosted WhatsApp bridge (PCS-T09, D-CS-01). Behind the `whatsapp`
+  # profile because it is opt-in: it drives a real WhatsApp Web session, and a
+  # container that boots by default would have every developer's `docker
+  # compose up` waiting on a QR scan for a number they do not have.
+  #
+  # Three things about this service are load-bearing rather than incidental:
+  #
+  #   * **No `ports:` mapping.** The REST port is reachable only from this
+  #     compose network, which the API is also on. GOWA's API can send as the
+  #     clinic and read its session — publishing it to the host, and from there
+  #     to whatever the host is exposed on, is the single worst mistake
+  #     available here. Reach it in development with `docker compose exec` or a
+  #     temporary `docker run --network` sidecar, never by adding a port.
+  #   * **The session volume is persisted.** GOWA stores the paired-device
+  #     credentials under /app/storages; losing it means re-scanning a QR code
+  #     against a production WhatsApp number, which §8.4 names as the top
+  #     operational failure mode.
+  #   * **Basic auth is on.** Defaulted here for local convenience only — the
+  #     runbook requires a generated credential in any deployment that is not
+  #     one developer's laptop.
+  gowa:
+    image: aldinokemal2104/go-whatsapp-web-multidevice:latest
+    container_name: hms-gowa
+    profiles: ['whatsapp']
+    restart: unless-stopped
+    environment:
+      APP_PORT: 3000
+      APP_BASIC_AUTH: '${WA_GATEWAY_BASIC_AUTH_USERNAME:-hmsdev}:${WA_GATEWAY_BASIC_AUTH_PASSWORD:-hmsdevsecret}'
+      APP_OS: Chrome
+      # `api` resolves on this network; the webhook never leaves it.
+      WHATSAPP_WEBHOOK: http://api:3001/api/v1/channels/whatsapp/webhook
+      WHATSAPP_WEBHOOK_SECRET: ${WA_GATEWAY_WEBHOOK_SECRET:-hms-dev-webhook-secret}
+      # Refuses to send to a number that is not on WhatsApp instead of
+      # silently succeeding — on a channel whose replies are booking
+      # confirmations, a send that reports success and never arrives is worse
+      # than one that fails.
+      WHATSAPP_ACCOUNT_VALIDATION: 'true'
+    volumes:
+      - hms-gowa-session:/app/storages
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/app/devices || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: ../..
@@ -77,6 +122,16 @@ services:
       # `host.docker.internal` trap already documented for chat.
       OLLAMA_EMBEDDING_BASE_URL: ${OLLAMA_EMBEDDING_BASE_URL:-http://host.docker.internal:11434}
       DOCUMENT_INGESTION_ENABLED: ${DOCUMENT_INGESTION_ENABLED:-false}
+      # The WhatsApp bridge, addressed by service name on the private network.
+      # Set even when the `whatsapp` profile is not up: the adapter refuses to
+      # send rather than failing at boot, so a configured-but-absent gateway is
+      # a ServiceUnavailable on one reply, not a dead API.
+      WA_GATEWAY_KIND: ${WA_GATEWAY_KIND:-GOWA}
+      WA_GATEWAY_BASE_URL: ${WA_GATEWAY_BASE_URL:-http://gowa:3000}
+      WA_GATEWAY_BASIC_AUTH_USERNAME: ${WA_GATEWAY_BASIC_AUTH_USERNAME:-hmsdev}
+      WA_GATEWAY_BASIC_AUTH_PASSWORD: ${WA_GATEWAY_BASIC_AUTH_PASSWORD:-hmsdevsecret}
+      WA_GATEWAY_WEBHOOK_SECRET: ${WA_GATEWAY_WEBHOOK_SECRET:-hms-dev-webhook-secret}
+      WA_GATEWAY_DEVICE_ID: ${WA_GATEWAY_DEVICE_ID:-}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
@@ -128,3 +183,6 @@ services:
 volumes:
   hms-postgres-data:
   hms-minio-data:
+  # Paired-device credentials. Losing this volume means re-scanning a QR code
+  # against a live WhatsApp number (§8.4).
+  hms-gowa-session:

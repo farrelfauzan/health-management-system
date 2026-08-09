@@ -37,7 +37,10 @@ describe('ChannelBookingService', () => {
   let mockVerificationService: jest.Mocked<
     Pick<
       ChannelVerificationService,
-      'resolveAvailableMethod' | 'issueChallenge' | 'isVerificationFresh'
+      | 'resolveAvailableMethod'
+      | 'issueChallenge'
+      | 'isVerificationFresh'
+      | 'isChannelPossessionProven'
     >
   >;
   let bookingService: ChannelBookingService;
@@ -117,6 +120,7 @@ describe('ChannelBookingService', () => {
       resolveAvailableMethod: jest.fn().mockResolvedValue('CONTACT_SHARE'),
       issueChallenge: jest.fn().mockResolvedValue({ id: 'challenge-1' }),
       isVerificationFresh: jest.fn().mockReturnValue(false),
+      isChannelPossessionProven: jest.fn().mockReturnValue(false),
     };
     bookingService = buildService();
   });
@@ -160,6 +164,48 @@ describe('ChannelBookingService', () => {
     expect(outcome.deterministicReply).toBe(CS_REPLY_TEMPLATES.contactShareChallenge);
     expect(outcome.pausesConversation).toBe(true);
     expect(mockAppointmentService.bookSessionForChannel).not.toHaveBeenCalled();
+  });
+
+  it('links without a challenge when the WhatsApp sender owns the number (§5.1.1 tier 1)', async () => {
+    mockPatientService.findChannelPhoneMatches.mockResolvedValue([
+      { id: 'patient-1', fullName: 'Siti Aminah', source: 'FRONT_DESK' },
+    ] satisfies PatientPhoneMatch[]);
+    mockVerificationService.isChannelPossessionProven.mockReturnValue(true);
+
+    const outcome = await bookingService.bookFromChannel(
+      buildBookingParams({ channel: 'WHATSAPP', externalChatId: '628123456789@s.whatsapp.net' }),
+    );
+
+    // WhatsApp already verified this device owns the number, so challenging
+    // would send a code to the very chat that asked for it.
+    expect(mockVerificationService.issueChallenge).not.toHaveBeenCalled();
+    expect(mockLinkRepository.markVerified).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patientId: 'patient-1',
+        verificationStatus: 'CHANNEL_VERIFIED',
+      }),
+    );
+    expect(mockAppointmentService.bookSessionForChannel).toHaveBeenCalledWith(
+      expect.objectContaining({ patientId: 'patient-1' }),
+      inputActor,
+    );
+    expect(outcome.result.outcome).toBe('CONFIRMED');
+  });
+
+  it('still challenges a WhatsApp customer booking for somebody else', async () => {
+    mockPatientService.findChannelPhoneMatches.mockResolvedValue([
+      { id: 'patient-1', fullName: 'Siti Aminah', source: 'FRONT_DESK' },
+    ] satisfies PatientPhoneMatch[]);
+    // The number typed is not the number they are messaging from — a parent
+    // booking for a child, or an attacker with somebody's number.
+    mockVerificationService.isChannelPossessionProven.mockReturnValue(false);
+
+    const outcome = await bookingService.bookFromChannel(
+      buildBookingParams({ channel: 'WHATSAPP', externalChatId: '628999888777@s.whatsapp.net' }),
+    );
+
+    expect(outcome.result).toEqual({ outcome: 'VERIFICATION_REQUIRED' });
+    expect(mockLinkRepository.markVerified).not.toHaveBeenCalled();
   });
 
   it('reveals nothing about the match when no challenge can be issued', async () => {

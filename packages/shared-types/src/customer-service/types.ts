@@ -6,6 +6,7 @@ import {
   ConversationMessageRoleValue,
   ConversationStateValue,
   CsSafetyTagValue,
+  WaGatewayKindValue,
 } from '#customer-service/schemas';
 
 /**
@@ -97,6 +98,44 @@ export type ChannelGatewayConfig = {
      */
     readonly webhookSecret: string;
   };
+  readonly whatsapp: WhatsappGatewayConfig;
+};
+
+/**
+ * The self-hosted WhatsApp bridge's configuration (`PCS-T09`, §2.1, §8.1).
+ *
+ * Every field is a *private-network* fact. `baseUrl` names a container on the
+ * API's own Docker network and must never be publicly resolvable: GOWA's REST
+ * port drives a live WhatsApp session, so anyone who can reach it can send as
+ * the clinic. The credentials are the second lock on that same door.
+ */
+export type WhatsappGatewayConfig = {
+  readonly kind: WaGatewayKindValue;
+  /** e.g. `http://gowa:3000`. Empty means no WhatsApp gateway is configured. */
+  readonly baseUrl: string;
+  /** GOWA's `APP_BASIC_AUTH` user half. */
+  readonly basicAuthUsername: string;
+  readonly basicAuthPassword: string;
+  /**
+   * The HMAC key GOWA signs every webhook body with. Empty closes the
+   * WhatsApp webhook rather than opening it, exactly as the Telegram secret
+   * does — an unset value must never mean "accept anything".
+   */
+  readonly webhookSecret: string;
+  /**
+   * The clinic's own WhatsApp JID, e.g. `628123456789@s.whatsapp.net`. GOWA
+   * scopes device-management calls by it, and §5.1.1 tier 1 compares against
+   * the *sender's* JID rather than this one — this is the account doing the
+   * sending, not the customer.
+   */
+  readonly deviceId: string;
+  /**
+   * Milliseconds to hold between consecutive outbound sends (§2.1 risk note,
+   * §8.3). Human-like pacing is one of the named ban mitigations, and it is a
+   * number rather than a boolean so a clinic warming a new number can slow it
+   * further without a code change.
+   */
+  readonly sendPacingMs: number;
 };
 
 /**

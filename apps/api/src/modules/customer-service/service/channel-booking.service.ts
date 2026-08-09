@@ -158,6 +158,32 @@ export class ChannelBookingService {
     // customer accumulating a new draft per booking.
     const registryMatch = matches.find((match) => match.source === 'FRONT_DESK');
     if (registryMatch !== undefined) {
+      // §5.1.1 **tier 1** (`PCS-T09`): on WhatsApp the sender's JID is a
+      // number WhatsApp already verified this device owns, so a customer
+      // booking under the number they are messaging from has nothing left to
+      // prove. Challenging them anyway would send a code to the very chat that
+      // asked for it — proof that a chat can read its own messages, and a
+      // step that costs a real customer time for nothing.
+      if (
+        this.verificationService.isChannelPossessionProven({
+          channel: params.channel,
+          externalChatId: params.externalChatId,
+          claimedPhoneNumber: normalisedPhoneNumber,
+        })
+      ) {
+        await this.linkRepository.markVerified({
+          linkId: link.id,
+          patientId: registryMatch.id,
+          verificationStatus: 'CHANNEL_VERIFIED',
+          verifiedAt: now,
+        });
+        return this.completeBooking({
+          patientId: registryMatch.id,
+          channel: params.channel,
+          actor: params.actor,
+          pendingBooking,
+        });
+      }
       const challengeOutcome = await this.challengeOrFallThrough({
         conversationId: params.conversationId,
         channel: params.channel,
