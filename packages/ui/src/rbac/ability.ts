@@ -16,7 +16,9 @@ export type AppAction =
   | 'retry'
   | 'link'
   | 'read-identifier'
-  | 'import-identifier';
+  | 'import-identifier'
+  | 'block'
+  | 'merge';
 export type AppSubject =
   | 'User'
   | 'Role'
@@ -40,6 +42,7 @@ export type AppSubject =
   | 'Payment'
   | 'ChatSession'
   | 'ChatMessage'
+  | 'Conversation'
   | 'AiProviderConfig'
   | 'Document'
   | 'BpjsConfig'

@@ -20,6 +20,8 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'link',
   'read-identifier',
   'import-identifier',
+  'block',
+  'merge',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',
@@ -44,6 +46,11 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   payment: 'Payment',
   'chat.session': 'ChatSession',
   'chat.message': 'ChatMessage',
+  // The WhatsApp/Telegram channel's staff surface (`PCS-T08`). Unlike
+  // `document` above, both scopes do *not* collapse here — every conversation
+  // grant exists only as `:any`, because a conversation has no HMS user on
+  // either end for an `:own` scope to resolve against.
+  conversation: 'Conversation',
   'ai-provider': 'AiProviderConfig',
   // Both scopes collapse to one subject here. `permissionToRule` drops the
   // `:own` / `:any` suffix, so this cannot distinguish an admin's clinic-corpus

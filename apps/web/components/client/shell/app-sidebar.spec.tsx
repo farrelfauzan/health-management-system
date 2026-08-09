@@ -1,10 +1,12 @@
 import { ADMIN_PORTAL_ADMIN_RULES, buildAppAbility, SidebarProvider, type AppRule } from '@hms/ui';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AppSidebar } from './app-sidebar';
 import { filterNavSections } from '#lib/shell/filter-nav-sections';
+import dashboardAiMessages from '../../../messages/id/dashboard-ai.json';
 import messages from '../../../messages/id/auth-shell.json';
 
 const { usePathnameMock } = vi.hoisted(() => ({
@@ -15,13 +17,27 @@ vi.mock('next/navigation', () => ({
   usePathname: usePathnameMock,
 }));
 
+/**
+ * The sidebar reads live data now: the conversations entry carries the handoff
+ * badge (`PCS-T08`), so a nav item can issue a query. Retries are off and the
+ * request fails in jsdom, which is the state under test here — the sidebar
+ * must render its links whether or not the count ever arrives.
+ */
 function renderAppSidebar(rules: AppRule[]): void {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   render(
-    <SidebarProvider>
-      <NextIntlClientProvider locale="id" messages={messages}>
-        <AppSidebar sections={filterNavSections(buildAppAbility(rules))} />
-      </NextIntlClientProvider>
-    </SidebarProvider>,
+    <QueryClientProvider client={queryClient}>
+      <SidebarProvider>
+        <NextIntlClientProvider
+          locale="id"
+          messages={{ ...messages, ...dashboardAiMessages }}
+        >
+          <AppSidebar sections={filterNavSections(buildAppAbility(rules))} />
+        </NextIntlClientProvider>
+      </SidebarProvider>
+    </QueryClientProvider>,
   );
 }
 
@@ -58,6 +74,7 @@ describe('AppSidebar', () => {
       'Pendaftaran',
       'Farmasi',
       'Asisten AI',
+      'Percakapan',
       'Integrasi',
       'Administrasi',
     ];

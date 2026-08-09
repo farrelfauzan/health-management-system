@@ -36,6 +36,8 @@ export type ConversationMinAggregateOutputType = {
   senderDisplayName: string | null
   state: $Enums.ConversationState | null
   hasSentNotice: boolean | null
+  blockedAt: Date | null
+  blockedById: string | null
   lastMessageAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -48,6 +50,8 @@ export type ConversationMaxAggregateOutputType = {
   senderDisplayName: string | null
   state: $Enums.ConversationState | null
   hasSentNotice: boolean | null
+  blockedAt: Date | null
+  blockedById: string | null
   lastMessageAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -60,6 +64,8 @@ export type ConversationCountAggregateOutputType = {
   senderDisplayName: number
   state: number
   hasSentNotice: number
+  blockedAt: number
+  blockedById: number
   lastMessageAt: number
   createdAt: number
   updatedAt: number
@@ -74,6 +80,8 @@ export type ConversationMinAggregateInputType = {
   senderDisplayName?: true
   state?: true
   hasSentNotice?: true
+  blockedAt?: true
+  blockedById?: true
   lastMessageAt?: true
   createdAt?: true
   updatedAt?: true
@@ -86,6 +94,8 @@ export type ConversationMaxAggregateInputType = {
   senderDisplayName?: true
   state?: true
   hasSentNotice?: true
+  blockedAt?: true
+  blockedById?: true
   lastMessageAt?: true
   createdAt?: true
   updatedAt?: true
@@ -98,6 +108,8 @@ export type ConversationCountAggregateInputType = {
   senderDisplayName?: true
   state?: true
   hasSentNotice?: true
+  blockedAt?: true
+  blockedById?: true
   lastMessageAt?: true
   createdAt?: true
   updatedAt?: true
@@ -183,6 +195,8 @@ export type ConversationGroupByOutputType = {
   senderDisplayName: string | null
   state: $Enums.ConversationState
   hasSentNotice: boolean
+  blockedAt: Date | null
+  blockedById: string | null
   lastMessageAt: Date
   createdAt: Date
   updatedAt: Date
@@ -216,11 +230,14 @@ export type ConversationWhereInput = {
   senderDisplayName?: Prisma.StringNullableFilter<"Conversation"> | string | null
   state?: Prisma.EnumConversationStateFilter<"Conversation"> | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFilter<"Conversation"> | boolean
+  blockedAt?: Prisma.DateTimeNullableFilter<"Conversation"> | Date | string | null
+  blockedById?: Prisma.UuidNullableFilter<"Conversation"> | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"Conversation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Conversation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Conversation"> | Date | string
   messages?: Prisma.ConversationMessageListRelationFilter
   otpChallenges?: Prisma.ChannelOtpChallengeListRelationFilter
+  blockedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type ConversationOrderByWithRelationInput = {
@@ -230,11 +247,14 @@ export type ConversationOrderByWithRelationInput = {
   senderDisplayName?: Prisma.SortOrderInput | Prisma.SortOrder
   state?: Prisma.SortOrder
   hasSentNotice?: Prisma.SortOrder
+  blockedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  blockedById?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   messages?: Prisma.ConversationMessageOrderByRelationAggregateInput
   otpChallenges?: Prisma.ChannelOtpChallengeOrderByRelationAggregateInput
+  blockedBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -248,11 +268,14 @@ export type ConversationWhereUniqueInput = Prisma.AtLeast<{
   senderDisplayName?: Prisma.StringNullableFilter<"Conversation"> | string | null
   state?: Prisma.EnumConversationStateFilter<"Conversation"> | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFilter<"Conversation"> | boolean
+  blockedAt?: Prisma.DateTimeNullableFilter<"Conversation"> | Date | string | null
+  blockedById?: Prisma.UuidNullableFilter<"Conversation"> | string | null
   lastMessageAt?: Prisma.DateTimeFilter<"Conversation"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Conversation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Conversation"> | Date | string
   messages?: Prisma.ConversationMessageListRelationFilter
   otpChallenges?: Prisma.ChannelOtpChallengeListRelationFilter
+  blockedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id" | "channel_externalChatId">
 
 export type ConversationOrderByWithAggregationInput = {
@@ -262,6 +285,8 @@ export type ConversationOrderByWithAggregationInput = {
   senderDisplayName?: Prisma.SortOrderInput | Prisma.SortOrder
   state?: Prisma.SortOrder
   hasSentNotice?: Prisma.SortOrder
+  blockedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  blockedById?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -280,6 +305,8 @@ export type ConversationScalarWhereWithAggregatesInput = {
   senderDisplayName?: Prisma.StringNullableWithAggregatesFilter<"Conversation"> | string | null
   state?: Prisma.EnumConversationStateWithAggregatesFilter<"Conversation"> | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolWithAggregatesFilter<"Conversation"> | boolean
+  blockedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Conversation"> | Date | string | null
+  blockedById?: Prisma.UuidNullableWithAggregatesFilter<"Conversation"> | string | null
   lastMessageAt?: Prisma.DateTimeWithAggregatesFilter<"Conversation"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Conversation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Conversation"> | Date | string
@@ -292,11 +319,13 @@ export type ConversationCreateInput = {
   senderDisplayName?: string | null
   state?: $Enums.ConversationState
   hasSentNotice?: boolean
+  blockedAt?: Date | string | null
   lastMessageAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   messages?: Prisma.ConversationMessageCreateNestedManyWithoutConversationInput
   otpChallenges?: Prisma.ChannelOtpChallengeCreateNestedManyWithoutConversationInput
+  blockedBy?: Prisma.UserCreateNestedOneWithoutBlockedConversationsInput
 }
 
 export type ConversationUncheckedCreateInput = {
@@ -306,6 +335,8 @@ export type ConversationUncheckedCreateInput = {
   senderDisplayName?: string | null
   state?: $Enums.ConversationState
   hasSentNotice?: boolean
+  blockedAt?: Date | string | null
+  blockedById?: string | null
   lastMessageAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -320,11 +351,13 @@ export type ConversationUpdateInput = {
   senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   messages?: Prisma.ConversationMessageUpdateManyWithoutConversationNestedInput
   otpChallenges?: Prisma.ChannelOtpChallengeUpdateManyWithoutConversationNestedInput
+  blockedBy?: Prisma.UserUpdateOneWithoutBlockedConversationsNestedInput
 }
 
 export type ConversationUncheckedUpdateInput = {
@@ -334,6 +367,8 @@ export type ConversationUncheckedUpdateInput = {
   senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  blockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -348,6 +383,8 @@ export type ConversationCreateManyInput = {
   senderDisplayName?: string | null
   state?: $Enums.ConversationState
   hasSentNotice?: boolean
+  blockedAt?: Date | string | null
+  blockedById?: string | null
   lastMessageAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -360,6 +397,7 @@ export type ConversationUpdateManyMutationInput = {
   senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -372,9 +410,21 @@ export type ConversationUncheckedUpdateManyInput = {
   senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  blockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ConversationListRelationFilter = {
+  every?: Prisma.ConversationWhereInput
+  some?: Prisma.ConversationWhereInput
+  none?: Prisma.ConversationWhereInput
+}
+
+export type ConversationOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type ConversationChannelExternalChatIdCompoundUniqueInput = {
@@ -389,6 +439,8 @@ export type ConversationCountOrderByAggregateInput = {
   senderDisplayName?: Prisma.SortOrder
   state?: Prisma.SortOrder
   hasSentNotice?: Prisma.SortOrder
+  blockedAt?: Prisma.SortOrder
+  blockedById?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -401,6 +453,8 @@ export type ConversationMaxOrderByAggregateInput = {
   senderDisplayName?: Prisma.SortOrder
   state?: Prisma.SortOrder
   hasSentNotice?: Prisma.SortOrder
+  blockedAt?: Prisma.SortOrder
+  blockedById?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -413,6 +467,8 @@ export type ConversationMinOrderByAggregateInput = {
   senderDisplayName?: Prisma.SortOrder
   state?: Prisma.SortOrder
   hasSentNotice?: Prisma.SortOrder
+  blockedAt?: Prisma.SortOrder
+  blockedById?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -421,6 +477,48 @@ export type ConversationMinOrderByAggregateInput = {
 export type ConversationScalarRelationFilter = {
   is?: Prisma.ConversationWhereInput
   isNot?: Prisma.ConversationWhereInput
+}
+
+export type ConversationCreateNestedManyWithoutBlockedByInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutBlockedByInput, Prisma.ConversationUncheckedCreateWithoutBlockedByInput> | Prisma.ConversationCreateWithoutBlockedByInput[] | Prisma.ConversationUncheckedCreateWithoutBlockedByInput[]
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutBlockedByInput | Prisma.ConversationCreateOrConnectWithoutBlockedByInput[]
+  createMany?: Prisma.ConversationCreateManyBlockedByInputEnvelope
+  connect?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+}
+
+export type ConversationUncheckedCreateNestedManyWithoutBlockedByInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutBlockedByInput, Prisma.ConversationUncheckedCreateWithoutBlockedByInput> | Prisma.ConversationCreateWithoutBlockedByInput[] | Prisma.ConversationUncheckedCreateWithoutBlockedByInput[]
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutBlockedByInput | Prisma.ConversationCreateOrConnectWithoutBlockedByInput[]
+  createMany?: Prisma.ConversationCreateManyBlockedByInputEnvelope
+  connect?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+}
+
+export type ConversationUpdateManyWithoutBlockedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutBlockedByInput, Prisma.ConversationUncheckedCreateWithoutBlockedByInput> | Prisma.ConversationCreateWithoutBlockedByInput[] | Prisma.ConversationUncheckedCreateWithoutBlockedByInput[]
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutBlockedByInput | Prisma.ConversationCreateOrConnectWithoutBlockedByInput[]
+  upsert?: Prisma.ConversationUpsertWithWhereUniqueWithoutBlockedByInput | Prisma.ConversationUpsertWithWhereUniqueWithoutBlockedByInput[]
+  createMany?: Prisma.ConversationCreateManyBlockedByInputEnvelope
+  set?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+  disconnect?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+  delete?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+  connect?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+  update?: Prisma.ConversationUpdateWithWhereUniqueWithoutBlockedByInput | Prisma.ConversationUpdateWithWhereUniqueWithoutBlockedByInput[]
+  updateMany?: Prisma.ConversationUpdateManyWithWhereWithoutBlockedByInput | Prisma.ConversationUpdateManyWithWhereWithoutBlockedByInput[]
+  deleteMany?: Prisma.ConversationScalarWhereInput | Prisma.ConversationScalarWhereInput[]
+}
+
+export type ConversationUncheckedUpdateManyWithoutBlockedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutBlockedByInput, Prisma.ConversationUncheckedCreateWithoutBlockedByInput> | Prisma.ConversationCreateWithoutBlockedByInput[] | Prisma.ConversationUncheckedCreateWithoutBlockedByInput[]
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutBlockedByInput | Prisma.ConversationCreateOrConnectWithoutBlockedByInput[]
+  upsert?: Prisma.ConversationUpsertWithWhereUniqueWithoutBlockedByInput | Prisma.ConversationUpsertWithWhereUniqueWithoutBlockedByInput[]
+  createMany?: Prisma.ConversationCreateManyBlockedByInputEnvelope
+  set?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+  disconnect?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+  delete?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+  connect?: Prisma.ConversationWhereUniqueInput | Prisma.ConversationWhereUniqueInput[]
+  update?: Prisma.ConversationUpdateWithWhereUniqueWithoutBlockedByInput | Prisma.ConversationUpdateWithWhereUniqueWithoutBlockedByInput[]
+  updateMany?: Prisma.ConversationUpdateManyWithWhereWithoutBlockedByInput | Prisma.ConversationUpdateManyWithWhereWithoutBlockedByInput[]
+  deleteMany?: Prisma.ConversationScalarWhereInput | Prisma.ConversationScalarWhereInput[]
 }
 
 export type EnumConversationStateFieldUpdateOperationsInput = {
@@ -455,6 +553,79 @@ export type ConversationUpdateOneRequiredWithoutOtpChallengesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationUpdateToOneWithWhereWithoutOtpChallengesInput, Prisma.ConversationUpdateWithoutOtpChallengesInput>, Prisma.ConversationUncheckedUpdateWithoutOtpChallengesInput>
 }
 
+export type ConversationCreateWithoutBlockedByInput = {
+  id?: string
+  channel: $Enums.ChannelKind
+  externalChatId: string
+  senderDisplayName?: string | null
+  state?: $Enums.ConversationState
+  hasSentNotice?: boolean
+  blockedAt?: Date | string | null
+  lastMessageAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  messages?: Prisma.ConversationMessageCreateNestedManyWithoutConversationInput
+  otpChallenges?: Prisma.ChannelOtpChallengeCreateNestedManyWithoutConversationInput
+}
+
+export type ConversationUncheckedCreateWithoutBlockedByInput = {
+  id?: string
+  channel: $Enums.ChannelKind
+  externalChatId: string
+  senderDisplayName?: string | null
+  state?: $Enums.ConversationState
+  hasSentNotice?: boolean
+  blockedAt?: Date | string | null
+  lastMessageAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  messages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutConversationInput
+  otpChallenges?: Prisma.ChannelOtpChallengeUncheckedCreateNestedManyWithoutConversationInput
+}
+
+export type ConversationCreateOrConnectWithoutBlockedByInput = {
+  where: Prisma.ConversationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConversationCreateWithoutBlockedByInput, Prisma.ConversationUncheckedCreateWithoutBlockedByInput>
+}
+
+export type ConversationCreateManyBlockedByInputEnvelope = {
+  data: Prisma.ConversationCreateManyBlockedByInput | Prisma.ConversationCreateManyBlockedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type ConversationUpsertWithWhereUniqueWithoutBlockedByInput = {
+  where: Prisma.ConversationWhereUniqueInput
+  update: Prisma.XOR<Prisma.ConversationUpdateWithoutBlockedByInput, Prisma.ConversationUncheckedUpdateWithoutBlockedByInput>
+  create: Prisma.XOR<Prisma.ConversationCreateWithoutBlockedByInput, Prisma.ConversationUncheckedCreateWithoutBlockedByInput>
+}
+
+export type ConversationUpdateWithWhereUniqueWithoutBlockedByInput = {
+  where: Prisma.ConversationWhereUniqueInput
+  data: Prisma.XOR<Prisma.ConversationUpdateWithoutBlockedByInput, Prisma.ConversationUncheckedUpdateWithoutBlockedByInput>
+}
+
+export type ConversationUpdateManyWithWhereWithoutBlockedByInput = {
+  where: Prisma.ConversationScalarWhereInput
+  data: Prisma.XOR<Prisma.ConversationUpdateManyMutationInput, Prisma.ConversationUncheckedUpdateManyWithoutBlockedByInput>
+}
+
+export type ConversationScalarWhereInput = {
+  AND?: Prisma.ConversationScalarWhereInput | Prisma.ConversationScalarWhereInput[]
+  OR?: Prisma.ConversationScalarWhereInput[]
+  NOT?: Prisma.ConversationScalarWhereInput | Prisma.ConversationScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Conversation"> | string
+  channel?: Prisma.EnumChannelKindFilter<"Conversation"> | $Enums.ChannelKind
+  externalChatId?: Prisma.StringFilter<"Conversation"> | string
+  senderDisplayName?: Prisma.StringNullableFilter<"Conversation"> | string | null
+  state?: Prisma.EnumConversationStateFilter<"Conversation"> | $Enums.ConversationState
+  hasSentNotice?: Prisma.BoolFilter<"Conversation"> | boolean
+  blockedAt?: Prisma.DateTimeNullableFilter<"Conversation"> | Date | string | null
+  blockedById?: Prisma.UuidNullableFilter<"Conversation"> | string | null
+  lastMessageAt?: Prisma.DateTimeFilter<"Conversation"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"Conversation"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Conversation"> | Date | string
+}
+
 export type ConversationCreateWithoutMessagesInput = {
   id?: string
   channel: $Enums.ChannelKind
@@ -462,10 +633,12 @@ export type ConversationCreateWithoutMessagesInput = {
   senderDisplayName?: string | null
   state?: $Enums.ConversationState
   hasSentNotice?: boolean
+  blockedAt?: Date | string | null
   lastMessageAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   otpChallenges?: Prisma.ChannelOtpChallengeCreateNestedManyWithoutConversationInput
+  blockedBy?: Prisma.UserCreateNestedOneWithoutBlockedConversationsInput
 }
 
 export type ConversationUncheckedCreateWithoutMessagesInput = {
@@ -475,6 +648,8 @@ export type ConversationUncheckedCreateWithoutMessagesInput = {
   senderDisplayName?: string | null
   state?: $Enums.ConversationState
   hasSentNotice?: boolean
+  blockedAt?: Date | string | null
+  blockedById?: string | null
   lastMessageAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -504,10 +679,12 @@ export type ConversationUpdateWithoutMessagesInput = {
   senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   otpChallenges?: Prisma.ChannelOtpChallengeUpdateManyWithoutConversationNestedInput
+  blockedBy?: Prisma.UserUpdateOneWithoutBlockedConversationsNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutMessagesInput = {
@@ -517,6 +694,8 @@ export type ConversationUncheckedUpdateWithoutMessagesInput = {
   senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  blockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -530,10 +709,12 @@ export type ConversationCreateWithoutOtpChallengesInput = {
   senderDisplayName?: string | null
   state?: $Enums.ConversationState
   hasSentNotice?: boolean
+  blockedAt?: Date | string | null
   lastMessageAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   messages?: Prisma.ConversationMessageCreateNestedManyWithoutConversationInput
+  blockedBy?: Prisma.UserCreateNestedOneWithoutBlockedConversationsInput
 }
 
 export type ConversationUncheckedCreateWithoutOtpChallengesInput = {
@@ -543,6 +724,8 @@ export type ConversationUncheckedCreateWithoutOtpChallengesInput = {
   senderDisplayName?: string | null
   state?: $Enums.ConversationState
   hasSentNotice?: boolean
+  blockedAt?: Date | string | null
+  blockedById?: string | null
   lastMessageAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -572,10 +755,12 @@ export type ConversationUpdateWithoutOtpChallengesInput = {
   senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   messages?: Prisma.ConversationMessageUpdateManyWithoutConversationNestedInput
+  blockedBy?: Prisma.UserUpdateOneWithoutBlockedConversationsNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutOtpChallengesInput = {
@@ -585,10 +770,68 @@ export type ConversationUncheckedUpdateWithoutOtpChallengesInput = {
   senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
   hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  blockedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   messages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutConversationNestedInput
+}
+
+export type ConversationCreateManyBlockedByInput = {
+  id?: string
+  channel: $Enums.ChannelKind
+  externalChatId: string
+  senderDisplayName?: string | null
+  state?: $Enums.ConversationState
+  hasSentNotice?: boolean
+  blockedAt?: Date | string | null
+  lastMessageAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ConversationUpdateWithoutBlockedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumChannelKindFieldUpdateOperationsInput | $Enums.ChannelKind
+  externalChatId?: Prisma.StringFieldUpdateOperationsInput | string
+  senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
+  hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  messages?: Prisma.ConversationMessageUpdateManyWithoutConversationNestedInput
+  otpChallenges?: Prisma.ChannelOtpChallengeUpdateManyWithoutConversationNestedInput
+}
+
+export type ConversationUncheckedUpdateWithoutBlockedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumChannelKindFieldUpdateOperationsInput | $Enums.ChannelKind
+  externalChatId?: Prisma.StringFieldUpdateOperationsInput | string
+  senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
+  hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  messages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutConversationNestedInput
+  otpChallenges?: Prisma.ChannelOtpChallengeUncheckedUpdateManyWithoutConversationNestedInput
+}
+
+export type ConversationUncheckedUpdateManyWithoutBlockedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumChannelKindFieldUpdateOperationsInput | $Enums.ChannelKind
+  externalChatId?: Prisma.StringFieldUpdateOperationsInput | string
+  senderDisplayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.EnumConversationStateFieldUpdateOperationsInput | $Enums.ConversationState
+  hasSentNotice?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  blockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastMessageAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -638,11 +881,14 @@ export type ConversationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   senderDisplayName?: boolean
   state?: boolean
   hasSentNotice?: boolean
+  blockedAt?: boolean
+  blockedById?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   messages?: boolean | Prisma.Conversation$messagesArgs<ExtArgs>
   otpChallenges?: boolean | Prisma.Conversation$otpChallengesArgs<ExtArgs>
+  blockedBy?: boolean | Prisma.Conversation$blockedByArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["conversation"]>
 
@@ -653,9 +899,12 @@ export type ConversationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   senderDisplayName?: boolean
   state?: boolean
   hasSentNotice?: boolean
+  blockedAt?: boolean
+  blockedById?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  blockedBy?: boolean | Prisma.Conversation$blockedByArgs<ExtArgs>
 }, ExtArgs["result"]["conversation"]>
 
 export type ConversationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -665,9 +914,12 @@ export type ConversationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   senderDisplayName?: boolean
   state?: boolean
   hasSentNotice?: boolean
+  blockedAt?: boolean
+  blockedById?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  blockedBy?: boolean | Prisma.Conversation$blockedByArgs<ExtArgs>
 }, ExtArgs["result"]["conversation"]>
 
 export type ConversationSelectScalar = {
@@ -677,25 +929,33 @@ export type ConversationSelectScalar = {
   senderDisplayName?: boolean
   state?: boolean
   hasSentNotice?: boolean
+  blockedAt?: boolean
+  blockedById?: boolean
   lastMessageAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ConversationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "channel" | "externalChatId" | "senderDisplayName" | "state" | "hasSentNotice" | "lastMessageAt" | "createdAt" | "updatedAt", ExtArgs["result"]["conversation"]>
+export type ConversationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "channel" | "externalChatId" | "senderDisplayName" | "state" | "hasSentNotice" | "blockedAt" | "blockedById" | "lastMessageAt" | "createdAt" | "updatedAt", ExtArgs["result"]["conversation"]>
 export type ConversationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   messages?: boolean | Prisma.Conversation$messagesArgs<ExtArgs>
   otpChallenges?: boolean | Prisma.Conversation$otpChallengesArgs<ExtArgs>
+  blockedBy?: boolean | Prisma.Conversation$blockedByArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ConversationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ConversationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ConversationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  blockedBy?: boolean | Prisma.Conversation$blockedByArgs<ExtArgs>
+}
+export type ConversationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  blockedBy?: boolean | Prisma.Conversation$blockedByArgs<ExtArgs>
+}
 
 export type $ConversationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Conversation"
   objects: {
     messages: Prisma.$ConversationMessagePayload<ExtArgs>[]
     otpChallenges: Prisma.$ChannelOtpChallengePayload<ExtArgs>[]
+    blockedBy: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -715,6 +975,20 @@ export type $ConversationPayload<ExtArgs extends runtime.Types.Extensions.Intern
      * not get slower as the conversation grows.
      */
     hasSentNotice: boolean
+    /**
+     * When an admin blocked this chat (`PCS-T08`, §8.3). Non-null means every
+     * further inbound message is dropped before persistence and before any
+     * provider call.
+     * 
+     * A nullable column rather than a sixth `ConversationState`, because a
+     * block is a policy overlay and a state is a position in a lifecycle: an
+     * admin who blocks a `HUMAN_ACTIVE` chat must not lose the fact that a
+     * colleague was mid-conversation, and unblocking must return the chat to
+     * where it was rather than to a guess. The pair also answers "who decided
+     * this", which a state transition on an append-only-free table cannot.
+     */
+    blockedAt: Date | null
+    blockedById: string | null
     lastMessageAt: Date
     createdAt: Date
     updatedAt: Date
@@ -1114,6 +1388,7 @@ export interface Prisma__ConversationClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   messages<T extends Prisma.Conversation$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   otpChallenges<T extends Prisma.Conversation$otpChallengesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$otpChallengesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChannelOtpChallengePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  blockedBy<T extends Prisma.Conversation$blockedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$blockedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1149,6 +1424,8 @@ export interface ConversationFieldRefs {
   readonly senderDisplayName: Prisma.FieldRef<"Conversation", 'String'>
   readonly state: Prisma.FieldRef<"Conversation", 'ConversationState'>
   readonly hasSentNotice: Prisma.FieldRef<"Conversation", 'Boolean'>
+  readonly blockedAt: Prisma.FieldRef<"Conversation", 'DateTime'>
+  readonly blockedById: Prisma.FieldRef<"Conversation", 'String'>
   readonly lastMessageAt: Prisma.FieldRef<"Conversation", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Conversation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Conversation", 'DateTime'>
@@ -1406,6 +1683,10 @@ export type ConversationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Ex
    */
   data: Prisma.ConversationCreateManyInput | Prisma.ConversationCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConversationIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1476,6 +1757,10 @@ export type ConversationUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Ex
    * Limit how many Conversations to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConversationIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1590,6 +1875,25 @@ export type Conversation$otpChallengesArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.ChannelOtpChallengeScalarFieldEnum | Prisma.ChannelOtpChallengeScalarFieldEnum[]
+}
+
+/**
+ * Conversation.blockedBy
+ */
+export type Conversation$blockedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

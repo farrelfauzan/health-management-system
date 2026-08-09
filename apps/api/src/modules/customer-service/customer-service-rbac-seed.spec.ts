@@ -56,6 +56,16 @@ describe('customer-service channel RBAC seed', () => {
     // It must not be able to grant itself anything.
     'role.assign:any',
     'user.create:any',
+    // `PCS-T08`'s admin surface. The channel is the thing being supervised —
+    // an account that could read every transcript, speak as an admin, or
+    // block a chat would be the automated half auditing and overruling the
+    // human half.
+    'conversation.read:any',
+    'conversation.write:any',
+    'conversation.block:any',
+    // §5.2's merge retires a patient record. The channel creates drafts; a
+    // human at the counter decides what becomes of them.
+    'patient.merge:any',
   ] as const;
 
   const seedSql = readFileSync(resolve(process.cwd(), 'prisma', 'seed.sql'), 'utf8');

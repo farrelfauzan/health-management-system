@@ -533,5 +533,119 @@
         "delete": "Tidak dapat memensiunkan dokumen ini."
       }
     }
+  },
+  "conversations": {
+    "header": {
+      "title": "Percakapan kanal",
+      "subtitle": "Percakapan WhatsApp dan Telegram, antrean alih tangan, dan pengambilalihan.",
+      "breadcrumbs": {
+        "assistant": "Asisten",
+        "conversations": "Percakapan"
+      }
+    },
+    "badge": {
+      "label": "{count, plural, other {# percakapan menunggu}}"
+    },
+    "summary": {
+      "needsHuman": "Menunggu petugas",
+      "humanActive": "Ditangani petugas",
+      "oldestWaiting": "Menunggu sejak",
+      "nobodyWaiting": "Tidak ada yang menunggu"
+    },
+    "filters": {
+      "queue": "Antrean",
+      "channel": "Kanal",
+      "allChannels": "Semua kanal",
+      "search": "Cari",
+      "searchPlaceholder": "Nama atau ID chat",
+      "queues": {
+        "ALL": "Semua percakapan",
+        "HANDOFF": "Butuh petugas",
+        "NEEDS_HUMAN": "Menunggu",
+        "HUMAN_ACTIVE": "Ditangani petugas",
+        "BOT_ACTIVE": "Ditangani bot",
+        "AWAITING_OTP": "Verifikasi",
+        "ARCHIVED": "Diarsipkan",
+        "BLOCKED": "Diblokir"
+      }
+    },
+    "states": {
+      "BOT_ACTIVE": "Bot",
+      "NEEDS_HUMAN": "Butuh petugas",
+      "HUMAN_ACTIVE": "Dengan petugas",
+      "AWAITING_OTP": "Verifikasi",
+      "ARCHIVED": "Diarsipkan",
+      "BLOCKED": "Diblokir",
+      "loading": "Memuat percakapan…",
+      "error": "Percakapan tidak dapat dimuat.",
+      "empty": "Tidak ada percakapan pada filter ini."
+    },
+    "wait": {
+      "underAMinute": "Baru saja",
+      "minutes": "{count, plural, other {# mnt}}",
+      "hours": "{count, plural, other {# jam}}"
+    },
+    "table": {
+      "unnamed": "Pelanggan tanpa nama",
+      "columns": {
+        "customer": "Pelanggan",
+        "channel": "Kanal",
+        "state": "Status",
+        "waiting": "Menunggu",
+        "messages": "Pesan",
+        "lastMessage": "Pesan terakhir"
+      }
+    },
+    "transcript": {
+      "loading": "Memuat transkrip…",
+      "error": "Transkrip tidak dapat dimuat.",
+      "empty": "Belum ada percakapan.",
+      "unnamed": "Pelanggan tanpa nama",
+      "backToInbox": "Kembali ke daftar",
+      "olderTurnsHidden": "Percakapan yang lebih lama tidak ditampilkan.",
+      "breadcrumbs": {
+        "assistant": "Asisten",
+        "conversations": "Percakapan"
+      },
+      "roles": {
+        "CUSTOMER": "Pelanggan",
+        "BOT": "Asisten",
+        "ADMIN": "Petugas",
+        "SYSTEM": "Klinik"
+      }
+    },
+    "reply": {
+      "placeholder": "Tulis balasan untuk pelanggan…",
+      "send": "Kirim balasan",
+      "sending": "Mengirim…",
+      "takesOver": "Mengirim balasan berarti Anda mengambil alih dari bot.",
+      "failed": "Balasan gagal dikirim.",
+      "blocked": "Chat ini diblokir. Buka blokir dulu sebelum membalas.",
+      "awaitingOtp": "Pelanggan sedang menyelesaikan verifikasi. Balasan dijeda sampai selesai."
+    },
+    "actions": {
+      "takeOver": "Ambil alih",
+      "release": "Kembalikan ke bot",
+      "block": "Blokir chat",
+      "unblock": "Buka blokir",
+      "takenOver": "Percakapan ini kini Anda tangani.",
+      "released": "Percakapan dikembalikan ke asisten.",
+      "unblocked": "Blokir chat dibuka.",
+      "takeOverFailed": "Percakapan gagal diambil alih.",
+      "releaseFailed": "Percakapan gagal dikembalikan.",
+      "unblockFailed": "Blokir chat gagal dibuka."
+    },
+    "block": {
+      "title": "Blokir chat ini?",
+      "description": "Semua pesan berikutnya dari chat ini dibuang sebelum dicatat, dan tidak ada balasan yang dikirim. Pelanggan tidak diberi tahu.",
+      "reason": "Alasan (opsional)",
+      "reasonPlaceholder": "mis. pesan otomatis berulang",
+      "reasonHint": "Hanya dicatat di log audit. Tidak pernah dikirim ke pelanggan.",
+      "cancel": "Batal",
+      "confirm": "Blokir chat",
+      "blocking": "Memblokir…",
+      "blocked": "Chat diblokir.",
+      "failed": "Chat gagal diblokir."
+    }
   }
 }

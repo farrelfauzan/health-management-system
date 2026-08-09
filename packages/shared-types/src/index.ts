@@ -70,4 +70,5 @@ export * from '#document-management/schemas';
 export * from '#document-management/contracts';
 export * from '#document-management/types';
 export * from '#customer-service/schemas';
+export * from '#customer-service/contracts';
 export * from '#customer-service/types';

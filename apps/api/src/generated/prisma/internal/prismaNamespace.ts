@@ -5799,6 +5799,8 @@ export const ConversationScalarFieldEnum = {
   senderDisplayName: 'senderDisplayName',
   state: 'state',
   hasSentNotice: 'hasSentNotice',
+  blockedAt: 'blockedAt',
+  blockedById: 'blockedById',
   lastMessageAt: 'lastMessageAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -5812,6 +5814,7 @@ export const ConversationMessageScalarFieldEnum = {
   conversationId: 'conversationId',
   role: 'role',
   content: 'content',
+  authorUserId: 'authorUserId',
   safetyTags: 'safetyTags',
   createdAt: 'createdAt'
 } as const

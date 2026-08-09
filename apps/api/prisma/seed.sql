@@ -152,7 +152,23 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('document.read:any', 'Document', 'read', 'ANY', 'Read every document in the shared document store'),
     ('document.write:any', 'Document', 'write', 'ANY', 'Upload, re-ingest, and delete clinic-corpus documents'),
     ('document.read:own', 'Document', 'read', 'OWN', 'Read documents in own personal knowledge base'),
-    ('document.write:own', 'Document', 'write', 'OWN', 'Upload and delete documents in own personal knowledge base')
+    ('document.write:own', 'Document', 'write', 'OWN', 'Upload and delete documents in own personal knowledge base'),
+    -- PCS-T08. Every conversation grant exists only in its ANY form, and that
+    -- is structural rather than an oversight: a WhatsApp/Telegram conversation
+    -- has no HMS user on either end, so there is no owner for an OWN scope to
+    -- resolve against and no owned variant a guard could confuse this with.
+    ('conversation.read:any', 'Conversation', 'read', 'ANY', 'Read every channel conversation and its transcript'),
+    ('conversation.write:any', 'Conversation', 'write', 'ANY', 'Take over, release, and reply to channel conversations'),
+    -- Split from write because the two are different acts. Replying and
+    -- handing a conversation back and forth are the shift's ordinary work;
+    -- silencing a member of the public is abuse control (§8.3), and the split
+    -- is what lets a clinic hand out the first without the second.
+    ('conversation.block:any', 'Conversation', 'block', 'ANY', 'Block and unblock an abusive channel chat'),
+    -- Merging retires a patient record, which no other patient grant does —
+    -- update edits a row, and this one ends it. It is `ANY` only: the merge is
+    -- performed by whoever is at the counter when the person arrives, and that
+    -- is never the record's owner.
+    ('patient.merge:any', 'Patient', 'merge', 'ANY', 'Merge a chat-created draft patient into an existing record')
 )
 INSERT INTO "permissions" (
   "id",
@@ -306,6 +322,18 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- corpora stay distinguishable in the audit trail.
     ('ADMIN', 'document.read:own'),
     ('ADMIN', 'document.write:own'),
+    -- The human side of the WA/Telegram channel (PCS-T08). ADMIN only: these
+    -- routes read what members of the public wrote to the clinic and speak
+    -- back to them under the clinic's name, and neither is a clinical role's
+    -- work. SUPER_ADMIN receives all three through the blanket grant below.
+    ('ADMIN', 'conversation.read:any'),
+    ('ADMIN', 'conversation.write:any'),
+    ('ADMIN', 'conversation.block:any'),
+    -- §5.2's arrival merge. Held by ADMIN alone even though the front desk
+    -- performs it, for the same reason `patient.read-identifier` is: the
+    -- action is irreversible from the desk's side, and the record it retires
+    -- is one the clinic keeps for 25 years.
+    ('ADMIN', 'patient.merge:any'),
     ('DOCTOR', 'auth.logout:own'),
     ('DOCTOR', 'patient.read:own'),
     ('DOCTOR', 'doctor.read:any'),

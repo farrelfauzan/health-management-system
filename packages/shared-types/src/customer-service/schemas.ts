@@ -419,3 +419,197 @@ export const LINKABLE_VERIFICATION_STATUSES = [
   'CHANNEL_VERIFIED',
   'OTP_VERIFIED',
 ] as const satisfies readonly ChannelVerificationStatusValue[];
+
+/**
+ * How the admin inbox slices the conversation list (`PCS-T08`, §4.2).
+ *
+ * `HANDOFF` is not a state — it is `NEEDS_HUMAN` plus `HUMAN_ACTIVE`, the two
+ * halves of "a person owns this conversation". It exists as its own filter
+ * because that is the queue an admin works from, and asking them to hold two
+ * checkboxes to see it would make the screen's primary job its least obvious
+ * one. `BLOCKED` is likewise not a state (§8.3 blocks are a policy overlay on
+ * whatever state the chat was in), so it cannot be expressed as one either.
+ */
+export const CONVERSATION_INBOX_FILTERS = [
+  'ALL',
+  'HANDOFF',
+  'NEEDS_HUMAN',
+  'HUMAN_ACTIVE',
+  'BOT_ACTIVE',
+  'AWAITING_OTP',
+  'ARCHIVED',
+  'BLOCKED',
+] as const;
+
+export const conversationInboxFilterSchema = z.enum(CONVERSATION_INBOX_FILTERS);
+
+export type ConversationInboxFilterValue = z.infer<typeof conversationInboxFilterSchema>;
+
+export const CONVERSATION_PAGE_DEFAULT_LIMIT = 25;
+export const CONVERSATION_PAGE_MAX_LIMIT = 100;
+
+export const listConversationsQuerySchema = z.object({
+  filter: conversationInboxFilterSchema.default('ALL'),
+  channel: channelKindSchema.optional(),
+  /**
+   * Matches the display name or the external chat id. Not the transcript:
+   * searching message bodies would make every §5.3 redaction decision moot by
+   * building an index over the text it was protecting.
+   */
+  search: z.string().trim().min(2).max(120).optional(),
+  cursor: z.string().uuid().optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(CONVERSATION_PAGE_MAX_LIMIT)
+    .default(CONVERSATION_PAGE_DEFAULT_LIMIT),
+});
+
+export type ListConversationsQueryInput = z.infer<typeof listConversationsQuerySchema>;
+
+export const CONVERSATION_TRANSCRIPT_DEFAULT_LIMIT = 50;
+export const CONVERSATION_TRANSCRIPT_MAX_LIMIT = 200;
+
+export const listConversationTranscriptQuerySchema = z.object({
+  cursor: z.string().uuid().optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(CONVERSATION_TRANSCRIPT_MAX_LIMIT)
+    .default(CONVERSATION_TRANSCRIPT_DEFAULT_LIMIT),
+});
+
+export type ListConversationTranscriptQueryInput = z.infer<
+  typeof listConversationTranscriptQuerySchema
+>;
+
+/**
+ * The longest reply an admin can send. Telegram's own limit is 4096, and the
+ * WhatsApp gateways are higher, so the tighter number is the one that is true
+ * on every channel — a reply that silently fails to send on one of them is
+ * worse than one refused in the composer.
+ */
+export const ADMIN_REPLY_MAX_LENGTH = 4000;
+
+export const replyToConversationSchema = z.object({
+  text: z.string().trim().min(1).max(ADMIN_REPLY_MAX_LENGTH),
+});
+
+export type ReplyToConversationInput = z.infer<typeof replyToConversationSchema>;
+
+/** §8.3's chat block. The reason is for the audit trail, never sent anywhere. */
+export const CS_BLOCK_REASON_MAX_LENGTH = 300;
+
+export const blockConversationSchema = z.object({
+  reason: z.string().trim().min(3).max(CS_BLOCK_REASON_MAX_LENGTH).optional(),
+});
+
+export type BlockConversationInput = z.infer<typeof blockConversationSchema>;
+
+/**
+ * The arrival worklist's window (§5.2).
+ *
+ * Defaults to today, because the worklist is a check-in-desk screen and the
+ * question it answers is "who is walking in with an incomplete record". The
+ * range is bounded so a mistyped date cannot ask for the whole channel history
+ * at a counter.
+ */
+export const CHANNEL_ARRIVAL_RANGE_MAX_DAYS = 31;
+
+const arrivalDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Tanggal harus dalam format YYYY-MM-DD');
+
+export const listChannelArrivalsQuerySchema = z
+  .object({
+    from: arrivalDateSchema.optional(),
+    to: arrivalDateSchema.optional(),
+    channel: channelKindSchema.optional(),
+    /**
+     * The reference code from the confirmation reply — what a customer reads
+     * out at the counter, and therefore the only search term the desk has
+     * before it has identified the person.
+     */
+    referenceCode: z.string().trim().min(3).max(32).optional(),
+    cursor: z.string().uuid().optional(),
+    limit: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(CONVERSATION_PAGE_MAX_LIMIT)
+      .default(CONVERSATION_PAGE_DEFAULT_LIMIT),
+  })
+  .refine((value) => value.from === undefined || value.to === undefined || value.from <= value.to, {
+    message: 'from must be on or before to',
+    path: ['to'],
+  });
+
+export type ListChannelArrivalsQueryInput = z.infer<typeof listChannelArrivalsQuerySchema>;
+
+/**
+ * Merges a chat-created draft into the patient record it should have been
+ * (§5.2 — the phone match was wrong, or verification never happened).
+ *
+ * Only the two ids. There is deliberately no "and also update these fields"
+ * half: completing a record is the existing patient-edit screen, with its own
+ * validation and its own permission, and folding it in here would make one
+ * request able to both move a booking and rewrite a registry record.
+ */
+export const mergeChannelDraftPatientSchema = z.object({
+  targetPatientId: z.string().uuid(),
+});
+
+export type MergeChannelDraftPatientInput = z.infer<typeof mergeChannelDraftPatientSchema>;
+
+/**
+ * Finds the record a draft should be merged into (§5.2).
+ *
+ * A lookup of its own rather than a reuse of the patient directory's search,
+ * because the two answer different questions. The directory lists patients;
+ * this lists *valid merge targets*, which excludes drafts by definition — and
+ * it returns the handful of fields a person at a counter uses to confirm they
+ * are looking at the right record, which the directory's list projection does
+ * not carry.
+ */
+export const listChannelMergeCandidatesQuerySchema = z.object({
+  search: z.string().trim().min(2).max(120),
+  limit: z.coerce.number().int().min(1).max(25).default(8),
+});
+
+export type ListChannelMergeCandidatesQueryInput = z.infer<
+  typeof listChannelMergeCandidatesQuerySchema
+>;
+
+/**
+ * The columns a chat-created draft leaves empty, as the worklist names them
+ * (§5.2).
+ *
+ * A closed list rather than free text, because the front-desk screen renders a
+ * label per entry and an unrecognised value would render as nothing at all —
+ * the one failure mode that looks exactly like a complete record.
+ */
+export const CHANNEL_DRAFT_MISSING_FIELDS = [
+  'dateOfBirth',
+  'sex',
+  'address',
+  'nik',
+  'bpjsNumber',
+] as const;
+
+export type ChannelDraftMissingFieldValue = (typeof CHANNEL_DRAFT_MISSING_FIELDS)[number];
+
+/**
+ * The subset of {@link CHANNEL_DRAFT_MISSING_FIELDS} whose absence keeps a
+ * booking on the worklist.
+ *
+ * Identifiers are not in it on purpose: a patient may genuinely have neither a
+ * NIK on them nor BPJS coverage, and a worklist that never clears is a
+ * worklist people stop reading. They are still *reported* as missing, so the
+ * desk knows to ask — the difference is between a prompt and a blocker.
+ */
+export const CHANNEL_DRAFT_REQUIRED_FIELDS = [
+  'dateOfBirth',
+  'address',
+] as const satisfies readonly ChannelDraftMissingFieldValue[];
