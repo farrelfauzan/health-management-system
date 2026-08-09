@@ -113,9 +113,22 @@ export type WhatsappGatewayConfig = {
   readonly kind: WaGatewayKindValue;
   /** e.g. `http://gowa:3000`. Empty means no WhatsApp gateway is configured. */
   readonly baseUrl: string;
-  /** GOWA's `APP_BASIC_AUTH` user half. */
+  /** GOWA's `APP_BASIC_AUTH` pair. Unused by WAHA, which takes a single key. */
   readonly basicAuthUsername: string;
   readonly basicAuthPassword: string;
+  /**
+   * WAHA's `X-Api-Key` (§8.5 `WA_GATEWAY_API_KEY`). A separate variable from
+   * the basic-auth pair rather than one credential field serving both: they
+   * are different secrets for different bridges, and a shared field would make
+   * a failover a find-and-replace inside a value.
+   */
+  readonly apiKey: string;
+  /**
+   * WAHA's session name, default `default`. WAHA is multi-session by design
+   * where GOWA is multi-device; one clinic uses one session, and the value is
+   * configurable only so a shared WAHA host can serve more than one clinic.
+   */
+  readonly sessionName: string;
   /**
    * The HMAC key GOWA signs every webhook body with. Empty closes the
    * WhatsApp webhook rather than opening it, exactly as the Telegram secret

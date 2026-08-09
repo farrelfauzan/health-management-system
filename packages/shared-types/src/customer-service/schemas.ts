@@ -662,8 +662,29 @@ export type GowaWebhookEventInput = z.infer<typeof gowaWebhookEventSchema>;
 /** GOWA's event name for an inbound message. Everything else is dropped. */
 export const GOWA_MESSAGE_EVENT = 'message';
 
-/** WhatsApp's suffix for a one-to-one chat JID. Groups end in `@g.us`. */
+/**
+ * The suffix this codebase stores a one-to-one WhatsApp chat under.
+ *
+ * **A canonical form, not a wire form.** The two bridges disagree: GOWA speaks
+ * `@s.whatsapp.net` and WAHA speaks `@c.us`, and both mean the same person.
+ * Storing whichever one happened to deliver a message would make
+ * `(channel, externalChatId)` — the key a conversation, its transcript, and
+ * every `ChannelPatientLink` hang off — depend on the bridge in front of it,
+ * so switching gateways would silently orphan every live conversation and
+ * every proven verification. That is not a fallback; it is a migration.
+ *
+ * So both normalizers canonicalise to this suffix and both adapters render it
+ * back to their own wire form on the way out. GOWA's value was chosen as the
+ * canonical one for the boring reason: it is already in the database from
+ * `PCS-T09`, so `PCS-T10` needs no migration.
+ */
 export const WHATSAPP_USER_JID_SUFFIX = '@s.whatsapp.net';
+
+/** WAHA's suffix for the same thing. Groups end in `@g.us` on both bridges. */
+export const WAHA_USER_JID_SUFFIX = '@c.us';
+
+/** Group chats, which v1 refuses on both bridges. */
+export const WHATSAPP_GROUP_JID_SUFFIX = '@g.us';
 
 /**
  * Which self-hosted WhatsApp bridge is configured (D-CS-01).
@@ -690,3 +711,116 @@ export function extractPhoneNumberFromJid(jid: string): string {
   const [phoneNumber = ''] = userPart.split(':');
   return phoneNumber;
 }
+
+/**
+ * Rewrites any one-to-one WhatsApp JID into {@link WHATSAPP_USER_JID_SUFFIX}
+ * form.
+ *
+ * This is what makes `WA_GATEWAY_KIND` a genuine switch rather than a
+ * one-way door: a customer mid-conversation on GOWA keeps the same
+ * conversation, transcript, and verification when the clinic fails over to
+ * WAHA, because both bridges' addresses reduce to the same stored id.
+ *
+ * Returns `null` for anything that is not a one-to-one address — a group, an
+ * empty string, a JID with no digits — so callers refuse rather than invent a
+ * conversation key from a room.
+ */
+export function toCanonicalWhatsappJid(jid: string): string | null {
+  const trimmed = jid.trim();
+  if (trimmed === '' || trimmed.endsWith(WHATSAPP_GROUP_JID_SUFFIX)) {
+    return null;
+  }
+  const phoneNumber = extractPhoneNumberFromJid(trimmed);
+  // Digits only: `status@broadcast` and WAHA's `@newsletter` addresses both
+  // parse to a non-numeric user part, and neither is a person to reply to.
+  if (phoneNumber === '' || !/^[0-9]+$/.test(phoneNumber)) {
+    return null;
+  }
+  return `${phoneNumber}${WHATSAPP_USER_JID_SUFFIX}`;
+}
+
+/**
+ * The slice of a WAHA webhook body this gateway accepts (`PCS-T10`, §2.1).
+ *
+ * Narrow for the same reason GOWA's is: WAHA publishes message, ack, presence,
+ * group, poll, call, and session-status events through one URL, and v1 answers
+ * one of them.
+ *
+ * The shape differs from GOWA's in three ways that matter, and each is a place
+ * a copy-pasted normalizer would be quietly wrong: the sender field is `from`
+ * with no separate chat id, `fromMe` is camelCase where GOWA sends
+ * `is_from_me`, and `timestamp` is **Unix seconds** where GOWA sends RFC 3339.
+ * A number read as a date string is the epoch.
+ */
+export const wahaWebhookPayloadSchema = z.object({
+  id: z.string(),
+  /** The chat's JID: `<number>@c.us` for a person, `@g.us` for a group. */
+  from: z.string(),
+  to: z.string().optional(),
+  fromMe: z.boolean().optional(),
+  /** Unix seconds, not milliseconds and not a date string. */
+  timestamp: z.number().optional(),
+  body: z.string().optional(),
+  hasMedia: z.boolean().optional(),
+});
+
+export type WahaWebhookPayloadInput = z.infer<typeof wahaWebhookPayloadSchema>;
+
+export const wahaWebhookEventSchema = z.object({
+  event: z.string(),
+  session: z.string().optional(),
+  engine: z.string().optional(),
+  payload: wahaWebhookPayloadSchema.optional(),
+});
+
+export type WahaWebhookEventInput = z.infer<typeof wahaWebhookEventSchema>;
+
+/**
+ * One inbound webhook body, before either bridge's shape is known.
+ *
+ * A **superset** of the two schemas above rather than a union of them, for one
+ * blunt reason and one design one. The blunt one: `createZodDto` needs a
+ * statically known object type, and a union has none. The design one: this
+ * schema's job is only to get a body through the pipe with unknown keys
+ * stripped — deciding *what it means* is the normalizer's, and it does that
+ * against the bridge the deployment is configured for. Validating the narrow
+ * shape here would put the GOWA/WAHA choice in two places.
+ *
+ * One route for both bridges is itself the point (`PCS-T10`): the webhook URL
+ * is registered inside the running container, so a failover that also required
+ * editing it would be a failover with an extra step to forget under pressure.
+ */
+export const whatsappWebhookEventSchema = z.object({
+  event: z.string(),
+  /** GOWA. */
+  device_id: z.string().optional(),
+  session_id: z.string().optional(),
+  /** WAHA. */
+  session: z.string().optional(),
+  engine: z.string().optional(),
+  payload: z
+    .object({
+      id: z.string().optional(),
+      /** GOWA's chat JID. WAHA has none — its `from` is the chat. */
+      chat_id: z.string().optional(),
+      from: z.string().optional(),
+      from_name: z.string().optional(),
+      to: z.string().optional(),
+      /** GOWA. */
+      is_from_me: z.boolean().optional(),
+      /** WAHA. */
+      fromMe: z.boolean().optional(),
+      /**
+       * GOWA sends RFC 3339; WAHA sends Unix **seconds**. Accepted as either
+       * and read by the normalizer that knows which — a number parsed as a
+       * date string is `NaN`, and a seconds value read as milliseconds is
+       * 1970, neither of which errors anywhere.
+       */
+      timestamp: z.union([z.string(), z.number()]).optional(),
+      body: z.string().optional(),
+      hasMedia: z.boolean().optional(),
+    })
+    .optional(),
+});
+
+export type WhatsappWebhookEventInput = z.infer<typeof whatsappWebhookEventSchema>;

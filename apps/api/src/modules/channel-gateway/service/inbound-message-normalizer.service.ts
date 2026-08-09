@@ -3,10 +3,10 @@ import { ConfigService } from '@nestjs/config';
 
 import {
   ChannelGatewayConfig,
-  GowaWebhookEventInput,
   InboundChannelMessage,
   InboundMessageOutcomeValue,
   TelegramWebhookUpdateInput,
+  WhatsappWebhookEventInput,
 } from '@hms/shared-types';
 
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
@@ -15,6 +15,7 @@ import { ChannelInboundReceiptRepository } from '../repository/channel-inbound-r
 import { InboundMessageSink } from './inbound-message-sink.service';
 import { normalizeGowaWebhook } from './normalize-gowa-webhook';
 import { normalizeTelegramUpdate } from './normalize-telegram-update';
+import { normalizeWahaWebhook } from './normalize-waha-webhook';
 
 /**
  * The inbound half of the gateway: normalize, deduplicate, hand off.
@@ -76,18 +77,35 @@ export class InboundMessageNormalizerService {
   }
 
   /**
-   * Takes in one GOWA event and reports what became of it (`PCS-T09`).
+   * Takes in one WhatsApp bridge event and reports what became of it
+   * (`PCS-T09` for GOWA, `PCS-T10` for WAHA).
    *
    * Identical in structure to the Telegram path and identical in its
-   * never-throw contract, which is the point of the shared tail below: the two
+   * never-throw contract, which is the point of the shared tail below: the
    * webhooks differ in how a body is authenticated and how it is parsed, and
    * in nothing after that. A second copy of dedup-then-sink is a second place
    * for the at-most-once guarantee to drift.
+   *
+   * **The reading is chosen by `WA_GATEWAY_KIND`, not sniffed from the body.**
+   * Guessing would be possible — the two shapes differ — but it would mean a
+   * malformed GOWA body could be re-read as a WAHA one and half-understood,
+   * and it would make "which bridge is this clinic on" a property of each
+   * request instead of of the deployment. One configured answer is also what
+   * makes the switch testable.
    */
-  async receiveWhatsappEvent(event: GowaWebhookEventInput): Promise<InboundMessageOutcomeValue> {
+  async receiveWhatsappEvent(
+    event: WhatsappWebhookEventInput,
+  ): Promise<InboundMessageOutcomeValue> {
+    if (!this.gatewayConfig.isEnabled) {
+      return 'DISABLED';
+    }
     // Receipts, presence, group chats, media with no body, and the clinic's
-    // own echoed replies all normalize to null.
-    return this.acceptMessage(this.gatewayConfig.isEnabled ? normalizeGowaWebhook(event) : null);
+    // own echoed replies all normalize to null on both bridges.
+    const message =
+      this.gatewayConfig.whatsapp.kind === 'WAHA'
+        ? normalizeWahaWebhook(event)
+        : normalizeGowaWebhook(event);
+    return this.acceptMessage(message);
   }
 
   /**

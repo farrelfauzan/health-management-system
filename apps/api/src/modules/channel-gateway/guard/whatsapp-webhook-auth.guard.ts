@@ -7,10 +7,24 @@ import { ChannelGatewayConfig } from '@hms/shared-types';
 
 import { resolveChannelGatewayConfig } from '../channel-gateway.config';
 
-/** The header GOWA sends its HMAC in. */
-const WHATSAPP_SIGNATURE_HEADER = 'x-hub-signature-256';
+/**
+ * The headers the two bridges sign in (`PCS-T10`).
+ *
+ * Both are read on every request rather than selecting by `WA_GATEWAY_KIND`,
+ * and that is deliberate: the signature is verified against the *body*, so
+ * accepting either header name cannot widen what a forger must know — they
+ * still need the secret. What it buys is that a failover does not have a
+ * window where the bridge has been switched and the API has not been
+ * restarted, which is exactly when nobody wants the webhook returning 401.
+ */
+const SIGNATURE_HEADERS = [
+  // GOWA, GitHub-style.
+  'x-hub-signature-256',
+  // WAHA.
+  'x-webhook-hmac',
+] as const;
 
-/** GOWA prefixes the hex digest with its algorithm, GitHub-style. */
+/** GOWA prefixes the hex digest with its algorithm; WAHA sends it bare. */
 const SIGNATURE_PREFIX = 'sha256=';
 
 /**
@@ -19,10 +33,13 @@ const SIGNATURE_PREFIX = 'sha256=';
  * The endpoint is `@PublicRoute` for JWT purposes — the bridge holds no HMS
  * session — so this guard is the only thing standing in front of it, exactly
  * as {@link TelegramWebhookAuthGuard} is for its own. The difference is what
- * is being checked: Telegram echoes a fixed secret, while GOWA signs the
- * **body** with HMAC-SHA256. That is the stronger of the two — a fixed secret
- * replayed from a captured request is still valid, whereas a signature only
- * authenticates the bytes it was computed over.
+ * is being checked: Telegram echoes a fixed secret, while both WhatsApp
+ * bridges sign the **body** with HMAC-SHA256. That is the stronger of the two
+ * — a fixed secret replayed from a captured request is still valid, whereas a
+ * signature only authenticates the bytes it was computed over.
+ *
+ * GOWA and WAHA agree on the algorithm and the digest and disagree only on
+ * the header name, so `PCS-T10` reads either one.
  *
  * Which is why this reads `request.rawBody` and not the parsed object.
  * Verifying against `JSON.stringify(body)` would be verifying a
@@ -62,12 +79,29 @@ export class WhatsappWebhookAuthGuard implements CanActivate {
       // outcome — silently accepting unsigned bodies is the alternative.
       throw new UnauthorizedException('WhatsApp webhook body could not be verified');
     }
-    const headerValue = request.headers?.[WHATSAPP_SIGNATURE_HEADER];
-    const presentedSignature = typeof headerValue === 'string' ? headerValue : '';
+    const presentedSignature = this.readSignature(request.headers);
     if (!this.isMatchingSignature(presentedSignature, rawBody, expectedSecret)) {
       throw new UnauthorizedException('Invalid WhatsApp webhook signature');
     }
     return true;
+  }
+
+  /**
+   * The first signature header either bridge supplied, or an empty string.
+   *
+   * An empty string still reaches the comparison rather than short-circuiting,
+   * so a missing header and a wrong one take the same path and the same time.
+   */
+  private readSignature(
+    headers: Record<string, string | string[] | undefined> | undefined,
+  ): string {
+    for (const headerName of SIGNATURE_HEADERS) {
+      const value = headers?.[headerName];
+      if (typeof value === 'string' && value !== '') {
+        return value;
+      }
+    }
+    return '';
   }
 
   /**

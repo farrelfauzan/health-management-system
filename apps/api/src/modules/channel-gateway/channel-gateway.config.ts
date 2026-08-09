@@ -60,6 +60,8 @@ export function resolveChannelGatewayConfig(configService: ConfigService): Chann
       baseUrl: readTrimmed(configService, 'WA_GATEWAY_BASE_URL').replace(/\/+$/, ''),
       basicAuthUsername: readTrimmed(configService, 'WA_GATEWAY_BASIC_AUTH_USERNAME'),
       basicAuthPassword: readTrimmed(configService, 'WA_GATEWAY_BASIC_AUTH_PASSWORD'),
+      apiKey: readTrimmed(configService, 'WA_GATEWAY_API_KEY'),
+      sessionName: readTrimmed(configService, 'WA_GATEWAY_SESSION_NAME') || 'default',
       webhookSecret: readTrimmed(configService, 'WA_GATEWAY_WEBHOOK_SECRET'),
       deviceId: readTrimmed(configService, 'WA_GATEWAY_DEVICE_ID'),
       sendPacingMs: readPositiveInteger(

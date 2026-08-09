@@ -2,12 +2,17 @@ import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 
 import { PublicRoute } from '../../../common/authorization/public-route.decorator';
-import { GowaWebhookEventDto } from '../dto/gowa-webhook-event.dto';
+import { WhatsappWebhookEventDto } from '../dto/whatsapp-webhook-event.dto';
 import { WhatsappWebhookAuthGuard } from '../guard/whatsapp-webhook-auth.guard';
 import { InboundMessageNormalizerService } from '../service/inbound-message-normalizer.service';
 
 /**
  * The WhatsApp bridge's delivery endpoint (`PCS-T09`, §2.1, §8.1).
+ *
+ * **One route for both bridges** (`PCS-T10`). The webhook URL is the thing an
+ * operator registers inside the running container, so a failover that also
+ * required editing it would be a failover with an extra step to forget under
+ * pressure — the body shape is resolved from configuration instead.
  *
  * `@PublicRoute` for JWT purposes because GOWA holds no HMS session;
  * {@link WhatsappWebhookAuthGuard} is the actual authentication, on the
@@ -39,7 +44,7 @@ export class WhatsappWebhookController {
   @HttpCode(200)
   @PublicRoute()
   @UseGuards(WhatsappWebhookAuthGuard)
-  async receiveEvent(@Body() body: GowaWebhookEventDto) {
+  async receiveEvent(@Body() body: WhatsappWebhookEventDto) {
     const outcome = await this.inboundMessageNormalizer.receiveWhatsappEvent(body);
 
     return { data: { outcome } };

@@ -75,12 +75,15 @@ that is harder to distinguish from a person typing.
 
 ## 4. Deployment posture
 
-The compose service is behind the `whatsapp` profile, so it does not start by
-default:
+Each bridge is behind its own profile, so neither starts by default:
 
 ```bash
-docker compose -f infra/docker/docker-compose.dev.yml --profile whatsapp up -d
+docker compose -f infra/docker/docker-compose.dev.yml --profile whatsapp-gowa up -d
 ```
+
+**Bring up one bridge, never both.** Only one can hold the clinic's paired
+session, and two containers racing for it is a session neither keeps. The
+profiles are separate for exactly that reason.
 
 Three properties of that service are load-bearing rather than incidental, and
 each is a way the clinic's WhatsApp session can be stolen if it is changed:
@@ -152,7 +155,45 @@ the number is gone: move to a new SIM and restart the warm-up from day one.
 
 ---
 
-## 6. Daily checks
+## 6. Failing over to WAHA
+
+WAHA is the documented fallback (D-CS-01). Both bridges drive WhatsApp Web over
+the same unofficial protocol, so a WhatsApp update that breaks one may well not
+break the other — that is the whole hedge, and it is why the codebase talks to
+both through one pair of ports.
+
+**What the switch costs, honestly:** it is a configuration change on the HMS
+side and a **re-pair** on the WhatsApp side. The two bridges store incompatible
+session state in separate volumes, so the number has to be linked again by QR.
+Budget a few minutes of the channel being down, and do it deliberately rather
+than at 9am on a Monday.
+
+**What the switch does *not* cost:** conversations. Both bridges' chat ids
+canonicalise to one stored form, so every live conversation, its transcript,
+and every proven `ChannelPatientLink` verification survives — customers
+mid-booking are not restarted under a new identity. No code changes, and no
+database migration.
+
+1. Stop the current bridge:
+   ```bash
+   docker compose -f infra/docker/docker-compose.dev.yml --profile whatsapp-gowa down
+   ```
+2. Set `WA_GATEWAY_KIND=WAHA` and `WA_GATEWAY_API_KEY` in the API's
+   environment. `WA_GATEWAY_WEBHOOK_SECRET` stays as it is — the guard reads
+   both bridges' signature headers, so one secret serves either.
+3. Start WAHA:
+   ```bash
+   docker compose -f infra/docker/docker-compose.dev.yml --profile whatsapp-waha up -d
+   ```
+4. Restart the API so it re-reads the configuration.
+5. Re-pair (§5). The admin card now reads `WAHA` and shows `SCAN_QR_CODE`
+   until the QR is scanned.
+6. Send yourself a message and confirm a reply arrives.
+
+The same sequence in reverse returns to GOWA. Neither bridge's session volume
+is deleted by the switch, so a return is a re-pair and not a rebuild.
+
+## 7. Daily checks
 
 - The WhatsApp session card is green.
 - The handoff queue (`/admin/conversations`, filter *Needs a human*) is not
@@ -161,7 +202,7 @@ the number is gone: move to a new SIM and restart the warm-up from day one.
 - The arrival worklist on `/admin/registrations` has been worked, so
   chat-created drafts are not accumulating.
 
-## 7. What to do on a ban
+## 8. What to do on a ban
 
 1. Stop the channel: `CS_CHANNEL_ENABLED=false`, restart the API. The webhooks
    stay registered and answer `DISABLED`, which is a much easier state to
