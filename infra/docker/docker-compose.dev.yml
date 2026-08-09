@@ -80,7 +80,11 @@ services:
   gowa:
     image: aldinokemal2104/go-whatsapp-web-multidevice:latest
     container_name: hms-gowa
-    profiles: ['whatsapp']
+    # Per-bridge profiles rather than one `whatsapp` profile (`PCS-T10`):
+    # only one bridge may hold the clinic's number at a time, and a profile
+    # that started both would have two containers racing for the same paired
+    # session. The API's WA_GATEWAY_KIND has to agree with whichever is up.
+    profiles: ['whatsapp-gowa']
     restart: unless-stopped
     environment:
       APP_PORT: 3000
@@ -98,6 +102,36 @@ services:
       - hms-gowa-session:/app/storages
     healthcheck:
       test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/app/devices || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # The documented fallback (PCS-T10, D-CS-01). Same private-network posture as
+  # GOWA above and for the same reasons — no published port, auth on, session
+  # volume persisted — because the risk is identical: whoever reaches this
+  # container can send as the clinic.
+  #
+  # Bring it up *instead of* gowa, not alongside it, and set
+  # WA_GATEWAY_KIND=WAHA so the API reads WAHA's webhook shape. Conversations
+  # survive the switch: both bridges' chat ids canonicalise to one stored form.
+  waha:
+    image: devlikeapro/waha:latest
+    container_name: hms-waha
+    profiles: ['whatsapp-waha']
+    restart: unless-stopped
+    environment:
+      WHATSAPP_API_KEY: ${WA_GATEWAY_API_KEY:-hmsdevwahakey}
+      WHATSAPP_DEFAULT_ENGINE: NOWEB
+      # `api` resolves on this network; the webhook never leaves it. The URL is
+      # the same one GOWA posts to — one route serves both bridges, so a
+      # failover does not also mean editing a running container's webhook.
+      WHATSAPP_HOOK_URL: http://api:3001/api/v1/channels/whatsapp/webhook
+      WHATSAPP_HOOK_EVENTS: message
+      WHATSAPP_HOOK_HMAC_KEY: ${WA_GATEWAY_WEBHOOK_SECRET:-hms-dev-webhook-secret}
+    volumes:
+      - hms-waha-session:/app/.sessions
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/api/sessions || exit 1']
       interval: 15s
       timeout: 5s
       retries: 5
@@ -132,6 +166,11 @@ services:
       WA_GATEWAY_BASIC_AUTH_PASSWORD: ${WA_GATEWAY_BASIC_AUTH_PASSWORD:-hmsdevsecret}
       WA_GATEWAY_WEBHOOK_SECRET: ${WA_GATEWAY_WEBHOOK_SECRET:-hms-dev-webhook-secret}
       WA_GATEWAY_DEVICE_ID: ${WA_GATEWAY_DEVICE_ID:-}
+      # WAHA's credential and session name. Unset on a GOWA deployment and
+      # harmless there — the adapter that reads them is constructed either way
+      # but only one is bound.
+      WA_GATEWAY_API_KEY: ${WA_GATEWAY_API_KEY:-hmsdevwahakey}
+      WA_GATEWAY_SESSION_NAME: ${WA_GATEWAY_SESSION_NAME:-default}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
@@ -183,6 +222,9 @@ services:
 volumes:
   hms-postgres-data:
   hms-minio-data:
-  # Paired-device credentials. Losing this volume means re-scanning a QR code
-  # against a live WhatsApp number (§8.4).
+  # Paired-device credentials. Losing either volume means re-scanning a QR code
+  # against a live WhatsApp number (§8.4). They are separate because the two
+  # bridges store incompatible session state — a failover is a re-pair, which
+  # the runbook says out loud.
   hms-gowa-session:
+  hms-waha-session:

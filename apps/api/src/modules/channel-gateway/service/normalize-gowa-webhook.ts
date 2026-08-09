@@ -1,10 +1,10 @@
 import {
-  GOWA_MESSAGE_EVENT,
-  GowaWebhookEventInput,
   extractPhoneNumberFromJid,
+  GOWA_MESSAGE_EVENT,
   INBOUND_MESSAGE_MAX_LENGTH,
   InboundChannelMessage,
-  WHATSAPP_USER_JID_SUFFIX,
+  toCanonicalWhatsappJid,
+  WhatsappWebhookEventInput,
 } from '@hms/shared-types';
 
 /**
@@ -26,9 +26,11 @@ import {
  * - **`is_from_me`.** GOWA echoes the clinic's *own* outbound messages back
  *   through the same webhook. Without this the bot answers itself, and two
  *   automated turns is an infinite loop with a banned number at the end of it.
- * - **Group chats.** A `@g.us` chat id would attribute several people's
- *   messages to one conversation and then reply to all of them — the same
- *   rejection the Telegram normalizer makes on `chat.type`.
+ * - **Anything that is not a one-to-one address.** A `@g.us` group would
+ *   attribute several people's messages to one conversation and then reply to
+ *   all of them — the same rejection the Telegram normalizer makes on
+ *   `chat.type` — and `status@broadcast` is not a person at all. Both are
+ *   refused by {@link toCanonicalWhatsappJid} returning null.
  * - **Empty or whitespace-only bodies.** A media message arrives as a
  *   `message` event with no `body`; there is nothing to classify, and an empty
  *   string would still occupy a dedup row and a transcript turn. Unlike
@@ -37,7 +39,9 @@ import {
  *   through a card.
  * - **Bodies past {@link INBOUND_MESSAGE_MAX_LENGTH}.**
  */
-export function normalizeGowaWebhook(event: GowaWebhookEventInput): InboundChannelMessage | null {
+export function normalizeGowaWebhook(
+  event: WhatsappWebhookEventInput,
+): InboundChannelMessage | null {
   if (event.event !== GOWA_MESSAGE_EVENT) {
     return null;
   }
@@ -45,7 +49,18 @@ export function normalizeGowaWebhook(event: GowaWebhookEventInput): InboundChann
   if (payload === undefined || payload.is_from_me === true) {
     return null;
   }
-  if (!payload.chat_id.endsWith(WHATSAPP_USER_JID_SUFFIX)) {
+  // The wire schema is a permissive superset of both bridges (`PCS-T10`), so
+  // the fields *this* bridge requires are checked here rather than assumed.
+  // A GOWA body with no id or no chat is not a message this clinic can hold a
+  // conversation in, and refusing beats inventing a key for it.
+  if (payload.id === undefined || payload.chat_id === undefined) {
+    return null;
+  }
+  // Canonicalised rather than stored as delivered (`PCS-T10`): GOWA and WAHA
+  // address the same person differently, and the conversation key must not
+  // depend on which bridge is in front of the clinic today.
+  const canonicalChatId = toCanonicalWhatsappJid(payload.chat_id);
+  if (canonicalChatId === null) {
     return null;
   }
   const text = payload.body?.trim() ?? '';
@@ -61,7 +76,7 @@ export function normalizeGowaWebhook(event: GowaWebhookEventInput): InboundChann
     // The chat JID, not the sender's. On a one-to-one chat they are the same
     // number, but they are different *fields* — and the conversation is keyed
     // on where a reply has to go, which is the chat.
-    externalChatId: payload.chat_id,
+    externalChatId: canonicalChatId,
     externalMessageId: payload.id,
     senderDisplayName: buildDisplayName(payload.from_name),
     text,
@@ -87,8 +102,8 @@ export function normalizeGowaWebhook(event: GowaWebhookEventInput): InboundChann
  * an unparseable value must not produce an `Invalid Date` that reaches the
  * database as a null and sorts a transcript at the epoch.
  */
-function parseTimestamp(timestamp: string | undefined): string {
-  if (timestamp === undefined) {
+function parseTimestamp(timestamp: string | number | undefined): string {
+  if (typeof timestamp !== 'string') {
     return new Date().toISOString();
   }
   const parsed = Date.parse(timestamp);

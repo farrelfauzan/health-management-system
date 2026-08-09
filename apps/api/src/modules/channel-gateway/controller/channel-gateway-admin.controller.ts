@@ -6,7 +6,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { CHANNEL_GATEWAY_EXAMPLES } from '../../../common/openapi/channel-gateway-examples';
-import { GowaWhatsappAdapter } from '../infrastructure/gowa-whatsapp.adapter';
+import { WhatsappSessionService } from '../infrastructure/whatsapp-session.service';
 
 /**
  * The operational surface of the WhatsApp bridge (`PCS-T09`, §8.4).
@@ -18,6 +18,11 @@ import { GowaWhatsappAdapter } from '../infrastructure/gowa-whatsapp.adapter';
  * delivered. A clinic can lose a day of customer messages without a single
  * log line saying so. These two routes exist to make that visible and fixable
  * without shell access to the container.
+ *
+ * They depend on {@link WhatsappSessionService}, not on a vendor class
+ * (`PCS-T10`): which bridge is running is a deployment fact, and a controller
+ * that named GOWA would have to be edited to fail over to WAHA — which is
+ * precisely the redesign D-CS-01 exists to avoid.
  *
  * Both sit behind `BpjsConfig`'s `manage` grant rather than a new one. The
  * question they answer is the same question that grant already exists for —
@@ -32,7 +37,7 @@ import { GowaWhatsappAdapter } from '../infrastructure/gowa-whatsapp.adapter';
   path: 'admin/channel-gateway/whatsapp',
 })
 export class ChannelGatewayAdminController {
-  constructor(private readonly gowaAdapter: GowaWhatsappAdapter) {}
+  constructor(private readonly whatsappSession: WhatsappSessionService) {}
 
   @Get('session')
   @Auth([{ action: 'manage', subject: 'BpjsConfig' }])
@@ -44,7 +49,7 @@ export class ChannelGatewayAdminController {
   })
   async getSessionHealth(@AuthUser() currentUser?: CurrentUser) {
     this.assertAuthenticated(currentUser);
-    const view = await this.gowaAdapter.readSessionHealth();
+    const view = await this.whatsappSession.readSessionHealth();
 
     return { data: view };
   }
@@ -63,7 +68,7 @@ export class ChannelGatewayAdminController {
   })
   async startPairing(@AuthUser() currentUser?: CurrentUser) {
     this.assertAuthenticated(currentUser);
-    const view = await this.gowaAdapter.startPairing();
+    const view = await this.whatsappSession.startPairing();
 
     return { data: view, message: 'Pairing started' };
   }
