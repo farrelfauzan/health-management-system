@@ -118,4 +118,27 @@ export const CS_REPLY_TEMPLATES = {
    */
   otpAwaitingCode:
     'Saya masih menunggu kode 6 digit yang dikirim ke nomor Anda. Balas kodenya, atau ketik "lanjut" untuk melewati langkah ini.',
+
+  /**
+   * The code itself, sent to the *registered* number (`PCS-T09`, §5.1.1 tier
+   * 3).
+   *
+   * The one outbound message on this channel that is not a reply, because a
+   * possession challenge is by definition addressed to someone who has not
+   * written to us. It is therefore written to be read by a stranger: it names
+   * the clinic, it says what the code is for, and it says plainly that
+   * ignoring it is safe — a person receiving an unexplained six-digit code
+   * from an unknown number is being phished, as far as they can tell, and the
+   * message has to answer that before it asks for anything.
+   *
+   * It also asks for nothing. There is no link, no reply-to instruction beyond
+   * the chat the customer is already in, and nothing that would train a
+   * patient to act on a WhatsApp message claiming to be their clinic.
+   */
+  otpCodeMessage: (code: string): string =>
+    [
+      `Kode verifikasi Anda: ${code}`,
+      'Kode ini digunakan untuk memastikan pemesanan janji temu lewat chat benar dari Anda. Berlaku 5 menit.',
+      'Jika Anda tidak sedang memesan janji temu, abaikan pesan ini. Kami tidak akan pernah meminta NIK, nomor BPJS, atau data lain lewat chat.',
+    ].join('\n\n'),
 } as const;

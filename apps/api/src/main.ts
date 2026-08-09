@@ -8,6 +8,13 @@ import { stringify } from 'yaml';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
+    // Keeps the undecoded request body on `request.rawBody` (`PCS-T09`).
+    // GOWA signs the exact bytes it sent, and a signature verified against
+    // `JSON.stringify(parsedBody)` would be verifying a re-serialisation —
+    // key order, whitespace, and unicode escaping are all free to differ, so
+    // the check would fail on valid deliveries and, worse, could be made to
+    // pass on crafted ones. The raw buffer is the only thing worth signing.
+    rawBody: true,
     cors: {
       origin: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],

@@ -613,3 +613,80 @@ export const CHANNEL_DRAFT_REQUIRED_FIELDS = [
   'dateOfBirth',
   'address',
 ] as const satisfies readonly ChannelDraftMissingFieldValue[];
+
+/**
+ * The slice of a GOWA webhook body this gateway accepts (`PCS-T09`, §2.1).
+ *
+ * **Deliberately not GOWA's full event surface.** It publishes message,
+ * receipt, presence, group, and connection events through one URL, and v1
+ * answers one of them. Parsing to a narrow shape at the edge is what keeps
+ * "the gateway is a dumb pipe" true of the data as well as the code: an event
+ * carrying a media payload or a group notification fails this schema and is
+ * acknowledged and dropped rather than half-understood.
+ *
+ * `passthrough` is **not** used, so unknown keys are stripped rather than
+ * carried into anything that persists them.
+ */
+export const gowaWebhookPayloadSchema = z.object({
+  id: z.string(),
+  /**
+   * The chat's JID. Equal to `from` for a one-to-one chat and a `@g.us` group
+   * id otherwise, which is how a group is recognised and refused.
+   */
+  chat_id: z.string(),
+  /** The sender's full JID, e.g. `628123456789@s.whatsapp.net`. */
+  from: z.string().optional(),
+  from_name: z.string().optional(),
+  /** RFC 3339. */
+  timestamp: z.string().optional(),
+  /**
+   * True when the clinic's own device sent it. Echoed back to us on every
+   * outbound message, and dropping these is what stops the bot answering
+   * itself.
+   */
+  is_from_me: z.boolean().optional(),
+  body: z.string().optional(),
+});
+
+export type GowaWebhookPayloadInput = z.infer<typeof gowaWebhookPayloadSchema>;
+
+export const gowaWebhookEventSchema = z.object({
+  event: z.string(),
+  device_id: z.string().optional(),
+  session_id: z.string().optional(),
+  payload: gowaWebhookPayloadSchema.optional(),
+});
+
+export type GowaWebhookEventInput = z.infer<typeof gowaWebhookEventSchema>;
+
+/** GOWA's event name for an inbound message. Everything else is dropped. */
+export const GOWA_MESSAGE_EVENT = 'message';
+
+/** WhatsApp's suffix for a one-to-one chat JID. Groups end in `@g.us`. */
+export const WHATSAPP_USER_JID_SUFFIX = '@s.whatsapp.net';
+
+/**
+ * Which self-hosted WhatsApp bridge is configured (D-CS-01).
+ *
+ * `GOWA` is the pragmatic v1 (`PCS-T09`) and `WAHA` the tested fallback
+ * (`PCS-T10`). Both sit behind one port, so this value picks a provider
+ * binding rather than a code path — and the official Cloud API joins the enum
+ * as a third value when it lands, not as a rewrite.
+ */
+export const WA_GATEWAY_KINDS = ['GOWA', 'WAHA'] as const;
+
+export type WaGatewayKindValue = (typeof WA_GATEWAY_KINDS)[number];
+
+/**
+ * The digits in front of the JID's suffix.
+ *
+ * A JID is `<number>@s.whatsapp.net`, sometimes with a `:device` part on the
+ * user half — `628123456789:12@s.whatsapp.net` is the same person on their
+ * second linked device. Both are stripped, because the thing being compared
+ * against a patient record is a phone number.
+ */
+export function extractPhoneNumberFromJid(jid: string): string {
+  const [userPart = ''] = jid.split('@');
+  const [phoneNumber = ''] = userPart.split(':');
+  return phoneNumber;
+}

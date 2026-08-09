@@ -443,5 +443,28 @@
       "merged": "Draf berhasil digabungkan ke pasien terdaftar.",
       "failed": "Draf gagal digabungkan."
     }
+  },
+  "channelGateway": {
+    "whatsapp": {
+      "title": "Sesi WhatsApp ({kind})",
+      "checkedAt": "Diperiksa pukul {time}",
+      "status": {
+        "HEALTHY": "Terhubung",
+        "DISCONNECTED": "Tidak terhubung",
+        "LOGGED_OUT": "Keluar — balasan tidak terkirim",
+        "NOT_CONFIGURED": "Belum dikonfigurasi"
+      },
+      "hint": {
+        "HEALTHY": "Pesan terkirim dan diterima normal.",
+        "DISCONNECTED": "Bridge sedang tidak dapat menjangkau WhatsApp. Biasanya pulih sendiri dalam satu menit.",
+        "LOGGED_OUT": "Perangkat sudah tidak terpasang. Pelanggan tetap mengirim pesan dan tidak ada yang sampai. Pasangkan ulang dengan ponsel pemilik nomor.",
+        "NOT_CONFIGURED": "Belum ada gateway WhatsApp untuk klinik ini."
+      },
+      "pair": "Pasangkan ulang",
+      "pairing": "Memulai…",
+      "pairFailed": "Pemasangan gagal dimulai.",
+      "pairInstructions": "Buka tautan ini dari dalam jaringan klinik, lalu pindai di WhatsApp melalui Setelan → Perangkat tertaut.",
+      "pairExpiry": "Kode berlaku sekitar {seconds} detik."
+    }
   }
 }

@@ -3,6 +3,7 @@ import type {
   ChannelKindValue,
   ConversationMessageRoleValue,
   ConversationStateValue,
+  WaGatewayKindValue,
 } from '#customer-service/schemas';
 
 /**
@@ -171,4 +172,43 @@ export type ChannelMergeCandidateView = {
   fullName: string;
   phoneNumber: string;
   dateOfBirth: string | null;
+};
+
+/**
+ * Whether the clinic's WhatsApp session is alive (`PCS-T09`, §8.4).
+ *
+ * §8.4 names a silently logged-out WhatsApp session as the channel's number
+ * one operational failure mode, and the reason it is *silent* is that nothing
+ * fails: the bridge keeps answering, the API keeps accepting bookings, and
+ * every reply is simply never delivered. This is the shape that makes it
+ * visible.
+ *
+ * The three booleans are separate on purpose because they fail in different
+ * ways and want different responses. `isConfigured` false means nobody set the
+ * gateway up; `isConnected` false means the bridge cannot reach WhatsApp,
+ * which usually resolves itself; `isLoggedIn` false is the one that needs a
+ * person with the clinic's phone, because it means the pairing is gone and
+ * only a QR scan brings it back.
+ */
+export type WhatsappSessionHealth = {
+  kind: WaGatewayKindValue;
+  isConfigured: boolean;
+  isConnected: boolean;
+  isLoggedIn: boolean;
+  /** When this was read. A stale card is worse than no card. */
+  checkedAt: string;
+};
+
+/**
+ * A pairing session started for a re-auth (§8.4).
+ *
+ * `qrLink` points at the **bridge**, on the private network, and is not
+ * proxied through HMS. Fetching the image and re-serving it would put a live
+ * pairing credential in an HMS response and its caches — and a WhatsApp
+ * pairing code grants the session outright, so it is the one secret that must
+ * not travel further than it has to.
+ */
+export type WhatsappPairingSessionView = {
+  qrLink: string;
+  expiresInSeconds: number | null;
 };

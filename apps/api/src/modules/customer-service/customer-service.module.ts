@@ -23,6 +23,8 @@ import { CsSafetyPolicyService } from './service/cs-safety-policy.service';
 import { CsSystemActorService } from './service/cs-system-actor.service';
 import { HandoffService } from './service/handoff.service';
 import { IntentOrchestratorService } from './service/intent-orchestrator.service';
+import { OtpDeliveryService } from './service/otp-delivery.service';
+import { WhatsappOtpDeliveryAdapter } from './service/whatsapp-otp-delivery.adapter';
 import { BookAppointmentTool } from './tools/definitions/book-appointment.tool';
 import { ListAvailableSessionsTool } from './tools/definitions/list-available-sessions.tool';
 import { SearchFaqTool } from './tools/definitions/search-faq.tool';
@@ -50,11 +52,14 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
  * here, and there must not be — a module a public channel cannot import is a
  * module a prompt injection cannot reach.
  *
- * {@link OtpDeliveryService} is deliberately **not** provided: §5.1.1's code
- * tier needs a transport to the patient's registered number, Telegram is not
- * one, and `PCS-T09` binds the WhatsApp gateway. Until then the contact-share
- * tier carries verification and everything else falls through to a draft
- * booking, which is a specified outcome rather than a degraded one.
+ * {@link OtpDeliveryService} is bound at `PCS-T09` to the WhatsApp gateway,
+ * closing the last gap §5.1.1 left open. The tier needed a transport to the
+ * patient's *registered* number rather than to the chat that asked, which
+ * Telegram structurally cannot be — so it waited for WhatsApp and arrives as a
+ * provider binding rather than as an edit to the booking flow. A deployment
+ * running Telegram alone still resolves it, and the adapter refuses to send
+ * against an unconfigured bridge, which the flow already treats as "cannot
+ * challenge by code" and falls through to a draft booking.
  */
 @Module({
   // `forwardRef` because the relationship genuinely runs both ways and
@@ -95,6 +100,10 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
     {
       provide: InboundMessageSink,
       useExisting: ConversationService,
+    },
+    {
+      provide: OtpDeliveryService,
+      useClass: WhatsappOtpDeliveryAdapter,
     },
   ],
   exports: [ConversationRepository, HandoffService, InboundMessageSink],

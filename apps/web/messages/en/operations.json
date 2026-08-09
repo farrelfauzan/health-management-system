@@ -443,5 +443,28 @@
       "merged": "The draft was merged into the existing patient.",
       "failed": "The draft could not be merged."
     }
+  },
+  "channelGateway": {
+    "whatsapp": {
+      "title": "WhatsApp session ({kind})",
+      "checkedAt": "Checked at {time}",
+      "status": {
+        "HEALTHY": "Connected",
+        "DISCONNECTED": "Not connected",
+        "LOGGED_OUT": "Logged out — replies are not being delivered",
+        "NOT_CONFIGURED": "Not configured"
+      },
+      "hint": {
+        "HEALTHY": "Messages are being sent and received normally.",
+        "DISCONNECTED": "The bridge cannot reach WhatsApp right now. This usually clears on its own within a minute.",
+        "LOGGED_OUT": "The device pairing is gone. Customers are still messaging and nothing is reaching them. Re-pair with the phone that owns the number.",
+        "NOT_CONFIGURED": "No WhatsApp gateway is set up for this clinic."
+      },
+      "pair": "Re-pair",
+      "pairing": "Starting…",
+      "pairFailed": "Pairing could not be started.",
+      "pairInstructions": "Open this link from inside the clinic network, then scan it in WhatsApp under Settings → Linked devices.",
+      "pairExpiry": "The code expires in about {seconds} seconds."
+    }
   }
 }

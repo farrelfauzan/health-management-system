@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 
 import {
   ChannelGatewayConfig,
+  GowaWebhookEventInput,
+  InboundChannelMessage,
   InboundMessageOutcomeValue,
   TelegramWebhookUpdateInput,
 } from '@hms/shared-types';
@@ -11,6 +13,7 @@ import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { resolveChannelGatewayConfig } from '../channel-gateway.config';
 import { ChannelInboundReceiptRepository } from '../repository/channel-inbound-receipt.repository';
 import { InboundMessageSink } from './inbound-message-sink.service';
+import { normalizeGowaWebhook } from './normalize-gowa-webhook';
 import { normalizeTelegramUpdate } from './normalize-telegram-update';
 
 /**
@@ -67,12 +70,41 @@ export class InboundMessageNormalizerService {
   async receiveTelegramUpdate(
     update: TelegramWebhookUpdateInput,
   ): Promise<InboundMessageOutcomeValue> {
+    // Stickers, edits, joins, group chats, bots normalize to null and are
+    // acknowledged and dropped.
+    return this.acceptMessage(this.gatewayConfig.isEnabled ? normalizeTelegramUpdate(update) : null);
+  }
+
+  /**
+   * Takes in one GOWA event and reports what became of it (`PCS-T09`).
+   *
+   * Identical in structure to the Telegram path and identical in its
+   * never-throw contract, which is the point of the shared tail below: the two
+   * webhooks differ in how a body is authenticated and how it is parsed, and
+   * in nothing after that. A second copy of dedup-then-sink is a second place
+   * for the at-most-once guarantee to drift.
+   */
+  async receiveWhatsappEvent(event: GowaWebhookEventInput): Promise<InboundMessageOutcomeValue> {
+    // Receipts, presence, group chats, media with no body, and the clinic's
+    // own echoed replies all normalize to null.
+    return this.acceptMessage(this.gatewayConfig.isEnabled ? normalizeGowaWebhook(event) : null);
+  }
+
+  /**
+   * Dedup, then hand off. Shared by both webhooks.
+   *
+   * A `null` message here means one of two different things — the channel is
+   * switched off, or the event is not one this clinic answers — and they are
+   * deliberately *not* distinguished, because the callers already know which
+   * applies and the outcome only has to be true for an operator reading a log.
+   */
+  private async acceptMessage(
+    message: InboundChannelMessage | null,
+  ): Promise<InboundMessageOutcomeValue> {
     if (!this.gatewayConfig.isEnabled) {
       return 'DISABLED';
     }
-    const message = normalizeTelegramUpdate(update);
     if (message === null) {
-      // Stickers, edits, joins, group chats, bots. Acknowledged and dropped.
       return 'IGNORED';
     }
     const isFirstDelivery = await this.receiptRepository.claimInboundMessage(message);

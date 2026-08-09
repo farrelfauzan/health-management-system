@@ -16657,6 +16657,136 @@ paths:
         - bearer: []
       summary: Queue one of your documents for re-ingestion
       tags: *a26
+  /api/v1/admin/channel-gateway/whatsapp/session:
+    get:
+      operationId: ChannelGatewayAdminController_getSessionHealth_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Whether the bridge is configured, reachable, and still paired. The
+            three flags fail in different ways and want different responses: not
+            configured means nobody set the gateway up, not connected usually
+            resolves itself, and **not logged in is the one that needs a person
+            with the clinic’s phone** — the pairing is gone and only a QR scan
+            brings it back. An unreachable bridge answers with connected=false
+            rather than erroring, because a status card that errors looks
+            exactly like one nobody loaded."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      kind:
+                        type: string
+                      isConfigured:
+                        type: boolean
+                      isConnected:
+                        type: boolean
+                      isLoggedIn:
+                        type: boolean
+                      checkedAt:
+                        type: string
+                    required:
+                      - kind
+                      - isConfigured
+                      - isConnected
+                      - isLoggedIn
+                      - checkedAt
+                required:
+                  - data
+                example:
+                  data:
+                    kind: GOWA
+                    isConfigured: true
+                    isConnected: true
+                    isLoggedIn: true
+                    checkedAt: 2026-08-09T03:12:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the WhatsApp session’s health
+      tags: &a27
+        - Channel Gateway
+  /api/v1/admin/channel-gateway/whatsapp/session/pairing:
+    post:
+      operationId: ChannelGatewayAdminController_startPairing_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Begins re-authentication and returns the bridge’s own QR link. The
+            link points at the bridge on the private network and is **not**
+            proxied through HMS: fetching the image and re-serving it would put
+            a live pairing credential in an HMS response and its caches, and a
+            WhatsApp pairing code grants the session outright. Scan it from
+            inside that network, then poll GET /session until isLoggedIn is
+            true."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      qrLink:
+                        type: string
+                      expiresInSeconds:
+                        type: integer
+                    required:
+                      - qrLink
+                      - expiresInSeconds
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    qrLink: http://gowa:3000/statics/qrcode/scan-qr-628123456789.png
+                    expiresInSeconds: 60
+                  message: Pairing started
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Start a QR pairing for the WhatsApp session
+      tags: *a27
   /api/v1/admin/conversations:
     get:
       operationId: CsAdminController_listConversations_v1
@@ -16806,7 +16936,7 @@ paths:
       security:
         - bearer: []
       summary: List channel conversations
-      tags: &a27
+      tags: &a28
         - Customer Service
   /api/v1/admin/conversations/handoff-summary:
     get:
@@ -16867,7 +16997,7 @@ paths:
       security:
         - bearer: []
       summary: Count the conversations waiting for a human
-      tags: *a27
+      tags: *a28
   /api/v1/admin/conversations/{id}:
     get:
       operationId: CsAdminController_getTranscript_v1
@@ -17042,7 +17172,7 @@ paths:
       security:
         - bearer: []
       summary: Read one conversation transcript
-      tags: *a27
+      tags: *a28
   /api/v1/admin/conversations/{id}/takeover:
     post:
       operationId: CsAdminController_takeOver_v1
@@ -17152,7 +17282,7 @@ paths:
       security:
         - bearer: []
       summary: Take a conversation over from the bot
-      tags: *a27
+      tags: *a28
   /api/v1/admin/conversations/{id}/release:
     post:
       operationId: CsAdminController_release_v1
@@ -17260,7 +17390,7 @@ paths:
       security:
         - bearer: []
       summary: Hand a conversation back to the bot
-      tags: *a27
+      tags: *a28
   /api/v1/admin/conversations/{id}/reply:
     post:
       operationId: CsAdminController_reply_v1
@@ -17376,7 +17506,7 @@ paths:
       security:
         - bearer: []
       summary: Reply to the customer on their original channel
-      tags: *a27
+      tags: *a28
   /api/v1/admin/conversations/{id}/block:
     post:
       operationId: CsAdminController_block_v1
@@ -17504,7 +17634,7 @@ paths:
       security:
         - bearer: []
       summary: Block a chat (§8.3 abuse control)
-      tags: *a27
+      tags: *a28
     delete:
       operationId: CsAdminController_unblock_v1
       parameters:
@@ -17610,7 +17740,7 @@ paths:
       security:
         - bearer: []
       summary: Unblock a chat
-      tags: *a27
+      tags: *a28
   /api/v1/admin/channel-arrivals:
     get:
       operationId: ChannelArrivalController_listArrivals_v1
@@ -17775,7 +17905,7 @@ paths:
       security:
         - bearer: []
       summary: List channel-sourced bookings for the check-in desk
-      tags: &a28
+      tags: &a29
         - Customer Service
   /api/v1/admin/channel-arrivals/merge-candidates:
     get:
@@ -17862,7 +17992,7 @@ paths:
       security:
         - bearer: []
       summary: Find the records a chat-created draft could be merged into
-      tags: *a28
+      tags: *a29
   /api/v1/admin/channel-arrivals/patients/{draftPatientId}/merge:
     post:
       operationId: ChannelArrivalController_mergeDraftPatient_v1
@@ -17970,7 +18100,7 @@ paths:
       security:
         - bearer: []
       summary: Merge a chat-created draft into an existing patient
-      tags: *a28
+      tags: *a29
   /api/v1/rbac/roles:
     get:
       operationId: RbacController_getRoles_v1
@@ -18026,7 +18156,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a29
+      tags: &a30
         - RBAC
   /api/v1/rbac/assign-role:
     post:
@@ -18119,7 +18249,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a29
+      tags: *a30
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -18211,7 +18341,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a29
+      tags: *a30
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
