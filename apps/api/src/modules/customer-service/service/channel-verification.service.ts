@@ -159,6 +159,39 @@ export class ChannelVerificationService {
    * not that they hold the one on the clinic's record.
    */
   /**
+   * Whether this patient record is being probed from more than one chat
+   * (`PCS-T11`, §8.3).
+   *
+   * §8.3 asks for repeated failed challenges against the same *registered
+   * number* to flag a conversation, and the per-chat quota cannot answer that:
+   * it bounds how often one conversation may guess, and opening a second chat
+   * resets it for free. Counting distinct chats against the record is what
+   * makes walking the registry visible.
+   *
+   * Returns a decision, not an action. The caller flags; this only knows the
+   * count — which keeps the threshold, the window, and the consequence in
+   * three places that can each be read on their own.
+   */
+  async isEnumerationSuspected(patientId: string, now: Date): Promise<boolean> {
+    const threshold = this.serviceConfig.booking.enumerationChatThreshold;
+    const failingChats = await this.challengeRepository.countChatsFailingAgainstPatient({
+      patientId,
+      since: new Date(now.getTime() - DAY_IN_MS),
+    });
+    if (failingChats < threshold) {
+      return false;
+    }
+    // Logged without the patient id: the point of the log line is that *a*
+    // record is being probed, and an operator investigating opens the flagged
+    // conversation. Putting the id in a log would put the thing being
+    // protected into the place logs are shipped to.
+    this.logger.warn(
+      buildSafeErrorLog('cs_enumeration_suspected', { failingChats, threshold }),
+    );
+    return true;
+  }
+
+  /**
    * §5.1.1 **tier 1**: the channel identity already proves possession
    * (`PCS-T09`).
    *

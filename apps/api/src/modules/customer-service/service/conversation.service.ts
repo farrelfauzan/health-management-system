@@ -22,6 +22,7 @@ import { IntentOrchestratorService } from './intent-orchestrator.service';
 import { extractOtpCodeCandidate } from './otp-code';
 
 const HOUR_IN_MS = 3_600_000;
+const DAY_IN_MS = 86_400_000;
 
 /**
  * How a customer declines the verification step.
@@ -129,6 +130,25 @@ export class ConversationService extends InboundMessageSink {
 
     if (await this.isOverRateLimit(conversation.id)) {
       await this.replyWith(conversation, CS_REPLY_TEMPLATES.rateLimited, ['rate_limited'], 'SYSTEM');
+      return;
+    }
+
+    // §8.3's clinic-wide daily budget (`PCS-T11`), checked after the per-chat
+    // limit and before anything that could reach a provider. The order is the
+    // cheap check first: a flooding chat should be turned away by its own
+    // limit without the whole channel paying for a count.
+    //
+    // Deliberately *not* checked before the safety layer below, which answers
+    // emergencies and redactions from templates at no cost. A clinic out of
+    // budget must still be able to tell somebody describing chest pain to
+    // call an ambulance.
+    if (decision.outcome === 'SEND_TO_MODEL' && (await this.isOverDailyBudget())) {
+      await this.replyWith(
+        conversation,
+        CS_REPLY_TEMPLATES.dailyBudgetExhausted,
+        ['daily_budget_exhausted'],
+        'SYSTEM',
+      );
       return;
     }
 
@@ -281,6 +301,17 @@ export class ConversationService extends InboundMessageSink {
     const now = new Date();
     await this.verificationService.consumeChallenge(challenge.id, now);
     await this.conversationRepository.updateState(conversation.id, 'BOT_ACTIVE');
+    // §8.3's enumeration flag (`PCS-T11`), checked only on a *failed* ending
+    // and only after the challenge is spent, so the count includes this
+    // attempt. A proven verification is not evidence of anything.
+    //
+    // The flag is raised **after** the booking completes below, never instead
+    // of it: §5.1.1 is explicit that a failed challenge is not a dead end, and
+    // an attacker must not be able to tell a flagged record from an unflagged
+    // one by whether their booking went through.
+    const isEnumerationSuspected =
+      verifiedPatientId === null &&
+      (await this.verificationService.isEnumerationSuspected(challenge.patientId, now));
     try {
       const actor = await this.systemActorService.resolveActor();
       if (verifiedPatientId !== null) {
@@ -305,6 +336,7 @@ export class ConversationService extends InboundMessageSink {
         [],
         'SYSTEM',
       );
+      await this.flagEnumerationIfSuspected(conversation, isEnumerationSuspected);
     } catch (caughtError) {
       // The challenge is already spent and the state already returned to the
       // bot, so the customer can keep talking. Telling them the booking failed
@@ -317,6 +349,32 @@ export class ConversationService extends InboundMessageSink {
       );
       await this.replyWith(conversation, CS_REPLY_TEMPLATES.providerUnavailable, [], 'SYSTEM');
     }
+  }
+
+  /**
+   * Records the enumeration flag and hands the conversation to a person.
+   *
+   * A `SYSTEM` transcript turn rather than only a state change, because the
+   * admin who opens this conversation needs to know *why* it is in their queue
+   * — a `NEEDS_HUMAN` with no explanation reads as a customer who asked for
+   * help. The turn is never dispatched: `replyWith` is deliberately not used,
+   * since telling the customer would hand an attacker the one signal that
+   * says their probing was noticed.
+   */
+  private async flagEnumerationIfSuspected(
+    conversation: ConversationRecord,
+    isSuspected: boolean,
+  ): Promise<void> {
+    if (!isSuspected) {
+      return;
+    }
+    await this.conversationRepository.appendMessage({
+      conversationId: conversation.id,
+      role: 'SYSTEM',
+      content: CS_REPLY_TEMPLATES.enumerationReviewNote,
+      safetyTags: ['enumeration_suspected'],
+    });
+    await this.conversationRepository.updateState(conversation.id, 'NEEDS_HUMAN');
   }
 
   private isDeclining(text: string): boolean {
@@ -355,6 +413,31 @@ export class ConversationService extends InboundMessageSink {
       since,
     );
     return count > this.serviceConfig.rateLimitPerChatHour;
+  }
+
+  /**
+   * §8.3's daily LLM budget, clinic-wide.
+   *
+   * The per-chat limit bounds what one customer costs and does nothing about
+   * a hundred chats, which on a public channel costs nothing to arrange. This
+   * is the cap that bounds the bill — and reaching it is logged at `error`,
+   * not `warn`, because unlike a rate-limited chat it stops *every* customer's
+   * reply and somebody has to know that happened rather than infer it from a
+   * quiet afternoon.
+   */
+  private async isOverDailyBudget(): Promise<boolean> {
+    const since = new Date(Date.now() - DAY_IN_MS);
+    const count = await this.conversationRepository.countProviderRepliesSince(since);
+    if (count < this.serviceConfig.maxLlmCallsPerDay) {
+      return false;
+    }
+    this.logger.error(
+      buildSafeErrorLog('cs_daily_llm_budget_exhausted', {
+        providerRepliesToday: count,
+        limit: this.serviceConfig.maxLlmCallsPerDay,
+      }),
+    );
+    return true;
   }
 
   /**

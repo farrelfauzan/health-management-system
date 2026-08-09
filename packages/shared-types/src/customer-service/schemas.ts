@@ -141,6 +141,21 @@ export const CS_SAFETY_TAGS = [
   'medical_question_referred',
   'handoff_requested',
   'rate_limited',
+  /**
+   * §8.3's clinic-wide daily LLM budget was spent (`PCS-T11`). Distinct from
+   * `rate_limited`, which is one customer sending too fast: this one means
+   * *every* customer is getting a template, and an operator counting these
+   * is looking at a different incident.
+   */
+  'daily_budget_exhausted',
+  /**
+   * Repeated failed possession challenges have targeted the same patient
+   * record from more than one chat (`PCS-T11`, §8.3) — what enumeration of
+   * the registry looks like from the inside. The conversation is flagged for
+   * a human rather than blocked, because the same pattern is also what a
+   * confused family produces sharing one number.
+   */
+  'enumeration_suspected',
   'provider_unavailable',
   /**
    * A tool-call turn (`PCS-T07`). Also the marker that keeps these rows out of
@@ -824,3 +839,23 @@ export const whatsappWebhookEventSchema = z.object({
 });
 
 export type WhatsappWebhookEventInput = z.infer<typeof whatsappWebhookEventSchema>;
+
+/** How far back §8.4's metrics look. Two weeks covers the rollout gate. */
+export const CHANNEL_METRICS_MAX_DAYS = 90;
+export const CHANNEL_METRICS_DEFAULT_DAYS = 14;
+
+export const channelMetricsQuerySchema = z.object({
+  /**
+   * Defaults to fourteen days because that is the window the `PCS-T11`
+   * go/no-go checklist asks about — "two clean weeks on Telegram" is not a
+   * figure of speech, it is the gate.
+   */
+  days: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(CHANNEL_METRICS_MAX_DAYS)
+    .default(CHANNEL_METRICS_DEFAULT_DAYS),
+});
+
+export type ChannelMetricsQueryInput = z.infer<typeof channelMetricsQuerySchema>;

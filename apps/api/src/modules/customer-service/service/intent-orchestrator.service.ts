@@ -46,6 +46,19 @@ export type CsToolInvocationRecord = {
   arguments: unknown;
   outcome: 'SUCCESS' | 'FAILED';
   errorCode: string | null;
+  /**
+   * How many items the lookup returned, or null when the result is not a list
+   * (`PCS-T11`).
+   *
+   * A **count, not a payload**, and the distinction is what makes this
+   * compatible with `PCS-T07`'s decision to keep results out of the
+   * transcript. That decision was about not putting a second copy of every FAQ
+   * passage into a retained record — a number is neither a passage nor a
+   * patient, and without it §8.4's FAQ no-hit rate cannot be computed at all:
+   * "the corpus could not answer this" and "the corpus was never asked" look
+   * identical from a bare tool name.
+   */
+  resultCount: number | null;
 };
 
 /**
@@ -231,6 +244,7 @@ export class IntentOrchestratorService {
           arguments: outcome.validatedArguments,
           outcome: 'SUCCESS',
           errorCode: null,
+          resultCount: countResultItems(outcome.result),
         },
         replayTurn: {
           role: 'tool',
@@ -264,6 +278,7 @@ export class IntentOrchestratorService {
           arguments: toolCall.arguments,
           outcome: 'FAILED',
           errorCode,
+          resultCount: null,
         },
         replayTurn: {
           role: 'tool',
@@ -277,4 +292,26 @@ export class IntentOrchestratorService {
       };
     }
   }
+}
+
+/**
+ * The length of whichever list a tool result carries, or null.
+ *
+ * Reads the two list-shaped results by name rather than looking for "the first
+ * array": `book_appointment` returns an object with no list, and a generic
+ * search would eventually find one somebody added for another reason and start
+ * reporting it as a hit count.
+ */
+function countResultItems(result: unknown): number | null {
+  if (typeof result !== 'object' || result === null) {
+    return null;
+  }
+  const candidate = result as { passages?: unknown; sessions?: unknown };
+  if (Array.isArray(candidate.passages)) {
+    return candidate.passages.length;
+  }
+  if (Array.isArray(candidate.sessions)) {
+    return candidate.sessions.length;
+  }
+  return null;
 }

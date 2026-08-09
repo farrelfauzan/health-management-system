@@ -5,6 +5,7 @@ import type { ChannelKindValue, ConversationInboxFilterValue } from '@hms/shared
 import { Card, CardContent } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ChannelMetricsCard } from '#components/client/conversations/channel-metrics-card';
 import { ConversationHandoffSummaryCard } from '#components/client/conversations/conversation-handoff-summary-card';
 import {
   CONVERSATION_CHANNEL_ALL,
@@ -48,6 +49,11 @@ export function ConversationInboxPanel() {
         breadcrumbs={[t('header.breadcrumbs.assistant'), t('header.breadcrumbs.conversations')]}
       />
       <ConversationHandoffSummaryCard />
+      {/* §8.4's metrics, under the live queue rather than above it: the queue
+          is what an admin acts on minute to minute, and these are the
+          fortnight numbers the rollout gate reads. Renders nothing while
+          loading or on error — a dashboard must never block the inbox. */}
+      <ChannelMetricsCard />
       <ConversationInboxFilters
         filter={filter}
         channel={channel}

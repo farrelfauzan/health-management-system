@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -7,10 +7,12 @@ import { getDashboardAiMessages } from '#lib/dashboard/localization';
 
 const listConversationsMock = vi.hoisted(() => vi.fn());
 const handoffSummaryMock = vi.hoisted(() => vi.fn());
+const metricsMock = vi.hoisted(() => vi.fn());
 
 vi.mock('#lib/api/generated/customer-service/customer-service', () => ({
   csAdminControllerListConversationsV1: listConversationsMock,
   csAdminControllerGetHandoffSummaryV1: handoffSummaryMock,
+  csAdminControllerGetMetricsV1: metricsMock,
   csAdminControllerGetTranscriptV1: vi.fn(),
   csAdminControllerTakeOverV1: vi.fn(),
   csAdminControllerReleaseV1: vi.fn(),
@@ -22,6 +24,7 @@ vi.mock('#lib/api/generated/customer-service/customer-service', () => ({
     params,
   ],
   getCsAdminControllerGetHandoffSummaryV1QueryKey: () => ['conversation-handoff'],
+  getCsAdminControllerGetMetricsV1QueryKey: () => ['conversation-metrics'],
   getCsAdminControllerGetTranscriptV1QueryKey: () => ['conversation-transcript'],
 }));
 
@@ -60,6 +63,34 @@ function renderPanel(): void {
 describe('ConversationInboxPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // The metrics card renders nothing on an error, so a rejection here would
+    // pass — but it would also mean the inbox tests were silently exercising
+    // an error path. Resolving keeps them testing the inbox.
+    metricsMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: {
+          from: '2026-07-26',
+          to: '2026-08-09',
+          windowDays: 14,
+          inboundMessages: 0,
+          messagesPerDay: 0,
+          conversationsStarted: 0,
+          intentMix: {},
+          bookingsConfirmed: 0,
+          bookingConversion: 0,
+          handoffs: 0,
+          handoffRate: 0,
+          faqSearches: 0,
+          faqNoHits: 0,
+          faqNoHitRate: null,
+          rateLimitedTurns: 0,
+          budgetExhaustedTurns: 0,
+          enumerationFlags: 0,
+          blockedConversations: 0,
+        },
+      },
+    });
     handoffSummaryMock.mockResolvedValue({
       status: 200,
       data: {
@@ -121,6 +152,8 @@ describe('ConversationInboxPanel', () => {
     renderPanel();
 
     expect(await screen.findByText('Dengan petugas')).toBeInTheDocument();
-    expect(screen.getByText('—')).toBeInTheDocument();
+    // Scoped to the table: the metrics card above it also renders an em dash,
+    // for the FAQ no-hit rate nobody has generated yet.
+    expect(within(screen.getByRole('table')).getByText('—')).toBeInTheDocument();
   });
 });

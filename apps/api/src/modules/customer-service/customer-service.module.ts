@@ -11,10 +11,12 @@ import { ChannelArrivalController } from './controller/channel-arrival.controlle
 import { CsAdminController } from './controller/cs-admin.controller';
 import { AdminConversationRepository } from './repository/admin-conversation.repository';
 import { ChannelArrivalRepository } from './repository/channel-arrival.repository';
+import { ChannelMetricsRepository } from './repository/channel-metrics.repository';
 import { ChannelOtpChallengeRepository } from './repository/channel-otp-challenge.repository';
 import { ChannelPatientLinkRepository } from './repository/channel-patient-link.repository';
 import { ConversationRepository } from './repository/conversation.repository';
 import { ChannelArrivalService } from './service/channel-arrival.service';
+import { ChannelMetricsService } from './service/channel-metrics.service';
 import { ChannelBookingService } from './service/channel-booking.service';
 import { CsAdminService } from './service/cs-admin.service';
 import { ChannelVerificationService } from './service/channel-verification.service';
@@ -80,10 +82,12 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
   providers: [
     AdminConversationRepository,
     ChannelArrivalRepository,
+    ChannelMetricsRepository,
     ChannelOtpChallengeRepository,
     ChannelPatientLinkRepository,
     ConversationRepository,
     ChannelArrivalService,
+    ChannelMetricsService,
     CsAdminService,
     CsSafetyPolicyService,
     CsSystemActorService,

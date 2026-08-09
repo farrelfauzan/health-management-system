@@ -21,6 +21,8 @@ import { BlockConversationDto } from '../dto/block-conversation.dto';
 import { ListConversationTranscriptQueryDto } from '../dto/list-conversation-transcript-query.dto';
 import { ListConversationsQueryDto } from '../dto/list-conversations-query.dto';
 import { ReplyToConversationDto } from '../dto/reply-to-conversation.dto';
+import { ChannelMetricsQueryDto } from '../dto/channel-metrics-query.dto';
+import { ChannelMetricsService } from '../service/channel-metrics.service';
 import { CsAdminService } from '../service/cs-admin.service';
 
 /**
@@ -44,7 +46,10 @@ import { CsAdminService } from '../service/cs-admin.service';
   path: 'admin/conversations',
 })
 export class CsAdminController {
-  constructor(private readonly csAdminService: CsAdminService) {}
+  constructor(
+    private readonly csAdminService: CsAdminService,
+    private readonly channelMetricsService: ChannelMetricsService,
+  ) {}
 
   @Get()
   @Auth([{ action: 'read', subject: 'Conversation' }])
@@ -78,6 +83,24 @@ export class CsAdminController {
   async getHandoffSummary(@AuthUser() currentUser?: CurrentUser) {
     this.assertAuthenticated(currentUser);
     const view = await this.csAdminService.getHandoffSummary();
+
+    return { data: view };
+  }
+
+  @Get('metrics')
+  @Auth([{ action: 'read', subject: 'Conversation' }])
+  @ApiEndpoint({
+    summary: 'Read the channel’s operating metrics (§8.4)',
+    responseDescription:
+      'The five §8.4 metrics over a window, defaulting to fourteen days — the window the staged-rollout gate asks about, since "two clean weeks on Telegram" is the condition for announcing a WhatsApp number rather than a figure of speech. Every rate is returned next to the counts it came from: a handoff rate of 1.0 is alarming over a hundred conversations and meaningless over one. `faqNoHitRate` is null when nothing was searched, because a zero would read as "the corpus answered everything" when the truth is nobody asked it anything. Counts and ratios only — no message text, no chat ids, no names.',
+    responseExample: { data: CUSTOMER_SERVICE_ADMIN_EXAMPLES.metrics },
+  })
+  async getMetrics(
+    @Query() query: ChannelMetricsQueryDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    this.assertAuthenticated(currentUser);
+    const view = await this.channelMetricsService.readMetrics(query);
 
     return { data: view };
   }

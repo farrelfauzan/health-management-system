@@ -16998,6 +16998,153 @@ paths:
         - bearer: []
       summary: Count the conversations waiting for a human
       tags: *a28
+  /api/v1/admin/conversations/metrics:
+    get:
+      operationId: CsAdminController_getMetrics_v1
+      parameters:
+        - name: days
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 90
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 14
+            type: integer
+      responses:
+        "200":
+          description: 'The five §8.4 metrics over a window, defaulting to fourteen days —
+            the window the staged-rollout gate asks about, since "two clean
+            weeks on Telegram" is the condition for announcing a WhatsApp number
+            rather than a figure of speech. Every rate is returned next to the
+            counts it came from: a handoff rate of 1.0 is alarming over a
+            hundred conversations and meaningless over one. `faqNoHitRate` is
+            null when nothing was searched, because a zero would read as "the
+            corpus answered everything" when the truth is nobody asked it
+            anything. Counts and ratios only — no message text, no chat ids, no
+            names.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      windowDays:
+                        type: integer
+                      inboundMessages:
+                        type: integer
+                      messagesPerDay:
+                        type: number
+                      conversationsStarted:
+                        type: integer
+                      intentMix:
+                        type: object
+                        properties:
+                          search_faq:
+                            type: integer
+                          list_available_sessions:
+                            type: integer
+                          book_appointment:
+                            type: integer
+                        required:
+                          - search_faq
+                          - list_available_sessions
+                          - book_appointment
+                      bookingsConfirmed:
+                        type: integer
+                      bookingConversion:
+                        type: number
+                      handoffs:
+                        type: integer
+                      handoffRate:
+                        type: number
+                      faqSearches:
+                        type: integer
+                      faqNoHits:
+                        type: integer
+                      faqNoHitRate:
+                        type: number
+                      rateLimitedTurns:
+                        type: integer
+                      budgetExhaustedTurns:
+                        type: integer
+                      enumerationFlags:
+                        type: integer
+                      blockedConversations:
+                        type: integer
+                    required:
+                      - from
+                      - to
+                      - windowDays
+                      - inboundMessages
+                      - messagesPerDay
+                      - conversationsStarted
+                      - intentMix
+                      - bookingsConfirmed
+                      - bookingConversion
+                      - handoffs
+                      - handoffRate
+                      - faqSearches
+                      - faqNoHits
+                      - faqNoHitRate
+                      - rateLimitedTurns
+                      - budgetExhaustedTurns
+                      - enumerationFlags
+                      - blockedConversations
+                required:
+                  - data
+                example:
+                  data:
+                    from: 2026-07-26
+                    to: 2026-08-09
+                    windowDays: 14
+                    inboundMessages: 412
+                    messagesPerDay: 29.4
+                    conversationsStarted: 96
+                    intentMix:
+                      search_faq: 88
+                      list_available_sessions: 41
+                      book_appointment: 23
+                    bookingsConfirmed: 23
+                    bookingConversion: 0.24
+                    handoffs: 7
+                    handoffRate: 0.073
+                    faqSearches: 88
+                    faqNoHits: 11
+                    faqNoHitRate: 0.125
+                    rateLimitedTurns: 3
+                    budgetExhaustedTurns: 0
+                    enumerationFlags: 0
+                    blockedConversations: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the channel’s operating metrics (§8.4)
+      tags: *a28
   /api/v1/admin/conversations/{id}:
     get:
       operationId: CsAdminController_getTranscript_v1

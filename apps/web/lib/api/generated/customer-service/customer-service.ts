@@ -29,6 +29,8 @@ import type {
   ChannelArrivalControllerMergeDraftPatientV1200,
   CsAdminControllerBlockV1200,
   CsAdminControllerGetHandoffSummaryV1200,
+  CsAdminControllerGetMetricsV1200,
+  CsAdminControllerGetMetricsV1Params,
   CsAdminControllerGetTranscriptV1200,
   CsAdminControllerGetTranscriptV1Params,
   CsAdminControllerListConversationsV1200,
@@ -235,6 +237,99 @@ export function useCsAdminControllerGetHandoffSummaryV1<TData = Awaited<ReturnTy
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getCsAdminControllerGetHandoffSummaryV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read the channel’s operating metrics (§8.4)
+ */
+export const csAdminControllerGetMetricsV1 = (
+    params?: CsAdminControllerGetMetricsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<CsAdminControllerGetMetricsV1200>(
+      {url: `/api/v1/admin/conversations/metrics`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getCsAdminControllerGetMetricsV1QueryKey = (params?: CsAdminControllerGetMetricsV1Params,) => {
+    return [
+    `/api/v1/admin/conversations/metrics`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getCsAdminControllerGetMetricsV1QueryOptions = <TData = Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError = unknown>(params?: CsAdminControllerGetMetricsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCsAdminControllerGetMetricsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>> = ({ signal }) => csAdminControllerGetMetricsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CsAdminControllerGetMetricsV1QueryResult = NonNullable<Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>>
+export type CsAdminControllerGetMetricsV1QueryError = unknown
+
+
+export function useCsAdminControllerGetMetricsV1<TData = Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError = unknown>(
+ params: undefined |  CsAdminControllerGetMetricsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>,
+          TError,
+          Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCsAdminControllerGetMetricsV1<TData = Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError = unknown>(
+ params?: CsAdminControllerGetMetricsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>,
+          TError,
+          Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCsAdminControllerGetMetricsV1<TData = Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError = unknown>(
+ params?: CsAdminControllerGetMetricsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the channel’s operating metrics (§8.4)
+ */
+
+export function useCsAdminControllerGetMetricsV1<TData = Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError = unknown>(
+ params?: CsAdminControllerGetMetricsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof csAdminControllerGetMetricsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCsAdminControllerGetMetricsV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
