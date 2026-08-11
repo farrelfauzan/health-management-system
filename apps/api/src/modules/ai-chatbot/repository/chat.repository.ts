@@ -55,14 +55,6 @@ export class ChatRepository {
     return row === null ? null : this.toSessionRecord(row);
   }
 
-  /** Unscoped lookup for the admin support view (`chat.session.read:any`). */
-  async findSessionById(id: string): Promise<ChatSessionRecord | null> {
-    const row = await this.prismaService.chatSession.findFirst({
-      where: { id, deletedAt: null },
-    });
-    return row === null ? null : this.toSessionRecord(row);
-  }
-
   async listSessionsForOwner(params: ListOwnChatSessionsParams): Promise<ChatSessionPage> {
     return this.listSessions({
       ownerUserId: params.ownerUserId,
