@@ -1,4 +1,5 @@
 import {
+  AppointmentScopeActor,
   BookSessionSlotPayload,
   BookSessionSlotResult,
   CancelAppointmentRecordPayload,
@@ -13,6 +14,8 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { AppointmentStatus, Prisma } from '../../../generated/prisma/client';
+import { buildAppointmentScopeWhere } from './build-appointment-scope-where';
+import { buildSessionScopeWhere } from './build-session-scope-where';
 
 const OPEN_APPOINTMENT_STATUSES: AppointmentStatus[] = ['SCHEDULED', 'CONFIRMED'];
 const CAPACITY_APPOINTMENT_STATUSES: AppointmentStatus[] = ['SCHEDULED', 'CONFIRMED', 'COMPLETED'];
@@ -39,9 +42,8 @@ const APPOINTMENT_RELATIONS_INCLUDE = {
 export class AppointmentManagementRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async listAppointments(params: ListAppointmentsParams) {
-    const { page, limit, status, doctorId, patientId, scheduledFrom, scheduledTo, ownerUserId } =
-      params;
+  async listAppointments(params: ListAppointmentsParams, actor: AppointmentScopeActor) {
+    const { page, limit, status, doctorId, patientId, scheduledFrom, scheduledTo } = params;
     const skip = (page - 1) * limit;
 
     const where = {
@@ -56,22 +58,7 @@ export class AppointmentManagementRepository {
             },
           }
         : {}),
-      ...(ownerUserId
-        ? {
-            OR: [
-              {
-                patient: {
-                  ownerUserId,
-                },
-              },
-              {
-                doctor: {
-                  ownerUserId,
-                },
-              },
-            ],
-          }
-        : {}),
+      AND: [buildAppointmentScopeWhere(actor)],
     };
 
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {
@@ -98,11 +85,18 @@ export class AppointmentManagementRepository {
     };
   }
 
-  async findAppointmentDetailById(id: string) {
-    return this.prisma.findUniqueActive(this.prisma.appointment, {
-      where: {
-        id,
-      },
+  /**
+   * Scoped by-ID fetch (SJ-2): the participant scope fragment rides in the
+   * SQL `where`, so a row outside the actor's reach is `null` —
+   * indistinguishable from a missing appointment.
+   */
+  async findAppointmentDetailById(id: string, actor: AppointmentScopeActor) {
+    const scopedWhere: Prisma.AppointmentWhereInput = {
+      id,
+      AND: [buildAppointmentScopeWhere(actor)],
+    };
+    return this.prisma.findFirstActive(this.prisma.appointment, {
+      where: scopedWhere,
       include: APPOINTMENT_RELATIONS_INCLUDE,
     });
   }
@@ -139,6 +133,38 @@ export class AppointmentManagementRepository {
       where: {
         id,
         isActive: true,
+      },
+      select: {
+        id: true,
+        ownerUserId: true,
+        schedules: {
+          select: {
+            id: true,
+            dayOfWeek: true,
+            startTime: true,
+            endTime: true,
+            isAvailable: true,
+            maxPatients: true,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Scoped variant of {@link findActiveDoctorById} for session reads (SJ-2):
+   * sessions belong to their doctor, so an `OWN`-scoped actor only reaches a
+   * doctor row they own — the same rule {@link buildSessionScopeWhere}
+   * applies at the session level, expressed here directly on `ownerUserId`.
+   * The unscoped variant stays for appointment creation, where a patient-side
+   * caller legitimately references a doctor they do not own.
+   */
+  async findScopedActiveDoctorById(id: string, actor: AppointmentScopeActor) {
+    return this.prisma.findFirstActive(this.prisma.doctorProfile, {
+      where: {
+        id,
+        isActive: true,
+        ...(actor.scope === 'OWN' ? { ownerUserId: actor.userId } : {}),
       },
       select: {
         id: true,
@@ -374,10 +400,13 @@ export class AppointmentManagementRepository {
     });
   }
 
-  async listActiveDoctorsWithSchedules() {
+  async listActiveDoctorsWithSchedules(actor: AppointmentScopeActor) {
     return this.prisma.findManyActive(this.prisma.doctorProfile, {
       where: {
         isActive: true,
+        // Doctor-side session ownership (see buildSessionScopeWhere), applied
+        // at the profile level so an OWN calendar is filtered in SQL.
+        ...(actor.scope === 'OWN' ? { ownerUserId: actor.userId } : {}),
       },
       select: {
         id: true,
@@ -436,10 +465,16 @@ export class AppointmentManagementRepository {
     });
   }
 
-  async findSessionWithCountById(id: string) {
-    return this.prisma.appointmentSession.findUnique({
+  /**
+   * Scoped session fetch (SJ-2): doctor-side ownership in the SQL `where` —
+   * an `OWN` actor probing another doctor's session gets `null`, the same as
+   * a missing session.
+   */
+  async findSessionWithCountById(id: string, actor: AppointmentScopeActor) {
+    return this.prisma.appointmentSession.findFirst({
       where: {
         id,
+        AND: [buildSessionScopeWhere(actor)],
       },
       select: {
         id: true,

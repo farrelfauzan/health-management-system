@@ -1,6 +1,7 @@
 import {
   Actor,
   AppointmentListItem,
+  AppointmentScopeActor,
   AppointmentWithRelationsRecord,
   BookBpjsAntreanSessionInput,
   BookChannelSessionInput,
@@ -39,6 +40,12 @@ import { UpdateAppointmentSessionDto } from '../dto/update-appointment-session.d
 import { AppointmentManagementRepository } from '../repository/appointment-management.repository';
 
 const RESCHEDULABLE_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
+/**
+ * Actor for internal read-backs of rows a transaction just inserted — the id
+ * comes from the insert, never from caller input, so no scope filter applies
+ * and the user id is never consulted.
+ */
+const SYSTEM_READBACK_ACTOR: AppointmentScopeActor = { userId: 'system-readback', scope: 'ANY' };
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const MAX_SESSION_RANGE_DAYS = 92;
 const DAY_IN_MS = 86_400_000;
@@ -63,16 +70,18 @@ export class AppointmentManagementService {
       throw new ForbiddenException('You are not allowed to read appointments');
     }
 
-    const result = await this.appointmentManagementRepository.listAppointments({
-      page: query.page,
-      limit: query.limit,
-      status: query.status,
-      doctorId: query.doctorId,
-      patientId: query.patientId,
-      scheduledFrom: query.scheduledFrom ? new Date(query.scheduledFrom) : undefined,
-      scheduledTo: query.scheduledTo ? new Date(query.scheduledTo) : undefined,
-      ownerUserId: readScope.hasAny ? undefined : currentUser.sub,
-    });
+    const result = await this.appointmentManagementRepository.listAppointments(
+      {
+        page: query.page,
+        limit: query.limit,
+        status: query.status,
+        doctorId: query.doctorId,
+        patientId: query.patientId,
+        scheduledFrom: query.scheduledFrom ? new Date(query.scheduledFrom) : undefined,
+        scheduledTo: query.scheduledTo ? new Date(query.scheduledTo) : undefined,
+      },
+      this.buildScopeActor(currentUser, readScope.hasAny),
+    );
 
     return {
       items: result.items.map((appointment) => this.toAppointmentListItem(appointment)),
@@ -92,14 +101,16 @@ export class AppointmentManagementService {
       throw new ForbiddenException('You are not allowed to read appointments');
     }
 
-    const appointment = await this.appointmentManagementRepository.findAppointmentDetailById(id);
+    // Participant scope rides in the repository where-clause (SJ-2): a row
+    // outside the actor's reach comes back null, so not-found and not-yours
+    // are the same 404 and a UUID probe learns nothing.
+    const appointment = await this.appointmentManagementRepository.findAppointmentDetailById(
+      id,
+      this.buildScopeActor(currentUser, readScope.hasAny),
+    );
 
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
-    }
-
-    if (!readScope.hasAny && !this.isAppointmentOwner(appointment, currentUser)) {
-      throw new ForbiddenException('You are not allowed to read this appointment');
     }
 
     return this.toAppointmentListItem(appointment);
@@ -208,14 +219,15 @@ export class AppointmentManagementService {
 
     this.assertSessionRangeWithinLimit(query.from, query.to);
 
-    const doctor = await this.appointmentManagementRepository.findActiveDoctorById(doctorId);
+    // Doctor-side scope in the SQL where (SJ-2): another doctor's sessions
+    // and a nonexistent doctor are the same 404.
+    const doctor = await this.appointmentManagementRepository.findScopedActiveDoctorById(
+      doctorId,
+      this.buildScopeActor(currentUser, readScope.hasAny),
+    );
 
     if (!doctor) {
       throw new NotFoundException('Doctor not found or inactive');
-    }
-
-    if (!readScope.hasAny && doctor.ownerUserId !== currentUser.sub) {
-      throw new ForbiddenException('You are only allowed to read your own sessions');
     }
 
     const materializedSessions = await this.appointmentManagementRepository.listSessionsWithCounts(
@@ -248,10 +260,9 @@ export class AppointmentManagementService {
 
     this.assertSessionRangeWithinLimit(query.from, query.to);
 
-    const allDoctors = await this.appointmentManagementRepository.listActiveDoctorsWithSchedules();
-    const doctors = readScope.hasAny
-      ? allDoctors
-      : allDoctors.filter((doctor) => doctor.ownerUserId === currentUser.sub);
+    const doctors = await this.appointmentManagementRepository.listActiveDoctorsWithSchedules(
+      this.buildScopeActor(currentUser, readScope.hasAny),
+    );
     const materializedSessions = await this.appointmentManagementRepository.listSessionsWithCounts(
       {
         fromDate: query.from,
@@ -365,14 +376,13 @@ export class AppointmentManagementService {
       throw new ForbiddenException('You are not allowed to read appointment sessions');
     }
 
-    const session = await this.appointmentManagementRepository.findSessionWithCountById(sessionId);
+    const session = await this.appointmentManagementRepository.findSessionWithCountById(
+      sessionId,
+      this.buildScopeActor(currentUser, readScope.hasAny),
+    );
 
     if (!session) {
       throw new NotFoundException('Session not found');
-    }
-
-    if (!readScope.hasAny && session.doctor.ownerUserId !== currentUser.sub) {
-      throw new ForbiddenException('You are only allowed to read your own sessions');
     }
 
     const queue = await this.appointmentManagementRepository.getSessionQueue(sessionId);
@@ -412,7 +422,12 @@ export class AppointmentManagementService {
       throw new ForbiddenException('You are not allowed to update appointment sessions');
     }
 
-    const session = await this.appointmentManagementRepository.findSessionWithCountById(sessionId);
+    // Post-gate the actor is ANY-scoped by definition — the fetch is scoped
+    // for signature uniformity, not because a filter applies here.
+    const session = await this.appointmentManagementRepository.findSessionWithCountById(
+      sessionId,
+      this.buildScopeActor(currentUser, true),
+    );
 
     if (!session) {
       throw new NotFoundException('Session not found');
@@ -449,14 +464,13 @@ export class AppointmentManagementService {
       throw new ForbiddenException('You are not allowed to update appointments');
     }
 
-    const appointment = await this.appointmentManagementRepository.findAppointmentDetailById(id);
+    const appointment = await this.appointmentManagementRepository.findAppointmentDetailById(
+      id,
+      this.buildScopeActor(currentUser, updateScope.hasAny),
+    );
 
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
-    }
-
-    if (!updateScope.hasAny && !this.isAppointmentOwner(appointment, currentUser)) {
-      throw new ForbiddenException('You are not allowed to update this appointment');
     }
 
     const isPatientLimited =
@@ -507,14 +521,13 @@ export class AppointmentManagementService {
       throw new ForbiddenException('You are not allowed to cancel appointments');
     }
 
-    const appointment = await this.appointmentManagementRepository.findAppointmentDetailById(id);
+    const appointment = await this.appointmentManagementRepository.findAppointmentDetailById(
+      id,
+      this.buildScopeActor(currentUser, cancelScope.hasAny),
+    );
 
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
-    }
-
-    if (!cancelScope.hasAny && !this.isAppointmentOwner(appointment, currentUser)) {
-      throw new ForbiddenException('You are not allowed to cancel this appointment');
     }
 
     if (!canTransitionAppointmentStatus(appointment.status, 'CANCELLED')) {
@@ -846,8 +859,12 @@ export class AppointmentManagementService {
       throw new ConflictException('Booking code already exists');
     }
 
+    // Internal read-back of the row the booking transaction just inserted —
+    // the id came from the insert, never from caller input, so no scope
+    // filter applies.
     const created = await this.appointmentManagementRepository.findAppointmentDetailById(
       result.appointmentId,
+      SYSTEM_READBACK_ACTOR,
     );
 
     if (!created) {
@@ -868,7 +885,10 @@ export class AppointmentManagementService {
       throw new ForbiddenException('You are not allowed to review appointment requests');
     }
 
-    const appointment = await this.appointmentManagementRepository.findAppointmentDetailById(id);
+    const appointment = await this.appointmentManagementRepository.findAppointmentDetailById(
+      id,
+      this.buildScopeActor(currentUser, true),
+    );
 
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
@@ -1001,14 +1021,20 @@ export class AppointmentManagementService {
     );
   }
 
-  private isAppointmentOwner(
-    appointment: AppointmentWithRelationsRecord,
+  /**
+   * Collapses a resolved permission scope into the actor context repositories
+   * require. Callers gate the action first (no scope at all → 403); rows the
+   * scope cannot reach are then the repository's business, never a post-fetch
+   * check here (SJ-2).
+   */
+  private buildScopeActor(
     currentUser: CurrentUser,
-  ): boolean {
-    return (
-      appointment.patient.ownerUserId === currentUser.sub ||
-      appointment.doctor.ownerUserId === currentUser.sub
-    );
+    hasAnyScope: boolean,
+  ): AppointmentScopeActor {
+    return {
+      userId: currentUser.sub,
+      scope: hasAnyScope ? 'ANY' : 'OWN',
+    };
   }
 
   private buildCancellationNotes(
