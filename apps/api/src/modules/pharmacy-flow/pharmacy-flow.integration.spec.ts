@@ -472,7 +472,8 @@ describe('PharmacyFlow integration', () => {
       expect(response.body.data).toHaveLength(1);
       expect(response.body.meta.total).toBe(1);
       expect(pharmacyRepositoryMock.listPrescriptions).toHaveBeenCalledWith(
-        expect.objectContaining({ status: 'ISSUED', ownerUserId: undefined }),
+        expect.objectContaining({ status: 'ISSUED' }),
+        expect.objectContaining({ scope: 'ANY' }),
       );
     });
 
@@ -486,7 +487,8 @@ describe('PharmacyFlow integration', () => {
 
       expect(response.status).toBe(200);
       expect(pharmacyRepositoryMock.listPrescriptions).toHaveBeenCalledWith(
-        expect.objectContaining({ ownerUserId: 'doctor-user' }),
+        expect.any(Object),
+        { userId: 'doctor-user', scope: 'OWN' },
       );
     });
 

@@ -21,7 +21,24 @@ export type ListPrescriptionsParams = {
   patientId?: string;
   doctorId?: string;
   encounterId?: string;
-  ownerUserId?: string;
+};
+
+/**
+ * How far a prescription permission reaches: `ANY` covers every record, `OWN`
+ * only the rows the actor participates in. Mirrors the permission `scope`
+ * column.
+ */
+export type PrescriptionScopeMode = 'ANY' | 'OWN';
+
+/**
+ * Actor context every scoped prescription repository query requires (SJ-2).
+ * Ownership is participant-side — the owning user of the patient or the
+ * doctor on the row — and mandatory: an optional owner param would make
+ * "forgot to pass it" silently unscoped.
+ */
+export type PrescriptionScopeActor = {
+  userId: string;
+  scope: PrescriptionScopeMode;
 };
 
 export type MedicationRecord = {

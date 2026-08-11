@@ -6,6 +6,7 @@ import {
   ListMedicationsParams,
   ListPrescriptionsParams,
   ListStockReceiptsParams,
+  PrescriptionScopeActor,
   resolvePrescriptionStatusAfterDispense,
   UpdateMedicationRecordPayload,
 } from '@hms/shared-types';
@@ -14,6 +15,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma } from '../../../generated/prisma/client';
+import { buildPrescriptionScopeWhere } from './build-prescription-scope-where';
 import { MedicationIdentifierConflictError } from './medication-identifier-conflict.error';
 
 const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
@@ -175,8 +177,8 @@ export class PharmacyFlowRepository {
     };
   }
 
-  async listPrescriptions(params: ListPrescriptionsParams) {
-    const { page, limit, status, patientId, doctorId, encounterId, ownerUserId } = params;
+  async listPrescriptions(params: ListPrescriptionsParams, actor: PrescriptionScopeActor) {
+    const { page, limit, status, patientId, doctorId, encounterId } = params;
     const skip = (page - 1) * limit;
 
     const where = {
@@ -184,11 +186,7 @@ export class PharmacyFlowRepository {
       ...(patientId ? { patientId } : {}),
       ...(doctorId ? { doctorId } : {}),
       ...(encounterId ? { encounterId } : {}),
-      ...(ownerUserId
-        ? {
-            OR: [{ patient: { ownerUserId } }, { doctor: { ownerUserId } }],
-          }
-        : {}),
+      AND: [buildPrescriptionScopeWhere(actor)],
     };
 
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {
