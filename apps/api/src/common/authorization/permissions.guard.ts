@@ -25,17 +25,24 @@ export class PermissionsGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublicRoute = this.reflector.get<boolean>(PUBLIC_ROUTE_KEY, context.getHandler());
+    const isPublicRoute = this.reflector.getAllAndOverride<boolean>(PUBLIC_ROUTE_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
     if (isPublicRoute) {
       return true;
     }
 
-    const requiredRules =
-      this.reflector.get<PermissionRule[]>(PERMISSION_CHECKER_KEY, context.getHandler()) ?? [];
+    const requiredRules = this.reflector.getAllAndOverride<PermissionRule[] | undefined>(
+      PERMISSION_CHECKER_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
-    if (requiredRules.length === 0) {
-      return true;
+    if (requiredRules === undefined || requiredRules.length === 0) {
+      throw new ForbiddenException(
+        'Route declares no permission requirements and is not public; access is denied by default',
+      );
     }
 
     const request = context.switchToHttp().getRequest<{ user?: CurrentUser }>();
