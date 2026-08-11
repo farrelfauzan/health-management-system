@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, ForbiddenException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
@@ -55,7 +60,6 @@ describe('PatientManagementService', () => {
     findPatientIdByBpjsNumber: jest.fn(),
     findActiveUserById: jest.fn(),
     findActiveDoctorsByIds: jest.fn(),
-    hasActiveAssignmentWithDoctorUser: jest.fn(),
     findPatientIdentifiers: jest.fn(),
     createPatient: jest.fn(),
     updatePatient: jest.fn(),
@@ -148,8 +152,7 @@ describe('PatientManagementService', () => {
         hasAppointment: undefined,
         createdFrom: new Date('2026-01-01T00:00:00.000Z'),
       },
-      currentUser,
-      true,
+      { userId: currentUser.sub, scope: 'ANY' },
     );
     expect(result.meta.total).toBe(1);
     expect(result.items[0]?.status).toBe('IN_PATIENT');
@@ -169,33 +172,22 @@ describe('PatientManagementService', () => {
     expect(JSON.stringify(result.items[0])).not.toContain('MRN-0001');
   });
 
-  it('denies reading patient detail when only own scope and no ownership or active assignment', async () => {
+  it('returns not-found when an own-scope read misses the scoped where-clause', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
       buildActor([{ action: 'read', resource: 'Patient', scope: 'OWN' }]),
     );
 
-    (patientManagementRepositoryMock.findPatientDetailById as jest.Mock).mockResolvedValue({
-      id: '3a6d785d-f729-4af2-b415-30f96439dad0',
-      mrn: 'MRN-0001',
-      fullName: 'John Patient',
-      dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
-      sex: 'MALE',
-      status: 'OUT_PATIENT',
-      phoneNumber: '12345',
-      address: 'Main Street',
-      ownerUserId: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
-      isActive: true,
-      createdAt: new Date('2026-01-01T00:00:00.000Z'),
-      updatedAt: new Date('2026-01-02T00:00:00.000Z'),
-      doctors: [],
-    });
-    (
-      patientManagementRepositoryMock.hasActiveAssignmentWithDoctorUser as jest.Mock
-    ).mockResolvedValue(false);
+    // The repository where-clause filtered the row in SQL: someone else's
+    // patient and a nonexistent patient are the same null (SJ-2).
+    (patientManagementRepositoryMock.findPatientDetailById as jest.Mock).mockResolvedValue(null);
 
     await expect(
       service.getPatientById('3a6d785d-f729-4af2-b415-30f96439dad0', currentUser),
-    ).rejects.toBeInstanceOf(ForbiddenException);
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(patientManagementRepositoryMock.findPatientDetailById).toHaveBeenCalledWith(
+      '3a6d785d-f729-4af2-b415-30f96439dad0',
+      { userId: currentUser.sub, scope: 'OWN' },
+    );
   });
 
   it('allows own-scope doctor to read patient detail through an active assignment', async () => {
@@ -237,18 +229,19 @@ describe('PatientManagementService', () => {
         },
       ],
     });
-    (
-      patientManagementRepositoryMock.hasActiveAssignmentWithDoctorUser as jest.Mock
-    ).mockResolvedValue(true);
 
     const result = await service.getPatientById(
       '3a6d785d-f729-4af2-b415-30f96439dad0',
       currentUser,
     );
 
-    expect(
-      patientManagementRepositoryMock.hasActiveAssignmentWithDoctorUser,
-    ).toHaveBeenCalledWith('3a6d785d-f729-4af2-b415-30f96439dad0', currentUser.sub);
+    // The assignment reach lives in the repository's CARE-scoped where-clause
+    // (see build-patient-scope-where.spec) — the service only forwards the
+    // actor and trusts the returned row.
+    expect(patientManagementRepositoryMock.findPatientDetailById).toHaveBeenCalledWith(
+      '3a6d785d-f729-4af2-b415-30f96439dad0',
+      { userId: currentUser.sub, scope: 'OWN' },
+    );
     expect(result.doctors).toEqual([
       {
         id: '58e9a316-40b2-4f4c-9207-2a58028babc4',
@@ -871,28 +864,24 @@ describe('PatientManagementService', () => {
       );
     });
 
-    it('denies an own-scope caller who does not own the record', async () => {
+    it('returns not-found for an own-scope caller outside the scoped where-clause', async () => {
       (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
         buildActor([{ action: 'read-identifier', resource: 'Patient', scope: 'OWN' }]),
       );
 
+      // SELF-scoped repository query filtered the row in SQL — a record the
+      // caller does not own is indistinguishable from a missing one, and a
+      // doctor assignment never widens it (see build-patient-scope-where.spec).
+      (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue(null);
+
       await expect(
         service.getPatientIdentifiers(mockPatient.id, currentUser),
-      ).rejects.toBeInstanceOf(ForbiddenException);
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(patientManagementRepositoryMock.findPatientById).toHaveBeenCalledWith(
+        mockPatient.id,
+        { userId: currentUser.sub, scope: 'OWN' },
+      );
       expect(patientManagementRepositoryMock.findPatientIdentifiers).not.toHaveBeenCalled();
-    });
-
-    it('never widens own scope through a doctor assignment', async () => {
-      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
-        buildActor([{ action: 'read-identifier', resource: 'Patient', scope: 'OWN' }]),
-      );
-      (
-        patientManagementRepositoryMock.hasActiveAssignmentWithDoctorUser as jest.Mock
-      ).mockResolvedValue(true);
-
-      await expect(
-        service.getPatientIdentifiers(mockPatient.id, currentUser),
-      ).rejects.toBeInstanceOf(ForbiddenException);
     });
 
     it('lets an own-scope owner read their own identifiers', async () => {
@@ -907,6 +896,10 @@ describe('PatientManagementService', () => {
       const actual = await service.getPatientIdentifiers(mockPatient.id, currentUser);
 
       expect(actual.nik).toBe('3201015205900001');
+      expect(patientManagementRepositoryMock.findPatientIdentifiers).toHaveBeenCalledWith(
+        mockPatient.id,
+        { userId: currentUser.sub, scope: 'OWN' },
+      );
       expect(auditServiceMock.record).toHaveBeenCalledWith(
         expect.objectContaining({ metadata: { scope: 'OWN', fields: ['nik'] } }),
       );

@@ -41,7 +41,6 @@ describe('PatientManagement integration', () => {
     findPatientIdByBpjsNumber: jest.fn(),
     findActiveUserById: jest.fn(),
     findActiveDoctorsByIds: jest.fn(),
-    hasActiveAssignmentWithDoctorUser: jest.fn(),
     findPatientIdentifiers: jest.fn(),
     createPatient: jest.fn(),
     updatePatient: jest.fn(),
@@ -137,7 +136,6 @@ describe('PatientManagement integration', () => {
       updatedAt: new Date('2026-01-01T00:00:00.000Z'),
       doctors: [],
     });
-    patientRepositoryMock.hasActiveAssignmentWithDoctorUser.mockResolvedValue(false);
     patientRepositoryMock.findActiveDoctorsByIds.mockResolvedValue([]);
   });
 
@@ -221,14 +219,13 @@ describe('PatientManagement integration', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(patientRepositoryMock.listPatients).toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.objectContaining({ sub: 'admin-user' }),
-      true,
-    );
+    expect(patientRepositoryMock.listPatients).toHaveBeenCalledWith(expect.any(Object), {
+      userId: 'admin-user',
+      scope: 'ANY',
+    });
   });
 
-  it('returns 403 when read:own user requests unowned patient detail', async () => {
+  it('returns 404 when read:own user requests unowned patient detail', async () => {
     const token = await jwtService.signAsync(
       {
         sub: 'own-user',
@@ -259,25 +256,20 @@ describe('PatientManagement integration', () => {
       ],
     });
 
-    patientRepositoryMock.findPatientDetailById.mockResolvedValue({
-      id: 'f746de50-6b45-4351-9bb6-45aeb3f671f9',
-      mrn: 'MRN-OTHER-01',
-      fullName: 'Other Patient',
-      dateOfBirth: new Date('1992-02-02T00:00:00.000Z'),
-      phoneNumber: '999999',
-      address: 'Owner Street',
-      ownerUserId: 'someone-else',
-      isActive: true,
-      createdAt: new Date('2026-01-01T00:00:00.000Z'),
-      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-      doctors: [],
-    });
+    // The scoped repository where-clause already filtered someone else's row
+    // in SQL, so the repository reports it exactly like a missing record —
+    // and the route answers 404, denying a UUID probe the existence oracle.
+    patientRepositoryMock.findPatientDetailById.mockResolvedValue(null);
 
     const response = await request(app.getHttpServer())
       .get('/api/v1/v1/patients/f746de50-6b45-4351-9bb6-45aeb3f671f9')
       .set('Authorization', `Bearer ${token}`);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(404);
+    expect(patientRepositoryMock.findPatientDetailById).toHaveBeenCalledWith(
+      'f746de50-6b45-4351-9bb6-45aeb3f671f9',
+      { userId: 'own-user', scope: 'OWN' },
+    );
   });
 
   describe('medical record numbers', () => {

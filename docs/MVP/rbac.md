@@ -126,6 +126,32 @@ export class AbilityFactory {
 - Assignment activity-log reads require `doctor-patient.activity.read:any`; assignment visibility does not implicitly grant access to the administrative audit log.
 - Never rely on frontend checks for access control.
 
+#### Row-level enforcement in repository where-clauses (SJ-2)
+
+`OWN` scope is enforced **inside the SQL `where`**, never by fetching a row and
+checking ownership afterwards. Repositories on scoped resources take a
+required actor context (`PatientScopeActor`: `{ userId, scope }`) and merge a
+scope fragment into every query; the fragment is built by a single per-domain
+helper (patients: `build-patient-scope-where.ts`) that is the source of
+ownership truth.
+
+Two ownership modes exist for patients, and the distinction is deliberate:
+
+| Mode | Reaches | Used by |
+| --- | --- | --- |
+| `CARE` | owning user **or** a doctor with an active `DoctorPatient` assignment (`unassignedAt: null`, doctor active and not deleted) | patient detail reads, patient lists |
+| `SELF` | strictly the owning user | identifier unmasking, patient updates, privacy-notice history |
+
+A doctor's care relationship never widens `SELF`: identifier plaintext and
+notice evidence are between the clinic and the patient, and clinical work runs
+on the MRN.
+
+Direct-by-ID probes answer **404, not 403**, when the row exists but is out of
+scope — not-found and not-yours must be indistinguishable so a UUID scan
+cannot become a resource-existence oracle. 403 remains the answer for
+action-level denials (no scope at all for the action), which is decided before
+any query runs.
+
 ### 4.7 Controller Usage Example
 
 ```ts

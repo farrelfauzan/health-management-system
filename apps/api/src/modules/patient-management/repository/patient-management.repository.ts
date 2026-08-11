@@ -6,15 +6,17 @@ import {
   PatientIdentifierPlaintext,
   PatientPhoneMatch,
   PatientRecord,
+  PatientScopeActor,
   UpdatePatientRecordPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
-import { CurrentUser } from '../../../common/auth/current-user.type';
+import { Prisma } from '../../../generated/prisma/client';
 import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
 import { MrnAllocatorRepository } from '../../../common/mrn/mrn-allocator.repository';
 import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { buildPatientScopeWhere } from './build-patient-scope-where';
 import { PatientIdentifierConflictError } from './patient-identifier-conflict.error';
 
 const RELATED_DOCTORS_DETAIL_LIMIT = 20;
@@ -184,7 +186,7 @@ export class PatientManagementRepository {
     private readonly privacyNoticeRepository: PrivacyNoticeRepository,
   ) {}
 
-  async listPatients(params: ListPatientsParams, currentUser: CurrentUser, hasAnyScope: boolean) {
+  async listPatients(params: ListPatientsParams, actor: PatientScopeActor) {
     const {
       page,
       limit,
@@ -240,27 +242,7 @@ export class PatientManagementRepository {
           }
         : {}),
       AND: [
-        ...(hasAnyScope
-          ? []
-          : [
-              {
-                OR: [
-                  { ownerUserId: currentUser.sub },
-                  {
-                    doctors: {
-                      some: {
-                        unassignedAt: null,
-                        doctor: {
-                          ownerUserId: currentUser.sub,
-                          deletedAt: null,
-                          isActive: true,
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            ]),
+        buildPatientScopeWhere({ actor, ownership: 'CARE' }),
         ...(search
           ? [
               {
@@ -344,10 +326,18 @@ export class PatientManagementRepository {
     };
   }
 
-  async findPatientById(id: string): Promise<PatientRecord | null> {
-    const patient = await this.prisma.findUniqueActive(this.prisma.patientProfile, {
+  /**
+   * Scoped by-ID fetch. `SELF` ownership on purpose: every caller of this
+   * method (identifier unmasking, updates, privacy-notice history) is an
+   * action where a treating doctor has no standing — the clinical read path
+   * goes through {@link findPatientDetailById} instead. A row outside the
+   * actor's scope is `null`, indistinguishable from a missing record.
+   */
+  async findPatientById(id: string, actor: PatientScopeActor): Promise<PatientRecord | null> {
+    const patient = await this.prisma.findFirstActive(this.prisma.patientProfile, {
       where: {
         id,
+        AND: [buildPatientScopeWhere({ actor, ownership: 'SELF' })],
       },
       select: PATIENT_RECORD_SELECT,
     });
@@ -355,11 +345,17 @@ export class PatientManagementRepository {
     return patient ? toPatientRecord(patient) : null;
   }
 
-  async findPatientDetailById(id: string) {
-    const patient = await this.prisma.findUniqueActive(this.prisma.patientProfile, {
-      where: {
-        id,
-      },
+  /**
+   * Scoped clinical detail fetch — `CARE` ownership, so an actively assigned
+   * doctor reads their patient through the same SQL boundary the owner does.
+   */
+  async findPatientDetailById(id: string, actor: PatientScopeActor) {
+    const scopedWhere: Prisma.PatientProfileWhereInput = {
+      id,
+      AND: [buildPatientScopeWhere({ actor, ownership: 'CARE' })],
+    };
+    const patient = await this.prisma.findFirstActive(this.prisma.patientProfile, {
+      where: scopedWhere,
       select: {
         ...PATIENT_RECORD_SELECT,
         doctors: {
@@ -486,10 +482,16 @@ export class PatientManagementRepository {
    * audit event. The decrypted values live in memory for the duration of the
    * response and are never logged.
    */
-  async findPatientIdentifiers(id: string): Promise<PatientIdentifierPlaintext | null> {
-    const patient = await this.prisma.findUniqueActive(this.prisma.patientProfile, {
+  async findPatientIdentifiers(
+    id: string,
+    actor: PatientScopeActor,
+  ): Promise<PatientIdentifierPlaintext | null> {
+    const patient = await this.prisma.findFirstActive(this.prisma.patientProfile, {
       where: {
         id,
+        // SELF, never CARE: identifier plaintext is the patient's own
+        // business — a treating doctor works on the MRN.
+        AND: [buildPatientScopeWhere({ actor, ownership: 'SELF' })],
       },
       select: {
         nikCiphertext: true,
@@ -533,22 +535,6 @@ export class PatientManagementRepository {
         id: true,
       },
     });
-  }
-
-  async hasActiveAssignmentWithDoctorUser(patientId: string, doctorUserId: string) {
-    const assignmentCount = await this.prisma.doctorPatient.count({
-      where: {
-        patientId,
-        unassignedAt: null,
-        doctor: {
-          ownerUserId: doctorUserId,
-          deletedAt: null,
-          isActive: true,
-        },
-      },
-    });
-
-    return assignmentCount > 0;
   }
 
   async createPatient(payload: CreatePatientRecordPayload): Promise<PatientRecord> {
