@@ -12,6 +12,12 @@ const EMBED_PATH = '/api/embed';
  * accepts an array `input` and answers with one vector per element — so a
  * document's chunks go up in batches rather than one request each.
  *
+ * **The local half of D-EMB-01** (`PCS-T12`). No longer the default, but kept
+ * a first-class adapter rather than a deprecated one: a clinic that will not
+ * add a third-party processor to its UU PDP account still has to be able to
+ * run this feature, and `bge-m3` is still the model that proved the
+ * cross-lingual ID↔EN retrieval `PCS-T02` was chosen for.
+ *
  * Every failure surfaces as a `ServiceUnavailableException` carrying no
  * upstream payload: the caller is the ingestion pipeline, which records the
  * reason on the document row, and a document's own text must never travel
@@ -24,7 +30,7 @@ export class OllamaEmbeddingService extends EmbeddingService {
 
   constructor(configService: ConfigService) {
     super();
-    this.embeddingConfig = resolveEmbeddingConfig(configService);
+    this.embeddingConfig = resolveEmbeddingConfig(configService).ollama;
   }
 
   get model(): string {

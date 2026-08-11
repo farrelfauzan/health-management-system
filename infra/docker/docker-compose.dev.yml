@@ -152,6 +152,14 @@ services:
       S3_BUCKET: ${S3_BUCKET:-hms-dev-objects}
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-hmsdevaccess}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-hmsdevsecret}
+      # Which embedder is bound (PCS-T12, D-EMB-01). Defaults to OLLAMA *here*
+      # rather than to the application default of TOGETHER: a dev stack that
+      # silently shipped every ingested document to a third party the first
+      # time somebody exported a TOGETHER_API_KEY would be a bad surprise, and
+      # a compose file is exactly the place to be conservative about it.
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-OLLAMA}
+      TOGETHER_API_KEY: ${TOGETHER_API_KEY:-}
+      TOGETHER_EMBEDDING_MODEL: ${TOGETHER_EMBEDDING_MODEL:-intfloat/multilingual-e5-large-instruct}
       # Ollama runs on the developer's host, not in this network — the same
       # `host.docker.internal` trap already documented for chat.
       OLLAMA_EMBEDDING_BASE_URL: ${OLLAMA_EMBEDDING_BASE_URL:-http://host.docker.internal:11434}
