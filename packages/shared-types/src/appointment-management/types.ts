@@ -13,7 +13,24 @@ export type ListAppointmentsParams = {
   patientId?: string;
   scheduledFrom?: Date;
   scheduledTo?: Date;
-  ownerUserId?: string;
+};
+
+/**
+ * How far an appointment permission reaches: `ANY` covers every record, `OWN`
+ * only the rows the actor participates in. Mirrors the permission `scope`
+ * column.
+ */
+export type AppointmentScopeMode = 'ANY' | 'OWN';
+
+/**
+ * Actor context every scoped appointment repository query requires (SJ-2).
+ * Appointment ownership is participant-side — the owning user of either the
+ * patient or the doctor on the row; session ownership is doctor-side only.
+ * Repositories merge the scope into the SQL `where`, never post-fetch.
+ */
+export type AppointmentScopeActor = {
+  userId: string;
+  scope: AppointmentScopeMode;
 };
 
 export type CreateAppointmentRecordPayload = {

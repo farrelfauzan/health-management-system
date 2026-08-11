@@ -46,6 +46,7 @@ describe('AppointmentManagementService', () => {
     findAppointmentDetailById: jest.fn(),
     findActivePatientById: jest.fn(),
     findActiveDoctorById: jest.fn(),
+    findScopedActiveDoctorById: jest.fn(),
     findScheduleWindowById: jest.fn(),
     findConflictingAppointment: jest.fn(),
     createAppointment: jest.fn(),
@@ -129,6 +130,7 @@ describe('AppointmentManagementService', () => {
     findAppointmentDetailById: jest.Mock;
     findActivePatientById: jest.Mock;
     findActiveDoctorById: jest.Mock;
+    findScopedActiveDoctorById: jest.Mock;
     findScheduleWindowById: jest.Mock;
     findConflictingAppointment: jest.Mock;
     createAppointment: jest.Mock;
@@ -168,6 +170,11 @@ describe('AppointmentManagementService', () => {
       ownerUserId: null,
       schedules: [],
     });
+    repositoryMock.findScopedActiveDoctorById.mockResolvedValue({
+      id: doctorId,
+      ownerUserId: null,
+      schedules: [],
+    });
     repositoryMock.findScheduleWindowById.mockResolvedValue(scheduleWindow);
     repositoryMock.findConflictingAppointment.mockResolvedValue(null);
     repositoryMock.createAppointment.mockResolvedValue(appointmentRecord);
@@ -200,9 +207,10 @@ describe('AppointmentManagementService', () => {
 
       await service.listAppointments({ page: 1, limit: 10 }, currentUser);
 
-      expect(repositoryMock.listAppointments).toHaveBeenCalledWith(
-        expect.objectContaining({ ownerUserId: undefined }),
-      );
+      expect(repositoryMock.listAppointments).toHaveBeenCalledWith(expect.any(Object), {
+        userId: currentUser.sub,
+        scope: 'ANY',
+      });
     });
 
     it('constrains ownership to current user for read:own scope', async () => {
@@ -210,9 +218,10 @@ describe('AppointmentManagementService', () => {
 
       await service.listAppointments({ page: 1, limit: 10 }, currentUser);
 
-      expect(repositoryMock.listAppointments).toHaveBeenCalledWith(
-        expect.objectContaining({ ownerUserId: currentUser.sub }),
-      );
+      expect(repositoryMock.listAppointments).toHaveBeenCalledWith(expect.any(Object), {
+        userId: currentUser.sub,
+        scope: 'OWN',
+      });
     });
   });
 
@@ -226,12 +235,20 @@ describe('AppointmentManagementService', () => {
       );
     });
 
-    it('throws forbidden for read:own scope when actor is not a participant', async () => {
+    it('returns not-found for read:own scope when the scoped where-clause misses', async () => {
       mockPermissions([{ action: 'read', resource: 'Appointment', scope: 'OWN' }]);
 
+      // The participant scope filtered the row in SQL (SJ-2): someone else's
+      // appointment and a nonexistent one are the same null.
+      repositoryMock.findAppointmentDetailById.mockResolvedValue(null);
+
       await expect(service.getAppointmentById(appointmentId, currentUser)).rejects.toBeInstanceOf(
-        ForbiddenException,
+        NotFoundException,
       );
+      expect(repositoryMock.findAppointmentDetailById).toHaveBeenCalledWith(appointmentId, {
+        userId: currentUser.sub,
+        scope: 'OWN',
+      });
     });
 
     it('returns appointment for read:own scope when actor owns the patient profile', async () => {
@@ -559,7 +576,7 @@ describe('AppointmentManagementService', () => {
 
     it('merges materialized sessions with projected schedule windows', async () => {
       mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'ANY' }]);
-      repositoryMock.findActiveDoctorById.mockResolvedValue({
+      repositoryMock.findScopedActiveDoctorById.mockResolvedValue({
         id: doctorId,
         ownerUserId: null,
         schedules: [scheduleWindow],
@@ -603,22 +620,24 @@ describe('AppointmentManagementService', () => {
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
-    it('throws forbidden when an OWN-scoped actor reads another doctor sessions', async () => {
+    it('returns not-found when an OWN-scoped actor reads another doctor sessions', async () => {
       mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'OWN' }]);
-      repositoryMock.findActiveDoctorById.mockResolvedValue({
-        id: doctorId,
-        ownerUserId: 'another-user-id',
-        schedules: [scheduleWindow],
-      });
+      // The doctor-side scope filtered the row in SQL (SJ-2): another
+      // doctor's profile and a missing one are the same null.
+      repositoryMock.findScopedActiveDoctorById.mockResolvedValue(null);
 
       await expect(
         service.listDoctorSessions(doctorId, sessionRange, currentUser),
-      ).rejects.toBeInstanceOf(ForbiddenException);
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(repositoryMock.findScopedActiveDoctorById).toHaveBeenCalledWith(doctorId, {
+        userId: currentUser.sub,
+        scope: 'OWN',
+      });
     });
 
     it('allows an OWN-scoped actor to read their own sessions', async () => {
       mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'OWN' }]);
-      repositoryMock.findActiveDoctorById.mockResolvedValue({
+      repositoryMock.findScopedActiveDoctorById.mockResolvedValue({
         id: doctorId,
         ownerUserId: currentUser.sub,
         schedules: [scheduleWindow],
@@ -678,19 +697,14 @@ describe('AppointmentManagementService', () => {
 
     it('limits an OWN-scoped actor to their own doctor calendar', async () => {
       mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'OWN' }]);
+      // The repository filters the roster in SQL (SJ-2) — the service only
+      // forwards the actor, so the mock returns the already-scoped set.
       repositoryMock.listActiveDoctorsWithSchedules.mockResolvedValue([
         {
           id: doctorId,
           fullName: 'Dr. First',
           ownerUserId: currentUser.sub,
           specialty: { name: 'Cardiology' },
-          schedules: [scheduleWindow],
-        },
-        {
-          id: 'b9c1d2e3-f4a5-4b6c-8d7e-9f0a1b2c3d4e',
-          fullName: 'Dr. Second',
-          ownerUserId: 'another-user-id',
-          specialty: { name: 'Neurology' },
           schedules: [scheduleWindow],
         },
       ]);
@@ -700,6 +714,10 @@ describe('AppointmentManagementService', () => {
         currentUser,
       );
 
+      expect(repositoryMock.listActiveDoctorsWithSchedules).toHaveBeenCalledWith({
+        userId: currentUser.sub,
+        scope: 'OWN',
+      });
       expect(actualSessions.length).toBeGreaterThan(0);
       expect(actualSessions.every((session) => session.doctor.id === doctorId)).toBe(true);
     });
@@ -743,24 +761,19 @@ describe('AppointmentManagementService', () => {
       expect(actualQueue.queue[0]).toMatchObject({ appointmentId, queueNumber: 1 });
     });
 
-    it('throws forbidden when an OWN-scoped actor reads another doctor queue', async () => {
+    it('returns not-found when an OWN-scoped actor reads another doctor queue', async () => {
       mockPermissions([{ action: 'read', resource: 'AppointmentSession', scope: 'OWN' }]);
-      repositoryMock.findSessionWithCountById.mockResolvedValue({
-        id: sessionId,
-        doctorId,
-        scheduleId,
-        sessionDate: new Date('2027-01-04T00:00:00.000Z'),
-        startTime: '08:00',
-        endTime: '12:00',
-        maxPatients: 10,
-        status: 'OPEN',
-        doctor: { ownerUserId: 'another-user-id' },
-        _count: { appointments: 1 },
-      });
+      // The doctor-side scope filtered the session in SQL (SJ-2): another
+      // doctor's queue and a missing session are the same null.
+      repositoryMock.findSessionWithCountById.mockResolvedValue(null);
 
       await expect(service.getSessionQueue(sessionId, currentUser)).rejects.toBeInstanceOf(
-        ForbiddenException,
+        NotFoundException,
       );
+      expect(repositoryMock.findSessionWithCountById).toHaveBeenCalledWith(sessionId, {
+        userId: currentUser.sub,
+        scope: 'OWN',
+      });
     });
 
     it('allows an OWN-scoped actor to read their own session queue', async () => {
@@ -984,12 +997,19 @@ describe('AppointmentManagementService', () => {
       ).rejects.toBeInstanceOf(NotFoundException);
     });
 
-    it('throws forbidden for cancel:own scope when actor is not a participant', async () => {
+    it('returns not-found for cancel:own scope when the scoped where-clause misses', async () => {
       mockPermissions([{ action: 'cancel', resource: 'Appointment', scope: 'OWN' }]);
+
+      // The participant scope filtered the row in SQL (SJ-2).
+      repositoryMock.findAppointmentDetailById.mockResolvedValue(null);
 
       await expect(
         service.cancelAppointment(appointmentId, {}, currentUser),
-      ).rejects.toBeInstanceOf(ForbiddenException);
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(repositoryMock.findAppointmentDetailById).toHaveBeenCalledWith(appointmentId, {
+        userId: currentUser.sub,
+        scope: 'OWN',
+      });
     });
 
     it('allows a patient to withdraw a pending special request', async () => {

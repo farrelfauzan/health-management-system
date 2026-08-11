@@ -146,6 +146,14 @@ A doctor's care relationship never widens `SELF`: identifier plaintext and
 notice evidence are between the clinic and the patient, and clinical work runs
 on the MRN.
 
+Appointments and sessions follow the same discipline with their own fragments
+(`build-appointment-scope-where.ts`, `build-session-scope-where.ts`):
+
+| Resource | `OWN` reaches | Rationale |
+| --- | --- | --- |
+| Appointment | participant-side: the owning user of the **patient** on the row or of the **doctor** on the row | a booking connects two parties; each side sees it |
+| AppointmentSession (incl. queue, calendars, per-doctor session lists) | doctor-side only: the session doctor's owning user | a practice session belongs to its doctor; a patient-side relationship never reaches one |
+
 Direct-by-ID probes answer **404, not 403**, when the row exists but is out of
 scope — not-found and not-yours must be indistinguishable so a UUID scan
 cannot become a resource-existence oracle. 403 remains the answer for
