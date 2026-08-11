@@ -32,6 +32,7 @@ describe('AppointmentManagement integration', () => {
     findAppointmentDetailById: jest.fn(),
     findActivePatientById: jest.fn(),
     findActiveDoctorById: jest.fn(),
+    findScopedActiveDoctorById: jest.fn(),
     findScheduleWindowById: jest.fn(),
     findConflictingAppointment: jest.fn(),
     createAppointment: jest.fn(),
@@ -152,6 +153,11 @@ describe('AppointmentManagement integration', () => {
       ownerUserId: null,
       schedules: [],
     });
+    appointmentRepositoryMock.findScopedActiveDoctorById.mockResolvedValue({
+      id: doctorId,
+      ownerUserId: null,
+      schedules: [],
+    });
     appointmentRepositoryMock.findScheduleWindowById.mockResolvedValue({
       id: scheduleId,
       doctorId,
@@ -204,9 +210,10 @@ describe('AppointmentManagement integration', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
-    expect(appointmentRepositoryMock.listAppointments).toHaveBeenCalledWith(
-      expect.objectContaining({ ownerUserId: undefined }),
-    );
+    expect(appointmentRepositoryMock.listAppointments).toHaveBeenCalledWith(expect.any(Object), {
+      userId: 'admin-user',
+      scope: 'ANY',
+    });
   });
 
   it('scopes appointment list to the current user with read:own permission', async () => {
@@ -218,9 +225,10 @@ describe('AppointmentManagement integration', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(appointmentRepositoryMock.listAppointments).toHaveBeenCalledWith(
-      expect.objectContaining({ ownerUserId: 'own-user' }),
-    );
+    expect(appointmentRepositoryMock.listAppointments).toHaveBeenCalledWith(expect.any(Object), {
+      userId: 'own-user',
+      scope: 'OWN',
+    });
   });
 
   it('returns 201 for special request creation with create:any permission', async () => {
