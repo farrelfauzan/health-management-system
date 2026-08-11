@@ -10,7 +10,7 @@ import { PUBLIC_ROUTE_KEY } from './public-route.decorator';
 
 describe('PermissionsGuard', () => {
   const reflector = {
-    get: jest.fn(),
+    getAllAndOverride: jest.fn(),
   } as unknown as Reflector;
 
   const authRepository = {
@@ -26,6 +26,7 @@ describe('PermissionsGuard', () => {
   const createContext = (user?: { sub: string; email: string }) =>
     ({
       getHandler: () => 'handler',
+      getClass: () => 'controller',
       switchToHttp: () => ({
         getRequest: () => ({ user }),
       }),
@@ -36,7 +37,7 @@ describe('PermissionsGuard', () => {
   });
 
   it('allows public routes', async () => {
-    (reflector.get as jest.Mock).mockImplementation((key: string) => {
+    (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
       if (key === PUBLIC_ROUTE_KEY) return true;
       return undefined;
     });
@@ -44,8 +45,34 @@ describe('PermissionsGuard', () => {
     await expect(guard.canActivate(createContext())).resolves.toBe(true);
   });
 
+  it('denies routes without permission metadata that are not public', async () => {
+    (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
+      if (key === PUBLIC_ROUTE_KEY) return undefined;
+      if (key === PERMISSION_CHECKER_KEY) return undefined;
+      return undefined;
+    });
+
+    await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+    expect(authRepository.findUserById).not.toHaveBeenCalled();
+  });
+
+  it('denies routes whose permission metadata is an empty list', async () => {
+    (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
+      if (key === PUBLIC_ROUTE_KEY) return false;
+      if (key === PERMISSION_CHECKER_KEY) return [];
+      return undefined;
+    });
+
+    await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+    expect(authRepository.findUserById).not.toHaveBeenCalled();
+  });
+
   it('throws unauthorized when user is missing', async () => {
-    (reflector.get as jest.Mock).mockImplementation((key: string) => {
+    (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
       if (key === PUBLIC_ROUTE_KEY) return false;
       if (key === PERMISSION_CHECKER_KEY) return [{ action: 'read', subject: 'Role' }];
       return undefined;
@@ -55,7 +82,7 @@ describe('PermissionsGuard', () => {
   });
 
   it('throws forbidden when permission check fails', async () => {
-    (reflector.get as jest.Mock).mockImplementation((key: string) => {
+    (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
       if (key === PUBLIC_ROUTE_KEY) return false;
       if (key === PERMISSION_CHECKER_KEY) return [{ action: 'read', subject: 'Role' }];
       return undefined;
@@ -90,7 +117,7 @@ describe('PermissionsGuard', () => {
   });
 
   it('throws internal error on unexpected ability exceptions', async () => {
-    (reflector.get as jest.Mock).mockImplementation((key: string) => {
+    (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
       if (key === PUBLIC_ROUTE_KEY) return false;
       if (key === PERMISSION_CHECKER_KEY) return [{ action: 'read', subject: 'Role' }];
       return undefined;
@@ -139,7 +166,7 @@ describe('PermissionsGuard', () => {
   });
 
   it('allows access when permission check passes', async () => {
-    (reflector.get as jest.Mock).mockImplementation((key: string) => {
+    (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
       if (key === PUBLIC_ROUTE_KEY) return false;
       if (key === PERMISSION_CHECKER_KEY) return [{ action: 'read', subject: 'Role' }];
       return undefined;
