@@ -17,6 +17,7 @@ import {
   PatientIdentifiers,
   PatientPhoneMatch,
   PatientRecord,
+  PatientScopeActor,
   PatientSexValue,
   REMOTE_REGISTRATION_PROVENANCES,
 } from '@hms/shared-types';
@@ -107,8 +108,7 @@ export class PatientManagementService {
         createdFrom: query.createdFrom ? parseDateOnly(query.createdFrom) : undefined,
         createdTo: query.createdTo ? parseDateOnly(query.createdTo) : undefined,
       },
-      currentUser,
-      readScope.hasAny,
+      this.buildScopeActor(currentUser, readScope.hasAny),
     );
 
     return {
@@ -142,14 +142,16 @@ export class PatientManagementService {
       throw new ForbiddenException('You are not allowed to read this patient');
     }
 
-    const patient = await this.patientManagementRepository.findPatientDetailById(id);
+    // Row-level scope lives in the repository where-clause (SJ-2): a record
+    // outside the actor's reach comes back null, so not-found and not-yours
+    // are the same 404 and a UUID probe learns nothing.
+    const patient = await this.patientManagementRepository.findPatientDetailById(
+      id,
+      this.buildScopeActor(currentUser, readScope.hasAny),
+    );
 
     if (!patient) {
       throw new NotFoundException('Patient not found');
-    }
-
-    if (!readScope.hasAny && !(await this.canReadOwnPatient(patient, currentUser))) {
-      throw new ForbiddenException('You are not allowed to read this patient');
     }
 
     return {
@@ -358,17 +360,17 @@ export class PatientManagementService {
       throw new ForbiddenException('You are not allowed to read patient identifiers');
     }
 
-    const patient = await this.patientManagementRepository.findPatientById(id);
+    const revealActor = this.buildScopeActor(currentUser, revealScope.hasAny);
+    const patient = await this.patientManagementRepository.findPatientById(id, revealActor);
 
     if (!patient) {
       throw new NotFoundException('Patient not found');
     }
 
-    if (!revealScope.hasAny && patient.ownerUserId !== currentUser.sub) {
-      throw new ForbiddenException('You are not allowed to read this patient identifiers');
-    }
-
-    const identifiers = await this.patientManagementRepository.findPatientIdentifiers(id);
+    const identifiers = await this.patientManagementRepository.findPatientIdentifiers(
+      id,
+      revealActor,
+    );
 
     if (!identifiers) {
       throw new NotFoundException('Patient not found');
@@ -405,16 +407,13 @@ export class PatientManagementService {
       throw new ForbiddenException('You are not allowed to update patients');
     }
 
-    const patient = await this.patientManagementRepository.findPatientById(id);
+    const patient = await this.patientManagementRepository.findPatientById(
+      id,
+      this.buildScopeActor(currentUser, updateScope.hasAny),
+    );
 
     if (!patient) {
       throw new NotFoundException('Patient not found');
-    }
-
-    const isOwner = patient.ownerUserId === currentUser.sub;
-
-    if (!updateScope.hasAny && !isOwner) {
-      throw new ForbiddenException('You are not allowed to update this patient');
     }
 
     if (!updateScope.hasAny && payload.ownerUserId !== undefined) {
@@ -467,12 +466,17 @@ export class PatientManagementService {
   async getPatientPrivacyNoticeHistory(id: string, currentUser: CurrentUser) {
     const actor = await this.getActorOrThrow(currentUser);
     const readScope = this.resolveScope(actor, 'Patient', 'read');
-    const patient = await this.patientManagementRepository.findPatientById(id);
+    if (!readScope.hasAny && !readScope.hasOwn) {
+      throw new ForbiddenException('You are not allowed to read this privacy notice history');
+    }
+    // SELF-scoped on purpose: notice evidence is between the clinic and the
+    // patient, so a treating doctor's care scope does not reach it.
+    const patient = await this.patientManagementRepository.findPatientById(
+      id,
+      this.buildScopeActor(currentUser, readScope.hasAny),
+    );
     if (!patient) {
       throw new NotFoundException('Patient not found');
-    }
-    if (!readScope.hasAny && (!readScope.hasOwn || patient.ownerUserId !== currentUser.sub)) {
-      throw new ForbiddenException('You are not allowed to read this privacy notice history');
     }
     const [current, history, currentRecord] = await Promise.all([
       this.privacyNoticeRepository.findCurrentVersion(),
@@ -651,18 +655,17 @@ export class PatientManagementService {
     });
   }
 
-  private async canReadOwnPatient(
-    patient: Pick<PatientRecord, 'id' | 'ownerUserId'>,
-    currentUser: CurrentUser,
-  ): Promise<boolean> {
-    if (patient.ownerUserId === currentUser.sub) {
-      return true;
-    }
-
-    return this.patientManagementRepository.hasActiveAssignmentWithDoctorUser(
-      patient.id,
-      currentUser.sub,
-    );
+  /**
+   * Collapses a resolved permission scope into the actor context repositories
+   * require. Callers gate the action first (no scope at all → 403); rows the
+   * scope cannot reach are then the repository's business, never a post-fetch
+   * check here.
+   */
+  private buildScopeActor(currentUser: CurrentUser, hasAnyScope: boolean): PatientScopeActor {
+    return {
+      userId: currentUser.sub,
+      scope: hasAnyScope ? 'ANY' : 'OWN',
+    };
   }
 
   private async assertAssignableDoctorIds(doctorIds?: string[]): Promise<void> {

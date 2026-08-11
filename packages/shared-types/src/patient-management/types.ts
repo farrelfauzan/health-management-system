@@ -204,3 +204,28 @@ export type PatientIdentifierConflict = {
   field: 'nik' | 'bpjsNumber';
   patientId: string;
 };
+
+/**
+ * How far a patient permission reaches: `ANY` covers every record, `OWN` only
+ * the rows the actor is connected to. Mirrors the permission `scope` column.
+ */
+export type PatientScopeMode = 'ANY' | 'OWN';
+
+/**
+ * What "own" means for a given action. `CARE` is the clinical read boundary —
+ * the owning user or an actively assigned doctor. `SELF` is strictly the
+ * owning user, used where a treating doctor has no business: identifier
+ * unmasking, demographic updates, privacy-notice history.
+ */
+export type PatientOwnershipMode = 'CARE' | 'SELF';
+
+/**
+ * Actor context every scoped patient repository query requires. Repositories
+ * never receive raw user IDs ad hoc — the scope travels with the identity so
+ * ownership is enforced inside the SQL `where`, not by post-fetch filtering
+ * (SJ-2).
+ */
+export type PatientScopeActor = {
+  userId: string;
+  scope: PatientScopeMode;
+};
