@@ -646,6 +646,22 @@
       "blocking": "Memblokir…",
       "blocked": "Chat diblokir.",
       "failed": "Chat gagal diblokir."
+    },
+    "metrics": {
+      "title": "Kesehatan kanal (14 hari terakhir)",
+      "window": "{from} s.d. {to}",
+      "messagesPerDay": "Pesan/hari",
+      "ofMessages": "{count} pesan",
+      "conversations": "Percakapan",
+      "inWindow": "dimulai pada periode ini",
+      "bookingConversion": "Rasio booking",
+      "ofBookings": "{count} booking",
+      "handoffRate": "Rasio alih tangan",
+      "ofHandoffs": "{count} alih tangan",
+      "faqNoHitRate": "FAQ tanpa hasil",
+      "ofSearches": "{count} pencarian",
+      "abuseSignals": "Sinyal penyalahgunaan",
+      "abuseBreakdown": "{enumeration} ditandai · {budget} lewat kuota · {blocked} diblokir"
     }
   }
 }

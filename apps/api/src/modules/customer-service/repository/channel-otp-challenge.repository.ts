@@ -172,6 +172,38 @@ export class ChannelOtpChallengeRepository {
   }
 
   /**
+   * How many *distinct chats* have failed a challenge against this patient
+   * record in the window (`PCS-T11`, §8.3).
+   *
+   * The count §8.3 actually asks for, and the one the per-chat quota cannot
+   * give: that quota bounds how often a single conversation may guess, and a
+   * second chat resets it for free — which on a public channel costs an
+   * attacker nothing. Counting distinct chats against the *record* is what
+   * makes "somebody is walking the registry" visible.
+   *
+   * A failed challenge is one that was consumed without ever linking, which is
+   * why `verifiedAt` is not the discriminator — there is no such column here.
+   * `consumedAt IS NOT NULL` with the conversation never reaching a linked
+   * state is the closest honest signal, so the caller passes the chat that is
+   * currently failing and this counts the *others*.
+   */
+  async countChatsFailingAgainstPatient(params: {
+    patientId: string;
+    since: Date;
+  }): Promise<number> {
+    const rows = await this.prismaService.channelOtpChallenge.findMany({
+      where: {
+        patientId: params.patientId,
+        createdAt: { gte: params.since },
+        consumedAt: { not: null },
+      },
+      select: { conversationId: true },
+      distinct: ['conversationId'],
+    });
+    return rows.length;
+  }
+
+  /**
    * Keyed rather than a plain digest. A six-digit code has a million
    * possibilities — a rainbow table anyone can build in a second — so an
    * unkeyed SHA-256 of one is not meaningfully safer than storing the code

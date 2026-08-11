@@ -206,6 +206,22 @@ export type CustomerServiceConfig = {
   readonly historyTurnLimit: number;
   /** Inbound messages allowed per chat per hour before the polite template. */
   readonly rateLimitPerChatHour: number;
+  /**
+   * §8.3's daily LLM budget, as a **clinic-wide** count of provider calls
+   * (`PCS-T11`).
+   *
+   * A second cap alongside the per-chat one, and it is not redundant: the
+   * per-chat limit bounds what one customer costs and does nothing about a
+   * hundred chats, which on a public channel costs nothing to arrange. This is
+   * the one that bounds the *bill*.
+   *
+   * Counted in calls rather than tokens deliberately. Tokens are the true
+   * unit, but they are only known after a provider answers — a token budget
+   * can only ever stop the call *after* the one that broke it, and it needs a
+   * counter every adapter has to remember to update. A call count is knowable
+   * before spending anything.
+   */
+  readonly maxLlmCallsPerDay: number;
   readonly clinicName: string;
   /** The booking and verification half (`PCS-T07`). */
   readonly booking: CustomerServiceBookingConfig;
@@ -250,6 +266,15 @@ export type CustomerServiceBookingConfig = {
   readonly otpMaxChallengesPerDay: number;
   /** §8.5 `CS_LINK_REVERIFY_DAYS`, default 180. */
   readonly linkReverifyDays: number;
+  /**
+   * How many *distinct chats* may fail a possession challenge against one
+   * patient record in a day before the conversation is flagged for review
+   * (`PCS-T11`, §8.3).
+   *
+   * Counted across chats, because the per-chat challenge quota above bounds
+   * one conversation and a second chat resets it for free.
+   */
+  readonly enumerationChatThreshold: number;
   /** §8.3's per-number cap on active future bookings. */
   readonly maxActiveBookingsPerPhone: number;
   /** §8.3's clinic-wide daily cap on bookings for numbers matching no record. */

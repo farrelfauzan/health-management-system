@@ -137,6 +137,25 @@ export class ConversationRepository {
     });
   }
 
+  /**
+   * How many provider calls the whole channel has made in the window, for
+   * §8.3's daily budget (`PCS-T11`).
+   *
+   * Counted from `BOT` turns rather than from a counter this code increments,
+   * because the transcript is already the record of what a provider produced
+   * and a separate counter is a second source of truth that can drift — and
+   * would reset on every deploy. `SYSTEM` turns are excluded by the role
+   * filter, which is what makes the count mean "calls that cost money" rather
+   * than "replies sent": every locally-answered emergency, template, and
+   * booking confirmation is a `SYSTEM` turn precisely because it never
+   * reached a provider.
+   */
+  async countProviderRepliesSince(since: Date): Promise<number> {
+    return this.prismaService.conversationMessage.count({
+      where: { role: 'BOT', createdAt: { gte: since } },
+    });
+  }
+
   private toRecord(row: ConversationRow): ConversationRecord {
     return {
       id: row.id,

@@ -646,6 +646,22 @@
       "blocking": "Blocking…",
       "blocked": "The chat is blocked.",
       "failed": "The chat could not be blocked."
+    },
+    "metrics": {
+      "title": "Channel health (last 14 days)",
+      "window": "{from} to {to}",
+      "messagesPerDay": "Messages/day",
+      "ofMessages": "{count} messages",
+      "conversations": "Conversations",
+      "inWindow": "started in window",
+      "bookingConversion": "Booking rate",
+      "ofBookings": "{count} booked",
+      "handoffRate": "Handoff rate",
+      "ofHandoffs": "{count} handoffs",
+      "faqNoHitRate": "FAQ no-hit",
+      "ofSearches": "{count} searches",
+      "abuseSignals": "Abuse signals",
+      "abuseBreakdown": "{enumeration} flagged · {budget} over budget · {blocked} blocked"
     }
   }
 }

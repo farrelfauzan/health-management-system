@@ -14,13 +14,34 @@
  */
 export const CS_REPLY_TEMPLATES = {
   /**
-   * §8.2's one-line notice, sent once at the top of a new conversation. It
-   * names the three things a data subject is owed: that this is automated,
-   * what their data is used for, and where the sensitive part happens.
+   * §8.2's notice, sent once at the top of a new conversation.
+   *
+   * **Reviewed against UU PDP at `PCS-T11`**, which is the gate before this
+   * channel is announced publicly, and three disclosures were added because
+   * the original said only that the assistant is automated, what the data is
+   * for, and where sensitive data is completed:
+   *
+   * 1. **That messages are processed by a third-party AI provider.** This is
+   *    the one a customer cannot possibly infer. They believe they are texting
+   *    a clinic; their words are sent to a vendor. §8.2 already constrains
+   *    *what* crosses — post-redaction text, never registry or medical data —
+   *    but constraining it is not the same as disclosing it.
+   * 2. **How long the chat is kept.** UU PDP expects a retention period, and
+   *    "90 days" is a fact the clinic already committed to in §8.2. Saying it
+   *    costs one clause.
+   * 3. **A route to exercise rights.** The clinic's own notice points patients
+   *    at the privacy officer; a channel that mentioned no route at all would
+   *    be the one surface where that right silently disappears.
+   *
+   * Deliberately still short. A notice long enough to scroll is a notice
+   * nobody reads, and an unread notice is not consent — so this states the
+   * facts a person needs to decide whether to keep typing, and points at the
+   * full notice for the rest.
    */
   privacyNotice: [
     'Halo! Anda terhubung dengan asisten otomatis klinik. Saya dapat menjawab pertanyaan seputar layanan klinik dan membantu membuat janji temu.',
-    'Data yang Anda kirim di sini hanya dipakai untuk keperluan tersebut. Data sensitif seperti NIK, nomor BPJS, dan riwayat medis dilengkapi langsung di klinik, bukan melalui chat ini.',
+    'Pesan Anda diproses oleh layanan AI pihak ketiga untuk menyusun jawaban, dan disimpan maksimal 90 hari. Data sensitif seperti NIK, nomor BPJS, dan riwayat medis tidak diminta di sini — semuanya dilengkapi langsung di klinik.',
+    'Untuk pertanyaan privasi, akses, atau koreksi data Anda, silakan hubungi petugas klinik.',
   ].join('\n\n'),
 
   /**
@@ -67,6 +88,34 @@ export const CS_REPLY_TEMPLATES = {
     'Maaf, pesan Anda terlalu banyak dalam waktu singkat. Silakan coba lagi beberapa saat lagi.',
     'Jika mendesak, silakan hubungi loket klinik langsung.',
   ].join('\n\n'),
+
+  /**
+   * §8.3's daily-budget reply (`PCS-T11`).
+   *
+   * Worded differently from {@link rateLimited}, and the difference is honest
+   * rather than cosmetic: that one is the customer's own fault and clears in
+   * minutes, this one is the *clinic* being out of budget and will not clear
+   * today. Telling someone to "try again shortly" when nothing will change
+   * until tomorrow is the kind of small lie that costs a booking.
+   */
+  dailyBudgetExhausted: [
+    'Maaf, layanan asisten otomatis kami sedang tidak tersedia untuk sementara.',
+    'Untuk membuat janji temu atau bertanya, silakan hubungi loket klinik langsung. Mohon maaf atas ketidaknyamanannya.',
+  ].join('\n\n'),
+
+  /**
+   * The note left in a transcript when §8.3's enumeration flag fires
+   * (`PCS-T11`).
+   *
+   * **Never sent to the customer.** It exists so the admin who finds this
+   * conversation in their queue knows why it is there — a `NEEDS_HUMAN` with
+   * no explanation reads as somebody who asked for help. Written in the
+   * staff-facing register for that reason, and deliberately without the
+   * patient record it concerns: an admin can see the conversation, and a
+   * transcript is not the place to name the record somebody was probing.
+   */
+  enumerationReviewNote:
+    '[Ditandai otomatis] Beberapa percakapan berbeda gagal memverifikasi nomor yang sama hari ini. Mohon periksa sebelum melanjutkan.',
 
   /** Acknowledges a handoff so the customer is not left waiting in silence. */
   handoff: [

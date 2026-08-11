@@ -212,3 +212,54 @@ export type WhatsappPairingSessionView = {
   qrLink: string;
   expiresInSeconds: number | null;
 };
+
+/**
+ * §8.4's channel metrics, over a window (`PCS-T11`).
+ *
+ * The five §8.4 names, and they exist to make the `PCS-T11` go/no-go decision
+ * read numbers instead of impressions. Each answers a question somebody
+ * actually asks before announcing a WhatsApp number:
+ *
+ * - `messagesPerDay` — is anyone using it, and is the volume what we expected?
+ * - `intentMix` — is the tool loop routing, or is every turn a bare chat?
+ * - `bookingConversion` — does the channel do the thing it was built for?
+ * - `handoffRate` — how much human time does it *cost* rather than save?
+ * - `faqNoHitRate` — the corpus-improvement signal: questions the clinic's
+ *   documents could not answer are the next documents to write.
+ *
+ * Counts and ratios only. No message text, no chat ids, no patient names — a
+ * dashboard is the surface most likely to be screenshotted into a group chat,
+ * and none of these numbers is worth less for being anonymous.
+ */
+export type ChannelMetricsView = {
+  /** Inclusive ISO dates the window covers, in the clinic timezone. */
+  from: string;
+  to: string;
+  windowDays: number;
+  inboundMessages: number;
+  /** Inbound customer messages divided by days in the window. */
+  messagesPerDay: number;
+  conversationsStarted: number;
+  /**
+   * How often each tool was actually called. An empty map with real traffic
+   * means the model is answering everything from the system prompt, which is
+   * the failure §6 warns about — it looks like a working bot and cites
+   * nothing.
+   */
+  intentMix: Readonly<Record<string, number>>;
+  bookingsConfirmed: number;
+  /** Bookings divided by conversations started, 0–1. */
+  bookingConversion: number;
+  handoffs: number;
+  /** Handoffs divided by conversations started, 0–1. */
+  handoffRate: number;
+  faqSearches: number;
+  faqNoHits: number;
+  /** No-hits divided by FAQ searches, 0–1. Null when nothing was searched. */
+  faqNoHitRate: number | null;
+  /** §8.3 counters, so a spent budget is visible next to the traffic. */
+  rateLimitedTurns: number;
+  budgetExhaustedTurns: number;
+  enumerationFlags: number;
+  blockedConversations: number;
+};

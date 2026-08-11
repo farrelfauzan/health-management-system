@@ -27,6 +27,7 @@ describe('ConversationService', () => {
       | 'updateState'
       | 'markNoticeSent'
       | 'countCustomerMessagesSince'
+      | 'countProviderRepliesSince'
     >
   >;
   let mockOrchestrator: jest.Mocked<Pick<IntentOrchestratorService, 'composeReply' | 'config'>>;
@@ -34,7 +35,11 @@ describe('ConversationService', () => {
   let mockVerification: jest.Mocked<
     Pick<
       ChannelVerificationService,
-      'findLiveChallenge' | 'isContactSatisfying' | 'submitCode' | 'consumeChallenge'
+      | 'findLiveChallenge'
+      | 'isContactSatisfying'
+      | 'submitCode'
+      | 'consumeChallenge'
+      | 'isEnumerationSuspected'
     >
   >;
   let mockBooking: jest.Mocked<
@@ -114,6 +119,7 @@ describe('ConversationService', () => {
       updateState: jest.fn().mockResolvedValue(buildConversation()),
       markNoticeSent: jest.fn().mockResolvedValue(undefined),
       countCustomerMessagesSince: jest.fn().mockResolvedValue(1),
+      countProviderRepliesSince: jest.fn().mockResolvedValue(0),
     };
     mockOrchestrator = {
       composeReply: jest.fn().mockResolvedValue({
@@ -126,12 +132,14 @@ describe('ConversationService', () => {
       config: {
         historyTurnLimit: 20,
         rateLimitPerChatHour: 20,
+        maxLlmCallsPerDay: 2000,
         clinicName: 'Klinik Uji',
         booking: {
           otpTtlSeconds: 300,
           otpMaxAttempts: 3,
           otpMaxChallengesPerDay: 3,
           linkReverifyDays: 180,
+          enumerationChatThreshold: 3,
           maxActiveBookingsPerPhone: 3,
           maxDraftBookingsPerDay: 50,
         },
@@ -143,6 +151,7 @@ describe('ConversationService', () => {
       isContactSatisfying: jest.fn().mockReturnValue(false),
       submitCode: jest.fn().mockResolvedValue({ isVerified: false, attemptsRemaining: 2 }),
       consumeChallenge: jest.fn().mockResolvedValue(undefined),
+      isEnumerationSuspected: jest.fn().mockResolvedValue(false),
     };
     mockBooking = {
       completePendingBooking: jest
@@ -221,6 +230,98 @@ describe('ConversationService', () => {
     // resolved verification first would allow.
     expect(mockVerification.findLiveChallenge).not.toHaveBeenCalled();
     expect(mockBooking.completePendingBooking).not.toHaveBeenCalled();
+  });
+
+  describe('§8.3 daily LLM budget', () => {
+    it('answers a template once the clinic-wide budget is spent', async () => {
+      mockRepository.countProviderRepliesSince.mockResolvedValue(2000);
+
+      await conversationService.handleInboundMessage(buildMessage());
+
+      // The per-chat limit bounds what one customer costs; this one bounds
+      // the bill, and it stops *everybody*.
+      expect(mockOrchestrator.composeReply).not.toHaveBeenCalled();
+      expect(mockDispatcher.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ text: CS_REPLY_TEMPLATES.dailyBudgetExhausted }),
+      );
+    });
+
+    it('still answers an emergency after the budget is spent', async () => {
+      mockRepository.countProviderRepliesSince.mockResolvedValue(5000);
+
+      await conversationService.handleInboundMessage(buildMessage('dada saya sakit banget'));
+
+      // A clinic out of budget must still be able to tell somebody describing
+      // chest pain to call an ambulance — that reply costs nothing to give.
+      expect(mockDispatcher.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ text: CS_REPLY_TEMPLATES.emergency }),
+      );
+    });
+
+    it('does not count the budget for a chat already over its own limit', async () => {
+      mockRepository.countCustomerMessagesSince.mockResolvedValue(21);
+
+      await conversationService.handleInboundMessage(buildMessage());
+
+      // Cheap check first: a flooding chat is turned away by its own limit
+      // without the whole channel paying for a count.
+      expect(mockRepository.countProviderRepliesSince).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('§8.3 enumeration flagging', () => {
+    it('does not flag a conversation whose challenge succeeded', async () => {
+      mockRepository.findOrCreateConversation.mockResolvedValue(
+        buildConversation({ state: 'AWAITING_OTP' }),
+      );
+      mockVerification.findLiveChallenge.mockResolvedValue(buildChallenge());
+      mockVerification.isContactSatisfying.mockReturnValue(true);
+
+      await conversationService.handleInboundMessage({
+        ...buildMessage(''),
+        sharedContact: { phoneNumber: '628123456789', isSelfShared: true },
+      });
+
+      // A proven verification is not evidence of anything.
+      expect(mockVerification.isEnumerationSuspected).not.toHaveBeenCalled();
+    });
+
+    it('flags the conversation for review after a failed challenge on a probed record', async () => {
+      mockRepository.findOrCreateConversation.mockResolvedValue(
+        buildConversation({ state: 'AWAITING_OTP' }),
+      );
+      mockVerification.findLiveChallenge.mockResolvedValue(buildChallenge({ method: 'OTP' }));
+      mockVerification.submitCode.mockResolvedValue({ isVerified: false, attemptsRemaining: 0 });
+      mockVerification.isEnumerationSuspected.mockResolvedValue(true);
+
+      await conversationService.handleInboundMessage(buildMessage('111111'));
+
+      expect(mockRepository.appendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ safetyTags: ['enumeration_suspected'] }),
+      );
+      expect(mockRepository.updateState).toHaveBeenCalledWith('conversation-1', 'NEEDS_HUMAN');
+    });
+
+    it('still completes the booking, and tells the customer nothing', async () => {
+      mockRepository.findOrCreateConversation.mockResolvedValue(
+        buildConversation({ state: 'AWAITING_OTP' }),
+      );
+      mockVerification.findLiveChallenge.mockResolvedValue(buildChallenge({ method: 'OTP' }));
+      mockVerification.submitCode.mockResolvedValue({ isVerified: false, attemptsRemaining: 0 });
+      mockVerification.isEnumerationSuspected.mockResolvedValue(true);
+
+      await conversationService.handleInboundMessage(buildMessage('111111'));
+
+      // §5.1.1 is explicit that a failed challenge is not a dead end, and an
+      // attacker must not be able to tell a flagged record from an unflagged
+      // one by whether their booking went through — or by any reply.
+      expect(mockBooking.completePendingBooking).toHaveBeenCalledWith(
+        expect.objectContaining({ verifiedPatientId: null }),
+      );
+      const dispatchedTexts = mockDispatcher.sendMessage.mock.calls.map(([call]) => call.text);
+      expect(dispatchedTexts).toContain(CONFIRMATION_REPLY);
+      expect(dispatchedTexts).not.toContain(CS_REPLY_TEMPLATES.enumerationReviewNote);
+    });
   });
 
   it('persists the customer turn already redacted', async () => {
@@ -338,7 +439,13 @@ describe('ConversationService', () => {
       requestContact: false,
       pausesConversation: false,
       toolInvocations: [
-        { toolName: 'search_faq', arguments: { query: 'jam buka' }, outcome: 'SUCCESS', errorCode: null },
+        {
+          toolName: 'search_faq',
+          arguments: { query: 'jam buka' },
+          outcome: 'SUCCESS',
+          errorCode: null,
+          resultCount: 2,
+        },
       ],
     });
 
