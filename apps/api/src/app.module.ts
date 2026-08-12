@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
 import { PrismaModule } from './common/prisma/prisma.module';
+import { SecurityConfigModule } from './common/config/config.module';
+import { JwtSecretsService } from './common/config/jwt-secrets.service';
 import { AuditModule } from './common/audit/audit.module';
 import { AuthorizationModule } from './common/authorization/authorization.module';
 import { BpjsPcareModule } from './common/bpjs-pcare/bpjs-pcare.module';
@@ -41,11 +43,12 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    SecurityConfigModule,
     PrismaModule,
     JwtModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_ACCESS_SECRET') ?? 'dev-access-secret',
+      inject: [JwtSecretsService],
+      useFactory: (jwtSecrets: JwtSecretsService) => ({
+        secret: jwtSecrets.getAccessSigningSecret(),
       }),
     }),
     ObservabilityModule,

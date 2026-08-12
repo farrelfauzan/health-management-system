@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, RefreshTokenPayload } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { JwtSecretsService } from '../../../common/config/jwt-secrets.service';
 import { RequestContext } from '../../../common/observability/observability.types';
 import { AuthRepository } from '../repository/auth.repository';
 import { AuthService } from './auth.service';
@@ -30,7 +31,16 @@ describe('AuthService', () => {
   const auditServiceMock = {
     record: jest.fn().mockResolvedValue(undefined),
   } as unknown as AuditService;
-  const service = new AuthService(authRepositoryMock, jwtService, configService, auditServiceMock);
+  // Real service over the same ConfigService the suite already builds, so the
+  // rotation path is exercised rather than stubbed away.
+  const jwtSecretsService = new JwtSecretsService(configService);
+  const service = new AuthService(
+    authRepositoryMock,
+    jwtService,
+    configService,
+    auditServiceMock,
+    jwtSecretsService,
+  );
   const user = {
     id: userId,
     email: 'admin@hms.local',

@@ -1,0 +1,45 @@
+# SJ-5 — secret scanning configuration.
+#
+# Extends the upstream ruleset rather than replacing it: the default rules
+# recognise the credential formats that actually matter here (cloud keys,
+# private keys, provider tokens), and a hand-rolled list would rot.
+#
+# The allowlist below is short on purpose. A scanner that cries wolf is a
+# scanner somebody switches off, but every entry is a place where a *real*
+# secret would then go unnoticed — so each one has to be a location where a
+# real secret cannot live.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Paths and literals that cannot contain a real credential"
+
+paths = [
+  # Prisma generates a base64-encoded schema graph here. It is high-entropy by
+  # construction and trips entropy rules on every run; it is also machine-
+  # written from schema.prisma, so a human secret cannot reach it.
+  '''apps/api/src/generated/''',
+  # Integrity hashes, not credentials.
+  '''pnpm-lock\.yaml''',
+  # Placeholders, and the file is the documented place for them. The values
+  # themselves are additionally refused at boot when NODE_ENV=production —
+  # see validateEnvironment.
+  '''apps/api/\.env\.example''',
+]
+
+regexes = [
+  # The well-known development values. They are in the repository on purpose
+  # (docker-compose defaults, CI fixtures) and are rejected in production by
+  # validateEnvironment, so a leak of one grants nothing.
+  '''dev-access-secret''',
+  '''dev-refresh-secret''',
+  '''replace-with-strong-secret''',
+  '''hmsdevaccess''',
+  '''hmsdevsecret''',
+  '''hmsdevwahakey''',
+  '''hms-dev-webhook-secret''',
+  # The single-host dev database credential pair, which is `postgres/postgres`
+  # on a container bound to localhost.
+  '''postgresql://postgres:postgres@''',
+]
