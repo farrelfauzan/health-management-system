@@ -43,3 +43,10 @@ packages/**/src/**/*.d.ts
 CLAUDE.md
 .agents/
 AGENTS.md
+
+# Generated weak-password denylist (SJ-7). The generator is committed; its
+# output is not — a file of 11k passwords trips the gitleaks secret-scan job,
+# and allowlisting a directory to silence that would hide a real leak landing
+# there. Regenerate with:
+#   node infra/wordlists/generate-weak-passwords.mjs > infra/wordlists/breached-passwords.txt
+infra/wordlists/*.txt

@@ -91,6 +91,37 @@ deliberately not used: a clinic server is expected to run without internet
 access, and a wordlist that has to be downloaded is a wordlist that is missing
 on the machine that needed it.
 
+### Generating a larger list without internet access
+
+`infra/wordlists/generate-weak-passwords.mjs` produces ~11,300 entries:
+
+```bash
+node infra/wordlists/generate-weak-passwords.mjs > infra/wordlists/breached-passwords.txt
+export BREACHED_PASSWORD_LIST_PATH="$PWD/infra/wordlists/breached-passwords.txt"
+```
+
+**It is not a breach corpus and does not claim to be.** It is a deterministic
+expansion of the patterns those corpora are made of — dictionary words, names,
+keyboard walks and numeric runs crossed with the suffixes people actually
+append — plus Indonesian and clinic vocabulary. Every entry is a password a
+cracking rig tries early, which is the property that matters; what it cannot
+tell you is real-world frequency ranking.
+
+The **generator** is committed, its **output is gitignored**. A file of 11k
+passwords trips the `secret-scan` job, and allowlisting a directory to silence
+that would hide a genuine leak landing there. Regenerating is byte-identical,
+so the file never needs to be in version control.
+
+Prefer the real thing where a machine has internet access:
+
+```bash
+curl -o infra/wordlists/breached-passwords.txt \
+  https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10-million-password-list-top-10000.txt
+```
+
+Either way the API merges the file with its compiled-in list, so the
+Indonesian and clinic entries survive.
+
 ---
 
 ## Throttling
