@@ -42,4 +42,23 @@ regexes = [
   # The single-host dev database credential pair, which is `postgres/postgres`
   # on a container bound to localhost.
   '''postgresql://postgres:postgres@''',
+
+  # Test fixtures for the BPJS and AI-provider credential paths. Allowlisted by
+  # *value*, not by file: a spec is precisely where somebody pastes a real key
+  # "just to debug the integration", so `*.spec.ts` stays scanned and only
+  # these six known-synthetic strings are exempt. Each was checked against the
+  # commit that introduced it — none was ever a real credential later swapped
+  # for a fixture.
+  #
+  #   b1a2c3... — a hand-walked hex sequence (b1 a2 c3 d4 e5 f6 07 18 ...)
+  #   0kSp1ke... — leetspeak "OkSpikeSecretKey"
+  #   sk-proj-abc123def456 — too short to be a real key, and says so
+  #   RahasiaPcare123 — "SecretPcare123" in Indonesian, for `klinik-demo`
+  #   a2xpbmlr... — base64 of `klinik-demo:RahasiaPcare123:095`, which is the
+  #     *expected output* the header test asserts, not an input credential
+  '''b1a2c3d4e5f60718293a4b5c6d7e8f90''',
+  '''0kSp1keSecretKey''',
+  '''sk-proj-abc123def456''',
+  '''RahasiaPcare123''',
+  '''a2xpbmlrLWRlbW86UmFoYXNpYVBjYXJlMTIzOjA5NQ==''',
 ]

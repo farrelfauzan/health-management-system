@@ -2,8 +2,19 @@ import { ConfigService } from '@nestjs/config';
 
 import { JwtSecretsService } from './jwt-secrets.service';
 
+/**
+ * A config source that sees only what the test gives it. A real `ConfigService`
+ * falls through to `process.env`, which makes these cases pass or fail
+ * depending on the ambient environment — CI sets `JWT_ACCESS_SECRET`, a
+ * developer shell usually does not, and the "missing secret" case then proves
+ * nothing.
+ */
+function buildConfigService(env: Record<string, string>): ConfigService {
+  return { get: (key: string): string | undefined => env[key] } as unknown as ConfigService;
+}
+
 function buildService(env: Record<string, string>): JwtSecretsService {
-  return new JwtSecretsService(new ConfigService(env));
+  return new JwtSecretsService(buildConfigService(env));
 }
 
 describe('JwtSecretsService', () => {

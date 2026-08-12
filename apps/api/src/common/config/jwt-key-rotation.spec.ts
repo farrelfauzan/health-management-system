@@ -18,8 +18,11 @@ type SessionClaims = { sub: string };
 describe('JWT key rotation', () => {
   const jwtService = new JwtService();
 
+  /** See jwt-secrets.service.spec.ts — isolated from ambient process.env. */
   function buildSecrets(env: Record<string, string>): JwtSecretsService {
-    return new JwtSecretsService(new ConfigService(env));
+    return new JwtSecretsService({
+      get: (key: string): string | undefined => env[key],
+    } as unknown as ConfigService);
   }
 
   async function signWith(secret: string): Promise<string> {
