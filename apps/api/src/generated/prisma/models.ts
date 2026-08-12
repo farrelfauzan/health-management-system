@@ -9,6 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/LoginAttempt'
 export type * from './models/RefreshToken'
 export type * from './models/MrnCounter'
 export type * from './models/PatientProfile'

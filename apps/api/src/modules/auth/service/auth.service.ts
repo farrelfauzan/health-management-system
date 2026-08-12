@@ -1,6 +1,5 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
-import { compare } from 'bcryptjs';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -13,12 +12,15 @@ import {
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { PasswordHasherService } from '../../../common/crypto/password-hasher.service';
+import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { JwtSecretsService } from '../../../common/config/jwt-secrets.service';
 import { JwtExpiresIn, resolveJwtExpiresIn } from '../../../common/auth/jwt-expires.util';
 import { RequestContext } from '../../../common/observability/observability.types';
 import { AuditAction } from '../../../generated/prisma/client';
 import { LoginDto } from '../dto/login.dto';
 import { AuthRepository } from '../repository/auth.repository';
+import { LoginThrottleService } from './login-throttle.service';
 
 /** 256 bits, per SJ-6. */
 const REFRESH_TOKEN_BYTES = 32;
@@ -60,33 +62,59 @@ function parseDurationToMs(duration: JwtExpiresIn): number {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly auditService: AuditService,
     private readonly jwtSecrets: JwtSecretsService,
+    private readonly passwordHasher: PasswordHasherService,
+    private readonly loginThrottle: LoginThrottleService,
   ) {}
 
+  /**
+   * Authenticates, or refuses in a way that reveals nothing (SJ-7).
+   *
+   * Every failure path below costs roughly the same wall-clock time and
+   * returns byte-identical output. An unknown address still runs an Argon2
+   * verification against a throwaway hash; a system account is refused after
+   * the same work as a wrong password. The throttle is keyed on the submitted
+   * address rather than a resolved user, so a nonexistent account backs off
+   * exactly like a real one — otherwise the throttle itself would answer the
+   * question the rest of this is hiding.
+   */
   async login(payload: LoginDto, origin: RequestContext): Promise<IssuedSession> {
+    const identifierHash = this.loginThrottle.hashIdentifier(payload.email);
+    await this.loginThrottle.assertWithinLimits({ identifierHash, ipAddress: origin.ipAddress });
     const user = await this.authRepository.findUserByEmail(payload.email);
     if (!user) {
-      await this.recordFailedLogin(origin);
-      throw new UnauthorizedException('Invalid credentials');
+      await this.passwordHasher.verifyAgainstDummy(payload.password);
+      throw await this.buildLoginFailure({ identifierHash, origin });
     }
     // Reserved service accounts (the BPJS Antrean bridge, P14-T04) are actors
-    // for machine-originated writes, never identities. Refusing here — before
-    // the password is even compared — means no credential an admin could set
-    // on that row, deliberately or by accident, ever becomes a session.
+    // for machine-originated writes, never identities. Refusing here — after
+    // the same hashing work as any other failure — means no credential an
+    // admin could set on that row ever becomes a session, and that the refusal
+    // is not detectable as a different kind of "no".
     if (user.isSystem) {
-      await this.recordFailedLogin(origin, user.id);
-      throw new UnauthorizedException('Invalid credentials');
+      await this.passwordHasher.verifyAgainstDummy(payload.password);
+      throw await this.buildLoginFailure({ identifierHash, origin, userId: user.id });
     }
-    const isValidPassword = await compare(payload.password, user.passwordHash);
+    const isValidPassword = await this.passwordHasher.verifyPassword(
+      user.passwordHash,
+      payload.password,
+    );
     if (!isValidPassword) {
-      await this.recordFailedLogin(origin, user.id);
-      throw new UnauthorizedException('Invalid credentials');
+      throw await this.buildLoginFailure({ identifierHash, origin, userId: user.id });
     }
+    await this.upgradePasswordHashIfStale(user.id, user.passwordHash, payload.password);
+    await this.loginThrottle.recordAttempt({
+      identifierHash,
+      ipAddress: origin.ipAddress,
+      succeeded: true,
+    });
     const claims: JwtPayload = {
       sub: user.id,
       email: user.email,
@@ -232,6 +260,51 @@ export class AuthService {
       requestId: origin.requestId,
     });
     return { success: true, message: 'Logged out' };
+  }
+
+  /**
+   * Records a rejected login and returns the one refusal every failure path
+   * throws, so there is a single error shape to keep honest. Returning it
+   * rather than throwing lets the call sites `throw await`, which is what
+   * tells the compiler control stops there.
+   */
+  private async buildLoginFailure(input: {
+    identifierHash: string;
+    origin: RequestContext;
+    userId?: string;
+  }): Promise<UnauthorizedException> {
+    await this.loginThrottle.recordAttempt({
+      identifierHash: input.identifierHash,
+      ipAddress: input.origin.ipAddress,
+      succeeded: false,
+    });
+    await this.recordFailedLogin(input.origin, input.userId);
+    return new UnauthorizedException('Invalid credentials');
+  }
+
+  /**
+   * Re-hashes a surviving bcrypt password, or one written under weaker Argon2
+   * parameters, using the only moment the plaintext is legitimately in hand
+   * (SJ-7). Old hashes die off as their owners log in, with no forced reset.
+   *
+   * A failure here is swallowed: the credential was already verified, so
+   * refusing the login because a housekeeping write failed would turn a
+   * successful authentication into an outage. The next login retries.
+   */
+  private async upgradePasswordHashIfStale(
+    userId: string,
+    storedHash: string,
+    plainPassword: string,
+  ): Promise<void> {
+    if (!this.passwordHasher.needsRehash(storedHash)) {
+      return;
+    }
+    try {
+      const upgradedHash = await this.passwordHasher.hashPassword(plainPassword);
+      await this.authRepository.updateUserPasswordHash(userId, upgradedHash);
+    } catch {
+      this.logger.warn(buildSafeErrorLog('password_hash_upgrade_failed', { userId }));
+    }
   }
 
   /**

@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto';
-import { hash } from 'bcryptjs';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -8,6 +7,8 @@ import { JwtPayload } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { JwtSecretsService } from '../../../common/config/jwt-secrets.service';
+import { PasswordHasherService } from '../../../common/crypto/password-hasher.service';
+import { LoginThrottleService } from './login-throttle.service';
 import { RequestContext } from '../../../common/observability/observability.types';
 import { AuthRepository } from '../repository/auth.repository';
 import { AuthService } from './auth.service';
@@ -23,6 +24,10 @@ describe('AuthService', () => {
     findUserByEmail: jest.fn(),
     findUserById: jest.fn(),
     createRefreshToken: jest.fn(),
+    createLoginAttempt: jest.fn(),
+    findRecentLoginAttempts: jest.fn().mockResolvedValue([]),
+    countLoginAttemptsFromIp: jest.fn().mockResolvedValue(0),
+    updateUserPasswordHash: jest.fn(),
     consumeRefreshToken: jest.fn(),
     findRefreshTokenFamilyByHash: jest.fn(),
     revokeRefreshTokenFamily: jest.fn(),
@@ -41,12 +46,15 @@ describe('AuthService', () => {
   // Real service over the same ConfigService the suite already builds, so the
   // rotation path is exercised rather than stubbed away.
   const jwtSecretsService = new JwtSecretsService(configService);
+  const passwordHasher = new PasswordHasherService();
   const service = new AuthService(
     authRepositoryMock,
     jwtService,
     configService,
     auditServiceMock,
     jwtSecretsService,
+    passwordHasher,
+    new LoginThrottleService(authRepositoryMock),
   );
   const user = {
     id: userId,
@@ -83,7 +91,7 @@ describe('AuthService', () => {
   };
 
   beforeAll(async () => {
-    user.passwordHash = await hash('password123', 4);
+    user.passwordHash = await passwordHasher.hashPassword('password123');
   });
 
   beforeEach(() => {

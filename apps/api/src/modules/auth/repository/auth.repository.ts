@@ -166,6 +166,44 @@ export class AuthRepository {
     });
   }
 
+  async createLoginAttempt(input: {
+    identifierHash: string;
+    ipAddress: string | null;
+    succeeded: boolean;
+  }): Promise<void> {
+    await this.prisma.loginAttempt.create({ data: input });
+  }
+
+  /** Newest first — the throttle walks this until it hits a success. */
+  async findRecentLoginAttempts(
+    identifierHash: string,
+    since: Date,
+  ): Promise<Array<{ succeeded: boolean; createdAt: Date }>> {
+    return this.prisma.loginAttempt.findMany({
+      where: { identifierHash, createdAt: { gte: since } },
+      orderBy: { createdAt: 'desc' },
+      select: { succeeded: true, createdAt: true },
+      take: 50,
+    });
+  }
+
+  async countLoginAttemptsFromIp(ipAddress: string, since: Date): Promise<number> {
+    return this.prisma.loginAttempt.count({
+      where: { ipAddress, createdAt: { gte: since } },
+    });
+  }
+
+  async deleteLoginAttemptsBefore(cutoff: Date): Promise<number> {
+    const deleted = await this.prisma.loginAttempt.deleteMany({
+      where: { createdAt: { lt: cutoff } },
+    });
+    return deleted.count;
+  }
+
+  async updateUserPasswordHash(userId: string, passwordHash: string): Promise<void> {
+    await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+  }
+
   /** Every family for one user — password change, admin action, sign-out-everywhere. */
   async revokeAllUserRefreshTokens(userId: string): Promise<number> {
     const revoked = await this.prisma.refreshToken.updateMany({

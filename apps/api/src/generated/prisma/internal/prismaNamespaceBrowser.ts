@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  LoginAttempt: 'LoginAttempt',
   RefreshToken: 'RefreshToken',
   MrnCounter: 'MrnCounter',
   PatientProfile: 'PatientProfile',
@@ -140,6 +141,17 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const LoginAttemptScalarFieldEnum = {
+  id: 'id',
+  identifierHash: 'identifierHash',
+  ipAddress: 'ipAddress',
+  succeeded: 'succeeded',
+  createdAt: 'createdAt'
+} as const
+
+export type LoginAttemptScalarFieldEnum = (typeof LoginAttemptScalarFieldEnum)[keyof typeof LoginAttemptScalarFieldEnum]
 
 
 export const RefreshTokenScalarFieldEnum = {

@@ -478,6 +478,32 @@ model User {
 /// model used to, makes a normal rotation indistinguishable from an attack —
 /// so either every multi-tab refresh looks like theft, or no theft is
 /// detectable at all.
+/// Login attempts, for throttling (SJ-7). One row per try, successes
+/// included — a success is what resets an account's failure streak.
+///
+/// The account is identified by `identifierHash`, a SHA-256 of the lowercased
+/// email, never the address itself. Two reasons. This table necessarily
+/// records addresses that were *typed*, including typos and addresses that
+/// belong to nobody, and a list of those is a liability with no operational
+/// value. And hashing costs nothing here: throttling only ever asks "how many
+/// recent failures share this identifier", which equality answers.
+///
+/// Rows are written for unknown accounts too, deliberately. If only real
+/// accounts accumulated failures, the throttle itself would answer "does this
+/// email exist" — the exact question SJ-7 exists to make unanswerable.
+model LoginAttempt {
+  id             String   @id @default(uuid()) @db.Uuid
+  identifierHash String   @map("identifier_hash")
+  ipAddress      String?  @map("ip_address")
+  succeeded      Boolean
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([identifierHash, createdAt])
+  @@index([ipAddress, createdAt])
+  @@index([createdAt])
+  @@map("login_attempts")
+}
+
 model RefreshToken {
   id         String    @id @db.Uuid
   userId     String    @map("user_id") @db.Uuid
