@@ -5,11 +5,13 @@ import { UnauthorizedException } from '@nestjs/common';
 
 import { AuditService } from '../../common/audit/audit.service';
 import { JwtSecretsService } from '../../common/config/jwt-secrets.service';
+import { PasswordHasherService } from '../../common/crypto/password-hasher.service';
 import { RequestContext } from '../../common/observability/observability.types';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuditAction } from '../../generated/prisma/client';
 import { AuthRepository } from './repository/auth.repository';
 import { AuthService } from './service/auth.service';
+import { LoginThrottleService } from './service/login-throttle.service';
 
 /**
  * SJ-6's rotation state machine against real Postgres.
@@ -37,10 +39,18 @@ describe('Refresh token rotation against Postgres', () => {
     return createHash('sha256').update(token).digest('hex');
   }
 
+  /**
+   * Each login comes from its own address. SJ-7 added a per-IP ceiling on the
+   * login route, and this suite logs in far more often in a minute than any
+   * real client would — the throttle is correct and this spec is simply not
+   * what it is aimed at.
+   */
+  let loginCounter = 0;
   async function loginFresh(): Promise<string> {
+    loginCounter += 1;
     const session = await authService.login(
       { email: `${TEST_MARKER}@example.test`, password: 'password123' },
-      ORIGIN,
+      { ...ORIGIN, ipAddress: `203.0.113.${loginCounter % 250}` },
     );
     return session.refreshToken;
   }
@@ -67,6 +77,8 @@ describe('Refresh token rotation against Postgres', () => {
       configService,
       auditServiceStub,
       new JwtSecretsService(configService),
+      new PasswordHasherService(),
+      new LoginThrottleService(authRepository),
     );
 
     const { hash } = await import('bcryptjs');
@@ -99,7 +111,7 @@ describe('Refresh token rotation against Postgres', () => {
       expect(stored).not.toBeNull();
       const allColumns = JSON.stringify(stored);
       expect(allColumns).not.toContain(refreshToken);
-      expect(stored?.ipAddress).toBe(ORIGIN.ipAddress);
+      expect(stored?.ipAddress).toMatch(/^203\.0\.113\./);
       expect(stored?.userAgent).toBe(ORIGIN.userAgent);
     });
 

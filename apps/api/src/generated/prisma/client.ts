@@ -45,7 +45,7 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
- * Model RefreshToken
+ * Model LoginAttempt
  * One issued refresh token (SJ-6). The token itself is opaque 256-bit random
  * and is never stored — only `tokenHash`, so a database disclosure yields
  * nothing a caller could present.
@@ -56,6 +56,24 @@ export type User = Prisma.UserModel
  * model used to, makes a normal rotation indistinguishable from an attack —
  * so either every multi-tab refresh looks like theft, or no theft is
  * detectable at all.
+ * Login attempts, for throttling (SJ-7). One row per try, successes
+ * included — a success is what resets an account's failure streak.
+ * 
+ * The account is identified by `identifierHash`, a SHA-256 of the lowercased
+ * email, never the address itself. Two reasons. This table necessarily
+ * records addresses that were *typed*, including typos and addresses that
+ * belong to nobody, and a list of those is a liability with no operational
+ * value. And hashing costs nothing here: throttling only ever asks "how many
+ * recent failures share this identifier", which equality answers.
+ * 
+ * Rows are written for unknown accounts too, deliberately. If only real
+ * accounts accumulated failures, the throttle itself would answer "does this
+ * email exist" — the exact question SJ-7 exists to make unanswerable.
+ */
+export type LoginAttempt = Prisma.LoginAttemptModel
+/**
+ * Model RefreshToken
+ * 
  */
 export type RefreshToken = Prisma.RefreshTokenModel
 /**

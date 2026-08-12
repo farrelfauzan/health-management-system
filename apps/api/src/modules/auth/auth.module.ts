@@ -7,6 +7,7 @@ import { resolveJwtExpiresIn } from '../../common/auth/jwt-expires.util';
 import { AuthController } from './controller/auth.controller';
 import { AuthRepository } from './repository/auth.repository';
 import { AuthService } from './service/auth.service';
+import { LoginThrottleService } from './service/login-throttle.service';
 import { RefreshTokenCleanupWorker } from './service/refresh-token-cleanup.worker';
 
 @Module({
@@ -22,7 +23,7 @@ import { RefreshTokenCleanupWorker } from './service/refresh-token-cleanup.worke
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthRepository, AuthService, RefreshTokenCleanupWorker],
+  providers: [AuthRepository, AuthService, LoginThrottleService, RefreshTokenCleanupWorker],
   exports: [AuthRepository, AuthService, JwtModule],
 })
 export class AuthModule {}

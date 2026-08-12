@@ -1,5 +1,23 @@
 import { z } from 'zod';
 
+/**
+ * The password policy for anywhere a password is *set* (SJ-7).
+ *
+ * Length only, following NIST 800-63B: composition rules push people towards
+ * `Password1!` and buy nothing measurable, while length and a breach check —
+ * enforced server-side in `BreachedPasswordCheckerService` — buy most of the
+ * protection. Twelve characters is the floor, and there is no maximum beyond
+ * a sanity bound, because a passphrase should never be rejected for being
+ * long.
+ *
+ * Deliberately **not** applied to the login schema: raising the floor there
+ * would lock out every existing account whose password predates this rule.
+ */
+export const passwordPolicySchema = z
+  .string()
+  .min(12, 'Password must be at least 12 characters')
+  .max(200);
+
 export const listUsersQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
@@ -13,7 +31,7 @@ export const listUsersQuerySchema = z.object({
 
 export const createAdminUserSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: passwordPolicySchema,
   isActive: z.boolean().optional().default(true),
   roleCodes: z.array(z.string().min(1)).min(1),
 });
@@ -21,7 +39,7 @@ export const createAdminUserSchema = z.object({
 export const updateAdminUserSchema = z
   .object({
     email: z.string().email().optional(),
-    password: z.string().min(8).optional(),
+    password: passwordPolicySchema.optional(),
     isActive: z.boolean().optional(),
     roleCodes: z.array(z.string().min(1)).min(1).optional(),
   })

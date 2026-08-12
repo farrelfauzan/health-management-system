@@ -1,4 +1,3 @@
-import { hash } from 'bcryptjs';
 import {
   BadRequestException,
   ConflictException,
@@ -8,6 +7,8 @@ import {
 } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { BreachedPasswordCheckerService } from '../../../common/crypto/breached-password-checker.service';
+import { PasswordHasherService } from '../../../common/crypto/password-hasher.service';
 import { AuditAction } from '../../../generated/prisma/client';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateAdminUserDto } from '../dto/create-admin-user.dto';
@@ -24,7 +25,23 @@ export class AdminManagementService {
     private readonly adminManagementRepository: AdminManagementRepository,
     private readonly authRepository: AuthRepository,
     private readonly auditService: AuditService,
+    private readonly passwordHasher: PasswordHasherService,
+    private readonly breachedPasswordChecker: BreachedPasswordCheckerService,
   ) {}
+
+  /**
+   * Refuses a password that appears in breach corpora (SJ-7). The message says
+   * why without echoing the password back, and is deliberately identical
+   * whichever entry matched — a caller learns their choice is common, not
+   * which list it is on.
+   */
+  private assertPasswordNotBreached(password: string): void {
+    if (this.breachedPasswordChecker.isBreached(password)) {
+      throw new BadRequestException(
+        'This password appears in known breach lists. Choose a different one.',
+      );
+    }
+  }
 
   async listUsers(query: ListUsersQueryDto) {
     const result = await this.adminManagementRepository.listUsers(query);
@@ -64,7 +81,8 @@ export class AdminManagementService {
       throw new BadRequestException('One or more role codes are invalid');
     }
 
-    const passwordHash = await hash(payload.password, 10);
+    this.assertPasswordNotBreached(payload.password);
+    const passwordHash = await this.passwordHasher.hashPassword(payload.password);
 
     const createdUser = await this.adminManagementRepository.createUserWithRoles({
       email: payload.email,
@@ -128,7 +146,12 @@ export class AdminManagementService {
       nextRoleIds = roles.map((role) => role.id);
     }
 
-    const passwordHash = payload.password ? await hash(payload.password, 10) : undefined;
+    if (payload.password) {
+      this.assertPasswordNotBreached(payload.password);
+    }
+    const passwordHash = payload.password
+      ? await this.passwordHasher.hashPassword(payload.password)
+      : undefined;
 
     const updatedUser = await this.adminManagementRepository.updateUserWithRoles({
       userId: id,

@@ -1,5 +1,9 @@
+import { BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ForbiddenException } from '@nestjs/common';
 
+import { BreachedPasswordCheckerService } from '../../../common/crypto/breached-password-checker.service';
+import { PasswordHasherService } from '../../../common/crypto/password-hasher.service';
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { AdminManagementRepository } from '../repository/admin-management.repository';
@@ -35,13 +39,16 @@ describe('AdminManagementService', () => {
     adminManagementRepositoryMock,
     authRepositoryMock,
     auditServiceMock,
+    new PasswordHasherService(),
+    new BreachedPasswordCheckerService(new ConfigService({})),
   );
 
   const currentUserId = '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8';
 
   const createPayload = {
     email: 'new-admin@hms.local',
-    password: 'password123',
+    // Not on the SJ-7 denylist; `password123` is, which is the point.
+    password: 'a-perfectly-good-passphrase',
     isActive: true,
     roleCodes: ['SUPER_ADMIN'],
   };
@@ -138,5 +145,11 @@ describe('AdminManagementService', () => {
     await service.createAdminUser({ ...createPayload, roleCodes: ['ADMIN'] }, currentUserId);
 
     expect(authRepositoryMock.findUserById).not.toHaveBeenCalled();
+  });
+
+  it('refuses a password that appears in breach lists', async () => {
+    await expect(
+      service.createAdminUser({ ...createPayload, password: 'password123' }, currentUserId),
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 });

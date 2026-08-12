@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  LoginAttempt: 'LoginAttempt',
   RefreshToken: 'RefreshToken',
   MrnCounter: 'MrnCounter',
   PatientProfile: 'PatientProfile',
@@ -458,7 +459,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "channelOtpChallenge"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "channelOtpChallenge"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -533,6 +534,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    LoginAttempt: {
+      payload: Prisma.$LoginAttemptPayload<ExtArgs>
+      fields: Prisma.LoginAttemptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LoginAttemptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LoginAttemptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload>
+        }
+        findFirst: {
+          args: Prisma.LoginAttemptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LoginAttemptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload>
+        }
+        findMany: {
+          args: Prisma.LoginAttemptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload>[]
+        }
+        create: {
+          args: Prisma.LoginAttemptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload>
+        }
+        createMany: {
+          args: Prisma.LoginAttemptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LoginAttemptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload>[]
+        }
+        delete: {
+          args: Prisma.LoginAttemptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload>
+        }
+        update: {
+          args: Prisma.LoginAttemptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload>
+        }
+        deleteMany: {
+          args: Prisma.LoginAttemptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LoginAttemptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LoginAttemptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload>[]
+        }
+        upsert: {
+          args: Prisma.LoginAttemptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginAttemptPayload>
+        }
+        aggregate: {
+          args: Prisma.LoginAttemptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLoginAttempt>
+        }
+        groupBy: {
+          args: Prisma.LoginAttemptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LoginAttemptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LoginAttemptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LoginAttemptCountAggregateOutputType> | number
         }
       }
     }
@@ -4881,6 +4956,17 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const LoginAttemptScalarFieldEnum = {
+  id: 'id',
+  identifierHash: 'identifierHash',
+  ipAddress: 'ipAddress',
+  succeeded: 'succeeded',
+  createdAt: 'createdAt'
+} as const
+
+export type LoginAttemptScalarFieldEnum = (typeof LoginAttemptScalarFieldEnum)[keyof typeof LoginAttemptScalarFieldEnum]
+
+
 export const RefreshTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -6841,6 +6927,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  loginAttempt?: Prisma.LoginAttemptOmit
   refreshToken?: Prisma.RefreshTokenOmit
   mrnCounter?: Prisma.MrnCounterOmit
   patientProfile?: Prisma.PatientProfileOmit

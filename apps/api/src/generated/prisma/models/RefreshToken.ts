@@ -14,16 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model RefreshToken
- * One issued refresh token (SJ-6). The token itself is opaque 256-bit random
- * and is never stored — only `tokenHash`, so a database disclosure yields
- * nothing a caller could present.
  * 
- * `consumedAt` and `revokedAt` are separate states and the distinction is the
- * whole mechanism. *Consumed* means this token did its job and handed over to
- * a successor; *revoked* means the family was killed. Collapsing them, as this
- * model used to, makes a normal rotation indistinguishable from an attack —
- * so either every multi-tab refresh looks like theft, or no theft is
- * detectable at all.
  */
 export type RefreshTokenModel = runtime.Types.Result.DefaultSelection<Prisma.$RefreshTokenPayload>
 
@@ -476,10 +467,6 @@ export type RefreshTokenUncheckedUpdateManyWithoutUserNestedInput = {
   update?: Prisma.RefreshTokenUpdateWithWhereUniqueWithoutUserInput | Prisma.RefreshTokenUpdateWithWhereUniqueWithoutUserInput[]
   updateMany?: Prisma.RefreshTokenUpdateManyWithWhereWithoutUserInput | Prisma.RefreshTokenUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.RefreshTokenScalarWhereInput | Prisma.RefreshTokenScalarWhereInput[]
-}
-
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
 }
 
 export type RefreshTokenCreateWithoutUserInput = {
