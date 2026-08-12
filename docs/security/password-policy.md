@@ -20,16 +20,21 @@ hardware.
 
 ### Measured cost
 
-| Hardware | Median hash time |
-|---|---|
-| Apple Silicon dev machine (M-series) | **~90–125 ms** |
-| GitHub-hosted CI runner (`ubuntu-latest`) | **~110 ms** |
+| Hardware | Median hash time | Measured? |
+|---|---|---|
+| Apple Silicon dev machine (M-series) | **~90–125 ms** | yes, 5-run sample |
+| GitHub-hosted CI runner (`ubuntu-latest`) | — | **not measured** |
+| Production host | — | **not measured** |
 
-Both sit inside the 100–300 ms band the ticket asks for: expensive enough that
-offline cracking is painful, cheap enough that a clinic's 8 a.m. login rush is
-not. **Re-measure on the production host before go-live** and raise
-`memoryCost` until the median lands near 250 ms — the point of the band is the
-target hardware, not the developer's laptop.
+Only the dev-machine figure is a real measurement. It sits at the bottom of the
+100–300 ms band the ticket asks for.
+
+**This is the open item on the ticket.** Argon2 cost is a property of the
+hardware it runs on, and a laptop number tells you very little about a clinic
+server — which is likely to be slower, meaning the same parameters cost *more*
+there, not less. Run the benchmark at the bottom of this page on the production
+host before go-live and adjust `memoryCost` until the median lands near 250 ms.
+Record the result in this table when you do.
 
 ### Migration off bcrypt
 
