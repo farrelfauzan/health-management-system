@@ -7,6 +7,36 @@ on:
       - main
 
 jobs:
+  # SJ-5 — a leak is cheapest to fix before it is merged, so this gates the PR
+  # rather than reporting after the fact. It runs as its own job because it
+  # needs the full history (`fetch-depth: 0`), which the quality job does not,
+  # and because a secret finding should be legible without scrolling past a
+  # test log.
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          # Shallow by default; a scan of one commit would miss the case this
+          # job exists for — a credential added, then removed in a later
+          # commit, and still readable in the objects.
+          fetch-depth: 0
+
+      - name: Scan history for secrets
+        # Pinned to the upstream image rather than the marketplace action:
+        # the action gates organisation use behind a licence key, and a scan
+        # that silently stops running is worse than no scan.
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.21.2 detect \
+            --source=/repo \
+            --config=/repo/.gitleaks.toml \
+            --log-opts="--all --full-history" \
+            --redact \
+            --no-banner \
+            --verbose
+
   quality:
     runs-on: ubuntu-latest
     # A leaked async handle can keep Jest's process alive after the run
@@ -14,6 +44,15 @@ jobs:
     timeout-minutes: 30
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public
+      # SJ-5 removed the `?? 'dev-access-secret'` fallbacks, so a missing JWT
+      # secret is now a startup failure rather than a silent weak default —
+      # which means CI has to supply them like any other deployment. These are
+      # the well-known values the specs sign their fixtures with, and the
+      # production checks in `validateEnvironment` reject them outright when
+      # NODE_ENV=production. They are test fixtures, not secrets: nothing they
+      # sign has any authority outside this runner.
+      JWT_ACCESS_SECRET: dev-access-secret
+      JWT_REFRESH_SECRET: dev-refresh-secret
       # NOTE: storage configuration is deliberately NOT set here. An
       # unconfigured secret expands to an empty string, and `S3_REGION=""` is
       # a hard startup error in `resolveStorageConfig` (`??` falls back on

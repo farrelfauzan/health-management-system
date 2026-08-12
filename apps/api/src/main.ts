@@ -1,12 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module';
+import { validateEnvironment } from './common/config/validate-environment';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { stringify } from 'yaml';
 
 async function bootstrap(): Promise<void> {
+  // SJ-5: refuse to start when a required secret is missing, before a single
+  // provider is constructed. Deliberately here rather than as ConfigModule's
+  // `validate` hook: whatever that hook returns becomes `validatedEnvConfig`,
+  // which `ConfigService.get` consults *ahead of* `process.env` — so wiring it
+  // there silently freezes configuration at import time and shadows every
+  // later change to the environment. Importing AppModule above has already run
+  // ConfigModule.forRoot, so `.env` is loaded into process.env by this point.
+  validateEnvironment(process.env);
+
   const app = await NestFactory.create(AppModule, {
     // Keeps the undecoded request body on `request.rawBody` (`PCS-T09`).
     // GOWA signs the exact bytes it sent, and a signature verified against

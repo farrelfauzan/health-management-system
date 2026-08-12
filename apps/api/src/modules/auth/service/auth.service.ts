@@ -15,6 +15,8 @@ import {
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { JwtSecretsService } from '../../../common/config/jwt-secrets.service';
+import { verifyWithAnySecret } from '../../../common/config/verify-with-any-secret';
 import { resolveJwtExpiresIn } from '../../../common/auth/jwt-expires.util';
 import { RequestContext } from '../../../common/observability/observability.types';
 import { AuditAction } from '../../../generated/prisma/client';
@@ -28,6 +30,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly auditService: AuditService,
+    private readonly jwtSecrets: JwtSecretsService,
   ) {}
 
   async login(payload: LoginDto, origin: RequestContext): Promise<AuthTokens> {
@@ -184,7 +187,7 @@ export class AuthService {
 
   private async issueAccessToken(claims: JwtPayload): Promise<string> {
     return this.jwtService.signAsync(claims, {
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET') ?? 'dev-access-secret',
+      secret: this.jwtSecrets.getAccessSigningSecret(),
       expiresIn: resolveJwtExpiresIn(
         this.configService.get<string>('JWT_ACCESS_EXPIRES_IN'),
         '15m',
@@ -208,7 +211,7 @@ export class AuthService {
         tokenType: 'refresh',
       },
       {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET') ?? 'dev-refresh-secret',
+        secret: this.jwtSecrets.getRefreshSigningSecret(),
         expiresIn: resolveJwtExpiresIn(
           this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
           '7d',
@@ -231,9 +234,11 @@ export class AuthService {
 
   private async verifyRefreshToken(refreshToken: string): Promise<RefreshTokenPayload> {
     try {
-      const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refreshToken, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET') ?? 'dev-refresh-secret',
-      });
+      const payload = await verifyWithAnySecret<RefreshTokenPayload>(
+        this.jwtService,
+        refreshToken,
+        this.jwtSecrets.getRefreshVerificationSecrets(),
+      );
       if (
         payload.tokenType !== 'refresh' ||
         !payload.jti ||

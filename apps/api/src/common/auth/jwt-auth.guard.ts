@@ -1,9 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 
 import { CurrentUser } from './current-user.type';
+import { JwtSecretsService } from '../config/jwt-secrets.service';
+import { verifyWithAnySecret } from '../config/verify-with-any-secret';
 import { PUBLIC_ROUTE_KEY } from '../authorization/public-route.decorator';
 
 @Injectable()
@@ -11,7 +12,7 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly reflector: Reflector,
-    private readonly configService: ConfigService,
+    private readonly jwtSecrets: JwtSecretsService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -38,9 +39,13 @@ export class JwtAuthGuard implements CanActivate {
     const token = authHeader.replace('Bearer ', '');
 
     try {
-      const payload = await this.jwtService.verifyAsync<CurrentUser>(token, {
-        secret: this.configService.get<string>('JWT_ACCESS_SECRET') ?? 'dev-access-secret',
-      });
+      // Accepts a token signed with the previous key while a rotation is in
+      // flight (SJ-5), so changing the signing secret does not log the clinic out.
+      const payload = await verifyWithAnySecret<CurrentUser>(
+        this.jwtService,
+        token,
+        this.jwtSecrets.getAccessVerificationSecrets(),
+      );
 
       request.user = payload;
       return true;
