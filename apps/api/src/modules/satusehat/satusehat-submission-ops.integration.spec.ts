@@ -54,6 +54,7 @@ describe('SATUSEHAT submission ops integration', () => {
 
   const auditServiceMock = {
     record: jest.fn(),
+    recordOrThrow: jest.fn(),
   };
 
   const prismaServiceMock = {

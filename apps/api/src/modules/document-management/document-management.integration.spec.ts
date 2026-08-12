@@ -43,7 +43,7 @@ describe('Document management integration', () => {
   let chunkRows: Array<Record<string, unknown>> = [];
 
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
-  const auditServiceMock = { record: jest.fn() };
+  const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   const objectStorageServiceMock = {
     generateObjectKey: jest.fn(() => CLINIC_KEY),
     getSignedUploadUrl: jest.fn(() =>

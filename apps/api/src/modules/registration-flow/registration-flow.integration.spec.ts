@@ -36,6 +36,11 @@ describe('RegistrationFlow integration', () => {
   };
 
   const prismaServiceMock = {
+    // SJ-4 writes one audit row per patient-data route, and the write is
+    // awaited: an access that cannot be recorded fails the request rather than
+    // returning the data. This stub replaces Prisma wholesale, so the delegate
+    // has to exist here or every audited route in this suite answers 500.
+    auditLog: { create: jest.fn() },
     $connect: jest.fn(),
     $disconnect: jest.fn(),
   };
