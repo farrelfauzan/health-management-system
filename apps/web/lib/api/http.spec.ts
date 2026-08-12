@@ -6,10 +6,7 @@ import {
   ACCESS_TOKEN_COOKIE_NAME,
   readAccessTokenFromBrowserCookie,
 } from '#lib/auth/access-token-cookie';
-import {
-  readRefreshTokenFromBrowserCookie,
-  REFRESH_TOKEN_COOKIE_NAME,
-} from '#lib/auth/refresh-token-cookie';
+import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 
 function buildResponse(
   config: InternalAxiosRequestConfig,
@@ -28,12 +25,12 @@ function buildResponse(
 describe('apiClient refresh interceptor', () => {
   beforeEach(() => {
     document.cookie = `${ACCESS_TOKEN_COOKIE_NAME}=old-access-token; Path=/`;
-    document.cookie = `${REFRESH_TOKEN_COOKIE_NAME}=old-refresh-token; Path=/`;
+    document.cookie = `${SESSION_HINT_COOKIE_NAME}=old-session-hint; Path=/`;
   });
 
   afterEach(() => {
     document.cookie = `${ACCESS_TOKEN_COOKIE_NAME}=; Max-Age=0; Path=/`;
-    document.cookie = `${REFRESH_TOKEN_COOKIE_NAME}=; Max-Age=0; Path=/`;
+    document.cookie = `${SESSION_HINT_COOKIE_NAME}=; Max-Age=0; Path=/`;
   });
 
   it('rotates tokens and retries a request after an access-token 401', async () => {
@@ -47,7 +44,6 @@ describe('apiClient refresh interceptor', () => {
         return buildResponse(config, 200, {
           data: {
             accessToken: 'new-access-token',
-            refreshToken: 'new-refresh-token',
             tokenType: 'Bearer',
             expiresIn: '15m',
           },
@@ -72,6 +68,9 @@ describe('apiClient refresh interceptor', () => {
     expect(protectedRequestCount).toBe(2);
     expect(refreshRequestCount).toBe(1);
     expect(readAccessTokenFromBrowserCookie()).toBe('new-access-token');
-    expect(readRefreshTokenFromBrowserCookie()).toBe('new-refresh-token');
+    // SJ-6: the rotated refresh token never reaches this tier. The browser
+    // holds it as an httpOnly cookie, so there is nothing here to assert on
+    // beyond the access token the interceptor did persist.
+    expect(readAccessTokenFromBrowserCookie()).toBe('new-access-token');
   });
 });

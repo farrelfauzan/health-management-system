@@ -26,14 +26,17 @@ const MINIMUM_PRODUCTION_SECRET_LENGTH = 32;
  * — is validated by its own config service at the point of use, so a clinic
  * running without those integrations still boots.
  */
-const REQUIRED_KEYS: readonly string[] = [
-  'DATABASE_URL',
-  'JWT_ACCESS_SECRET',
-  'JWT_REFRESH_SECRET',
-];
+const REQUIRED_KEYS: readonly string[] = ['DATABASE_URL', 'JWT_ACCESS_SECRET'];
 
-/** Required keys that are secrets, and so face the extra production checks. */
-const REQUIRED_SECRET_KEYS: readonly string[] = ['JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET'];
+/**
+ * Required keys that are secrets, and so face the extra production checks.
+ *
+ * `JWT_REFRESH_SECRET` left this list with SJ-6: refresh tokens became opaque
+ * random strings validated against a stored hash, so nothing signs them and
+ * there is no key to be weak. A deployment that still sets it is harmless —
+ * the value is simply never read.
+ */
+const REQUIRED_SECRET_KEYS: readonly string[] = ['JWT_ACCESS_SECRET'];
 
 /**
  * Fails startup when a required secret is absent, and — in production — when

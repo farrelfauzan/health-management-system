@@ -43,12 +43,16 @@ investigates.
 
 | Secret               | Stored in                | Readable by  | Rotation                          |
 | -------------------- | ------------------------ | ------------ | --------------------------------- |
-| `DATABASE_URL`       | host `.env`, mode `0600` | server admin | [DB password](#database-password) |
-| `JWT_ACCESS_SECRET`  | host `.env`              | server admin | [JWT keys](#jwt-signing-keys)     |
-| `JWT_REFRESH_SECRET` | host `.env`              | server admin | [JWT keys](#jwt-signing-keys)     |
+| `DATABASE_URL`      | host `.env`, mode `0600` | server admin | [DB password](#database-password) |
+| `JWT_ACCESS_SECRET` | host `.env`              | server admin | [JWT keys](#jwt-signing-keys)     |
 
-Production additionally requires both JWT secrets to be ≥ 32 characters and not
-one of the known placeholders — enforced in
+`JWT_REFRESH_SECRET` used to be on this list and was retired by **SJ-6**:
+refresh tokens became opaque 256-bit random strings checked against a stored
+SHA-256, so nothing signs them and there is no key to rotate or leak. A
+deployment that still sets the variable is harmless — it is simply never read.
+
+Production additionally requires the JWT access secret to be ≥ 32 characters and
+not one of the known placeholders — enforced in
 `apps/api/src/common/config/validate-environment.ts`.
 
 ### Encryption keys
@@ -88,9 +92,18 @@ GitHub Actions secrets only, referenced as `${{ secrets.* }}`. Note that an
 unconfigured GitHub secret expands to `""`, not to unset — `??` does not catch
 it, so anything read in CI must treat empty as absent.
 
-`JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` are set to the well-known dev values
-as plain workflow `env`, deliberately. They are test fixtures: nothing they
-sign has authority outside the runner, and production refuses them.
+`JWT_ACCESS_SECRET` is set to the well-known dev value as plain workflow `env`,
+deliberately. It is a test fixture: nothing it signs has authority outside the
+runner, and production refuses it.
+
+### Refresh tokens (SJ-6)
+
+Not a secret anyone configures — one is minted per session. Worth knowing where
+they live, though: the value exists only in the browser's `httpOnly`,
+path-scoped cookie and, transiently, in the response that set it. The database
+holds a SHA-256 and nothing else, so a database disclosure yields no token
+anybody can present. Replaying a consumed one outside the grace window revokes
+the whole family and writes a `TOKEN_REUSE` audit row.
 
 ---
 
@@ -99,9 +112,12 @@ sign has authority outside the runner, and production refuses them.
 ### JWT signing keys
 
 The only procedure here that must not log anybody out. A single-key deployment
-cannot change its JWT secret without invalidating every access and refresh
-token in flight — for a clinic, that is every workstation dropping
-mid-consultation.
+cannot change its JWT secret without invalidating every access token in flight
+— for a clinic, that is every workstation failing its next request.
+
+Only the access token is a JWT. Since SJ-6 the refresh token is opaque, so a
+key rotation cannot touch it: sessions survive on the refresh side no matter
+what happens to the signing key.
 
 Each family has one **signing** key and an ordered list of **verification**
 keys (`apps/api/src/common/config/jwt-secrets.service.ts`).
@@ -125,9 +141,8 @@ JWT_ACCESS_SECRET_PREVIOUS=""
 # restart the API
 ```
 
-`*_PREVIOUS` accepts a comma-separated list, so an interrupted rotation can be
-resumed rather than unwound. Rotate `JWT_REFRESH_SECRET` the same way with
-`JWT_REFRESH_SECRET_PREVIOUS`.
+`JWT_ACCESS_SECRET_PREVIOUS` accepts a comma-separated list, so an interrupted
+rotation can be resumed rather than unwound.
 
 **Skipping step 2 is the mistake to avoid** — dropping the old key early is
 exactly the mass logout the mechanism exists to prevent.

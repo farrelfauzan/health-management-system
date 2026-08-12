@@ -22,6 +22,12 @@ export type ClientAddressedRequest = {
 export type RequestContext = {
   readonly ipAddress: string | null;
   readonly requestId: string | null;
+  /**
+   * Recorded alongside the address on an issued refresh token (SJ-6). Weak
+   * evidence on its own — trivially spoofed — but "the same family refreshed
+   * from two different clients" is the shape a reuse investigation looks for.
+   */
+  readonly userAgent: string | null;
 };
 
 export type ObservedResponse = {

@@ -10,11 +10,7 @@ import {
   readAccessTokenFromBrowserCookie,
   setAccessTokenCookie,
 } from '#lib/auth/access-token-cookie';
-import {
-  clearRefreshTokenCookie,
-  readRefreshTokenFromBrowserCookie,
-  setRefreshTokenCookie,
-} from '#lib/auth/refresh-token-cookie';
+
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 
@@ -39,8 +35,11 @@ function redirectToLogin(): void {
 }
 
 function clearSessionAndRedirect(): void {
+  // Only the access-token cookie is ours to clear. The refresh token is
+  // `httpOnly` and path-scoped to the API (SJ-6), so this tier cannot see it
+  // and must not pretend to — the server drops it on logout or on the reuse
+  // check that killed the family.
   clearAccessTokenCookie();
-  clearRefreshTokenCookie();
   redirectToLogin();
 }
 
@@ -60,17 +59,23 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+/**
+ * Exchanges the refresh cookie for a new access token (SJ-6).
+ *
+ * There is no token to send: the browser attaches the `httpOnly` cookie to
+ * this one path by itself, which is why the request body is empty and
+ * `withCredentials` is not optional. The single-flight wrapper below matters
+ * more than it used to — the server now treats a second rotation of the same
+ * token outside its grace window as theft and kills the whole family, so two
+ * concurrent refreshes racing past each other would log the user out.
+ */
 async function executeTokenRefresh(): Promise<string> {
-  const refreshToken = readRefreshTokenFromBrowserCookie();
-  if (!refreshToken) {
-    throw new Error('Refresh token is unavailable');
-  }
-  const response = await apiClient.post<ApiSuccess<RefreshedAuthTokens>>('/api/v1/auth/refresh', {
-    refreshToken,
-  });
+  const response = await apiClient.post<ApiSuccess<RefreshedAuthTokens>>(
+    '/api/v1/auth/refresh',
+    {},
+  );
   const tokens = response.data.data;
   setAccessTokenCookie(tokens.accessToken);
-  setRefreshTokenCookie(tokens.refreshToken);
   return tokens.accessToken;
 }
 

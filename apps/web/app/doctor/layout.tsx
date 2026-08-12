@@ -8,7 +8,7 @@ import { AppAbilityProvider } from '#components/client/app-ability-provider';
 import { AppSidebar } from '#components/client/shell/app-sidebar';
 import { TopBar } from '#components/server/shell/top-bar';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
-import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
+import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { DOCTOR_ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
@@ -25,8 +25,8 @@ type DoctorLayoutProps = {
 export default async function DoctorLayout({ children }: DoctorLayoutProps) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
-  const claims = resolveSessionClaims({ accessToken, refreshToken });
+  const sessionHint = cookieStore.get(SESSION_HINT_COOKIE_NAME)?.value;
+  const claims = resolveSessionClaims({ accessToken, sessionHint });
   const rules = resolveAppAbilityRules(claims);
   const sections = filterNavSections(buildAppAbility(rules), DOCTOR_NAV_SECTIONS);
   const profile = resolveShellProfile(claims);

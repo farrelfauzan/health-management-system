@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 /**
- * The signing and verification keys for both token families (SJ-5).
+ * The signing and verification keys for the access token (SJ-5).
+ *
+ * Only the access token is a JWT. SJ-6 made refresh tokens opaque random
+ * strings checked against a hash in the database, so there is no refresh
+ * signing key to rotate — and no `JWT_REFRESH_SECRET`.
  *
  * Rotation without mass logout is the whole point. A single-key deployment
- * cannot change its JWT secret without invalidating every access token and
- * every refresh token in flight — which, for a clinic, means every logged-in
- * workstation drops mid-consultation. So each family has one *signing* key and
- * an ordered list of *verification* keys:
+ * cannot change its JWT secret without invalidating every access token in
+ * flight — which, for a clinic, means every logged-in workstation failing its
+ * next request. So there is one *signing* key and an ordered list of
+ * *verification* keys:
  *
  *   1. add the new key as `JWT_ACCESS_SECRET`, move the old one to
  *      `JWT_ACCESS_SECRET_PREVIOUS`, restart — new tokens are signed with the
@@ -33,16 +37,8 @@ export class JwtSecretsService {
     return this.readRequiredSecret('JWT_ACCESS_SECRET');
   }
 
-  getRefreshSigningSecret(): string {
-    return this.readRequiredSecret('JWT_REFRESH_SECRET');
-  }
-
   getAccessVerificationSecrets(): string[] {
     return this.buildVerificationSecrets('JWT_ACCESS_SECRET');
-  }
-
-  getRefreshVerificationSecrets(): string[] {
-    return this.buildVerificationSecrets('JWT_REFRESH_SECRET');
   }
 
   private buildVerificationSecrets(key: string): string[] {

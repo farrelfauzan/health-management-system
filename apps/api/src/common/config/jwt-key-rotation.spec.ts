@@ -40,7 +40,6 @@ describe('JWT key rotation', () => {
   it('step 1 — before rotating, a token signed with the only key verifies', async () => {
     const inputSecrets = buildSecrets({
       JWT_ACCESS_SECRET: OLD_SECRET,
-      JWT_REFRESH_SECRET: 'unused',
     });
     const existingToken = await signWith(OLD_SECRET);
 
@@ -51,7 +50,6 @@ describe('JWT key rotation', () => {
     const inputSecrets = buildSecrets({
       JWT_ACCESS_SECRET: NEW_SECRET,
       JWT_ACCESS_SECRET_PREVIOUS: OLD_SECRET,
-      JWT_REFRESH_SECRET: 'unused',
     });
     const existingToken = await signWith(OLD_SECRET);
     const freshToken = await signWith(NEW_SECRET);
@@ -63,7 +61,6 @@ describe('JWT key rotation', () => {
   it('step 3 — once the old key is dropped, tokens signed with it are refused', async () => {
     const inputSecrets = buildSecrets({
       JWT_ACCESS_SECRET: NEW_SECRET,
-      JWT_REFRESH_SECRET: 'unused',
     });
     const existingToken = await signWith(OLD_SECRET);
 
@@ -74,7 +71,6 @@ describe('JWT key rotation', () => {
     const inputSecrets = buildSecrets({
       JWT_ACCESS_SECRET: NEW_SECRET,
       JWT_ACCESS_SECRET_PREVIOUS: OLD_SECRET,
-      JWT_REFRESH_SECRET: 'unused',
     });
 
     const signedToken = await signWith(inputSecrets.getAccessSigningSecret());

@@ -8,7 +8,6 @@
 
 export type AuthControllerRefreshV1200Data = {
   accessToken: string;
-  refreshToken: string;
   tokenType: string;
   expiresIn: string;
 };

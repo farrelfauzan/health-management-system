@@ -303,15 +303,10 @@ export const PHASE_THREE_EXAMPLES = {
       email: 'admin@example.com',
       password: 'SecurePassword123!',
     },
-    refreshRequest: {
-      refreshToken: 'eyJhbGciOiJIUzI1NiJ9.refresh.example',
-    },
-    logoutRequest: {
-      refreshToken: 'eyJhbGciOiJIUzI1NiJ9.refresh.example',
-    },
+    // SJ-6: refresh and logout take no body. The refresh token travels only
+    // as an httpOnly cookie, so there is nothing for a client to send or read.
     tokens: {
       accessToken: 'eyJhbGciOiJIUzI1NiJ9.access.example',
-      refreshToken: 'eyJhbGciOiJIUzI1NiJ9.refresh.example',
       tokenType: 'Bearer',
       expiresIn: '15m',
     },

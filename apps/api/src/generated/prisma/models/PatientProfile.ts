@@ -1181,10 +1181,6 @@ export type EnumPatientRecordSourceFieldUpdateOperationsInput = {
   set?: $Enums.PatientRecordSource
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type NullableEnumPatientSexFieldUpdateOperationsInput = {
   set?: $Enums.PatientSex | null
 }

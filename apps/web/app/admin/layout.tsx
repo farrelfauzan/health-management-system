@@ -10,7 +10,7 @@ import { TopBar } from '#components/server/shell/top-bar';
 import { ADMIN_ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { hasAnyRole } from '#lib/auth/access-token-claims';
-import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
+import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { filterNavSections } from '#lib/shell/filter-nav-sections';
@@ -25,8 +25,8 @@ type AdminLayoutProps = {
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
-  const claims = resolveSessionClaims({ accessToken, refreshToken });
+  const sessionHint = cookieStore.get(SESSION_HINT_COOKIE_NAME)?.value;
+  const claims = resolveSessionClaims({ accessToken, sessionHint });
   const rules = resolveAppAbilityRules(claims);
   const isAdmin = hasAnyRole(claims, ['SUPER_ADMIN', 'ADMIN']);
   const isPharmacistOnly = !isAdmin && hasAnyRole(claims, ['PHARMACIST']);

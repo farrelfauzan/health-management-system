@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RefreshTokenDto {
-  refreshToken: string;
-}
+export type AuditControllerListAuditEventsV1200DataItemMetadata = {
+  method: string;
+  route: string;
+};
