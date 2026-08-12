@@ -187,9 +187,10 @@ describe('RegistrationFlowService', () => {
 
       await service.listRegistrations({ page: 1, limit: 10 }, currentUser);
 
-      expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(
-        expect.objectContaining({ ownerUserId: undefined }),
-      );
+      expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(expect.any(Object), {
+        userId: currentUser.sub,
+        scope: 'ANY',
+      });
     });
 
     it('constrains ownership to current user for read:own scope', async () => {
@@ -197,9 +198,10 @@ describe('RegistrationFlowService', () => {
 
       await service.listRegistrations({ page: 1, limit: 10 }, currentUser);
 
-      expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(
-        expect.objectContaining({ ownerUserId: currentUser.sub }),
-      );
+      expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(expect.any(Object), {
+        userId: currentUser.sub,
+        scope: 'OWN',
+      });
     });
 
     it('passes the search term through to the repository', async () => {
@@ -209,6 +211,7 @@ describe('RegistrationFlowService', () => {
 
       expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(
         expect.objectContaining({ search: 'MRN-0001' }),
+        expect.any(Object),
       );
     });
 
@@ -219,6 +222,7 @@ describe('RegistrationFlowService', () => {
 
       expect(repositoryMock.listRegistrations).toHaveBeenCalledWith(
         expect.objectContaining({ doctorId }),
+        expect.any(Object),
       );
     });
 
@@ -235,6 +239,7 @@ describe('RegistrationFlowService', () => {
           registeredFrom: new Date('2026-07-01T00:00:00.000Z'),
           registeredTo: new Date('2026-07-18T00:00:00.000Z'),
         }),
+        expect.any(Object),
       );
     });
   });
@@ -249,12 +254,20 @@ describe('RegistrationFlowService', () => {
       );
     });
 
-    it('throws forbidden for read:own scope when actor does not own the patient profile', async () => {
+    it('returns not-found for read:own scope when the scoped where-clause misses', async () => {
       mockPermissions([{ action: 'read', resource: 'Registration', scope: 'OWN' }]);
 
+      // The patient-side scope filtered the row in SQL (SJ-2): someone else's
+      // registration and a nonexistent one are the same null.
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(null);
+
       await expect(service.getRegistrationById(registrationId, currentUser)).rejects.toBeInstanceOf(
-        ForbiddenException,
+        NotFoundException,
       );
+      expect(repositoryMock.findRegistrationDetailById).toHaveBeenCalledWith(registrationId, {
+        userId: currentUser.sub,
+        scope: 'OWN',
+      });
     });
 
     it('returns registration for read:own scope when actor owns the patient profile', async () => {
@@ -640,12 +653,19 @@ describe('RegistrationFlowService', () => {
       ).rejects.toBeInstanceOf(NotFoundException);
     });
 
-    it('throws forbidden for update:own scope when actor does not own the patient profile', async () => {
+    it('returns not-found for update:own scope when the scoped where-clause misses', async () => {
       mockPermissions([{ action: 'update', resource: 'Registration', scope: 'OWN' }]);
+
+      // The patient-side scope filtered the row in SQL (SJ-2).
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(null);
 
       await expect(
         service.updateRegistration(registrationId, { status: 'CANCELLED' }, currentUser),
-      ).rejects.toBeInstanceOf(ForbiddenException);
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(repositoryMock.findRegistrationDetailById).toHaveBeenCalledWith(registrationId, {
+        userId: currentUser.sub,
+        scope: 'OWN',
+      });
     });
 
     it('forbids patient-owned scope from checking in', async () => {

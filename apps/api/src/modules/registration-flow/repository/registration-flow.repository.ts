@@ -3,6 +3,7 @@ import {
   FindOpenRegistrationParams,
   ListQueueBoardParams,
   ListRegistrationsParams,
+  RegistrationScopeActor,
   UpdateRegistrationRecordPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
@@ -10,6 +11,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma, RegistrationStatus } from '../../../generated/prisma/client';
+import { buildRegistrationScopeWhere } from './build-registration-scope-where';
 import { QueueNumberAllocatorRepository } from './queue-number-allocator.repository';
 import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 
@@ -65,22 +67,12 @@ export class RegistrationFlowRepository {
     private readonly privacyNoticeRepository: PrivacyNoticeRepository,
   ) {}
 
-  async listRegistrations(params: ListRegistrationsParams) {
-    const {
-      page,
-      limit,
-      search,
-      status,
-      patientId,
-      doctorId,
-      registeredFrom,
-      registeredTo,
-      ownerUserId,
-    } = params;
+  async listRegistrations(params: ListRegistrationsParams, actor: RegistrationScopeActor) {
+    const { page, limit, search, status, patientId, doctorId, registeredFrom, registeredTo } =
+      params;
     const skip = (page - 1) * limit;
 
     const patientFilter = {
-      ...(ownerUserId ? { ownerUserId } : {}),
       ...(search
         ? {
             OR: [
@@ -126,6 +118,7 @@ export class RegistrationFlowRepository {
             patient: patientFilter,
           }
         : {}),
+      AND: [buildRegistrationScopeWhere(actor)],
     };
 
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {
@@ -152,11 +145,18 @@ export class RegistrationFlowRepository {
     };
   }
 
-  async findRegistrationDetailById(id: string) {
-    return this.prisma.findUniqueActive(this.prisma.registration, {
-      where: {
-        id,
-      },
+  /**
+   * Scoped by-ID fetch (SJ-2): the patient-side scope fragment rides in the
+   * SQL `where`, so a row outside the actor's reach is `null` —
+   * indistinguishable from a missing registration.
+   */
+  async findRegistrationDetailById(id: string, actor: RegistrationScopeActor) {
+    const scopedWhere: Prisma.RegistrationWhereInput = {
+      id,
+      AND: [buildRegistrationScopeWhere(actor)],
+    };
+    return this.prisma.findFirstActive(this.prisma.registration, {
+      where: scopedWhere,
       include: REGISTRATION_RELATIONS_INCLUDE,
     });
   }

@@ -11,7 +11,25 @@ export type ListRegistrationsParams = {
   doctorId?: string;
   registeredFrom?: Date;
   registeredTo?: Date;
-  ownerUserId?: string;
+};
+
+/**
+ * How far a registration permission reaches: `ANY` covers every record, `OWN`
+ * only rows whose patient the actor owns. Mirrors the permission `scope`
+ * column.
+ */
+export type RegistrationScopeMode = 'ANY' | 'OWN';
+
+/**
+ * Actor context every scoped registration repository query requires (SJ-2).
+ * Ownership is patient-side only — a registration belongs to the patient
+ * being registered; staff and doctors read the queue through `ANY`-scoped
+ * routes. Mandatory, so forgetting the scope is a compile error rather than
+ * a silently unscoped query.
+ */
+export type RegistrationScopeActor = {
+  userId: string;
+  scope: RegistrationScopeMode;
 };
 
 export type CreateRegistrationRecordPayload = {
