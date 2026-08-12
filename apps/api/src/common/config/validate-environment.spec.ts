@@ -6,7 +6,6 @@ function buildEnv(overrides: Record<string, unknown> = {}): Record<string, unkno
   return {
     DATABASE_URL: 'postgresql://user:pass@localhost:5432/db',
     JWT_ACCESS_SECRET: 'dev-access-secret',
-    JWT_REFRESH_SECRET: 'dev-refresh-secret',
     ...overrides,
   };
 }
@@ -25,7 +24,7 @@ describe('validateEnvironment', () => {
     expect(actual.SOME_OPTIONAL_SETTING).toBe('kept');
   });
 
-  it.each(['DATABASE_URL', 'JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET'])(
+  it.each(['DATABASE_URL', 'JWT_ACCESS_SECRET'])(
     'fails startup when %s is absent',
     (key) => {
       const inputEnv = buildEnv({ [key]: undefined });
@@ -45,9 +44,17 @@ describe('validateEnvironment', () => {
   });
 
   it('lists every problem at once rather than one per restart', () => {
-    const inputEnv = buildEnv({ DATABASE_URL: undefined, JWT_REFRESH_SECRET: undefined });
+    const inputEnv = buildEnv({ DATABASE_URL: undefined, JWT_ACCESS_SECRET: undefined });
 
-    expect(() => validateEnvironment(inputEnv)).toThrow(/DATABASE_URL[\s\S]*JWT_REFRESH_SECRET/);
+    expect(() => validateEnvironment(inputEnv)).toThrow(/DATABASE_URL[\s\S]*JWT_ACCESS_SECRET/);
+  });
+
+  /**
+   * SJ-6 made refresh tokens opaque, so nothing signs them. A deployment that
+   * still sets the old variable is fine; one that does not must still boot.
+   */
+  it('no longer requires JWT_REFRESH_SECRET', () => {
+    expect(() => validateEnvironment(buildEnv({ JWT_REFRESH_SECRET: undefined }))).not.toThrow();
   });
 
   describe('production hardening', () => {
@@ -61,7 +68,6 @@ describe('validateEnvironment', () => {
       const inputEnv = buildEnv({
         NODE_ENV: 'production',
         JWT_ACCESS_SECRET: 'replace-with-strong-secret',
-        JWT_REFRESH_SECRET: STRONG_SECRET,
       });
 
       expect(() => validateEnvironment(inputEnv)).toThrow(/known placeholder value/);
@@ -71,7 +77,6 @@ describe('validateEnvironment', () => {
       const inputEnv = buildEnv({
         NODE_ENV: 'production',
         JWT_ACCESS_SECRET: 'short-but-not-a-placeholder',
-        JWT_REFRESH_SECRET: STRONG_SECRET,
       });
 
       expect(() => validateEnvironment(inputEnv)).toThrow(/at least 32 characters/);
@@ -81,7 +86,6 @@ describe('validateEnvironment', () => {
       const inputEnv = buildEnv({
         NODE_ENV: 'production',
         JWT_ACCESS_SECRET: STRONG_SECRET,
-        JWT_REFRESH_SECRET: `${STRONG_SECRET}b`,
       });
 
       expect(() => validateEnvironment(inputEnv)).not.toThrow();

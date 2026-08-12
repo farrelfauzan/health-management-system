@@ -6,7 +6,7 @@ import { ChatLauncher } from '#components/client/ai-assistant/chat-launcher';
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
 import { PortalTopBar } from '#components/server/portal/portal-top-bar';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
-import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
+import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
@@ -18,8 +18,8 @@ type PortalLayoutProps = {
 export default async function PortalLayout({ children }: PortalLayoutProps) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
-  const claims = resolveSessionClaims({ accessToken, refreshToken });
+  const sessionHint = cookieStore.get(SESSION_HINT_COOKIE_NAME)?.value;
+  const claims = resolveSessionClaims({ accessToken, sessionHint });
   const rules = resolveAppAbilityRules(claims);
   const profile = resolveShellProfile(claims);
   return (

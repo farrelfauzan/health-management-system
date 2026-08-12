@@ -46,13 +46,13 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public
       # SJ-5 removed the `?? 'dev-access-secret'` fallbacks, so a missing JWT
       # secret is now a startup failure rather than a silent weak default —
-      # which means CI has to supply them like any other deployment. These are
-      # the well-known values the specs sign their fixtures with, and the
-      # production checks in `validateEnvironment` reject them outright when
-      # NODE_ENV=production. They are test fixtures, not secrets: nothing they
-      # sign has any authority outside this runner.
+      # which means CI has to supply it like any other deployment. This is the
+      # well-known value the specs sign their fixtures with, and the production
+      # checks in `validateEnvironment` reject it outright when
+      # NODE_ENV=production. It is a test fixture, not a secret: nothing it
+      # signs has any authority outside this runner. (SJ-6 retired
+      # JWT_REFRESH_SECRET — refresh tokens are opaque and unsigned.)
       JWT_ACCESS_SECRET: dev-access-secret
-      JWT_REFRESH_SECRET: dev-refresh-secret
       # NOTE: storage configuration is deliberately NOT set here. An
       # unconfigured secret expands to an empty string, and `S3_REGION=""` is
       # a hard startup error in `resolveStorageConfig` (`??` falls back on

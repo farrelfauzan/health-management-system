@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface LogoutDto {
-  refreshToken: string;
-}
+export type AuthControllerLogoutAllV1200Data = {
+  success: boolean;
+  message: string;
+};

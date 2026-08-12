@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { proxy } from './proxy';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
-import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
+import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -16,10 +16,15 @@ function buildToken(claims: object): string {
   return `${encodeBase64Url({ alg: 'HS256', typ: 'JWT' })}.${encodeBase64Url(claims)}.signature`;
 }
 
-function buildRequest(path: string, token?: string, refreshToken?: string): NextRequest {
+/** The API's session hint: base64url JSON, no signature — see SJ-6. */
+function buildSessionHint(claims: { exp: number; roles: string[] }): string {
+  return encodeBase64Url(claims);
+}
+
+function buildRequest(path: string, token?: string, sessionHint?: string): NextRequest {
   const cookies = [
     token ? `${ACCESS_TOKEN_COOKIE_NAME}=${token}` : null,
-    refreshToken ? `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}` : null,
+    sessionHint ? `${SESSION_HINT_COOKIE_NAME}=${sessionHint}` : null,
   ].filter((cookie): cookie is string => cookie !== null);
   const headers = cookies.length > 0 ? { cookie: cookies.join('; ') } : undefined;
   return new NextRequest(`${BASE_URL}${path}`, { headers });
@@ -89,12 +94,35 @@ describe('proxy', () => {
     expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/pharmacy`);
   });
 
-  it('allows an expired access session while its refresh token remains valid', () => {
+  /**
+   * The window between the access token expiring and the client refreshing it.
+   * Without the hint this reload would bounce a live session to /login.
+   */
+  it('allows an expired access session while the session hint is still valid', () => {
     const expiredAccessToken = buildToken({ exp: pastUnix(), roles: ['ADMIN'] });
-    const refreshToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'], tokenType: 'refresh' });
-    const response = proxy(buildRequest('/admin/administration', expiredAccessToken, refreshToken));
+    const sessionHint = buildSessionHint({ exp: futureUnix(), roles: ['ADMIN'] });
+    const response = proxy(buildRequest('/admin/administration', expiredAccessToken, sessionHint));
 
     expect(response.headers.get('x-middleware-next')).toBe('1');
+  });
+
+  it('refuses an expired access token once the session hint has expired too', () => {
+    const expiredAccessToken = buildToken({ exp: pastUnix(), roles: ['ADMIN'] });
+    const staleHint = buildSessionHint({ exp: pastUnix(), roles: ['ADMIN'] });
+    const response = proxy(buildRequest('/admin/administration', expiredAccessToken, staleHint));
+
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
+  });
+
+  /**
+   * The hint is unsigned by design — it authorises nothing. Garbage in it must
+   * read as "no session" rather than crash the gate.
+   */
+  it('treats an unparseable session hint as no session at all', () => {
+    const expiredAccessToken = buildToken({ exp: pastUnix(), roles: ['ADMIN'] });
+    const response = proxy(buildRequest('/admin/administration', expiredAccessToken, 'not-base64'));
+
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
   });
 
   it('redirects an authenticated admin visiting /login to /admin/dashboard', () => {

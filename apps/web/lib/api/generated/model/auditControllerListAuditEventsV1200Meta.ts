@@ -6,8 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AuthControllerLoginV1200Data = {
-  accessToken: string;
-  tokenType: string;
-  expiresIn: string;
+export type AuditControllerListAuditEventsV1200Meta = {
+  page: number;
+  limit: number;
+  total: number;
 };

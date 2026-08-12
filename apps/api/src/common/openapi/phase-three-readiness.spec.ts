@@ -113,8 +113,10 @@ type ExpectedPublicOperation = {
 
 const expectedPublicOperations: readonly ExpectedPublicOperation[] = [
   { httpMethod: 'post', path: '/api/v1/auth/login', hasRequestBody: true },
-  { httpMethod: 'post', path: '/api/v1/auth/refresh', hasRequestBody: true },
-  { httpMethod: 'post', path: '/api/v1/auth/logout', hasRequestBody: true },
+  // SJ-6: both take the refresh token from an httpOnly cookie the browser
+  // attaches itself, so neither has a body a client could send.
+  { httpMethod: 'post', path: '/api/v1/auth/refresh', hasRequestBody: false },
+  { httpMethod: 'post', path: '/api/v1/auth/logout', hasRequestBody: false },
   { httpMethod: 'get', path: '/api/v1/health', hasRequestBody: false },
 ];
 

@@ -19,17 +19,15 @@ function buildService(env: Record<string, string>): JwtSecretsService {
 
 describe('JwtSecretsService', () => {
   it('signs with the current secret', () => {
-    const service = buildService({ JWT_ACCESS_SECRET: 'current', JWT_REFRESH_SECRET: 'r-current' });
+    const service = buildService({ JWT_ACCESS_SECRET: 'current' });
 
     expect(service.getAccessSigningSecret()).toBe('current');
-    expect(service.getRefreshSigningSecret()).toBe('r-current');
   });
 
   it('verifies against the current secret alone when nothing is retired', () => {
-    const service = buildService({ JWT_ACCESS_SECRET: 'current', JWT_REFRESH_SECRET: 'r-current' });
+    const service = buildService({ JWT_ACCESS_SECRET: 'current' });
 
     expect(service.getAccessVerificationSecrets()).toEqual(['current']);
-    expect(service.getRefreshVerificationSecrets()).toEqual(['r-current']);
   });
 
   /**
@@ -39,7 +37,6 @@ describe('JwtSecretsService', () => {
   it('puts the signing secret ahead of retired ones', () => {
     const service = buildService({
       JWT_ACCESS_SECRET: 'current',
-      JWT_REFRESH_SECRET: 'r-current',
       JWT_ACCESS_SECRET_PREVIOUS: 'previous',
     });
 
@@ -49,7 +46,6 @@ describe('JwtSecretsService', () => {
   it('accepts several retired keys so an interrupted rotation can be resumed', () => {
     const service = buildService({
       JWT_ACCESS_SECRET: 'current',
-      JWT_REFRESH_SECRET: 'r-current',
       JWT_ACCESS_SECRET_PREVIOUS: 'previous-one, previous-two ,previous-three',
     });
 
@@ -64,7 +60,6 @@ describe('JwtSecretsService', () => {
   it('ignores blank entries from a trailing comma', () => {
     const service = buildService({
       JWT_ACCESS_SECRET: 'current',
-      JWT_REFRESH_SECRET: 'r-current',
       JWT_ACCESS_SECRET_PREVIOUS: 'previous,, ,',
     });
 
@@ -74,23 +69,10 @@ describe('JwtSecretsService', () => {
   it('never lists the same secret twice when a rotation is rolled back', () => {
     const service = buildService({
       JWT_ACCESS_SECRET: 'current',
-      JWT_REFRESH_SECRET: 'r-current',
       JWT_ACCESS_SECRET_PREVIOUS: 'current',
     });
 
     expect(service.getAccessVerificationSecrets()).toEqual(['current']);
-  });
-
-  it('keeps the two token families apart', () => {
-    const service = buildService({
-      JWT_ACCESS_SECRET: 'access',
-      JWT_REFRESH_SECRET: 'refresh',
-      JWT_ACCESS_SECRET_PREVIOUS: 'old-access',
-      JWT_REFRESH_SECRET_PREVIOUS: 'old-refresh',
-    });
-
-    expect(service.getAccessVerificationSecrets()).toEqual(['access', 'old-access']);
-    expect(service.getRefreshVerificationSecrets()).toEqual(['refresh', 'old-refresh']);
   });
 
   /**

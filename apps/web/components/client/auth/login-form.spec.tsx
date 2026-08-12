@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoginForm } from './login-form';
 import { authControllerLoginV1 } from '#lib/api/generated/auth/auth';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
-import { REFRESH_TOKEN_COOKIE_NAME } from '#lib/auth/refresh-token-cookie';
+import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import messages from '../../../messages/id/auth-shell.json';
 
 const { replaceMock } = vi.hoisted(() => ({
@@ -45,7 +45,7 @@ function renderLoginForm(): ReactElement | void {
 
 function clearSessionCookies(): void {
   document.cookie = `${ACCESS_TOKEN_COOKIE_NAME}=; Max-Age=0; Path=/`;
-  document.cookie = `${REFRESH_TOKEN_COOKIE_NAME}=; Max-Age=0; Path=/`;
+  document.cookie = `${SESSION_HINT_COOKIE_NAME}=; Max-Age=0; Path=/`;
 }
 
 describe('LoginForm', () => {
@@ -96,7 +96,7 @@ describe('LoginForm', () => {
     expect(replaceMock).not.toHaveBeenCalled();
   });
 
-  it('persists the session cookies and redirects to the dashboard on success', async () => {
+  it('persists the access token and redirects to the dashboard on success', async () => {
     const user = userEvent.setup();
     loginRequestMock.mockResolvedValueOnce({
       status: 200,
@@ -104,7 +104,6 @@ describe('LoginForm', () => {
       data: {
         data: {
           accessToken: 'header.payload.signature',
-          refreshToken: 'refresh.payload.signature',
           tokenType: 'Bearer',
           expiresIn: '15m',
         },
@@ -119,7 +118,9 @@ describe('LoginForm', () => {
 
     expect(await screen.findByRole('button', { name: 'Masuk' })).toBeEnabled();
     expect(document.cookie).toContain(`${ACCESS_TOKEN_COOKIE_NAME}=header.payload.signature`);
-    expect(document.cookie).toContain(`${REFRESH_TOKEN_COOKIE_NAME}=refresh.payload.signature`);
+    // The refresh token and the session hint are both set by the API as
+    // response cookies (SJ-6), so this tier neither receives nor writes them.
+    expect(document.cookie).not.toContain(SESSION_HINT_COOKIE_NAME);
     expect(replaceMock).toHaveBeenCalledWith('/admin/dashboard');
   });
 });
