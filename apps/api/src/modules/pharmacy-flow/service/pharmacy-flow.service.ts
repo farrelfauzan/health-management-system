@@ -150,15 +150,20 @@ export class PharmacyFlowService {
       throw new ForbiddenException('You are not allowed to read prescriptions');
     }
 
-    const result = await this.pharmacyFlowRepository.listPrescriptions({
-      page: query.page,
-      limit: query.limit,
-      status: query.status,
-      patientId: query.patientId,
-      doctorId: query.doctorId,
-      encounterId: query.encounterId,
-      ownerUserId: readScope.hasAny ? undefined : currentUser.sub,
-    });
+    const result = await this.pharmacyFlowRepository.listPrescriptions(
+      {
+        page: query.page,
+        limit: query.limit,
+        status: query.status,
+        patientId: query.patientId,
+        doctorId: query.doctorId,
+        encounterId: query.encounterId,
+      },
+      {
+        userId: currentUser.sub,
+        scope: readScope.hasAny ? 'ANY' : 'OWN',
+      },
+    );
 
     return {
       items: result.items.map((prescription) => this.toPrescriptionResponse(prescription)),

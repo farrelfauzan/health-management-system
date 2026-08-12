@@ -482,14 +482,10 @@ describe('PharmacyFlowService', () => {
 
       expect(actualResult.items).toHaveLength(1);
       expect(actualResult.meta.total).toBe(1);
-      expect(repositoryMock.listPrescriptions).toHaveBeenCalledWith({
-        page: 1,
-        limit: 10,
-        status: 'ISSUED',
-        patientId: undefined,
-        doctorId: undefined,
-        ownerUserId: undefined,
-      });
+      expect(repositoryMock.listPrescriptions).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 1, limit: 10, status: 'ISSUED' }),
+        { userId: currentUser.sub, scope: 'ANY' },
+      );
     });
 
     it('scopes the list to the current user with prescription.read:own permission', async () => {
@@ -497,14 +493,10 @@ describe('PharmacyFlowService', () => {
 
       await service.listPrescriptions({ page: 1, limit: 10 }, currentUser);
 
-      expect(repositoryMock.listPrescriptions).toHaveBeenCalledWith({
-        page: 1,
-        limit: 10,
-        status: undefined,
-        patientId: undefined,
-        doctorId: undefined,
-        ownerUserId: currentUser.sub,
-      });
+      expect(repositoryMock.listPrescriptions).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 1, limit: 10 }),
+        { userId: currentUser.sub, scope: 'OWN' },
+      );
     });
   });
 
