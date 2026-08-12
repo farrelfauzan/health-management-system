@@ -14,6 +14,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuditAction } from '../../../generated/prisma/client';
+import { Audited } from '../../../common/audit/audited.decorator';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
@@ -33,6 +35,12 @@ export class RegistrationFlowController {
 
   @Get()
   @Auth([{ action: 'read', subject: 'Registration' }])
+  @Audited({
+    resource: 'registration',
+    action: AuditAction.READ,
+    idParam: null,
+    patientIdQuery: 'patientId',
+  })
   @ApiEndpoint({
     summary: 'List registrations',
     responseDescription: 'A permission-scoped, filtered, paginated registration list.',
@@ -61,6 +69,7 @@ export class RegistrationFlowController {
   // route param.
   @Get('queue-board')
   @Auth([{ action: 'read', subject: 'Registration' }])
+  @Audited({ resource: 'registration', action: AuditAction.READ, idParam: null })
   @ApiEndpoint({
     summary: "Get a day's queue board",
     responseDescription:
@@ -84,6 +93,7 @@ export class RegistrationFlowController {
 
   @Get(':id')
   @Auth([{ action: 'read', subject: 'Registration' }])
+  @Audited({ resource: 'registration', action: AuditAction.READ })
   @ApiEndpoint({
     summary: 'Get a registration',
     responseDescription: 'The registration visible to the authenticated actor.',
@@ -108,6 +118,7 @@ export class RegistrationFlowController {
   @Post()
   @HttpCode(201)
   @Auth([{ action: 'create', subject: 'Registration' }])
+  @Audited({ resource: 'registration', action: AuditAction.CREATE })
   @ApiEndpoint({
     summary: 'Create a registration',
     responseDescription: 'The registration was created.',
@@ -140,6 +151,7 @@ export class RegistrationFlowController {
 
   @Patch(':id')
   @Auth([{ action: 'update', subject: 'Registration' }])
+  @Audited({ resource: 'registration', action: AuditAction.UPDATE })
   @ApiEndpoint({
     summary: 'Update a registration',
     responseDescription: 'The registration was updated after transition validation.',

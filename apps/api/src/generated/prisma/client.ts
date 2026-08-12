@@ -403,7 +403,23 @@ export type UserRole = Prisma.UserRoleModel
 export type SatusehatSubmission = Prisma.SatusehatSubmissionModel
 /**
  * Model AuditLog
+ * Append-only record of who touched patient-identifiable data (SJ-4). Rows
+ * carry no `updatedAt` and no `deletedAt` because they are never modified: a
+ * trigger installed by the migration rejects UPDATE/DELETE/TRUNCATE outright,
+ * and SJ-11 additionally revokes those grants from the runtime role.
  * 
+ * `actorUserId` deliberately has **no foreign key**. A relation would let a
+ * hard `DELETE` on `users` rewrite history — `ON DELETE SET NULL` is an UPDATE
+ * on this table — which is precisely what an immutable log must not permit,
+ * and which the append-only trigger would turn into a failed user deletion.
+ * `actorRole` is denormalised for the same reason: the answer to "what could
+ * this person see at the time" must not change when their roles change later.
+ * 
+ * `patientId` is likewise denormalised rather than joined. It is the primary
+ * query pattern — "who read this patient's chart, when" — and it is populated
+ * even for resources that merely *reference* a patient (an encounter, a
+ * prescription), so one index answers the question without a union across
+ * every clinical table.
  */
 export type AuditLog = Prisma.AuditLogModel
 /**

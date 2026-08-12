@@ -3,6 +3,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuditAction } from '../../../generated/prisma/client';
+import { Audited } from '../../../common/audit/audited.decorator';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
@@ -20,6 +22,7 @@ export class DispenseController {
   @Post()
   @HttpCode(201)
   @Auth([{ action: 'write', subject: 'DispenseRecord' }])
+  @Audited({ resource: 'dispense', action: AuditAction.CREATE })
   @ApiEndpoint({
     summary: 'Dispense a prescription',
     responseDescription: 'The dispense record was committed and inventory was reduced atomically.',

@@ -2,6 +2,8 @@ import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { PublicRoute } from '../../../common/authorization/public-route.decorator';
+import { RequestOrigin } from '../../../common/observability/request-context.decorator';
+import { RequestContext } from '../../../common/observability/observability.types';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
 import { LoginDto } from '../dto/login.dto';
@@ -32,8 +34,8 @@ export class AuthController {
     isPublic: true,
     unauthorizedDescription: 'Invalid credentials.',
   })
-  async login(@Body() payload: LoginDto) {
-    const tokens = await this.authService.login(payload);
+  async login(@Body() payload: LoginDto, @RequestOrigin() origin: RequestContext) {
+    const tokens = await this.authService.login(payload, origin);
 
     return {
       data: tokens,
@@ -56,8 +58,8 @@ export class AuthController {
     isPublic: true,
     unauthorizedDescription: 'Invalid refresh token.',
   })
-  async refresh(@Body() payload: RefreshTokenDto) {
-    const token = await this.authService.refresh(payload.refreshToken);
+  async refresh(@Body() payload: RefreshTokenDto, @RequestOrigin() origin: RequestContext) {
+    const token = await this.authService.refresh(payload.refreshToken, origin);
 
     return {
       data: token,
@@ -80,8 +82,8 @@ export class AuthController {
     isPublic: true,
     unauthorizedDescription: 'Invalid refresh token.',
   })
-  async logout(@Body() payload: LogoutDto) {
-    const result = await this.authService.logout(payload.refreshToken);
+  async logout(@Body() payload: LogoutDto, @RequestOrigin() origin: RequestContext) {
+    const result = await this.authService.logout(payload.refreshToken, origin);
 
     return {
       data: result,

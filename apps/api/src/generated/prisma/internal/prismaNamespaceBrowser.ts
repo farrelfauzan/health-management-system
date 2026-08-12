@@ -808,9 +808,12 @@ export type SatusehatSubmissionScalarFieldEnum = (typeof SatusehatSubmissionScal
 export const AuditLogScalarFieldEnum = {
   id: 'id',
   actorUserId: 'actorUserId',
+  actorRole: 'actorRole',
   action: 'action',
   resource: 'resource',
   resourceId: 'resourceId',
+  patientId: 'patientId',
+  ipAddress: 'ipAddress',
   metadata: 'metadata',
   requestId: 'requestId',
   occurredAt: 'occurredAt'

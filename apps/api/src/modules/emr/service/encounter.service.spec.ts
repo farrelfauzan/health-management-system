@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { AuditContextService } from '../../../common/audit/audit-context.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { ListEncountersQueryDto } from '../dto/list-encounters-query.dto';
 import { OpenEncounterDto } from '../dto/open-encounter.dto';
@@ -49,7 +50,11 @@ describe('EncounterService', () => {
     findUserById: jest.fn(),
   } as unknown as AuthRepository;
 
-  const accessService = new EncounterAccessService(encounterRepositoryMock, authRepositoryMock);
+  const accessService = new EncounterAccessService(
+    encounterRepositoryMock,
+    authRepositoryMock,
+    new AuditContextService(),
+  );
   const service = new EncounterService(
     encounterRepositoryMock,
     accessService,

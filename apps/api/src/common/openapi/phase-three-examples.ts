@@ -798,5 +798,22 @@ export const PHASE_THREE_EXAMPLES = {
       ],
     },
   },
+  // SJ-4. The example is a read, because a read is the case people forget an
+  // audit log records at all.
+  audit: {
+    event: {
+      id: '99999999-9999-4999-8999-999999999999',
+      actorUserId: userId,
+      actorRole: 'DOCTOR',
+      action: 'READ',
+      resource: 'patient',
+      resourceId: patientId,
+      patientId,
+      ipAddress: '203.0.113.24',
+      requestId: 'f1e2d3c4-b5a6-4978-8899-aabbccddeeff',
+      metadata: { method: 'GET', route: '/api/v1/patients/:id' },
+      occurredAt: timestamp,
+    },
+  },
   paginationMeta,
 } as const;

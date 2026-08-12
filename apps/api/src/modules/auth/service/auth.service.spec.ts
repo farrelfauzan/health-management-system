@@ -6,10 +6,12 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, RefreshTokenPayload } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { RequestContext } from '../../../common/observability/observability.types';
 import { AuthRepository } from '../repository/auth.repository';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
+  const TEST_ORIGIN: RequestContext = { ipAddress: '203.0.113.9', requestId: 'req-auth-spec' };
   const userId = '41f5da47-4151-4871-a391-106e7da1c02c';
   const authRepositoryMock = {
     findUserByEmail: jest.fn(),
@@ -78,7 +80,7 @@ describe('AuthService', () => {
     const actualTokens = await service.login({
       email: user.email,
       password: 'password123',
-    });
+    }, TEST_ORIGIN);
     const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualTokens.accessToken, {
       secret: 'test-access-secret',
     });
@@ -94,7 +96,7 @@ describe('AuthService', () => {
     (authRepositoryMock.findUserByEmail as jest.Mock).mockResolvedValue(null);
 
     await expect(
-      service.login({ email: 'pii-sentinel@example.com', password: 'wrong-password' }),
+      service.login({ email: 'pii-sentinel@example.com', password: 'wrong-password' }, TEST_ORIGIN),
     ).rejects.toBeInstanceOf(UnauthorizedException);
 
     expect(auditServiceMock.record).toHaveBeenCalledWith(
@@ -109,7 +111,7 @@ describe('AuthService', () => {
     const actualTokens = await service.login({
       email: user.email,
       password: 'password123',
-    });
+    }, TEST_ORIGIN);
     const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualTokens.accessToken, {
       secret: 'test-access-secret',
     });
@@ -121,7 +123,7 @@ describe('AuthService', () => {
     const actualTokens = await service.login({
       email: user.email,
       password: 'password123',
-    });
+    }, TEST_ORIGIN);
     const refreshPayload = await jwtService.verifyAsync<Record<string, unknown>>(
       actualTokens.refreshToken,
       { secret: 'test-refresh-secret' },
@@ -135,7 +137,7 @@ describe('AuthService', () => {
     const loginTokens = await service.login({
       email: user.email,
       password: 'password123',
-    });
+    }, TEST_ORIGIN);
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue({
       ...user,
       roles: [
@@ -149,7 +151,7 @@ describe('AuthService', () => {
       ],
     });
 
-    const refreshedTokens = await service.refresh(loginTokens.refreshToken);
+    const refreshedTokens = await service.refresh(loginTokens.refreshToken, TEST_ORIGIN);
     const accessPayload = await jwtService.verifyAsync<JwtPayload>(refreshedTokens.accessToken, {
       secret: 'test-access-secret',
     });
@@ -163,7 +165,7 @@ describe('AuthService', () => {
     const actualTokens = await service.login({
       email: user.email,
       password: 'password123',
-    });
+    }, TEST_ORIGIN);
     const refreshPayload = await jwtService.verifyAsync<RefreshTokenPayload>(
       actualTokens.refreshToken,
       {
@@ -187,14 +189,14 @@ describe('AuthService', () => {
     const loginTokens = await service.login({
       email: user.email,
       password: 'password123',
-    });
+    }, TEST_ORIGIN);
     const loginPayload = await jwtService.verifyAsync<RefreshTokenPayload>(
       loginTokens.refreshToken,
       {
         secret: 'test-refresh-secret',
       },
     );
-    const actualTokens = await service.refresh(loginTokens.refreshToken);
+    const actualTokens = await service.refresh(loginTokens.refreshToken, TEST_ORIGIN);
     const refreshPayload = await jwtService.verifyAsync<RefreshTokenPayload>(
       actualTokens.refreshToken,
       {
@@ -220,9 +222,9 @@ describe('AuthService', () => {
     const loginTokens = await service.login({
       email: user.email,
       password: 'password123',
-    });
+    }, TEST_ORIGIN);
     (authRepositoryMock.rotateRefreshToken as jest.Mock).mockResolvedValue(false);
-    await expect(service.refresh(loginTokens.refreshToken)).rejects.toBeInstanceOf(
+    await expect(service.refresh(loginTokens.refreshToken, TEST_ORIGIN)).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
   });
@@ -231,14 +233,14 @@ describe('AuthService', () => {
     const loginTokens = await service.login({
       email: user.email,
       password: 'password123',
-    });
+    }, TEST_ORIGIN);
     const refreshPayload = await jwtService.verifyAsync<RefreshTokenPayload>(
       loginTokens.refreshToken,
       {
         secret: 'test-refresh-secret',
       },
     );
-    await service.logout(loginTokens.refreshToken);
+    await service.logout(loginTokens.refreshToken, TEST_ORIGIN);
     expect(authRepositoryMock.revokeRefreshTokenFamily).toHaveBeenCalledWith(
       refreshPayload.familyId,
     );

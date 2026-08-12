@@ -16,6 +16,7 @@ import {
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { resolveJwtExpiresIn } from '../../../common/auth/jwt-expires.util';
+import { RequestContext } from '../../../common/observability/observability.types';
 import { AuditAction } from '../../../generated/prisma/client';
 import { LoginDto } from '../dto/login.dto';
 import { AuthRepository } from '../repository/auth.repository';
@@ -29,10 +30,10 @@ export class AuthService {
     private readonly auditService: AuditService,
   ) {}
 
-  async login(payload: LoginDto): Promise<AuthTokens> {
+  async login(payload: LoginDto, origin: RequestContext): Promise<AuthTokens> {
     const user = await this.authRepository.findUserByEmail(payload.email);
     if (!user) {
-      await this.recordFailedLogin();
+      await this.recordFailedLogin(origin);
       throw new UnauthorizedException('Invalid credentials');
     }
     // Reserved service accounts (the BPJS Antrean bridge, P14-T04) are actors
@@ -40,12 +41,12 @@ export class AuthService {
     // the password is even compared — means no credential an admin could set
     // on that row, deliberately or by accident, ever becomes a session.
     if (user.isSystem) {
-      await this.recordFailedLogin();
+      await this.recordFailedLogin(origin, user.id);
       throw new UnauthorizedException('Invalid credentials');
     }
     const isValidPassword = await compare(payload.password, user.passwordHash);
     if (!isValidPassword) {
-      await this.recordFailedLogin();
+      await this.recordFailedLogin(origin, user.id);
       throw new UnauthorizedException('Invalid credentials');
     }
     const claims: JwtPayload = {
@@ -65,6 +66,8 @@ export class AuthService {
       resource: 'auth',
       actorUserId: user.id,
       resourceId: user.id,
+      ipAddress: origin.ipAddress,
+      requestId: origin.requestId,
     });
     return {
       accessToken,
@@ -74,7 +77,7 @@ export class AuthService {
     };
   }
 
-  async refresh(refreshToken: string): Promise<RefreshedAuthTokens> {
+  async refresh(refreshToken: string, origin: RequestContext): Promise<RefreshedAuthTokens> {
     const decoded = await this.verifyRefreshToken(refreshToken);
     const user = await this.authRepository.findUserById(decoded.sub);
     if (!user) {
@@ -106,6 +109,8 @@ export class AuthService {
       resource: 'auth',
       actorUserId: user.id,
       resourceId: user.id,
+      ipAddress: origin.ipAddress,
+      requestId: origin.requestId,
     });
     return {
       accessToken,
@@ -115,7 +120,7 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken: string): Promise<LogoutResult> {
+  async logout(refreshToken: string, origin: RequestContext): Promise<LogoutResult> {
     const decoded = await this.verifyRefreshToken(refreshToken);
     await this.authRepository.revokeRefreshTokenFamily(decoded.familyId);
     await this.auditService.record({
@@ -123,6 +128,8 @@ export class AuthService {
       resource: 'auth',
       actorUserId: decoded.sub,
       resourceId: decoded.sub,
+      ipAddress: origin.ipAddress,
+      requestId: origin.requestId,
     });
     return {
       success: true,
@@ -130,10 +137,21 @@ export class AuthService {
     };
   }
 
-  private async recordFailedLogin(): Promise<void> {
+  /**
+   * Records the attempt without the email. The address is the point: SJ-4 asks
+   * for failed logins with an IP so ten in an hour against one account is a
+   * detectable pattern (the threshold SJ-24 alerts on). The account itself is
+   * identified by `resourceId` when it exists, and by nothing at all when the
+   * email matched no user — writing an unmatched email here would turn the
+   * audit log into a list of addresses people mistyped.
+   */
+  private async recordFailedLogin(origin: RequestContext, userId?: string): Promise<void> {
     await this.auditService.record({
       action: AuditAction.USER_LOGIN_FAILED,
       resource: 'auth',
+      resourceId: userId ?? null,
+      ipAddress: origin.ipAddress,
+      requestId: origin.requestId,
     });
   }
 
