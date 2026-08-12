@@ -15,6 +15,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuditAction } from '../../../generated/prisma/client';
+import { Audited } from '../../../common/audit/audited.decorator';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { AI_CHAT_EXAMPLES } from '../../../common/openapi/ai-chat-examples';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
@@ -57,6 +59,7 @@ export class ChatController {
 
   @Post('sessions')
   @Auth([{ action: 'create', subject: 'ChatSession' }])
+  @Audited({ resource: 'chat-session', action: AuditAction.CREATE })
   @ApiEndpoint({
     summary: 'Start a chat session',
     responseDescription:
@@ -78,6 +81,7 @@ export class ChatController {
 
   @Get('sessions')
   @Auth([{ action: 'read', subject: 'ChatSession' }])
+  @Audited({ resource: 'chat-session', action: AuditAction.READ, idParam: null })
   @ApiEndpoint({
     summary: 'List your own chat sessions',
     responseDescription:
@@ -103,6 +107,7 @@ export class ChatController {
    */
   @Get('admin/sessions')
   @Auth([{ action: 'read', subject: 'ChatSession' }])
+  @Audited({ resource: 'chat-session', action: AuditAction.READ, idParam: null })
   @ApiEndpoint({
     summary: 'List every chat session (admin support view)',
     responseDescription:
@@ -124,6 +129,7 @@ export class ChatController {
 
   @Get('sessions/:id')
   @Auth([{ action: 'read', subject: 'ChatSession' }])
+  @Audited({ resource: 'chat-session', action: AuditAction.READ })
   @ApiEndpoint({
     summary: 'Read one of your chat sessions',
     responseDescription:
@@ -143,6 +149,7 @@ export class ChatController {
 
   @Delete('sessions/:id')
   @Auth([{ action: 'delete', subject: 'ChatSession' }])
+  @Audited({ resource: 'chat-session', action: AuditAction.DELETE })
   @ApiEndpoint({
     summary: 'Delete one of your chat sessions',
     responseDescription:
@@ -163,6 +170,7 @@ export class ChatController {
   @Post('sessions/:id/messages')
   @HttpCode(200)
   @Auth([{ action: 'create', subject: 'ChatMessage' }])
+  @Audited({ resource: 'chat-message', action: AuditAction.CREATE, idParam: 'id' })
   @ApiEndpoint({
     summary: 'Send a message and receive the assistant’s reply',
     responseDescription:
@@ -191,6 +199,7 @@ export class ChatController {
 
   @Get('sessions/:id/messages')
   @Auth([{ action: 'read', subject: 'ChatMessage' }])
+  @Audited({ resource: 'chat-message', action: AuditAction.READ, idParam: 'id' })
   @ApiEndpoint({
     summary: 'Read a session transcript',
     responseDescription:

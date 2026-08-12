@@ -14,6 +14,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuditAction } from '../../../generated/prisma/client';
+import { Audited } from '../../../common/audit/audited.decorator';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
@@ -32,6 +34,12 @@ export class EncounterController {
 
   @Get()
   @Auth([{ action: 'read', subject: 'Encounter' }])
+  @Audited({
+    resource: 'encounter',
+    action: AuditAction.READ,
+    idParam: null,
+    patientIdQuery: 'patientId',
+  })
   @ApiEndpoint({
     summary: 'List clinical encounters',
     responseDescription: 'A permission-scoped, filtered, paginated encounter list.',
@@ -55,6 +63,7 @@ export class EncounterController {
 
   @Get(':id')
   @Auth([{ action: 'read', subject: 'Encounter' }])
+  @Audited({ resource: 'encounter', action: AuditAction.READ })
   @ApiEndpoint({
     summary: 'Get a clinical encounter',
     responseDescription:
@@ -77,6 +86,7 @@ export class EncounterController {
   @Post()
   @HttpCode(201)
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({ resource: 'encounter', action: AuditAction.CREATE })
   @ApiEndpoint({
     summary: 'Open a clinical encounter',
     responseDescription: 'The encounter was opened for a CHECKED_IN registration.',
@@ -100,6 +110,7 @@ export class EncounterController {
 
   @Patch(':id')
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({ resource: 'encounter', action: AuditAction.UPDATE })
   @ApiEndpoint({
     summary: 'Write the SOAP note',
     responseDescription: 'The narrative record was updated. Only IN_PROGRESS encounters accept it.',
@@ -128,6 +139,7 @@ export class EncounterController {
   @Post(':id/close')
   @HttpCode(200)
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({ resource: 'encounter', action: AuditAction.UPDATE })
   @ApiEndpoint({
     summary: 'Close a clinical encounter',
     responseDescription:
@@ -158,6 +170,7 @@ export class EncounterController {
   @Post(':id/cancel')
   @HttpCode(200)
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({ resource: 'encounter', action: AuditAction.UPDATE })
   @ApiEndpoint({
     summary: 'Cancel a clinical encounter',
     responseDescription:

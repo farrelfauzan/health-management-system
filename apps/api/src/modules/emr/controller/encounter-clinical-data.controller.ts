@@ -14,6 +14,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuditAction } from '../../../generated/prisma/client';
+import { Audited } from '../../../common/audit/audited.decorator';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { BPJS_PCARE_EXAMPLES } from '../../../common/openapi/bpjs-pcare-examples';
@@ -40,6 +42,11 @@ export class EncounterClinicalDataController {
   @Post('vital-signs')
   @HttpCode(201)
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({
+    resource: 'encounter-vital-signs',
+    action: AuditAction.CREATE,
+    idParam: 'encounterId',
+  })
   @ApiEndpoint({
     summary: 'Record a vital-signs measurement',
     responseDescription:
@@ -74,6 +81,7 @@ export class EncounterClinicalDataController {
   @Post('diagnoses')
   @HttpCode(201)
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({ resource: 'encounter-diagnosis', action: AuditAction.CREATE, idParam: 'encounterId' })
   @ApiEndpoint({
     summary: 'Code a diagnosis',
     responseDescription:
@@ -107,6 +115,7 @@ export class EncounterClinicalDataController {
 
   @Delete('diagnoses/:diagnosisId')
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({ resource: 'encounter-diagnosis', action: AuditAction.DELETE, idParam: 'diagnosisId' })
   @ApiEndpoint({
     summary: 'Retract a diagnosis',
     responseDescription:
@@ -130,6 +139,7 @@ export class EncounterClinicalDataController {
   @Post('procedures')
   @HttpCode(201)
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({ resource: 'encounter-procedure', action: AuditAction.CREATE, idParam: 'encounterId' })
   @ApiEndpoint({
     summary: 'Code a procedure',
     responseDescription:
@@ -163,6 +173,7 @@ export class EncounterClinicalDataController {
 
   @Delete('procedures/:procedureId')
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({ resource: 'encounter-procedure', action: AuditAction.DELETE, idParam: 'procedureId' })
   @ApiEndpoint({
     summary: 'Retract a procedure',
     responseDescription: 'The procedure is soft-deleted and stays auditable.',
@@ -184,6 +195,11 @@ export class EncounterClinicalDataController {
 
   @Put('bpjs-referral')
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({
+    resource: 'encounter-bpjs-referral',
+    action: AuditAction.UPDATE,
+    idParam: 'encounterId',
+  })
   @ApiEndpoint({
     summary: 'Record or replace the encounter’s BPJS rujukan',
     responseDescription:
@@ -216,6 +232,11 @@ export class EncounterClinicalDataController {
 
   @Get('bpjs-referral')
   @Auth([{ action: 'read', subject: 'Encounter' }])
+  @Audited({
+    resource: 'encounter-bpjs-referral',
+    action: AuditAction.READ,
+    idParam: 'encounterId',
+  })
   @ApiEndpoint({
     summary: 'Read the encounter’s recorded BPJS rujukan',
     responseDescription: 'The referral recorded on this encounter, if any.',
@@ -234,6 +255,11 @@ export class EncounterClinicalDataController {
 
   @Delete('bpjs-referral')
   @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({
+    resource: 'encounter-bpjs-referral',
+    action: AuditAction.DELETE,
+    idParam: 'encounterId',
+  })
   @ApiEndpoint({
     summary: 'Retract the encounter’s BPJS rujukan',
     responseDescription:

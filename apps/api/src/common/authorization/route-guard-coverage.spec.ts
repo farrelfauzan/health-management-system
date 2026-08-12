@@ -3,6 +3,8 @@ import { MetadataScanner, ModulesContainer, Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppModule } from '../../app.module';
+import { AuditedRouteOptions } from '../audit/audit.types';
+import { AUDITED_ROUTE_KEY } from '../audit/audited.decorator';
 import { PERMISSION_CHECKER_KEY } from './check-permissions.decorator';
 import { PermissionRule } from './permission-rule.type';
 import { PUBLIC_ROUTE_KEY } from './public-route.decorator';
@@ -50,7 +52,39 @@ type RouteGuardInfo = {
   readonly httpRoute: string;
   readonly isPublic: boolean;
   readonly permissionRules: readonly PermissionRule[] | undefined;
+  readonly auditedOptions: AuditedRouteOptions | undefined;
 };
+
+/**
+ * SJ-4 — the controllers whose routes touch patient-identifiable data. Every
+ * route on these classes must carry `@Audited()`, with the named exceptions
+ * below. The list is a controller list rather than a route list on purpose: a
+ * new route added to `PatientManagementController` is patient data by default
+ * and has to be argued out, not argued in.
+ */
+const AUDITED_CONTROLLERS: readonly string[] = [
+  'AppointmentManagementController',
+  'AuditController',
+  'ChatController',
+  'DispenseController',
+  'EncounterClinicalDataController',
+  'EncounterController',
+  'PatientManagementController',
+  'PrescriptionController',
+  'RegistrationFlowController',
+];
+
+/**
+ * Routes on an audited controller that deliberately write no audit row,
+ * because they read no patient-identifiable data.
+ */
+const UNAUDITED_ROUTE_ALLOWLIST: readonly string[] = [
+  // The clinic's current privacy-notice text. A published document, identical
+  // for every caller, and naming nobody.
+  'PatientManagementController.getCurrentPrivacyNotice',
+  // Whether a chatbot provider is configured at all. Answers yes or no.
+  'ChatController.getAvailability',
+];
 
 describe('Route guard coverage (deny by default)', () => {
   let testingModule: TestingModule;
@@ -81,6 +115,34 @@ describe('Route guard coverage (deny by default)', () => {
       .filter((route) => route.isPublic && hasPermissionRules(route))
       .map((route) => `${route.route} (${route.httpRoute})`);
     expect(contradictoryRoutes).toEqual([]);
+  });
+
+  it('audits every route on a patient-data controller', () => {
+    const unauditedRoutes = discoveredRoutes
+      .filter((route) => AUDITED_CONTROLLERS.includes(route.route.split('.')[0] ?? ''))
+      .filter((route) => route.auditedOptions === undefined)
+      .map((route) => route.route)
+      .filter((route) => !UNAUDITED_ROUTE_ALLOWLIST.includes(route))
+      .sort();
+    expect(unauditedRoutes).toEqual([]);
+  });
+
+  it('declares a resource and action on every audited route', () => {
+    const malformedRoutes = discoveredRoutes
+      .filter((route) => route.auditedOptions !== undefined)
+      .filter(
+        (route) =>
+          !route.auditedOptions?.resource?.trim() || !route.auditedOptions?.action?.trim(),
+      )
+      .map((route) => route.route);
+    expect(malformedRoutes).toEqual([]);
+  });
+
+  it('never audits a public route, which has no actor to attribute', () => {
+    const attributionlessRoutes = discoveredRoutes
+      .filter((route) => route.isPublic && route.auditedOptions !== undefined)
+      .map((route) => route.route);
+    expect(attributionlessRoutes).toEqual([]);
   });
 
   it('keeps public routes limited to the reviewed allowlist', () => {
@@ -142,10 +204,15 @@ function buildRouteInfo(input: {
     PERMISSION_CHECKER_KEY,
     [handler, controllerClass],
   );
+  const auditedOptions = reflector.getAllAndOverride<AuditedRouteOptions | undefined>(
+    AUDITED_ROUTE_KEY,
+    [handler, controllerClass],
+  );
   return {
     route: `${controllerClass.name}.${methodName}`,
     httpRoute: `${RequestMethod[requestMethod]} ${routePath}`,
     isPublic,
     permissionRules,
+    auditedOptions,
   };
 }

@@ -63,7 +63,7 @@ describe('BPJS Antrean config integration', () => {
     findUserById: jest.fn(),
     findUserByEmail: jest.fn(),
   };
-  const auditServiceMock = { record: jest.fn() };
+  const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   const bpjsAntreanConfigDelegate = {
     findFirst: jest.fn(() => Promise.resolve(configRow === null ? null : { ...configRow })),
     create: jest.fn(({ data }: { data: Record<string, unknown> }) => {

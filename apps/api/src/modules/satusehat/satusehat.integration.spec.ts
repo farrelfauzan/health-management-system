@@ -35,6 +35,7 @@ describe('SATUSEHAT link integration', () => {
 
   const auditServiceMock = {
     record: jest.fn(),
+    recordOrThrow: jest.fn(),
   };
 
   const prismaServiceMock = {

@@ -45,7 +45,9 @@ export class PermissionsGuard implements CanActivate {
       );
     }
 
-    const request = context.switchToHttp().getRequest<{ user?: CurrentUser }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<{ user?: CurrentUser; auditActorRoles?: string[] }>();
     const currentUser = request.user;
 
     if (!currentUser?.sub) {
@@ -57,6 +59,13 @@ export class PermissionsGuard implements CanActivate {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
+
+    // Hand the roles this guard resolved to `AuditInterceptor` (SJ-4). The
+    // audit row must name the role the actor acted *as*, and the JWT claim is
+    // the wrong source: it is a snapshot from login that a since-revoked role
+    // would still list. These are the grants that actually admitted the
+    // request, already loaded, so recording them costs no extra query.
+    request.auditActorRoles = user.roles.map((userRole) => userRole.role.code);
 
     const permissions = user.roles.flatMap((userRole) =>
       userRole.role.permissions.map((rolePermission) => ({

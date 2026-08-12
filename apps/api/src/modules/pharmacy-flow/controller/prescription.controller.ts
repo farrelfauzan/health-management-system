@@ -3,6 +3,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuditAction } from '../../../generated/prisma/client';
+import { Audited } from '../../../common/audit/audited.decorator';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
@@ -20,6 +22,12 @@ export class PrescriptionController {
 
   @Get()
   @Auth([{ action: 'read', subject: 'Prescription' }])
+  @Audited({
+    resource: 'prescription',
+    action: AuditAction.READ,
+    idParam: null,
+    patientIdQuery: 'patientId',
+  })
   @ApiEndpoint({
     summary: 'List prescriptions',
     responseDescription: 'A permission-scoped, filtered, paginated prescription list.',
@@ -47,6 +55,7 @@ export class PrescriptionController {
   @Post()
   @HttpCode(201)
   @Auth([{ action: 'write', subject: 'Prescription' }])
+  @Audited({ resource: 'prescription', action: AuditAction.CREATE })
   @ApiEndpoint({
     summary: 'Create a prescription',
     responseDescription: 'The prescription and its medication items were created.',

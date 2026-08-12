@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 
+import { AuditContextService } from '../../../common/audit/audit-context.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { Icd9cmCodeService } from '../../terminology/service/icd9cm-code.service';
 import { Icd10CodeService } from '../../terminology/service/icd10-code.service';
@@ -51,7 +52,7 @@ describe('EncounterClinicalDataService', () => {
 
   const service = new EncounterClinicalDataService(
     encounterRepositoryMock,
-    new EncounterAccessService(encounterRepositoryMock, authRepositoryMock),
+    new EncounterAccessService(encounterRepositoryMock, authRepositoryMock, new AuditContextService()),
     new EncounterMapper(),
     icd10CodeServiceMock,
     icd9cmCodeServiceMock,

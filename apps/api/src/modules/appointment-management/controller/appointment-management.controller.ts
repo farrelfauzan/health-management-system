@@ -16,6 +16,8 @@ import { ZodValidationPipe } from 'nestjs-zod';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuditAction } from '../../../generated/prisma/client';
+import { Audited } from '../../../common/audit/audited.decorator';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
@@ -37,6 +39,12 @@ export class AppointmentManagementController {
 
   @Get()
   @Auth([{ action: 'read', subject: 'Appointment' }])
+  @Audited({
+    resource: 'appointment',
+    action: AuditAction.READ,
+    idParam: null,
+    patientIdQuery: 'patientId',
+  })
   @ApiEndpoint({
     summary: 'List appointments',
     responseDescription: 'A permission-scoped, filtered, paginated appointment list.',
@@ -63,6 +71,7 @@ export class AppointmentManagementController {
 
   @Get(':id')
   @Auth([{ action: 'read', subject: 'Appointment' }])
+  @Audited({ resource: 'appointment', action: AuditAction.READ })
   @ApiEndpoint({
     summary: 'Get an appointment',
     responseDescription: 'The appointment visible to the authenticated actor.',
@@ -90,6 +99,7 @@ export class AppointmentManagementController {
   @Post()
   @HttpCode(201)
   @Auth([{ action: 'create', subject: 'Appointment' }])
+  @Audited({ resource: 'appointment', action: AuditAction.CREATE })
   @ApiEndpoint({
     summary: 'Create an appointment',
     responseDescription: 'The appointment was created after schedule validation.',
@@ -124,6 +134,7 @@ export class AppointmentManagementController {
 
   @Patch(':id')
   @Auth([{ action: 'update', subject: 'Appointment' }])
+  @Audited({ resource: 'appointment', action: AuditAction.UPDATE })
   @ApiEndpoint({
     summary: 'Update an appointment',
     responseDescription: 'The appointment was updated after transition and schedule validation.',
@@ -159,6 +170,7 @@ export class AppointmentManagementController {
   @Post(':id/approve')
   @HttpCode(200)
   @Auth([{ action: 'approve', subject: 'Appointment' }])
+  @Audited({ resource: 'appointment', action: AuditAction.UPDATE })
   @ApiEndpoint({
     summary: 'Approve a special appointment request',
     responseDescription: 'The pending special request was approved and scheduled.',
@@ -194,6 +206,7 @@ export class AppointmentManagementController {
   @Post(':id/reject')
   @HttpCode(200)
   @Auth([{ action: 'approve', subject: 'Appointment' }])
+  @Audited({ resource: 'appointment', action: AuditAction.UPDATE })
   @ApiEndpoint({
     summary: 'Reject a special appointment request',
     responseDescription: 'The pending special request was rejected.',
@@ -233,6 +246,7 @@ export class AppointmentManagementController {
   @Post(':id/cancel')
   @HttpCode(200)
   @Auth([{ action: 'cancel', subject: 'Appointment' }])
+  @Audited({ resource: 'appointment', action: AuditAction.UPDATE })
   @ApiEndpoint({
     summary: 'Cancel an appointment',
     responseDescription: 'The appointment was transitioned to cancelled.',

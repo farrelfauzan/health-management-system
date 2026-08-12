@@ -12,6 +12,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
+import { AuditContextService } from '../../../common/audit/audit-context.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { EncounterRepository } from '../repository/encounter.repository';
@@ -31,6 +32,7 @@ export class EncounterAccessService {
   constructor(
     private readonly encounterRepository: EncounterRepository,
     private readonly authRepository: AuthRepository,
+    private readonly auditContextService: AuditContextService,
   ) {}
 
   async resolveScopeOrThrow(
@@ -58,6 +60,11 @@ export class EncounterAccessService {
     currentUser: CurrentUser;
   }): Promise<void> {
     const { encounter, scope, currentUser } = params;
+    // Every encounter read and write passes through this gate, and the
+    // encounter is the only thing in the exchange that names the patient — a
+    // diagnosis route returns a diagnosis. Stamping it here is what puts
+    // clinical sub-resources into the patient's access history (SJ-4).
+    this.auditContextService.setPatientId(encounter.patientId);
 
     if (scope.hasAny) {
       return;
@@ -88,6 +95,7 @@ export class EncounterAccessService {
     currentUser: CurrentUser;
   }): void {
     const { encounter, scope, currentUser } = params;
+    this.auditContextService.setPatientId(encounter.patientId);
 
     if (scope.hasAny) {
       return;

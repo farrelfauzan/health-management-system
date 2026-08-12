@@ -34,6 +34,19 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ZodValidationPipe());
 
+  // How many proxy hops in front of the API may be trusted to have appended
+  // X-Forwarded-For, which is what decides `request.ip` and therefore the
+  // address written on every audit row (SJ-4). Zero — the default — ignores
+  // the header outright and uses the socket peer, because a header the caller
+  // controls must not be recorded as fact. Raise it to the real hop count once
+  // SJ-1 puts a TLS terminator in front, and no further: trusting one hop too
+  // many hands the client the first entry back.
+  const trustedProxyHops = Number(process.env.TRUSTED_PROXY_HOPS ?? 0);
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .set('trust proxy', Number.isFinite(trustedProxyHops) ? trustedProxyHops : 0);
+
   const swaggerConfig = new DocumentBuilder()
     .setTitle('HMS API')
     .setDescription('Health Management System API')
@@ -46,10 +59,16 @@ async function bootstrap(): Promise<void> {
   const httpAdapter = app.getHttpAdapter();
   const openApiYaml = stringify(swaggerDocument);
 
-  httpAdapter.get('/api/openapi.yaml', (_request: unknown, response: { type: (v: string) => unknown; send: (v: string) => unknown }) => {
-    response.type('application/yaml');
-    response.send(openApiYaml);
-  });
+  httpAdapter.get(
+    '/api/openapi.yaml',
+    (
+      _request: unknown,
+      response: { type: (v: string) => unknown; send: (v: string) => unknown },
+    ) => {
+      response.type('application/yaml');
+      response.send(openApiYaml);
+    },
+  );
 
   const configService = app.get(ConfigService);
 

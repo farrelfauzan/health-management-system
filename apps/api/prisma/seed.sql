@@ -168,7 +168,13 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- update edits a row, and this one ends it. It is `ANY` only: the merge is
     -- performed by whoever is at the counter when the person arrives, and that
     -- is never the record's owner.
-    ('patient.merge:any', 'Patient', 'merge', 'ANY', 'Merge a chat-created draft patient into an existing record')
+    ('patient.merge:any', 'Patient', 'merge', 'ANY', 'Merge a chat-created draft patient into an existing record'),
+    -- SJ-4. Reading the access history is the most privileged read in the
+    -- system: one query answers who saw which patient, and the answer names
+    -- every patient the clinic holds. It exists only in the ANY form because
+    -- there is no owned slice of it worth handing out — a patient's own access
+    -- history is a separate product decision, not a narrowing of this grant.
+    ('audit.read:any', 'AuditLog', 'read', 'ANY', 'Query the patient-data access history')
 )
 INSERT INTO "permissions" (
   "id",
@@ -334,6 +340,11 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- action is irreversible from the desk's side, and the record it retires
     -- is one the clinic keeps for 25 years.
     ('ADMIN', 'patient.merge:any'),
+    -- SJ-4's access history. Administrative, not clinical: a doctor answers
+    -- "what is wrong with this patient", an administrator answers "who has
+    -- been reading about them", and only the second question needs a view
+    -- across every record in the clinic. SUPER_ADMIN holds it implicitly.
+    ('ADMIN', 'audit.read:any'),
     ('DOCTOR', 'auth.logout:own'),
     ('DOCTOR', 'patient.read:own'),
     ('DOCTOR', 'doctor.read:any'),

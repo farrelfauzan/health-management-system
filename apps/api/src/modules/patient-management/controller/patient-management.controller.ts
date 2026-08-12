@@ -14,6 +14,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuditAction } from '../../../generated/prisma/client';
+import { Audited } from '../../../common/audit/audited.decorator';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
@@ -57,6 +59,7 @@ export class PatientManagementController {
 
   @Get()
   @Auth([{ action: 'read', subject: 'Patient' }])
+  @Audited({ resource: 'patient', action: AuditAction.READ, idParam: null })
   @ApiEndpoint({
     summary: 'List patients',
     responseDescription: 'A permission-scoped, paginated list of patients.',
@@ -80,6 +83,7 @@ export class PatientManagementController {
 
   @Get(':id')
   @Auth([{ action: 'read', subject: 'Patient' }])
+  @Audited({ resource: 'patient', action: AuditAction.READ })
   @ApiEndpoint({
     summary: 'Get a patient',
     responseDescription: 'The patient and active doctor relationships.',
@@ -104,6 +108,7 @@ export class PatientManagementController {
   @Post()
   @HttpCode(201)
   @Auth([{ action: 'create', subject: 'Patient' }])
+  @Audited({ resource: 'patient', action: AuditAction.CREATE })
   @ApiEndpoint({
     summary: 'Create a patient',
     responseDescription: 'The patient and optional initial doctor assignments were created.',
@@ -133,6 +138,7 @@ export class PatientManagementController {
   @Post('import')
   @HttpCode(201)
   @Auth([{ action: 'import-identifier', subject: 'Patient' }])
+  @Audited({ resource: 'patient', action: AuditAction.CREATE })
   @ApiEndpoint({
     summary: 'Import a patient with an existing medical record number',
     responseDescription:
@@ -162,6 +168,7 @@ export class PatientManagementController {
 
   @Get(':id/identifiers')
   @Auth([{ action: 'read-identifier', subject: 'Patient' }])
+  @Audited({ resource: 'patient-identifier', action: AuditAction.READ, patientIdParam: 'id' })
   @ApiEndpoint({
     summary: 'Reveal a patient national and payer identifiers',
     responseDescription:
@@ -186,6 +193,7 @@ export class PatientManagementController {
 
   @Get(':id/privacy-notices')
   @Auth([{ action: 'read', subject: 'Patient' }])
+  @Audited({ resource: 'patient-privacy-notice', action: AuditAction.READ, patientIdParam: 'id' })
   @ApiEndpoint({
     summary: 'Get patient privacy notice evidence history',
     responseDescription: 'Append-only evidence history and current-version capture status.',
@@ -217,6 +225,7 @@ export class PatientManagementController {
 
   @Patch(':id')
   @Auth([{ action: 'update', subject: 'Patient' }])
+  @Audited({ resource: 'patient', action: AuditAction.UPDATE })
   @ApiEndpoint({
     summary: 'Update a patient',
     responseDescription: 'The patient was updated.',

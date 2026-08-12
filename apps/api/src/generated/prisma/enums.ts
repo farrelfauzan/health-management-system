@@ -26,6 +26,11 @@ export type DoctorPatientActivityAction = (typeof DoctorPatientActivityAction)[k
 
 
 export const AuditAction = {
+  READ: 'READ',
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  EXPORT: 'EXPORT',
   USER_LOGIN: 'USER_LOGIN',
   USER_LOGIN_FAILED: 'USER_LOGIN_FAILED',
   TOKEN_REFRESHED: 'TOKEN_REFRESHED',

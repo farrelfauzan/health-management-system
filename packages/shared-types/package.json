@@ -63,7 +63,10 @@
     "#document-management/types": "./src/document-management/types.ts",
     "#customer-service/schemas": "./src/customer-service/schemas.ts",
     "#customer-service/contracts": "./src/customer-service/contracts.ts",
-    "#customer-service/types": "./src/customer-service/types.ts"
+    "#customer-service/types": "./src/customer-service/types.ts",
+    "#audit/schemas": "./src/audit/schemas.ts",
+    "#audit/contracts": "./src/audit/contracts.ts",
+    "#audit/types": "./src/audit/types.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

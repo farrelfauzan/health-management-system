@@ -74,7 +74,7 @@ describe('Chat flow integration', () => {
   let messageSequence = 0;
 
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
-  const auditServiceMock = { record: jest.fn() };
+  const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   /**
    * The pharmacy tools' backing service. Stubbed at the service boundary
    * rather than below it because what these cases prove is the chain above
@@ -132,6 +132,11 @@ describe('Chat flow integration', () => {
     [key: string]: unknown;
   };
   const prismaServiceMock: PrismaMock = {
+    // SJ-4 writes one audit row per patient-data route, and the write is
+    // awaited: an access that cannot be recorded fails the request rather than
+    // returning the data. This stub replaces Prisma wholesale, so the delegate
+    // has to exist here or every audited route in this suite answers 500.
+    auditLog: { create: jest.fn() },
     $connect: jest.fn(),
     $disconnect: jest.fn(),
     /**
