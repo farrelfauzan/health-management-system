@@ -176,7 +176,8 @@ describe('RegistrationFlow integration', () => {
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
     expect(registrationRepositoryMock.listRegistrations).toHaveBeenCalledWith(
-      expect.objectContaining({ ownerUserId: undefined }),
+      expect.any(Object),
+      { userId: 'admin-user', scope: 'ANY' },
     );
   });
 
@@ -190,7 +191,8 @@ describe('RegistrationFlow integration', () => {
 
     expect(response.status).toBe(200);
     expect(registrationRepositoryMock.listRegistrations).toHaveBeenCalledWith(
-      expect.objectContaining({ ownerUserId: 'own-user' }),
+      expect.any(Object),
+      { userId: 'own-user', scope: 'OWN' },
     );
   });
 
@@ -210,6 +212,7 @@ describe('RegistrationFlow integration', () => {
         registeredFrom: new Date('2026-07-01T00:00:00.000Z'),
         registeredTo: new Date('2026-07-18T00:00:00.000Z'),
       }),
+      expect.any(Object),
     );
   });
 
@@ -225,6 +228,7 @@ describe('RegistrationFlow integration', () => {
     expect(response.status).toBe(200);
     expect(registrationRepositoryMock.listRegistrations).toHaveBeenCalledWith(
       expect.objectContaining({ doctorId }),
+      expect.any(Object),
     );
   });
 

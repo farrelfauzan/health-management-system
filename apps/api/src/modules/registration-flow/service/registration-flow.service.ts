@@ -8,6 +8,7 @@ import {
   QueueBoardResponse,
   RegistrationListItem,
   RegistrationPoli,
+  RegistrationScopeActor,
   RegistrationStatusValue,
   RegistrationWithRelationsRecord,
   UpdateRegistrationRecordPayload,
@@ -63,19 +64,23 @@ export class RegistrationFlowService {
       throw new ForbiddenException('You are not allowed to read registrations');
     }
 
-    const result = await this.registrationFlowRepository.listRegistrations({
-      page: query.page,
-      limit: query.limit,
-      search: query.search,
-      status: query.status,
-      patientId: query.patientId,
-      doctorId: query.doctorId,
-      registeredFrom: query.registeredFrom
-        ? parseRegistrationDateOnly(query.registeredFrom)
-        : undefined,
-      registeredTo: query.registeredTo ? parseRegistrationDateOnly(query.registeredTo) : undefined,
-      ownerUserId: readScope.hasAny ? undefined : currentUser.sub,
-    });
+    const result = await this.registrationFlowRepository.listRegistrations(
+      {
+        page: query.page,
+        limit: query.limit,
+        search: query.search,
+        status: query.status,
+        patientId: query.patientId,
+        doctorId: query.doctorId,
+        registeredFrom: query.registeredFrom
+          ? parseRegistrationDateOnly(query.registeredFrom)
+          : undefined,
+        registeredTo: query.registeredTo
+          ? parseRegistrationDateOnly(query.registeredTo)
+          : undefined,
+      },
+      this.buildScopeActor(currentUser, readScope.hasAny),
+    );
 
     return {
       items: result.items.map((registration) => this.toRegistrationListItem(registration)),
@@ -95,14 +100,16 @@ export class RegistrationFlowService {
       throw new ForbiddenException('You are not allowed to read registrations');
     }
 
-    const registration = await this.registrationFlowRepository.findRegistrationDetailById(id);
+    // Patient-side scope rides in the repository where-clause (SJ-2): a row
+    // outside the actor's reach comes back null, so not-found and not-yours
+    // are the same 404 and a UUID probe learns nothing.
+    const registration = await this.registrationFlowRepository.findRegistrationDetailById(
+      id,
+      this.buildScopeActor(currentUser, readScope.hasAny),
+    );
 
     if (!registration) {
       throw new NotFoundException('Registration not found');
-    }
-
-    if (!readScope.hasAny && !this.isRegistrationOwner(registration, currentUser)) {
-      throw new ForbiddenException('You are not allowed to read this registration');
     }
 
     return this.toRegistrationListItem(registration);
@@ -282,14 +289,13 @@ export class RegistrationFlowService {
       throw new ForbiddenException('You are not allowed to update registrations');
     }
 
-    const registration = await this.registrationFlowRepository.findRegistrationDetailById(id);
+    const registration = await this.registrationFlowRepository.findRegistrationDetailById(
+      id,
+      this.buildScopeActor(currentUser, updateScope.hasAny),
+    );
 
     if (!registration) {
       throw new NotFoundException('Registration not found');
-    }
-
-    if (!updateScope.hasAny && !this.isRegistrationOwner(registration, currentUser)) {
-      throw new ForbiddenException('You are not allowed to update this registration');
     }
 
     const isPatientLimited = !updateScope.hasAny;
@@ -400,11 +406,20 @@ export class RegistrationFlowService {
     }
   }
 
-  private isRegistrationOwner(
-    registration: RegistrationWithRelationsRecord,
+  /**
+   * Collapses a resolved permission scope into the actor context repositories
+   * require. Callers gate the action first (no scope at all → 403); rows the
+   * scope cannot reach are then the repository's business, never a post-fetch
+   * check here (SJ-2).
+   */
+  private buildScopeActor(
     currentUser: CurrentUser,
-  ): boolean {
-    return registration.patient.ownerUserId === currentUser.sub;
+    hasAnyScope: boolean,
+  ): RegistrationScopeActor {
+    return {
+      userId: currentUser.sub,
+      scope: hasAnyScope ? 'ANY' : 'OWN',
+    };
   }
 
   private async getActorOrThrow(currentUser: CurrentUser): Promise<Actor> {

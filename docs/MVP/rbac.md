@@ -155,6 +155,7 @@ Appointments and sessions follow the same discipline with their own fragments
 | AppointmentSession (incl. queue, calendars, per-doctor session lists) | doctor-side only: the session doctor's owning user | a practice session belongs to its doctor; a patient-side relationship never reaches one |
 | ChatSession / ChatMessage | the session's `ownerUserId` directly (`findSessionForOwner`, owner-mandatory lists, owner-scoped soft delete); messages are reachable only through the scoped session | a conversation belongs to the user who opened it; the admin support list is a separate `read:ANY`-gated route |
 | Prescription | participant-side: the owning user of the **patient** on the row or of the prescribing **doctor** (`build-prescription-scope-where.ts`) | same two-party rule as appointments; dispensing, inventory, and medications are `ANY`-only actions with no row scope |
+| Registration | patient-side only: the owning user of the patient being registered (`build-registration-scope-where.ts`) | a registration belongs to the patient; the queue board and staff worklists are separate `ANY`-gated routes |
 
 Direct-by-ID probes answer **404, not 403**, when the row exists but is out of
 scope — not-found and not-yours must be indistinguishable so a UUID scan
