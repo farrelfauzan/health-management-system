@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -14,7 +15,8 @@ import {
 } from '@hms/ui';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
-import { executeLogout } from '#lib/auth/logout';
+import { LockWorkstationItem } from '#components/client/shell/lock-workstation-item';
+import { endSession } from '#lib/auth/end-session';
 import type { ShellProfile } from '#lib/shell/shell-profile';
 
 type ProfileMenuProps = {
@@ -23,6 +25,7 @@ type ProfileMenuProps = {
 
 export function ProfileMenu({ profile }: ProfileMenuProps) {
   const t = useTranslations('authShell.shell.profile');
+  const queryClient = useQueryClient();
   const displayName = profile.isFallbackName ? t('fallbackName') : profile.displayName;
   const roleLabel = profile.roleKey ? t(`roles.${profile.roleKey}`) : profile.roleLabel;
   return (
@@ -50,7 +53,15 @@ export function ProfileMenu({ profile }: ProfileMenuProps) {
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onSelect={() => void executeLogout()}>
+        {/*
+          Lock sits above logout: handing the workstation to a colleague is the
+          twenty-times-a-day action, signing off for the night is not (SJ-9).
+        */}
+        <LockWorkstationItem />
+        <DropdownMenuItem
+          variant="destructive"
+          onSelect={() => void endSession('LOGOUT', queryClient)}
+        >
           <Icon name="logout" size={16} />
           {t('logout')}
         </DropdownMenuItem>
