@@ -133,7 +133,8 @@
           "pharmacist": "Apoteker",
           "patient": "Pasien",
           "staff": "Staf"
-        }
+        },
+        "lockWorkstation": "Kunci komputer"
       },
       "portal": {
         "name": "Portal Pasien"
@@ -167,6 +168,12 @@
         "integrationsSubtitle": "Konfigurasikan BPJS PCare dan pantau pengiriman data kesehatan eksternal.",
         "administrationSubtitle": "Kelola pengguna sistem, peran, dan izin.",
         "aiProvidersSubtitle": "Atur penyedia AI yang menjawab percakapan chatbot."
+      },
+      "idle": {
+        "title": "Masih di sana?",
+        "description": "Anda akan keluar dalam {seconds} detik untuk melindungi data pasien di komputer ini.",
+        "continue": "Tetap masuk",
+        "endNow": "Serahkan sekarang"
       }
     }
   }
