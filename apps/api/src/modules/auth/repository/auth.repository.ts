@@ -92,10 +92,15 @@ export class AuthRepository {
    * successor's plaintext no longer exists to hand back. Both tabs end up
    * holding valid tokens in the same family, which is the property that
    * mattered.
+   *
+   * SJ-9 adds a fifth outcome ahead of the others, `IDLE_TIMEOUT`, for a
+   * family nobody has touched inside the threshold.
    */
   async consumeRefreshToken(input: {
     tokenHash: string;
     graceWindowMs: number;
+    /** Omitted only where the idle policy does not apply. */
+    idleTimeoutMs?: number;
     nextToken: RefreshTokenRecordPayload;
   }): Promise<ConsumeRefreshTokenResult> {
     return this.prisma.executeTransaction(async (tx): Promise<ConsumeRefreshTokenResult> => {
@@ -108,12 +113,25 @@ export class AuthRepository {
           expiresAt: true,
           consumedAt: true,
           revokedAt: true,
+          lastUsedAt: true,
         },
       });
       if (!existing) {
         return { outcome: 'INVALID' };
       }
       const now = new Date();
+      // SJ-9 — the idle check sits before every other verdict except "this
+      // token was already dead". A session nobody has touched for the
+      // threshold is over, and it should not matter whether the token
+      // presented is live, consumed, or inside the grace window: all three
+      // mean the same thing on an abandoned terminal.
+      if (input.idleTimeoutMs !== undefined && !existing.revokedAt) {
+        const idleForMs = now.getTime() - existing.lastUsedAt.getTime();
+        if (idleForMs > input.idleTimeoutMs) {
+          await revokeFamily(tx, existing.familyId, now);
+          return { outcome: 'IDLE_TIMEOUT', userId: existing.userId, familyId: existing.familyId };
+        }
+      }
       if (existing.revokedAt) {
         // Already dead. Presenting it is either a replay of a token stolen
         // before the family was killed, or a client that missed the memo —
@@ -164,6 +182,45 @@ export class AuthRepository {
       where: { tokenHash },
       select: { familyId: true, userId: true },
     });
+  }
+
+  /**
+   * Marks a session as still in use without rotating it (SJ-9).
+   *
+   * The filters are the whole point. A revoked token cannot be resurrected by
+   * a heartbeat, an expired one cannot be extended, and — the one that matters
+   * most — a session already past the idle threshold cannot be saved by a
+   * heartbeat that arrives late. Without that last condition a tab left open
+   * on a locked screen could keep its own session alive forever, which is
+   * precisely the thing this ticket exists to stop.
+   *
+   * Returns whether anything was bumped, so the caller can tell a live session
+   * from one that is already gone.
+   */
+  async touchRefreshToken(input: {
+    tokenHash: string;
+    idleTimeoutMs: number;
+  }): Promise<{ userId: string; familyId: string } | null> {
+    const now = new Date();
+    const existing = await this.prisma.refreshToken.findUnique({
+      where: { tokenHash: input.tokenHash },
+      select: { id: true, userId: true, familyId: true },
+    });
+    if (!existing) {
+      return null;
+    }
+    const touched = await this.prisma.refreshToken.updateMany({
+      where: {
+        id: existing.id,
+        revokedAt: null,
+        expiresAt: { gt: now },
+        lastUsedAt: { gt: new Date(now.getTime() - input.idleTimeoutMs) },
+      },
+      data: { lastUsedAt: now },
+    });
+    return touched.count === 1
+      ? { userId: existing.userId, familyId: existing.familyId }
+      : null;
   }
 
   async createLoginAttempt(input: {

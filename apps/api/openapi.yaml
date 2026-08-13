@@ -251,6 +251,86 @@ paths:
         - bearer: []
       summary: Revoke every session for the current user
       tags: *a1
+  /api/v1/auth/session/heartbeat:
+    post:
+      operationId: AuthController_recordSessionActivity_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Marks the session as active without rotating it, and returns the
+            thresholds the browser should count down to. Authenticated by the
+            refresh cookie alone, like /auth/refresh. Cannot revive a session
+            that has already timed out — `alive: false` says so rather than
+            failing, because a heartbeat is advisory and the next real request
+            will discover it anyway."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      alive:
+                        type: boolean
+                      idleTimeoutSeconds:
+                        type: integer
+                      warningLeadSeconds:
+                        type: integer
+                    required:
+                      - alive
+                      - idleTimeoutSeconds
+                      - warningLeadSeconds
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    alive: true
+                    idleTimeoutSeconds: 900
+                    warningLeadSeconds: 60
+                  message: Session activity recorded
+      summary: Report that the session is still in use
+      tags: *a1
+  /api/v1/auth/session/lock:
+    post:
+      operationId: AuthController_lockSession_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Revokes the refresh-token family and clears the cookies, exactly
+            as logout does. Separate from /auth/logout only in the audit trail:
+            a deliberate hand-off is recorded as SESSION_LOCK so a clinic can
+            tell whether staff actually lock terminals when they walk away."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                      message:
+                        type: string
+                    required:
+                      - success
+                      - message
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    success: true
+                    message: Logged out
+                  message: Session locked
+      summary: Hand the workstation over
+      tags: *a1
   /api/v1/auth/mfa/enroll:
     post:
       operationId: AuthController_beginMfaEnrolment_v1

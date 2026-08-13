@@ -16,6 +16,7 @@ import { AuthService } from './service/auth.service';
 import { LoginThrottleService } from './service/login-throttle.service';
 import { MfaEnforcementService } from './service/mfa-enforcement.service';
 import { MfaTicketService } from './service/mfa-ticket.service';
+import { SessionPolicyService } from './service/session-policy.service';
 
 /**
  * SJ-6's rotation state machine against real Postgres.
@@ -92,6 +93,7 @@ describe('Refresh token rotation against Postgres', () => {
       new MfaRepository(prisma, new MfaCryptoService(configService)),
       new MfaEnforcementService(configService, new MfaCryptoService(configService)),
       new MfaTicketService(new JwtService(), new JwtSecretsService(configService)),
+        new SessionPolicyService(configService),
     );
 
     const { hash } = await import('bcryptjs');

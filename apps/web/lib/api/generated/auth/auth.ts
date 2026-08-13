@@ -24,9 +24,11 @@ import type {
   AuthControllerAnswerMfaChallengeV1200,
   AuthControllerBeginMfaEnrolmentV1200,
   AuthControllerGetMfaStatusV1200,
+  AuthControllerLockSessionV1200,
   AuthControllerLoginV1200,
   AuthControllerLogoutAllV1200,
   AuthControllerLogoutV1200,
+  AuthControllerRecordSessionActivityV1200,
   AuthControllerRefreshV1200,
   AuthControllerRegenerateRecoveryCodesV1200,
   AuthControllerResetMfaV1200,
@@ -417,6 +419,190 @@ export function useAuthControllerLogoutAllV1<TData = Awaited<ReturnType<typeof a
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAuthControllerLogoutAllV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Report that the session is still in use
+ */
+export const authControllerRecordSessionActivityV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AuthControllerRecordSessionActivityV1200>(
+      {url: `/api/v1/auth/session/heartbeat`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerRecordSessionActivityV1QueryKey = () => {
+    return [
+    'POST', `/api/v1/auth/session/heartbeat`
+    ] as const;
+    }
+
+
+export const getAuthControllerRecordSessionActivityV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerRecordSessionActivityV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>> = ({ signal }) => authControllerRecordSessionActivityV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerRecordSessionActivityV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>>
+export type AuthControllerRecordSessionActivityV1QueryError = unknown
+
+
+export function useAuthControllerRecordSessionActivityV1<TData = Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerRecordSessionActivityV1<TData = Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerRecordSessionActivityV1<TData = Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Report that the session is still in use
+ */
+
+export function useAuthControllerRecordSessionActivityV1<TData = Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRecordSessionActivityV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerRecordSessionActivityV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Hand the workstation over
+ */
+export const authControllerLockSessionV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AuthControllerLockSessionV1200>(
+      {url: `/api/v1/auth/session/lock`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerLockSessionV1QueryKey = () => {
+    return [
+    'POST', `/api/v1/auth/session/lock`
+    ] as const;
+    }
+
+
+export const getAuthControllerLockSessionV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerLockSessionV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerLockSessionV1>>> = ({ signal }) => authControllerLockSessionV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerLockSessionV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerLockSessionV1>>>
+export type AuthControllerLockSessionV1QueryError = unknown
+
+
+export function useAuthControllerLockSessionV1<TData = Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerLockSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerLockSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerLockSessionV1<TData = Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerLockSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerLockSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerLockSessionV1<TData = Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Hand the workstation over
+ */
+
+export function useAuthControllerLockSessionV1<TData = Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerLockSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerLockSessionV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

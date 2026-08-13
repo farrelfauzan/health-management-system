@@ -369,6 +369,14 @@ export const PHASE_THREE_EXAMPLES = {
       success: true,
       message: 'Second factor reset',
     },
+    // SJ-9: the browser reads its countdown from here rather than hard-coding
+    // it, so a clinic that changes the threshold does not end up with a
+    // warning modal that fires at the wrong moment.
+    sessionHeartbeat: {
+      alive: true,
+      idleTimeoutSeconds: 900,
+      warningLeadSeconds: 60,
+    },
   },
   rbac: {
     roleItem: {

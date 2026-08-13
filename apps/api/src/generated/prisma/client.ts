@@ -107,10 +107,10 @@ export type MfaCredential = Prisma.MfaCredentialModel
  * A single-use fallback for a lost authenticator (SJ-8).
  * 
  * Only the SHA-256 is stored, so the plaintext exists exactly once — in the
- * response that issued it. This is the one place where plain SHA-256 rather
- * than Argon2 is right: the code is 80 bits of CSPRNG output, so there is no
- * dictionary to slow an attacker down, and the throttle on the challenge
- * endpoint already caps guessing at a handful of tries.
+ * response that issued it. Plain SHA-256 rather than Argon2 is right here:
+ * the code is 75 bits of CSPRNG output, so there is no dictionary to slow an
+ * attacker down and nothing an offline search can reach. The hash is salted
+ * with the owner's id, so one precomputation cannot be reused across users.
  * 
  * Consumed codes are kept, not deleted. `usedAt` is the audit trail — "this
  * recovery code was spent at 03:14 from that address" is exactly the question

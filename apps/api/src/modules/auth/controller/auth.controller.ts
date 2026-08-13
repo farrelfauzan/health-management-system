@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { LoginResult, MfaEnrolmentCompleted } from '@hms/shared-types';
+import { LoginResult, MfaEnrolmentCompleted, SessionHeartbeat } from '@hms/shared-types';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
@@ -196,6 +196,66 @@ export class AuthController {
     return {
       data: result,
       message: 'All sessions revoked',
+    };
+  }
+
+  @Post('session/heartbeat')
+  @PublicRoute(true)
+  @HttpCode(200)
+  @ApiEndpoint({
+    summary: 'Report that the session is still in use',
+    responseDescription:
+      'Marks the session as active without rotating it, and returns the thresholds the browser should count down to. Authenticated by the refresh cookie alone, like /auth/refresh. Cannot revive a session that has already timed out — `alive: false` says so rather than failing, because a heartbeat is advisory and the next real request will discover it anyway.',
+    responseExample: {
+      data: PHASE_THREE_EXAMPLES.auth.sessionHeartbeat,
+      message: 'Session activity recorded',
+    },
+    isPublic: true,
+  })
+  async recordSessionActivity(@Req() request: RefreshTokenCookieCarrier) {
+    const refreshToken = readRefreshTokenCookie(request);
+    const alive = refreshToken
+      ? await this.authService.recordSessionActivity(refreshToken)
+      : false;
+
+    return {
+      data: {
+        alive,
+        idleTimeoutSeconds: this.authService.idleTimeoutSeconds,
+        warningLeadSeconds: this.authService.warningLeadSeconds,
+      } satisfies SessionHeartbeat,
+      message: 'Session activity recorded',
+    };
+  }
+
+  @Post('session/lock')
+  @PublicRoute(true)
+  @HttpCode(200)
+  @ApiEndpoint({
+    summary: 'Hand the workstation over',
+    responseDescription:
+      'Revokes the refresh-token family and clears the cookies, exactly as logout does. Separate from /auth/logout only in the audit trail: a deliberate hand-off is recorded as SESSION_LOCK so a clinic can tell whether staff actually lock terminals when they walk away.',
+    responseExample: {
+      data: PHASE_THREE_EXAMPLES.auth.logoutResult,
+      message: 'Session locked',
+    },
+    isPublic: true,
+  })
+  async lockSession(
+    @Req() request: RefreshTokenCookieCarrier,
+    @RequestOrigin() origin: RequestContext,
+    @Res({ passthrough: true }) response: RefreshTokenCookieWriter,
+  ) {
+    const refreshToken = readRefreshTokenCookie(request);
+    clearRefreshTokenCookie(response);
+    clearSessionHintCookie(response);
+    const result = refreshToken
+      ? await this.authService.lockSession(refreshToken, origin)
+      : { success: true, message: 'Logged out' };
+
+    return {
+      data: result,
+      message: 'Session locked',
     };
   }
 

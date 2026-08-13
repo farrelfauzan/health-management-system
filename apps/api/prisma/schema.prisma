@@ -38,6 +38,16 @@ enum AuditAction {
   /// Every session for one user was revoked at once — a password change, an
   /// admin action, or the user signing out everywhere.
   SESSION_REVOKED_ALL
+  /// A session died because nobody touched it (SJ-9). Distinct from
+  /// `USER_LOGOUT` because the two answer different questions after the fact:
+  /// one says somebody left deliberately, the other says a clinic terminal sat
+  /// unattended with a session open — which is a workflow problem worth
+  /// counting, not just an auth event.
+  SESSION_TIMEOUT
+  /// Someone handed the workstation over on purpose, ending their session in
+  /// one action. Counted separately from an ordinary logout so "are staff
+  /// actually locking terminals" is answerable.
+  SESSION_LOCK
   USER_LOGOUT
   /// TOTP multi-factor events (SJ-8). Enrolment and reset are the ones an
   /// investigator reads backwards from: `MFA_RESET` is an admin removing
@@ -527,6 +537,16 @@ model RefreshToken {
   /// not an attack); outside it, presenting one is the reuse signal.
   consumedAt DateTime? @map("consumed_at")
   revokedAt  DateTime? @map("revoked_at")
+  /// When this session was last known to be in use (SJ-9), carried forward to
+  /// each successor so the live token always holds the family's answer.
+  ///
+  /// Not the same thing as `createdAt`, even though they start equal. A
+  /// heartbeat bumps this without rotating, which is what stops someone who is
+  /// genuinely reading a screen — interacting, but making no API calls — from
+  /// being timed out mid-sentence. Collapsing the two would make "when was
+  /// this token minted" and "when was this person last here" the same
+  /// question, and they are not.
+  lastUsedAt DateTime  @default(now()) @map("last_used_at")
   /// Where the token was issued from. Recorded so a reuse event can be
   /// investigated — "the same family refreshed from two countries" is the
   /// question this column exists to answer.
@@ -540,6 +560,7 @@ model RefreshToken {
   @@index([familyId])
   @@index([expiresAt])
   @@index([revokedAt])
+  @@index([lastUsedAt])
   @@map("refresh_tokens")
 }
 
