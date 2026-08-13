@@ -21,11 +21,21 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AuthControllerAnswerMfaChallengeV1200,
+  AuthControllerBeginMfaEnrolmentV1200,
+  AuthControllerGetMfaStatusV1200,
   AuthControllerLoginV1200,
   AuthControllerLogoutAllV1200,
   AuthControllerLogoutV1200,
   AuthControllerRefreshV1200,
-  LoginDto
+  AuthControllerRegenerateRecoveryCodesV1200,
+  AuthControllerResetMfaV1200,
+  AuthControllerVerifyMfaEnrolmentV1200,
+  LoginDto,
+  MfaChallengeDto,
+  MfaRegenerateRecoveryCodesDto,
+  MfaResetDto,
+  MfaVerifyEnrolmentDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -407,6 +417,566 @@ export function useAuthControllerLogoutAllV1<TData = Awaited<ReturnType<typeof a
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAuthControllerLogoutAllV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Begin TOTP enrolment
+ */
+export const authControllerBeginMfaEnrolmentV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AuthControllerBeginMfaEnrolmentV1200>(
+      {url: `/api/v1/auth/mfa/enroll`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerBeginMfaEnrolmentV1QueryKey = () => {
+    return [
+    'POST', `/api/v1/auth/mfa/enroll`
+    ] as const;
+    }
+
+
+export const getAuthControllerBeginMfaEnrolmentV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerBeginMfaEnrolmentV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>> = ({ signal }) => authControllerBeginMfaEnrolmentV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerBeginMfaEnrolmentV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>>
+export type AuthControllerBeginMfaEnrolmentV1QueryError = unknown
+
+
+export function useAuthControllerBeginMfaEnrolmentV1<TData = Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerBeginMfaEnrolmentV1<TData = Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerBeginMfaEnrolmentV1<TData = Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Begin TOTP enrolment
+ */
+
+export function useAuthControllerBeginMfaEnrolmentV1<TData = Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerBeginMfaEnrolmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerBeginMfaEnrolmentV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Activate TOTP enrolment with a code
+ */
+export const authControllerVerifyMfaEnrolmentV1 = (
+    mfaVerifyEnrolmentDto: MfaVerifyEnrolmentDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AuthControllerVerifyMfaEnrolmentV1200>(
+      {url: `/api/v1/auth/mfa/verify`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: mfaVerifyEnrolmentDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerVerifyMfaEnrolmentV1QueryKey = (mfaVerifyEnrolmentDto?: MfaVerifyEnrolmentDto,) => {
+    return [
+    'POST', `/api/v1/auth/mfa/verify`, mfaVerifyEnrolmentDto
+    ] as const;
+    }
+
+
+export const getAuthControllerVerifyMfaEnrolmentV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError = unknown>(mfaVerifyEnrolmentDto: MfaVerifyEnrolmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerVerifyMfaEnrolmentV1QueryKey(mfaVerifyEnrolmentDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>> = ({ signal }) => authControllerVerifyMfaEnrolmentV1(mfaVerifyEnrolmentDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerVerifyMfaEnrolmentV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>>
+export type AuthControllerVerifyMfaEnrolmentV1QueryError = unknown
+
+
+export function useAuthControllerVerifyMfaEnrolmentV1<TData = Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError = unknown>(
+ mfaVerifyEnrolmentDto: MfaVerifyEnrolmentDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerVerifyMfaEnrolmentV1<TData = Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError = unknown>(
+ mfaVerifyEnrolmentDto: MfaVerifyEnrolmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerVerifyMfaEnrolmentV1<TData = Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError = unknown>(
+ mfaVerifyEnrolmentDto: MfaVerifyEnrolmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Activate TOTP enrolment with a code
+ */
+
+export function useAuthControllerVerifyMfaEnrolmentV1<TData = Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError = unknown>(
+ mfaVerifyEnrolmentDto: MfaVerifyEnrolmentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerVerifyMfaEnrolmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerVerifyMfaEnrolmentV1QueryOptions(mfaVerifyEnrolmentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Complete a two-phase login with a second factor
+ */
+export const authControllerAnswerMfaChallengeV1 = (
+    mfaChallengeDto: MfaChallengeDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AuthControllerAnswerMfaChallengeV1200>(
+      {url: `/api/v1/auth/mfa/challenge`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: mfaChallengeDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerAnswerMfaChallengeV1QueryKey = (mfaChallengeDto?: MfaChallengeDto,) => {
+    return [
+    'POST', `/api/v1/auth/mfa/challenge`, mfaChallengeDto
+    ] as const;
+    }
+
+
+export const getAuthControllerAnswerMfaChallengeV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError = unknown>(mfaChallengeDto: MfaChallengeDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerAnswerMfaChallengeV1QueryKey(mfaChallengeDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>> = ({ signal }) => authControllerAnswerMfaChallengeV1(mfaChallengeDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerAnswerMfaChallengeV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>>
+export type AuthControllerAnswerMfaChallengeV1QueryError = unknown
+
+
+export function useAuthControllerAnswerMfaChallengeV1<TData = Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError = unknown>(
+ mfaChallengeDto: MfaChallengeDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerAnswerMfaChallengeV1<TData = Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError = unknown>(
+ mfaChallengeDto: MfaChallengeDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerAnswerMfaChallengeV1<TData = Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError = unknown>(
+ mfaChallengeDto: MfaChallengeDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Complete a two-phase login with a second factor
+ */
+
+export function useAuthControllerAnswerMfaChallengeV1<TData = Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError = unknown>(
+ mfaChallengeDto: MfaChallengeDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerAnswerMfaChallengeV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerAnswerMfaChallengeV1QueryOptions(mfaChallengeDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read the current user’s second-factor status
+ */
+export const authControllerGetMfaStatusV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AuthControllerGetMfaStatusV1200>(
+      {url: `/api/v1/auth/mfa/status`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerGetMfaStatusV1QueryKey = () => {
+    return [
+    `/api/v1/auth/mfa/status`
+    ] as const;
+    }
+
+
+export const getAuthControllerGetMfaStatusV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerGetMfaStatusV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>> = ({ signal }) => authControllerGetMfaStatusV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerGetMfaStatusV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>>
+export type AuthControllerGetMfaStatusV1QueryError = unknown
+
+
+export function useAuthControllerGetMfaStatusV1<TData = Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerGetMfaStatusV1<TData = Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerGetMfaStatusV1<TData = Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the current user’s second-factor status
+ */
+
+export function useAuthControllerGetMfaStatusV1<TData = Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetMfaStatusV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerGetMfaStatusV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Regenerate recovery codes
+ */
+export const authControllerRegenerateRecoveryCodesV1 = (
+    mfaRegenerateRecoveryCodesDto: MfaRegenerateRecoveryCodesDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AuthControllerRegenerateRecoveryCodesV1200>(
+      {url: `/api/v1/auth/mfa/recovery-codes`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: mfaRegenerateRecoveryCodesDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerRegenerateRecoveryCodesV1QueryKey = (mfaRegenerateRecoveryCodesDto?: MfaRegenerateRecoveryCodesDto,) => {
+    return [
+    'POST', `/api/v1/auth/mfa/recovery-codes`, mfaRegenerateRecoveryCodesDto
+    ] as const;
+    }
+
+
+export const getAuthControllerRegenerateRecoveryCodesV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError = unknown>(mfaRegenerateRecoveryCodesDto: MfaRegenerateRecoveryCodesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerRegenerateRecoveryCodesV1QueryKey(mfaRegenerateRecoveryCodesDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>> = ({ signal }) => authControllerRegenerateRecoveryCodesV1(mfaRegenerateRecoveryCodesDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerRegenerateRecoveryCodesV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>>
+export type AuthControllerRegenerateRecoveryCodesV1QueryError = unknown
+
+
+export function useAuthControllerRegenerateRecoveryCodesV1<TData = Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError = unknown>(
+ mfaRegenerateRecoveryCodesDto: MfaRegenerateRecoveryCodesDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerRegenerateRecoveryCodesV1<TData = Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError = unknown>(
+ mfaRegenerateRecoveryCodesDto: MfaRegenerateRecoveryCodesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerRegenerateRecoveryCodesV1<TData = Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError = unknown>(
+ mfaRegenerateRecoveryCodesDto: MfaRegenerateRecoveryCodesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Regenerate recovery codes
+ */
+
+export function useAuthControllerRegenerateRecoveryCodesV1<TData = Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError = unknown>(
+ mfaRegenerateRecoveryCodesDto: MfaRegenerateRecoveryCodesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerRegenerateRecoveryCodesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerRegenerateRecoveryCodesV1QueryOptions(mfaRegenerateRecoveryCodesDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Remove another user’s second factor
+ */
+export const authControllerResetMfaV1 = (
+    mfaResetDto: MfaResetDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AuthControllerResetMfaV1200>(
+      {url: `/api/v1/auth/mfa/reset`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: mfaResetDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerResetMfaV1QueryKey = (mfaResetDto?: MfaResetDto,) => {
+    return [
+    'POST', `/api/v1/auth/mfa/reset`, mfaResetDto
+    ] as const;
+    }
+
+
+export const getAuthControllerResetMfaV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError = unknown>(mfaResetDto: MfaResetDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerResetMfaV1QueryKey(mfaResetDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerResetMfaV1>>> = ({ signal }) => authControllerResetMfaV1(mfaResetDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerResetMfaV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerResetMfaV1>>>
+export type AuthControllerResetMfaV1QueryError = unknown
+
+
+export function useAuthControllerResetMfaV1<TData = Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError = unknown>(
+ mfaResetDto: MfaResetDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerResetMfaV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerResetMfaV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerResetMfaV1<TData = Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError = unknown>(
+ mfaResetDto: MfaResetDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerResetMfaV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerResetMfaV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerResetMfaV1<TData = Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError = unknown>(
+ mfaResetDto: MfaResetDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Remove another user’s second factor
+ */
+
+export function useAuthControllerResetMfaV1<TData = Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError = unknown>(
+ mfaResetDto: MfaResetDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerResetMfaV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerResetMfaV1QueryOptions(mfaResetDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

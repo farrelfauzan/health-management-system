@@ -27,6 +27,49 @@
       "errors": {
         "invalidCredentials": "Invalid email or password.",
         "loginFailed": "Unable to sign in right now. Please try again."
+      },
+      "mfa": {
+        "challenge": {
+          "title": "Two-factor verification",
+          "subtitle": "Enter the six-digit code from your authenticator app.",
+          "recoverySubtitle": "Enter one of the recovery codes you saved when you set up two-factor verification.",
+          "codeLabel": "Authentication code",
+          "codePlaceholder": "123456",
+          "recoveryCodeLabel": "Recovery code",
+          "recoveryCodePlaceholder": "abcde-fghjk-mnpqr",
+          "submit": "Verify",
+          "submitting": "Verifying...",
+          "useRecoveryCode": "Use a recovery code instead",
+          "useAuthenticator": "Use my authenticator app instead",
+          "errors": {
+            "rejected": "That code was not accepted. Codes can only be used once — wait for a new one and try again.",
+            "expired": "This sign-in attempt timed out. Please enter your password again.",
+            "throttled": "Too many attempts. Wait a minute before trying again.",
+            "failed": "Unable to verify right now. Please try again."
+          }
+        },
+        "enrolment": {
+          "title": "Set up two-factor verification",
+          "subtitle": "Your account can view or export patient data, so it needs a second factor. Scan this with an authenticator app, then enter the code it shows.",
+          "qrAlt": "QR code for setting up two-factor verification",
+          "manualEntry": "Can't scan? Enter this key into your authenticator app instead:",
+          "codeLabel": "Authentication code",
+          "codePlaceholder": "123456",
+          "submit": "Confirm and continue",
+          "submitting": "Confirming...",
+          "errors": {
+            "rejected": "That code was not accepted. Check that your phone's clock is correct and try the next code.",
+            "expired": "This sign-in attempt timed out. Please enter your password again.",
+            "throttled": "Too many attempts. Wait a minute before trying again.",
+            "failed": "Unable to set up two-factor verification right now. Please try again."
+          }
+        },
+        "recoveryCodes": {
+          "title": "Save your recovery codes",
+          "description": "Each code signs you in once if you lose access to your authenticator app.",
+          "warning": "This is the only time these are shown. Store them somewhere safe and offline — we keep only a one-way hash, so nobody can look them up for you.",
+          "acknowledge": "I have saved these codes"
+        }
       }
     },
     "shell": {

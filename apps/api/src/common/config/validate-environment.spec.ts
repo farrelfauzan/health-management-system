@@ -86,9 +86,29 @@ describe('validateEnvironment', () => {
       const inputEnv = buildEnv({
         NODE_ENV: 'production',
         JWT_ACCESS_SECRET: STRONG_SECRET,
+        MFA_SECRET_ENCRYPTION_KEY: STRONG_SECRET,
       });
 
       expect(() => validateEnvironment(inputEnv)).not.toThrow();
+    });
+
+    /**
+     * SJ-8 — the one key required in production and nowhere else. Without it
+     * nobody can enrol a second factor, so enforcement has to stay off; a
+     * production deployment silently running with the whole control disabled
+     * is the failure this catches.
+     */
+    it('refuses to start production without an MFA encryption key', () => {
+      const inputEnv = buildEnv({
+        NODE_ENV: 'production',
+        JWT_ACCESS_SECRET: STRONG_SECRET,
+      });
+
+      expect(() => validateEnvironment(inputEnv)).toThrow(/MFA_SECRET_ENCRYPTION_KEY is required/);
+    });
+
+    it('lets development run without an MFA encryption key', () => {
+      expect(() => validateEnvironment(buildEnv({ NODE_ENV: 'development' }))).not.toThrow();
     });
 
     /**

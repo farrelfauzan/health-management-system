@@ -27,6 +27,49 @@
       "errors": {
         "invalidCredentials": "Email atau kata sandi tidak valid.",
         "loginFailed": "Tidak dapat masuk saat ini. Silakan coba lagi."
+      },
+      "mfa": {
+        "challenge": {
+          "title": "Verifikasi dua faktor",
+          "subtitle": "Masukkan kode enam digit dari aplikasi autentikator Anda.",
+          "recoverySubtitle": "Masukkan salah satu kode pemulihan yang Anda simpan saat mengaktifkan verifikasi dua faktor.",
+          "codeLabel": "Kode autentikasi",
+          "codePlaceholder": "123456",
+          "recoveryCodeLabel": "Kode pemulihan",
+          "recoveryCodePlaceholder": "abcde-fghjk-mnpqr",
+          "submit": "Verifikasi",
+          "submitting": "Memverifikasi...",
+          "useRecoveryCode": "Gunakan kode pemulihan",
+          "useAuthenticator": "Gunakan aplikasi autentikator",
+          "errors": {
+            "rejected": "Kode tidak diterima. Setiap kode hanya bisa dipakai sekali — tunggu kode baru lalu coba lagi.",
+            "expired": "Percobaan masuk ini kedaluwarsa. Silakan masukkan kata sandi Anda lagi.",
+            "throttled": "Terlalu banyak percobaan. Tunggu satu menit sebelum mencoba lagi.",
+            "failed": "Tidak dapat memverifikasi saat ini. Silakan coba lagi."
+          }
+        },
+        "enrolment": {
+          "title": "Aktifkan verifikasi dua faktor",
+          "subtitle": "Akun Anda dapat melihat atau mengekspor data pasien, sehingga memerlukan faktor kedua. Pindai kode ini dengan aplikasi autentikator, lalu masukkan kode yang muncul.",
+          "qrAlt": "Kode QR untuk mengaktifkan verifikasi dua faktor",
+          "manualEntry": "Tidak bisa memindai? Masukkan kunci ini ke aplikasi autentikator Anda:",
+          "codeLabel": "Kode autentikasi",
+          "codePlaceholder": "123456",
+          "submit": "Konfirmasi dan lanjutkan",
+          "submitting": "Mengonfirmasi...",
+          "errors": {
+            "rejected": "Kode tidak diterima. Pastikan jam di ponsel Anda tepat, lalu coba kode berikutnya.",
+            "expired": "Percobaan masuk ini kedaluwarsa. Silakan masukkan kata sandi Anda lagi.",
+            "throttled": "Terlalu banyak percobaan. Tunggu satu menit sebelum mencoba lagi.",
+            "failed": "Tidak dapat mengaktifkan verifikasi dua faktor saat ini. Silakan coba lagi."
+          }
+        },
+        "recoveryCodes": {
+          "title": "Simpan kode pemulihan Anda",
+          "description": "Setiap kode dapat digunakan sekali untuk masuk jika Anda kehilangan akses ke aplikasi autentikator.",
+          "warning": "Kode ini hanya ditampilkan sekali. Simpan di tempat yang aman dan luring — kami hanya menyimpan hash satu arah, sehingga tidak ada yang bisa mencarinya untuk Anda.",
+          "acknowledge": "Saya sudah menyimpan kode ini"
+        }
       }
     },
     "shell": {

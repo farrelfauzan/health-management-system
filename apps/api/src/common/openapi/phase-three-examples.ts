@@ -314,6 +314,61 @@ export const PHASE_THREE_EXAMPLES = {
       success: true,
       message: 'Logged out',
     },
+    // SJ-8: login has three outcomes. Exactly one of `tokens` and `mfaTicket`
+    // is present, decided by `status` — both are optional in the schema for
+    // that reason, and a client must branch rather than reach for `tokens`.
+    loginResult: {
+      status: 'AUTHENTICATED',
+      tokens: optionalExample({
+        accessToken: 'eyJhbGciOiJIUzI1NiJ9.access.example',
+        tokenType: 'Bearer',
+        expiresIn: '15m',
+      }),
+      mfaTicket: optionalExample({
+        ticket: 'eyJhbGciOiJIUzI1NiJ9.mfa-pending.example',
+        expiresIn: '120s',
+      }),
+      mfaEnrolmentRequired: optionalExample(false),
+      mfaEnrolmentDeadline: optionalExample('2026-09-01T00:00:00.000Z'),
+    },
+    mfaEnrolment: {
+      otpauthUri:
+        'otpauth://totp/HMS%20Clinic:admin@example.com?secret=JBSWY3DPEHPK3PXP&issuer=HMS%20Clinic',
+      secret: 'JBSWY3DPEHPK3PXP',
+    },
+    mfaEnrolmentCompleted: {
+      recoveryCodes: ['3k9mp-x2vtr-8hnqz', 'b7wdf-4jkm2-ptxs9'],
+      tokens: optionalExample({
+        accessToken: 'eyJhbGciOiJIUzI1NiJ9.access.example',
+        tokenType: 'Bearer',
+        expiresIn: '15m',
+      }),
+    },
+    mfaRecoveryCodes: {
+      recoveryCodes: ['3k9mp-x2vtr-8hnqz', 'b7wdf-4jkm2-ptxs9'],
+    },
+    mfaStatus: {
+      enrolled: true,
+      required: true,
+      enrolledAt: optionalExample(timestamp),
+      unusedRecoveryCodeCount: 9,
+      enrolmentDeadline: optionalExample('2026-09-01T00:00:00.000Z'),
+    },
+    mfaVerifyRequest: {
+      code: '123456',
+    },
+    mfaChallengeRequest: {
+      code: '123456',
+    },
+    mfaResetRequest: {
+      userId,
+      actorCode: '123456',
+      reason: 'Lost phone, identity confirmed in person',
+    },
+    mfaResetResult: {
+      success: true,
+      message: 'Second factor reset',
+    },
   },
   rbac: {
     roleItem: {

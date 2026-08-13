@@ -7,10 +7,14 @@ import { AuditService } from '../../common/audit/audit.service';
 import { JwtSecretsService } from '../../common/config/jwt-secrets.service';
 import { PasswordHasherService } from '../../common/crypto/password-hasher.service';
 import { RequestContext } from '../../common/observability/observability.types';
+import { MfaCryptoService } from '../../common/crypto/mfa-crypto.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from './repository/auth.repository';
+import { MfaRepository } from './repository/mfa.repository';
 import { AuthService } from './service/auth.service';
 import { LoginThrottleService } from './service/login-throttle.service';
+import { MfaEnforcementService } from './service/mfa-enforcement.service';
+import { MfaTicketService } from './service/mfa-ticket.service';
 
 /**
  * SJ-7 against real Postgres. The failure streak, the per-IP window and the
@@ -69,6 +73,11 @@ describe('Password policy and login throttling against Postgres', () => {
       new JwtSecretsService(configService),
       passwordHasher,
       throttle,
+      // No MFA encryption key here, so enforcement is off and these accounts
+      // log in the pre-SJ-8 way — this suite is about SJ-7's password paths.
+      new MfaRepository(prisma, new MfaCryptoService(configService)),
+      new MfaEnforcementService(configService, new MfaCryptoService(configService)),
+      new MfaTicketService(new JwtService(), new JwtSecretsService(configService)),
     );
     email = await createUserWithHash('primary', await passwordHasher.hashPassword(PASSWORD));
   });

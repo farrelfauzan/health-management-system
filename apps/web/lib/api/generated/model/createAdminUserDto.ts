@@ -8,7 +8,10 @@
 
 export interface CreateAdminUserDto {
   email: string;
-  /** @minLength 8 */
+  /**
+     * @minLength 12
+     * @maxLength 200
+     */
   password: string;
   isActive?: boolean;
   /**

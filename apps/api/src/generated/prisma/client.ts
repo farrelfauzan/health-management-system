@@ -77,6 +77,48 @@ export type LoginAttempt = Prisma.LoginAttemptModel
  */
 export type RefreshToken = Prisma.RefreshTokenModel
 /**
+ * Model MfaCredential
+ * One user's TOTP second factor (SJ-8). At most one per user — re-enrolling
+ * replaces the row rather than accumulating secrets, so "which of these is
+ * live" is never a question.
+ * 
+ * The secret is **encrypted, not hashed**, and that asymmetry with
+ * `password_hash` is deliberate rather than an oversight. TOTP is a symmetric
+ * construction: the server has to recompute the same HMAC the phone does, so
+ * it needs the secret back. AES-256-GCM under `MFA_SECRET_ENCRYPTION_KEY`
+ * means a database disclosure alone does not yield a working second factor —
+ * an attacker needs the application's key as well.
+ * 
+ * `verifiedAt` is the enforcement switch. A row exists from the moment
+ * enrolment starts, but until the user proves possession by returning a
+ * current code it is inert: login is unchanged, and nothing can lock anyone
+ * out. Enrolment that is started and abandoned leaves an unverified row that
+ * the next attempt overwrites.
+ * 
+ * `lastAcceptedTimeStep` is the replay guard. RFC 6238 codes stay valid for a
+ * whole 30-second step, so without recording the step that was accepted, a
+ * code observed over someone's shoulder — or replayed from a proxy log — works
+ * again for the rest of its window. Storing the counter makes every code
+ * strictly single-use.
+ */
+export type MfaCredential = Prisma.MfaCredentialModel
+/**
+ * Model MfaRecoveryCode
+ * A single-use fallback for a lost authenticator (SJ-8).
+ * 
+ * Only the SHA-256 is stored, so the plaintext exists exactly once — in the
+ * response that issued it. This is the one place where plain SHA-256 rather
+ * than Argon2 is right: the code is 80 bits of CSPRNG output, so there is no
+ * dictionary to slow an attacker down, and the throttle on the challenge
+ * endpoint already caps guessing at a handful of tries.
+ * 
+ * Consumed codes are kept, not deleted. `usedAt` is the audit trail — "this
+ * recovery code was spent at 03:14 from that address" is exactly the question
+ * asked after an account is suspected compromised, and a deleted row answers
+ * nothing.
+ */
+export type MfaRecoveryCode = Prisma.MfaRecoveryCodeModel
+/**
  * Model MrnCounter
  * Sequence source for medical record numbers. Allocation is a single atomic
  * `UPDATE … RETURNING` (never `MAX(mrn) + 1`, which races), run inside the

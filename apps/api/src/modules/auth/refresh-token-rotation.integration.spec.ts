@@ -9,9 +9,13 @@ import { PasswordHasherService } from '../../common/crypto/password-hasher.servi
 import { RequestContext } from '../../common/observability/observability.types';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuditAction } from '../../generated/prisma/client';
+import { MfaCryptoService } from '../../common/crypto/mfa-crypto.service';
 import { AuthRepository } from './repository/auth.repository';
+import { MfaRepository } from './repository/mfa.repository';
 import { AuthService } from './service/auth.service';
 import { LoginThrottleService } from './service/login-throttle.service';
+import { MfaEnforcementService } from './service/mfa-enforcement.service';
+import { MfaTicketService } from './service/mfa-ticket.service';
 
 /**
  * SJ-6's rotation state machine against real Postgres.
@@ -48,11 +52,14 @@ describe('Refresh token rotation against Postgres', () => {
   let loginCounter = 0;
   async function loginFresh(): Promise<string> {
     loginCounter += 1;
-    const session = await authService.login(
+    const outcome = await authService.login(
       { email: `${TEST_MARKER}@example.test`, password: 'password123' },
       { ...ORIGIN, ipAddress: `203.0.113.${loginCounter % 250}` },
     );
-    return session.refreshToken;
+    if (outcome.kind !== 'SESSION') {
+      throw new Error(`Expected a session, got ${outcome.kind}`);
+    }
+    return outcome.session.refreshToken;
   }
 
   beforeAll(async () => {
@@ -79,6 +86,12 @@ describe('Refresh token rotation against Postgres', () => {
       new JwtSecretsService(configService),
       new PasswordHasherService(),
       new LoginThrottleService(authRepository),
+      // No MFA encryption key in this ConfigService, so enforcement is off and
+      // the fixture user logs in the pre-SJ-8 way. Second-factor behaviour is
+      // proven in `mfa.integration.spec.ts`.
+      new MfaRepository(prisma, new MfaCryptoService(configService)),
+      new MfaEnforcementService(configService, new MfaCryptoService(configService)),
+      new MfaTicketService(new JwtService(), new JwtSecretsService(configService)),
     );
 
     const { hash } = await import('bcryptjs');

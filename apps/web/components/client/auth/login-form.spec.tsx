@@ -25,6 +25,12 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('#lib/api/generated/auth/auth', () => ({
   authControllerLoginV1: vi.fn(),
+  // The enrolment step fetches a secret as soon as it mounts. Left unmocked it
+  // would reach for the real axios client; the SJ-8 case below only cares that
+  // the step rendered and that nothing was persisted, so it never resolves.
+  authControllerBeginMfaEnrolmentV1: vi.fn(() => new Promise(() => undefined)),
+  authControllerVerifyMfaEnrolmentV1: vi.fn(),
+  authControllerAnswerMfaChallengeV1: vi.fn(),
 }));
 
 const loginRequestMock = vi.mocked(authControllerLoginV1);
@@ -103,9 +109,12 @@ describe('LoginForm', () => {
       headers: {},
       data: {
         data: {
-          accessToken: 'header.payload.signature',
-          tokenType: 'Bearer',
-          expiresIn: '15m',
+          status: 'AUTHENTICATED',
+          tokens: {
+            accessToken: 'header.payload.signature',
+            tokenType: 'Bearer',
+            expiresIn: '15m',
+          },
         },
         message: 'Login success',
       },
@@ -122,5 +131,60 @@ describe('LoginForm', () => {
     // response cookies (SJ-6), so this tier neither receives nor writes them.
     expect(document.cookie).not.toContain(SESSION_HINT_COOKIE_NAME);
     expect(replaceMock).toHaveBeenCalledWith('/admin/dashboard');
+  });
+
+  /**
+   * SJ-8 — a correct password is no longer the end of it. These two cases pin
+   * the property that matters on this tier: no access token is written and no
+   * redirect happens until the second factor is settled.
+   */
+  it('shows the challenge step and stores nothing when a second factor is required', async () => {
+    const user = userEvent.setup();
+    loginRequestMock.mockResolvedValueOnce({
+      status: 200,
+      headers: {},
+      data: {
+        data: {
+          status: 'MFA_REQUIRED',
+          mfaTicket: { ticket: 'pending.ticket.value', expiresIn: '120s' },
+        },
+        message: 'Second factor required',
+      },
+    } as never);
+    renderLoginForm();
+
+    await user.type(screen.getByLabelText('Email'), 'admin@salingjaga.com');
+    await user.type(screen.getByLabelText('Kata sandi'), 'password-123');
+    await user.click(screen.getByRole('button', { name: 'Masuk' }));
+
+    expect(await screen.findByLabelText('Kode autentikasi')).toBeInTheDocument();
+    expect(document.cookie).not.toContain(ACCESS_TOKEN_COOKIE_NAME);
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it('shows the enrolment step when a privileged account has no second factor', async () => {
+    const user = userEvent.setup();
+    loginRequestMock.mockResolvedValueOnce({
+      status: 200,
+      headers: {},
+      data: {
+        data: {
+          status: 'MFA_ENROLMENT_REQUIRED',
+          mfaTicket: { ticket: 'pending.ticket.value', expiresIn: '120s' },
+        },
+        message: 'Second factor required',
+      },
+    } as never);
+    renderLoginForm();
+
+    await user.type(screen.getByLabelText('Email'), 'admin@salingjaga.com');
+    await user.type(screen.getByLabelText('Kata sandi'), 'password-123');
+    await user.click(screen.getByRole('button', { name: 'Masuk' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Aktifkan verifikasi dua faktor' }),
+    ).toBeInTheDocument();
+    expect(document.cookie).not.toContain(ACCESS_TOKEN_COOKIE_NAME);
+    expect(replaceMock).not.toHaveBeenCalled();
   });
 });
