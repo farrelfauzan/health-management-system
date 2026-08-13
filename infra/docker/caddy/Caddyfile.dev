@@ -1,0 +1,49 @@
+# SJ-1 — the same proxy topology, with a locally-issued certificate.
+#
+# Exists so the proxy path is exercised in development rather than first met in
+# production. The things that actually break on the cutover — cookies gaining
+# `Secure`, `request.ip` coming from `X-Forwarded-For`, Next.js building
+# absolute URLs from the forwarded host — all behave here the way they will
+# behave behind the real certificate.
+#
+#   pnpm docker:dev:up --profile tls
+#   open https://localhost
+#
+# `tls internal` issues from Caddy's own CA, so the first visit shows a browser
+# warning unless the CA is trusted locally. That is expected and is the one
+# difference from production. Trust it once with:
+#
+#   docker compose -f infra/docker/docker-compose.dev.yml cp \
+#     caddy:/data/caddy/pki/authorities/local/root.crt /tmp/hms-local-ca.crt
+#
+# then add /tmp/hms-local-ca.crt to the system keychain.
+
+{
+	# No ACME, no email, no outbound network.
+	local_certs
+}
+
+http://localhost {
+	redir https://{host}{uri} permanent
+}
+
+https://localhost {
+	tls internal
+
+	header {
+		# Present in development too, so a `Secure`-cookie or mixed-content
+		# problem surfaces here rather than on a clinic workstation. Short
+		# max-age on purpose: pinning `localhost` to HTTPS for a year would
+		# break every other project on the machine that serves plain HTTP.
+		Strict-Transport-Security "max-age=300"
+		-Server
+	}
+
+	handle /api/* {
+		reverse_proxy api:3001
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}

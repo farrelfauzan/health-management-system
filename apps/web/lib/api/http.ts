@@ -13,6 +13,18 @@ import {
 import { mfaTicketStore } from '#lib/auth/mfa-ticket-store';
 
 
+/**
+ * Where the API lives.
+ *
+ * **An empty string is meaningful, not missing.** Behind SJ-1's reverse proxy
+ * the API and the web app share one origin — `https://hms.<domain>/api/…` — so
+ * the correct production value is empty, which makes every request relative
+ * and therefore same-origin. That also means no CORS preflight and no
+ * third-party cookie question at all.
+ *
+ * `??` rather than `||` is load-bearing for that: `||` would treat the empty
+ * string as absent and silently send production traffic to `localhost:3001`.
+ */
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 
 const LOGIN_PATH = '/login';

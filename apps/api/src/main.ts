@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module';
+import { resolveCorsOptions } from './common/config/resolve-cors-options';
 import { validateEnvironment } from './common/config/validate-environment';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
@@ -25,13 +26,11 @@ async function bootstrap(): Promise<void> {
     // the check would fail on valid deliveries and, worse, could be made to
     // pass on crafted ones. The raw buffer is the only thing worth signing.
     rawBody: true,
-    cors: {
-      origin: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
-      exposedHeaders: ['X-Request-Id'],
-      credentials: true,
-    },
+    // SJ-1: an allowlist from the environment, never `origin: true`. Read the
+    // resolver for why reflecting the caller's Origin alongside
+    // `credentials: true` is an open door, and why production refuses to fall
+    // back to a default.
+    cors: resolveCorsOptions(process.env),
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
