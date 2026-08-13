@@ -10,6 +10,7 @@ import {
   readAccessTokenFromBrowserCookie,
   setAccessTokenCookie,
 } from '#lib/auth/access-token-cookie';
+import { mfaTicketStore } from '#lib/auth/mfa-ticket-store';
 
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
@@ -49,10 +50,15 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = readAccessTokenFromBrowserCookie();
+  config.headers = config.headers ?? {};
+  // The two-phase login's ticket wins on the three MFA routes (SJ-8). It has
+  // to: a user whose login was just refused for want of a second factor may
+  // still hold a stale access-token cookie, and sending that instead would
+  // present the one credential the server is guaranteed to reject.
+  const ticket = mfaTicketStore.resolveFor(config.url);
+  const token = ticket ?? readAccessTokenFromBrowserCookie();
 
   if (token) {
-    config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
   }
 

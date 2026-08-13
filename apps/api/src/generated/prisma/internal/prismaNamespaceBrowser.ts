@@ -54,6 +54,8 @@ export const ModelName = {
   User: 'User',
   LoginAttempt: 'LoginAttempt',
   RefreshToken: 'RefreshToken',
+  MfaCredential: 'MfaCredential',
+  MfaRecoveryCode: 'MfaRecoveryCode',
   MrnCounter: 'MrnCounter',
   PatientProfile: 'PatientProfile',
   PrivacyNoticeVersion: 'PrivacyNoticeVersion',
@@ -168,6 +170,31 @@ export const RefreshTokenScalarFieldEnum = {
 } as const
 
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
+
+
+export const MfaCredentialScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  secretEncrypted: 'secretEncrypted',
+  keyVersion: 'keyVersion',
+  verifiedAt: 'verifiedAt',
+  lastAcceptedTimeStep: 'lastAcceptedTimeStep',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MfaCredentialScalarFieldEnum = (typeof MfaCredentialScalarFieldEnum)[keyof typeof MfaCredentialScalarFieldEnum]
+
+
+export const MfaRecoveryCodeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  codeHash: 'codeHash',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type MfaRecoveryCodeScalarFieldEnum = (typeof MfaRecoveryCodeScalarFieldEnum)[keyof typeof MfaRecoveryCodeScalarFieldEnum]
 
 
 export const MrnCounterScalarFieldEnum = {

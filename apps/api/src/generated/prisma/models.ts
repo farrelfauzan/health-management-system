@@ -11,6 +11,8 @@
 export type * from './models/User'
 export type * from './models/LoginAttempt'
 export type * from './models/RefreshToken'
+export type * from './models/MfaCredential'
+export type * from './models/MfaRecoveryCode'
 export type * from './models/MrnCounter'
 export type * from './models/PatientProfile'
 export type * from './models/PrivacyNoticeVersion'

@@ -61,7 +61,20 @@ export class LoginThrottleService {
         throw buildThrottledError(Math.ceil(IP_ATTEMPT_WINDOW_MS / 1_000));
       }
     }
-    const retryAfterMs = await this.resolveAccountBackoffMs(input.identifierHash);
+    await this.assertAccountWithinLimits(input.identifierHash);
+  }
+
+  /**
+   * The account half of the budget, without the per-IP ceiling.
+   *
+   * The MFA challenge (SJ-8) uses this rather than the full check. Charging
+   * challenges against the per-IP budget would halve the login capacity of a
+   * clinic behind one NAT, because every login would spend two of its ten
+   * attempts per minute. Nothing is given up: a challenge is unreachable
+   * without a login, and that login already paid the IP toll.
+   */
+  async assertAccountWithinLimits(identifierHash: string): Promise<void> {
+    const retryAfterMs = await this.resolveAccountBackoffMs(identifierHash);
     if (retryAfterMs > 0) {
       throw buildThrottledError(Math.ceil(retryAfterMs / 1_000));
     }

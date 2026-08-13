@@ -18,7 +18,11 @@ paths:
                   password: SecurePassword123!
       responses:
         "200":
-          description: Access and refresh tokens for the authenticated user.
+          description: One of three outcomes (SJ-8). `AUTHENTICATED` carries `tokens`;
+            `MFA_REQUIRED` and `MFA_ENROLMENT_REQUIRED` carry a short-lived
+            `mfaTicket` instead, and no session cookie is written. Branch on
+            `status` — a client that reaches straight for `tokens` will break
+            the moment an account becomes privileged.
           content:
             application/json:
               schema:
@@ -27,16 +31,37 @@ paths:
                   data:
                     type: object
                     properties:
-                      accessToken:
+                      status:
                         type: string
-                      tokenType:
-                        type: string
-                      expiresIn:
+                      tokens:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                          tokenType:
+                            type: string
+                          expiresIn:
+                            type: string
+                        required:
+                          - accessToken
+                          - tokenType
+                          - expiresIn
+                      mfaTicket:
+                        type: object
+                        properties:
+                          ticket:
+                            type: string
+                          expiresIn:
+                            type: string
+                        required:
+                          - ticket
+                          - expiresIn
+                      mfaEnrolmentRequired:
+                        type: boolean
+                      mfaEnrolmentDeadline:
                         type: string
                     required:
-                      - accessToken
-                      - tokenType
-                      - expiresIn
+                      - status
                   message:
                     type: string
                 required:
@@ -44,9 +69,16 @@ paths:
                   - message
                 example:
                   data:
-                    accessToken: eyJhbGciOiJIUzI1NiJ9.access.example
-                    tokenType: Bearer
-                    expiresIn: 15m
+                    status: AUTHENTICATED
+                    tokens:
+                      accessToken: eyJhbGciOiJIUzI1NiJ9.access.example
+                      tokenType: Bearer
+                      expiresIn: 15m
+                    mfaTicket:
+                      ticket: eyJhbGciOiJIUzI1NiJ9.mfa-pending.example
+                      expiresIn: 120s
+                    mfaEnrolmentRequired: false
+                    mfaEnrolmentDeadline: 2026-09-01T00:00:00.000Z
                   message: Login success
         "400":
           description: Request validation failed.
@@ -218,6 +250,429 @@ paths:
       security:
         - bearer: []
       summary: Revoke every session for the current user
+      tags: *a1
+  /api/v1/auth/mfa/enroll:
+    post:
+      operationId: AuthController_beginMfaEnrolment_v1
+      parameters: []
+      responses:
+        "200":
+          description: A fresh secret, stored encrypted and unverified. Render
+            `otpauthUri` as a QR code and offer `secret` for manual entry — both
+            carry the same value, and a QR alone is unusable with a screen
+            reader or a desktop authenticator. Nothing is enforced until the
+            code is verified. Authenticate with either an access token or an
+            enrolment ticket from login.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      otpauthUri:
+                        type: string
+                      secret:
+                        type: string
+                    required:
+                      - otpauthUri
+                      - secret
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    otpauthUri: otpauth://totp/HMS%20Clinic:admin@example.com?secret=JBSWY3DPEHPK3PXP&issuer=HMS%20Clinic
+                    secret: JBSWY3DPEHPK3PXP
+                  message: Enrolment started
+        "401":
+          description: Missing or invalid access token or enrolment ticket.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Missing or invalid access token or enrolment ticket.
+      summary: Begin TOTP enrolment
+      tags: *a1
+  /api/v1/auth/mfa/verify:
+    post:
+      operationId: AuthController_verifyMfaEnrolment_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MfaVerifyEnrolmentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  code: "123456"
+      responses:
+        "200":
+          description: Activates enforcement and returns ten recovery codes **once** —
+            only their hashes are kept, so a client that fails to show them has
+            cost the user their fallback. When enrolment was reached with an
+            enrolment ticket the response also completes the login and sets the
+            session cookies.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      recoveryCodes:
+                        type: array
+                        items:
+                          type: string
+                      tokens:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                          tokenType:
+                            type: string
+                          expiresIn:
+                            type: string
+                        required:
+                          - accessToken
+                          - tokenType
+                          - expiresIn
+                    required:
+                      - recoveryCodes
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    recoveryCodes:
+                      - 3k9mp-x2vtr-8hnqz
+                      - b7wdf-4jkm2-ptxs9
+                    tokens:
+                      accessToken: eyJhbGciOiJIUzI1NiJ9.access.example
+                      tokenType: Bearer
+                      expiresIn: 15m
+                  message: Second factor enrolled
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: The code was not valid.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: The code was not valid.
+      summary: Activate TOTP enrolment with a code
+      tags: *a1
+  /api/v1/auth/mfa/challenge:
+    post:
+      operationId: AuthController_answerMfaChallenge_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MfaChallengeDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  code: "123456"
+      responses:
+        "200":
+          description: Trades the challenge ticket for a real session. Send exactly one of
+            `code` or `recoveryCode` — a body carrying both is rejected rather
+            than the server choosing which to spend.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                      tokenType:
+                        type: string
+                      expiresIn:
+                        type: string
+                    required:
+                      - accessToken
+                      - tokenType
+                      - expiresIn
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    accessToken: eyJhbGciOiJIUzI1NiJ9.access.example
+                    tokenType: Bearer
+                    expiresIn: 15m
+                  message: Login success
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Verification failed, or the ticket has expired.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Verification failed, or the ticket has expired.
+      summary: Complete a two-phase login with a second factor
+      tags: *a1
+  /api/v1/auth/mfa/status:
+    get:
+      operationId: AuthController_getMfaStatus_v1
+      parameters: []
+      responses:
+        "200":
+          description: Whether a second factor is enrolled, whether this account requires
+            one, and how many recovery codes remain. Drives the settings screen
+            and the grace-period banner.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      enrolled:
+                        type: boolean
+                      required:
+                        type: boolean
+                      enrolledAt:
+                        type: string
+                      unusedRecoveryCodeCount:
+                        type: integer
+                      enrolmentDeadline:
+                        type: string
+                    required:
+                      - enrolled
+                      - required
+                      - unusedRecoveryCodeCount
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    enrolled: true
+                    required: true
+                    enrolledAt: 2026-07-20T08:00:00.000Z
+                    unusedRecoveryCodeCount: 9
+                    enrolmentDeadline: 2026-09-01T00:00:00.000Z
+                  message: MFA status
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the current user’s second-factor status
+      tags: *a1
+  /api/v1/auth/mfa/recovery-codes:
+    post:
+      operationId: AuthController_regenerateRecoveryCodes_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MfaRegenerateRecoveryCodesDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  code: "123456"
+      responses:
+        "200":
+          description: "Issues ten fresh codes and invalidates every prior one. Requires a
+            current authenticator code even though the caller is signed in: this
+            endpoint mints durable bypasses for the second factor, so a borrowed
+            unlocked workstation must not be enough to reach it."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      recoveryCodes:
+                        type: array
+                        items:
+                          type: string
+                    required:
+                      - recoveryCodes
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    recoveryCodes:
+                      - 3k9mp-x2vtr-8hnqz
+                      - b7wdf-4jkm2-ptxs9
+                  message: Recovery codes regenerated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: The code was not valid.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: The code was not valid.
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Regenerate recovery codes
+      tags: *a1
+  /api/v1/auth/mfa/reset:
+    post:
+      operationId: AuthController_resetMfa_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MfaResetDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  userId: 33333333-3333-4333-8333-333333333333
+                  actorCode: "123456"
+                  reason: Lost phone, identity confirmed in person
+      responses:
+        "200":
+          description: The lost-device path. Requires the acting administrator’s own
+            current code, revokes every session the target holds, and is audited
+            as MFA_RESET with the stated reason — this is the one action that
+            downgrades another account to a password.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                      message:
+                        type: string
+                    required:
+                      - success
+                      - message
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    success: true
+                    message: Second factor reset
+                  message: Second factor reset
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: The administrator’s own code was not valid.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: The administrator’s own code was not valid.
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Remove another user’s second factor
       tags: *a1
   /api/v1/users:
     get:
@@ -18741,6 +19196,48 @@ components:
       required:
         - email
         - password
+    MfaVerifyEnrolmentDto:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^\d{3}\s?\d{3}$
+      required:
+        - code
+    MfaChallengeDto:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^\d{3}\s?\d{3}$
+        recoveryCode:
+          type: string
+          pattern: ^[0-9a-hjkmnp-tv-z]{5}-[0-9a-hjkmnp-tv-z]{5}-[0-9a-hjkmnp-tv-z]{5}$
+    MfaRegenerateRecoveryCodesDto:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^\d{3}\s?\d{3}$
+      required:
+        - code
+    MfaResetDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        actorCode:
+          type: string
+          pattern: ^\d{3}\s?\d{3}$
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+        - userId
+        - actorCode
+        - reason
     CreateAdminUserDto:
       type: object
       properties:
@@ -18749,7 +19246,8 @@ components:
           format: email
         password:
           type: string
-          minLength: 8
+          minLength: 12
+          maxLength: 200
         isActive:
           type: boolean
           default: true
@@ -18771,7 +19269,8 @@ components:
           format: email
         password:
           type: string
-          minLength: 8
+          minLength: 12
+          maxLength: 200
         isActive:
           type: boolean
         roleCodes:

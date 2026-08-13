@@ -3,14 +3,18 @@ import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { JwtPayload } from '@hms/shared-types';
+import { IssuedSession, JwtPayload } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { JwtSecretsService } from '../../../common/config/jwt-secrets.service';
+import { MfaCryptoService } from '../../../common/crypto/mfa-crypto.service';
 import { PasswordHasherService } from '../../../common/crypto/password-hasher.service';
 import { LoginThrottleService } from './login-throttle.service';
+import { MfaEnforcementService } from './mfa-enforcement.service';
+import { MfaTicketService } from './mfa-ticket.service';
 import { RequestContext } from '../../../common/observability/observability.types';
 import { AuthRepository } from '../repository/auth.repository';
+import { MfaRepository } from '../repository/mfa.repository';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
@@ -47,6 +51,18 @@ describe('AuthService', () => {
   // rotation path is exercised rather than stubbed away.
   const jwtSecretsService = new JwtSecretsService(configService);
   const passwordHasher = new PasswordHasherService();
+  // No `MFA_SECRET_ENCRYPTION_KEY` in this ConfigService, so the crypto service
+  // reports itself unconfigured and enforcement stays off — which is what these
+  // cases want: they are about SJ-6 token mechanics, and the fixture user holds
+  // no privileged permission anyway. SJ-8's own behaviour is covered by
+  // `mfa.integration.spec.ts` against a real key and a real database.
+  const mfaRepositoryMock = {
+    findVerifiedAt: jest.fn().mockResolvedValue(null),
+  } as unknown as MfaRepository;
+  const mfaEnforcement = new MfaEnforcementService(
+    configService,
+    new MfaCryptoService(configService),
+  );
   const service = new AuthService(
     authRepositoryMock,
     jwtService,
@@ -55,7 +71,11 @@ describe('AuthService', () => {
     jwtSecretsService,
     passwordHasher,
     new LoginThrottleService(authRepositoryMock),
+    mfaRepositoryMock,
+    mfaEnforcement,
+    new MfaTicketService(jwtService, jwtSecretsService),
   );
+
   const user = {
     id: userId,
     email: 'admin@hms.local',
@@ -90,6 +110,23 @@ describe('AuthService', () => {
     ],
   };
 
+  /**
+   * Logs in and asserts the outcome was a full session. Since SJ-8 `login`
+   * returns a discriminated union, and every case below is about what a
+   * *completed* login produces — narrowing here keeps that assertion in one
+   * place instead of thirteen.
+   */
+  async function loginForSession(): Promise<IssuedSession> {
+    const outcome = await service.login(
+      { email: user.email, password: 'password123' },
+      TEST_ORIGIN,
+    );
+    if (outcome.kind !== 'SESSION') {
+      throw new Error(`Expected a session, got ${outcome.kind}`);
+    }
+    return outcome.session;
+  }
+
   beforeAll(async () => {
     user.passwordHash = await passwordHasher.hashPassword('password123');
   });
@@ -110,11 +147,8 @@ describe('AuthService', () => {
   });
 
   it('carries the granted permissions on the access token, de-duplicated', async () => {
-    const actualTokens = await service.login({
-      email: user.email,
-      password: 'password123',
-    }, TEST_ORIGIN);
-    const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualTokens.tokens.accessToken, {
+    const actualSession = await loginForSession();
+    const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualSession.tokens.accessToken, {
       secret: 'test-access-secret',
     });
 
@@ -141,11 +175,8 @@ describe('AuthService', () => {
   });
 
   it('omits permissions granted only by an unassigned role', async () => {
-    const actualTokens = await service.login({
-      email: user.email,
-      password: 'password123',
-    }, TEST_ORIGIN);
-    const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualTokens.tokens.accessToken, {
+    const actualSession = await loginForSession();
+    const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualSession.tokens.accessToken, {
       secret: 'test-access-secret',
     });
 
@@ -158,10 +189,7 @@ describe('AuthService', () => {
    * that decodes to anything is a token that tells its holder who they are.
    */
   it('issues an opaque refresh token carrying no readable claims', async () => {
-    const actualSession = await service.login(
-      { email: user.email, password: 'password123' },
-      TEST_ORIGIN,
-    );
+    const actualSession = await loginForSession();
 
     expect(actualSession.refreshToken).not.toContain('.');
     expect(() => JSON.parse(Buffer.from(actualSession.refreshToken, 'base64url').toString('utf8')))
@@ -170,10 +198,7 @@ describe('AuthService', () => {
   });
 
   it('never returns the refresh token in the response body', async () => {
-    const actualSession = await service.login(
-      { email: user.email, password: 'password123' },
-      TEST_ORIGIN,
-    );
+    const actualSession = await loginForSession();
 
     expect(Object.keys(actualSession.tokens)).toEqual(['accessToken', 'tokenType', 'expiresIn']);
   });
@@ -199,10 +224,7 @@ describe('AuthService', () => {
   });
 
   it('persists only a hash of the refresh token, never the token itself', async () => {
-    const actualSession = await service.login(
-      { email: user.email, password: 'password123' },
-      TEST_ORIGIN,
-    );
+    const actualSession = await loginForSession();
 
     const [storedRecord] = (authRepositoryMock.createRefreshToken as jest.Mock).mock.calls[0] as [
       { tokenHash: string; userId: string; familyId: string },

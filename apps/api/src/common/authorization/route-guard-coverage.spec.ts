@@ -5,6 +5,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../app.module';
 import { AuditedRouteOptions } from '../audit/audit.types';
 import { AUDITED_ROUTE_KEY } from '../audit/audited.decorator';
+import { MfaRouteOptions } from '../auth/mfa-route-options.type';
+import { MFA_ROUTE_KEY } from '../auth/mfa-route.decorator';
 import { PERMISSION_CHECKER_KEY } from './check-permissions.decorator';
 import { PermissionRule } from './permission-rule.type';
 import { PUBLIC_ROUTE_KEY } from './public-route.decorator';
@@ -27,9 +29,12 @@ const ROUTE_METHOD_METADATA_KEY = 'method';
  * this array is an explicit, diff-visible act in the PR that adds the route.
  */
 const PUBLIC_ROUTE_ALLOWLIST: readonly string[] = [
+  'AuthController.answerMfaChallenge',
+  'AuthController.beginMfaEnrolment',
   'AuthController.login',
   'AuthController.logout',
   'AuthController.refresh',
+  'AuthController.verifyMfaEnrolment',
   'BpjsAntreanWsController.cancel',
   'BpjsAntreanWsController.getRemaining',
   'BpjsAntreanWsController.getStatus',
@@ -53,7 +58,20 @@ type RouteGuardInfo = {
   readonly isPublic: boolean;
   readonly permissionRules: readonly PermissionRule[] | undefined;
   readonly auditedOptions: AuditedRouteOptions | undefined;
+  readonly mfaRouteOptions: MfaRouteOptions | undefined;
 };
+
+/**
+ * SJ-8 — routes that stand the global guards down and authenticate themselves
+ * with `MfaTicketGuard` instead, because they are the machinery that decides
+ * whether a session exists yet. They are public in the metadata sense only;
+ * the spec below proves each one still declares a credential.
+ */
+const SELF_AUTHENTICATING_ROUTES: readonly string[] = [
+  'AuthController.answerMfaChallenge',
+  'AuthController.beginMfaEnrolment',
+  'AuthController.verifyMfaEnrolment',
+];
 
 /**
  * SJ-4 — the controllers whose routes touch patient-identifiable data. Every
@@ -145,6 +163,26 @@ describe('Route guard coverage (deny by default)', () => {
     expect(attributionlessRoutes).toEqual([]);
   });
 
+  it('gives every self-authenticating route an MFA credential declaration', () => {
+    const undeclaredRoutes = SELF_AUTHENTICATING_ROUTES.filter(
+      (route) =>
+        discoveredRoutes.find((discovered) => discovered.route === route)?.mfaRouteOptions ===
+        undefined,
+    );
+    expect(undeclaredRoutes).toEqual([]);
+  });
+
+  it('declares no MFA credential on a route outside that set', () => {
+    // The inverse guard: `@MfaRoute()` also marks a route public, so applying
+    // it anywhere else would quietly remove that route's permission check.
+    const strayRoutes = discoveredRoutes
+      .filter((route) => route.mfaRouteOptions !== undefined)
+      .map((route) => route.route)
+      .filter((route) => !SELF_AUTHENTICATING_ROUTES.includes(route))
+      .sort();
+    expect(strayRoutes).toEqual([]);
+  });
+
   it('keeps public routes limited to the reviewed allowlist', () => {
     const publicRoutes = discoveredRoutes
       .filter((route) => route.isPublic)
@@ -208,11 +246,16 @@ function buildRouteInfo(input: {
     AUDITED_ROUTE_KEY,
     [handler, controllerClass],
   );
+  const mfaRouteOptions = reflector.getAllAndOverride<MfaRouteOptions | undefined>(MFA_ROUTE_KEY, [
+    handler,
+    controllerClass,
+  ]);
   return {
     route: `${controllerClass.name}.${methodName}`,
     httpRoute: `${RequestMethod[requestMethod]} ${routePath}`,
     isPublic,
     permissionRules,
     auditedOptions,
+    mfaRouteOptions,
   };
 }

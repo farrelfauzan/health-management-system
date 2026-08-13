@@ -39,6 +39,21 @@ const REQUIRED_KEYS: readonly string[] = ['DATABASE_URL', 'JWT_ACCESS_SECRET'];
 const REQUIRED_SECRET_KEYS: readonly string[] = ['JWT_ACCESS_SECRET'];
 
 /**
+ * Keys required in production only (SJ-8).
+ *
+ * `MFA_SECRET_ENCRYPTION_KEY` is here rather than in `REQUIRED_KEYS` because
+ * the alternative failure is worse than a missing key. Without it nobody can
+ * enrol a second factor, so `MfaEnforcementService` has to leave enforcement
+ * off — otherwise the first deployment after this ticket locks every
+ * administrator out of the clinic with no recovery path short of an operator
+ * editing the database. Failing open is the right call for that hour and the
+ * wrong call for a year, so production refuses to boot instead, and
+ * development and CI — which run thousands of tests that never reach MFA —
+ * carry on without the key.
+ */
+const PRODUCTION_REQUIRED_KEYS: readonly string[] = ['MFA_SECRET_ENCRYPTION_KEY'];
+
+/**
  * Fails startup when a required secret is absent, and — in production — when
  * it is present but worthless (SJ-5).
  *
@@ -53,7 +68,11 @@ const REQUIRED_SECRET_KEYS: readonly string[] = ['JWT_ACCESS_SECRET'];
  * settings, so this is a floor, not an allowlist.
  */
 export function validateEnvironment(config: Record<string, unknown>): Record<string, unknown> {
-  const problems = [...collectMissingKeys(config), ...collectWeakProductionSecrets(config)];
+  const problems = [
+    ...collectMissingKeys(config),
+    ...collectMissingProductionKeys(config),
+    ...collectWeakProductionSecrets(config),
+  ];
   if (problems.length > 0) {
     throw new Error(
       `Invalid environment configuration:\n${problems.map((problem) => `  - ${problem}`).join('\n')}`,
@@ -65,6 +84,15 @@ export function validateEnvironment(config: Record<string, unknown>): Record<str
 function collectMissingKeys(config: Record<string, unknown>): string[] {
   return REQUIRED_KEYS.filter((key) => !readNonEmptyString(config, key)).map(
     (key) => `${key} is required but missing or empty`,
+  );
+}
+
+function collectMissingProductionKeys(config: Record<string, unknown>): string[] {
+  if (config.NODE_ENV !== 'production') {
+    return [];
+  }
+  return PRODUCTION_REQUIRED_KEYS.filter((key) => !readNonEmptyString(config, key)).map(
+    (key) => `${key} is required in production but missing or empty`,
   );
 }
 

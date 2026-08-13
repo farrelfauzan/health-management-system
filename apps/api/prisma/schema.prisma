@@ -39,6 +39,16 @@ enum AuditAction {
   /// admin action, or the user signing out everywhere.
   SESSION_REVOKED_ALL
   USER_LOGOUT
+  /// TOTP multi-factor events (SJ-8). Enrolment and reset are the ones an
+  /// investigator reads backwards from: `MFA_RESET` is an admin removing
+  /// someone else's second factor, which is the single most abusable action in
+  /// the feature, and `MFA_RECOVERY_USED` means a code that can never be
+  /// presented again just was.
+  MFA_ENROLLED
+  MFA_CHALLENGE_FAILED
+  MFA_RECOVERY_USED
+  MFA_RECOVERY_REGENERATED
+  MFA_RESET
   USER_CREATED
   USER_UPDATED
   ROLE_ASSIGNED
@@ -455,6 +465,8 @@ model User {
   voidedInvoices           Invoice[]                    @relation("InvoiceVoidedBy")
   receivedPayments         Payment[]                    @relation("PaymentCashier")
   refreshTokens            RefreshToken[]
+  mfaCredential            MfaCredential?
+  mfaRecoveryCodes         MfaRecoveryCode[]
   privacyNoticeRecords     PatientPrivacyNoticeRecord[] @relation("PrivacyNoticeActor")
   chatSessions             ChatSession[]                @relation("ChatSessionOwner")
   chatMessages             ChatMessage[]                @relation("ChatMessageAuthor")
@@ -529,6 +541,71 @@ model RefreshToken {
   @@index([expiresAt])
   @@index([revokedAt])
   @@map("refresh_tokens")
+}
+
+/// One user's TOTP second factor (SJ-8). At most one per user — re-enrolling
+/// replaces the row rather than accumulating secrets, so "which of these is
+/// live" is never a question.
+///
+/// The secret is **encrypted, not hashed**, and that asymmetry with
+/// `password_hash` is deliberate rather than an oversight. TOTP is a symmetric
+/// construction: the server has to recompute the same HMAC the phone does, so
+/// it needs the secret back. AES-256-GCM under `MFA_SECRET_ENCRYPTION_KEY`
+/// means a database disclosure alone does not yield a working second factor —
+/// an attacker needs the application's key as well.
+///
+/// `verifiedAt` is the enforcement switch. A row exists from the moment
+/// enrolment starts, but until the user proves possession by returning a
+/// current code it is inert: login is unchanged, and nothing can lock anyone
+/// out. Enrolment that is started and abandoned leaves an unverified row that
+/// the next attempt overwrites.
+///
+/// `lastAcceptedTimeStep` is the replay guard. RFC 6238 codes stay valid for a
+/// whole 30-second step, so without recording the step that was accepted, a
+/// code observed over someone's shoulder — or replayed from a proxy log — works
+/// again for the rest of its window. Storing the counter makes every code
+/// strictly single-use.
+model MfaCredential {
+  id                   String    @id @default(uuid()) @db.Uuid
+  userId               String    @unique @map("user_id") @db.Uuid
+  secretEncrypted      String    @map("secret_encrypted")
+  /// Which `MFA_SECRET_ENCRYPTION_KEY` sealed this row, so a key rotation can
+  /// find what still needs re-sealing instead of guessing.
+  keyVersion           Int       @default(1) @map("key_version")
+  verifiedAt           DateTime? @map("verified_at")
+  lastAcceptedTimeStep BigInt?   @map("last_accepted_time_step")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([verifiedAt])
+  @@map("mfa_credentials")
+}
+
+/// A single-use fallback for a lost authenticator (SJ-8).
+///
+/// Only the SHA-256 is stored, so the plaintext exists exactly once — in the
+/// response that issued it. Plain SHA-256 rather than Argon2 is right here:
+/// the code is 75 bits of CSPRNG output, so there is no dictionary to slow an
+/// attacker down and nothing an offline search can reach. The hash is salted
+/// with the owner's id, so one precomputation cannot be reused across users.
+///
+/// Consumed codes are kept, not deleted. `usedAt` is the audit trail — "this
+/// recovery code was spent at 03:14 from that address" is exactly the question
+/// asked after an account is suspected compromised, and a deleted row answers
+/// nothing.
+model MfaRecoveryCode {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  codeHash  String    @unique @map("code_hash")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, usedAt])
+  @@map("mfa_recovery_codes")
 }
 
 /// Sequence source for medical record numbers. Allocation is a single atomic

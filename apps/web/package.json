@@ -27,6 +27,7 @@
     "geist": "^1.7.2",
     "next": "^16.2.12",
     "next-intl": "^4.13.4",
+    "qrcode": "^1.5.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
@@ -38,6 +39,7 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.18.0",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^6.0.3",

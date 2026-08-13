@@ -5,9 +5,13 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { AuthControllerLoginV1200DataMfaTicket } from './authControllerLoginV1200DataMfaTicket';
+import type { AuthControllerLoginV1200DataTokens } from './authControllerLoginV1200DataTokens';
 
 export type AuthControllerLoginV1200Data = {
-  accessToken: string;
-  tokenType: string;
-  expiresIn: string;
+  status: string;
+  tokens?: AuthControllerLoginV1200DataTokens;
+  mfaTicket?: AuthControllerLoginV1200DataMfaTicket;
+  mfaEnrolmentRequired?: boolean;
+  mfaEnrolmentDeadline?: string;
 };

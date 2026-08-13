@@ -4,10 +4,15 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { JwtSecretsService } from '../../common/config/jwt-secrets.service';
 import { resolveJwtExpiresIn } from '../../common/auth/jwt-expires.util';
+import { MfaTicketGuard } from '../../common/auth/mfa-ticket.guard';
 import { AuthController } from './controller/auth.controller';
 import { AuthRepository } from './repository/auth.repository';
+import { MfaRepository } from './repository/mfa.repository';
 import { AuthService } from './service/auth.service';
 import { LoginThrottleService } from './service/login-throttle.service';
+import { MfaEnforcementService } from './service/mfa-enforcement.service';
+import { MfaTicketService } from './service/mfa-ticket.service';
+import { MfaService } from './service/mfa.service';
 import { RefreshTokenCleanupWorker } from './service/refresh-token-cleanup.worker';
 
 @Module({
@@ -23,7 +28,20 @@ import { RefreshTokenCleanupWorker } from './service/refresh-token-cleanup.worke
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthRepository, AuthService, LoginThrottleService, RefreshTokenCleanupWorker],
-  exports: [AuthRepository, AuthService, JwtModule],
+  providers: [
+    AuthRepository,
+    MfaRepository,
+    AuthService,
+    LoginThrottleService,
+    MfaEnforcementService,
+    MfaTicketService,
+    MfaService,
+    // Resolved by `@MfaRoute()`'s `UseGuards`, which Nest instantiates from
+    // this module's injector — so the guard has to be a provider here even
+    // though nothing injects it by name.
+    MfaTicketGuard,
+    RefreshTokenCleanupWorker,
+  ],
+  exports: [AuthRepository, AuthService, MfaEnforcementService, MfaTicketService, JwtModule],
 })
 export class AuthModule {}

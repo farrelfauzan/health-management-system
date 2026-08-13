@@ -227,6 +227,8 @@ export type UserWhereInput = {
   voidedInvoices?: Prisma.InvoiceListRelationFilter
   receivedPayments?: Prisma.PaymentListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
+  mfaCredential?: Prisma.XOR<Prisma.MfaCredentialNullableScalarRelationFilter, Prisma.MfaCredentialWhereInput> | null
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeListRelationFilter
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
   chatSessions?: Prisma.ChatSessionListRelationFilter
   chatMessages?: Prisma.ChatMessageListRelationFilter
@@ -268,6 +270,8 @@ export type UserOrderByWithRelationInput = {
   voidedInvoices?: Prisma.InvoiceOrderByRelationAggregateInput
   receivedPayments?: Prisma.PaymentOrderByRelationAggregateInput
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
+  mfaCredential?: Prisma.MfaCredentialOrderByWithRelationInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeOrderByRelationAggregateInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordOrderByRelationAggregateInput
   chatSessions?: Prisma.ChatSessionOrderByRelationAggregateInput
   chatMessages?: Prisma.ChatMessageOrderByRelationAggregateInput
@@ -312,6 +316,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   voidedInvoices?: Prisma.InvoiceListRelationFilter
   receivedPayments?: Prisma.PaymentListRelationFilter
   refreshTokens?: Prisma.RefreshTokenListRelationFilter
+  mfaCredential?: Prisma.XOR<Prisma.MfaCredentialNullableScalarRelationFilter, Prisma.MfaCredentialWhereInput> | null
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeListRelationFilter
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
   chatSessions?: Prisma.ChatSessionListRelationFilter
   chatMessages?: Prisma.ChatMessageListRelationFilter
@@ -381,6 +387,8 @@ export type UserCreateInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -422,6 +430,8 @@ export type UserUncheckedCreateInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -463,6 +473,8 @@ export type UserUpdateInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -504,6 +516,8 @@ export type UserUncheckedUpdateInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -619,6 +633,34 @@ export type UserUpdateOneRequiredWithoutRefreshTokensNestedInput = {
   upsert?: Prisma.UserUpsertWithoutRefreshTokensInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRefreshTokensInput, Prisma.UserUpdateWithoutRefreshTokensInput>, Prisma.UserUncheckedUpdateWithoutRefreshTokensInput>
+}
+
+export type UserCreateNestedOneWithoutMfaCredentialInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMfaCredentialInput, Prisma.UserUncheckedCreateWithoutMfaCredentialInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMfaCredentialInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMfaCredentialNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMfaCredentialInput, Prisma.UserUncheckedCreateWithoutMfaCredentialInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMfaCredentialInput
+  upsert?: Prisma.UserUpsertWithoutMfaCredentialInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMfaCredentialInput, Prisma.UserUpdateWithoutMfaCredentialInput>, Prisma.UserUncheckedUpdateWithoutMfaCredentialInput>
+}
+
+export type UserCreateNestedOneWithoutMfaRecoveryCodesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMfaRecoveryCodesInput, Prisma.UserUncheckedCreateWithoutMfaRecoveryCodesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMfaRecoveryCodesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMfaRecoveryCodesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMfaRecoveryCodesInput, Prisma.UserUncheckedCreateWithoutMfaRecoveryCodesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMfaRecoveryCodesInput
+  upsert?: Prisma.UserUpsertWithoutMfaRecoveryCodesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMfaRecoveryCodesInput, Prisma.UserUpdateWithoutMfaRecoveryCodesInput>, Prisma.UserUncheckedUpdateWithoutMfaRecoveryCodesInput>
 }
 
 export type UserCreateNestedOneWithoutPatientProfilesInput = {
@@ -1100,6 +1142,8 @@ export type UserCreateWithoutRefreshTokensInput = {
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -1140,6 +1184,8 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -1196,6 +1242,8 @@ export type UserUpdateWithoutRefreshTokensInput = {
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -1236,6 +1284,376 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserCreateWithoutMfaCredentialInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutMfaCredentialInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type UserCreateOrConnectWithoutMfaCredentialInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMfaCredentialInput, Prisma.UserUncheckedCreateWithoutMfaCredentialInput>
+}
+
+export type UserUpsertWithoutMfaCredentialInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMfaCredentialInput, Prisma.UserUncheckedUpdateWithoutMfaCredentialInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMfaCredentialInput, Prisma.UserUncheckedCreateWithoutMfaCredentialInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMfaCredentialInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMfaCredentialInput, Prisma.UserUncheckedUpdateWithoutMfaCredentialInput>
+}
+
+export type UserUpdateWithoutMfaCredentialInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMfaCredentialInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserCreateWithoutMfaRecoveryCodesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutMfaRecoveryCodesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type UserCreateOrConnectWithoutMfaRecoveryCodesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMfaRecoveryCodesInput, Prisma.UserUncheckedCreateWithoutMfaRecoveryCodesInput>
+}
+
+export type UserUpsertWithoutMfaRecoveryCodesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMfaRecoveryCodesInput, Prisma.UserUncheckedUpdateWithoutMfaRecoveryCodesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMfaRecoveryCodesInput, Prisma.UserUncheckedCreateWithoutMfaRecoveryCodesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMfaRecoveryCodesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMfaRecoveryCodesInput, Prisma.UserUncheckedUpdateWithoutMfaRecoveryCodesInput>
+}
+
+export type UserUpdateWithoutMfaRecoveryCodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMfaRecoveryCodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -1276,6 +1694,8 @@ export type UserCreateWithoutPatientProfilesInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -1316,6 +1736,8 @@ export type UserUncheckedCreateWithoutPatientProfilesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -1372,6 +1794,8 @@ export type UserUpdateWithoutPatientProfilesInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -1412,6 +1836,8 @@ export type UserUncheckedUpdateWithoutPatientProfilesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -1453,6 +1879,8 @@ export type UserCreateWithoutPrivacyNoticeRecordsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
@@ -1493,6 +1921,8 @@ export type UserUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1549,6 +1979,8 @@ export type UserUpdateWithoutPrivacyNoticeRecordsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
@@ -1589,6 +2021,8 @@ export type UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1628,6 +2062,8 @@ export type UserCreateWithoutDoctorProfileInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -1668,6 +2104,8 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -1724,6 +2162,8 @@ export type UserUpdateWithoutDoctorProfileInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -1764,6 +2204,8 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -1804,6 +2246,8 @@ export type UserCreateWithoutAssignedDoctorPatientsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -1844,6 +2288,8 @@ export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -1889,6 +2335,8 @@ export type UserCreateWithoutUnassignedDoctorPatientsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -1929,6 +2377,8 @@ export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -1985,6 +2435,8 @@ export type UserUpdateWithoutAssignedDoctorPatientsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -2025,6 +2477,8 @@ export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -2076,6 +2530,8 @@ export type UserUpdateWithoutUnassignedDoctorPatientsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -2116,6 +2572,8 @@ export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -2156,6 +2614,8 @@ export type UserCreateWithoutDoctorPatientActivitiesInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -2196,6 +2656,8 @@ export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -2252,6 +2714,8 @@ export type UserUpdateWithoutDoctorPatientActivitiesInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -2292,6 +2756,8 @@ export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -2332,6 +2798,8 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -2372,6 +2840,8 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -2428,6 +2898,8 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -2468,6 +2940,8 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -2508,6 +2982,8 @@ export type UserCreateWithoutCreatedRegistrationsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -2548,6 +3024,8 @@ export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -2604,6 +3082,8 @@ export type UserUpdateWithoutCreatedRegistrationsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -2644,6 +3124,8 @@ export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -2684,6 +3166,8 @@ export type UserCreateWithoutCreatedEncountersInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -2724,6 +3208,8 @@ export type UserUncheckedCreateWithoutCreatedEncountersInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -2780,6 +3266,8 @@ export type UserUpdateWithoutCreatedEncountersInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -2820,6 +3308,8 @@ export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -2860,6 +3350,8 @@ export type UserCreateWithoutRecordedVitalSignsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -2900,6 +3392,8 @@ export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -2956,6 +3450,8 @@ export type UserUpdateWithoutRecordedVitalSignsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -2996,6 +3492,8 @@ export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -3036,6 +3534,8 @@ export type UserCreateWithoutRecordedDiagnosesInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -3076,6 +3576,8 @@ export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -3132,6 +3634,8 @@ export type UserUpdateWithoutRecordedDiagnosesInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -3172,6 +3676,8 @@ export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -3212,6 +3718,8 @@ export type UserCreateWithoutRecordedProceduresInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -3252,6 +3760,8 @@ export type UserUncheckedCreateWithoutRecordedProceduresInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -3308,6 +3818,8 @@ export type UserUpdateWithoutRecordedProceduresInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -3348,6 +3860,8 @@ export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -3388,6 +3902,8 @@ export type UserCreateWithoutDispensedByRecordsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -3428,6 +3944,8 @@ export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -3484,6 +4002,8 @@ export type UserUpdateWithoutDispensedByRecordsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -3524,6 +4044,8 @@ export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -3564,6 +4086,8 @@ export type UserCreateWithoutMedicationStockReceiptsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -3604,6 +4128,8 @@ export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -3660,6 +4186,8 @@ export type UserUpdateWithoutMedicationStockReceiptsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -3700,6 +4228,8 @@ export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -3740,6 +4270,8 @@ export type UserCreateWithoutVoidedInvoicesInput = {
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -3780,6 +4312,8 @@ export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -3825,6 +4359,8 @@ export type UserCreateWithoutCreatedInvoicesInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -3865,6 +4401,8 @@ export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -3921,6 +4459,8 @@ export type UserUpdateWithoutVoidedInvoicesInput = {
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -3961,6 +4501,8 @@ export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -4012,6 +4554,8 @@ export type UserUpdateWithoutCreatedInvoicesInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -4052,6 +4596,8 @@ export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -4092,6 +4638,8 @@ export type UserCreateWithoutReceivedPaymentsInput = {
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -4132,6 +4680,8 @@ export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -4188,6 +4738,8 @@ export type UserUpdateWithoutReceivedPaymentsInput = {
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -4228,6 +4780,8 @@ export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -4268,6 +4822,8 @@ export type UserCreateWithoutRolesInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -4308,6 +4864,8 @@ export type UserUncheckedCreateWithoutRolesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -4353,6 +4911,8 @@ export type UserCreateWithoutAssignedRolesInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -4393,6 +4953,8 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -4438,6 +5000,8 @@ export type UserCreateWithoutUnassignedRolesInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -4478,6 +5042,8 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -4534,6 +5100,8 @@ export type UserUpdateWithoutRolesInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -4574,6 +5142,8 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -4625,6 +5195,8 @@ export type UserUpdateWithoutAssignedRolesInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -4665,6 +5237,8 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -4716,6 +5290,8 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -4756,6 +5332,8 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -4796,6 +5374,8 @@ export type UserCreateWithoutRecordedBpjsReferralsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -4836,6 +5416,8 @@ export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -4892,6 +5474,8 @@ export type UserUpdateWithoutRecordedBpjsReferralsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -4932,6 +5516,8 @@ export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -4973,6 +5559,8 @@ export type UserCreateWithoutCreatedAiProviderConfigsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -5013,6 +5601,8 @@ export type UserUncheckedCreateWithoutCreatedAiProviderConfigsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -5058,6 +5648,8 @@ export type UserCreateWithoutUpdatedAiProviderConfigsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -5098,6 +5690,8 @@ export type UserUncheckedCreateWithoutUpdatedAiProviderConfigsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -5154,6 +5748,8 @@ export type UserUpdateWithoutCreatedAiProviderConfigsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -5194,6 +5790,8 @@ export type UserUncheckedUpdateWithoutCreatedAiProviderConfigsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -5245,6 +5843,8 @@ export type UserUpdateWithoutUpdatedAiProviderConfigsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -5285,6 +5885,8 @@ export type UserUncheckedUpdateWithoutUpdatedAiProviderConfigsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -5325,6 +5927,8 @@ export type UserCreateWithoutChatSessionsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
@@ -5365,6 +5969,8 @@ export type UserUncheckedCreateWithoutChatSessionsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
@@ -5421,6 +6027,8 @@ export type UserUpdateWithoutChatSessionsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
@@ -5461,6 +6069,8 @@ export type UserUncheckedUpdateWithoutChatSessionsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -5501,6 +6111,8 @@ export type UserCreateWithoutChatMessagesInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
@@ -5541,6 +6153,8 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
@@ -5597,6 +6211,8 @@ export type UserUpdateWithoutChatMessagesInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
@@ -5637,6 +6253,8 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -5677,6 +6295,8 @@ export type UserCreateWithoutUploadedDocumentsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -5717,6 +6337,8 @@ export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -5762,6 +6384,8 @@ export type UserCreateWithoutOwnedDocumentsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -5802,6 +6426,8 @@ export type UserUncheckedCreateWithoutOwnedDocumentsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -5858,6 +6484,8 @@ export type UserUpdateWithoutUploadedDocumentsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -5898,6 +6526,8 @@ export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -5949,6 +6579,8 @@ export type UserUpdateWithoutOwnedDocumentsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -5989,6 +6621,8 @@ export type UserUncheckedUpdateWithoutOwnedDocumentsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -6029,6 +6663,8 @@ export type UserCreateWithoutBlockedConversationsInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -6069,6 +6705,8 @@ export type UserUncheckedCreateWithoutBlockedConversationsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -6125,6 +6763,8 @@ export type UserUpdateWithoutBlockedConversationsInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -6165,6 +6805,8 @@ export type UserUncheckedUpdateWithoutBlockedConversationsInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -6205,6 +6847,8 @@ export type UserCreateWithoutConversationMessagesInput = {
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
@@ -6245,6 +6889,8 @@ export type UserUncheckedCreateWithoutConversationMessagesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
   receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
@@ -6301,6 +6947,8 @@ export type UserUpdateWithoutConversationMessagesInput = {
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
@@ -6341,6 +6989,8 @@ export type UserUncheckedUpdateWithoutConversationMessagesInput = {
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
   receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
   privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
@@ -6377,6 +7027,7 @@ export type UserCountOutputType = {
   voidedInvoices: number
   receivedPayments: number
   refreshTokens: number
+  mfaRecoveryCodes: number
   privacyNoticeRecords: number
   chatSessions: number
   chatMessages: number
@@ -6409,6 +7060,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   voidedInvoices?: boolean | UserCountOutputTypeCountVoidedInvoicesArgs
   receivedPayments?: boolean | UserCountOutputTypeCountReceivedPaymentsArgs
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
+  mfaRecoveryCodes?: boolean | UserCountOutputTypeCountMfaRecoveryCodesArgs
   privacyNoticeRecords?: boolean | UserCountOutputTypeCountPrivacyNoticeRecordsArgs
   chatSessions?: boolean | UserCountOutputTypeCountChatSessionsArgs
   chatMessages?: boolean | UserCountOutputTypeCountChatMessagesArgs
@@ -6573,6 +7225,13 @@ export type UserCountOutputTypeCountRefreshTokensArgs<ExtArgs extends runtime.Ty
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountMfaRecoveryCodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MfaRecoveryCodeWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountPrivacyNoticeRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PatientPrivacyNoticeRecordWhereInput
 }
@@ -6664,6 +7323,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   voidedInvoices?: boolean | Prisma.User$voidedInvoicesArgs<ExtArgs>
   receivedPayments?: boolean | Prisma.User$receivedPaymentsArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
+  mfaCredential?: boolean | Prisma.User$mfaCredentialArgs<ExtArgs>
+  mfaRecoveryCodes?: boolean | Prisma.User$mfaRecoveryCodesArgs<ExtArgs>
   privacyNoticeRecords?: boolean | Prisma.User$privacyNoticeRecordsArgs<ExtArgs>
   chatSessions?: boolean | Prisma.User$chatSessionsArgs<ExtArgs>
   chatMessages?: boolean | Prisma.User$chatMessagesArgs<ExtArgs>
@@ -6732,6 +7393,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   voidedInvoices?: boolean | Prisma.User$voidedInvoicesArgs<ExtArgs>
   receivedPayments?: boolean | Prisma.User$receivedPaymentsArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
+  mfaCredential?: boolean | Prisma.User$mfaCredentialArgs<ExtArgs>
+  mfaRecoveryCodes?: boolean | Prisma.User$mfaRecoveryCodesArgs<ExtArgs>
   privacyNoticeRecords?: boolean | Prisma.User$privacyNoticeRecordsArgs<ExtArgs>
   chatSessions?: boolean | Prisma.User$chatSessionsArgs<ExtArgs>
   chatMessages?: boolean | Prisma.User$chatMessagesArgs<ExtArgs>
@@ -6770,6 +7433,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     voidedInvoices: Prisma.$InvoicePayload<ExtArgs>[]
     receivedPayments: Prisma.$PaymentPayload<ExtArgs>[]
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
+    mfaCredential: Prisma.$MfaCredentialPayload<ExtArgs> | null
+    mfaRecoveryCodes: Prisma.$MfaRecoveryCodePayload<ExtArgs>[]
     privacyNoticeRecords: Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>[]
     chatSessions: Prisma.$ChatSessionPayload<ExtArgs>[]
     chatMessages: Prisma.$ChatMessagePayload<ExtArgs>[]
@@ -7212,6 +7877,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   voidedInvoices<T extends Prisma.User$voidedInvoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$voidedInvoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   receivedPayments<T extends Prisma.User$receivedPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$receivedPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  mfaCredential<T extends Prisma.User$mfaCredentialArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mfaCredentialArgs<ExtArgs>>): Prisma.Prisma__MfaCredentialClient<runtime.Types.Result.GetResult<Prisma.$MfaCredentialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  mfaRecoveryCodes<T extends Prisma.User$mfaRecoveryCodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mfaRecoveryCodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MfaRecoveryCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   privacyNoticeRecords<T extends Prisma.User$privacyNoticeRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$privacyNoticeRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chatSessions<T extends Prisma.User$chatSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$chatSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chatMessages<T extends Prisma.User$chatMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$chatMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -8147,6 +8814,49 @@ export type User$refreshTokensArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.RefreshTokenScalarFieldEnum | Prisma.RefreshTokenScalarFieldEnum[]
+}
+
+/**
+ * User.mfaCredential
+ */
+export type User$mfaCredentialArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MfaCredential
+   */
+  select?: Prisma.MfaCredentialSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MfaCredential
+   */
+  omit?: Prisma.MfaCredentialOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MfaCredentialInclude<ExtArgs> | null
+  where?: Prisma.MfaCredentialWhereInput
+}
+
+/**
+ * User.mfaRecoveryCodes
+ */
+export type User$mfaRecoveryCodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MfaRecoveryCode
+   */
+  select?: Prisma.MfaRecoveryCodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MfaRecoveryCode
+   */
+  omit?: Prisma.MfaRecoveryCodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MfaRecoveryCodeInclude<ExtArgs> | null
+  where?: Prisma.MfaRecoveryCodeWhereInput
+  orderBy?: Prisma.MfaRecoveryCodeOrderByWithRelationInput | Prisma.MfaRecoveryCodeOrderByWithRelationInput[]
+  cursor?: Prisma.MfaRecoveryCodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MfaRecoveryCodeScalarFieldEnum | Prisma.MfaRecoveryCodeScalarFieldEnum[]
 }
 
 /**

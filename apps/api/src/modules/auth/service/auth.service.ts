@@ -8,7 +8,9 @@ import {
   IssueRefreshTokenInput,
   JwtPayload,
   IssuedSession,
+  LoginOutcome,
   LogoutResult,
+  MfaRequirement,
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -20,7 +22,10 @@ import { RequestContext } from '../../../common/observability/observability.type
 import { AuditAction } from '../../../generated/prisma/client';
 import { LoginDto } from '../dto/login.dto';
 import { AuthRepository } from '../repository/auth.repository';
+import { MfaRepository } from '../repository/mfa.repository';
 import { LoginThrottleService } from './login-throttle.service';
+import { MfaEnforcementService } from './mfa-enforcement.service';
+import { MfaTicketService } from './mfa-ticket.service';
 
 /** 256 bits, per SJ-6. */
 const REFRESH_TOKEN_BYTES = 32;
@@ -72,6 +77,9 @@ export class AuthService {
     private readonly jwtSecrets: JwtSecretsService,
     private readonly passwordHasher: PasswordHasherService,
     private readonly loginThrottle: LoginThrottleService,
+    private readonly mfaRepository: MfaRepository,
+    private readonly mfaEnforcement: MfaEnforcementService,
+    private readonly mfaTickets: MfaTicketService,
   ) {}
 
   /**
@@ -84,8 +92,15 @@ export class AuthService {
    * address rather than a resolved user, so a nonexistent account backs off
    * exactly like a real one — otherwise the throttle itself would answer the
    * question the rest of this is hiding.
+   *
+   * Since SJ-8 a correct password is not always the end of it: a privileged
+   * account receives a two-minute ticket instead of a session and has to spend
+   * it on the challenge endpoint. That branch sits *after* every
+   * timing-equalised failure path on purpose — it is reached only once the
+   * password is known good, so it can never become a way to ask whether an
+   * account exists or which accounts are privileged.
    */
-  async login(payload: LoginDto, origin: RequestContext): Promise<IssuedSession> {
+  async login(payload: LoginDto, origin: RequestContext): Promise<LoginOutcome> {
     const identifierHash = this.loginThrottle.hashIdentifier(payload.email);
     await this.loginThrottle.assertWithinLimits({ identifierHash, ipAddress: origin.ipAddress });
     const user = await this.authRepository.findUserByEmail(payload.email);
@@ -121,19 +136,96 @@ export class AuthService {
       roles: this.resolveActiveRoleCodes(user.roles),
       permissions: this.resolveActivePermissionCodes(user.roles),
     };
+    const requirement = this.mfaEnforcement.evaluate(claims.permissions);
+    const secondFactorTicket = await this.resolveSecondFactorTicket(user.id, requirement);
+    if (secondFactorTicket) {
+      return secondFactorTicket;
+    }
+    return {
+      kind: 'SESSION',
+      session: await this.issueSession(claims, origin, AuditAction.USER_LOGIN),
+      enrolmentRequired: requirement.isPrivileged && this.mfaEnforcement.isEnforceable,
+      enrolmentDeadline: requirement.graceUntil,
+    };
+  }
+
+  /**
+   * The token-issuance backstop (SJ-8), or null when the caller may proceed.
+   *
+   * This is the only place that decides a password was not enough, and it is
+   * placed at issuance rather than on individual routes because that is the
+   * one chokepoint every session must pass. A guard on business endpoints
+   * would have to be remembered on each new route; a check here cannot be
+   * forgotten, because forgetting it means not issuing a token at all.
+   */
+  private async resolveSecondFactorTicket(
+    userId: string,
+    requirement: MfaRequirement,
+  ): Promise<LoginOutcome | null> {
+    const verifiedAt = await this.mfaRepository.findVerifiedAt(userId);
+    if (verifiedAt) {
+      return {
+        kind: 'MFA_TICKET',
+        status: 'MFA_REQUIRED',
+        ticket: await this.mfaTickets.issueTicket(userId, 'mfa_challenge'),
+        expiresIn: `${this.mfaTickets.ticketLifetimeSeconds}s`,
+      };
+    }
+    // No factor enrolled. Only a privileged account is stopped, only once the
+    // grace period is over, and never on a deployment that has no encryption
+    // key — without one, enrolment is impossible and refusing here would lock
+    // every administrator out with no way back in.
+    if (!requirement.isPrivileged || requirement.isWithinGrace || !this.mfaEnforcement.isEnforceable) {
+      return null;
+    }
+    return {
+      kind: 'MFA_TICKET',
+      status: 'MFA_ENROLMENT_REQUIRED',
+      ticket: await this.mfaTickets.issueTicket(userId, 'mfa_enrolment'),
+      expiresIn: `${this.mfaTickets.ticketLifetimeSeconds}s`,
+    };
+  }
+
+  /**
+   * Issues a session for a user who has satisfied every factor. The single
+   * place a refresh-token family is born, called from login, from a completed
+   * MFA challenge, and from a completed forced enrolment.
+   */
+  async issueSessionForVerifiedUser(userId: string, origin: RequestContext): Promise<IssuedSession> {
+    const user = await this.authRepository.findUserById(userId);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    return this.issueSession(
+      {
+        sub: user.id,
+        email: user.email,
+        roles: this.resolveActiveRoleCodes(user.roles),
+        permissions: this.resolveActivePermissionCodes(user.roles),
+      },
+      origin,
+      AuditAction.USER_LOGIN,
+    );
+  }
+
+  private async issueSession(
+    claims: JwtPayload,
+    origin: RequestContext,
+    auditAction: AuditAction,
+  ): Promise<IssuedSession> {
     const accessToken = await this.issueAccessToken(claims);
     const issuedRefreshToken = this.issueRefreshToken({
-      userId: user.id,
+      userId: claims.sub,
       familyId: randomUUID(),
       ipAddress: origin.ipAddress,
       userAgent: origin.userAgent,
     });
     await this.authRepository.createRefreshToken(issuedRefreshToken.record);
     await this.auditService.record({
-      action: AuditAction.USER_LOGIN,
+      action: auditAction,
       resource: 'auth',
-      actorUserId: user.id,
-      resourceId: user.id,
+      actorUserId: claims.sub,
+      resourceId: claims.sub,
       ipAddress: origin.ipAddress,
       requestId: origin.requestId,
     });
@@ -201,6 +293,7 @@ export class AuthService {
       roles: this.resolveActiveRoleCodes(user.roles),
       permissions: this.resolveActivePermissionCodes(user.roles),
     };
+    await this.assertSecondFactorSatisfied(user.id, claims.permissions);
     const accessToken = await this.issueAccessToken(claims);
     await this.auditService.record({
       action: AuditAction.TOKEN_REFRESHED,
@@ -221,6 +314,35 @@ export class AuthService {
       roles: claims.roles,
       sessionExpiresAt: nextToken.record.expiresAt,
     };
+  }
+
+  /**
+   * Closes the door on a session that predates the requirement (SJ-8).
+   *
+   * Refresh is the loophole the login backstop cannot see. Promote a user to
+   * an admin role and their existing refresh token would otherwise keep
+   * minting access tokens for a week without ever passing a challenge. Killing
+   * the family rather than merely refusing sends them back through login,
+   * which is the path that hands out an enrolment ticket — a bare 401 would
+   * leave a client retrying a token that will never work again.
+   */
+  private async assertSecondFactorSatisfied(
+    userId: string,
+    permissionKeys: string[],
+  ): Promise<void> {
+    if (!this.mfaEnforcement.isEnforceable) {
+      return;
+    }
+    const requirement = this.mfaEnforcement.evaluate(permissionKeys);
+    if (!requirement.isPrivileged || requirement.isWithinGrace) {
+      return;
+    }
+    const verifiedAt = await this.mfaRepository.findVerifiedAt(userId);
+    if (verifiedAt) {
+      return;
+    }
+    await this.authRepository.revokeAllUserRefreshTokens(userId);
+    throw new UnauthorizedException('Invalid refresh token');
   }
 
   /**
