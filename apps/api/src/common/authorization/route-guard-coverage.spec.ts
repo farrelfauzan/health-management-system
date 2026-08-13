@@ -31,8 +31,10 @@ const ROUTE_METHOD_METADATA_KEY = 'method';
 const PUBLIC_ROUTE_ALLOWLIST: readonly string[] = [
   'AuthController.answerMfaChallenge',
   'AuthController.beginMfaEnrolment',
+  'AuthController.lockSession',
   'AuthController.login',
   'AuthController.logout',
+  'AuthController.recordSessionActivity',
   'AuthController.refresh',
   'AuthController.verifyMfaEnrolment',
   'BpjsAntreanWsController.cancel',

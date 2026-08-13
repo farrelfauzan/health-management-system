@@ -25,6 +25,7 @@ import { AuthRepository } from '../repository/auth.repository';
 import { MfaRepository } from '../repository/mfa.repository';
 import { LoginThrottleService } from './login-throttle.service';
 import { MfaEnforcementService } from './mfa-enforcement.service';
+import { SessionPolicyService } from './session-policy.service';
 import { MfaTicketService } from './mfa-ticket.service';
 
 /** 256 bits, per SJ-6. */
@@ -80,6 +81,7 @@ export class AuthService {
     private readonly mfaRepository: MfaRepository,
     private readonly mfaEnforcement: MfaEnforcementService,
     private readonly mfaTickets: MfaTicketService,
+    private readonly sessionPolicy: SessionPolicyService,
   ) {}
 
   /**
@@ -266,8 +268,25 @@ export class AuthService {
     const result = await this.authRepository.consumeRefreshToken({
       tokenHash,
       graceWindowMs: REFRESH_GRACE_WINDOW_MS,
+      idleTimeoutMs: this.sessionPolicy.idleTimeoutMs,
       nextToken: nextToken.record,
     });
+    // SJ-9 — the session was abandoned. Audited as its own verb rather than
+    // folded into a generic refusal: "a terminal sat unattended with a session
+    // open" is a workflow finding a clinic can act on, and it is invisible if
+    // it looks like every other failed refresh.
+    if (result.outcome === 'IDLE_TIMEOUT') {
+      await this.auditService.record({
+        action: AuditAction.SESSION_TIMEOUT,
+        resource: 'auth',
+        actorUserId: result.userId ?? null,
+        resourceId: result.familyId ?? null,
+        ipAddress: origin.ipAddress,
+        requestId: origin.requestId,
+        metadata: { idleTimeoutMinutes: this.sessionPolicy.idleTimeoutMinutes },
+      });
+      throw new UnauthorizedException('Invalid refresh token');
+    }
     if (result.outcome === 'REUSE_DETECTED') {
       await this.auditService.record({
         action: AuditAction.TOKEN_REUSE,
@@ -314,6 +333,53 @@ export class AuthService {
       roles: claims.roles,
       sessionExpiresAt: nextToken.record.expiresAt,
     };
+  }
+
+  /**
+   * Reports that a session is still in use, without rotating it (SJ-9).
+   *
+   * The browser cannot be trusted to decide when a session is alive — that is
+   * why the timeout is enforced server-side at all. What the browser *can*
+   * legitimately report is that a human is interacting with it, and this is
+   * the narrowest possible channel for saying so: it extends a session that is
+   * still inside its window and cannot resurrect one that is not.
+   *
+   * Without it, someone reading a long patient record — present, scrolling,
+   * making no API calls — is indistinguishable from someone who walked away,
+   * and gets logged out mid-sentence.
+   *
+   * Never throws. A heartbeat is advisory; the caller's next real request will
+   * discover the session is gone through the ordinary refresh path, and
+   * failing loudly here would only add an error nobody can act on.
+   */
+  async recordSessionActivity(refreshToken: string): Promise<boolean> {
+    const touched = await this.authRepository.touchRefreshToken({
+      tokenHash: this.hashRefreshToken(refreshToken),
+      idleTimeoutMs: this.sessionPolicy.idleTimeoutMs,
+    });
+    return touched !== null;
+  }
+
+  /** The threshold the client counts down to, so the two never disagree. */
+  get idleTimeoutSeconds(): number {
+    return Math.round(this.sessionPolicy.idleTimeoutMs / 1_000);
+  }
+
+  get warningLeadSeconds(): number {
+    return this.sessionPolicy.warningLeadSeconds;
+  }
+
+  /**
+   * Ends a session because the workstation is being handed over (SJ-9).
+   *
+   * Mechanically identical to `logout` — the family dies either way — and
+   * separate only in the audit trail. "Are staff actually locking terminals
+   * when they walk away" is a question a clinic will eventually ask, and it is
+   * unanswerable if a deliberate hand-off is recorded the same way as closing
+   * a browser tab at the end of a shift.
+   */
+  async lockSession(refreshToken: string, origin: RequestContext): Promise<LogoutResult> {
+    return this.endSession(refreshToken, origin, AuditAction.SESSION_LOCK);
   }
 
   /**
@@ -364,6 +430,14 @@ export class AuthService {
   }
 
   async logout(refreshToken: string, origin: RequestContext): Promise<LogoutResult> {
+    return this.endSession(refreshToken, origin, AuditAction.USER_LOGOUT);
+  }
+
+  private async endSession(
+    refreshToken: string,
+    origin: RequestContext,
+    auditAction: AuditAction,
+  ): Promise<LogoutResult> {
     const family = await this.authRepository.findRefreshTokenFamilyByHash(
       this.hashRefreshToken(refreshToken),
     );
@@ -375,7 +449,7 @@ export class AuthService {
     }
     await this.authRepository.revokeRefreshTokenFamily(family.familyId);
     await this.auditService.record({
-      action: AuditAction.USER_LOGOUT,
+      action: auditAction,
       resource: 'auth',
       resourceId: family.familyId,
       ipAddress: origin.ipAddress,

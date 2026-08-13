@@ -20,6 +20,24 @@ export type LogoutResult = {
 };
 
 /**
+ * What the browser needs to run its own idle countdown (SJ-9).
+ *
+ * The server sends the threshold rather than the client hard-coding it, so a
+ * clinic that changes `SESSION_IDLE_TIMEOUT_MINUTES` does not end up with a
+ * warning modal that fires at the wrong moment — a countdown that disagrees
+ * with the server is worse than none, because it teaches people the warning
+ * is meaningless.
+ *
+ * `alive` is false once the session is already gone, which lets a tab that
+ * woke from sleep find out without waiting for its next real request.
+ */
+export type SessionHeartbeat = {
+  alive: boolean;
+  idleTimeoutSeconds: number;
+  warningLeadSeconds: number;
+};
+
+/**
  * How far a login got (SJ-8).
  *
  * - `AUTHENTICATED` — password was enough; `tokens` is present.

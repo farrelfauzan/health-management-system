@@ -15,6 +15,7 @@ import { AuthService } from './service/auth.service';
 import { LoginThrottleService } from './service/login-throttle.service';
 import { MfaEnforcementService } from './service/mfa-enforcement.service';
 import { MfaTicketService } from './service/mfa-ticket.service';
+import { SessionPolicyService } from './service/session-policy.service';
 
 /**
  * SJ-7 against real Postgres. The failure streak, the per-IP window and the
@@ -78,6 +79,7 @@ describe('Password policy and login throttling against Postgres', () => {
       new MfaRepository(prisma, new MfaCryptoService(configService)),
       new MfaEnforcementService(configService, new MfaCryptoService(configService)),
       new MfaTicketService(new JwtService(), new JwtSecretsService(configService)),
+        new SessionPolicyService(configService),
     );
     email = await createUserWithHash('primary', await passwordHasher.hashPassword(PASSWORD));
   });

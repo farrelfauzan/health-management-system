@@ -21,6 +21,7 @@ import { AuthService } from './service/auth.service';
 import { LoginThrottleService } from './service/login-throttle.service';
 import { MfaEnforcementService } from './service/mfa-enforcement.service';
 import { MfaTicketService } from './service/mfa-ticket.service';
+import { SessionPolicyService } from './service/session-policy.service';
 import { MfaService } from './service/mfa.service';
 import { createTotpBase32Plugin } from './service/totp-base32.plugin';
 
@@ -97,6 +98,7 @@ describe('TOTP multi-factor authentication against Postgres', () => {
       repository,
       enforcement,
       tickets,
+      new SessionPolicyService(configService),
     );
     const mfa = new MfaService(
       repository,
@@ -350,12 +352,21 @@ describe('TOTP multi-factor authentication against Postgres', () => {
     it('does not enforce on a deployment with no encryption key', async () => {
       const email = `${TEST_MARKER}-unconfigured@example.test`;
       await createUser('unconfigured', adminRoleId);
+      // `ConfigService.get` reads `process.env` *before* the object it was
+      // constructed with, so passing an empty key here proves nothing on a
+      // developer machine that has one in `.env` — the service would quietly
+      // find the real key and this case would test the opposite of its name.
+      // Removing it for the duration is the only way to actually build the
+      // unconfigured deployment this case is about.
+      const realKey = process.env.MFA_SECRET_ENCRYPTION_KEY;
+      delete process.env.MFA_SECRET_ENCRYPTION_KEY;
       const configService = new ConfigService({
         JWT_ACCESS_SECRET: 'sj8-access-secret',
         JWT_ACCESS_EXPIRES_IN: '15m',
         JWT_REFRESH_EXPIRES_IN: '7d',
       });
       const crypto = new MfaCryptoService(configService);
+      expect(crypto.isConfigured).toBe(false);
       const auth = new AuthService(
         authRepository,
         new JwtService(),
@@ -367,11 +378,18 @@ describe('TOTP multi-factor authentication against Postgres', () => {
         new MfaRepository(prisma, crypto),
         new MfaEnforcementService(configService, crypto),
         new MfaTicketService(new JwtService(), new JwtSecretsService(configService)),
+        new SessionPolicyService(configService),
       );
 
-      const outcome = await auth.login({ email, password: PASSWORD }, originFrom(88));
+      try {
+        const outcome = await auth.login({ email, password: PASSWORD }, originFrom(88));
 
-      expect(outcome.kind).toBe('SESSION');
+        expect(outcome.kind).toBe('SESSION');
+      } finally {
+        if (realKey !== undefined) {
+          process.env.MFA_SECRET_ENCRYPTION_KEY = realKey;
+        }
+      }
     });
   });
 

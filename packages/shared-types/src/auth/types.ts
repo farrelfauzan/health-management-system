@@ -66,7 +66,14 @@ export type RefreshTokenOutcome =
   | 'GRACE_REISSUED'
   | 'REUSE_DETECTED'
   | 'INVALID'
-  | 'EXPIRED';
+  | 'EXPIRED'
+  /**
+   * Nobody touched this session inside the idle threshold (SJ-9). Separate
+   * from `EXPIRED`, which is the token reaching its own end of life, and from
+   * `REUSE_DETECTED`, which is an accusation — a timeout is nobody's fault and
+   * should not read like theft in the audit log.
+   */
+  | 'IDLE_TIMEOUT';
 
 /**
  * What the auth service hands the controller: the body the client sees, plus

@@ -12,6 +12,7 @@ import { AuthService } from './service/auth.service';
 import { LoginThrottleService } from './service/login-throttle.service';
 import { MfaEnforcementService } from './service/mfa-enforcement.service';
 import { MfaTicketService } from './service/mfa-ticket.service';
+import { SessionPolicyService } from './service/session-policy.service';
 import { MfaService } from './service/mfa.service';
 import { RefreshTokenCleanupWorker } from './service/refresh-token-cleanup.worker';
 
@@ -35,6 +36,7 @@ import { RefreshTokenCleanupWorker } from './service/refresh-token-cleanup.worke
     LoginThrottleService,
     MfaEnforcementService,
     MfaTicketService,
+    SessionPolicyService,
     MfaService,
     // Resolved by `@MfaRoute()`'s `UseGuards`, which Nest instantiates from
     // this module's injector — so the guard has to be a provider here even
@@ -42,6 +44,13 @@ import { RefreshTokenCleanupWorker } from './service/refresh-token-cleanup.worke
     MfaTicketGuard,
     RefreshTokenCleanupWorker,
   ],
-  exports: [AuthRepository, AuthService, MfaEnforcementService, MfaTicketService, JwtModule],
+  exports: [
+    AuthRepository,
+    AuthService,
+    MfaEnforcementService,
+    MfaTicketService,
+    SessionPolicyService,
+    JwtModule,
+  ],
 })
 export class AuthModule {}

@@ -12,6 +12,7 @@ import { PasswordHasherService } from '../../../common/crypto/password-hasher.se
 import { LoginThrottleService } from './login-throttle.service';
 import { MfaEnforcementService } from './mfa-enforcement.service';
 import { MfaTicketService } from './mfa-ticket.service';
+import { SessionPolicyService } from './session-policy.service';
 import { RequestContext } from '../../../common/observability/observability.types';
 import { AuthRepository } from '../repository/auth.repository';
 import { MfaRepository } from '../repository/mfa.repository';
@@ -74,6 +75,7 @@ describe('AuthService', () => {
     mfaRepositoryMock,
     mfaEnforcement,
     new MfaTicketService(jwtService, jwtSecretsService),
+    new SessionPolicyService(configService),
   );
 
   const user = {
