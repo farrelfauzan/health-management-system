@@ -24,6 +24,10 @@
 }
 
 http://localhost {
+	# Stripped here too, not just on the HTTPS site: a redirect is still a
+	# response, and the version string tells an attacker which CVEs to try
+	# while telling a legitimate client nothing.
+	header -Server
 	redir https://{host}{uri} permanent
 }
 
