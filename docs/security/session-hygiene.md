@@ -3,10 +3,7 @@
 **SJ-9.** How a walked-away session dies, how a workstation is handed over, and
 why none of it depends on the browser behaving.
 
-> **Status: server side only.** The idle timeout, heartbeat, lock endpoint and
-> `no-store` headers are implemented. The browser's warning modal, the lock
-> button and cross-tab coordination are the second half of the ticket and are
-> not built yet — see [Not yet built](#not-yet-built).
+Shipped in two PRs: the server-side control first, the browser layer second.
 
 ---
 
@@ -115,18 +112,54 @@ deliberately not `TOKEN_REUSE`. A timeout is nobody's fault and must not read
 like theft; a rising count of them is a workflow finding, not a security
 incident.
 
-## Not yet built
+## The browser layer
 
-The browser half of SJ-9:
+A courtesy, not the control — which is what makes it safe for the countdown to
+live in JavaScript somebody could pause in DevTools. What it buys is a warning:
+without it a session simply stops working mid-task with no explanation.
 
-- `IdleProvider` — activity listeners, countdown, auto-logout at the threshold
-- The "still there?" modal at threshold − 60 s
-- The one-click lock action that also clears the TanStack Query cache
-- `BroadcastChannel` cross-tab coordination
-- The storage audit confirming no tokens or patient data reach
-  `localStorage` / `sessionStorage` / IndexedDB
+`IdleSessionGuard` mounts in the three authenticated layouts (`/admin`,
+`/doctor`, `/portal`) and nowhere else. Counting down on the login page would
+be meaningless, and worse, would fire a heartbeat at a session that does not
+exist.
 
-Until that lands, an idle session still dies on the server — users simply get
-no warning first. `GET`-ing the thresholds is already possible: the heartbeat
-response carries `idleTimeoutSeconds` and `warningLeadSeconds` so the client
-never hard-codes a countdown that disagrees with the server.
+**The deadline is an absolute timestamp, not a decrementing counter.**
+`setInterval` does not run in a backgrounded tab, so a laptop closed for an
+hour would otherwise wake with most of its countdown intact. Comparing against
+a timestamp means the first tick after waking sees the truth.
+
+**Activity is throttled twice.** Listeners fire constantly; the deadline is
+reset on every event, but the *server* is told at most once every two minutes.
+A database write per keystroke would be absurd.
+
+**One teardown path.** `endSession` is shared by the idle timeout, the lock
+button and ordinary logout. It revokes server-side, clears the TanStack Query
+cache, drops the access-token cookie, then does a full page assign rather than
+a router push — a client navigation keeps React state alive.
+
+`queryClient.clear()` is the easy thing to forget and the reason a lock that
+only redirected would be theatre: the cache holds the last patient list and the
+last record the outgoing user opened, and it would still be there when the next
+person signs in.
+
+**Cross-tab** uses `BroadcastChannel`, not a `storage` event — the storage
+trick requires writing to `localStorage`, and SJ-9 also asks that nothing
+persists across users. Where the API is unavailable (Safari before 15.4) it
+degrades to per-tab behaviour, which is fine: the server enforces the real
+deadline whatever any tab believes.
+
+## Persistence
+
+`session-storage-audit.spec.ts` scans `app/`, `components/`, `hooks/` and
+`lib/` for `localStorage`, `sessionStorage` and `indexedDB`, and asserts the
+login form has no remember-me control.
+
+Structural rather than behavioural, because the failure it guards against is
+somebody *adding* persistence later — a remember-me checkbox, a cached patient
+list to make a screen feel faster. Neither breaks a runtime test; both leave
+the previous user's data on a shared terminal.
+
+One reviewed exception, listed by path: `use-persisted-boolean` keeps UI
+preferences like whether the sidebar is folded. No session material, no patient
+data. Naming it explicitly means a *second* persisting hook has to be added
+deliberately and shows up in the diff.

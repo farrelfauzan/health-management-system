@@ -4,8 +4,10 @@ import type { ReactNode } from 'react';
 import { AiAssistantProvider } from '#components/client/ai-assistant/ai-assistant-provider';
 import { ChatLauncher } from '#components/client/ai-assistant/chat-launcher';
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
+import { IdleSessionGuard } from '#components/client/shell/idle-session-guard';
 import { PortalTopBar } from '#components/server/portal/portal-top-bar';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
+import { resolveSessionIdlePolicy } from '#lib/shell/session-idle-policy';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
@@ -22,6 +24,7 @@ export default async function PortalLayout({ children }: PortalLayoutProps) {
   const claims = resolveSessionClaims({ accessToken, sessionHint });
   const rules = resolveAppAbilityRules(claims);
   const profile = resolveShellProfile(claims);
+  const idlePolicy = resolveSessionIdlePolicy();
   return (
     <AppAbilityProvider rules={rules}>
       {/*
@@ -40,6 +43,7 @@ export default async function PortalLayout({ children }: PortalLayoutProps) {
         </div>
         <ChatLauncher />
       </AiAssistantProvider>
+      <IdleSessionGuard {...idlePolicy} />
     </AppAbilityProvider>
   );
 }

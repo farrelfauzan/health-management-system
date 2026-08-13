@@ -5,9 +5,11 @@ import { buildAppAbility, SidebarInset, SidebarProvider } from '@hms/ui';
 import { AiAssistantProvider } from '#components/client/ai-assistant/ai-assistant-provider';
 import { ChatLauncher } from '#components/client/ai-assistant/chat-launcher';
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
+import { IdleSessionGuard } from '#components/client/shell/idle-session-guard';
 import { AppSidebar } from '#components/client/shell/app-sidebar';
 import { TopBar } from '#components/server/shell/top-bar';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
+import { resolveSessionIdlePolicy } from '#lib/shell/session-idle-policy';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { DOCTOR_ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
@@ -31,6 +33,7 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
   const sections = filterNavSections(buildAppAbility(rules), DOCTOR_NAV_SECTIONS);
   const profile = resolveShellProfile(claims);
 
+  const idlePolicy = resolveSessionIdlePolicy();
   return (
     <AppAbilityProvider rules={rules}>
       <AiAssistantProvider displayName={profile.displayName} assistantPath={DOCTOR_ASSISTANT_PATH}>
@@ -45,6 +48,7 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
         </SidebarProvider>
         <ChatLauncher />
       </AiAssistantProvider>
+      <IdleSessionGuard {...idlePolicy} />
     </AppAbilityProvider>
   );
 }
