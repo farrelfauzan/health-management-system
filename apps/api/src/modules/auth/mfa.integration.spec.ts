@@ -129,6 +129,35 @@ describe('TOTP multi-factor authentication against Postgres', () => {
   }
 
   /**
+   * Builds a marker-prefixed role holding one marker-prefixed permission, and
+   * returns the role id.
+   *
+   * Upserted rather than created: a run that dies mid-suite leaves rows
+   * behind, and a fixture that cannot be re-run fails for the wrong reason
+   * next time.
+   */
+  async function createRoleWithPermission(
+    suffix: string,
+    permission: { permissionKey: string; resource: string; action: string },
+  ): Promise<string> {
+    const created = await prisma.permission.upsert({
+      where: { permissionKey: permission.permissionKey },
+      create: { ...permission, scope: 'ANY' },
+      update: {},
+    });
+    const role = await prisma.role.upsert({
+      where: { code: `${TEST_MARKER}-${suffix}` },
+      create: {
+        code: `${TEST_MARKER}-${suffix}`,
+        name: `SJ-8 ${suffix} fixture`,
+        permissions: { create: [{ permissionId: created.id }] },
+      },
+      update: {},
+    });
+    return role.id;
+  }
+
+  /**
    * Clears the replay watermark that enrolment necessarily set.
    *
    * Verifying enrolment spends the current time step — deliberately, so the
@@ -164,31 +193,31 @@ describe('TOTP multi-factor authentication against Postgres', () => {
     authRepository = new AuthRepository(prisma);
     passwordHasher = new PasswordHasherService();
     recordedAudits = [];
-    // Two roles built from real permission rows: one privileged by the
-    // predicate, one not. Nothing here names a role — the predicate reads
-    // capabilities, and these fixtures exist to prove that.
-    const adminPermission = await prisma.permission.findUniqueOrThrow({
-      where: { permissionKey: 'role.assign:any' },
+    // Two roles, one privileged by the predicate and one not.
+    //
+    // The permissions are created here rather than read out of the seed. CI
+    // migrates its Postgres but never seeds it, so a lookup finds nothing
+    // there while passing locally against a populated database — and a spec
+    // that only fails in CI is the worst kind. Creating them also keeps the
+    // fixture self-contained: everything this suite makes carries the marker
+    // prefix and is removed again, so it leaves no rows behind on a real
+    // database either.
+    //
+    // Nothing here names a role. The predicate reads capabilities, and these
+    // fixtures exist to prove exactly that — `…manage:any` matches the
+    // privileged pattern and `…read:any` matches nothing, regardless of what
+    // the roles carrying them are called. The real seeded keys are covered by
+    // `privileged-permission.predicate.spec.ts`.
+    adminRoleId = await createRoleWithPermission('privileged', {
+      permissionKey: `${TEST_MARKER}.manage:any`,
+      resource: `${TEST_MARKER}Integration`,
+      action: 'manage',
     });
-    const clinicalPermission = await prisma.permission.findUniqueOrThrow({
-      where: { permissionKey: 'patient.read:any' },
+    clinicalRoleId = await createRoleWithPermission('clinical', {
+      permissionKey: `${TEST_MARKER}.read:any`,
+      resource: `${TEST_MARKER}Record`,
+      action: 'read',
     });
-    const adminRole = await prisma.role.create({
-      data: {
-        code: `${TEST_MARKER}-privileged`,
-        name: 'SJ-8 privileged fixture',
-        permissions: { create: [{ permissionId: adminPermission.id }] },
-      },
-    });
-    const clinicalRole = await prisma.role.create({
-      data: {
-        code: `${TEST_MARKER}-clinical`,
-        name: 'SJ-8 clinical fixture',
-        permissions: { create: [{ permissionId: clinicalPermission.id }] },
-      },
-    });
-    adminRoleId = adminRole.id;
-    clinicalRoleId = clinicalRole.id;
     const services = buildService();
     authService = services.auth;
     mfaService = services.mfa;
@@ -262,27 +291,12 @@ describe('TOTP multi-factor authentication against Postgres', () => {
       const userId = await createUser('promoted', clinicalRoleId);
       const beforePromotion = await authService.login({ email, password: PASSWORD }, originFrom(83));
       expect(beforePromotion.kind).toBe('SESSION');
-      // Upserted rather than created: a run that dies mid-suite leaves this
-      // row behind, and a fixture that cannot be re-run is a fixture that
-      // fails for the wrong reason next time.
-      const exportPermission = await prisma.permission.upsert({
-        where: { permissionKey: `${TEST_MARKER}.export:any` },
-        create: {
-          permissionKey: `${TEST_MARKER}.export:any`,
-          resource: `${TEST_MARKER}Report`,
-          action: 'export',
-          scope: 'ANY',
-        },
-        update: {},
+      const exporterRoleId = await createRoleWithPermission('exporter', {
+        permissionKey: `${TEST_MARKER}.export:any`,
+        resource: `${TEST_MARKER}Report`,
+        action: 'export',
       });
-      const freshRole = await prisma.role.create({
-        data: {
-          code: `${TEST_MARKER}-exporter`,
-          name: 'SJ-8 exporter fixture',
-          permissions: { create: [{ permissionId: exportPermission.id }] },
-        },
-      });
-      await prisma.userRole.create({ data: { userId, roleId: freshRole.id } });
+      await prisma.userRole.create({ data: { userId, roleId: exporterRoleId } });
 
       const afterPromotion = await authService.login({ email, password: PASSWORD }, originFrom(84));
 
