@@ -1,0 +1,72 @@
+# SJ-1 — TLS termination for the clinic deployment.
+#
+# One process owns every byte that crosses the network boundary. The API and
+# web containers keep serving plain HTTP, but only on the Docker network; this
+# is the only service that binds host ports.
+#
+# Requires a registered domain and DNS control — see docs/security/tls.md. On a
+# host without those, run Caddyfile.dev instead, which issues a local
+# certificate and needs neither.
+{
+	# Where Let's Encrypt sends expiry warnings. Not optional in practice: it is
+	# the only channel that tells you renewal has been failing for two months.
+	email {$ACME_EMAIL}
+}
+
+# Explicit HTTP site. Caddy would redirect on its own, but with a 308 — and
+# SJ-1's acceptance criterion asks for a 301, so it is stated rather than
+# inherited. Nothing else is served here; :80 exists solely to send callers
+# somewhere encrypted.
+http://{$HMS_DOMAIN} {
+	# Stripped here too, not just on the HTTPS site: a redirect is still a
+	# response, and the version string tells an attacker which CVEs to try
+	# while telling a legitimate client nothing.
+	header -Server
+	redir https://{host}{uri} permanent
+}
+
+https://{$HMS_DOMAIN} {
+	tls {
+		# DNS-01, not HTTP-01. HTTP-01 needs Let's Encrypt to reach port 80 from
+		# the public internet, which a clinic server behind a LAN firewall
+		# cannot offer — and opening it just for renewals would undo the reason
+		# the box is not exposed. DNS-01 proves domain control through a TXT
+		# record instead, so the server needs outbound access and nothing more.
+		#
+		# The token must be scoped to editing _acme-challenge TXT records on
+		# this zone alone. A full-access DNS token on the clinic's server is a
+		# domain takeover waiting for one container escape.
+		dns cloudflare {$CLOUDFLARE_API_TOKEN}
+
+		# TLS 1.2 floor, 1.3 preferred. Caddy's defaults already comply; stated
+		# anyway so a future default that quietly re-admits 1.1 does not pass
+		# unnoticed through this file.
+		protocols tls1.2 tls1.3
+	}
+
+	header {
+		# One year, subdomains included. Long enough that a browser which has
+		# seen the site once will refuse plaintext for it thereafter.
+		#
+		# `preload` is deliberately absent. Submitting to the browser preload
+		# list is close to irreversible — removal takes months to propagate —
+		# and it commits every current and future subdomain of the clinic's
+		# domain to HTTPS forever. That is a decision for the customer, not a
+		# default in a config file.
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+		# The version string tells an attacker which CVEs to try and tells a
+		# legitimate client nothing.
+		-Server
+	}
+
+	# The API first: a prefix match, so anything under /api reaches Nest and
+	# everything else falls through to Next.js.
+	handle /api/* {
+		reverse_proxy api:3001
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}

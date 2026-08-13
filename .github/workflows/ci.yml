@@ -168,3 +168,48 @@ jobs:
 
       - name: Web docker build
         run: docker build -f infra/docker/web/Dockerfile.dev .
+
+      # SJ-1 — the proxy config is the only thing between a clinic workstation
+      # and plaintext, and a typo in it means the container refuses to start.
+      # `validate` parses and loads the config without binding a port, so it
+      # catches that here rather than during a cutover. Both files are checked:
+      # the development one is what people actually run, and the production one
+      # is what nobody runs until the day it matters.
+      # Builds the proxy image and parses both configs with it. The image has
+      # to be the custom one: the production Caddyfile uses the `dns cloudflare`
+      # directive, which is a compiled-in Go plugin the stock image does not
+      # have, so validating against `caddy:2.10` would fail on a config that is
+      # perfectly correct for the binary that actually runs it. Building also
+      # proves the xcaddy step still resolves.
+      #
+      # The env values are placeholders. `validate` parses and loads the config
+      # without binding a port or contacting an ACME server, so no real domain
+      # or token is involved.
+      - name: Proxy docker build
+        run: docker build -t hms-caddy:ci infra/docker/caddy
+
+      # Two different checks, because the two configs can be checked to
+      # different depths.
+      #
+      # The development one gets a full `validate`: it provisions every module,
+      # which is possible because its issuer is Caddy's internal CA and needs
+      # no credentials.
+      #
+      # The production one gets `adapt` — parse and load every directive,
+      # including the `dns cloudflare` plugin, and stop before provisioning.
+      # Provisioning would mean handing the Cloudflare module a token, and the
+      # only token available in CI is a fake one. It rejects fakes by design,
+      # so a full `validate` here would either fail on a correct config or pass
+      # only because the placeholder looked convincing — neither is a test.
+      # `adapt` still catches what actually goes wrong in this file: typos,
+      # unknown directives, and a plugin that stopped existing.
+      - name: Validate Caddy configuration
+        run: |
+          docker run --rm -v "$PWD/infra/docker/caddy:/etc/caddy:ro" hms-caddy:ci \
+            caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile.dev
+          docker run --rm \
+            -e HMS_DOMAIN=hms.example.test \
+            -e ACME_EMAIL=ops@example.test \
+            -e CLOUDFLARE_API_TOKEN=adapt-only-never-provisioned \
+            -v "$PWD/infra/docker/caddy:/etc/caddy:ro" hms-caddy:ci \
+            caddy adapt --adapter caddyfile --config /etc/caddy/Caddyfile > /dev/null

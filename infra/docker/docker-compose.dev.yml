@@ -214,7 +214,11 @@ services:
       dockerfile: infra/docker/web/Dockerfile.dev
     container_name: hms-web
     environment:
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+      # `-` not `:-`, deliberately: an explicitly empty value must survive.
+      # Behind the `tls` proxy the API is same-origin at /api, and empty is how
+      # the client is told to use relative URLs. `:-` would override that with
+      # the localhost default and send browser traffic straight past the proxy.
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL-http://localhost:3001}
     ports:
       - '3000:3000'
     depends_on:
@@ -227,9 +231,52 @@ services:
       retries: 10
     command: ['pnpm', '--filter', '@hms/web', 'dev', '--', '--hostname', '0.0.0.0', '--port', '3000']
 
+  # TLS termination (SJ-1). Behind the `tls` profile because the everyday loop
+  # is `localhost:3000` against `localhost:3001` and forcing a proxy into that
+  # buys nothing. What it buys when you *do* turn it on is that the proxy path
+  # gets exercised before production meets it: `Secure` cookies, `request.ip`
+  # arriving via X-Forwarded-For, and Next.js building absolute URLs from the
+  # forwarded host all behave here the way they will behave behind the real
+  # certificate.
+  #
+  #   docker compose -f infra/docker/docker-compose.dev.yml --profile tls up
+  #
+  # Uses Caddyfile.dev, which issues from Caddy's own CA — no domain, no DNS
+  # token, no outbound network. The production Caddyfile alongside it needs all
+  # three; see docs/security/tls.md.
+  caddy:
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
+    container_name: hms-caddy
+    profiles: ['tls']
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      # Certificates and the ACME account key. Named rather than anonymous so a
+      # `docker compose down` does not throw away the local CA and make every
+      # developer re-trust a new root.
+      - hms-caddy-data:/data
+      - hms-caddy-config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- --no-check-certificate https://localhost/api/v1/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 volumes:
   hms-postgres-data:
   hms-minio-data:
+  hms-caddy-data:
+  hms-caddy-config:
   # Paired-device credentials. Losing either volume means re-scanning a QR code
   # against a live WhatsApp number (§8.4). They are separate because the two
   # bridges store incompatible session state — a failover is a re-pair, which
