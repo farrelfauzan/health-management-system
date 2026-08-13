@@ -7,7 +7,6 @@
 # Requires a registered domain and DNS control — see docs/security/tls.md. On a
 # host without those, run Caddyfile.dev instead, which issues a local
 # certificate and needs neither.
-
 {
 	# Where Let's Encrypt sends expiry warnings. Not optional in practice: it is
 	# the only channel that tells you renewal has been failing for two months.

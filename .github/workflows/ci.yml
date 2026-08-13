@@ -188,6 +188,21 @@ jobs:
       - name: Proxy docker build
         run: docker build -t hms-caddy:ci infra/docker/caddy
 
+      # Two different checks, because the two configs can be checked to
+      # different depths.
+      #
+      # The development one gets a full `validate`: it provisions every module,
+      # which is possible because its issuer is Caddy's internal CA and needs
+      # no credentials.
+      #
+      # The production one gets `adapt` — parse and load every directive,
+      # including the `dns cloudflare` plugin, and stop before provisioning.
+      # Provisioning would mean handing the Cloudflare module a token, and the
+      # only token available in CI is a fake one. It rejects fakes by design,
+      # so a full `validate` here would either fail on a correct config or pass
+      # only because the placeholder looked convincing — neither is a test.
+      # `adapt` still catches what actually goes wrong in this file: typos,
+      # unknown directives, and a plugin that stopped existing.
       - name: Validate Caddy configuration
         run: |
           docker run --rm -v "$PWD/infra/docker/caddy:/etc/caddy:ro" hms-caddy:ci \
@@ -195,6 +210,6 @@ jobs:
           docker run --rm \
             -e HMS_DOMAIN=hms.example.test \
             -e ACME_EMAIL=ops@example.test \
-            -e CLOUDFLARE_API_TOKEN=validate-only-placeholder \
+            -e CLOUDFLARE_API_TOKEN=adapt-only-never-provisioned \
             -v "$PWD/infra/docker/caddy:/etc/caddy:ro" hms-caddy:ci \
-            caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile
+            caddy adapt --adapter caddyfile --config /etc/caddy/Caddyfile > /dev/null

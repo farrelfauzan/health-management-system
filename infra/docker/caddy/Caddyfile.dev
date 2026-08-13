@@ -17,7 +17,6 @@
 #     caddy:/data/caddy/pki/authorities/local/root.crt /tmp/hms-local-ca.crt
 #
 # then add /tmp/hms-local-ca.crt to the system keychain.
-
 {
 	# No ACME, no email, no outbound network.
 	local_certs
