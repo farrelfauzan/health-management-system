@@ -133,7 +133,8 @@
           "pharmacist": "Pharmacist",
           "patient": "Patient",
           "staff": "Staff"
-        }
+        },
+        "lockWorkstation": "Lock workstation"
       },
       "portal": {
         "name": "Patient Portal"
@@ -167,6 +168,12 @@
         "integrationsSubtitle": "Configure BPJS PCare and monitor external health-data submissions.",
         "administrationSubtitle": "Manage system users, roles, and permissions.",
         "aiProvidersSubtitle": "Configure the upstream AI provider that answers chatbot conversations."
+      },
+      "idle": {
+        "title": "Are you still there?",
+        "description": "You will be signed out in {seconds} seconds to protect patient data on this workstation.",
+        "continue": "Stay signed in",
+        "endNow": "Hand over now"
       }
     }
   }

@@ -5,9 +5,11 @@ import { buildAppAbility, SidebarInset, SidebarProvider } from '@hms/ui';
 import { AiAssistantProvider } from '#components/client/ai-assistant/ai-assistant-provider';
 import { ChatLauncher } from '#components/client/ai-assistant/chat-launcher';
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
+import { IdleSessionGuard } from '#components/client/shell/idle-session-guard';
 import { AppSidebar } from '#components/client/shell/app-sidebar';
 import { TopBar } from '#components/server/shell/top-bar';
 import { ADMIN_ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
+import { resolveSessionIdlePolicy } from '#lib/shell/session-idle-policy';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { hasAnyRole } from '#lib/auth/access-token-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
@@ -36,6 +38,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     isPharmacistOnly ? ['/admin/dashboard'] : [],
   );
   const profile = resolveShellProfile(claims);
+  const idlePolicy = resolveSessionIdlePolicy();
   return (
     <AppAbilityProvider rules={rules}>
       {/*
@@ -73,6 +76,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         </SidebarProvider>
         <ChatLauncher />
       </AiAssistantProvider>
+      <IdleSessionGuard {...idlePolicy} />
     </AppAbilityProvider>
   );
 }
