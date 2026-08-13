@@ -61,4 +61,12 @@ regexes = [
   '''sk-proj-abc123def456''',
   '''RahasiaPcare123''',
   '''a2xpbmlrLWRlbW86UmFoYXNpYVBjYXJlMTIzOjA5NQ==''',
+
+  # SJ-8. The RFC 6238 Appendix B test key: `12345678901234567890` in ASCII,
+  # base32-encoded. It is printed in the published standard and reproduced in
+  # every TOTP implementation on the internet, so it cannot be a real
+  # credential — and `totp-base32.plugin.spec.ts` needs the literal, because a
+  # conformance test that derives its own input is no longer pinned to
+  # anything outside the codebase.
+  '''GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ''',
 ]
