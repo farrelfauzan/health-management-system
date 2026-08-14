@@ -27,10 +27,12 @@ import {
   SendChatMessageInput,
 } from '@hms/shared-types';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { AiChatbotError } from '../ai-chatbot.error';
 import {
+  AiChatbotErrorCode,
   ChatCompletionMessage,
   ChatToolCall,
   ResolvedAiProviderConfig,
@@ -40,6 +42,9 @@ import { buildChatToolCaller } from '../tools/build-chat-tool-caller';
 import { buildChatToolWireDefinitions } from '../tools/build-chat-tool-wire-definitions';
 import { ChatToolRegistry } from '../tools/chat-tool.registry';
 import { ChatToolCaller } from '../tools/chat-tool.types';
+import { isToolDenialCode } from '../tools/is-tool-denial-code';
+import { resolveToolCallPatientId } from '../tools/resolve-tool-call-patient-id';
+import { resolveToolFailureCode } from '../tools/resolve-tool-failure-code';
 import { AI_CHAT_CONTEXT_PREAMBLE } from './ai-chat-context-preamble';
 import { AI_CHAT_DISCLAIMERS } from './ai-chat-disclaimer';
 import { AI_CHAT_RETRIEVAL_PREAMBLE } from './ai-chat-retrieval-preamble';
@@ -78,6 +83,17 @@ const MAX_TOOL_CALLS_PER_MESSAGE = 3;
 const ADMIN_CHANNEL_ROLE_CODES: readonly string[] = ['ADMIN', 'SUPER_ADMIN'];
 
 /**
+ * What a denied lookup is filed under in the audit log (SJ-14 §5). Its own
+ * resource rather than the domain's (`patient`, `medication`) because the
+ * question these rows answer is different: not "who read this chart" — nobody
+ * did, the read was refused — but "who asked the assistant for something it
+ * would not fetch". `resourceId` carries the tool name, so the indexed
+ * `(resource, resourceId)` pair reads as "every refusal of
+ * `get_patient_summary`".
+ */
+const CHAT_TOOL_AUDIT_RESOURCE = 'ChatTool';
+
+/**
  * Orchestrates a chat exchange end to end: ownership check, provider
  * resolution, history replay, retrieval, the upstream call, the Mode A tool
  * loop (P15-T04 — the model chooses lookups, HMS executes them as the asking
@@ -110,6 +126,7 @@ export class AiChatbotService {
     private readonly safetyPolicyService: SafetyPolicyService,
     private readonly chatToolRegistry: ChatToolRegistry,
     private readonly chatSessionTitleService: ChatSessionTitleService,
+    private readonly auditService: AuditService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -466,6 +483,11 @@ export class AiChatbotService {
    * lookup is part of the exchange's answer (§4.5 — it renders as failed,
    * never as prose about what might have been there), and one bad call must
    * not discard the assistant turn or the other results.
+   *
+   * Swallowing the exception is what makes the audit row load-bearing (SJ-14
+   * §5): a refusal that never propagates would otherwise leave no trace
+   * outside a transcript nobody queries, so the two denial codes are written
+   * to the audit log here, where the decision is still in hand.
    */
   private async executeSingleToolCall(
     session: ChatSessionRecord,
@@ -487,15 +509,56 @@ export class AiChatbotService {
         errorCode: null,
       };
     } catch (caughtError) {
+      const errorCode = resolveToolFailureCode(caughtError);
+      if (isToolDenialCode(errorCode)) {
+        await this.recordToolDenial(session, caller, toolCall, errorCode);
+      }
       return {
         toolName: toolCall.name,
         arguments: toolCall.arguments,
         outcome: 'FAILED',
         result: null,
-        errorCode:
-          caughtError instanceof AiChatbotError ? caughtError.code : 'AI_TOOL_EXECUTION_FAILED',
+        errorCode,
       };
     }
+  }
+
+  /**
+   * Files a refused lookup as a `READ` that did not happen (SJ-14 §5, SJ-4).
+   *
+   * Best-effort `record` rather than `recordOrThrow`: the disclosure this row
+   * describes was already prevented, so failing the exchange over the note
+   * about it would cost the user their answer to buy nothing. That is the
+   * opposite trade to `AuditInterceptor`, where the data is on its way out
+   * the door and the row is the only thing standing behind it.
+   *
+   * The awaited call is deliberate even so — the denial must be durable before
+   * the model is told about it, because the reply is the point at which an
+   * attacker learns their probe was noticed.
+   */
+  private async recordToolDenial(
+    session: ChatSessionRecord,
+    caller: ChatToolCaller,
+    toolCall: ChatToolCall,
+    errorCode: AiChatbotErrorCode,
+  ): Promise<void> {
+    const patientId = resolveToolCallPatientId(toolCall.arguments);
+    await this.auditService.record({
+      action: 'READ',
+      resource: CHAT_TOOL_AUDIT_RESOURCE,
+      resourceId: toolCall.name,
+      actorUserId: caller.user.sub,
+      actorRole: caller.roleCodes.length > 0 ? caller.roleCodes.join(',') : null,
+      ...(patientId === null ? {} : { patientId }),
+      // The arguments themselves are never copied here: they are model output,
+      // unbounded, and on the injection path this log is meant to survive.
+      metadata: {
+        outcome: 'DENIED',
+        errorCode,
+        sessionId: session.id,
+        channel: session.channel,
+      },
+    });
   }
 
   private async buildToolCaller(actor: CurrentUser): Promise<ChatToolCaller> {

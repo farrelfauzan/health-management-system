@@ -14,6 +14,14 @@ import type { AiProviderKindValue, ChatChannelValue } from '@hms/shared-types';
  * tool-prefixed codes are raised by the P15 `ChatToolRegistry`: a
  * model-requested tool that fails the offering rules, and model-produced
  * arguments the tool's Zod schema rejects.
+ *
+ * `AI_TOOL_PERMISSION_DENIED` is separate from `AI_TOOL_EXECUTION_FAILED` on
+ * purpose (SJ-14 §5). Both used to collapse into the latter, which made a
+ * doctor reaching for a patient they are not assigned indistinguishable from
+ * a database outage — to the model relaying the failure, and to anyone
+ * reading the transcript afterwards. A denial is a decision the system made
+ * and can defend; a failure is one it could not avoid, and only the first is
+ * worth an audit row.
  */
 export type AiChatbotErrorCode =
   | 'AI_NOT_CONFIGURED'
@@ -25,6 +33,7 @@ export type AiChatbotErrorCode =
   | 'AI_RATE_LIMITED'
   | 'AI_TOOL_UNAVAILABLE'
   | 'AI_TOOL_INVALID_ARGUMENTS'
+  | 'AI_TOOL_PERMISSION_DENIED'
   | 'AI_TOOL_EXECUTION_FAILED';
 
 /**

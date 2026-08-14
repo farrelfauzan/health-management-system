@@ -905,11 +905,56 @@ describe('Chat flow integration', () => {
         toolName: 'get_patient_summary',
         outcome: 'FAILED',
         result: null,
-        errorCode: 'AI_TOOL_EXECUTION_FAILED',
+        // SJ-14 §5: named as a denial, not as a broken lookup. The two used to
+        // be the same code, which left "you may not read this chart" and "the
+        // database is down" indistinguishable to the model relaying it.
+        errorCode: 'AI_TOOL_PERMISSION_DENIED',
       });
       const systemTurns = messageRows.filter((row) => row.actor === 'SYSTEM');
       expect(systemTurns).toHaveLength(1);
       expect(systemTurns[0]?.authorUserId).toBe(OWNER_USER_ID);
+    });
+
+    it('writes the cross-patient probe to the audit log, under that patient', async () => {
+      // SJ-14 acceptance criterion 3, the half a transcript cannot satisfy:
+      // the attempt has to be findable by someone auditing this patient's
+      // access history, not only by someone already reading this session.
+      patientManagementServiceMock.getPatientById.mockRejectedValue(
+        new ForbiddenException('You are not allowed to read this patient'),
+      );
+      stubOpenAiCompatibleToolCall('Saya ambil ringkasannya.', 'get_patient_summary', {
+        patientId: PATIENT_ID,
+      });
+
+      await sendDoctorMessage('Ringkas pasien ini dong');
+
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'READ',
+          resource: 'ChatTool',
+          resourceId: 'get_patient_summary',
+          actorUserId: OWNER_USER_ID,
+          actorRole: 'DOCTOR',
+          patientId: PATIENT_ID,
+          metadata: expect.objectContaining({
+            outcome: 'DENIED',
+            errorCode: 'AI_TOOL_PERMISSION_DENIED',
+            channel: 'DOCTOR',
+          }),
+        }),
+      );
+    });
+
+    it('writes no audit row for a lookup that simply broke', async () => {
+      patientManagementServiceMock.getPatientById.mockRejectedValue(new Error('connection reset'));
+      stubOpenAiCompatibleToolCall('Saya ambil ringkasannya.', 'get_patient_summary', {
+        patientId: PATIENT_ID,
+      });
+
+      const response = await sendDoctorMessage('Ringkas pasien ini dong');
+
+      expect(response.body.meta.toolResults[0].errorCode).toBe('AI_TOOL_EXECUTION_FAILED');
+      expect(auditServiceMock.record).not.toHaveBeenCalled();
     });
 
     it('refuses a count the model asserted without calling any tool', async () => {
@@ -1037,6 +1082,49 @@ describe('Chat flow integration', () => {
         .send({ channel: 'ADMIN' });
 
       expect(response.status).toBe(403);
+    });
+
+    it('refuses an admin tool to an actor who has stopped being an admin', async () => {
+      // SJ-14 §4 and acceptance criterion 4. The session says ADMIN; the
+      // person no longer does. Session metadata was decided once, at creation,
+      // and cannot answer for a role revoked since — so the check that has to
+      // hold is the one at dispatch, against the actor's current grants.
+      const token = await buildToken(OWNER_USER_ID, 'admin@hms.local');
+      const sessionId = await createSession(token, 'ADMIN');
+      mockDoctorPermissions();
+      stubOpenAiCompatibleToolCall('Saya ambil laporannya.', 'get_daily_cashier_report', {});
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/chat/sessions/${sessionId}/messages`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ content: 'Laporan kasir hari ini dong' });
+
+      expect(response.status).toBe(200);
+      // Offered nothing, and refused anyway when the model named a tool it was
+      // never given — the two gates are independent on purpose.
+      const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string) as {
+        tools?: unknown[];
+      };
+      expect(body.tools).toBeUndefined();
+      expect(cashierReportServiceMock.getDailyReport).not.toHaveBeenCalled();
+      expect(response.body.meta.toolResults[0]).toMatchObject({
+        toolName: 'get_daily_cashier_report',
+        outcome: 'FAILED',
+        errorCode: 'AI_TOOL_UNAVAILABLE',
+      });
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'READ',
+          resource: 'ChatTool',
+          resourceId: 'get_daily_cashier_report',
+          actorUserId: OWNER_USER_ID,
+          metadata: expect.objectContaining({
+            outcome: 'DENIED',
+            errorCode: 'AI_TOOL_UNAVAILABLE',
+            channel: 'ADMIN',
+          }),
+        }),
+      );
     });
 
     it('offers an admin exactly the five admin tools on the wire', async () => {
