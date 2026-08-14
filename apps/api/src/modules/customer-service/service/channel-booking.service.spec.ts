@@ -151,6 +151,99 @@ describe('ChannelBookingService', () => {
     );
   });
 
+  /**
+   * One number is one household. A parent books for a child from their own
+   * phone, and before the name was part of the match the child's appointment
+   * was filed under the parent — with any clinical note taken at arrival
+   * following it onto the wrong record.
+   */
+  describe('satu nomor, beberapa pasien', () => {
+    it('creates a separate draft when the same number books for somebody else', async () => {
+      mockPatientService.findChannelPhoneMatches.mockResolvedValue([
+        { id: 'draft-parent', fullName: 'Rizky Pratama', source: 'CHANNEL_BOOKING' },
+      ] satisfies PatientPhoneMatch[]);
+
+      await bookingService.bookFromChannel(
+        buildBookingParams({ patientFullName: 'Alya Pratama' }),
+      );
+
+      expect(mockPatientService.createChannelDraftPatient).toHaveBeenCalledWith(
+        { fullName: 'Alya Pratama', phoneNumber: '628123456789' },
+        inputActor,
+      );
+      expect(mockAppointmentService.bookSessionForChannel).not.toHaveBeenCalledWith(
+        expect.objectContaining({ patientId: 'draft-parent' }),
+        inputActor,
+      );
+    });
+
+    it('still reuses the draft when the same person books again, spelled loosely', async () => {
+      mockPatientService.findChannelPhoneMatches.mockResolvedValue([
+        { id: 'draft-parent', fullName: 'Rizky Pratama', source: 'CHANNEL_BOOKING' },
+      ] satisfies PatientPhoneMatch[]);
+
+      await bookingService.bookFromChannel(
+        buildBookingParams({ patientFullName: '  rizky   pratama ' }),
+      );
+
+      expect(mockPatientService.createChannelDraftPatient).not.toHaveBeenCalled();
+      expect(mockAppointmentService.bookSessionForChannel).toHaveBeenCalledWith(
+        expect.objectContaining({ patientId: 'draft-parent' }),
+        inputActor,
+      );
+    });
+
+    it('does not book onto a front-desk record belonging to a different name', async () => {
+      mockPatientService.findChannelPhoneMatches.mockResolvedValue([
+        { id: 'patient-parent', fullName: 'Rizky Pratama', source: 'FRONT_DESK' },
+      ] satisfies PatientPhoneMatch[]);
+
+      const outcome = await bookingService.bookFromChannel(
+        buildBookingParams({ patientFullName: 'Alya Pratama' }),
+      );
+
+      // No challenge either: there is nothing about the child to prove against
+      // the parent's record, so this is an ordinary first booking.
+      expect(outcome.result.outcome).toBe('CONFIRMED');
+      expect(mockPatientService.createChannelDraftPatient).toHaveBeenCalledWith(
+        { fullName: 'Alya Pratama', phoneNumber: '628123456789' },
+        inputActor,
+      );
+    });
+
+    it('does not reuse a proven link for a different person on the same number', async () => {
+      mockLinkRepository.recordClaim.mockResolvedValue({
+        id: 'link-1',
+        channel: 'TELEGRAM',
+        externalChatId: '12345',
+        phoneNumber: '628123456789',
+        // Already overwritten by this booking's claim, which is exactly why the
+        // link's own name cannot be the thing compared.
+        fullName: 'Alya Pratama',
+        patientId: 'patient-parent',
+        verificationStatus: 'CHANNEL_VERIFIED',
+        verifiedAt: new Date().toISOString(),
+      });
+      mockVerificationService.isVerificationFresh.mockReturnValue(true);
+      mockPatientService.findChannelPhoneMatches.mockResolvedValue([
+        { id: 'patient-parent', fullName: 'Rizky Pratama', source: 'FRONT_DESK' },
+      ] satisfies PatientPhoneMatch[]);
+
+      await bookingService.bookFromChannel(
+        buildBookingParams({ patientFullName: 'Alya Pratama' }),
+      );
+
+      expect(mockAppointmentService.bookSessionForChannel).not.toHaveBeenCalledWith(
+        expect.objectContaining({ patientId: 'patient-parent' }),
+        inputActor,
+      );
+      expect(mockPatientService.createChannelDraftPatient).toHaveBeenCalledWith(
+        { fullName: 'Alya Pratama', phoneNumber: '628123456789' },
+        inputActor,
+      );
+    });
+  });
+
   it('challenges rather than links when the number matches a front-desk record', async () => {
     mockPatientService.findChannelPhoneMatches.mockResolvedValue([
       { id: 'patient-1', fullName: 'Siti Aminah', source: 'FRONT_DESK' },

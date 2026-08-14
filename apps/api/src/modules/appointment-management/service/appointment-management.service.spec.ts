@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { DoctorPatientService } from '../../doctor-patient/service/doctor-patient.service';
 import { AppointmentManagementRepository } from '../repository/appointment-management.repository';
 import { AppointmentManagementService } from './appointment-management.service';
 
@@ -68,9 +69,14 @@ describe('AppointmentManagementService', () => {
     get: jest.fn().mockReturnValue('Asia/Jakarta'),
   } as unknown as ConfigService;
 
+  const doctorPatientServiceMock = {
+    assignDoctorToPatient: jest.fn().mockResolvedValue({ assignment: {}, created: true }),
+  } as unknown as DoctorPatientService;
+
   const service = new AppointmentManagementService(
     appointmentManagementRepositoryMock,
     authRepositoryMock,
+    doctorPatientServiceMock,
     configServiceMock,
   );
 
@@ -421,6 +427,37 @@ describe('AppointmentManagementService', () => {
           scheduledAt: new Date('2027-01-04T01:00:00.000Z'),
         }),
       );
+      expect(actualAppointment.id).toBe(appointmentId);
+    });
+
+    /**
+     * Booking is the moment a doctor becomes one of this patient's doctors.
+     * Before this, `doctor_patients` was only ever written by hand from the
+     * admin screens, so a patient could have appointments with a doctor who
+     * appeared nowhere among their doctors.
+     */
+    it('puts the booked doctor on the patient care team', async () => {
+      mockPermissions([{ action: 'create', resource: 'Appointment', scope: 'ANY' }]);
+
+      await service.createAppointment(sessionPayload, currentUser);
+
+      expect(doctorPatientServiceMock.assignDoctorToPatient).toHaveBeenCalledWith(
+        { doctorId, patientId },
+        currentUser,
+      );
+    });
+
+    it('still returns the booking when the care-team link cannot be written', async () => {
+      mockPermissions([{ action: 'create', resource: 'Appointment', scope: 'ANY' }]);
+      (doctorPatientServiceMock.assignDoctorToPatient as jest.Mock).mockRejectedValueOnce(
+        new ForbiddenException('not allowed'),
+      );
+
+      // The appointment is already committed by the time the link is written.
+      // A bookkeeping gap an admin can close from the patient screen is not a
+      // reason to fail a booking that succeeded.
+      const actualAppointment = await service.createAppointment(sessionPayload, currentUser);
+
       expect(actualAppointment.id).toBe(appointmentId);
     });
 

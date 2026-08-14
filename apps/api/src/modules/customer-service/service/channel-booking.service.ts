@@ -23,6 +23,7 @@ import { buildBookingConfirmationReply } from './build-booking-confirmation-repl
 import { CS_REPLY_TEMPLATES } from './cs-reply-templates';
 import { decodeChannelSessionReference } from './channel-session-reference';
 import { generateBookingReferenceCode } from './generate-booking-reference-code';
+import { normalizeClaimedName } from './normalize-claimed-name';
 import { normalizePhoneNumber } from './normalize-phone-number';
 
 const DAY_IN_MS = 86_400_000;
@@ -136,11 +137,24 @@ export class ChannelBookingService {
       note: params.note ?? null,
     };
 
+    // Every match below is qualified by the claimed name as well as the
+    // number, because one number is one household rather than one person
+    // (see `normalizeClaimedName`). Without it a parent booking for a child
+    // silently books the parent, since the number resolves first and the name
+    // is only ever read when a record is *created*.
+    const claimedName = normalizeClaimedName(params.patientFullName);
+    const linkedMatch = matches.find((match) => match.id === link.patientId);
+
     // An existing proof, still inside its re-verification window, books
     // straight through: the point of persisting a verification is that the
-    // same chat is not challenged again next month.
+    // same chat is not challenged again next month. The proof belongs to the
+    // person it was taken for, though — the link's own `fullName` is no help
+    // here, because `recordClaim` has already overwritten it with whatever
+    // name this booking claimed.
     if (
       link.patientId !== null &&
+      linkedMatch !== undefined &&
+      normalizeClaimedName(linkedMatch.fullName) === claimedName &&
       LINKABLE_VERIFICATION_STATUSES.some((status) => status === link.verificationStatus) &&
       this.verificationService.isVerificationFresh(link.verifiedAt, now)
     ) {
@@ -156,7 +170,10 @@ export class ChannelBookingService {
     // earlier is not — it holds nothing but what this chat already said — so
     // it is reused rather than challenged, which is also what stops one
     // customer accumulating a new draft per booking.
-    const registryMatch = matches.find((match) => match.source === 'FRONT_DESK');
+    const registryMatch = matches.find(
+      (match) =>
+        match.source === 'FRONT_DESK' && normalizeClaimedName(match.fullName) === claimedName,
+    );
     if (registryMatch !== undefined) {
       // §5.1.1 **tier 1** (`PCS-T09`): on WhatsApp the sender's JID is a
       // number WhatsApp already verified this device owns, so a customer
@@ -314,7 +331,15 @@ export class ChannelBookingService {
 
   /**
    * Books against a draft patient — reusing one this chat already created for
-   * the same number, or creating one.
+   * the same number **and the same name**, or creating one.
+   *
+   * The name qualifier is what makes a shared household number usable. Reusing
+   * on the number alone was deliberate once, as the thing that stopped one
+   * customer accumulating a draft per booking; but it also meant a number
+   * could only ever represent its first patient, so a parent booking for a
+   * child got the child's appointment filed under the parent. The daily draft
+   * cap is the anti-accumulation control now, which is the control that was
+   * always meant to hold that line.
    */
   private async completeAsDraft(params: {
     channel: ChannelKindValue;
@@ -322,7 +347,11 @@ export class ChannelBookingService {
     matches: readonly PatientPhoneMatch[];
     pendingBooking: PendingChannelBooking;
   }): Promise<ChannelBookingOutcome> {
-    const existingDraft = params.matches.find((match) => match.source === 'CHANNEL_BOOKING');
+    const claimedName = normalizeClaimedName(params.pendingBooking.patientFullName);
+    const existingDraft = params.matches.find(
+      (match) =>
+        match.source === 'CHANNEL_BOOKING' && normalizeClaimedName(match.fullName) === claimedName,
+    );
     const patientId =
       existingDraft?.id ??
       (

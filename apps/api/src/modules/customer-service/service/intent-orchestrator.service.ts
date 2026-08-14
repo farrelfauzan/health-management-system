@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { ConversationTurn, CustomerServiceConfig } from '@hms/shared-types';
+import {
+  ConversationTurn,
+  CustomerServiceConfig,
+  getCalendarDateInTimeZone,
+} from '@hms/shared-types';
 
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import {
@@ -18,6 +22,8 @@ import { buildCsSystemPrompt } from './build-cs-system-prompt';
 
 /** §6's bound: at most three tool calls answer one inbound message. */
 const MAX_TOOL_CALLS_PER_MESSAGE = 3;
+
+const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * How many times the provider may be asked in one turn.
@@ -112,6 +118,7 @@ export type IntentOrchestrationResult = {
 export class IntentOrchestratorService {
   private readonly logger = new Logger(IntentOrchestratorService.name);
   private readonly serviceConfig: CustomerServiceConfig;
+  private readonly clinicTimeZone: string;
 
   constructor(
     configService: ConfigService,
@@ -119,6 +126,8 @@ export class IntentOrchestratorService {
     private readonly toolRegistry: CsToolRegistry,
   ) {
     this.serviceConfig = resolveCustomerServiceConfig(configService);
+    this.clinicTimeZone =
+      configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
   }
 
   get config(): CustomerServiceConfig {
@@ -139,7 +148,15 @@ export class IntentOrchestratorService {
       const { adapter, config } = await this.providerResolver.resolveActiveProvider();
       const toolDefinitions = buildCsToolWireDefinitions(this.toolRegistry.listTools());
       const messages: ChatCompletionMessage[] = [
-        { role: 'system', content: buildCsSystemPrompt(this.serviceConfig.clinicName) },
+        {
+          role: 'system',
+          content: buildCsSystemPrompt({
+            clinicName: this.serviceConfig.clinicName,
+            // Resolved per reply rather than at boot: a long-running API must
+            // not still be telling the model it is the day it started.
+            currentDate: getCalendarDateInTimeZone(new Date(), this.clinicTimeZone),
+          }),
+        },
         ...history.map((turn) => ({
           role: turn.role === 'CUSTOMER' ? ('user' as const) : ('assistant' as const),
           content: turn.content,
