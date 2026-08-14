@@ -13,6 +13,7 @@ import { encodeChannelSessionReference } from '../../service/channel-session-ref
 import { CsSystemActorService } from '../../service/cs-system-actor.service';
 import { CsTool } from '../cs-tool.interface';
 import { CsToolContext, CsToolExecution } from '../cs-tool.types';
+import { SPECIALTY_SYNONYMS } from './specialty-synonyms';
 
 /**
  * How many sessions one call may return.
@@ -42,7 +43,9 @@ const MAX_SESSIONS_RETURNED = 20;
  * The name filter is a substring match on both the doctor and the poli,
  * because a customer types "dokter gigi" or "Sinta" and means the same request
  * either way, and there is no third thing in the projection they could
- * accidentally match on.
+ * accidentally match on. A direct substring match is not enough on its own,
+ * though: the projection carries the clinic's English specialty names and the
+ * customer types Indonesian, so {@link SPECIALTY_SYNONYMS} bridges the two.
  */
 @Injectable()
 export class ListAvailableSessionsTool implements CsTool {
@@ -127,9 +130,27 @@ export class ListAvailableSessionsTool implements CsTool {
       return true;
     }
     const needle = requestedName.toLocaleLowerCase('id-ID');
+    const specialty = session.doctor.specialty.toLocaleLowerCase('id-ID');
     return (
       session.doctor.fullName.toLocaleLowerCase('id-ID').includes(needle) ||
-      session.doctor.specialty.toLocaleLowerCase('id-ID').includes(needle)
+      specialty.includes(needle) ||
+      this.matchesSpecialtySynonym(needle, specialty)
+    );
+  }
+
+  /**
+   * The Indonesian half of the name filter (see {@link SPECIALTY_SYNONYMS}).
+   *
+   * Both halves must agree: the customer's phrase has to contain one of the
+   * poli's aliases *and* the session's specialty has to be the one that alias
+   * names. Matching on the alias alone would hand "poli anak" every session in
+   * the clinic.
+   */
+  private matchesSpecialtySynonym(needle: string, specialty: string): boolean {
+    return SPECIALTY_SYNONYMS.some(
+      (entry) =>
+        specialty.includes(entry.specialty) &&
+        entry.aliases.some((alias) => needle.includes(alias)),
     );
   }
 }
