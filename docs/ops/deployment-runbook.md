@@ -75,7 +75,7 @@ Application rollback and schema rollback are separate decisions — consult the 
 
 ## 5. Standard operations
 
-- **Seed roles/permissions baseline** (fresh environment only): `pnpm db:seed`.
+- **Seed roles/permissions baseline**: `pnpm db:seed`. Run on a fresh environment, **and again after any release whose notes mention a new role grant, permission, or system account** — `migrate deploy` never seeds, so those rows arrive only this way. The seed is idempotent (`ON CONFLICT DO NOTHING` throughout), so re-running it on an existing environment is safe and changes nothing else. Skipping it does not fail a deploy loudly: the affected feature simply degrades. A missing `doctor-patient.assign` grant, for example, lets every booking succeed while the doctor is quietly never linked to the patient, visible only as `appointment_care_team_link_failed` in the logs.
 - **Logs**: API writes structured JSON lines to stdout — access logs under the `HttpAccess` context (`requestId`, `method`, `path`, `statusCode`, `durationMs`, `userId`), 5xx details under `AllExceptionsFilter`. Correlate any user report via the `X-Request-Id` response header.
 - **Audit trail**: sensitive mutations (logins, user management, role changes) are recorded in the `audit_logs` table (`actor_user_id`, `action`, `resource`, `metadata`, `occurred_at`). Identifier disclosure is audited too — `PATIENT_IDENTIFIER_UNMASKED` and `DOCTOR_IDENTIFIER_UNMASKED` name which fields were revealed and to whom, never the values; `PATIENT_MRN_IMPORTED` records legacy migrations.
 - **API docs**: Swagger UI at `/api/docs`, contract YAML at `/api/openapi.yaml`.

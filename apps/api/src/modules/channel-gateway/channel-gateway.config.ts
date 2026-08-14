@@ -22,6 +22,30 @@ function readPositiveInteger(configService: ConfigService, key: string, fallback
  */
 const DEFAULT_SEND_PACING_MS = 1_000;
 
+/**
+ * The deployment's public origin, from `HMS_DOMAIN`.
+ *
+ * `HMS_DOMAIN` is a bare host — it is what the reverse proxy matches on — so
+ * the scheme is added here rather than stored. Always `https`: Telegram will
+ * not deliver to a plain-http webhook, so a value that produced one would be a
+ * url that can never work.
+ *
+ * A host typed with a scheme, a trailing slash, or a path is normalised rather
+ * than rejected, because every one of those is a reasonable thing to paste and
+ * none of them changes which deployment is meant.
+ */
+function readPublicBaseUrl(configService: ConfigService): string {
+  const configured = readTrimmed(configService, 'HMS_DOMAIN');
+  if (configured === '') {
+    return '';
+  }
+  const host = configured
+    .replace(/^https?:\/\//i, '')
+    .replace(/\/.*$/, '')
+    .replace(/\/+$/, '');
+  return host === '' ? '' : `https://${host}`;
+}
+
 function readGatewayKind(configService: ConfigService): WaGatewayKindValue {
   const configured = readTrimmed(configService, 'WA_GATEWAY_KIND').toUpperCase();
   // Falls back rather than throwing, for the same reason nothing else here
@@ -51,6 +75,7 @@ function readGatewayKind(configService: ConfigService): WaGatewayKindValue {
 export function resolveChannelGatewayConfig(configService: ConfigService): ChannelGatewayConfig {
   return {
     isEnabled: readTrimmed(configService, 'CS_CHANNEL_ENABLED').toLowerCase() === 'true',
+    publicBaseUrl: readPublicBaseUrl(configService),
     telegram: {
       botToken: readTrimmed(configService, 'TELEGRAM_BOT_TOKEN'),
       webhookSecret: readTrimmed(configService, 'TELEGRAM_WEBHOOK_SECRET'),

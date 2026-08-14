@@ -465,6 +465,35 @@
       "pairFailed": "Pairing could not be started.",
       "pairInstructions": "Open this link from inside the clinic network, then scan it in WhatsApp under Settings → Linked devices.",
       "pairExpiry": "The code expires in about {seconds} seconds."
+    },
+    "telegram": {
+      "title": "Telegram webhook",
+      "checkedAt": "Checked at {time}",
+      "expectedUrl": "URL to register",
+      "registeredUrl": "URL Telegram currently holds",
+      "status": {
+        "HEALTHY": "Registered",
+        "PAUSED": "Registered, channel switched off",
+        "UNREGISTERED": "Not registered — messages will not arrive",
+        "HIJACKED": "Registered to a different deployment",
+        "DELIVERY_FAILING": "Delivery is failing",
+        "NO_DOMAIN": "No domain configured",
+        "NOT_CONFIGURED": "Not configured"
+      },
+      "hint": {
+        "HEALTHY": "Telegram is delivering customer messages to this deployment.",
+        "PAUSED": "The webhook is correct, but CS_CHANNEL_ENABLED is off. Messages are accepted and then ignored.",
+        "UNREGISTERED": "Telegram does not know where to deliver. Customers can message and nothing reaches the clinic.",
+        "HIJACKED": "A bot has exactly one webhook. Another deployment is using the same bot token and has taken the traffic — customer messages are arriving there, not here. Use a separate bot per environment.",
+        "DELIVERY_FAILING": "Telegram is holding messages because delivery is being refused. Check that the API is reachable from the internet and the secret matches.",
+        "NO_DOMAIN": "HMS_DOMAIN is not set, so the webhook URL cannot be derived.",
+        "NOT_CONFIGURED": "No bot token or webhook secret is set for this clinic."
+      },
+      "register": "Register again",
+      "registering": "Registering…",
+      "registerFailed": "The webhook could not be registered.",
+      "lastErrorStale": "Last error {time}: {message}. Nothing is queued now, so this is a fault that already passed.",
+      "lastErrorLive": "Last error {time}: {message}."
     }
   }
 }

@@ -6,6 +6,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { CHANNEL_GATEWAY_EXAMPLES } from '../../../common/openapi/channel-gateway-examples';
+import { TelegramWebhookAdminService } from '../infrastructure/telegram-webhook-admin.service';
 import { WhatsappSessionService } from '../infrastructure/whatsapp-session.service';
 
 /**
@@ -34,12 +35,15 @@ import { WhatsappSessionService } from '../infrastructure/whatsapp-session.servi
 @ApiTags('Channel Gateway')
 @Controller({
   version: '1',
-  path: 'admin/channel-gateway/whatsapp',
+  path: 'admin/channel-gateway',
 })
 export class ChannelGatewayAdminController {
-  constructor(private readonly whatsappSession: WhatsappSessionService) {}
+  constructor(
+    private readonly whatsappSession: WhatsappSessionService,
+    private readonly telegramWebhookAdmin: TelegramWebhookAdminService,
+  ) {}
 
-  @Get('session')
+  @Get('whatsapp/session')
   @Auth([{ action: 'manage', subject: 'BpjsConfig' }])
   @ApiEndpoint({
     summary: 'Read the WhatsApp session’s health',
@@ -54,7 +58,7 @@ export class ChannelGatewayAdminController {
     return { data: view };
   }
 
-  @Post('session/pairing')
+  @Post('whatsapp/session/pairing')
   @HttpCode(200)
   @Auth([{ action: 'manage', subject: 'BpjsConfig' }])
   @ApiEndpoint({
@@ -71,6 +75,40 @@ export class ChannelGatewayAdminController {
     const view = await this.whatsappSession.startPairing();
 
     return { data: view, message: 'Pairing started' };
+  }
+
+  @Get('telegram/webhook')
+  @Auth([{ action: 'manage', subject: 'BpjsConfig' }])
+  @ApiEndpoint({
+    summary: 'Read the Telegram webhook’s registration health',
+    responseDescription:
+      'Where Telegram is currently pointed, and whether that is this deployment. `isMatching` is the field to read first: a bot token has exactly one webhook **globally**, so a second environment registering with the same token silently takes the traffic and leaves this one quiet with a healthy-looking configuration — nothing errors anywhere. `isLastErrorStale` is the second: Telegram never clears `lastErrorMessage` on a successful delivery, only overwrites it on the next failure, so a resolved outage otherwise reads as a live one forever. Neither the bot token nor the webhook secret appears here.',
+    responseExample: { data: CHANNEL_GATEWAY_EXAMPLES.telegramWebhookHealth },
+  })
+  async getTelegramWebhookHealth(@AuthUser() currentUser?: CurrentUser) {
+    this.assertAuthenticated(currentUser);
+    const view = await this.telegramWebhookAdmin.readHealth();
+
+    return { data: view };
+  }
+
+  @Post('telegram/webhook')
+  @HttpCode(200)
+  @Auth([{ action: 'manage', subject: 'BpjsConfig' }])
+  @ApiEndpoint({
+    summary: 'Point Telegram at this deployment',
+    responseDescription:
+      'Registers the webhook and returns the health read back afterwards. **The URL is not an input.** It is derived from `HMS_DOMAIN` and the route this API actually serves, so the request body is empty: a URL that came from the caller would make this endpoint a way to redirect the clinic’s bot traffic to any host on the internet. Telegram answers `ok` for any well-formed URL without checking that the host is yours, so the registration is read back and this route fails rather than reporting success when Telegram is not pointing here.',
+    responseExample: {
+      data: CHANNEL_GATEWAY_EXAMPLES.telegramWebhookHealth,
+      message: 'Telegram webhook registered',
+    },
+  })
+  async registerTelegramWebhook(@AuthUser() currentUser?: CurrentUser) {
+    this.assertAuthenticated(currentUser);
+    const view = await this.telegramWebhookAdmin.registerWebhook();
+
+    return { data: view, message: 'Telegram webhook registered' };
   }
 
   private assertAuthenticated(currentUser?: CurrentUser): CurrentUser {

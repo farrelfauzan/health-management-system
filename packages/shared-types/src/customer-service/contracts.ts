@@ -214,6 +214,51 @@ export type WhatsappPairingSessionView = {
 };
 
 /**
+ * The Telegram webhook's registration health (§8.4).
+ *
+ * Telegram's own `getWebhookInfo` is the source of every field here, because
+ * the only authority on what Telegram will do with the clinic's bot is
+ * Telegram. What this shape adds is the two comparisons a raw reading does not
+ * make, and both exist because of failure modes that are otherwise invisible.
+ *
+ * **`isMatching` is the one worth building the card for.** A bot token has
+ * exactly one webhook, globally — not one per environment. So a staging
+ * deployment registering with production's token does not produce an error
+ * anywhere: it silently takes the traffic, and production goes quiet with a
+ * healthy-looking configuration. Comparing the registered url against the one
+ * this deployment would register is the only way that shows up.
+ *
+ * **`isLastErrorStale` exists because Telegram's error field is sticky.**
+ * `lastErrorMessage` holds the last failure forever and is never cleared by a
+ * successful delivery — only overwritten by the next failure. Read without a
+ * clock it looks like a live outage, and an operator who reacts to a
+ * three-hour-old 401 is chasing a fault that fixed itself.
+ *
+ * `registeredUrl` is a public path and carries nothing secret. The bot token
+ * and the webhook secret never appear in this shape and must not: the card
+ * shows where Telegram is pointed, never what authenticates it.
+ */
+export type TelegramWebhookHealth = {
+  /** Both the bot token and the webhook secret are present in the environment. */
+  isConfigured: boolean;
+  /** Whether the channel's master switch is on. Configured but paused is not broken. */
+  isChannelEnabled: boolean;
+  /** What Telegram currently holds. Null means no webhook is registered at all. */
+  registeredUrl: string | null;
+  /** What this deployment would register, built from its own public base url. */
+  expectedUrl: string | null;
+  isMatching: boolean;
+  /** Updates Telegram is holding because delivery is failing. */
+  pendingUpdateCount: number;
+  lastErrorAt: string | null;
+  lastErrorMessage: string | null;
+  /** Whether that error predates the most recent successful delivery window. */
+  isLastErrorStale: boolean;
+  /** When this was read. A stale card is worse than no card. */
+  checkedAt: string;
+};
+
+/**
  * §8.4's channel metrics, over a window (`PCS-T11`).
  *
  * The five §8.4 names, and they exist to make the `PCS-T11` go/no-go decision
