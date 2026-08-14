@@ -40,6 +40,14 @@ implementation is stronger than that, because the model never sees them.
 Source 3 is therefore the whole problem. It is the only place where text a
 third party chose reaches the model, and uploading a document is self-service.
 
+**This is a property of Mode A, not a law.** `.env.example` already anticipates
+`AI_CHAT_TOOL_RESULT_TO_PROVIDER` (P15-T07, not implemented — the name appears
+in no source file today). The day it lands, patient rows enter the model's
+context and tool results become surface #5, carrying free-text fields a patient
+can set on themselves. Whoever builds it should re-read this document rather
+than assume it still describes the system: the serialization argument in §2
+transfers, the "not on this list" claim above does not.
+
 ## 2. What was wrong, and what fixed it
 
 `ChatRetrievalService.toResult` used to join passages as text:
