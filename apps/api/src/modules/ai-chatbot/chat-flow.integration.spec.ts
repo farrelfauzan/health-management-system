@@ -1284,12 +1284,24 @@ describe('Chat flow integration', () => {
         },
       ]);
       const retrievalMessage = readOutboundBody().messages.find((message) =>
-        message.content.includes('[1] SOP Pendaftaran BPJS (ID)'),
+        message.content.includes('SOP Pendaftaran BPJS'),
       );
       expect(retrievalMessage?.role).toBe('system');
-      expect(retrievalMessage?.content).toContain(
-        'Pendaftaran pasien BPJS dibuka pukul 07.00 di poliklinik umum.',
-      );
+      // SJ-15: the passages ride as a JSON array, so a document cannot forge
+      // the boundary between itself and the next one. Parsed rather than
+      // substring-matched, because what this asserts is the structure.
+      const retrievalContent = String(retrievalMessage?.content);
+      const passages = JSON.parse(
+        retrievalContent.slice(retrievalContent.indexOf('\n\n') + 2),
+      ) as Array<Record<string, unknown>>;
+      expect(passages).toEqual([
+        {
+          reference: 1,
+          title: 'SOP Pendaftaran BPJS',
+          language: 'ID',
+          content: 'Pendaftaran pasien BPJS dibuka pukul 07.00 di poliklinik umum.',
+        },
+      ]);
       // One answering round trip: retrieval runs before the completion, it is
       // not a tool the model asks for (§5.5). The second call is the
       // session-naming one, which carries no passage.

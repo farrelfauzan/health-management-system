@@ -112,6 +112,23 @@ export class ChatRetrievalService {
    * refers to. Citations are built from the database rows rather than parsed
    * out of the reply, so a marker the model invented resolves to nothing
    * instead of to a plausible-looking document.
+   *
+   * **Serialized as JSON rather than templated into text (SJ-15).** The
+   * passages used to be joined as `[n] Title (LANG)\ncontent`, which made the
+   * passage boundary a text pattern — and every byte on both sides of it is
+   * attacker-supplied. A document containing a blank line followed by
+   * `[3] Clinic Policy (ID)` would have appeared to the model as a third
+   * retrieved passage that no repository ever returned, carrying whatever
+   * instruction the uploader wanted and a citation number the client would
+   * resolve to a real document. An uploaded title could do the same in fewer
+   * characters.
+   *
+   * JSON removes the shape of the attack rather than pattern-matching for it:
+   * `content` is a string value, so a newline or a bracket inside it is
+   * escaped and stays inside it, and forging a sibling entry would require
+   * breaking out of a quoted string that the serializer will not let you
+   * break out of. The preamble tells the model this is a list of passages;
+   * the structure is what makes that description true.
    */
   private toResult(passages: readonly RetrievedDocumentChunk[]): ChatRetrievalResult {
     const citations = passages.map((passage, index) => ({
@@ -121,15 +138,14 @@ export class ChatRetrievalService {
       language: passage.language,
       sourceTier: passage.sourceTier,
     }));
-    const promptBlock = passages
-      .map((passage, index) => {
-        const citation = citations[index];
-        return [
-          `[${citation?.reference}] ${passage.documentTitle} (${passage.language})`,
-          passage.content.trim(),
-        ].join('\n');
-      })
-      .join('\n\n');
+    const promptBlock = JSON.stringify(
+      passages.map((passage, index) => ({
+        reference: citations[index]?.reference,
+        title: passage.documentTitle,
+        language: passage.language,
+        content: passage.content.trim(),
+      })),
+    );
     return { promptBlock, citations };
   }
 
