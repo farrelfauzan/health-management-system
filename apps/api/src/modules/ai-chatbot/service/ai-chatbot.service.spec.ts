@@ -7,6 +7,7 @@ import {
   checkMedicationStockToolArgsSchema,
 } from '@hms/shared-types';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AiChatbotError } from '../ai-chatbot.error';
 import { ChatCompletionMessage } from '../infrastructure/ai-provider.types';
@@ -45,6 +46,7 @@ describe('AiChatbotService', () => {
   const sessionQuota = { since: new Date('2026-08-13T00:00:00.000Z'), limit: 20 };
 
   const findUserByIdMock = jest.fn();
+  const auditRecordMock = jest.fn();
 
   const inputActor: CurrentUser = { sub: 'user-patient', email: 'patient@hms.local' };
 
@@ -70,6 +72,7 @@ describe('AiChatbotService', () => {
       } as unknown as SafetyPolicyService,
       toolRegistry,
       { generateTitle: generateTitleMock } as unknown as ChatSessionTitleService,
+      { record: auditRecordMock } as unknown as AuditService,
       new ConfigService(env),
     );
   }
@@ -950,6 +953,118 @@ describe('AiChatbotService', () => {
 
         expect(actualResult.meta.toolResults?.[0]?.outcome).toBe('FAILED');
         expect(actualResult.meta.toolResults?.[0]?.errorCode).toBe('AI_TOOL_EXECUTION_FAILED');
+      });
+
+      it('leaves an execution failure out of the audit log', async () => {
+        // SJ-14 §5. A database outage is not somebody being told no, and
+        // filing it as an access event would bury the refusals that matter.
+        stubDoctorExchange();
+        const service = buildService(
+          undefined,
+          buildToolRegistry(jest.fn().mockRejectedValue(new Error('database gone'))),
+        );
+        respondWithToolCalls([{ id: 'call_1', name: 'check_medication_stock', arguments: {} }]);
+
+        await service.sendMessage('session-1', { content: 'Cek stok' }, inputActor);
+
+        expect(auditRecordMock).not.toHaveBeenCalled();
+      });
+
+      it('separates a domain refusal from a domain failure', async () => {
+        // SJ-14 §5. The tool runs as the asking user, so `Forbidden` from the
+        // service is the authorization system working — the model is told
+        // that, not that the lookup broke.
+        stubDoctorExchange();
+        const service = buildService(
+          undefined,
+          buildToolRegistry(
+            jest.fn().mockRejectedValue(new ForbiddenException('Not your patient')),
+          ),
+        );
+        respondWithToolCalls([{ id: 'call_1', name: 'check_medication_stock', arguments: {} }]);
+
+        const actualResult = await service.sendMessage(
+          'session-1',
+          { content: 'Cek stok' },
+          inputActor,
+        );
+
+        expect(actualResult.meta.toolResults?.[0]?.errorCode).toBe('AI_TOOL_PERMISSION_DENIED');
+      });
+
+      it('audits a domain refusal as a READ that did not happen', async () => {
+        stubDoctorExchange();
+        const service = buildService(
+          undefined,
+          buildToolRegistry(
+            jest.fn().mockRejectedValue(new ForbiddenException('Not your patient')),
+          ),
+        );
+        respondWithToolCalls([
+          {
+            id: 'call_1',
+            name: 'check_medication_stock',
+            arguments: { patientId: '77777777-7777-4777-8777-777777777777' },
+          },
+        ]);
+
+        await service.sendMessage('session-1', { content: 'Ringkas pasien ini' }, inputActor);
+
+        expect(auditRecordMock).toHaveBeenCalledWith({
+          action: 'READ',
+          resource: 'ChatTool',
+          resourceId: 'check_medication_stock',
+          actorUserId: 'user-patient',
+          actorRole: 'DOCTOR',
+          // Filed under the patient the probe named, so the attempt lands in
+          // that patient's access history and not only in the asker's.
+          patientId: '77777777-7777-4777-8777-777777777777',
+          metadata: {
+            outcome: 'DENIED',
+            errorCode: 'AI_TOOL_PERMISSION_DENIED',
+            sessionId: 'session-1',
+            channel: 'DOCTOR',
+          },
+        });
+      });
+
+      it('audits a tool the caller was never offered', async () => {
+        // The registry refusing a name the model produced is the shape a
+        // prompt injection takes when it works on the model but not on us,
+        // which is exactly the event worth having a row for.
+        stubDoctorExchange();
+        const service = buildService(undefined, buildToolRegistry(jest.fn()));
+        respondWithToolCalls([
+          { id: 'call_1', name: 'list_my_patients', arguments: { page: 1 } },
+        ]);
+
+        await service.sendMessage('session-1', { content: 'Pasien saya siapa?' }, inputActor);
+
+        expect(auditRecordMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: 'READ',
+            resource: 'ChatTool',
+            resourceId: 'list_my_patients',
+            metadata: expect.objectContaining({
+              outcome: 'DENIED',
+              errorCode: 'AI_TOOL_UNAVAILABLE',
+            }),
+          }),
+        );
+      });
+
+      it('records no patient id when the refused call named none', async () => {
+        // The arguments are model output: a hallucinated `"the patient"` in a
+        // uuid column would abort the insert and lose the row entirely.
+        stubDoctorExchange();
+        const service = buildService(undefined, buildToolRegistry(jest.fn()));
+        respondWithToolCalls([
+          { id: 'call_1', name: 'list_my_patients', arguments: { patientId: 'pasien itu' } },
+        ]);
+
+        await service.sendMessage('session-1', { content: 'Pasien saya siapa?' }, inputActor);
+
+        expect(auditRecordMock.mock.calls[0]?.[0]).not.toHaveProperty('patientId');
       });
 
       it('omits toolResults from meta when the model called nothing', async () => {

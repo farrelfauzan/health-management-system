@@ -266,5 +266,57 @@ describe('ChatToolRegistry', () => {
         'Chat tool is already registered: check_medication_stock',
       );
     });
+
+    /**
+     * SJ-14. Each case is a tool the compiler would have accepted through a
+     * cast — a test double, a half-finished definition — and each one names a
+     * field the offering rules later read to decide who may call it.
+     */
+    it('refuses a tool that declares no required permission', () => {
+      const registry = new ChatToolRegistry();
+      const inputTool = { ...buildStockTool(), requiredPermission: undefined };
+
+      expect(() => registry.registerTool(inputTool as unknown as ChatTool)).toThrow(
+        'Chat tool declaration is invalid (check_medication_stock): requiredPermission is missing',
+      );
+    });
+
+    it('refuses a permission whose scope is neither ANY nor OWN', () => {
+      const registry = new ChatToolRegistry();
+      const inputTool = {
+        ...buildStockTool(),
+        requiredPermission: { resource: 'medication', action: 'read', scope: 'ALL' },
+      };
+
+      expect(() => registry.registerTool(inputTool as unknown as ChatTool)).toThrow(
+        'requiredPermission.scope must be ANY or OWN, got ALL',
+      );
+    });
+
+    it('refuses a tool that could never be offered to anyone', () => {
+      const registry = new ChatToolRegistry();
+      const inputTool = { ...buildStockTool(), channels: [], allowedRoleCodes: [] };
+
+      expect(() => registry.registerTool(inputTool as unknown as ChatTool)).toThrow(
+        'channels is empty, so the tool could never be offered; allowedRoleCodes is empty',
+      );
+    });
+
+    it('names the tool in the failure, because nothing else identifies it at boot', () => {
+      const registry = new ChatToolRegistry();
+      const inputTool = { ...buildListMyPatientsTool(), execute: undefined };
+
+      expect(() => registry.registerTool(inputTool as unknown as ChatTool)).toThrow(
+        'Chat tool declaration is invalid (list_my_patients): execute is not a function',
+      );
+    });
+
+    it('registers nothing when the declaration is rejected', () => {
+      const registry = new ChatToolRegistry();
+      const inputTool = { ...buildStockTool(), requiredPermission: undefined };
+
+      expect(() => registry.registerTool(inputTool as unknown as ChatTool)).toThrow();
+      expect(registry.hasRegisteredTools()).toBe(false);
+    });
   });
 });

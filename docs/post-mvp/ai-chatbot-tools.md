@@ -143,6 +143,18 @@ No permission is violated: an admin may read all patients over HTTP. What breaks
 
 Rule 2 is what makes the §2.1 table honest. It also means an admin who genuinely needs clinic-wide numbers gets them from a tool built for that question (§2.1.2), with a projection designed for it — not by borrowing a doctor's tool and silently widening its scope.
 
+#### 4.1.2 A refusal is an event, not an error (SJ-14)
+
+Both rules above fail closed, which means the interesting output of this design is a stream of denials — and until SJ-14 that stream went nowhere. Three changes make it legible.
+
+**Denials are named apart from failures.** `AI_TOOL_PERMISSION_DENIED` is raised when a domain service refuses the row (the tool ran as the asking user and was told no); `AI_TOOL_EXECUTION_FAILED` now means only that something broke. They used to be one code, which left "this is not your patient" and "the database is unreachable" indistinguishable — to the model composing the reply, and to anyone reading the transcript later. A `NotFoundException` is deliberately *not* reclassified: some services 404 rather than 403 precisely so they do not confirm a record exists, and guessing at that here would file genuine missing rows as security events.
+
+**Denials are audited, successes are not.** A refused lookup writes one `READ` row against resource `ChatTool`, with the tool name as `resourceId` and, when the call named one, the patient id — so the attempt lands in *that patient's* access history and not only in the asker's. Successful tool calls are already audited by the domain services they run through; adding a second row here would double-count every lookup. The write is best-effort (`AuditService.record`): the disclosure was already prevented, so failing the exchange over the note about it would cost the user their answer and buy nothing — the opposite trade to `AuditInterceptor`, where the data is on its way out the door.
+
+Two codes are audited, and the second is the one worth naming: `AI_TOOL_UNAVAILABLE` means the registry refused a tool the caller was never offered. That is the shape a successful prompt injection takes — it worked on the model, and stopped at the registry. It is also why the arguments themselves are never copied into the audit metadata: they are unbounded model output, and this is the log meant to survive the attack that produced them.
+
+**The tool layer cannot reach Prisma.** §4.1's "calls the existing domain service" is enforced by an ESLint `no-restricted-imports` rule scoped to `tools/**`, banning `PrismaService`, the generated client, and repositories. It is a lint error rather than a test because the mistake is made while writing a new tool, and lint is the only check that fires then rather than afterwards. Likewise, a tool whose declaration is incomplete — missing `requiredPermission` above all — fails at module init rather than registering: an undeclared requirement would be compared against `undefined` and the tool offered to everyone.
+
 ### 4.2 Module layout
 
 ```

@@ -29,6 +29,10 @@ const STATUS_BY_ERROR_CODE: Readonly<Record<AiChatbotErrorCode, number>> = {
   AI_TOOL_UNAVAILABLE: HttpStatus.BAD_GATEWAY,
   AI_TOOL_INVALID_ARGUMENTS: HttpStatus.BAD_GATEWAY,
   AI_TOOL_EXECUTION_FAILED: HttpStatus.BAD_GATEWAY,
+  // The exception to the paragraph above: a denial is about the caller, not
+  // the model or the upstream, so if one ever escapes the loop it must not
+  // read as a vendor fault the clinic should go looking into.
+  AI_TOOL_PERMISSION_DENIED: HttpStatus.FORBIDDEN,
 };
 
 /**

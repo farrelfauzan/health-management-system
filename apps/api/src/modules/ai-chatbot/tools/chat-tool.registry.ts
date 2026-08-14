@@ -40,10 +40,25 @@ const CHANNEL_ROLE_CODES: Record<ChatChannelValue, readonly string[]> = {
 export class ChatToolRegistry {
   private readonly toolsByName = new Map<ChatToolNameValue, ChatTool>();
 
+  /**
+   * Admits one tool, or refuses to boot (SJ-14).
+   *
+   * The declaration is checked at runtime even though the interface already
+   * requires it at compile time. TypeScript is the wrong last line of defence
+   * here: a single `as ChatTool` — the sort of thing a test double or a
+   * hurried refactor produces — satisfies the compiler and registers a tool
+   * with no permission requirement at all, which `isRequiredScopeSatisfied`
+   * would then evaluate against `undefined` and quietly offer to everyone.
+   *
+   * Failing at module init is the same posture as SJ-3's route-guard
+   * coverage: the mistake becomes a process that will not start, rather than
+   * a tool that works and should not.
+   */
   registerTool(tool: ChatTool): void {
     if (this.toolsByName.has(tool.name)) {
       throw new Error(`Chat tool is already registered: ${tool.name}`);
     }
+    assertToolIsDeclared(tool);
     this.toolsByName.set(tool.name, tool);
   }
 
@@ -150,5 +165,59 @@ export class ChatToolRegistry {
       hasAny: matching.some((permission) => permission.scope === 'ANY'),
       hasOwn: matching.some((permission) => permission.scope === 'OWN'),
     };
+  }
+}
+
+/**
+ * Refuses a tool whose authorization contract is incomplete (SJ-14).
+ *
+ * Every field checked here is one the registry later reads to decide who may
+ * call the tool. An empty `channels` or `allowedRoleCodes` would be
+ * self-denying and merely useless; a missing `requiredPermission` is the
+ * dangerous one, because `isRequiredScopeSatisfied` would compare against
+ * `undefined` and the tool would be offered to whoever asked.
+ *
+ * The message names the tool and the field, because this fires at boot with
+ * no request to correlate against — "chat tool declaration is invalid" alone
+ * would send somebody reading eight definitions to find out which.
+ */
+function assertToolIsDeclared(tool: ChatTool): void {
+  const problems: string[] = [];
+  if (!tool.name) {
+    problems.push('name is empty');
+  }
+  if (!tool.description?.trim()) {
+    problems.push('description is empty');
+  }
+  if (!tool.channels?.length) {
+    problems.push('channels is empty, so the tool could never be offered');
+  }
+  if (!tool.allowedRoleCodes?.length) {
+    problems.push('allowedRoleCodes is empty, so the tool could never be offered');
+  }
+  const permission = tool.requiredPermission;
+  if (!permission) {
+    problems.push('requiredPermission is missing');
+  } else {
+    if (!permission.resource?.trim()) {
+      problems.push('requiredPermission.resource is empty');
+    }
+    if (!permission.action?.trim()) {
+      problems.push('requiredPermission.action is empty');
+    }
+    if (permission.scope !== 'ANY' && permission.scope !== 'OWN') {
+      problems.push(`requiredPermission.scope must be ANY or OWN, got ${String(permission.scope)}`);
+    }
+  }
+  if (!tool.argumentSchema) {
+    problems.push('argumentSchema is missing');
+  }
+  if (typeof tool.execute !== 'function') {
+    problems.push('execute is not a function');
+  }
+  if (problems.length > 0) {
+    throw new Error(
+      `Chat tool declaration is invalid (${String(tool.name)}): ${problems.join('; ')}`,
+    );
   }
 }
