@@ -79,12 +79,59 @@ describe('redactCustomerMessage', () => {
     expect(actualResult.content).toBe('NIK [NIK DIREDAKSI] dan BPJS [NOMOR BPJS DIREDAKSI]');
   });
 
-  it('redacts a 13-digit run typed as a phone number, and that is the deliberate trade', () => {
-    const actualResult = redactCustomerMessage('nomor saya 6281234567890');
+  /**
+   * The booking flow asks for a phone number in so many words, so redacting
+   * the answer does not cost a clarifying question — it ends the booking, and
+   * takes the customer's name down with it, because a redacted turn never
+   * reaches the model at all.
+   */
+  describe('nomor telepon', () => {
+    it.each([
+      ['Rizky Pratama, 081298765432', 12],
+      ['nama saya Budi, 08123456789', 11],
+      ['Siti, 081234567890', 12],
+      ['Andi 0812-3456-7890', 12],
+      ['Doni, 0812 3456 7895', 12],
+      ['Rina +6281298765432', 13],
+      ['Eka 6281234567890', 13],
+    ])('leaves %s alone', (inputMessage) => {
+      const actualResult = redactCustomerMessage(inputMessage);
 
-    // Indonesian mobile numbers overlap BPJS width, and shape alone cannot
-    // separate them. Losing a phone number costs a clarifying question;
-    // leaking a payer identifier to a processor does not undo.
-    expect(actualResult.wasRedacted).toBe(true);
+      expect(actualResult.wasRedacted).toBe(false);
+      expect(actualResult.content).toBe(inputMessage);
+    });
+
+    it('keeps the name and the number together in one turn', () => {
+      const inputMessage = 'Rizky Pratama, 081298765432';
+
+      const actualResult = redactCustomerMessage(inputMessage);
+
+      expect(actualResult.content).toContain('Rizky Pratama');
+      expect(actualResult.content).toContain('081298765432');
+    });
+
+    it('still redacts a BPJS number that does not have a mobile prefix', () => {
+      const actualResult = redactCustomerMessage('BPJS saya 0001234567890');
+
+      expect(actualResult.content).toBe('BPJS saya [NOMOR BPJS DIREDAKSI]');
+    });
+
+    it('still redacts a NIK, which cannot fit the exemption', () => {
+      const actualResult = redactCustomerMessage('nomor saya 3171020344050001');
+
+      expect(actualResult.content).toBe('nomor saya [NIK DIREDAKSI]');
+    });
+
+    it('redacts an identifier sitting beside an exempted phone number', () => {
+      const actualResult = redactCustomerMessage('Rizky 081298765432, NIK 3171020344050001');
+
+      expect(actualResult.content).toBe('Rizky 081298765432, NIK [NIK DIREDAKSI]');
+    });
+
+    it('does not let a forged mask smuggle an identifier through', () => {
+      const actualResult = redactCustomerMessage('TEL0 3171020344050001');
+
+      expect(actualResult.content).toContain('[NIK DIREDAKSI]');
+    });
   });
 });
