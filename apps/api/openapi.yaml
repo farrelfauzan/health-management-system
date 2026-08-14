@@ -17523,6 +17523,189 @@ paths:
         - bearer: []
       summary: Start a QR pairing for the WhatsApp session
       tags: *a27
+  /api/v1/admin/channel-gateway/telegram/webhook:
+    get:
+      operationId: ChannelGatewayAdminController_getTelegramWebhookHealth_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Where Telegram is currently pointed, and whether that is this
+            deployment. `isMatching` is the field to read first: a bot token has
+            exactly one webhook **globally**, so a second environment
+            registering with the same token silently takes the traffic and
+            leaves this one quiet with a healthy-looking configuration — nothing
+            errors anywhere. `isLastErrorStale` is the second: Telegram never
+            clears `lastErrorMessage` on a successful delivery, only overwrites
+            it on the next failure, so a resolved outage otherwise reads as a
+            live one forever. Neither the bot token nor the webhook secret
+            appears here."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isConfigured:
+                        type: boolean
+                      isChannelEnabled:
+                        type: boolean
+                      registeredUrl:
+                        type: string
+                      expectedUrl:
+                        type: string
+                      isMatching:
+                        type: boolean
+                      pendingUpdateCount:
+                        type: integer
+                      lastErrorAt:
+                        type: string
+                      lastErrorMessage:
+                        type: string
+                      isLastErrorStale:
+                        type: boolean
+                      checkedAt:
+                        type: string
+                    required:
+                      - isConfigured
+                      - isChannelEnabled
+                      - registeredUrl
+                      - expectedUrl
+                      - isMatching
+                      - pendingUpdateCount
+                      - lastErrorAt
+                      - lastErrorMessage
+                      - isLastErrorStale
+                      - checkedAt
+                required:
+                  - data
+                example:
+                  data:
+                    isConfigured: true
+                    isChannelEnabled: true
+                    registeredUrl: https://klinik.example.id/api/v1/channels/telegram/webhook
+                    expectedUrl: https://klinik.example.id/api/v1/channels/telegram/webhook
+                    isMatching: true
+                    pendingUpdateCount: 0
+                    lastErrorAt: 2026-08-09T02:41:00.000Z
+                    lastErrorMessage: "Wrong response from the webhook: 401 Unauthorized"
+                    isLastErrorStale: true
+                    checkedAt: 2026-08-09T03:12:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the Telegram webhook’s registration health
+      tags: *a27
+    post:
+      operationId: ChannelGatewayAdminController_registerTelegramWebhook_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Registers the webhook and returns the health read back afterwards.
+            **The URL is not an input.** It is derived from `HMS_DOMAIN` and the
+            route this API actually serves, so the request body is empty: a URL
+            that came from the caller would make this endpoint a way to redirect
+            the clinic’s bot traffic to any host on the internet. Telegram
+            answers `ok` for any well-formed URL without checking that the host
+            is yours, so the registration is read back and this route fails
+            rather than reporting success when Telegram is not pointing here."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isConfigured:
+                        type: boolean
+                      isChannelEnabled:
+                        type: boolean
+                      registeredUrl:
+                        type: string
+                      expectedUrl:
+                        type: string
+                      isMatching:
+                        type: boolean
+                      pendingUpdateCount:
+                        type: integer
+                      lastErrorAt:
+                        type: string
+                      lastErrorMessage:
+                        type: string
+                      isLastErrorStale:
+                        type: boolean
+                      checkedAt:
+                        type: string
+                    required:
+                      - isConfigured
+                      - isChannelEnabled
+                      - registeredUrl
+                      - expectedUrl
+                      - isMatching
+                      - pendingUpdateCount
+                      - lastErrorAt
+                      - lastErrorMessage
+                      - isLastErrorStale
+                      - checkedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    isConfigured: true
+                    isChannelEnabled: true
+                    registeredUrl: https://klinik.example.id/api/v1/channels/telegram/webhook
+                    expectedUrl: https://klinik.example.id/api/v1/channels/telegram/webhook
+                    isMatching: true
+                    pendingUpdateCount: 0
+                    lastErrorAt: 2026-08-09T02:41:00.000Z
+                    lastErrorMessage: "Wrong response from the webhook: 401 Unauthorized"
+                    isLastErrorStale: true
+                    checkedAt: 2026-08-09T03:12:00.000Z
+                  message: Telegram webhook registered
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Point Telegram at this deployment
+      tags: *a27
   /api/v1/admin/conversations:
     get:
       operationId: CsAdminController_listConversations_v1

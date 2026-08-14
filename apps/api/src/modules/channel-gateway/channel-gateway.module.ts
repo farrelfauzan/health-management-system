@@ -10,6 +10,7 @@ import { GowaWhatsappAdapter } from './infrastructure/gowa-whatsapp.adapter';
 import { GrammyTelegramAdapter } from './infrastructure/grammy-telegram.adapter';
 import { resolveWhatsappAdapter } from './infrastructure/resolve-whatsapp-adapter';
 import { TelegramGatewayService } from './infrastructure/telegram-gateway.service';
+import { TelegramWebhookAdminService } from './infrastructure/telegram-webhook-admin.service';
 import { WahaWhatsappAdapter } from './infrastructure/waha-whatsapp.adapter';
 import { WhatsappGatewayService } from './infrastructure/whatsapp-gateway.service';
 import { WhatsappSessionService } from './infrastructure/whatsapp-session.service';
@@ -60,6 +61,11 @@ import { OutboundMessageDispatcherService } from './service/outbound-message-dis
     ChannelInboundReceiptRepository,
     InboundMessageNormalizerService,
     OutboundMessageDispatcherService,
+    // Bound as a concrete class rather than behind a port, unlike the
+    // messaging adapters: a webhook registration is a Telegram concept with no
+    // WhatsApp counterpart, so a provider-neutral token would be an interface
+    // only one implementation could ever answer.
+    TelegramWebhookAdminService,
     {
       provide: TelegramGatewayService,
       useClass: GrammyTelegramAdapter,

@@ -89,6 +89,20 @@ export type InboundMessageOutcomeValue = (typeof INBOUND_MESSAGE_OUTCOMES)[numbe
 export type ChannelGatewayConfig = {
   /** Master switch, default off. With it off, no webhook does any work. */
   readonly isEnabled: boolean;
+  /**
+   * The deployment's own public origin, e.g. `https://klinik.example.id`.
+   *
+   * Read from `HMS_DOMAIN`, the variable the reverse proxy already terminates
+   * TLS for, so the API and the proxy cannot disagree about what this
+   * deployment is called. Empty on a deployment that has not set it, which
+   * makes webhook registration unavailable rather than guessed at.
+   *
+   * It exists so the webhook url is **derived** rather than typed. The path is
+   * a fact of this codebase, not an operator's decision, and an origin that
+   * came from a form would turn the registration button into a way to point
+   * the clinic's bot traffic at any host on the internet.
+   */
+  readonly publicBaseUrl: string;
   readonly telegram: {
     readonly botToken: string;
     /**

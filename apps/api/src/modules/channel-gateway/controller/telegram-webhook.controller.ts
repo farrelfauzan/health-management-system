@@ -4,6 +4,7 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import { PublicRoute } from '../../../common/authorization/public-route.decorator';
 import { TelegramWebhookUpdateDto } from '../dto/telegram-webhook-update.dto';
 import { TelegramWebhookAuthGuard } from '../guard/telegram-webhook-auth.guard';
+import { TELEGRAM_WEBHOOK_ROUTE } from '../infrastructure/telegram-webhook-route';
 import { InboundMessageNormalizerService } from '../service/inbound-message-normalizer.service';
 
 /**
@@ -31,15 +32,15 @@ import { InboundMessageNormalizerService } from '../service/inbound-message-norm
  */
 @ApiExcludeController()
 @Controller({
-  version: '1',
-  path: 'channels/telegram',
+  version: TELEGRAM_WEBHOOK_ROUTE.version,
+  path: TELEGRAM_WEBHOOK_ROUTE.controllerPath,
 })
 export class TelegramWebhookController {
   constructor(
     private readonly inboundMessageNormalizer: InboundMessageNormalizerService,
   ) {}
 
-  @Post('webhook')
+  @Post(TELEGRAM_WEBHOOK_ROUTE.routePath)
   @HttpCode(200)
   @PublicRoute()
   @UseGuards(TelegramWebhookAuthGuard)

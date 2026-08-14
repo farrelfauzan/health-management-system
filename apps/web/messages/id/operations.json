@@ -465,6 +465,35 @@
       "pairFailed": "Pemasangan gagal dimulai.",
       "pairInstructions": "Buka tautan ini dari dalam jaringan klinik, lalu pindai di WhatsApp melalui Setelan → Perangkat tertaut.",
       "pairExpiry": "Kode berlaku sekitar {seconds} detik."
+    },
+    "telegram": {
+      "title": "Webhook Telegram",
+      "checkedAt": "Diperiksa pukul {time}",
+      "expectedUrl": "URL yang didaftarkan",
+      "registeredUrl": "URL yang dipegang Telegram sekarang",
+      "status": {
+        "HEALTHY": "Terdaftar",
+        "PAUSED": "Terdaftar, kanal dimatikan",
+        "UNREGISTERED": "Belum terdaftar — pesan tidak akan masuk",
+        "HIJACKED": "Terdaftar ke deployment lain",
+        "DELIVERY_FAILING": "Pengiriman sedang gagal",
+        "NO_DOMAIN": "Domain belum dikonfigurasi",
+        "NOT_CONFIGURED": "Belum dikonfigurasi"
+      },
+      "hint": {
+        "HEALTHY": "Telegram mengirim pesan pelanggan ke deployment ini.",
+        "PAUSED": "Webhook sudah benar, tetapi CS_CHANNEL_ENABLED masih mati. Pesan diterima lalu diabaikan.",
+        "UNREGISTERED": "Telegram belum tahu ke mana harus mengirim. Pelanggan bisa mengirim pesan dan tidak ada yang sampai ke klinik.",
+        "HIJACKED": "Satu bot hanya punya satu webhook. Deployment lain memakai token bot yang sama dan mengambil trafiknya — pesan pelanggan masuk ke sana, bukan ke sini. Pakai bot terpisah per environment.",
+        "DELIVERY_FAILING": "Telegram menahan pesan karena pengiriman ditolak. Periksa apakah API dapat dijangkau dari internet dan secret-nya cocok.",
+        "NO_DOMAIN": "HMS_DOMAIN belum diisi, jadi URL webhook tidak bisa disusun.",
+        "NOT_CONFIGURED": "Token bot atau secret webhook belum diisi untuk klinik ini."
+      },
+      "register": "Daftarkan ulang",
+      "registering": "Mendaftarkan…",
+      "registerFailed": "Pendaftaran webhook gagal.",
+      "lastErrorStale": "Error terakhir {time}: {message}. Sudah tidak ada antrean tertahan, jadi ini sisa gangguan yang berlalu.",
+      "lastErrorLive": "Error terakhir {time}: {message}."
     }
   }
 }

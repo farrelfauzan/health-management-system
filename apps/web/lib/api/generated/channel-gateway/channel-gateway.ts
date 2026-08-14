@@ -22,6 +22,8 @@ import type {
 
 import type {
   ChannelGatewayAdminControllerGetSessionHealthV1200,
+  ChannelGatewayAdminControllerGetTelegramWebhookHealthV1200,
+  ChannelGatewayAdminControllerRegisterTelegramWebhookV1200,
   ChannelGatewayAdminControllerStartPairingV1200
 } from '../model';
 
@@ -218,6 +220,190 @@ export function useChannelGatewayAdminControllerStartPairingV1<TData = Awaited<R
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getChannelGatewayAdminControllerStartPairingV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read the Telegram webhook’s registration health
+ */
+export const channelGatewayAdminControllerGetTelegramWebhookHealthV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChannelGatewayAdminControllerGetTelegramWebhookHealthV1200>(
+      {url: `/api/v1/admin/channel-gateway/telegram/webhook`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getChannelGatewayAdminControllerGetTelegramWebhookHealthV1QueryKey = () => {
+    return [
+    `/api/v1/admin/channel-gateway/telegram/webhook`
+    ] as const;
+    }
+
+
+export const getChannelGatewayAdminControllerGetTelegramWebhookHealthV1QueryOptions = <TData = Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChannelGatewayAdminControllerGetTelegramWebhookHealthV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>> = ({ signal }) => channelGatewayAdminControllerGetTelegramWebhookHealthV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChannelGatewayAdminControllerGetTelegramWebhookHealthV1QueryResult = NonNullable<Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>>
+export type ChannelGatewayAdminControllerGetTelegramWebhookHealthV1QueryError = unknown
+
+
+export function useChannelGatewayAdminControllerGetTelegramWebhookHealthV1<TData = Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>,
+          TError,
+          Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChannelGatewayAdminControllerGetTelegramWebhookHealthV1<TData = Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>,
+          TError,
+          Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChannelGatewayAdminControllerGetTelegramWebhookHealthV1<TData = Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the Telegram webhook’s registration health
+ */
+
+export function useChannelGatewayAdminControllerGetTelegramWebhookHealthV1<TData = Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerGetTelegramWebhookHealthV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChannelGatewayAdminControllerGetTelegramWebhookHealthV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Point Telegram at this deployment
+ */
+export const channelGatewayAdminControllerRegisterTelegramWebhookV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ChannelGatewayAdminControllerRegisterTelegramWebhookV1200>(
+      {url: `/api/v1/admin/channel-gateway/telegram/webhook`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getChannelGatewayAdminControllerRegisterTelegramWebhookV1QueryKey = () => {
+    return [
+    'POST', `/api/v1/admin/channel-gateway/telegram/webhook`
+    ] as const;
+    }
+
+
+export const getChannelGatewayAdminControllerRegisterTelegramWebhookV1QueryOptions = <TData = Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChannelGatewayAdminControllerRegisterTelegramWebhookV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>> = ({ signal }) => channelGatewayAdminControllerRegisterTelegramWebhookV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChannelGatewayAdminControllerRegisterTelegramWebhookV1QueryResult = NonNullable<Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>>
+export type ChannelGatewayAdminControllerRegisterTelegramWebhookV1QueryError = unknown
+
+
+export function useChannelGatewayAdminControllerRegisterTelegramWebhookV1<TData = Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>,
+          TError,
+          Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChannelGatewayAdminControllerRegisterTelegramWebhookV1<TData = Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>,
+          TError,
+          Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChannelGatewayAdminControllerRegisterTelegramWebhookV1<TData = Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Point Telegram at this deployment
+ */
+
+export function useChannelGatewayAdminControllerRegisterTelegramWebhookV1<TData = Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof channelGatewayAdminControllerRegisterTelegramWebhookV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChannelGatewayAdminControllerRegisterTelegramWebhookV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

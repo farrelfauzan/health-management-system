@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { TelegramWebhookCard } from '#components/client/channel-gateway/telegram-webhook-card';
 import { WhatsappSessionCard } from '#components/client/channel-gateway/whatsapp-session-card';
 import { BpjsAntreanSettingsPanel } from '#components/client/integrations/bpjs-antrean-settings-panel';
 import { BpjsMappingsPanel } from '#components/client/integrations/bpjs-mappings-panel';
@@ -22,11 +23,14 @@ export function IntegrationsPanel() {
   return (
     <div className="space-y-6">
       <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
-      {/* Above the tabs rather than inside one, because a logged-out WhatsApp
-          session is silent (§8.4) and a warning behind a tab is a warning
-          nobody sees. It renders nothing while loading and nothing for an
-          admin without the config grant. */}
+      {/* Above the tabs rather than inside one, because both of these fail
+          silently (§8.4) and a warning behind a tab is a warning nobody sees.
+          A logged-out WhatsApp session and a webhook pointed at another
+          deployment are the same class of fault: the API keeps working and no
+          customer hears back. Both render nothing while loading and nothing
+          for an admin without the config grant. */}
       {canConfigure ? <WhatsappSessionCard /> : null}
+      {canConfigure ? <TelegramWebhookCard /> : null}
       <Tabs defaultValue={defaultTab} className="space-y-5">
         <TabsList>
           {canMonitor ? <TabsTrigger value="monitor">{t('monitor')}</TabsTrigger> : null}
