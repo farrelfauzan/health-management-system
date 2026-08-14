@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -29,6 +30,7 @@ import {
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { AiChatbotError } from '../ai-chatbot.error';
 import {
@@ -53,6 +55,7 @@ import { AiProviderResolverService } from './ai-provider-resolver.service';
 import { ChatContextEnrichmentService } from './chat-context-enrichment.service';
 import { ChatRetrievalResult, ChatRetrievalService } from './chat-retrieval.service';
 import { ChatSessionTitleService } from './chat-session-title.service';
+import { countInjectionPatternHits } from './count-injection-pattern-hits';
 import { normalizeChatSessionTitle } from './normalize-chat-session-title';
 import { SafetyPolicyService } from './safety-policy.service';
 import { ChatRepository } from '../repository/chat.repository';
@@ -117,6 +120,8 @@ const CHAT_TOOL_AUDIT_RESOURCE = 'ChatTool';
  */
 @Injectable()
 export class AiChatbotService {
+  private readonly logger = new Logger(AiChatbotService.name);
+
   constructor(
     private readonly chatRepository: ChatRepository,
     private readonly authRepository: AuthRepository,
@@ -317,6 +322,7 @@ export class AiChatbotService {
       this.contextEnrichmentService.buildContext(session.channel, actor),
       this.chatRetrievalService.retrieve(session.channel, actor, input.content),
     ]);
+    this.logInjectionHeuristics(session, contextPayload, retrieval);
     // The context that is about to reach a third party is persisted as its
     // own SYSTEM turn before the call: the UU PDP audit question is "what
     // personal data went to the processor, and when", and this row is the
@@ -559,6 +565,42 @@ export class AiChatbotService {
         channel: session.channel,
       },
     });
+  }
+
+  /**
+   * Says how often a payload about to be transmitted reads like an injection
+   * attempt (SJ-15 §6). Advisory only: nothing here changes what is sent.
+   *
+   * The containment is structural and already in place by this point — the
+   * passages are serialized so they cannot forge a boundary, the system
+   * prompt states the trust hierarchy, and SJ-14 capped what any tool could
+   * reach at what this caller could read anyway. What is missing without this
+   * line is the ability to answer "is anyone actually trying?", which is a
+   * question the readiness review asks and no control answers.
+   *
+   * Logged as a count with the session id, never the matched text: the
+   * payload is already persisted verbatim as this exchange's SYSTEM turn, and
+   * a log that also carries clinical document content is a second copy of the
+   * corpus in a place with different retention.
+   */
+  private logInjectionHeuristics(
+    session: ChatSessionRecord,
+    contextPayload: Record<string, unknown>,
+    retrieval: ChatRetrievalResult,
+  ): void {
+    const retrievalHits = countInjectionPatternHits(retrieval.promptBlock);
+    const contextHits = countInjectionPatternHits(JSON.stringify(contextPayload));
+    if (retrievalHits === 0 && contextHits === 0) {
+      return;
+    }
+    this.logger.warn(
+      buildSafeErrorLog('chat_injection_pattern_detected', {
+        sessionId: session.id,
+        channel: session.channel,
+        retrievalHits,
+        contextHits,
+      }),
+    );
   }
 
   private async buildToolCaller(actor: CurrentUser): Promise<ChatToolCaller> {

