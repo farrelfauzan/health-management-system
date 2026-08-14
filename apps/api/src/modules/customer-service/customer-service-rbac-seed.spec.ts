@@ -25,6 +25,18 @@ describe('customer-service channel RBAC seed', () => {
     'appointment.session.read:any',
     'patient.create:any',
     'patient.read:any',
+    // Booking is the moment a doctor becomes one of this patient's doctors,
+    // and `AppointmentManagementService` now writes that link for every
+    // booking rather than only for the ones made from the admin screens. The
+    // channel books, so the channel needs the grant.
+    //
+    // It is the one grant here that can write to a record the channel did not
+    // create, which is why it is worth naming the bound: the tool catalogue is
+    // an allowlist of three and none of them assigns anything, so the only
+    // assignment reachable is the doctor of a session the customer just
+    // booked. `doctor-patient.unassign` is deliberately absent — removing a
+    // doctor from a patient is a decision, not a side effect of a booking.
+    'doctor-patient.assign:any',
   ] as const;
 
   /**
@@ -90,7 +102,7 @@ describe('customer-service channel RBAC seed', () => {
     );
   });
 
-  it('grants exactly the five the booking flow needs and nothing more', () => {
+  it('grants exactly the six the booking flow needs and nothing more', () => {
     const grantPattern = new RegExp(`^\\('${SYSTEM_ROLE_CODE}', '([a-z0-9.\\-]+:[a-z]+)'\\),?$`);
     const actualGranted = seedSql
       .split('\n')

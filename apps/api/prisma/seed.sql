@@ -450,7 +450,15 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('CUSTOMER_SERVICE_CHANNEL', 'patient.create:any'),
     ('CUSTOMER_SERVICE_CHANNEL', 'appointment.read:any'),
     ('CUSTOMER_SERVICE_CHANNEL', 'appointment.create:any'),
-    ('CUSTOMER_SERVICE_CHANNEL', 'appointment.session.read:any')
+    ('CUSTOMER_SERVICE_CHANNEL', 'appointment.session.read:any'),
+    -- Booking is the moment a doctor becomes one of this patient's doctors, and
+    -- `AppointmentManagementService` writes that link for every booking rather
+    -- than only the ones made from the admin screens. The channel needs the
+    -- grant to complete its own bookings' side of it.
+    -- The same mitigation as `patient.read:any` applies: the tool catalogue is
+    -- an allowlist of three, none of them assigns anything, so this is spendable
+    -- only on the doctor a customer just booked.
+    ('CUSTOMER_SERVICE_CHANNEL', 'doctor-patient.assign:any')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"

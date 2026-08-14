@@ -23,13 +23,16 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { DoctorPatientService } from '../../doctor-patient/service/doctor-patient.service';
 import { ApproveAppointmentDto } from '../dto/approve-appointment.dto';
 import { CancelAppointmentDto } from '../dto/cancel-appointment.dto';
 import { ListAppointmentsQueryDto } from '../dto/list-appointments-query.dto';
@@ -52,14 +55,60 @@ const DAY_IN_MS = 86_400_000;
 
 @Injectable()
 export class AppointmentManagementService {
+  private readonly logger = new Logger(AppointmentManagementService.name);
   private readonly clinicTimeZone: string;
 
   constructor(
     private readonly appointmentManagementRepository: AppointmentManagementRepository,
     private readonly authRepository: AuthRepository,
+    private readonly doctorPatientService: DoctorPatientService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+  }
+
+  /**
+   * Puts an appointment's doctor on the patient's care team.
+   *
+   * Booking is the moment a doctor becomes one of this patient's doctors, and
+   * before this the two facts lived apart: `doctor_patients` was only ever
+   * written by hand from the admin screens, so a patient who booked through
+   * the chat channel — or through the front desk — had appointments with a
+   * doctor who was not listed among their doctors anywhere in the product.
+   *
+   * **A failure here never fails the booking.** The appointment is the
+   * customer-facing outcome and it is already committed by the time this runs;
+   * a care-team link that could not be written is a bookkeeping gap an admin
+   * can close from the patient screen, not a reason to refuse a booking that
+   * succeeded. It is logged so the gap is visible rather than silent.
+   *
+   * The assignment goes through `DoctorPatientService` and therefore through
+   * the same permission check a hand-made assignment gets. That is deliberate:
+   * the actors who book are not all the actors who may assign. `ADMIN` and
+   * `SUPER_ADMIN` already hold the grant, and the customer-service channel is
+   * granted it alongside this change; a patient booking for themselves is not,
+   * and must not be — `doctor-patient.assign` exists only in `ANY` scope, so
+   * granting it to `PATIENT` would let any patient assign any doctor to
+   * anyone. Those bookings simply leave the link for staff to make.
+   */
+  private async ensureCareTeamLink(params: {
+    doctorId: string;
+    patientId: string;
+    currentUser: CurrentUser;
+  }): Promise<void> {
+    try {
+      await this.doctorPatientService.assignDoctorToPatient(
+        { doctorId: params.doctorId, patientId: params.patientId },
+        params.currentUser,
+      );
+    } catch (caughtError) {
+      this.logger.warn(
+        buildSafeErrorLog('appointment_care_team_link_failed', {
+          appointmentDoctorId: params.doctorId,
+          reason: caughtError instanceof Error ? caughtError.name : 'unknown',
+        }),
+      );
+    }
   }
 
   async listAppointments(query: ListAppointmentsQueryDto, currentUser: CurrentUser) {
@@ -660,7 +709,14 @@ export class AppointmentManagementService {
           result.outcome === 'DUPLICATE_BOOKING_CODE' ? 'SESSION_NOT_OPEN' : result.outcome,
       };
     }
-    return { outcome: 'BOOKED', appointment: await this.resolveBookedAppointment(result) };
+    const appointment = await this.resolveBookedAppointment(result);
+    await this.ensureCareTeamLink({
+      doctorId: input.doctorId,
+      patientId: input.patientId,
+      currentUser,
+    });
+
+    return { outcome: 'BOOKED', appointment };
   }
 
   /**
@@ -787,8 +843,14 @@ export class AppointmentManagementService {
       notes: payload.notes,
       createdById: currentUser.sub,
     });
+    const appointment = await this.resolveBookedAppointment(result);
+    await this.ensureCareTeamLink({
+      doctorId: payload.doctorId,
+      patientId: payload.patientId,
+      currentUser,
+    });
 
-    return this.resolveBookedAppointment(result);
+    return appointment;
   }
 
   private async createSpecialRequest(
@@ -835,6 +897,11 @@ export class AppointmentManagementService {
       reason: payload.reason,
       notes: payload.notes,
       createdById: currentUser.sub,
+    });
+    await this.ensureCareTeamLink({
+      doctorId: payload.doctorId,
+      patientId: payload.patientId,
+      currentUser,
     });
 
     return this.toAppointmentListItem(created);
