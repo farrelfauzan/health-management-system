@@ -238,22 +238,36 @@ cannot assign:
 
 ## 7. Minimization follow-ups (ticket §4)
 
-Candidates the inventory surfaced. Filing these as backlog tickets is an AC of
-SJ-17 and has not been done:
+Filed in the Security Backlog. Each carries the reasoning below plus the
+tradeoff it is trading against, because two of the four have a legitimate
+"keep it, documented" outcome:
 
-- **M1 — `displayName` in the patient channel.** The only direct identifier
+| Ticket | What | Priority |
+|---|---|---|
+| **SJ-27** | Remove the hosted embedder from DPA scope | High |
+| **SJ-28** | Stop sending the patient's legal name to ❶ | Medium |
+| **SJ-29** | Drop the doctor's name from the patient appointment context | Medium |
+| **SJ-30** | Title sessions locally instead of with a second vendor call | Low |
+
+- **SJ-27 — question text to ❷.** Not fixable by redaction (see §4): a redacted
+  question retrieves the wrong passages, so there is no sanitisation step to
+  add. The only real mitigation is `EMBEDDING_PROVIDER=OLLAMA`, which removes
+  the processor entirely — which is what D-EMB-01 recorded the tradeoff for.
+  **Time-sensitive**: a one-variable change today, a migration and full
+  re-ingest once any corpus exists.
+- **SJ-28 — `displayName` in the patient channel.** The only direct identifier
   crossing to ❶ under default-off enrichment. The model needs to address the
-  user; it does not need their legal name. A greeting name or role label would
-  do. (The doctor channel already made this trade —
+  user; it does not need their legal name. (The doctor channel already made
+  this trade —
   [chat-context-enrichment.service.ts:118](../../apps/api/src/modules/ai-chatbot/service/chat-context-enrichment.service.ts:118).)
-- **M2 — `doctorName` in `nextAppointment`.** Second identifier, about a third
-  party rather than the asking user.
-- **M3 — the title call (§3.1 row 7).** A local heuristic already exists as the
-  fallback path (`normalizeChatSessionTitle`). Making it the default would
-  remove one vendor round trip per session at the cost of blunter titles.
-- **M4 — question text to ❷.** Not fixable by redaction (see §4). The real
-  mitigation is `EMBEDDING_PROVIDER=OLLAMA`, which removes the processor
-  entirely — which is what D-EMB-01 recorded the tradeoff for.
+- **SJ-29 — `doctorName` in `nextAppointment`.** Second identifier, about a
+  third party rather than the asking user. Genuinely a judgement call: it is
+  also the most useful field in the object, and `redactChatContext` will not
+  catch it — no forbidden fragment matches — so it is a projection change.
+- **SJ-30 — the title call (§3.1 row 7).** Transmits no *new* data, so this is
+  not a disclosure fix; it removes one round trip from the retention
+  conversation. The local heuristic already exists as the fallback path
+  (`normalizeChatSessionTitle`), at the cost of blunter titles.
 
 ## 8. Go / no-go for production
 
@@ -369,7 +383,7 @@ Four things the compliance owner has to decide, which engineering cannot:
 | Vendor training/retention/region posture with sources | **open** — §5, needs deployment access |
 | Gap list reviewed with compliance owner, owners + dates | **partial** — gaps named in §6, unowned and unreviewed |
 | Patient-facing disclosure text drafted and routed | **partial** — draft in §10, unreviewed and deliberately not routed |
-| Minimization tickets filed | **open** — candidates in §7, not filed |
+| Minimization tickets filed | **done** — SJ-27, SJ-28, SJ-29, SJ-30 (§7) |
 | Go/no-go recorded and acknowledged | **partial** — §8 proposed, unacknowledged |
 
 The ticket's Verification — walkthrough with the compliance owner, and a
