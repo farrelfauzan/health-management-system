@@ -6,10 +6,16 @@ processors receive personal data, and under what agreement* — has an answer
 drawn from the code rather than from the architecture diagram.
 
 This document is deliverable #1 of the ticket (the inventory) plus the parts of
-#5 (the decision record) that can be written without a counterparty. The vendor
-posture review (§4) and the legal gap list (§5) are **open** and say so
-explicitly: they need the deployment's actual vendor and a named compliance
-owner, and inventing either would make this document worse than absent.
+#5 (the decision record) that can be written without a counterparty. The
+inventory is not prose alone: §9 describes the contract test that fails the
+build when the boundary moves, which is what keeps this document from quietly
+decaying into fiction.
+
+The vendor posture review (§5) and the legal gap list (§6) are **open** and say
+so explicitly: they need the deployment's actual vendor and a named compliance
+owner, and inventing either would make this document worse than absent. The
+disclosure draft in §10 is unreviewed text for a lawyer to correct, not copy to
+ship.
 
 ## 1. The correction this inventory has to make first
 
@@ -271,14 +277,98 @@ Three facts make this condition cheap to hold today and expensive to hold later:
    table. Reviewing seven chat kinds a deployment will never configure is how
    this review stalls.
 
-## 9. What is done and what is not
+## 9. The inventory is enforced, not just written
+
+Everything above was produced by reading code, and a document produced by
+reading is true only on the day it was written. The next field somebody folds
+into a completion request is exactly the field this DPA does not cover, and
+nothing would have failed.
+
+`apps/api/src/modules/ai-chatbot/vendor-egress-contract.spec.ts` pins the
+boundary as a test. It is deliberately **exhaustive rather than illustrative** —
+it asserts complete key sets and complete message counts, because a presence
+assertion (`expect(body).toHaveProperty('messages')`) passes unchanged when a
+payload is added beside it. What it holds:
+
+| Claim | How it is pinned |
+|---|---|
+| §3.1 — the OpenAI wire body is exactly `model`, `messages`, `max_tokens` | complete key-set equality |
+| §3.1 — the Anthropic body adds only `system` | complete key-set equality |
+| §3.1 — `sessionExternalId`, `channel`, `contextPayload` are dropped by both adapters | populated with canaries, asserted absent from the serialized body |
+| §3.1 — the service sends exactly five input fields | complete key-set equality |
+| §3.1 — four message sources, in documented order | exact role sequence of a maximal exchange |
+| §3.3 — **no tool result ever crosses** | a canary field in tool output, asserted absent from every request; plus no `"role":"tool"` |
+| §3.3 — stored `SYSTEM` turns are not replayed | canary in an earlier turn, asserted absent |
+| §3.1 row 7 — the title call carries only the two excerpts | exact argument equality |
+| §4 — the embedding body is exactly `model` and `input`, question verbatim | complete key-set equality |
+| §3.2 — the redaction denylist still strips every identifier class | one payload per forbidden fragment |
+
+The suite was mutation-checked: folding `contextPayload` onto the OpenAI wire
+body as a `metadata` field fails two of these tests. A test that cannot fail is
+not a control.
+
+**A failure here is not necessarily a bug.** It means the boundary moved, and
+§3, §4 and the gap list in §6 need re-reading before the change ships. That is
+the whole point — the Mode B tripwire in particular is the one that converts
+"someone implemented `AI_CHAT_TOOL_RESULT_TO_PROVIDER` and forgot the DPA" from
+an invisible event into a red build.
+
+This does **not** replace the ticket's Verification step. The contract proves
+the code sends what this document says; only a captured payload from a running
+deployment proves the document did not miss a path entirely.
+
+## 10. Draft patient-facing disclosure — NOT LEGALLY REVIEWED
+
+G4 needs text. This is a **drafting starting point for the compliance owner, not
+approved copy**, and it is deliberately not wired into
+`AI_CHAT_DISCLAIMERS` — routing unreviewed text about data processing into what
+patients actually see would be worse than shipping nothing.
+
+The mechanism it should route into is proven and described in §6 G4: per-channel
+strings returned in the response envelope's `meta`, with `disclaimerShown`
+persisted per turn.
+
+> **Indonesian.** Asisten ini menggunakan layanan kecerdasan buatan pihak
+> ketiga. Pertanyaan yang Anda tulis, dan ringkasan data janji temu serta nomor
+> antrean Anda, dikirim ke penyedia layanan tersebut untuk menghasilkan jawaban.
+> Rekam medis, hasil diagnosis, resep, NIK, dan nomor BPJS Anda **tidak** ikut
+> dikirim. Jangan menuliskan informasi yang tidak ingin Anda bagikan kepada
+> pihak ketiga.
+>
+> **English.** This assistant uses a third-party artificial-intelligence
+> service. The questions you write, along with a summary of your appointment and
+> queue number, are sent to that provider to produce an answer. Your medical
+> records, diagnoses, prescriptions, national identity number, and BPJS number
+> are **not** sent. Please do not type information you would not want shared
+> with a third party.
+
+Four things the compliance owner has to decide, which engineering cannot:
+
+1. **Whether this is notice or consent.** The draft reads as notice. If UU PDP
+   requires consent for this processing, the disclaimer mechanism is the wrong
+   surface entirely — consent needs a recorded affirmative act, not a line in a
+   response envelope.
+2. **Whether the vendor must be named.** The draft says "a third-party service".
+   Naming it is more honest and becomes wrong the moment an admin changes the
+   config — the disclaimer is static text and the chat vendor is a database row.
+3. **The two-processor problem.** This draft describes ❶ only. With the hosted
+   embedder (§4), the question also reaches a second company — and it does so
+   even when every chat-side flag is off. Either the text covers both or the
+   deployment sets `EMBEDDING_PROVIDER=OLLAMA`.
+4. **Accuracy against the flags.** The middle sentence is true only with
+   `AI_CHAT_CONTEXT_ENRICHMENT_ENABLED=true`. With it off the assistant sends no
+   appointment or queue data at all, and claiming otherwise is its own kind of
+   wrong. Text that is accurate under every flag combination, or text per
+   configuration — another decision this document cannot make.
+
+## 11. What is done and what is not
 
 | AC | State |
 |---|---|
-| Field-level data-flow inventory + diagram | **done** — §2, §3, §4 |
+| Field-level data-flow inventory + diagram | **done** — §2, §3, §4, held by the contract test in §9 |
 | Vendor training/retention/region posture with sources | **open** — §5, needs deployment access |
 | Gap list reviewed with compliance owner, owners + dates | **partial** — gaps named in §6, unowned and unreviewed |
-| Patient-facing disclosure text drafted and routed | **open** — mechanism verified, text not drafted (G4) |
+| Patient-facing disclosure text drafted and routed | **partial** — draft in §10, unreviewed and deliberately not routed |
 | Minimization tickets filed | **open** — candidates in §7, not filed |
 | Go/no-go recorded and acknowledged | **partial** — §8 proposed, unacknowledged |
 
