@@ -97,6 +97,11 @@ enum AuditAction {
   BPJS_ANTREAN_INBOUND_BOOKING_CREATED
   BPJS_ANTREAN_INBOUND_BOOKING_CANCELLED
   BPJS_ANTREAN_INBOUND_PATIENT_REGISTERED
+  /// An uploaded object's bytes disagreed with the MIME type its signed
+  /// upload declared (SJ-21) — a renamed executable, a polyglot, an encrypted
+  /// PDF. The object was deleted at confirm time; this row is how a pattern
+  /// of forged uploads by one account is countable afterwards.
+  DOCUMENT_UPLOAD_REJECTED
 }
 
 enum BpjsSubmissionType {

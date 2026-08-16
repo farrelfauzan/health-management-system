@@ -3,6 +3,7 @@ import type {
   DocumentLanguageValue,
   DocumentOwnerTypeValue,
   DocumentPurposeValue,
+  DocumentUploadMimeTypeValue,
   DocumentVisibilityValue,
 } from '#document-management/schemas';
 
@@ -115,6 +116,36 @@ export type DocumentIngestionConfig = {
 export type ExtractDocumentTextParams = {
   content: Uint8Array;
   mimeType: string;
+};
+
+/**
+ * Bytes to check against the type their upload declared (SJ-21). `Uint8Array`
+ * rather than `Buffer` for the same browser-compilation reason as
+ * {@link ExtractDocumentTextParams}.
+ */
+export type ValidateDocumentContentParams = {
+  content: Uint8Array;
+  declaredMimeType: DocumentUploadMimeTypeValue;
+};
+
+/**
+ * The verdict on uploaded bytes. `reason` is written for the audit log and for
+ * the uploader — it names the check that failed, never file content, because a
+ * rejection message that quotes bytes would leak what it refused to store.
+ */
+export type DocumentContentValidationResult =
+  | { isAccepted: true }
+  | { isAccepted: false; reason: string };
+
+/**
+ * One confirm-time content check (SJ-21): which stored object to read, what
+ * type its upload declared, and who is confirming — the actor lands in the
+ * audit row when the bytes disagree with the declaration.
+ */
+export type AssertUploadedDocumentContentParams = {
+  storageKey: string;
+  declaredMimeType: DocumentUploadMimeTypeValue;
+  actorUserId: string;
 };
 
 /**

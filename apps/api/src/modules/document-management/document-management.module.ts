@@ -14,6 +14,7 @@ import { DocumentRetrievalService } from './service/document-retrieval.service';
 import { DocumentService } from './service/document.service';
 import { FaqSearchService } from './service/faq-search.service';
 import { PersonalDocumentService } from './service/personal-document.service';
+import { UploadedDocumentGuardService } from './service/uploaded-document-guard.service';
 
 /**
  * The shared document store (P15-T10). One module holds the clinic FAQ/SOP
@@ -54,6 +55,7 @@ import { PersonalDocumentService } from './service/personal-document.service';
     DocumentRetrievalRepository,
     DocumentService,
     PersonalDocumentService,
+    UploadedDocumentGuardService,
     DocumentIngestionService,
     DocumentIngestionWorker,
     DocumentRetrievalService,

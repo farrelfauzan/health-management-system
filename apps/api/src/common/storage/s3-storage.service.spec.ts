@@ -129,7 +129,7 @@ describe('S3StorageService', () => {
       service.uploadObject({
         key: 'patients/photos/object-key',
         body: Buffer.from('too large'),
-        contentType: 'image/png',
+        contentType: 'text/plain',
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(mockSend).not.toHaveBeenCalled();
@@ -145,7 +145,7 @@ describe('S3StorageService', () => {
     const result = await service.uploadObject({
       key: 'patients/photos/object-key',
       body: Buffer.from('content'),
-      contentType: 'IMAGE/PNG',
+      contentType: 'APPLICATION/PDF',
     });
 
     expect(mockSend).toHaveBeenCalledTimes(1);
@@ -153,10 +153,26 @@ describe('S3StorageService', () => {
       expect.objectContaining({
         Bucket: 'hms-test-bucket',
         Key: 'patients/photos/object-key',
-        ContentType: 'image/png',
+        ContentType: 'application/pdf',
       }),
     );
     expect(result).toEqual({ key: 'patients/photos/object-key', etag: '"etag-value"' });
+  });
+
+  it('rejects image uploads under the default allowlist (SJ-21)', async () => {
+    // Image types leave the default until an image-bearing feature ships
+    // with its re-encode step — a bucket that quietly accepts them is
+    // standing room for a surface that skips it.
+    const service = new S3StorageService(buildConfigService());
+
+    await expect(
+      service.uploadObject({
+        key: 'patients/photos/object-key',
+        body: Buffer.from('content'),
+        contentType: 'image/png',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(mockSend).not.toHaveBeenCalled();
   });
 
   it('returns signed URLs with expiry metadata', async () => {
@@ -175,6 +191,25 @@ describe('S3StorageService', () => {
     const expiresAtMs = new Date(result.expiresAt).getTime();
     expect(expiresAtMs).toBeGreaterThanOrEqual(beforeSigning + 119_000);
     expect(expiresAtMs).toBeLessThanOrEqual(Date.now() + 121_000);
+  });
+
+  it('signs response-header overrides into a download URL (SJ-21)', async () => {
+    mockGetSignedUrl.mockResolvedValue('https://signed.example/object-key');
+    const service = new S3StorageService(buildConfigService());
+
+    await service.getSignedUrl({
+      key: 'documents/clinic/object-key',
+      responseContentDisposition: 'attachment; filename="sop.pdf"',
+      responseContentType: 'application/pdf',
+    });
+
+    const [, command] = mockGetSignedUrl.mock.calls[0];
+    expect(command.input).toEqual(
+      expect.objectContaining({
+        ResponseContentDisposition: 'attachment; filename="sop.pdf"',
+        ResponseContentType: 'application/pdf',
+      }),
+    );
   });
 
   it('rejects signed URL requests above the configured expiry', async () => {
