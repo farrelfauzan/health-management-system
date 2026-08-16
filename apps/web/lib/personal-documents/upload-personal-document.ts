@@ -6,12 +6,14 @@ import {
 } from '#lib/api/generated/document-management/document-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { putFileToSignedUrl } from '#lib/documents/put-file-to-signed-url';
+import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 
 type UploadPersonalDocumentParams = {
   file: File;
   title: string;
   mimeType: DocumentUploadMimeTypeValue;
   language: DocumentLanguageValue;
+  onProgress?: (progress: DocumentUploadProgress) => void;
 };
 
 type SignedUpload = {
@@ -34,18 +36,30 @@ type SignedUpload = {
  * The key is passed through from step 1 untouched. It is server-minted, and
  * the API refuses to record a key it did not issue — so there is nothing to be
  * gained by constructing one here, and this function does not try.
+ *
+ * `onProgress` narrates the three steps for the dialog's progress bar:
+ * `preparing` while the URL is signed, `uploading` with a byte-accurate
+ * percentage while the PUT runs, `scanning` while the confirm call has the
+ * API reading the object back through the SJ-21 content checks, and
+ * `complete` once the row exists.
  */
 export async function uploadPersonalDocument({
   file,
   title,
   mimeType,
   language,
+  onProgress,
 }: UploadPersonalDocumentParams): Promise<void> {
+  onProgress?.({ stage: 'preparing' });
   const signed = parseApiSuccess<SignedUpload>(
     await personalDocumentControllerCreateUploadUrlV1({ mimeType, sizeBytes: file.size }),
     'Unable to start the upload.',
   );
-  await putFileToSignedUrl(signed.data.url, file, signed.data.requiredHeaders);
+  onProgress?.({ stage: 'uploading', percent: 0 });
+  await putFileToSignedUrl(signed.data.url, file, signed.data.requiredHeaders, (percent) =>
+    onProgress?.({ stage: 'uploading', percent }),
+  );
+  onProgress?.({ stage: 'scanning' });
   parseApiSuccess(
     await personalDocumentControllerConfirmUploadV1({
       storageKey: signed.data.storageKey,
@@ -54,4 +68,5 @@ export async function uploadPersonalDocument({
     }),
     'The file uploaded, but recording it failed.',
   );
+  onProgress?.({ stage: 'complete' });
 }
