@@ -26,8 +26,10 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
 import { NoPatientDataNotice } from '#components/client/personal-documents/no-patient-data-notice';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 import { invalidatePersonalDocumentQueries } from '#lib/personal-documents/invalidate-personal-document-queries';
 import { uploadPersonalDocument } from '#lib/personal-documents/upload-personal-document';
 
@@ -57,6 +59,7 @@ export function PersonalDocumentUploadDialog({
   const [title, setTitle] = useState('');
   const [language, setLanguage] = useState<DocumentLanguageValue>('ID');
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<DocumentUploadProgress | null>(null);
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
@@ -71,6 +74,7 @@ export function PersonalDocumentUploadDialog({
         title: title.trim() === '' ? file.name : title.trim(),
         mimeType: file.type,
         language,
+        onProgress: setProgress,
       });
     },
     onSuccess: async () => {
@@ -80,6 +84,7 @@ export function PersonalDocumentUploadDialog({
       onUploaded(t('success'));
     },
     onError: (err: unknown) => {
+      setProgress(null);
       setError(resolveApiErrorMessage(err, t('errors.failed')));
     },
   });
@@ -89,9 +94,22 @@ export function PersonalDocumentUploadDialog({
     setTitle('');
     setLanguage('ID');
     setError(null);
+    setProgress(null);
+  }
+
+  function resolveProgressLabel(current: DocumentUploadProgress): string {
+    if (current.stage === 'uploading') {
+      return t('progress.uploading', { percent: current.percent });
+    }
+    return t(`progress.${current.stage}`);
   }
 
   function handleOpenChange(nextOpen: boolean): void {
+    // Closing mid-upload would hide a request that is still running; the
+    // dialog stays open until the upload settles either way.
+    if (!nextOpen && uploadMutation.isPending) {
+      return;
+    }
     if (!nextOpen) {
       resetForm();
     }
@@ -148,9 +166,17 @@ export function PersonalDocumentUploadDialog({
             </Select>
           </div>
           {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {progress && uploadMutation.isPending ? (
+            <UploadProgressIndicator progress={progress} label={resolveProgressLabel(progress)} />
+          ) : null}
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={uploadMutation.isPending}
+            onClick={() => handleOpenChange(false)}
+          >
             {t('actions.cancel')}
           </Button>
           <Button

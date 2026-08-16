@@ -58,7 +58,7 @@ export class DocumentAdminController {
   @ApiEndpoint({
     summary: 'Record a completed upload as a clinic document',
     responseDescription:
-      'The created document. Size and MIME type are read back from the stored object rather than taken from this request — a client’s claim about what it uploaded is not evidence of what is in the bucket. A knowledge-base purpose rests at ingestStatus PENDING until the ingestion pipeline runs; GENERAL rests at NOT_APPLICABLE and is never embedded. Returns 400 when the key was not issued here or the object is missing, and 409 when the same upload was already recorded.',
+      'The created document. Size and MIME type are read back from the stored object rather than taken from this request — a client’s claim about what it uploaded is not evidence of what is in the bucket — and the object’s bytes must agree with that type (SJ-21): a PDF must carry the PDF signature and not be encrypted, text must be genuine UTF-8 text. A file that fails the check is deleted from storage and the rejection is audit-logged. A knowledge-base purpose rests at ingestStatus PENDING until the ingestion pipeline runs; GENERAL rests at NOT_APPLICABLE and is never embedded. Returns 400 when the key was not issued here, the object is missing, or its content fails validation, and 409 when the same upload was already recorded.',
     responseExample: {
       data: DOCUMENT_MANAGEMENT_EXAMPLES.pendingDocument,
       message: 'Document created',

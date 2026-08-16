@@ -37,9 +37,17 @@ export type GetObjectResult = {
   contentType?: string;
 };
 
+/**
+ * `responseContentDisposition` and `responseContentType` are signed into the
+ * URL as response-header overrides (SJ-21): the storage origin then serves
+ * the object with exactly these values, so a download route can force
+ * `attachment` and the validated stored type without proxying the bytes.
+ */
 export type GetSignedUrlRequest = {
   key: string;
   expiresInSeconds?: number;
+  responseContentDisposition?: string;
+  responseContentType?: string;
 };
 
 export type GetSignedUrlResult = {

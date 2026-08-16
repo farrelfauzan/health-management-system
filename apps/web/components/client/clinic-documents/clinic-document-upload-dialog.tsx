@@ -28,9 +28,11 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
 import { invalidateClinicDocumentQueries } from '#lib/clinic-documents/invalidate-clinic-document-queries';
 import { uploadClinicDocument } from '#lib/clinic-documents/upload-clinic-document';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 
 type ClinicDocumentUploadDialogProps = {
   open: boolean;
@@ -63,6 +65,7 @@ export function ClinicDocumentUploadDialog({
   const [visibility, setVisibility] = useState<DocumentVisibilityValue>('DOCTOR');
   const [language, setLanguage] = useState<DocumentLanguageValue>('ID');
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<DocumentUploadProgress | null>(null);
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
@@ -82,6 +85,7 @@ export function ClinicDocumentUploadDialog({
         purpose: 'FAQ_KNOWLEDGE_BASE',
         visibility,
         language,
+        onProgress: setProgress,
       });
     },
     onSuccess: async () => {
@@ -91,6 +95,7 @@ export function ClinicDocumentUploadDialog({
       onUploaded(t('success'));
     },
     onError: (err: unknown) => {
+      setProgress(null);
       setError(resolveApiErrorMessage(err, t('errors.failed')));
     },
   });
@@ -101,9 +106,22 @@ export function ClinicDocumentUploadDialog({
     setVisibility('DOCTOR');
     setLanguage('ID');
     setError(null);
+    setProgress(null);
+  }
+
+  function resolveProgressLabel(current: DocumentUploadProgress): string {
+    if (current.stage === 'uploading') {
+      return t('progress.uploading', { percent: current.percent });
+    }
+    return t(`progress.${current.stage}`);
   }
 
   function handleOpenChange(nextOpen: boolean): void {
+    // Closing mid-upload would hide a request that is still running; the
+    // dialog stays open until the upload settles either way.
+    if (!nextOpen && uploadMutation.isPending) {
+      return;
+    }
     if (!nextOpen) {
       resetForm();
     }
@@ -178,9 +196,17 @@ export function ClinicDocumentUploadDialog({
             </Select>
           </div>
           {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {progress && uploadMutation.isPending ? (
+            <UploadProgressIndicator progress={progress} label={resolveProgressLabel(progress)} />
+          ) : null}
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={uploadMutation.isPending}
+            onClick={() => handleOpenChange(false)}
+          >
             {t('actions.cancel')}
           </Button>
           <Button

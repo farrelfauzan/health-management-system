@@ -11,6 +11,7 @@ import {
 } from '#lib/api/generated/document-management/document-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { putFileToSignedUrl } from '#lib/documents/put-file-to-signed-url';
+import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 
 type UploadClinicDocumentParams = {
   file: File;
@@ -19,6 +20,7 @@ type UploadClinicDocumentParams = {
   purpose: DocumentPurposeValue;
   visibility: DocumentVisibilityValue;
   language: DocumentLanguageValue;
+  onProgress?: (progress: DocumentUploadProgress) => void;
 };
 
 type SignedUpload = {
@@ -52,12 +54,18 @@ export async function uploadClinicDocument({
   purpose,
   visibility,
   language,
+  onProgress,
 }: UploadClinicDocumentParams): Promise<void> {
+  onProgress?.({ stage: 'preparing' });
   const signed = parseApiSuccess<SignedUpload>(
     await documentAdminControllerCreateUploadUrlV1({ mimeType, sizeBytes: file.size }),
     'Unable to start the upload.',
   );
-  await putFileToSignedUrl(signed.data.url, file, signed.data.requiredHeaders);
+  onProgress?.({ stage: 'uploading', percent: 0 });
+  await putFileToSignedUrl(signed.data.url, file, signed.data.requiredHeaders, (percent) =>
+    onProgress?.({ stage: 'uploading', percent }),
+  );
+  onProgress?.({ stage: 'scanning' });
   parseApiSuccess(
     await documentAdminControllerConfirmUploadV1({
       storageKey: signed.data.storageKey,
@@ -68,4 +76,5 @@ export async function uploadClinicDocument({
     }),
     'The file uploaded, but recording it failed.',
   );
+  onProgress?.({ stage: 'complete' });
 }

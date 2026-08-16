@@ -12,6 +12,7 @@ import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DocumentRepository } from '../repository/document.repository';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { DocumentService } from './document.service';
+import { UploadedDocumentGuardService } from './uploaded-document-guard.service';
 
 const CLINIC_KEY = 'documents/clinic/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf';
 const ACTOR: CurrentUser = { sub: 'a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d', email: 'admin@hms.test' };
@@ -62,6 +63,7 @@ describe('DocumentService', () => {
   let mockDocumentRepository: jest.Mocked<DocumentRepository>;
   let mockObjectStorageService: jest.Mocked<ObjectStorageService>;
   let mockAuthRepository: jest.Mocked<AuthRepository>;
+  let mockUploadedDocumentGuardService: jest.Mocked<UploadedDocumentGuardService>;
   let documentService: DocumentService;
 
   beforeEach(() => {
@@ -81,10 +83,14 @@ describe('DocumentService', () => {
     mockAuthRepository = {
       findUserById: jest.fn().mockResolvedValue(buildActorWithPermissions(ANY_SCOPE_PERMISSIONS)),
     } as unknown as jest.Mocked<AuthRepository>;
+    mockUploadedDocumentGuardService = {
+      assertUploadedContentMatches: jest.fn().mockResolvedValue(undefined),
+    } as unknown as jest.Mocked<UploadedDocumentGuardService>;
     documentService = new DocumentService(
       mockDocumentRepository,
       mockObjectStorageService,
       mockAuthRepository,
+      mockUploadedDocumentGuardService,
     );
   });
 
@@ -150,6 +156,39 @@ describe('DocumentService', () => {
       expect(mockDocumentRepository.createDocument).toHaveBeenCalledWith(
         expect.objectContaining({ sizeBytes: 999, mimeType: 'text/markdown' }),
       );
+    });
+
+    it('runs the confirm-time content gate against the stored object (SJ-21)', async () => {
+      mockObjectStorageService.headObject.mockResolvedValue({
+        key: CLINIC_KEY,
+        sizeBytes: 2048,
+        contentType: 'application/pdf',
+      });
+      mockDocumentRepository.createDocument.mockResolvedValue(buildDocumentRecord());
+
+      await documentService.confirmUpload(CONFIRM_INPUT, ACTOR);
+
+      expect(mockUploadedDocumentGuardService.assertUploadedContentMatches).toHaveBeenCalledWith({
+        storageKey: CLINIC_KEY,
+        declaredMimeType: 'application/pdf',
+        actorUserId: ACTOR.sub,
+      });
+    });
+
+    it('writes no row when the content gate rejects the bytes (SJ-21)', async () => {
+      mockObjectStorageService.headObject.mockResolvedValue({
+        key: CLINIC_KEY,
+        sizeBytes: 2048,
+        contentType: 'application/pdf',
+      });
+      mockUploadedDocumentGuardService.assertUploadedContentMatches.mockRejectedValue(
+        new BadRequestException('File does not begin with the PDF signature its upload declared'),
+      );
+
+      await expect(documentService.confirmUpload(CONFIRM_INPUT, ACTOR)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
+      expect(mockDocumentRepository.createDocument).not.toHaveBeenCalled();
     });
 
     it('refuses a storage key this module never minted, without reading the object', async () => {
@@ -276,6 +315,32 @@ describe('DocumentService', () => {
       expect(mockDocumentRepository.listDocuments).toHaveBeenCalledWith(
         expect.objectContaining({ ownerType: 'CLINIC', ownerId: null }),
       );
+    });
+  });
+
+  describe('getDownloadUrl', () => {
+    it('signs attachment disposition and the stored type into the URL (SJ-21)', async () => {
+      mockDocumentRepository.findDocumentById.mockResolvedValue(buildDocumentRecord());
+      mockObjectStorageService.getSignedUrl.mockResolvedValue({
+        url: 'https://signed.example/download',
+        expiresAt: '2026-08-03T09:05:00.000Z',
+      });
+
+      const actualView = await documentService.getDownloadUrl(
+        '2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11',
+        ACTOR,
+      );
+
+      expect(mockObjectStorageService.getSignedUrl).toHaveBeenCalledWith({
+        key: CLINIC_KEY,
+        responseContentDisposition:
+          `attachment; filename="SOP Pendaftaran.pdf"; filename*=UTF-8''SOP%20Pendaftaran.pdf`,
+        responseContentType: 'application/pdf',
+      });
+      expect(actualView).toEqual({
+        url: 'https://signed.example/download',
+        expiresAt: '2026-08-03T09:05:00.000Z',
+      });
     });
   });
 

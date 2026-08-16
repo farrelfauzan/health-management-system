@@ -7,19 +7,14 @@ const DEFAULT_BUCKET = 'hms-dev-objects';
 const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
 const DEFAULT_SIGNED_URL_EXPIRES_IN_SECONDS = 300;
 const DEFAULT_MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024;
-// `text/markdown` and `text/plain` join the defaults for the document store
-// (P15-T10): the knowledge-base corpus is authored as Markdown, and a bucket
-// that refuses it makes the whole ingestion path unreachable on a default
-// deployment. Each feature narrows this list further for its own uploads —
-// the document store accepts none of the image types.
-const DEFAULT_ALLOWED_MIME_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'application/pdf',
-  'text/markdown',
-  'text/plain',
-];
+// The default is exactly what the document store accepts (P15-T10) — the
+// only feature uploading today. Image types were removed under SJ-21's
+// per-surface allowlist rule: no shipped feature stores images, and a bucket
+// that quietly accepts them is standing room for a future surface to skip
+// the re-encode-through-`sharp` step SJ-21 requires of image uploads. An
+// image-bearing feature widens this via `S3_ALLOWED_MIME_TYPES` (or a new
+// default) in the same change that adds its re-encode.
+const DEFAULT_ALLOWED_MIME_TYPES = ['application/pdf', 'text/markdown', 'text/plain'];
 const MAX_SIGNED_URL_EXPIRES_IN_SECONDS = 3_600;
 const MIME_TYPE_PATTERN = /^[a-z0-9!#$&^_.+-]+\/[a-z0-9!#$&^_.+-]+$/i;
 

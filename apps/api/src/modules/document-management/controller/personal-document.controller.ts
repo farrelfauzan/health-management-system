@@ -65,7 +65,7 @@ export class PersonalDocumentController {
   @ApiEndpoint({
     summary: 'Record a completed upload in your own knowledge base',
     responseDescription:
-      'Records the uploaded object as a document you own, queued for ingestion. Owner and purpose are derived from your identity, never from the body — the storage key must be one issued to you by the upload-url route, so a key minted for the clinic corpus is refused here.',
+      'Records the uploaded object as a document you own, queued for ingestion. Owner and purpose are derived from your identity, never from the body — the storage key must be one issued to you by the upload-url route, so a key minted for the clinic corpus is refused here. The object’s bytes must agree with the declared type (SJ-21): a file that fails the check is deleted from storage, audit-logged, and refused with 400.',
     responseExample: {
       data: PERSONAL_DOCUMENT_EXAMPLES.document,
       message: 'Document added to your knowledge base',

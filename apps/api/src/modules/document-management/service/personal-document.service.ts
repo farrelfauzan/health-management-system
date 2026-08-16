@@ -29,8 +29,10 @@ import { ObjectStorageService } from '../../../common/storage/object-storage.ser
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DocumentRepository } from '../repository/document.repository';
+import { buildDocumentDownloadDisposition } from './build-document-download-disposition';
 import { isPersonalDocumentStorageKey } from './is-personal-document-storage-key';
 import { buildPersonalDocumentStorageKeyPrefix } from './personal-document-storage-key-prefix';
+import { UploadedDocumentGuardService } from './uploaded-document-guard.service';
 
 const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
 
@@ -63,6 +65,7 @@ export class PersonalDocumentService {
     private readonly documentRepository: DocumentRepository,
     private readonly objectStorageService: ObjectStorageService,
     private readonly authRepository: AuthRepository,
+    private readonly uploadedDocumentGuardService: UploadedDocumentGuardService,
   ) {}
 
   /**
@@ -115,6 +118,11 @@ export class PersonalDocumentService {
     if (storedObject.sizeBytes <= 0) {
       throw new BadRequestException('Uploaded file is empty');
     }
+    await this.uploadedDocumentGuardService.assertUploadedContentMatches({
+      storageKey: input.storageKey,
+      declaredMimeType: mimeType,
+      actorUserId: actor.sub,
+    });
     try {
       const record = await this.documentRepository.createDocument({
         ownerType,
@@ -173,7 +181,14 @@ export class PersonalDocumentService {
   async getDownloadUrl(id: string, actor: CurrentUser): Promise<PersonalDocumentDownloadView> {
     const ownerType = await this.resolvePersonalOwnerType(actor, 'read');
     const record = await this.requireOwnedDocument(id, ownerType, actor.sub);
-    const signedUrl = await this.objectStorageService.getSignedUrl({ key: record.storageKey });
+    // Signed as response-header overrides (SJ-21): the storage origin serves
+    // the file as an attachment under its validated stored type, so a
+    // download can never render inline on the bucket origin.
+    const signedUrl = await this.objectStorageService.getSignedUrl({
+      key: record.storageKey,
+      responseContentDisposition: buildDocumentDownloadDisposition(record),
+      responseContentType: record.mimeType,
+    });
     return { url: signedUrl.url, expiresAt: signedUrl.expiresAt };
   }
 

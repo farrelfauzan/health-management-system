@@ -370,6 +370,12 @@
         "upload": "Upload",
         "uploading": "Uploading…"
       },
+      "progress": {
+        "preparing": "Preparing upload…",
+        "uploading": "Uploading… {percent}%",
+        "scanning": "Scanning file…",
+        "complete": "Done"
+      },
       "errors": {
         "noFile": "Choose a file first.",
         "unsupportedType": "That file type is not accepted. Use PDF, Markdown or plain text.",
@@ -488,6 +494,12 @@
         "cancel": "Cancel",
         "upload": "Upload",
         "uploading": "Uploading…"
+      },
+      "progress": {
+        "preparing": "Preparing upload…",
+        "uploading": "Uploading… {percent}%",
+        "scanning": "Scanning file…",
+        "complete": "Done"
       },
       "errors": {
         "noFile": "Choose a file first.",

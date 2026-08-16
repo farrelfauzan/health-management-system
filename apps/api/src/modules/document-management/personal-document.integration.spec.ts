@@ -70,6 +70,16 @@ describe('Personal document integration', () => {
     headObject: jest.fn(() =>
       Promise.resolve({ key: DOCTOR_KEY, sizeBytes: 96256, contentType: 'application/pdf' }),
     ),
+    // The confirm-time content gate (SJ-21) reads the bytes back; these are
+    // PDF-shaped so a confirm against this mock passes the magic-byte check.
+    getObject: jest.fn(() =>
+      Promise.resolve({
+        key: DOCTOR_KEY,
+        body: Buffer.from('%PDF-1.4\ntrailer << /Root 1 0 R >>\n%%EOF', 'ascii'),
+        contentType: 'application/pdf',
+      }),
+    ),
+    deleteObject: jest.fn(() => Promise.resolve({ key: DOCTOR_KEY, deleted: true })),
   };
 
   type PrismaMock = {

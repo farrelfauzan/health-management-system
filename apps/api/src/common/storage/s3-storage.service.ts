@@ -169,6 +169,12 @@ export class S3StorageService extends ObjectStorageService {
       new GetObjectCommand({
         Bucket: this.storageConfig.bucket,
         Key: request.key,
+        ...(request.responseContentDisposition
+          ? { ResponseContentDisposition: request.responseContentDisposition }
+          : {}),
+        ...(request.responseContentType
+          ? { ResponseContentType: request.responseContentType }
+          : {}),
       }),
       { expiresIn: expiresInSeconds },
     );

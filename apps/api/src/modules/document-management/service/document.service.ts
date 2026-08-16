@@ -31,8 +31,10 @@ import { ObjectStorageService } from '../../../common/storage/object-storage.ser
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DocumentRepository } from '../repository/document.repository';
+import { buildDocumentDownloadDisposition } from './build-document-download-disposition';
 import { CLINIC_DOCUMENT_STORAGE_KEY_PREFIX } from './clinic-document-storage-key-prefix';
 import { isClinicDocumentStorageKey } from './is-clinic-document-storage-key';
+import { UploadedDocumentGuardService } from './uploaded-document-guard.service';
 
 const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
 
@@ -55,6 +57,7 @@ export class DocumentService {
     private readonly documentRepository: DocumentRepository,
     private readonly objectStorageService: ObjectStorageService,
     private readonly authRepository: AuthRepository,
+    private readonly uploadedDocumentGuardService: UploadedDocumentGuardService,
   ) {}
 
   /**
@@ -103,6 +106,11 @@ export class DocumentService {
     if (storedObject.sizeBytes <= 0) {
       throw new BadRequestException('Uploaded file is empty');
     }
+    await this.uploadedDocumentGuardService.assertUploadedContentMatches({
+      storageKey: input.storageKey,
+      declaredMimeType: mimeType,
+      actorUserId: actor.sub,
+    });
     try {
       const record = await this.documentRepository.createDocument({
         ownerType: 'CLINIC',
@@ -160,7 +168,14 @@ export class DocumentService {
   async getDownloadUrl(id: string, actor: CurrentUser): Promise<ClinicDocumentDownloadView> {
     await this.assertClinicCorpusScope(actor, 'read');
     const record = await this.requireClinicDocument(id);
-    const signedUrl = await this.objectStorageService.getSignedUrl({ key: record.storageKey });
+    // Signed as response-header overrides (SJ-21): the storage origin serves
+    // the file as an attachment under its validated stored type, so a
+    // download can never render inline on the bucket origin.
+    const signedUrl = await this.objectStorageService.getSignedUrl({
+      key: record.storageKey,
+      responseContentDisposition: buildDocumentDownloadDisposition(record),
+      responseContentType: record.mimeType,
+    });
     return { url: signedUrl.url, expiresAt: signedUrl.expiresAt };
   }
 

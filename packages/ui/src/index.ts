@@ -95,6 +95,7 @@ export {
   PopoverTitle,
   PopoverTrigger,
 } from '#components/popover';
+export { Progress } from '#components/progress';
 export { Separator } from '#components/separator';
 export {
   Sheet,
