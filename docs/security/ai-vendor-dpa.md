@@ -377,14 +377,30 @@ Four things the compliance owner has to decide, which engineering cannot:
 
 ## 11. What is done and what is not
 
-| AC | State |
-|---|---|
-| Field-level data-flow inventory + diagram | **done** — §2, §3, §4, held by the contract test in §9 |
-| Vendor training/retention/region posture with sources | **open** — §5, needs deployment access |
-| Gap list reviewed with compliance owner, owners + dates | **partial** — gaps named in §6, unowned and unreviewed |
-| Patient-facing disclosure text drafted and routed | **partial** — draft in §10, unreviewed and deliberately not routed |
-| Minimization tickets filed | **done** — SJ-27, SJ-28, SJ-29, SJ-30 (§7) |
-| Go/no-go recorded and acknowledged | **partial** — §8 proposed, unacknowledged |
+**SJ-17 is closed for the inventory. The compliance half is SJ-31, which owns
+the production go-live gate.** Read that split before treating this document as
+permission to ship: what is finished is the *evidence*, not any signature.
+There is no DPA with either processor, no documented Art. 55–56 transfer
+mechanism, and the §8 condition has never been acknowledged.
+
+| AC | State | Owner |
+|---|---|---|
+| Field-level data-flow inventory + diagram | **done** — §2, §3, §4, held by the contract test in §9 | SJ-17 |
+| Minimization tickets filed | **done** — SJ-27, SJ-28, SJ-29, SJ-30 (§7) | SJ-17 |
+| Vendor training/retention/region posture with sources | **open** — §5, needs deployment access | **SJ-31** |
+| Gap list reviewed with compliance owner, owners + dates | **open** — G1–G5 named in §6, unowned | **SJ-31** |
+| Patient-facing disclosure text reviewed and routed | **open** — draft in §10, deliberately not routed | **SJ-31** |
+| Go/no-go acknowledged by the project owner | **open** — §8 proposed | **SJ-31** |
+
+SJ-31 is filed **Blocked**: all four of its criteria need a named compliance
+owner (a DPO, which UU PDP requires for a health-data controller) and access to
+the target deployment to read the active `AiProviderConfig` row. Neither exists
+yet, and pretending otherwise is how a go-live gate quietly stops being one.
+
+Worth resolving SJ-27 first regardless. It closes gap G2 by *deletion* rather
+than by signature — removing the second processor entirely instead of
+negotiating an agreement with it — and it is a one-variable change today
+against a migration and full re-ingest once a corpus exists.
 
 The ticket's Verification — walkthrough with the compliance owner, and a
 spot-check of this inventory against a captured dev vendor payload using
