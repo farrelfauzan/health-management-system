@@ -24,6 +24,19 @@ describe('findPrivilegedPermissions (SJ-8)', () => {
     expect(actualMatches).toEqual(['role.assign:any', 'user.create:any']);
   });
 
+  it('treats role lifecycle permissions as privileged (IMP-2)', () => {
+    const inputPermissions = [
+      'role.read:any',
+      'role.create:any',
+      'role.update:any',
+      'role.delete:any',
+    ];
+
+    const actualMatches = findPrivilegedPermissions(inputPermissions);
+
+    expect(actualMatches).toEqual(['role.create:any', 'role.delete:any', 'role.update:any']);
+  });
+
   it('matches a nested manage permission at any scope depth', () => {
     const inputPermissions = ['bpjs.config.manage:any', 'bpjs.reference.read:any'];
 

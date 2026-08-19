@@ -99,8 +99,12 @@ export class RbacController {
     requestType: CreateRoleDto,
     requestExample: PHASE_THREE_EXAMPLES.rbac.createRoleRequest,
   })
-  async createRole(@Body() payload: CreateRoleDto) {
-    const role = await this.rbacService.createRole(payload);
+  async createRole(@Body() payload: CreateRoleDto, @AuthUser() currentUser?: CurrentUser) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const role = await this.rbacService.createRole(payload, currentUser.sub);
 
     return {
       data: role,
@@ -112,7 +116,7 @@ export class RbacController {
   @Auth([{ action: 'update', subject: 'Role' }])
   @ApiEndpoint({
     summary: 'Update a role name or description',
-    responseDescription: 'The updated role. Role codes are immutable.',
+    responseDescription: 'The updated role. Role codes are immutable; system roles return 403.',
     responseExample: {
       data: PHASE_THREE_EXAMPLES.rbac.customRoleItem,
       message: 'Role updated',
@@ -124,8 +128,13 @@ export class RbacController {
   async updateRole(
     @Param('id', new ParseUUIDPipe()) roleId: string,
     @Body() payload: UpdateRoleDto,
+    @AuthUser() currentUser?: CurrentUser,
   ) {
-    const role = await this.rbacService.updateRole(roleId, payload);
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const role = await this.rbacService.updateRole(roleId, payload, currentUser.sub);
 
     return {
       data: role,
@@ -139,7 +148,7 @@ export class RbacController {
   @ApiEndpoint({
     summary: 'Soft-delete a role',
     responseDescription:
-      'The deleted role. Every active assignment of the role is revoked in the same transaction.',
+      'The deleted role. Every active assignment of the role is revoked in the same transaction. System roles return 403.',
     responseExample: {
       data: PHASE_THREE_EXAMPLES.rbac.roleDeletion,
       message: 'Role deleted',
@@ -167,7 +176,7 @@ export class RbacController {
   @ApiEndpoint({
     summary: 'Replace the permission set attached to a role',
     responseDescription:
-      'The role after the replacement. Keys not in the catalog are rejected as a whole; nothing is partially applied.',
+      'The role after the replacement. Keys not in the catalog are rejected as a whole; nothing is partially applied. System roles return 403.',
     responseExample: {
       data: PHASE_THREE_EXAMPLES.rbac.roleDetail,
       message: 'Role permissions updated',
@@ -179,8 +188,13 @@ export class RbacController {
   async setRolePermissions(
     @Param('id', new ParseUUIDPipe()) roleId: string,
     @Body() payload: SetRolePermissionsDto,
+    @AuthUser() currentUser?: CurrentUser,
   ) {
-    const role = await this.rbacService.setRolePermissions(roleId, payload);
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const role = await this.rbacService.setRolePermissions(roleId, payload, currentUser.sub);
 
     return {
       data: role,

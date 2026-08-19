@@ -6,7 +6,7 @@ import request from 'supertest';
 
 import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { PermissionScope } from '../../generated/prisma/client';
+import { AuditAction, PermissionScope } from '../../generated/prisma/client';
 
 /**
  * IMP-1 against real Postgres, with the real `PermissionsGuard` (no
@@ -15,6 +15,11 @@ import { PermissionScope } from '../../generated/prisma/client';
  * next request, and deleting it revokes that access just as immediately —
  * the guard reads `user_roles` per request, so no token or redeploy is
  * involved.
+ *
+ * IMP-2 rides along: system roles refuse mutation with a 403 envelope, and
+ * every lifecycle mutation leaves a `resource = 'role'` audit row. Audit rows
+ * are append-only and stay behind, keyed to role ids that no longer exist —
+ * the correct behaviour of an immutable log, not leakage.
  *
  * The permission catalog is seed-owned and CI's database is migrated but not
  * seeded, so the handful of keys the spec needs are upserted by key and left
@@ -27,6 +32,7 @@ describe('RBAC role management against Postgres', () => {
   const MEMBER_USER_ID = '6bbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
   const ADMIN_ROLE_CODE = 'IMP1_SPEC_ROLE_ADMIN';
   const CUSTOM_ROLE_CODE = 'IMP1_SPEC_FRONT_DESK';
+  const SYSTEM_ROLE_CODE = 'IMP1_SPEC_SYSTEM';
 
   type CatalogSeed = {
     permissionKey: string;
@@ -49,6 +55,7 @@ describe('RBAC role management against Postgres', () => {
   let adminToken: string;
   let memberToken: string;
   let customRoleId: string;
+  let systemRoleId: string;
 
   async function signTokenFor(userId: string): Promise<string> {
     return jwtService.signAsync(
@@ -101,14 +108,34 @@ describe('RBAC role management against Postgres', () => {
     });
   }
 
+  async function seedSystemRole(): Promise<void> {
+    const role = await prisma.role.upsert({
+      where: { code: SYSTEM_ROLE_CODE },
+      update: { deletedAt: null, isSystem: true },
+      create: { code: SYSTEM_ROLE_CODE, name: `${TEST_MARKER} system`, isSystem: true },
+    });
+    systemRoleId = role.id;
+  }
+
+  async function findRoleAuditActions(roleId: string): Promise<AuditAction[]> {
+    const rows = await prisma.auditLog.findMany({
+      where: { resource: 'role', resourceId: roleId },
+      orderBy: { occurredAt: 'asc' },
+      select: { action: true },
+    });
+    return rows.map((row) => row.action);
+  }
+
   async function removeFixtures(): Promise<void> {
     const roles = await prisma.role.findMany({
-      where: { code: { in: [ADMIN_ROLE_CODE, CUSTOM_ROLE_CODE] } },
+      where: { code: { in: [ADMIN_ROLE_CODE, CUSTOM_ROLE_CODE, SYSTEM_ROLE_CODE] } },
       select: { id: true },
     });
     const roleIds = roles.map((role) => role.id);
     await prisma.userRole.deleteMany({
-      where: { OR: [{ roleId: { in: roleIds } }, { userId: { in: [ADMIN_USER_ID, MEMBER_USER_ID] } }] },
+      where: {
+        OR: [{ roleId: { in: roleIds } }, { userId: { in: [ADMIN_USER_ID, MEMBER_USER_ID] } }],
+      },
     });
     await prisma.rolePermission.deleteMany({ where: { roleId: { in: roleIds } } });
     await prisma.role.deleteMany({ where: { id: { in: roleIds } } });
@@ -132,6 +159,7 @@ describe('RBAC role management against Postgres', () => {
     await upsertUser(ADMIN_USER_ID);
     await upsertUser(MEMBER_USER_ID);
     await seedAdminRole();
+    await seedSystemRole();
     adminToken = await signTokenFor(ADMIN_USER_ID);
     memberToken = await signTokenFor(MEMBER_USER_ID);
   });
@@ -151,7 +179,9 @@ describe('RBAC role management against Postgres', () => {
       (group: { resource: string }) => group.resource === 'Role',
     );
     expect(roleGroup).toBeDefined();
-    const keys = roleGroup.permissions.map((entry: { permissionKey: string }) => entry.permissionKey);
+    const keys = roleGroup.permissions.map(
+      (entry: { permissionKey: string }) => entry.permissionKey,
+    );
     expect(keys).toEqual(expect.arrayContaining(['role.create:any', 'role.delete:any']));
   });
 
@@ -291,6 +321,65 @@ describe('RBAC role management against Postgres', () => {
     });
     expect(revokedAssignment?.deletedAt).not.toBeNull();
     expect(revokedAssignment?.unassignedById).toBe(ADMIN_USER_ID);
+  });
+
+  it('refuses to update, delete, or re-permission a system role', async () => {
+    const patch = await request(app.getHttpServer())
+      .patch(`/api/v1/rbac/roles/${systemRoleId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'renamed' });
+    expect(patch.status).toBe(403);
+    expect(patch.body.error).toMatchObject({ code: 'FORBIDDEN' });
+
+    const put = await request(app.getHttpServer())
+      .put(`/api/v1/rbac/roles/${systemRoleId}/permissions`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ permissionKeys: ['patient.read:any'] });
+    expect(put.status).toBe(403);
+
+    const del = await request(app.getHttpServer())
+      .delete(`/api/v1/rbac/roles/${systemRoleId}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+    expect(del.status).toBe(403);
+
+    const untouched = await prisma.role.findUnique({
+      where: { id: systemRoleId },
+      select: { name: true, deletedAt: true, _count: { select: { permissions: true } } },
+    });
+    expect(untouched).toEqual({
+      name: `${TEST_MARKER} system`,
+      deletedAt: null,
+      _count: { permissions: 0 },
+    });
+    expect(await findRoleAuditActions(systemRoleId)).toEqual([]);
+  });
+
+  it('left one audit row per lifecycle mutation of the custom role', async () => {
+    const actions = await findRoleAuditActions(customRoleId);
+
+    expect(actions).toEqual([
+      AuditAction.ROLE_CREATED,
+      AuditAction.ROLE_UPDATED,
+      AuditAction.ROLE_PERMISSIONS_CHANGED,
+      AuditAction.ROLE_PERMISSIONS_CHANGED,
+      AuditAction.ROLE_DELETED,
+    ]);
+
+    const diffRows = await prisma.auditLog.findMany({
+      where: {
+        resource: 'role',
+        resourceId: customRoleId,
+        action: AuditAction.ROLE_PERMISSIONS_CHANGED,
+      },
+      orderBy: { occurredAt: 'asc' },
+      select: { metadata: true, actorUserId: true },
+    });
+    expect(diffRows[0]?.actorUserId).toBe(ADMIN_USER_ID);
+    expect(diffRows[0]?.metadata).toMatchObject({
+      added: ['patient.read:any', 'role.read:any'],
+      removed: [],
+    });
+    expect(diffRows[1]?.metadata).toMatchObject({ added: [], removed: ['patient.read:any'] });
   });
 
   it('refuses to reuse the code of a deleted role', async () => {

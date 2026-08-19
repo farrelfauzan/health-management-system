@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuditAction } from '../../../generated/prisma/client';
@@ -46,7 +51,12 @@ describe('RbacService', () => {
     scope: 'ANY' as const,
     description: 'Read all patients',
   };
-  const roleWithPermissions = { ...roleRecord, memberCount: 2, permissions: [patientReadPermission] };
+  const roleWithPermissions = {
+    ...roleRecord,
+    memberCount: 2,
+    permissions: [patientReadPermission],
+  };
+  const systemRole = { ...roleWithPermissions, id: 'sys-1', code: 'SUPER_ADMIN', isSystem: true };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -64,7 +74,12 @@ describe('RbacService', () => {
     (rbacRepositoryMock.findPermissionCatalog as jest.Mock).mockResolvedValue([
       { ...patientReadPermission, resource: 'Appointment', permissionKey: 'appointment.read:any' },
       patientReadPermission,
-      { ...patientReadPermission, id: 'perm-2', permissionKey: 'patient.update:any', action: 'update' },
+      {
+        ...patientReadPermission,
+        id: 'perm-2',
+        permissionKey: 'patient.update:any',
+        action: 'update',
+      },
     ]);
     const actualGroups = await service.getPermissionCatalog();
     expect(actualGroups.map((group) => group.resource)).toEqual(['Appointment', 'Patient']);
@@ -98,9 +113,17 @@ describe('RbacService', () => {
     (rbacRepositoryMock.findAnyRoleByCode as jest.Mock).mockResolvedValue(null);
     (rbacRepositoryMock.createRole as jest.Mock).mockResolvedValue(roleRecord);
     const inputRole = { code: 'FRONT_DESK_LEAD', name: 'Front Desk Lead' };
-    const actualRole = await service.createRole(inputRole);
+    const actualRole = await service.createRole(inputRole, actorId);
     expect(rbacRepositoryMock.createRole).toHaveBeenCalledWith(inputRole);
     expect(actualRole.isSystem).toBe(false);
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: AuditAction.ROLE_CREATED,
+        resource: 'role',
+        actorUserId: actorId,
+        resourceId: roleId,
+      }),
+    );
   });
 
   it('rejects a duplicate role code with Conflict, including soft-deleted codes', async () => {
@@ -109,9 +132,10 @@ describe('RbacService', () => {
       deletedAt: createdAt,
     });
     await expect(
-      service.createRole({ code: 'FRONT_DESK_LEAD', name: 'Front Desk Lead' }),
+      service.createRole({ code: 'FRONT_DESK_LEAD', name: 'Front Desk Lead' }, actorId),
     ).rejects.toBeInstanceOf(ConflictException);
     expect(rbacRepositoryMock.createRole).not.toHaveBeenCalled();
+    expect(auditServiceMock.record).not.toHaveBeenCalled();
   });
 
   it('updates an existing role', async () => {
@@ -120,9 +144,34 @@ describe('RbacService', () => {
       ...roleRecord,
       name: 'Desk Lead',
     });
-    const actualRole = await service.updateRole(roleId, { name: 'Desk Lead' });
+    const actualRole = await service.updateRole(roleId, { name: 'Desk Lead' }, actorId);
     expect(rbacRepositoryMock.updateRole).toHaveBeenCalledWith(roleId, { name: 'Desk Lead' });
     expect(actualRole.name).toBe('Desk Lead');
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: AuditAction.ROLE_UPDATED,
+        resourceId: roleId,
+        metadata: expect.objectContaining({
+          before: { name: 'Front Desk Lead', description: null },
+          after: { name: 'Desk Lead', description: null },
+        }),
+      }),
+    );
+  });
+
+  it('refuses to update, delete, or re-permission a system role', async () => {
+    (rbacRepositoryMock.findRoleById as jest.Mock).mockResolvedValue(systemRole);
+    await expect(service.updateRole('sys-1', { name: 'x' }, actorId)).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+    await expect(service.deleteRole('sys-1', actorId)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(
+      service.setRolePermissions('sys-1', { permissionKeys: [] }, actorId),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(rbacRepositoryMock.updateRole).not.toHaveBeenCalled();
+    expect(rbacRepositoryMock.softDeleteRole).not.toHaveBeenCalled();
+    expect(rbacRepositoryMock.replaceRolePermissions).not.toHaveBeenCalled();
+    expect(auditServiceMock.record).not.toHaveBeenCalled();
   });
 
   it('soft-deletes a role and reports revoked assignments', async () => {
@@ -141,6 +190,13 @@ describe('RbacService', () => {
       deletedAt: '2026-01-01T00:00:00.000Z',
       revokedAssignmentCount: 2,
     });
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: AuditAction.ROLE_DELETED,
+        resourceId: roleId,
+        metadata: { roleCode: 'FRONT_DESK_LEAD', revokedAssignmentCount: 2 },
+      }),
+    );
   });
 
   it('replaces the permission set with de-duplicated known keys', async () => {
@@ -148,14 +204,38 @@ describe('RbacService', () => {
     (rbacRepositoryMock.findPermissionsByKeys as jest.Mock).mockResolvedValue([
       patientReadPermission,
     ]);
-    await service.setRolePermissions(roleId, {
-      permissionKeys: ['patient.read:any', 'patient.read:any'],
-    });
+    await service.setRolePermissions(
+      roleId,
+      { permissionKeys: ['patient.read:any', 'patient.read:any'] },
+      actorId,
+    );
     expect(rbacRepositoryMock.findPermissionsByKeys).toHaveBeenCalledWith(['patient.read:any']);
     expect(rbacRepositoryMock.replaceRolePermissions).toHaveBeenCalledWith({
       roleId,
       permissionIds: ['perm-1'],
     });
+  });
+
+  it('audits the permission diff, not just the final set', async () => {
+    (rbacRepositoryMock.findRoleById as jest.Mock).mockResolvedValue(roleWithPermissions);
+    const appointmentRead = {
+      ...patientReadPermission,
+      id: 'perm-3',
+      permissionKey: 'appointment.read:any',
+    };
+    (rbacRepositoryMock.findPermissionsByKeys as jest.Mock).mockResolvedValue([appointmentRead]);
+    await service.setRolePermissions(roleId, { permissionKeys: ['appointment.read:any'] }, actorId);
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: AuditAction.ROLE_PERMISSIONS_CHANGED,
+        resourceId: roleId,
+        metadata: {
+          roleCode: 'FRONT_DESK_LEAD',
+          added: ['appointment.read:any'],
+          removed: ['patient.read:any'],
+        },
+      }),
+    );
   });
 
   it('rejects unknown permission keys without touching the role', async () => {
@@ -164,9 +244,11 @@ describe('RbacService', () => {
       patientReadPermission,
     ]);
     await expect(
-      service.setRolePermissions(roleId, {
-        permissionKeys: ['patient.read:any', 'galaxy.destroy:any'],
-      }),
+      service.setRolePermissions(
+        roleId,
+        { permissionKeys: ['patient.read:any', 'galaxy.destroy:any'] },
+        actorId,
+      ),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(rbacRepositoryMock.replaceRolePermissions).not.toHaveBeenCalled();
   });
