@@ -62,6 +62,7 @@ export * from '#auth/schemas';
 export * from '#auth/contracts';
 export * from '#auth/types';
 export * from '#rbac/schemas';
+export * from '#rbac/contracts';
 export * from '#rbac/types';
 export * from '#ai-chatbot/schemas';
 export * from '#ai-chatbot/contracts';

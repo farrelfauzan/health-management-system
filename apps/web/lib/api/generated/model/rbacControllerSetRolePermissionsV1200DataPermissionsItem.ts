@@ -6,10 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RbacControllerGetRolesV1200DataItem = {
+export type RbacControllerSetRolePermissionsV1200DataPermissionsItem = {
   id: string;
-  code: string;
-  name: string;
+  permissionKey: string;
+  resource: string;
+  action: string;
+  scope: string;
   description?: string;
-  isSystem: boolean;
 };

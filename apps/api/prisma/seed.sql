@@ -68,6 +68,14 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
     ('role.unassign:any', 'Role', 'unassign', 'ANY', 'Unassign roles from users'),
+    -- IMP-1: role lifecycle. Deliberately not granted to ADMIN below — a
+    -- role that can mint roles holding any permission is a super-admin
+    -- capability, and SUPER_ADMIN inherits these through the catalog-wide
+    -- grant. The permission catalog itself stays seed-only (no permission.*
+    -- keys): roles are composed from it, never extended past it.
+    ('role.create:any', 'Role', 'create', 'ANY', 'Create custom roles'),
+    ('role.update:any', 'Role', 'update', 'ANY', 'Update roles and their permission sets'),
+    ('role.delete:any', 'Role', 'delete', 'ANY', 'Delete custom roles'),
     ('auth.logout:own', 'Auth', 'logout', 'OWN', 'Logout own session'),
     ('user.read:any', 'User', 'read', 'ANY', 'Read all users'),
     ('user.create:any', 'User', 'create', 'ANY', 'Create users'),

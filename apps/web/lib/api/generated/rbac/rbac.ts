@@ -22,10 +22,19 @@ import type {
 
 import type {
   AssignRoleDto,
+  CreateRoleDto,
   RbacControllerAssignRoleV1200,
+  RbacControllerCreateRoleV1201,
+  RbacControllerDeleteRoleV1200,
+  RbacControllerGetPermissionCatalogV1200,
+  RbacControllerGetRoleByIdV1200,
   RbacControllerGetRolesV1200,
+  RbacControllerSetRolePermissionsV1200,
   RbacControllerUnassignRoleV1200,
-  UnassignRoleDto
+  RbacControllerUpdateRoleV1200,
+  SetRolePermissionsDto,
+  UnassignRoleDto,
+  UpdateRoleDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -129,6 +138,578 @@ export function useRbacControllerGetRolesV1<TData = Awaited<ReturnType<typeof rb
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getRbacControllerGetRolesV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Create a custom role
+ */
+export const rbacControllerCreateRoleV1 = (
+    createRoleDto: CreateRoleDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<RbacControllerCreateRoleV1201>(
+      {url: `/api/v1/rbac/roles`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createRoleDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getRbacControllerCreateRoleV1QueryKey = (createRoleDto?: CreateRoleDto,) => {
+    return [
+    'POST', `/api/v1/rbac/roles`, createRoleDto
+    ] as const;
+    }
+
+
+export const getRbacControllerCreateRoleV1QueryOptions = <TData = Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError = unknown>(createRoleDto: CreateRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getRbacControllerCreateRoleV1QueryKey(createRoleDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>> = ({ signal }) => rbacControllerCreateRoleV1(createRoleDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type RbacControllerCreateRoleV1QueryResult = NonNullable<Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>>
+export type RbacControllerCreateRoleV1QueryError = unknown
+
+
+export function useRbacControllerCreateRoleV1<TData = Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError = unknown>(
+ createRoleDto: CreateRoleDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerCreateRoleV1<TData = Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError = unknown>(
+ createRoleDto: CreateRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerCreateRoleV1<TData = Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError = unknown>(
+ createRoleDto: CreateRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Create a custom role
+ */
+
+export function useRbacControllerCreateRoleV1<TData = Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError = unknown>(
+ createRoleDto: CreateRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerCreateRoleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getRbacControllerCreateRoleV1QueryOptions(createRoleDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List the permission catalog
+ */
+export const rbacControllerGetPermissionCatalogV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<RbacControllerGetPermissionCatalogV1200>(
+      {url: `/api/v1/rbac/permissions`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getRbacControllerGetPermissionCatalogV1QueryKey = () => {
+    return [
+    `/api/v1/rbac/permissions`
+    ] as const;
+    }
+
+
+export const getRbacControllerGetPermissionCatalogV1QueryOptions = <TData = Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getRbacControllerGetPermissionCatalogV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>> = ({ signal }) => rbacControllerGetPermissionCatalogV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type RbacControllerGetPermissionCatalogV1QueryResult = NonNullable<Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>>
+export type RbacControllerGetPermissionCatalogV1QueryError = unknown
+
+
+export function useRbacControllerGetPermissionCatalogV1<TData = Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerGetPermissionCatalogV1<TData = Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerGetPermissionCatalogV1<TData = Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List the permission catalog
+ */
+
+export function useRbacControllerGetPermissionCatalogV1<TData = Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetPermissionCatalogV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getRbacControllerGetPermissionCatalogV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Get a role with its permissions and member count
+ */
+export const rbacControllerGetRoleByIdV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<RbacControllerGetRoleByIdV1200>(
+      {url: `/api/v1/rbac/roles/${id}`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getRbacControllerGetRoleByIdV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/rbac/roles/${id}`
+    ] as const;
+    }
+
+
+export const getRbacControllerGetRoleByIdV1QueryOptions = <TData = Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getRbacControllerGetRoleByIdV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>> = ({ signal }) => rbacControllerGetRoleByIdV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type RbacControllerGetRoleByIdV1QueryResult = NonNullable<Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>>
+export type RbacControllerGetRoleByIdV1QueryError = unknown
+
+
+export function useRbacControllerGetRoleByIdV1<TData = Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerGetRoleByIdV1<TData = Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerGetRoleByIdV1<TData = Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a role with its permissions and member count
+ */
+
+export function useRbacControllerGetRoleByIdV1<TData = Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerGetRoleByIdV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getRbacControllerGetRoleByIdV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Update a role name or description
+ */
+export const rbacControllerUpdateRoleV1 = (
+    id: string,
+    updateRoleDto: UpdateRoleDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<RbacControllerUpdateRoleV1200>(
+      {url: `/api/v1/rbac/roles/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateRoleDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getRbacControllerUpdateRoleV1QueryKey = (id: string,
+    updateRoleDto?: UpdateRoleDto,) => {
+    return [
+    'PATCH', `/api/v1/rbac/roles/${id}`, updateRoleDto
+    ] as const;
+    }
+
+
+export const getRbacControllerUpdateRoleV1QueryOptions = <TData = Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError = unknown>(id: string,
+    updateRoleDto: UpdateRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getRbacControllerUpdateRoleV1QueryKey(id,updateRoleDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>> = ({ signal }) => rbacControllerUpdateRoleV1(id,updateRoleDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type RbacControllerUpdateRoleV1QueryResult = NonNullable<Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>>
+export type RbacControllerUpdateRoleV1QueryError = unknown
+
+
+export function useRbacControllerUpdateRoleV1<TData = Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError = unknown>(
+ id: string,
+    updateRoleDto: UpdateRoleDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerUpdateRoleV1<TData = Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError = unknown>(
+ id: string,
+    updateRoleDto: UpdateRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerUpdateRoleV1<TData = Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError = unknown>(
+ id: string,
+    updateRoleDto: UpdateRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Update a role name or description
+ */
+
+export function useRbacControllerUpdateRoleV1<TData = Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError = unknown>(
+ id: string,
+    updateRoleDto: UpdateRoleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerUpdateRoleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getRbacControllerUpdateRoleV1QueryOptions(id,updateRoleDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Soft-delete a role
+ */
+export const rbacControllerDeleteRoleV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<RbacControllerDeleteRoleV1200>(
+      {url: `/api/v1/rbac/roles/${id}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getRbacControllerDeleteRoleV1QueryKey = (id: string,) => {
+    return [
+    'DELETE', `/api/v1/rbac/roles/${id}`
+    ] as const;
+    }
+
+
+export const getRbacControllerDeleteRoleV1QueryOptions = <TData = Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getRbacControllerDeleteRoleV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>> = ({ signal }) => rbacControllerDeleteRoleV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type RbacControllerDeleteRoleV1QueryResult = NonNullable<Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>>
+export type RbacControllerDeleteRoleV1QueryError = unknown
+
+
+export function useRbacControllerDeleteRoleV1<TData = Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerDeleteRoleV1<TData = Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerDeleteRoleV1<TData = Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Soft-delete a role
+ */
+
+export function useRbacControllerDeleteRoleV1<TData = Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerDeleteRoleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getRbacControllerDeleteRoleV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Replace the permission set attached to a role
+ */
+export const rbacControllerSetRolePermissionsV1 = (
+    id: string,
+    setRolePermissionsDto: SetRolePermissionsDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<RbacControllerSetRolePermissionsV1200>(
+      {url: `/api/v1/rbac/roles/${id}/permissions`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: setRolePermissionsDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getRbacControllerSetRolePermissionsV1QueryKey = (id: string,
+    setRolePermissionsDto?: SetRolePermissionsDto,) => {
+    return [
+    'PUT', `/api/v1/rbac/roles/${id}/permissions`, setRolePermissionsDto
+    ] as const;
+    }
+
+
+export const getRbacControllerSetRolePermissionsV1QueryOptions = <TData = Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError = unknown>(id: string,
+    setRolePermissionsDto: SetRolePermissionsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getRbacControllerSetRolePermissionsV1QueryKey(id,setRolePermissionsDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>> = ({ signal }) => rbacControllerSetRolePermissionsV1(id,setRolePermissionsDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type RbacControllerSetRolePermissionsV1QueryResult = NonNullable<Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>>
+export type RbacControllerSetRolePermissionsV1QueryError = unknown
+
+
+export function useRbacControllerSetRolePermissionsV1<TData = Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError = unknown>(
+ id: string,
+    setRolePermissionsDto: SetRolePermissionsDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerSetRolePermissionsV1<TData = Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError = unknown>(
+ id: string,
+    setRolePermissionsDto: SetRolePermissionsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>,
+          TError,
+          Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useRbacControllerSetRolePermissionsV1<TData = Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError = unknown>(
+ id: string,
+    setRolePermissionsDto: SetRolePermissionsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Replace the permission set attached to a role
+ */
+
+export function useRbacControllerSetRolePermissionsV1<TData = Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError = unknown>(
+ id: string,
+    setRolePermissionsDto: SetRolePermissionsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof rbacControllerSetRolePermissionsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getRbacControllerSetRolePermissionsV1QueryOptions(id,setRolePermissionsDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

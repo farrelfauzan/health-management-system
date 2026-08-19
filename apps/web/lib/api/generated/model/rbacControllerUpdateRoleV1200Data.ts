@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RbacControllerGetRolesV1200DataItem = {
+export type RbacControllerUpdateRoleV1200Data = {
   id: string;
   code: string;
   name: string;
