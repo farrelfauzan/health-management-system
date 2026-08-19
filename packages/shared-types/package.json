@@ -54,6 +54,7 @@
     "#auth/contracts": "./src/auth/contracts.ts",
     "#auth/types": "./src/auth/types.ts",
     "#rbac/schemas": "./src/rbac/schemas.ts",
+    "#rbac/contracts": "./src/rbac/contracts.ts",
     "#rbac/types": "./src/rbac/types.ts",
     "#ai-chatbot/schemas": "./src/ai-chatbot/schemas.ts",
     "#ai-chatbot/contracts": "./src/ai-chatbot/contracts.ts",

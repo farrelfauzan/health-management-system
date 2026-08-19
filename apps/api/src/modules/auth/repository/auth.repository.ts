@@ -21,6 +21,9 @@ export class AuthRepository {
         roles: {
           where: {
             deletedAt: null,
+            // A soft-deleted role must stop granting the moment it is deleted,
+            // even if an assignment row somehow outlives it (IMP-1).
+            role: { deletedAt: null },
           },
           include: {
             role: {
@@ -48,6 +51,9 @@ export class AuthRepository {
         roles: {
           where: {
             deletedAt: null,
+            // A soft-deleted role must stop granting the moment it is deleted,
+            // even if an assignment row somehow outlives it (IMP-1).
+            role: { deletedAt: null },
           },
           include: {
             role: {

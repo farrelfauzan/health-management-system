@@ -6,10 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RbacControllerGetRolesV1200DataItem = {
+export type RbacControllerDeleteRoleV1200Data = {
   id: string;
   code: string;
-  name: string;
-  description?: string;
-  isSystem: boolean;
+  deletedAt: string;
+  revokedAssignmentCount: number;
 };
