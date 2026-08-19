@@ -4,6 +4,7 @@ export const SESSION_HINT_COOKIE_NAME = 'hms_session_hint';
 
 type SessionHint = {
   roles?: string[];
+  permissions?: string[];
   exp?: number;
 };
 
@@ -29,7 +30,12 @@ export function decodeSessionHint(hint: string | undefined): AccessTokenClaims |
     if (!Array.isArray(parsed.roles) || typeof parsed.exp !== 'number') {
       return null;
     }
-    return { roles: parsed.roles, exp: parsed.exp };
+    // Older hints predate the permissions field (IMP-3); they keep working
+    // through the role fallback in the proxy.
+    const permissions = Array.isArray(parsed.permissions)
+      ? parsed.permissions.filter((entry): entry is string => typeof entry === 'string')
+      : [];
+    return { roles: parsed.roles, permissions, exp: parsed.exp };
   } catch {
     return null;
   }

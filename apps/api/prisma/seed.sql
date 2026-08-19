@@ -65,6 +65,15 @@ SET
 
 WITH seed_permissions(permission_key, resource, action, scope, description) AS (
   VALUES
+    -- IMP-3: portal-shell access as a permission, so a custom role can reach
+    -- a shell without impersonating a seeded role code. `proxy.ts` reads these
+    -- from the JWT claim as a *navigation* gate only — the API's
+    -- PermissionsGuard remains the authorisation boundary. The pharmacy
+    -- workspace deliberately has no key yet: it is a slice of the admin shell,
+    -- and stays role-gated until a custom role needs it.
+    ('portal.admin-access:any', 'Portal', 'admin-access', 'ANY', 'Access the admin web shell'),
+    ('portal.doctor-access:any', 'Portal', 'doctor-access', 'ANY', 'Access the doctor web shell'),
+    ('portal.patient-access:own', 'Portal', 'patient-access', 'OWN', 'Access the patient portal'),
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
     ('role.unassign:any', 'Role', 'unassign', 'ANY', 'Unassign roles from users'),
@@ -214,6 +223,7 @@ SET
 
 WITH explicit_role_permissions(role_code, permission_key) AS (
   VALUES
+    ('ADMIN', 'portal.admin-access:any'),
     ('ADMIN', 'role.assign:any'),
     ('ADMIN', 'role.read:any'),
     ('ADMIN', 'role.unassign:any'),
@@ -353,6 +363,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- been reading about them", and only the second question needs a view
     -- across every record in the clinic. SUPER_ADMIN holds it implicitly.
     ('ADMIN', 'audit.read:any'),
+    ('DOCTOR', 'portal.doctor-access:any'),
     ('DOCTOR', 'auth.logout:own'),
     ('DOCTOR', 'patient.read:own'),
     ('DOCTOR', 'doctor.read:any'),
@@ -401,6 +412,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PHARMACIST', 'dispense.write:any'),
     ('PHARMACIST', 'inventory.read:any'),
     ('PHARMACIST', 'inventory.write:any'),
+    ('PATIENT', 'portal.patient-access:own'),
     ('PATIENT', 'auth.logout:own'),
     ('PATIENT', 'patient.read:own'),
     ('PATIENT', 'patient.update:own'),

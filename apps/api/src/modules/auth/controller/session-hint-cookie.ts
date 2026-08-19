@@ -8,6 +8,9 @@ export const SESSION_HINT_COOKIE_NAME = 'hms_session_hint';
  */
 const SESSION_HINT_COOKIE_PATH = '/';
 
+/** Only `portal.*` keys belong in the hint: shell choice is its entire job (IMP-3). */
+const PORTAL_PERMISSION_PREFIX = 'portal.';
+
 /**
  * A non-credential hint that lets the Next.js server render the right shell on
  * a cold page load (SJ-6).
@@ -35,10 +38,17 @@ const SESSION_HINT_COOKIE_PATH = '/';
  */
 export function setSessionHintCookie(
   response: RefreshTokenCookieWriter,
-  hint: { roles: readonly string[]; expiresAt: Date },
+  hint: { roles: readonly string[]; permissions: readonly string[]; expiresAt: Date },
 ): void {
+  const portalPermissions = hint.permissions.filter((permissionKey) =>
+    permissionKey.startsWith(PORTAL_PERMISSION_PREFIX),
+  );
   const payload = Buffer.from(
-    JSON.stringify({ roles: hint.roles, exp: Math.floor(hint.expiresAt.getTime() / 1000) }),
+    JSON.stringify({
+      roles: hint.roles,
+      permissions: portalPermissions,
+      exp: Math.floor(hint.expiresAt.getTime() / 1000),
+    }),
   ).toString('base64url');
   response.cookie(SESSION_HINT_COOKIE_NAME, payload, {
     httpOnly: false,

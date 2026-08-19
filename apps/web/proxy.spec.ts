@@ -17,7 +17,7 @@ function buildToken(claims: object): string {
 }
 
 /** The API's session hint: base64url JSON, no signature — see SJ-6. */
-function buildSessionHint(claims: { exp: number; roles: string[] }): string {
+function buildSessionHint(claims: { exp: number; roles: string[]; permissions?: string[] }): string {
   return encodeBase64Url(claims);
 }
 
@@ -214,6 +214,100 @@ describe('proxy', () => {
     const response = proxy(buildRequest('/admin/administration', dualToken));
 
     expect(response.status).toBe(200);
+  });
+
+  /**
+   * IMP-3: shell access follows the `portal.*` permission claim, so a custom
+   * role composed in the IAM screens needs no seeded role code. The role-array
+   * checks above stay valid as the fallback for pre-IMP-3 tokens.
+   */
+  it('lets a custom role holding portal.admin-access into the admin shell', () => {
+    const customToken = buildToken({
+      exp: futureUnix(),
+      roles: ['FRONT_DESK_LEAD'],
+      permissions: ['patient.read:any', 'portal.admin-access:any'],
+    });
+    const response = proxy(buildRequest('/admin/administration', customToken));
+
+    expect(response.headers.get('x-middleware-next')).toBe('1');
+  });
+
+  it('routes a custom role holding portal.doctor-access to the doctor shell', () => {
+    const customToken = buildToken({
+      exp: futureUnix(),
+      roles: ['LOCUM'],
+      permissions: ['portal.doctor-access:any'],
+    });
+
+    expect(proxy(buildRequest('/doctor/encounters', customToken)).status).toBe(200);
+    expect(proxy(buildRequest('/login', customToken)).headers.get('location')).toBe(
+      `${BASE_URL}/doctor/dashboard`,
+    );
+  });
+
+  it('routes a custom role holding portal.patient-access to the portal', () => {
+    const customToken = buildToken({
+      exp: futureUnix(),
+      roles: ['FAMILY_CARER'],
+      permissions: ['portal.patient-access:own'],
+    });
+
+    expect(proxy(buildRequest('/portal/registrations', customToken)).status).toBe(200);
+    expect(proxy(buildRequest('/admin/dashboard', customToken)).headers.get('location')).toBe(
+      `${BASE_URL}/portal/registrations`,
+    );
+  });
+
+  it('still clears a custom role that holds no portal permission', () => {
+    const customToken = buildToken({
+      exp: futureUnix(),
+      roles: ['FRONT_DESK_LEAD'],
+      permissions: ['patient.read:any'],
+    });
+    const response = proxy(buildRequest('/admin/administration', customToken));
+
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
+    expect(response.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value).toBe('');
+  });
+
+  /**
+   * SUPER_ADMIN's blanket grant includes every portal permission; the admin
+   * shell must still win, exactly as it did under the role check.
+   */
+  it('keeps a super admin holding every portal permission pinned to the admin shell', () => {
+    const superToken = buildToken({
+      exp: futureUnix(),
+      roles: ['SUPER_ADMIN'],
+      permissions: [
+        'portal.admin-access:any',
+        'portal.doctor-access:any',
+        'portal.patient-access:own',
+      ],
+    });
+
+    expect(proxy(buildRequest('/portal/registrations', superToken)).headers.get('location')).toBe(
+      `${BASE_URL}/admin/dashboard`,
+    );
+    expect(proxy(buildRequest('/doctor/encounters', superToken)).headers.get('location')).toBe(
+      `${BASE_URL}/admin/dashboard`,
+    );
+    expect(proxy(buildRequest('/admin/dashboard', superToken)).status).toBe(200);
+  });
+
+  it('honours the portal permission carried by a session hint after token expiry', () => {
+    const expiredAccessToken = buildToken({
+      exp: pastUnix(),
+      roles: ['FRONT_DESK_LEAD'],
+      permissions: ['portal.admin-access:any'],
+    });
+    const sessionHint = buildSessionHint({
+      exp: futureUnix(),
+      roles: ['FRONT_DESK_LEAD'],
+      permissions: ['portal.admin-access:any'],
+    });
+    const response = proxy(buildRequest('/admin/administration', expiredAccessToken, sessionHint));
+
+    expect(response.headers.get('x-middleware-next')).toBe('1');
   });
 
   it('sends a signed-in doctor away from /login to their shell', () => {
