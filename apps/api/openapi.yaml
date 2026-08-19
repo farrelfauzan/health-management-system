@@ -19543,7 +19543,7 @@ paths:
                   description: Registration desk supervisor
       responses:
         "200":
-          description: The updated role. Role codes are immutable.
+          description: The updated role. Role codes are immutable; system roles return 403.
           content:
             application/json:
               schema:
@@ -19631,7 +19631,7 @@ paths:
       responses:
         "200":
           description: The deleted role. Every active assignment of the role is revoked in
-            the same transaction.
+            the same transaction. System roles return 403.
           content:
             application/json:
               schema:
@@ -19721,7 +19721,8 @@ paths:
       responses:
         "200":
           description: The role after the replacement. Keys not in the catalog are
-            rejected as a whole; nothing is partially applied.
+            rejected as a whole; nothing is partially applied. System roles
+            return 403.
           content:
             application/json:
               schema:

@@ -63,6 +63,14 @@ enum AuditAction {
   USER_UPDATED
   ROLE_ASSIGNED
   ROLE_UNASSIGNED
+  /// Role lifecycle (IMP-2). Assignment says who holds a role; these say what
+  /// the role *is* — and a permission set that quietly grew is the change an
+  /// investigator most needs to find. `metadata` on PERMISSIONS_CHANGED
+  /// carries the added and removed keys, not just the final set.
+  ROLE_CREATED
+  ROLE_UPDATED
+  ROLE_DELETED
+  ROLE_PERMISSIONS_CHANGED
   PATIENT_IDENTIFIER_UNMASKED
   DOCTOR_IDENTIFIER_UNMASKED
   PATIENT_MRN_IMPORTED

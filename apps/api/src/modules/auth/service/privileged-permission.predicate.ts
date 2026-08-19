@@ -15,7 +15,9 @@
  * **Administrative control.** Anything that can grant permissions, create
  * users, or reconfigure an upstream integration can hand an attacker a durable
  * foothold that outlives the stolen password. `role.assign:any` is the sharpest
- * of these — it is the one permission that can promote its holder.
+ * of these — it is the one permission that can promote its holder — and the
+ * `role.create/update/delete` trio sits beside it because rewriting what a
+ * role grants is the same promotion by another route.
  *
  * **Bulk data egress.** `*.export` and `audit.read:any` return patient-
  * identifiable data by the thousand rather than one record at a time. The
@@ -37,6 +39,11 @@ const PRIVILEGED_PERMISSION_PATTERNS: readonly string[] = [
   'user.update:any',
   'role.assign:any',
   'role.unassign:any',
+  // IMP-2: composing a role is one step removed from assigning it — a role
+  // that can be given any permission set is a promotion waiting for a holder.
+  'role.create:any',
+  'role.update:any',
+  'role.delete:any',
   'audit.read:any',
   'patient.merge:any',
 ];
