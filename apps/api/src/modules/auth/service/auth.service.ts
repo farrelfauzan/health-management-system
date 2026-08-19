@@ -240,6 +240,7 @@ export class AuthService {
       refreshToken: issuedRefreshToken.token,
       refreshTokenMaxAgeMs: issuedRefreshToken.record.expiresAt.getTime() - Date.now(),
       roles: claims.roles,
+      permissions: claims.permissions,
       sessionExpiresAt: issuedRefreshToken.record.expiresAt,
     };
   }
@@ -331,6 +332,7 @@ export class AuthService {
       refreshToken: nextToken.token,
       refreshTokenMaxAgeMs: nextToken.record.expiresAt.getTime() - Date.now(),
       roles: claims.roles,
+      permissions: claims.permissions,
       sessionExpiresAt: nextToken.record.expiresAt,
     };
   }

@@ -87,6 +87,12 @@ export type IssuedSession = {
   refreshTokenMaxAgeMs: number;
   /** Feeds the session-hint cookie: rendering input, never authorisation. */
   roles: string[];
+  /**
+   * Same posture as `roles`: the hint writer keeps only the `portal.*` keys,
+   * so a custom role still resolves to the right shell after the access token
+   * expires (IMP-3). Never an authorisation input.
+   */
+  permissions: string[];
   sessionExpiresAt: Date;
 };
 

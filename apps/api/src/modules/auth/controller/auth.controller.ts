@@ -89,7 +89,11 @@ export class AuthController {
     }
     const { session } = outcome;
     setRefreshTokenCookie(response, session.refreshToken, session.refreshTokenMaxAgeMs);
-    setSessionHintCookie(response, { roles: session.roles, expiresAt: session.sessionExpiresAt });
+    setSessionHintCookie(response, {
+      roles: session.roles,
+      permissions: session.permissions,
+      expiresAt: session.sessionExpiresAt,
+    });
 
     return {
       data: {
@@ -129,7 +133,11 @@ export class AuthController {
     }
     const session = await this.authService.refresh(refreshToken, origin);
     setRefreshTokenCookie(response, session.refreshToken, session.refreshTokenMaxAgeMs);
-    setSessionHintCookie(response, { roles: session.roles, expiresAt: session.sessionExpiresAt });
+    setSessionHintCookie(response, {
+      roles: session.roles,
+      permissions: session.permissions,
+      expiresAt: session.sessionExpiresAt,
+    });
 
     return {
       data: session.tokens,
@@ -314,7 +322,11 @@ export class AuthController {
     // again would be theatre.
     const session = await this.authService.issueSessionForVerifiedUser(actor.userId, origin);
     setRefreshTokenCookie(response, session.refreshToken, session.refreshTokenMaxAgeMs);
-    setSessionHintCookie(response, { roles: session.roles, expiresAt: session.sessionExpiresAt });
+    setSessionHintCookie(response, {
+      roles: session.roles,
+      permissions: session.permissions,
+      expiresAt: session.sessionExpiresAt,
+    });
 
     return {
       data: { recoveryCodes, tokens: session.tokens } satisfies MfaEnrolmentCompleted,
@@ -347,7 +359,11 @@ export class AuthController {
     const verifiedUserId = await this.mfaService.answerChallenge(actor.userId, payload, origin);
     const session = await this.authService.issueSessionForVerifiedUser(verifiedUserId, origin);
     setRefreshTokenCookie(response, session.refreshToken, session.refreshTokenMaxAgeMs);
-    setSessionHintCookie(response, { roles: session.roles, expiresAt: session.sessionExpiresAt });
+    setSessionHintCookie(response, {
+      roles: session.roles,
+      permissions: session.permissions,
+      expiresAt: session.sessionExpiresAt,
+    });
 
     return {
       data: session.tokens,

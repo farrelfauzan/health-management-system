@@ -1,10 +1,24 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
-import { hasAnyRole } from '#lib/auth/access-token-claims';
+import { hasAnyRole, hasPermission } from '#lib/auth/access-token-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 
+/**
+ * Shell access is decided by the `portal.*` permission claims (IMP-3), so a
+ * custom role composed in the IAM screens reaches a shell without borrowing a
+ * seeded role code. The role arrays remain as a fallback for tokens and
+ * session hints minted before the portal permissions were seeded, and for
+ * the pharmacy workspace, which has no permission key yet.
+ *
+ * Either way this file gates navigation only: the API's PermissionsGuard
+ * re-resolves permissions from the database on every request, so a forged or
+ * stale claim buys a shell frame whose every data call still 403s.
+ */
+const ADMIN_PORTAL_PERMISSION = 'portal.admin-access:any';
+const DOCTOR_PORTAL_PERMISSION = 'portal.doctor-access:any';
+const PATIENT_PORTAL_PERMISSION = 'portal.patient-access:own';
 const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN'];
 const DOCTOR_ROLES = ['DOCTOR'];
 const PHARMACIST_ROLES = ['PHARMACIST'];
@@ -29,15 +43,24 @@ export function proxy(request: NextRequest) {
   const sessionHint = request.cookies.get(SESSION_HINT_COOKIE_NAME)?.value;
   const claims = resolveSessionClaims({ accessToken, sessionHint });
   const hasValidSession = claims !== null;
-  const hasAdminSession = hasValidSession && hasAnyRole(claims, ADMIN_ROLES);
+  const hasAdminSession =
+    hasValidSession &&
+    (hasPermission(claims, ADMIN_PORTAL_PERMISSION) || hasAnyRole(claims, ADMIN_ROLES));
   // Admin wins when a user holds both: the admin shell is a superset of what
   // the doctor shell shows, and bouncing such a user to /doctor would hide
-  // surfaces they are entitled to.
+  // surfaces they are entitled to. The same precedence keeps SUPER_ADMIN —
+  // whose blanket grant includes every portal permission — pinned to the
+  // admin shell rather than leaking into the doctor or patient views.
   const hasDoctorSession =
-    hasValidSession && !hasAdminSession && hasAnyRole(claims, DOCTOR_ROLES);
+    hasValidSession &&
+    !hasAdminSession &&
+    (hasPermission(claims, DOCTOR_PORTAL_PERMISSION) || hasAnyRole(claims, DOCTOR_ROLES));
   const hasPharmacistSession =
     hasValidSession && !hasAdminSession && hasAnyRole(claims, PHARMACIST_ROLES);
-  const hasPatientSession = hasValidSession && hasAnyRole(claims, PATIENT_ROLES);
+  const hasPatientSession =
+    hasValidSession &&
+    !hasAdminSession &&
+    (hasPermission(claims, PATIENT_PORTAL_PERMISSION) || hasAnyRole(claims, PATIENT_ROLES));
   const pathname = request.nextUrl.pathname;
 
   function redirectToHome(): NextResponse {

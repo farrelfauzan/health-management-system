@@ -42,3 +42,12 @@ export function hasAnyRole(claims: AccessTokenClaims | null, roles: string[]): b
 
   return roles.some((role) => claimedRoles.has(role));
 }
+
+/**
+ * Whether the claim set carries a given permission key (IMP-3). Like every
+ * read of these claims, this is a navigation input only — the backend
+ * PermissionsGuard re-resolves permissions from the database on each request.
+ */
+export function hasPermission(claims: AccessTokenClaims | null, permissionKey: string): boolean {
+  return claims?.permissions?.includes(permissionKey) ?? false;
+}
