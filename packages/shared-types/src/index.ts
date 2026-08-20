@@ -73,6 +73,8 @@ export * from '#document-management/types';
 export * from '#customer-service/schemas';
 export * from '#customer-service/contracts';
 export * from '#customer-service/types';
+export * from '#feature-entitlement/types';
+export * from '#feature-entitlement/catalog';
 export * from '#audit/schemas';
 export * from '#audit/contracts';
 export * from '#audit/types';

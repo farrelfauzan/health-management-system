@@ -57,6 +57,7 @@ export const ModelName = {
   MfaCredential: 'MfaCredential',
   MfaRecoveryCode: 'MfaRecoveryCode',
   MrnCounter: 'MrnCounter',
+  FeatureEntitlement: 'FeatureEntitlement',
   PatientProfile: 'PatientProfile',
   PrivacyNoticeVersion: 'PrivacyNoticeVersion',
   PatientPrivacyNoticeRecord: 'PatientPrivacyNoticeRecord',
@@ -205,6 +206,20 @@ export const MrnCounterScalarFieldEnum = {
 } as const
 
 export type MrnCounterScalarFieldEnum = (typeof MrnCounterScalarFieldEnum)[keyof typeof MrnCounterScalarFieldEnum]
+
+
+export const FeatureEntitlementScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  featureKey: 'featureKey',
+  isEnabled: 'isEnabled',
+  notes: 'notes',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FeatureEntitlementScalarFieldEnum = (typeof FeatureEntitlementScalarFieldEnum)[keyof typeof FeatureEntitlementScalarFieldEnum]
 
 
 export const PatientProfileScalarFieldEnum = {

@@ -191,7 +191,15 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- every patient the clinic holds. It exists only in the ANY form because
     -- there is no owned slice of it worth handing out — a patient's own access
     -- history is a separate product decision, not a narrowing of this grant.
-    ('audit.read:any', 'AuditLog', 'read', 'ANY', 'Query the patient-data access history')
+    ('audit.read:any', 'AuditLog', 'read', 'ANY', 'Query the patient-data access history'),
+    -- IMP-6. Which optional features this client bought. The read grant is
+    -- separate from the manage grant because the two answer to different
+    -- people: support staff need to see why a screen is missing, and only the
+    -- account that owns the contract may switch one back on. Neither is
+    -- granted to ADMIN below — entitlements are the vendor's lever, not the
+    -- clinic's, and SUPER_ADMIN picks both up from the catalog-wide union.
+    ('feature.read:any', 'FeatureEntitlement', 'read', 'ANY', 'Read the per-client feature entitlement list'),
+    ('feature.manage:any', 'FeatureEntitlement', 'manage', 'ANY', 'Switch an optional feature on or off for this client')
 )
 INSERT INTO "permissions" (
   "id",
@@ -713,6 +721,47 @@ SET
 INSERT INTO "mrn_counters" ("facility_id", "next_value", "updated_at")
 VALUES ('00000000-0000-0000-0000-000000000000'::uuid, 1, NOW())
 ON CONFLICT ("facility_id") DO NOTHING;
+
+-- IMP-6. One entitlement row per FEATURE_CATALOG key, defaulting to enabled so
+-- an existing deployment behaves exactly as it did before this table existed.
+--
+-- `DO NOTHING`, emphatically not `DO UPDATE`: `is_enabled` is the one column in
+-- this file a customer owns. A clinic that switched BPJS off would find it back
+-- on after the next deploy if the seed asserted the default, which is the whole
+-- failure mode entitlements exist to prevent. What the seed does own is the key
+-- *set* — a new catalog key appears here on the next run, and a key with no row
+-- reads as enabled until it does, so a release that adds one is not an outage
+-- of a feature the clinic is paying for.
+--
+-- Keys are duplicated from `FEATURE_CATALOG` in @hms/shared-types because SQL
+-- cannot import TypeScript; `feature-catalog.spec.ts` fails the build if the
+-- two lists ever disagree.
+INSERT INTO "feature_entitlements" (
+  "id",
+  "feature_key",
+  "is_enabled",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('feature_entitlement:' || feature_key)::uuid,
+  feature_key,
+  TRUE,
+  NOW(),
+  NOW()
+FROM (
+  VALUES
+    ('ai-chatbot'),
+    ('room-management'),
+    ('pharmacy'),
+    ('billing'),
+    ('bpjs-pcare'),
+    ('bpjs-antrean'),
+    ('satusehat'),
+    ('document-management'),
+    ('cs-channels')
+) AS seed_feature_entitlements(feature_key)
+ON CONFLICT ("feature_key") DO NOTHING;
 
 UPDATE "mrn_counters"
 SET

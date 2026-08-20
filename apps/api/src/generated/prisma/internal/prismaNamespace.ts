@@ -390,6 +390,7 @@ export const ModelName = {
   MfaCredential: 'MfaCredential',
   MfaRecoveryCode: 'MfaRecoveryCode',
   MrnCounter: 'MrnCounter',
+  FeatureEntitlement: 'FeatureEntitlement',
   PatientProfile: 'PatientProfile',
   PrivacyNoticeVersion: 'PrivacyNoticeVersion',
   PatientPrivacyNoticeRecord: 'PatientPrivacyNoticeRecord',
@@ -461,7 +462,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "channelOtpChallenge"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "channelOtpChallenge"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -906,6 +907,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.MrnCounterCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.MrnCounterCountAggregateOutputType> | number
+        }
+      }
+    }
+    FeatureEntitlement: {
+      payload: Prisma.$FeatureEntitlementPayload<ExtArgs>
+      fields: Prisma.FeatureEntitlementFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeatureEntitlementFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeatureEntitlementFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload>
+        }
+        findFirst: {
+          args: Prisma.FeatureEntitlementFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeatureEntitlementFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload>
+        }
+        findMany: {
+          args: Prisma.FeatureEntitlementFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload>[]
+        }
+        create: {
+          args: Prisma.FeatureEntitlementCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload>
+        }
+        createMany: {
+          args: Prisma.FeatureEntitlementCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeatureEntitlementCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload>[]
+        }
+        delete: {
+          args: Prisma.FeatureEntitlementDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload>
+        }
+        update: {
+          args: Prisma.FeatureEntitlementUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeatureEntitlementDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeatureEntitlementUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeatureEntitlementUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeatureEntitlementUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureEntitlementPayload>
+        }
+        aggregate: {
+          args: Prisma.FeatureEntitlementAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeatureEntitlement>
+        }
+        groupBy: {
+          args: Prisma.FeatureEntitlementGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeatureEntitlementGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeatureEntitlementCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeatureEntitlementCountAggregateOutputType> | number
         }
       }
     }
@@ -5168,6 +5243,20 @@ export const MrnCounterScalarFieldEnum = {
 export type MrnCounterScalarFieldEnum = (typeof MrnCounterScalarFieldEnum)[keyof typeof MrnCounterScalarFieldEnum]
 
 
+export const FeatureEntitlementScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  featureKey: 'featureKey',
+  isEnabled: 'isEnabled',
+  notes: 'notes',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FeatureEntitlementScalarFieldEnum = (typeof FeatureEntitlementScalarFieldEnum)[keyof typeof FeatureEntitlementScalarFieldEnum]
+
+
 export const PatientProfileScalarFieldEnum = {
   id: 'id',
   mrn: 'mrn',
@@ -7108,6 +7197,7 @@ export type GlobalOmitConfig = {
   mfaCredential?: Prisma.MfaCredentialOmit
   mfaRecoveryCode?: Prisma.MfaRecoveryCodeOmit
   mrnCounter?: Prisma.MrnCounterOmit
+  featureEntitlement?: Prisma.FeatureEntitlementOmit
   patientProfile?: Prisma.PatientProfileOmit
   privacyNoticeVersion?: Prisma.PrivacyNoticeVersionOmit
   patientPrivacyNoticeRecord?: Prisma.PatientPrivacyNoticeRecordOmit
