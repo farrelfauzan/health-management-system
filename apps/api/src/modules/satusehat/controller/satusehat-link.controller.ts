@@ -9,6 +9,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
@@ -16,6 +17,7 @@ import { SATUSEHAT_EXAMPLES } from '../../../common/openapi/satusehat-examples';
 import { SatusehatLinkService } from '../service/satusehat-link.service';
 
 @ApiTags('SATUSEHAT')
+@RequireFeature('satusehat')
 @Controller({
   version: '1',
   path: 'satusehat',

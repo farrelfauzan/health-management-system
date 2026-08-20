@@ -21,6 +21,7 @@ import {
 } from '@hms/shared-types';
 
 import { PublicRoute } from '../../../common/authorization/public-route.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { AuditAction } from '../../../generated/prisma/client';
 import { AntreanCancelDto } from '../dto/antrean-cancel.dto';
 import { AntreanInboundTokenDto } from '../dto/antrean-inbound-token.dto';
@@ -81,6 +82,7 @@ const OK_MESSAGE = 'Ok';
  * the facility's disk.
  */
 @ApiExcludeController()
+@RequireFeature('bpjs-antrean')
 @Controller({ version: '1', path: 'bpjs/antrean/ws' })
 @UseFilters(BpjsAntreanWsExceptionFilter)
 @UseInterceptors(BpjsAntreanInboundCaptureInterceptor)

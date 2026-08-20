@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ChatMessageRecord, ChatSessionRecord, checkMedicationStockToolArgsSchema } from '@hms/shared-types';
 
 import { AuditService } from '../../common/audit/audit.service';
+import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
 import { CurrentUser } from '../../common/auth/current-user.type';
 import { TogetherEmbeddingService } from '../../common/embedding/together-embedding.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
@@ -247,6 +248,10 @@ describe('external AI processor egress contract (SJ-17)', () => {
         { generateTitle: generateTitleMock } as unknown as ChatSessionTitleService,
         { record: jest.fn() } as unknown as AuditService,
         new ConfigService({ AI_CHAT_ENABLED: 'true' }),
+        {
+          isEnabled: jest.fn().mockResolvedValue(true),
+          invalidate: jest.fn(),
+        } as unknown as FeatureAvailabilityCacheService,
       );
     }
 

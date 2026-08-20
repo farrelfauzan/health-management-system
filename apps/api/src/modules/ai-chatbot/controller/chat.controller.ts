@@ -18,6 +18,8 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuditAction } from '../../../generated/prisma/client';
 import { Audited } from '../../../common/audit/audited.decorator';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { FeatureIndependent } from '../../../common/authorization/feature-independent.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { AI_CHAT_EXAMPLES } from '../../../common/openapi/ai-chat-examples';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { CreateChatSessionDto } from '../dto/create-chat-session.dto';
@@ -35,6 +37,7 @@ import { AiChatbotExceptionFilter } from './ai-chatbot-exception.filter';
  */
 @ApiTags('AI Chatbot')
 @UseFilters(AiChatbotExceptionFilter)
+@RequireFeature('ai-chatbot')
 @Controller({
   version: '1',
   path: 'chat',
@@ -43,6 +46,11 @@ export class ChatController {
   constructor(private readonly chatbotService: AiChatbotService) {}
 
   @Get('availability')
+  // The one chat route that survives the feature being switched off (IMP-8):
+  // a client that got FEATURE_DISABLED here could not tell "this clinic did
+  // not buy chat" from "the availability call failed", and would have to
+  // discover the state from a failed send instead.
+  @FeatureIndependent()
   @Auth([{ action: 'create', subject: 'ChatSession' }])
   @ApiEndpoint({
     summary: 'Check whether chat can answer right now',

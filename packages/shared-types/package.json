@@ -66,6 +66,8 @@
     "#customer-service/contracts": "./src/customer-service/contracts.ts",
     "#customer-service/types": "./src/customer-service/types.ts",
     "#feature-entitlement/catalog": "./src/feature-entitlement/catalog.ts",
+    "#feature-entitlement/schemas": "./src/feature-entitlement/schemas.ts",
+    "#feature-entitlement/contracts": "./src/feature-entitlement/contracts.ts",
     "#feature-entitlement/types": "./src/feature-entitlement/types.ts",
     "#audit/schemas": "./src/audit/schemas.ts",
     "#audit/contracts": "./src/audit/contracts.ts",

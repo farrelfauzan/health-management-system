@@ -15,6 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { CUSTOMER_SERVICE_ADMIN_EXAMPLES } from '../../../common/openapi/customer-service-admin-examples';
 import { BlockConversationDto } from '../dto/block-conversation.dto';
@@ -41,6 +42,7 @@ import { CsAdminService } from '../service/cs-admin.service';
  * second.
  */
 @ApiTags('Customer Service')
+@RequireFeature('cs-channels')
 @Controller({
   version: '1',
   path: 'admin/conversations',
