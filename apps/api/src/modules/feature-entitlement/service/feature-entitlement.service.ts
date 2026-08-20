@@ -14,6 +14,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuditAction } from '../../../generated/prisma/client';
 import { FeatureEntitlementRepository } from '../repository/feature-entitlement.repository';
+import { FeatureAvailabilityCacheService } from './feature-availability-cache.service';
 
 /**
  * The per-client feature switches (IMP-7).
@@ -29,6 +30,7 @@ export class FeatureEntitlementService {
   constructor(
     private readonly featureEntitlementRepository: FeatureEntitlementRepository,
     private readonly auditService: AuditService,
+    private readonly featureAvailabilityCache: FeatureAvailabilityCacheService,
   ) {}
 
   /** The full admin list: every catalog entry with its switch state. */
@@ -66,6 +68,9 @@ export class FeatureEntitlementService {
       notes: input.notes,
       updatedById: actorUserId,
     });
+    // Directly, not on the TTL: the operator who just threw the switch is the
+    // one most likely to check that it took (IMP-8).
+    this.featureAvailabilityCache.invalidate();
     await this.auditService.record({
       action: AuditAction.FEATURE_TOGGLED,
       resource: 'feature-entitlement',

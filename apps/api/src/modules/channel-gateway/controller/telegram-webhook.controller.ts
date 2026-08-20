@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 
 import { PublicRoute } from '../../../common/authorization/public-route.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { TelegramWebhookUpdateDto } from '../dto/telegram-webhook-update.dto';
 import { TelegramWebhookAuthGuard } from '../guard/telegram-webhook-auth.guard';
 import { TELEGRAM_WEBHOOK_ROUTE } from '../infrastructure/telegram-webhook-route';
@@ -31,6 +32,14 @@ import { InboundMessageNormalizerService } from '../service/inbound-message-norm
  * browsers.
  */
 @ApiExcludeController()
+/**
+ * IMP-8: a clinic that did not buy the channels must not have its inbound
+ * webhook answering. The 403 does mean the provider will retry with backoff
+ * and eventually drop the webhook registration — which is the right end state
+ * for a channel this deployment does not run, and the reason the switch
+ * belongs here rather than deeper in the normalizer.
+ */
+@RequireFeature('cs-channels')
 @Controller({
   version: TELEGRAM_WEBHOOK_ROUTE.version,
   path: TELEGRAM_WEBHOOK_ROUTE.controllerPath,

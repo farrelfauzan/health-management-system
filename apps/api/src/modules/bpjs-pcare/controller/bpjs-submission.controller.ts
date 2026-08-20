@@ -13,12 +13,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { BPJS_PCARE_EXAMPLES } from '../../../common/openapi/bpjs-pcare-examples';
 import { ListBpjsSubmissionsQueryDto } from '../dto/list-bpjs-submissions-query.dto';
 import { BpjsSubmissionOpsService } from '../service/bpjs-submission-ops.service';
 
 @ApiTags('BPJS PCare')
+@RequireFeature('bpjs-pcare')
 @Controller({
   version: '1',
   path: 'bpjs',

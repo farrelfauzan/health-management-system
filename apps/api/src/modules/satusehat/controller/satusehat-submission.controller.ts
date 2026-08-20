@@ -13,12 +13,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { SATUSEHAT_EXAMPLES } from '../../../common/openapi/satusehat-examples';
 import { ListSatusehatSubmissionsQueryDto } from '../dto/list-satusehat-submissions-query.dto';
 import { SatusehatSubmissionOpsService } from '../service/satusehat-submission-ops.service';
 
 @ApiTags('SATUSEHAT')
+@RequireFeature('satusehat')
 @Controller({
   version: '1',
   path: 'satusehat',

@@ -14,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { CUSTOMER_SERVICE_ADMIN_EXAMPLES } from '../../../common/openapi/customer-service-admin-examples';
 import { ListChannelArrivalsQueryDto } from '../dto/list-channel-arrivals-query.dto';
@@ -35,6 +36,7 @@ import { ChannelArrivalService } from '../service/channel-arrival.service';
  * two grants should not receive the other half.
  */
 @ApiTags('Customer Service')
+@RequireFeature('cs-channels')
 @Controller({
   version: '1',
   path: 'admin/channel-arrivals',

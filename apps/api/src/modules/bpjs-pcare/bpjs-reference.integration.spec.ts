@@ -180,6 +180,13 @@ describe('BPJS PCare reference sync integration', () => {
   };
 
   const prismaServiceMock = {
+    // IMP-8: `FeatureGuard` resolves this controller's entitlement through
+    // Prisma on every request, and this stub replaces Prisma wholesale — so
+    // the delegate has to exist here or every route in the suite answers 500.
+    // No rows means no key is disabled, which is the fail-open default.
+    featureEntitlement: {
+      findMany: jest.fn(() => Promise.resolve([])),
+    },
     $connect: jest.fn(),
     $disconnect: jest.fn(),
     $transaction: jest.fn((operations: Array<Promise<unknown>>) => Promise.all(operations)),

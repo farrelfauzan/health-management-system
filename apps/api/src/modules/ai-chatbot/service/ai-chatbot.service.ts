@@ -29,6 +29,7 @@ import {
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { FeatureAvailabilityCacheService } from '../../feature-entitlement/service/feature-availability-cache.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuthRepository } from '../../auth/repository/auth.repository';
@@ -133,6 +134,7 @@ export class AiChatbotService {
     private readonly chatSessionTitleService: ChatSessionTitleService,
     private readonly auditService: AuditService,
     private readonly configService: ConfigService,
+    private readonly featureAvailabilityCache: FeatureAvailabilityCacheService,
   ) {}
 
   /**
@@ -144,7 +146,7 @@ export class AiChatbotService {
    * the same claim as a disabled feature.
    */
   async getAvailability(): Promise<ChatAvailabilityView> {
-    const isEnabled = this.isChatEnabled();
+    const isEnabled = await this.isChatEnabled();
     if (!isEnabled) {
       return { isAvailable: false, isEnabled: false, hasActiveProvider: false };
     }
@@ -163,7 +165,7 @@ export class AiChatbotService {
     input: CreateChatSessionInput,
     actor: CurrentUser,
   ): Promise<ChatSessionView> {
-    this.assertChatEnabled();
+    await this.assertChatEnabled();
     await this.assertChannelAllowed(input.channel, actor);
     // Resolving at creation is what stamps the audit columns: the session
     // records which credential set answered it, and P13-T01 made those plain
@@ -270,7 +272,7 @@ export class AiChatbotService {
     input: SendChatMessageInput,
     actor: CurrentUser,
   ): Promise<{ data: ChatExchangeView; meta: ChatExchangeMeta }> {
-    this.assertChatEnabled();
+    await this.assertChatEnabled();
     const session = await this.requireOwnSession(id, actor);
     // Guards run before the provider is resolved: a blocked prompt must cost
     // neither an upstream call nor the clinic's tokens.
@@ -788,14 +790,30 @@ export class AiChatbotService {
    * so an existing transcript stays available after a clinic pauses AI —
    * only starting a session and spending tokens are gated.
    */
-  private assertChatEnabled(): void {
-    if (!this.isChatEnabled()) {
+  private async assertChatEnabled(): Promise<void> {
+    if (!(await this.isChatEnabled())) {
       throw new AiChatbotError('AI_NOT_CONFIGURED', 'AI chat is not enabled on this deployment');
     }
   }
 
-  private isChatEnabled(): boolean {
-    return this.configService.get<string>('AI_CHAT_ENABLED')?.trim().toLowerCase() === 'true';
+  /**
+   * Chat is on when **both** switches say so (IMP-8): the client is entitled
+   * to the `ai-chatbot` feature, and the deployment's `AI_CHAT_ENABLED` env
+   * flag is set. The provider's own `isEnabled` is the third and is applied
+   * where it belongs, in `resolveActiveProvider`, which answers
+   * `AI_NOT_CONFIGURED` for a disabled configuration.
+   *
+   * The env flag survives the entitlement rather than being replaced by it:
+   * it is the emergency off switch an operator can throw without a database,
+   * and keeping it means an existing deployment sees no change in behaviour.
+   */
+  private async isChatEnabled(): Promise<boolean> {
+    const isEnabledByEnv =
+      this.configService.get<string>('AI_CHAT_ENABLED')?.trim().toLowerCase() === 'true';
+    if (!isEnabledByEnv) {
+      return false;
+    }
+    return this.featureAvailabilityCache.isEnabled('ai-chatbot');
   }
 
   private toSessionView(session: ChatSessionRecord): ChatSessionView {

@@ -8,6 +8,7 @@ import {
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { FeatureAvailabilityCacheService } from '../../feature-entitlement/service/feature-availability-cache.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AiChatbotError } from '../ai-chatbot.error';
 import { ChatCompletionMessage } from '../infrastructure/ai-provider.types';
@@ -53,6 +54,7 @@ describe('AiChatbotService', () => {
   function buildService(
     env: Record<string, string> = { AI_CHAT_ENABLED: 'true' },
     toolRegistry: ChatToolRegistry = new ChatToolRegistry(),
+    isFeatureEnabled = true,
   ): AiChatbotService {
     return new AiChatbotService(
       chatRepositoryMock as unknown as ChatRepository,
@@ -74,6 +76,10 @@ describe('AiChatbotService', () => {
       { generateTitle: generateTitleMock } as unknown as ChatSessionTitleService,
       { record: auditRecordMock } as unknown as AuditService,
       new ConfigService(env),
+      {
+        isEnabled: jest.fn().mockResolvedValue(isFeatureEnabled),
+        invalidate: jest.fn(),
+      } as unknown as FeatureAvailabilityCacheService,
     );
   }
 

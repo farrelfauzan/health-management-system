@@ -23,11 +23,20 @@ const ERROR_CODE_BY_STATUS: Readonly<Record<number, string>> = {
 type HttpExceptionBody = {
   readonly message?: string | readonly string[];
   readonly errors?: unknown;
+  readonly code?: string;
 };
 
 type ResolvedErrorContent = {
   readonly message: string;
   readonly details?: unknown;
+  /**
+   * Set when the thrower named a code. The status-derived label is the right
+   * default for the hundreds of ordinary 400s and 404s, but it cannot express
+   * a reason the client has to branch on — `FEATURE_DISABLED` (IMP-8) is a 403
+   * that means "not in your plan", and rendering it as a plain FORBIDDEN would
+   * tell the user they lack a permission they in fact hold.
+   */
+  readonly code?: string;
 };
 
 /**
@@ -47,7 +56,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    const { message, details } = resolveErrorContent(exception);
+    const { message, details, code } = resolveErrorContent(exception);
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
         buildSafeErrorLog('unhandled_http_exception', {
@@ -60,7 +69,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
     response.status(status).json({
       error: {
-        code: ERROR_CODE_BY_STATUS[status] ?? 'INTERNAL_SERVER_ERROR',
+        code: code ?? ERROR_CODE_BY_STATUS[status] ?? 'INTERNAL_SERVER_ERROR',
         message,
         ...(details === undefined ? {} : { details }),
       },
@@ -76,9 +85,9 @@ function resolveErrorContent(exception: unknown): ResolvedErrorContent {
   if (typeof body === 'string') {
     return { message: body };
   }
-  const { message, errors } = body as HttpExceptionBody;
+  const { message, errors, code } = body as HttpExceptionBody;
   const resolvedMessage = Array.isArray(message)
     ? message.join('; ')
     : ((message as string | undefined) ?? exception.message);
-  return { message: resolvedMessage, details: errors };
+  return { message: resolvedMessage, details: errors, ...(code === undefined ? {} : { code }) };
 }
