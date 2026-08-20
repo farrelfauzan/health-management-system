@@ -49,6 +49,11 @@ export type RoleRecord = {
   updatedAt: Date;
 };
 
+/** `RoleRecord` plus the list endpoint's member count. */
+export type RoleListRecord = RoleRecord & {
+  memberCount: number;
+};
+
 /** `RoleRecord` plus what the detail endpoint joins in. */
 export type RoleWithPermissionsRecord = RoleRecord & {
   memberCount: number;

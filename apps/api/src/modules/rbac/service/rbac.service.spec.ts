@@ -62,11 +62,13 @@ describe('RbacService', () => {
     jest.clearAllMocks();
   });
 
-  it('returns active roles as summaries with null descriptions dropped', async () => {
-    (rbacRepositoryMock.findActiveRoles as jest.Mock).mockResolvedValue([roleRecord]);
+  it('returns active roles with member counts and null descriptions dropped', async () => {
+    (rbacRepositoryMock.findActiveRoles as jest.Mock).mockResolvedValue([
+      { ...roleRecord, memberCount: 4 },
+    ]);
     const actualRoles = await service.getRoles();
     expect(actualRoles).toEqual([
-      { id: roleId, code: 'FRONT_DESK_LEAD', name: 'Front Desk Lead', isSystem: false },
+      { id: roleId, code: 'FRONT_DESK_LEAD', name: 'Front Desk Lead', isSystem: false, memberCount: 4 },
     ]);
   });
 
