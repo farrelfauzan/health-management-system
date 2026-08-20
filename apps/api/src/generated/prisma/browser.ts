@@ -113,6 +113,29 @@ export type MfaRecoveryCode = Prisma.MfaRecoveryCodeModel
  */
 export type MrnCounter = Prisma.MrnCounterModel
 /**
+ * Model FeatureEntitlement
+ * Whether one optional product feature is switched on for this deployment
+ * (IMP-6). The row is the seam that keeps a clinic which bought registration
+ * and pharmacy from seeing BPJS, SATUSEHAT, or the chatbot in its portal —
+ * and, once `FeatureGuard` lands (IMP-8), from reaching their endpoints.
+ * 
+ * The keys are code-owned: `FEATURE_CATALOG` in `@hms/shared-types` is the
+ * list, and the seed converges this table onto it. A row here is therefore a
+ * *state* for a known key, never a definition of one — a spelling nobody
+ * implements cannot be typed into existence through the admin API.
+ * 
+ * `facilityId` is nullable for the same reason it is on `MrnCounter`,
+ * `BpjsPcareConfig`, `BpjsAntreanConfig`, and `AiProviderConfig`: the
+ * recorded multi-tenancy decision is one database per tenant
+ * (`docs/post-mvp/multi-tenancy.md`), so a deployment's rows are already
+ * its own and the column is the seam a shared-database tenant would need,
+ * not a discriminator anything filters on today. `featureKey` is unique
+ * outright rather than unique per facility for exactly that reason —
+ * narrowing it later is a migration, and widening a compound key that never
+ * had a second value in it is not.
+ */
+export type FeatureEntitlement = Prisma.FeatureEntitlementModel
+/**
  * Model PatientProfile
  * 
  */

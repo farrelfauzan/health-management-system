@@ -499,6 +499,7 @@ model User {
   ownedDocuments           Document[]                   @relation("DocumentOwner")
   blockedConversations     Conversation[]               @relation("ConversationBlockedBy")
   conversationMessages     ConversationMessage[]        @relation("ConversationMessageAuthor")
+  updatedFeatureEntitlements FeatureEntitlement[]       @relation("FeatureEntitlementUpdatedBy")
 
   @@map("users")
 }
@@ -660,6 +661,44 @@ model MrnCounter {
   updatedAt  DateTime @default(now()) @map("updated_at")
 
   @@map("mrn_counters")
+}
+
+/// Whether one optional product feature is switched on for this deployment
+/// (IMP-6). The row is the seam that keeps a clinic which bought registration
+/// and pharmacy from seeing BPJS, SATUSEHAT, or the chatbot in its portal —
+/// and, once `FeatureGuard` lands (IMP-8), from reaching their endpoints.
+///
+/// The keys are code-owned: `FEATURE_CATALOG` in `@hms/shared-types` is the
+/// list, and the seed converges this table onto it. A row here is therefore a
+/// *state* for a known key, never a definition of one — a spelling nobody
+/// implements cannot be typed into existence through the admin API.
+///
+/// `facilityId` is nullable for the same reason it is on `MrnCounter`,
+/// `BpjsPcareConfig`, `BpjsAntreanConfig`, and `AiProviderConfig`: the
+/// recorded multi-tenancy decision is one database per tenant
+/// (`docs/post-mvp/multi-tenancy.md`), so a deployment's rows are already
+/// its own and the column is the seam a shared-database tenant would need,
+/// not a discriminator anything filters on today. `featureKey` is unique
+/// outright rather than unique per facility for exactly that reason —
+/// narrowing it later is a migration, and widening a compound key that never
+/// had a second value in it is not.
+model FeatureEntitlement {
+  id          String   @id @default(uuid()) @db.Uuid
+  facilityId  String?  @map("facility_id") @db.Uuid
+  /// A `FEATURE_CATALOG` key, e.g. `ai-chatbot`. Kebab-case, code-owned.
+  featureKey  String   @unique @map("feature_key")
+  isEnabled   Boolean  @default(true) @map("is_enabled")
+  /// Free text for whoever toggled it — "not in the Rp X package", "paused
+  /// pending BPJS credentials". Read by humans only.
+  notes       String?
+  updatedById String?  @map("updated_by_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  updatedBy User? @relation("FeatureEntitlementUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([facilityId])
+  @@map("feature_entitlements")
 }
 
 /// How a patient record came into existence, and therefore how much of it can
