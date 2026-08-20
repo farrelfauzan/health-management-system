@@ -330,6 +330,33 @@ export function getSidebarRoutes(ability: AppAbility): AppRoute[] {
 - Invalidate protected queries when role bindings change.
 - Use centralized 403 handler to show permission-aware messages.
 
+### 5.5 Permission Propagation and the Stale-Claim Window (D-022)
+
+Two readers of one permission model, with deliberately different freshness:
+
+| Surface | Reads from | Freshness after a role edit |
+| --- | --- | --- |
+| `PermissionsGuard` (API) | Database, per request | Immediate — next request |
+| CASL ability, `proxy.ts`, session hint (web) | JWT `permissions` claim | Next token refresh — up to `JWT_ACCESS_EXPIRES_IN` |
+
+The claim is advisory by contract, so the web tier's staleness is a cosmetic
+lag, never an authorization gap: revoked users keep menus that 403 on use;
+newly granted users wait one refresh (or re-login) for menus to appear. The
+window is accepted rather than engineered away — see D-022 in
+[decisions.md](decisions.md) for the evaluation of forced refresh.
+
+Rules for code in this window:
+
+- Never make a UI decision irreversible on the claim alone; render optimistic
+  affordances only where the failing API call surfaces cleanly (the standing
+  `notifyApiError` path).
+- `ADMIN_PORTAL_ADMIN_RULES` is a legacy fallback, not a merge: it applies
+  only when **no** claim maps to a rule and the token carries a seeded admin
+  role code. Real claims always win — a custom role's ability comes from its
+  claims exclusively (`app-ability.server.spec.ts`).
+- `proxy.ts` shares the same bound: shell access follows the `portal.*`
+  claims and converges at the same refresh.
+
 ## 6. API and Data Requirements for RBAC
 
 Backend should expose enough data for FE ability construction:

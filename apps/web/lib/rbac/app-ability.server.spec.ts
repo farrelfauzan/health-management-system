@@ -120,6 +120,66 @@ describe('resolveAppAbilityRules integration permissions', () => {
   });
 });
 
+/**
+ * IMP-5 / D-022: the ADMIN_PORTAL_ADMIN_RULES preset exists for tokens minted
+ * before the permissions claim; it must never shadow a token that carries
+ * real claims. These specs pin down exactly when the fallback can fire —
+ * and that all of this is visibility-only, because PermissionsGuard re-reads
+ * the database on every API request regardless of what the claim says.
+ */
+describe('resolveAppAbilityRules legacy admin fallback (D-022)', () => {
+  it('lets real claims win over the admin preset even when an admin role code is present', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        roles: ['ADMIN', 'FRONT_DESK_LEAD'],
+        permissions: ['patient.read:any'],
+      }),
+    );
+
+    expect(ability.can('read', 'Patient')).toBe(true);
+    // The preset would grant these; the mapped claim set must not.
+    expect(ability.can('create', 'User')).toBe(false);
+    expect(ability.can('create', 'Patient')).toBe(false);
+  });
+
+  it('applies the admin preset for a legacy token with no permissions claim', () => {
+    const ability = buildAppAbility(resolveAppAbilityRules({ roles: ['SUPER_ADMIN'] }));
+
+    expect(ability.can('create', 'User')).toBe(true);
+    expect(ability.can('read', 'Role')).toBe(true);
+  });
+
+  it('grants a custom role nothing when its only claims do not map to UI rules', () => {
+    // portal.* keys gate shells in proxy.ts but name no UI capability; a
+    // custom role holding only those must not inherit the admin preset.
+    const actualRules = resolveAppAbilityRules({
+      roles: ['FRONT_DESK_LEAD'],
+      permissions: ['portal.admin-access:any'],
+    });
+
+    expect(actualRules).toEqual([]);
+  });
+
+  it('still falls back for a seeded admin whose claims are all unmappable', () => {
+    // A seeded ADMIN genuinely holds the preset capabilities server-side, so
+    // showing them is honest; a custom role can never reach this branch
+    // because role codes are unique and ADMIN/SUPER_ADMIN are seed-owned.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        roles: ['ADMIN'],
+        permissions: ['portal.admin-access:any'],
+      }),
+    );
+
+    expect(ability.can('read', 'User')).toBe(true);
+  });
+
+  it('returns no rules for a custom role with neither claims nor a seeded admin code', () => {
+    expect(resolveAppAbilityRules({ roles: ['FRONT_DESK_LEAD'] })).toEqual([]);
+    expect(resolveAppAbilityRules(null)).toEqual([]);
+  });
+});
+
 describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
   // The exact claim the API now issues for dokter@salingjaga.com.
   const DOCTOR_PERMISSIONS = [
