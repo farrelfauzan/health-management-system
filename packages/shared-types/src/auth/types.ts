@@ -10,6 +10,9 @@ export type JwtPayload = {
    * model the backend enforces, instead of inferring capability from role
    * names. **Advisory only**: the API resolves permissions from the database
    * on every request, so a token claim can never grant access on its own.
+   * After a role edit this claim stays stale until the next token refresh —
+   * an accepted, visibility-only window bounded by JWT_ACCESS_EXPIRES_IN
+   * (D-022 in docs/MVP/decisions.md).
    */
   permissions: string[];
 };
