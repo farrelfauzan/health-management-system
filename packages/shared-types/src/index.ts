@@ -75,6 +75,8 @@ export * from '#customer-service/contracts';
 export * from '#customer-service/types';
 export * from '#feature-entitlement/types';
 export * from '#feature-entitlement/catalog';
+export * from '#feature-entitlement/schemas';
+export * from '#feature-entitlement/contracts';
 export * from '#audit/schemas';
 export * from '#audit/contracts';
 export * from '#audit/types';

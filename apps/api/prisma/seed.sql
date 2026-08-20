@@ -199,7 +199,14 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- granted to ADMIN below — entitlements are the vendor's lever, not the
     -- clinic's, and SUPER_ADMIN picks both up from the catalog-wide union.
     ('feature.read:any', 'FeatureEntitlement', 'read', 'ANY', 'Read the per-client feature entitlement list'),
-    ('feature.manage:any', 'FeatureEntitlement', 'manage', 'ANY', 'Switch an optional feature on or off for this client')
+    ('feature.manage:any', 'FeatureEntitlement', 'manage', 'ANY', 'Switch an optional feature on or off for this client'),
+    -- IMP-7. The shell needs the enabled key set to know which nav entries to
+    -- draw, so every signed-in role holds this one. It is a separate *action*
+    -- rather than a narrower scope of `feature.read` because `PermissionsGuard`
+    -- matches on action and subject and never on scope — `feature.read:own`
+    -- would have opened the admin list, notes and all, to every patient.
+    -- `patient.read-identifier` splits an action the same way.
+    ('feature.read-availability:own', 'FeatureEntitlement', 'read-availability', 'OWN', 'Read which features this client may use')
 )
 INSERT INTO "permissions" (
   "id",
@@ -486,7 +493,15 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- The same mitigation as `patient.read:any` applies: the tool catalogue is
     -- an allowlist of three, none of them assigns anything, so this is spendable
     -- only on the doctor a customer just booked.
-    ('CUSTOMER_SERVICE_CHANNEL', 'doctor-patient.assign:any')
+    ('CUSTOMER_SERVICE_CHANNEL', 'doctor-patient.assign:any'),
+    -- IMP-7. Every role a human signs in as; the shell cannot draw its
+    -- navigation without knowing which features exist here. Service accounts
+    -- render no shell and are left out. A custom role picks this up the same
+    -- way it picks up any other grant — from the permission matrix.
+    ('ADMIN', 'feature.read-availability:own'),
+    ('DOCTOR', 'feature.read-availability:own'),
+    ('PHARMACIST', 'feature.read-availability:own'),
+    ('PATIENT', 'feature.read-availability:own')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"
