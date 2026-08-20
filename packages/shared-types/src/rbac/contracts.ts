@@ -27,6 +27,11 @@ export type RoleSummary = {
   isSystem: boolean;
 };
 
+/** A `GET /rbac/roles` row: the summary plus how many active users hold it. */
+export type RoleListItem = RoleSummary & {
+  memberCount: number;
+};
+
 /** A role with its attached permissions and active member count (`GET /rbac/roles/:id`). */
 export type RoleDetail = RoleSummary & {
   memberCount: number;

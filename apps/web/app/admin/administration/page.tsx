@@ -1,4 +1,4 @@
-import { AdminUsersPanel } from '#components/client/administration/admin-users-panel';
+import { AdministrationTabs } from '#components/client/administration/administration-tabs';
 import { parseAdminUsersSearchParams } from '#lib/admin-users/search-params';
 
 type AdminAdministrationPageProps = {
@@ -8,7 +8,9 @@ type AdminAdministrationPageProps = {
 export default async function AdminAdministrationPage({
   searchParams,
 }: AdminAdministrationPageProps) {
-  const query = parseAdminUsersSearchParams(await searchParams);
+  const params = await searchParams;
+  const query = parseAdminUsersSearchParams(params);
+  const defaultTab = params.tab === 'roles' ? ('roles' as const) : ('users' as const);
 
-  return <AdminUsersPanel initialQuery={query} />;
+  return <AdministrationTabs initialQuery={query} defaultTab={defaultTab} />;
 }

@@ -12,4 +12,5 @@ export type RbacControllerGetRolesV1200DataItem = {
   name: string;
   description?: string;
   isSystem: boolean;
+  memberCount: number;
 };

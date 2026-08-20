@@ -19199,11 +19199,14 @@ paths:
                           type: string
                         isSystem:
                           type: boolean
+                        memberCount:
+                          type: integer
                       required:
                         - id
                         - code
                         - name
                         - isSystem
+                        - memberCount
                 required:
                   - data
                 example:
@@ -19213,6 +19216,7 @@ paths:
                       name: Administrator
                       description: Clinic administrator
                       isSystem: true
+                      memberCount: 3
         "401":
           description: Authentication is required.
           content:

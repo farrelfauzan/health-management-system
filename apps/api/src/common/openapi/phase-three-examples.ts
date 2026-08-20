@@ -385,6 +385,7 @@ export const PHASE_THREE_EXAMPLES = {
       name: 'Administrator',
       description: optionalExample('Clinic administrator'),
       isSystem: true,
+      memberCount: 3,
     },
     customRoleItem: {
       id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',

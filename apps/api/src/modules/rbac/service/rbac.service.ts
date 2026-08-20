@@ -5,6 +5,7 @@ import {
   PermissionRecord,
   RoleDeletion,
   RoleDetail,
+  RoleListItem,
   RoleRecord,
   RoleSummary,
   RoleWithPermissionsRecord,
@@ -30,9 +31,9 @@ export class RbacService {
     private readonly auditService: AuditService,
   ) {}
 
-  async getRoles(): Promise<RoleSummary[]> {
+  async getRoles(): Promise<RoleListItem[]> {
     const roles = await this.rbacRepository.findActiveRoles();
-    return roles.map((role) => this.toRoleSummary(role));
+    return roles.map((role) => ({ ...this.toRoleSummary(role), memberCount: role.memberCount }));
   }
 
   /**

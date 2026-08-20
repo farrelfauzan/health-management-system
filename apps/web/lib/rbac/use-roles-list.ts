@@ -1,4 +1,4 @@
-import type { AdminRoleOption } from '@hms/shared-types';
+import type { RoleListItem } from '@hms/shared-types';
 
 import {
   getRbacControllerGetRolesV1QueryKey,
@@ -7,7 +7,7 @@ import {
 import { useApiQuery } from '#lib/api/use-api-query';
 
 export function useRolesList() {
-  const query = useApiQuery<AdminRoleOption[]>({
+  const query = useApiQuery<RoleListItem[]>({
     queryKey: getRbacControllerGetRolesV1QueryKey(),
     queryFn: (signal) => rbacControllerGetRolesV1(signal),
     errorMessage: 'Failed to load roles',

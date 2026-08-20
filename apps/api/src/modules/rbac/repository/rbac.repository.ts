@@ -2,6 +2,7 @@ import {
   CreateRolePayload,
   PermissionRecord,
   ReplaceRolePermissionsPayload,
+  RoleListRecord,
   RoleRecord,
   RoleWithPermissionsRecord,
   SoftDeleteRoleResult,
@@ -34,13 +35,19 @@ const PERMISSION_SELECT = {
 export class RbacRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findActiveRoles(): Promise<RoleRecord[]> {
-    return this.prisma.findManyActive(this.prisma.role, {
+  async findActiveRoles(): Promise<RoleListRecord[]> {
+    const roles = await this.prisma.findManyActive(this.prisma.role, {
       orderBy: {
         name: 'asc',
       },
-      select: ROLE_SELECT,
+      select: {
+        ...ROLE_SELECT,
+        _count: {
+          select: { users: { where: { deletedAt: null } } },
+        },
+      },
     });
+    return roles.map(({ _count, ...role }) => ({ ...role, memberCount: _count.users }));
   }
 
   /** The whole catalog, ordered so grouping by resource is a single pass. */
