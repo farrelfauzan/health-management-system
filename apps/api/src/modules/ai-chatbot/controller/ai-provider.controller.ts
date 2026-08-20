@@ -15,6 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { AI_CHATBOT_EXAMPLES } from '../../../common/openapi/ai-chatbot-examples';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { CreateAiProviderConfigDto } from '../dto/create-ai-provider-config.dto';
@@ -22,6 +23,7 @@ import { UpdateAiProviderConfigDto } from '../dto/update-ai-provider-config.dto'
 import { AiProviderConfigService } from '../service/ai-provider-config.service';
 
 @ApiTags('AI Chatbot')
+@RequireFeature('ai-chatbot')
 @Controller({
   version: '1',
   path: 'admin/ai-providers',

@@ -4,6 +4,7 @@ import { NotFoundException } from '@nestjs/common';
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuditAction } from '../../../generated/prisma/client';
 import { FeatureEntitlementRepository } from '../repository/feature-entitlement.repository';
+import { FeatureAvailabilityCacheService } from './feature-availability-cache.service';
 import { FeatureEntitlementService } from './feature-entitlement.service';
 
 describe('FeatureEntitlementService', () => {
@@ -28,8 +29,11 @@ describe('FeatureEntitlementService', () => {
     } as unknown as jest.Mocked<FeatureEntitlementRepository>;
     const mockAuditService = { record: jest.fn().mockResolvedValue(undefined) } as unknown as
       jest.Mocked<AuditService>;
-    const service = new FeatureEntitlementService(mockRepository, mockAuditService);
-    return { service, mockRepository, mockAuditService };
+    const mockCache = { isEnabled: jest.fn(), invalidate: jest.fn() } as unknown as jest.Mocked<
+      FeatureAvailabilityCacheService
+    >;
+    const service = new FeatureEntitlementService(mockRepository, mockAuditService, mockCache);
+    return { service, mockRepository, mockAuditService, mockCache };
   }
 
   it('lists every catalog entry, including keys with no stored row', async () => {
@@ -85,7 +89,7 @@ describe('FeatureEntitlementService', () => {
   });
 
   it('audits a toggle with the state on both sides of it', async () => {
-    const { service, mockRepository, mockAuditService } = buildService([
+    const { service, mockRepository, mockAuditService, mockCache } = buildService([
       buildRecord({ isEnabled: true }),
     ]);
     mockRepository.upsertEntitlement.mockResolvedValue(
@@ -100,6 +104,7 @@ describe('FeatureEntitlementService', () => {
 
     expect(actual.isEnabled).toBe(false);
     expect(actual.notes).toBe('not in the package');
+    expect(mockCache.invalidate).toHaveBeenCalled();
     expect(mockAuditService.record).toHaveBeenCalledWith(
       expect.objectContaining({
         action: AuditAction.FEATURE_TOGGLED,

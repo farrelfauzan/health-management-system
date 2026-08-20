@@ -149,6 +149,12 @@ describe('Chat flow integration', () => {
       run(prismaServiceMock as unknown),
     ),
     $executeRaw: jest.fn(() => Promise.resolve(0)),
+    // IMP-8: `FeatureGuard` resolves the entitlement for every chat route
+    // through this delegate. No rows means no key is disabled, which is the
+    // fail-open default and what these cases assume.
+    featureEntitlement: {
+      findMany: jest.fn(() => Promise.resolve([])),
+    },
     aiProviderConfig: {
       findFirst: jest.fn((): Promise<Record<string, unknown> | null> =>
         Promise.resolve(buildActiveConfigRow()),

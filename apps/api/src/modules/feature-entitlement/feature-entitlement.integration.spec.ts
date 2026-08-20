@@ -29,6 +29,8 @@ describe('Feature entitlements against Postgres', () => {
   const OPERATOR_ROLE_CODE = 'IMP7_SPEC_OPERATOR';
   const STAFF_ROLE_CODE = 'IMP7_SPEC_STAFF';
   const TOGGLED_KEY = 'bpjs-pcare';
+  /** Never read: `FeatureGuard` and `PermissionsGuard` both answer before the handler. */
+  const PATIENT_ID = '7ccccccc-cccc-4ccc-8ccc-cccccccccccc';
 
   type CatalogSeed = {
     permissionKey: string;
@@ -228,6 +230,54 @@ describe('Feature entitlements against Postgres', () => {
 
     expect(response.status).toBe(404);
     expect(response.body.error.code).toBe('NOT_FOUND');
+  });
+
+  it('refuses a gated route with FEATURE_DISABLED once its feature is off', async () => {
+    // `bpjs-pcare` is switched off by the toggle test above. The staff role is
+    // granted `bpjs.eligibility.check:any` here, so this proves the entitlement
+    // — not a missing grant — is what refuses the call.
+    await prisma.permission.upsert({
+      where: { permissionKey: 'bpjs.eligibility.check:any' },
+      update: {},
+      create: {
+        permissionKey: 'bpjs.eligibility.check:any',
+        resource: 'BpjsEligibility',
+        action: 'check',
+        scope: 'ANY',
+      },
+    });
+    const permission = await prisma.permission.findUniqueOrThrow({
+      where: { permissionKey: 'bpjs.eligibility.check:any' },
+      select: { id: true },
+    });
+    const role = await prisma.role.findUniqueOrThrow({
+      where: { code: STAFF_ROLE_CODE },
+      select: { id: true },
+    });
+    await prisma.rolePermission.createMany({
+      data: [{ roleId: role.id, permissionId: permission.id }],
+      skipDuplicates: true,
+    });
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/bpjs/eligibility/patients/${PATIENT_ID}/check`)
+      .set('Authorization', `Bearer ${staffToken}`)
+      .send({});
+
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('FEATURE_DISABLED');
+  });
+
+  it('keeps a plain FORBIDDEN for a caller who never held the grant', async () => {
+    // Guard order (IMP-8): `PermissionsGuard` runs first, so a caller without
+    // the grant learns nothing about which modules this clinic bought.
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/bpjs/eligibility/patients/${PATIENT_ID}/check`)
+      .set('Authorization', `Bearer ${operatorToken}`)
+      .send({});
+
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('FORBIDDEN');
   });
 
   it('rejects a body that is not a boolean switch', async () => {

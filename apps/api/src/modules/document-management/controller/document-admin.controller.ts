@@ -16,6 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { DOCUMENT_MANAGEMENT_EXAMPLES } from '../../../common/openapi/document-management-examples';
 import { ConfirmClinicDocumentUploadDto } from '../dto/confirm-clinic-document-upload.dto';
@@ -25,6 +26,7 @@ import { UpdateClinicDocumentDto } from '../dto/update-clinic-document.dto';
 import { DocumentService } from '../service/document.service';
 
 @ApiTags('Document Management')
+@RequireFeature('document-management')
 @Controller({
   version: '1',
   path: 'admin/documents',

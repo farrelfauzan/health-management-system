@@ -4,6 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { CHANNEL_GATEWAY_EXAMPLES } from '../../../common/openapi/channel-gateway-examples';
 import { TelegramWebhookAdminService } from '../infrastructure/telegram-webhook-admin.service';
@@ -33,6 +34,7 @@ import { WhatsappSessionService } from '../infrastructure/whatsapp-session.servi
  * assign for no additional boundary.
  */
 @ApiTags('Channel Gateway')
+@RequireFeature('cs-channels')
 @Controller({
   version: '1',
   path: 'admin/channel-gateway',

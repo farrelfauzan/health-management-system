@@ -16,6 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PERSONAL_DOCUMENT_EXAMPLES } from '../../../common/openapi/personal-document-examples';
 import { ConfirmPersonalDocumentUploadDto } from '../dto/confirm-personal-document-upload.dto';
@@ -32,6 +33,7 @@ import { PersonalDocumentService } from '../service/personal-document.service';
  * corpus here, so there is no request shape that names someone else's.
  */
 @ApiTags('Document Management')
+@RequireFeature('document-management')
 @Controller({
   version: '1',
   path: 'me/documents',
