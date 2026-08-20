@@ -71,6 +71,12 @@ enum AuditAction {
   ROLE_UPDATED
   ROLE_DELETED
   ROLE_PERMISSIONS_CHANGED
+  /// A per-client feature was switched on or off (IMP-7). Separate from the
+  /// role verbs above because it answers a different question: not "who may
+  /// do this" but "does this clinic have it at all" — and a disabled feature
+  /// overrides every role grant, so the two logs would otherwise disagree
+  /// about why a request was refused.
+  FEATURE_TOGGLED
   PATIENT_IDENTIFIER_UNMASKED
   DOCTOR_IDENTIFIER_UNMASKED
   PATIENT_MRN_IMPORTED
