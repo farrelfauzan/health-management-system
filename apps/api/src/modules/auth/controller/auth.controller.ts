@@ -31,6 +31,7 @@ import {
   readRefreshTokenCookie,
   setRefreshTokenCookie,
 } from './refresh-token-cookie';
+import { FeatureAvailabilityCacheService } from '../../feature-entitlement/service/feature-availability-cache.service';
 import { clearSessionHintCookie, setSessionHintCookie } from './session-hint-cookie';
 import { RequestOrigin } from '../../../common/observability/request-context.decorator';
 import { RequestContext } from '../../../common/observability/observability.types';
@@ -49,7 +50,18 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly mfaService: MfaService,
     private readonly mfaTickets: MfaTicketService,
+    private readonly featureAvailabilityCache: FeatureAvailabilityCacheService,
   ) {}
+
+  /**
+   * The disabled feature keys stamped into every session hint (IMP-9), so the
+   * Next.js shell can drop a feature's nav entries before it renders rather
+   * than after hydration. Reads the guard's own cache, so this costs a `Set`
+   * copy on a path that already does password hashing.
+   */
+  private async resolveDisabledFeatures(): Promise<readonly string[]> {
+    return this.featureAvailabilityCache.getDisabledKeys();
+  }
 
   @Post('login')
   @PublicRoute(true)
@@ -92,6 +104,7 @@ export class AuthController {
     setSessionHintCookie(response, {
       roles: session.roles,
       permissions: session.permissions,
+      disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
 
@@ -136,6 +149,7 @@ export class AuthController {
     setSessionHintCookie(response, {
       roles: session.roles,
       permissions: session.permissions,
+      disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
 
@@ -325,6 +339,7 @@ export class AuthController {
     setSessionHintCookie(response, {
       roles: session.roles,
       permissions: session.permissions,
+      disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
 
@@ -362,6 +377,7 @@ export class AuthController {
     setSessionHintCookie(response, {
       roles: session.roles,
       permissions: session.permissions,
+      disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
 

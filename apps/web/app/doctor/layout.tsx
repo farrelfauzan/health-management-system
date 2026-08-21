@@ -16,6 +16,8 @@ import { DOCTOR_ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { DOCTOR_NAV_SECTIONS } from '#lib/shell/doctor-nav-items';
 import { filterNavSections } from '#lib/shell/filter-nav-sections';
+import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
+import { resolveDisabledNavHrefs } from '#lib/shell/resolve-disabled-nav-hrefs';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
 
 const SIDEBAR_STYLE: CSSProperties = { '--sidebar-width': '15rem' } as CSSProperties;
@@ -30,7 +32,12 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
   const sessionHint = cookieStore.get(SESSION_HINT_COOKIE_NAME)?.value;
   const claims = resolveSessionClaims({ accessToken, sessionHint });
   const rules = resolveAppAbilityRules(claims);
-  const sections = filterNavSections(buildAppAbility(rules), DOCTOR_NAV_SECTIONS);
+  const sections = filterNavSections(
+    buildAppAbility(rules),
+    DOCTOR_NAV_SECTIONS,
+    resolveDisabledNavHrefs(claims),
+  );
+  const isChatEnabled = isFeatureEnabled(claims, 'ai-chatbot');
   const profile = resolveShellProfile(claims);
 
   const idlePolicy = resolveSessionIdlePolicy();
@@ -46,7 +53,7 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
             </main>
           </SidebarInset>
         </SidebarProvider>
-        <ChatLauncher />
+        {isChatEnabled ? <ChatLauncher /> : null}
       </AiAssistantProvider>
       <IdleSessionGuard {...idlePolicy} />
     </AppAbilityProvider>
