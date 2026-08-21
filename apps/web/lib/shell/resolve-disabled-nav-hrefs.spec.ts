@@ -35,6 +35,22 @@ describe('resolveDisabledNavHrefs', () => {
     expect(resolveDisabledNavHrefs({ disabledFeatures: ['warp-drive'] })).toEqual([]);
   });
 
+  it('keeps a shared route while any owner is still enabled', () => {
+    // `/admin/integrations` is listed by bpjs-pcare, bpjs-antrean and
+    // satusehat. A clinic that bought two of the three must keep the screen.
+    const actual = resolveDisabledNavHrefs({ disabledFeatures: ['satusehat'] });
+
+    expect(actual).not.toContain('/admin/integrations');
+  });
+
+  it('hides a shared route once every owner is disabled', () => {
+    const actual = resolveDisabledNavHrefs({
+      disabledFeatures: ['satusehat', 'bpjs-pcare', 'bpjs-antrean'],
+    });
+
+    expect(actual).toContain('/admin/integrations');
+  });
+
   it('combines the routes of several disabled features', () => {
     const actual = resolveDisabledNavHrefs({ disabledFeatures: ['pharmacy', 'billing'] });
 
