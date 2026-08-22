@@ -35,6 +35,7 @@ import { PatientManagementModule } from './modules/patient-management/patient-ma
 import { PharmacyFlowModule } from './modules/pharmacy-flow/pharmacy-flow.module';
 import { RbacModule } from './modules/rbac/rbac.module';
 import { RegistrationFlowModule } from './modules/registration-flow/registration-flow.module';
+import { RoomManagementModule } from './modules/room-management/room-management.module';
 import { SatusehatIntegrationModule } from './modules/satusehat/satusehat-integration.module';
 import { SpecialtyModule } from './modules/specialty/specialty.module';
 import { TerminologyModule } from './modules/terminology/terminology.module';
@@ -70,6 +71,7 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     DoctorPatientModule,
     AppointmentManagementModule,
     RegistrationFlowModule,
+    RoomManagementModule,
     EmrModule,
     PharmacyFlowModule,
     BillingModule,
