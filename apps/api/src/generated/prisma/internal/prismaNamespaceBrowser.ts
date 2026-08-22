@@ -113,7 +113,13 @@ export const ModelName = {
   Conversation: 'Conversation',
   ConversationMessage: 'ConversationMessage',
   ChannelPatientLink: 'ChannelPatientLink',
-  ChannelOtpChallenge: 'ChannelOtpChallenge'
+  ChannelOtpChallenge: 'ChannelOtpChallenge',
+  RoomClass: 'RoomClass',
+  Ward: 'Ward',
+  Room: 'Room',
+  Bed: 'Bed',
+  Admission: 'Admission',
+  BedAssignment: 'BedAssignment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1179,6 +1185,100 @@ export const ChannelOtpChallengeScalarFieldEnum = {
 } as const
 
 export type ChannelOtpChallengeScalarFieldEnum = (typeof ChannelOtpChallengeScalarFieldEnum)[keyof typeof ChannelOtpChallengeScalarFieldEnum]
+
+
+export const RoomClassScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  quota: 'quota',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type RoomClassScalarFieldEnum = (typeof RoomClassScalarFieldEnum)[keyof typeof RoomClassScalarFieldEnum]
+
+
+export const WardScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type WardScalarFieldEnum = (typeof WardScalarFieldEnum)[keyof typeof WardScalarFieldEnum]
+
+
+export const RoomScalarFieldEnum = {
+  id: 'id',
+  wardId: 'wardId',
+  roomClassId: 'roomClassId',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type RoomScalarFieldEnum = (typeof RoomScalarFieldEnum)[keyof typeof RoomScalarFieldEnum]
+
+
+export const BedScalarFieldEnum = {
+  id: 'id',
+  roomId: 'roomId',
+  code: 'code',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type BedScalarFieldEnum = (typeof BedScalarFieldEnum)[keyof typeof BedScalarFieldEnum]
+
+
+export const AdmissionScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  admittingDoctorId: 'admittingDoctorId',
+  sourceEncounterId: 'sourceEncounterId',
+  status: 'status',
+  reason: 'reason',
+  admittedAt: 'admittedAt',
+  dischargedAt: 'dischargedAt',
+  dischargeSummary: 'dischargeSummary',
+  cancelledAt: 'cancelledAt',
+  cancelReason: 'cancelReason',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type AdmissionScalarFieldEnum = (typeof AdmissionScalarFieldEnum)[keyof typeof AdmissionScalarFieldEnum]
+
+
+export const BedAssignmentScalarFieldEnum = {
+  id: 'id',
+  admissionId: 'admissionId',
+  bedId: 'bedId',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BedAssignmentScalarFieldEnum = (typeof BedAssignmentScalarFieldEnum)[keyof typeof BedAssignmentScalarFieldEnum]
 
 
 export const SortOrder = {

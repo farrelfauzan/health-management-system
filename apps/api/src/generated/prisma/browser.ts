@@ -745,3 +745,92 @@ export type ChannelPatientLink = Prisma.ChannelPatientLinkModel
  * 
  */
 export type ChannelOtpChallenge = Prisma.ChannelOtpChallengeModel
+/**
+ * Model RoomClass
+ * Room class (kelas perawatan) — the axis Indonesian clinics price
+ * accommodation on, as **master data the clinic owns** rather than an enum
+ * the vendor ships.
+ * 
+ * It started as an enum of the four classes BPJS recognises. That was wrong
+ * for the same reason `Specialty` is a table and not an enum: a clinic with a
+ * "Suite" or a "Kelas 3B" would need a migration, a redeploy, and a new
+ * `ServiceTariffCategory` value to sell a bed it already has. What the four
+ * standard classes get instead is a seeded baseline — present on every fresh
+ * database, editable and extendable from the admin screen.
+ * 
+ * `code` is the stable handle the seed converges on and the tariff table
+ * points at; `name` is what staff read and what a clinic may rename freely.
+ * Unique among live rows only, so a retired class frees its code — the same
+ * partial-index technique as {@link Ward.code}.
+ */
+export type RoomClass = Prisma.RoomClassModel
+/**
+ * Model Ward
+ * Inpatient ward (bangsal) — the root of the room inventory tree
+ * Ward → Room → Bed (IMP-11).
+ * 
+ * Master data, so soft-deleted rather than deleted: a discharged admission
+ * keeps pointing at the bed it used, and a ward that closes must not take its
+ * own history with it. `code` is what staff say out loud ("Melati"), and it is
+ * unique among live rows only — a hand-written partial unique index
+ * (`WHERE deleted_at IS NULL`) in the migration, so a closed ward's code can
+ * be reused by its replacement.
+ */
+export type Ward = Prisma.WardModel
+/**
+ * Model Room
+ * One room in a ward. Its class prices it (IMP-15) and is a property of the
+ * room rather than of the bed: a transfer between classes is a transfer
+ * between rooms, which is exactly what the bill has to reflect.
+ * 
+ * `code` is unique per ward among live rows, hand-written as a partial unique
+ * index in the migration for the same reuse reason as {@link Ward.code}.
+ */
+export type Room = Prisma.RoomModel
+/**
+ * Model Bed
+ * One bed — the unit an admission actually occupies.
+ * 
+ * `status` is a cached projection of the live `BedAssignment` set, kept in the
+ * same transaction that opens or closes an assignment. It is stored anyway
+ * because the occupancy board reads it on every render and because
+ * MAINTENANCE is a state no assignment can express.
+ * 
+ * The authority on double-booking is **not** this column: a partial unique
+ * index on `bed_assignments (bed_id) WHERE ended_at IS NULL` is, so two
+ * concurrent admits race to the same constraint and one of them loses.
+ */
+export type Bed = Prisma.BedModel
+/**
+ * Model Admission
+ * One inpatient stay — a **parallel aggregate to `Encounter`, not a child of
+ * it**.
+ * 
+ * The outpatient chain cannot carry an admission and must not be bent to:
+ * `Encounter.registrationId` is `@unique` (one encounter per registration by
+ * design) and `EncounterStatus` is terminal once closed, so a stay spanning
+ * days of care — with its own doctor, its own bed history, and its own
+ * discharge — has nowhere to live on that row.
+ * 
+ * `sourceEncounterId` records the outpatient consultation that referred the
+ * patient in, when there was one. Nullable and not unique: a direct admission
+ * has no source encounter, and a patient readmitted after the same
+ * consultation is two admissions, not a contradiction.
+ * 
+ * At most one ADMITTED admission per patient at a time, enforced by a
+ * hand-written partial unique index in the migration
+ * (`WHERE status = 'ADMITTED' AND deleted_at IS NULL`) — the same technique
+ * `invoices_encounter_id_live_key` uses.
+ */
+export type Admission = Prisma.AdmissionModel
+/**
+ * Model BedAssignment
+ * Which bed an admission held, and when. A transfer closes one row and opens
+ * the next, so the table is the stay's full bed history rather than a current
+ * pointer — which is what IMP-15 prices, night by night, at the class the
+ * patient was actually in.
+ * 
+ * No `deletedAt`: an assignment is a fact about where a patient slept, like a
+ * `Payment` is money that changed hands. Rows are closed, never removed.
+ */
+export type BedAssignment = Prisma.BedAssignmentModel
