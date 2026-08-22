@@ -83,6 +83,7 @@ const SELF_AUTHENTICATING_ROUTES: readonly string[] = [
  * and has to be argued out, not argued in.
  */
 const AUDITED_CONTROLLERS: readonly string[] = [
+  'AdmissionFlowController',
   'AppointmentManagementController',
   'AuditController',
   'ChatController',
