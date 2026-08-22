@@ -12,5 +12,6 @@ export type ServiceTariffControllerListServiceTariffsV1Category = typeof Service
 export const ServiceTariffControllerListServiceTariffsV1Category = {
   CONSULTATION: 'CONSULTATION',
   PROCEDURE: 'PROCEDURE',
+  ACCOMMODATION: 'ACCOMMODATION',
   OTHER: 'OTHER',
 } as const;

@@ -1,6 +1,16 @@
 import { z } from 'zod';
 
-export const SERVICE_TARIFF_CATEGORIES = ['CONSULTATION', 'PROCEDURE', 'OTHER'] as const;
+/**
+ * ACCOMMODATION (IMP-15) is the one category priced per ward class rather than
+ * per service — the room class *is* the product — which is why a tariff in it
+ * must carry `roomClass` and a tariff in any other must not.
+ */
+export const SERVICE_TARIFF_CATEGORIES = [
+  'CONSULTATION',
+  'PROCEDURE',
+  'ACCOMMODATION',
+  'OTHER',
+] as const;
 
 export const serviceTariffCategorySchema = z.enum(SERVICE_TARIFF_CATEGORIES);
 
@@ -30,7 +40,13 @@ export const INVOICE_STATUS_TRANSITIONS: Record<
   VOID: [],
 } as const;
 
-export const INVOICE_ITEM_TYPES = ['CONSULTATION', 'PROCEDURE', 'MEDICATION', 'OTHER'] as const;
+export const INVOICE_ITEM_TYPES = [
+  'CONSULTATION',
+  'PROCEDURE',
+  'MEDICATION',
+  'ACCOMMODATION',
+  'OTHER',
+] as const;
 
 export const invoiceItemTypeSchema = z.enum(INVOICE_ITEM_TYPES);
 
@@ -107,14 +123,33 @@ const billingCalendarDateSchema = z
     );
   }, 'Date must be a valid calendar date');
 
-export const createServiceTariffSchema = z.object({
-  code: z.string().trim().min(1).max(MAX_TARIFF_CODE_LENGTH),
-  name: z.string().trim().min(1).max(MAX_TARIFF_NAME_LENGTH),
-  category: serviceTariffCategorySchema,
-  icd9cmCode: z.string().trim().min(1).max(MAX_ICD9CM_CODE_LENGTH).optional(),
-  price: moneyAmountSchema,
-  isActive: z.boolean().default(true),
-});
+/**
+ * `roomClassId` is required for ACCOMMODATION and refused for everything else,
+ * mirroring the CHECK constraint in the migration. A field that means
+ * something on one row and nothing on the next is how the two start
+ * disagreeing, so the API refuses the combination rather than ignoring it.
+ *
+ * It is a room-class id rather than an enum value because the classes are
+ * master data the clinic edits (IMP-11): a "Suite" added this morning is
+ * priceable this afternoon.
+ */
+export const createServiceTariffSchema = z
+  .object({
+    code: z.string().trim().min(1).max(MAX_TARIFF_CODE_LENGTH),
+    name: z.string().trim().min(1).max(MAX_TARIFF_NAME_LENGTH),
+    category: serviceTariffCategorySchema,
+    icd9cmCode: z.string().trim().min(1).max(MAX_ICD9CM_CODE_LENGTH).optional(),
+    roomClassId: z.string().uuid().optional(),
+    price: moneyAmountSchema,
+    isActive: z.boolean().default(true),
+  })
+  .refine(
+    (payload) => (payload.category === 'ACCOMMODATION') === (payload.roomClassId !== undefined),
+    {
+      message: 'roomClassId is required for ACCOMMODATION tariffs and not allowed for others',
+      path: ['roomClassId'],
+    },
+  );
 
 /**
  * `code` is immutable — it is the identifier invoice items snapshot their
@@ -126,6 +161,7 @@ export const updateServiceTariffSchema = z
     name: z.string().trim().min(1).max(MAX_TARIFF_NAME_LENGTH).optional(),
     category: serviceTariffCategorySchema.optional(),
     icd9cmCode: z.string().trim().min(1).max(MAX_ICD9CM_CODE_LENGTH).nullable().optional(),
+    roomClassId: z.string().uuid().optional(),
     price: moneyAmountSchema.optional(),
     isActive: z.boolean().optional(),
   })
@@ -178,6 +214,7 @@ export const listInvoicesQuerySchema = z
     status: invoiceStatusSchema.optional(),
     patientId: z.string().uuid().optional(),
     encounterId: z.string().uuid().optional(),
+    admissionId: z.string().uuid().optional(),
     createdFrom: billingCalendarDateSchema.optional(),
     createdTo: billingCalendarDateSchema.optional(),
   })

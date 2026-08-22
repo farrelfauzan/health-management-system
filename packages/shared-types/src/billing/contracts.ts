@@ -1,3 +1,4 @@
+import type { RoomClassSummary } from '#room-management/contracts';
 import type {
   InvoiceItemTypeValue,
   InvoiceStatusValue,
@@ -11,6 +12,9 @@ export type ServiceTariffResponse = {
   name: string;
   category: ServiceTariffCategoryValue;
   icd9cmCode?: string;
+  /** Present exactly on ACCOMMODATION rows, which price a ward class. */
+  roomClassId?: string;
+  roomClass?: RoomClassSummary;
   price: number;
   isActive: boolean;
   createdAt: string;
@@ -60,7 +64,9 @@ export type InvoiceRelatedPatient = {
 export type InvoiceListItem = {
   id: string;
   invoiceNumber: string;
-  encounterId: string;
+  /** Absent on an inpatient bill; exactly one of the two ids is present. */
+  encounterId?: string;
+  admissionId?: string;
   patientId: string;
   patient: InvoiceRelatedPatient;
   status: InvoiceStatusValue;
@@ -89,7 +95,8 @@ export type InvoicesListMeta = {
 export type InvoiceGenerationGapReason =
   | 'NO_CONSULTATION_TARIFF'
   | 'NO_TARIFF_FOR_PROCEDURE'
-  | 'UNPRICED_MEDICATION';
+  | 'UNPRICED_MEDICATION'
+  | 'NO_ACCOMMODATION_TARIFF';
 
 /**
  * A billable thing the generator found on the encounter but could not price.
@@ -127,4 +134,21 @@ export type CashierDailyReport = {
   totals: CashierReportTotals;
   byMethod: CashierReportMethodLine[];
   byDoctor: CashierReportDoctorLine[];
+};
+
+/**
+ * What discharging a stay did to the cashier's side of it (IMP-15).
+ *
+ * `invoiceId` is absent when the stay produced no billable night — a same-day
+ * admit and discharge crosses no midnight — or when no ward class the patient
+ * occupied has a live tariff. Either way the `gaps` say so: an inpatient bill
+ * that quietly omits three nights in a VIP room reads as "nothing to charge"
+ * when it is really "nobody priced the VIP room".
+ */
+export type AdmissionRoomChargeResult = {
+  invoiceId?: string;
+  invoiceNumber?: string;
+  totalAmount: number;
+  nights: number;
+  gaps: InvoiceGenerationGap[];
 };

@@ -24,6 +24,7 @@ export interface CreateServiceTariffDto {
      * @maxLength 16
      */
   icd9cmCode?: string;
+  roomClassId?: string;
   /**
      * @minimum 0
      * @maximum 9999999999.99

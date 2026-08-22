@@ -77,5 +77,12 @@ export const ADMISSION_FLOW_EXAMPLES = {
     updateRequest: {
       reason: 'Demam berdarah dengue grade II',
     },
+    roomCharge: {
+      invoiceId: '7f809102-1324-45d6-8758-a9b0c1d2e3f4',
+      invoiceNumber: 'INV/20260908/0003',
+      totalAmount: 900000,
+      nights: 3,
+      gaps: [],
+    },
   },
 } as const;

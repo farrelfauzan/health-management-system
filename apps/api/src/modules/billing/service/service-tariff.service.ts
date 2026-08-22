@@ -49,6 +49,7 @@ export class ServiceTariffService {
         name: payload.name,
         category: payload.category,
         icd9cmCode: payload.icd9cmCode,
+        roomClassId: payload.roomClassId,
         price: payload.price,
         isActive: payload.isActive,
       });
@@ -87,6 +88,7 @@ export class ServiceTariffService {
       ...(payload.name !== undefined ? { name: payload.name } : {}),
       ...(payload.category !== undefined ? { category: payload.category } : {}),
       ...(payload.icd9cmCode !== undefined ? { icd9cmCode: payload.icd9cmCode } : {}),
+      ...(payload.roomClassId !== undefined ? { roomClassId: payload.roomClassId } : {}),
       ...(payload.price !== undefined ? { price: payload.price } : {}),
       ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
     };
