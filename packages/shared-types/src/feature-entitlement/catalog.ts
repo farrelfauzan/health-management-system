@@ -27,10 +27,7 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
     key: 'room-management',
     name: 'Rooms & Inpatient',
     description: 'Ward, room and bed inventory, admissions, transfers and discharge.',
-    // Phase 3 has not built these screens yet (IMP-11..IMP-16). The key exists
-    // now so the catalog is the one place the roadmap is expressed, and an
-    // empty list is honest about there being nothing to hide yet.
-    navHrefs: [],
+    navHrefs: ['/admin/rooms', '/admin/admissions'],
   },
   {
     key: 'pharmacy',

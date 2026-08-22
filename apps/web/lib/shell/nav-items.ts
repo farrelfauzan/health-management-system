@@ -12,6 +12,8 @@ export type ShellNavigationKey =
   | 'appointments'
   | 'registration'
   | 'encounters'
+  | 'rooms'
+  | 'admissions'
   | 'pharmacy'
   | 'billing'
   | 'advanced'
@@ -91,6 +93,29 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         labelKey: 'encounters',
         icon: 'clinical_notes',
         ability: { action: 'read', subject: 'Encounter' },
+      },
+      {
+        // IMP-16. Inventory and the occupancy board. Any of the three
+        // inventory subjects is enough to open the screen — the workspace
+        // renders only the tabs the ability allows, and a clinic that lets a
+        // clerk read beds without reading wards still needs a way in.
+        href: '/admin/rooms',
+        label: 'Rooms',
+        labelKey: 'rooms',
+        icon: 'king_bed',
+        ability: [
+          { action: 'read', subject: 'RoomClass' },
+          { action: 'read', subject: 'Ward' },
+          { action: 'read', subject: 'Room' },
+          { action: 'read', subject: 'Bed' },
+        ],
+      },
+      {
+        href: '/admin/admissions',
+        label: 'Admissions',
+        labelKey: 'admissions',
+        icon: 'bed',
+        ability: { action: 'read', subject: 'Admission' },
       },
       {
         href: '/admin/pharmacy',

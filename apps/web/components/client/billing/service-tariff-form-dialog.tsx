@@ -27,6 +27,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { RoomClassSelect } from '#components/client/rooms/room-class-select';
 import {
   serviceTariffControllerCreateServiceTariffV1,
   serviceTariffControllerUpdateServiceTariffV1,
@@ -56,6 +57,7 @@ export function ServiceTariffFormDialog({
     tariff?.category ?? 'CONSULTATION',
   );
   const [icd9cmCode, setIcd9cmCode] = useState<string>(tariff?.icd9cmCode ?? '');
+  const [roomClassId, setRoomClassId] = useState<string>(tariff?.roomClassId ?? '');
   const [price, setPrice] = useState<string>(tariff ? String(tariff.price) : '');
   const [isActive, setIsActive] = useState<boolean>(tariff?.isActive ?? true);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -88,6 +90,16 @@ export function ServiceTariffFormDialog({
 
     // `code` is immutable — invoice items snapshot their provenance against it,
     // so an update never sends it.
+    // An ACCOMMODATION tariff prices one ward class and every other category
+    // prices none — the API's schema and the CHECK constraint behind it both
+    // refuse the mismatch, so the form sends the class only where it belongs.
+    const isAccommodation = category === 'ACCOMMODATION';
+
+    if (isAccommodation && roomClassId.length === 0) {
+      setActionError(t('billing.accommodationNeedsClass'));
+      return;
+    }
+
     const payload = isEditing
       ? ({
           name: trimmedName,
@@ -95,6 +107,7 @@ export function ServiceTariffFormDialog({
           icd9cmCode: trimmedIcd9cm.length > 0 ? trimmedIcd9cm : null,
           price: parsedPrice,
           isActive,
+          ...(isAccommodation ? { roomClassId } : {}),
         } satisfies UpdateServiceTariffInput)
       : ({
           code: trimmedCode,
@@ -103,6 +116,7 @@ export function ServiceTariffFormDialog({
           price: parsedPrice,
           isActive,
           ...(trimmedIcd9cm.length > 0 ? { icd9cmCode: trimmedIcd9cm } : {}),
+          ...(isAccommodation ? { roomClassId } : {}),
         } satisfies CreateServiceTariffInput);
 
     try {
@@ -223,6 +237,13 @@ export function ServiceTariffFormDialog({
                 />
               </div>
             </div>
+            {category === 'ACCOMMODATION' ? (
+              <RoomClassSelect
+                id="tariff-room-class"
+                value={roomClassId}
+                onChange={setRoomClassId}
+              />
+            ) : null}
             <label className="flex items-center gap-2 text-sm text-slate-700">
               <Checkbox
                 checked={isActive}

@@ -94,7 +94,9 @@
         "aiProviders": "AI Providers",
         "knowledgeBase": "Knowledge Base",
         "clinicCorpus": "Clinic Corpus",
-        "conversations": "Conversations"
+        "conversations": "Conversations",
+        "rooms": "Rooms",
+        "admissions": "Admissions"
       },
       "search": {
         "label": "Search patients",

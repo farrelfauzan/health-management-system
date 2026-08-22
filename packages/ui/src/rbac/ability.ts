@@ -17,6 +17,9 @@ export type AppAction =
   | 'link'
   | 'read-identifier'
   | 'import-identifier'
+  | 'admit'
+  | 'transfer'
+  | 'discharge'
   | 'block'
   | 'merge';
 export type AppSubject =
@@ -37,6 +40,11 @@ export type AppSubject =
   | 'Inventory'
   | 'Prescription'
   | 'DispenseRecord'
+  | 'RoomClass'
+  | 'Ward'
+  | 'Room'
+  | 'Bed'
+  | 'Admission'
   | 'ServiceTariff'
   | 'Invoice'
   | 'Payment'
