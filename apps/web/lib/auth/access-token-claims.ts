@@ -5,6 +5,15 @@ export type AccessTokenClaims = {
   role?: string;
   roles?: string[];
   permissions?: string[];
+  /**
+   * Feature keys this client may not use (IMP-9). Carried by the session-hint
+   * cookie only — never by the access token, which is signed and presented to
+   * the API, and has no business carrying commercial packaging.
+   *
+   * Undefined means "hide nothing", not "hide everything": a hint issued
+   * before this field existed must not blank the sidebar.
+   */
+  disabledFeatures?: string[];
 };
 
 export function decodeAccessTokenClaims(token: string): AccessTokenClaims | null {

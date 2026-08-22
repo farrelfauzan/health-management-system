@@ -24,8 +24,9 @@ const PORTAL_PERMISSION_PREFIX = 'portal.';
  * page fifteen minutes after the last refresh bounces a perfectly valid
  * session to the login screen.
  *
- * What makes this safe is what it is *not*. It carries roles and an expiry and
- * nothing else — no signature anybody checks, no bearer value, no identifier
+ * What makes this safe is what it is *not*. It carries roles, the disabled
+ * feature keys, and an expiry — no signature anybody checks, no bearer value,
+ * no identifier
  * the API will accept. Presenting it to the API achieves exactly nothing;
  * every route still demands the access token, and `PermissionsGuard` still
  * re-reads permissions from the database on every request. It is a rendering
@@ -38,7 +39,24 @@ const PORTAL_PERMISSION_PREFIX = 'portal.';
  */
 export function setSessionHintCookie(
   response: RefreshTokenCookieWriter,
-  hint: { roles: readonly string[]; permissions: readonly string[]; expiresAt: Date },
+  hint: {
+    roles: readonly string[];
+    permissions: readonly string[];
+    /**
+     * The feature keys this client may **not** use (IMP-9).
+     *
+     * Disabled rather than enabled, for two reasons that both reduce to the
+     * same rule: absence must mean "hide nothing". A hint written before this
+     * field existed has no `disabledFeatures`, and a client whose cookie was
+     * issued by an older API must not lose its navigation — with an enabled
+     * list, an empty array and a missing one are indistinguishable and both
+     * would blank the sidebar. It is also the same fail-open default
+     * `FeatureAvailabilityCacheService` and `FeatureEntitlementService` apply,
+     * expressed once more rather than inverted here.
+     */
+    disabledFeatures: readonly string[];
+    expiresAt: Date;
+  },
 ): void {
   const portalPermissions = hint.permissions.filter((permissionKey) =>
     permissionKey.startsWith(PORTAL_PERMISSION_PREFIX),
@@ -47,6 +65,7 @@ export function setSessionHintCookie(
     JSON.stringify({
       roles: hint.roles,
       permissions: portalPermissions,
+      disabledFeatures: hint.disabledFeatures,
       exp: Math.floor(hint.expiresAt.getTime() / 1000),
     }),
   ).toString('base64url');

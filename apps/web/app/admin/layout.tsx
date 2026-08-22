@@ -16,6 +16,8 @@ import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { filterNavSections } from '#lib/shell/filter-nav-sections';
+import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
+import { resolveDisabledNavHrefs } from '#lib/shell/resolve-disabled-nav-hrefs';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
 
 const SIDEBAR_STYLE: CSSProperties = { '--sidebar-width': '15rem' } as CSSProperties;
@@ -32,11 +34,15 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const rules = resolveAppAbilityRules(claims);
   const isAdmin = hasAnyRole(claims, ['SUPER_ADMIN', 'ADMIN']);
   const isPharmacistOnly = !isAdmin && hasAnyRole(claims, ['PHARMACIST']);
-  const sections = filterNavSections(
-    buildAppAbility(rules),
-    undefined,
-    isPharmacistOnly ? ['/admin/dashboard'] : [],
-  );
+  // Two independent reasons to drop a nav entry, combined in one list: a
+  // pharmacist-only user has no dashboard, and a feature this client did not
+  // buy has no entries at all (IMP-9). Neither is authorization — the API
+  // refuses both regardless of what the sidebar renders.
+  const sections = filterNavSections(buildAppAbility(rules), undefined, [
+    ...(isPharmacistOnly ? ['/admin/dashboard'] : []),
+    ...resolveDisabledNavHrefs(claims),
+  ]);
+  const isChatEnabled = isFeatureEnabled(claims, 'ai-chatbot');
   const profile = resolveShellProfile(claims);
   const idlePolicy = resolveSessionIdlePolicy();
   return (
@@ -74,7 +80,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             </main>
           </SidebarInset>
         </SidebarProvider>
-        <ChatLauncher />
+        {isChatEnabled ? <ChatLauncher /> : null}
       </AiAssistantProvider>
       <IdleSessionGuard {...idlePolicy} />
     </AppAbilityProvider>

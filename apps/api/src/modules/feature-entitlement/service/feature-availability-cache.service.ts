@@ -33,6 +33,16 @@ export class FeatureAvailabilityCacheService {
     return !disabledKeys.has(featureKey);
   }
 
+  /**
+   * The disabled key set itself, for callers that need the whole answer rather
+   * than one key (IMP-9: the login response stamps it into the session-hint
+   * cookie so the Next.js shell can hide a feature before it renders). Shares
+   * the guard's cache, so a login costs no extra query.
+   */
+  async getDisabledKeys(): Promise<readonly string[]> {
+    return [...(await this.resolveDisabledKeys())];
+  }
+
   /** Called by the write path so a toggle does not wait out the TTL. */
   invalidate(): void {
     this.disabledKeys = null;

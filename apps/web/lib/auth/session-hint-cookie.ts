@@ -5,6 +5,7 @@ export const SESSION_HINT_COOKIE_NAME = 'hms_session_hint';
 type SessionHint = {
   roles?: string[];
   permissions?: string[];
+  disabledFeatures?: string[];
   exp?: number;
 };
 
@@ -35,7 +36,13 @@ export function decodeSessionHint(hint: string | undefined): AccessTokenClaims |
     const permissions = Array.isArray(parsed.permissions)
       ? parsed.permissions.filter((entry): entry is string => typeof entry === 'string')
       : [];
-    return { roles: parsed.roles, permissions, exp: parsed.exp };
+    // Likewise for IMP-9's disabled feature keys. An older hint has none, and
+    // the correct reading of that is "nothing is switched off" — the same
+    // fail-open default the API's own guard applies.
+    const disabledFeatures = Array.isArray(parsed.disabledFeatures)
+      ? parsed.disabledFeatures.filter((entry): entry is string => typeof entry === 'string')
+      : [];
+    return { roles: parsed.roles, permissions, disabledFeatures, exp: parsed.exp };
   } catch {
     return null;
   }
