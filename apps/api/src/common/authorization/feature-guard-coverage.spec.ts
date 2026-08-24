@@ -40,6 +40,12 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   WhatsappWebhookController: 'cs-channels',
   CsAdminController: 'cs-channels',
   ChannelArrivalController: 'cs-channels',
+  RoomClassController: 'room-management',
+  WardController: 'room-management',
+  RoomController: 'room-management',
+  BedController: 'room-management',
+  RoomOccupancyController: 'room-management',
+  AdmissionFlowController: 'room-management',
 };
 
 /**
@@ -59,11 +65,11 @@ const NEVER_GATED_CONTROLLERS: readonly string[] = [
 
 /**
  * Catalog keys that hide navigation (IMP-9) but do not yet refuse endpoints.
- * `room-management` has no module at all; `pharmacy` and `billing` were left
- * out of IMP-8's enumerated scope. Listing them here is what keeps the gap a
- * decision rather than an oversight.
+ * `pharmacy` and `billing` were left out of IMP-8's enumerated scope; IMP-18
+ * closes them. Listing them here is what keeps the gap a decision rather than
+ * an oversight. `room-management` left this list when IMP-13 gave it a module.
  */
-const NOT_YET_ENFORCED_KEYS: readonly FeatureKey[] = ['pharmacy', 'billing', 'room-management'];
+const NOT_YET_ENFORCED_KEYS: readonly FeatureKey[] = ['pharmacy', 'billing'];
 
 /**
  * Routes that stay reachable while their controller's feature is off, so a

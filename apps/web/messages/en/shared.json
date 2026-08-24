@@ -47,7 +47,10 @@
       "low_stock": "LOW STOCK",
       "out_patient": "OUT-PATIENT",
       "in_patient": "IN-PATIENT",
-      "discharged": "DISCHARGED"
+      "discharged": "DISCHARGED",
+      "admitted": "ADMITTED",
+      "occupied": "OCCUPIED",
+      "maintenance": "MAINTENANCE"
     }
   }
 }

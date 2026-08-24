@@ -94,7 +94,9 @@
         "aiProviders": "Penyedia AI",
         "knowledgeBase": "Basis Pengetahuan",
         "clinicCorpus": "Korpus Klinik",
-        "conversations": "Percakapan"
+        "conversations": "Percakapan",
+        "rooms": "Kamar",
+        "admissions": "Rawat Inap"
       },
       "search": {
         "label": "Cari pasien",

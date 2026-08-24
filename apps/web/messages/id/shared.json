@@ -47,7 +47,10 @@
       "low_stock": "STOK MENIPIS",
       "out_patient": "RAWAT JALAN",
       "in_patient": "RAWAT INAP",
-      "discharged": "DIPULANGKAN"
+      "discharged": "DIPULANGKAN",
+      "admitted": "DIRAWAT",
+      "occupied": "TERISI",
+      "maintenance": "PERAWATAN"
     }
   }
 }

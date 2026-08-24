@@ -263,6 +263,7 @@ export type RoomClassWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"RoomClass"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"RoomClass"> | Date | string | null
   rooms?: Prisma.RoomListRelationFilter
+  serviceTariffs?: Prisma.ServiceTariffListRelationFilter
 }
 
 export type RoomClassOrderByWithRelationInput = {
@@ -276,6 +277,7 @@ export type RoomClassOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   rooms?: Prisma.RoomOrderByRelationAggregateInput
+  serviceTariffs?: Prisma.ServiceTariffOrderByRelationAggregateInput
 }
 
 export type RoomClassWhereUniqueInput = Prisma.AtLeast<{
@@ -292,6 +294,7 @@ export type RoomClassWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"RoomClass"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"RoomClass"> | Date | string | null
   rooms?: Prisma.RoomListRelationFilter
+  serviceTariffs?: Prisma.ServiceTariffListRelationFilter
 }, "id">
 
 export type RoomClassOrderByWithAggregationInput = {
@@ -337,6 +340,7 @@ export type RoomClassCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   rooms?: Prisma.RoomCreateNestedManyWithoutRoomClassInput
+  serviceTariffs?: Prisma.ServiceTariffCreateNestedManyWithoutRoomClassInput
 }
 
 export type RoomClassUncheckedCreateInput = {
@@ -350,6 +354,7 @@ export type RoomClassUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   rooms?: Prisma.RoomUncheckedCreateNestedManyWithoutRoomClassInput
+  serviceTariffs?: Prisma.ServiceTariffUncheckedCreateNestedManyWithoutRoomClassInput
 }
 
 export type RoomClassUpdateInput = {
@@ -363,6 +368,7 @@ export type RoomClassUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rooms?: Prisma.RoomUpdateManyWithoutRoomClassNestedInput
+  serviceTariffs?: Prisma.ServiceTariffUpdateManyWithoutRoomClassNestedInput
 }
 
 export type RoomClassUncheckedUpdateInput = {
@@ -376,6 +382,7 @@ export type RoomClassUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rooms?: Prisma.RoomUncheckedUpdateManyWithoutRoomClassNestedInput
+  serviceTariffs?: Prisma.ServiceTariffUncheckedUpdateManyWithoutRoomClassNestedInput
 }
 
 export type RoomClassCreateManyInput = {
@@ -412,6 +419,11 @@ export type RoomClassUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type RoomClassNullableScalarRelationFilter = {
+  is?: Prisma.RoomClassWhereInput | null
+  isNot?: Prisma.RoomClassWhereInput | null
 }
 
 export type RoomClassCountOrderByAggregateInput = {
@@ -463,6 +475,22 @@ export type RoomClassScalarRelationFilter = {
   isNot?: Prisma.RoomClassWhereInput
 }
 
+export type RoomClassCreateNestedOneWithoutServiceTariffsInput = {
+  create?: Prisma.XOR<Prisma.RoomClassCreateWithoutServiceTariffsInput, Prisma.RoomClassUncheckedCreateWithoutServiceTariffsInput>
+  connectOrCreate?: Prisma.RoomClassCreateOrConnectWithoutServiceTariffsInput
+  connect?: Prisma.RoomClassWhereUniqueInput
+}
+
+export type RoomClassUpdateOneWithoutServiceTariffsNestedInput = {
+  create?: Prisma.XOR<Prisma.RoomClassCreateWithoutServiceTariffsInput, Prisma.RoomClassUncheckedCreateWithoutServiceTariffsInput>
+  connectOrCreate?: Prisma.RoomClassCreateOrConnectWithoutServiceTariffsInput
+  upsert?: Prisma.RoomClassUpsertWithoutServiceTariffsInput
+  disconnect?: Prisma.RoomClassWhereInput | boolean
+  delete?: Prisma.RoomClassWhereInput | boolean
+  connect?: Prisma.RoomClassWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RoomClassUpdateToOneWithWhereWithoutServiceTariffsInput, Prisma.RoomClassUpdateWithoutServiceTariffsInput>, Prisma.RoomClassUncheckedUpdateWithoutServiceTariffsInput>
+}
+
 export type RoomClassCreateNestedOneWithoutRoomsInput = {
   create?: Prisma.XOR<Prisma.RoomClassCreateWithoutRoomsInput, Prisma.RoomClassUncheckedCreateWithoutRoomsInput>
   connectOrCreate?: Prisma.RoomClassCreateOrConnectWithoutRoomsInput
@@ -477,6 +505,74 @@ export type RoomClassUpdateOneRequiredWithoutRoomsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RoomClassUpdateToOneWithWhereWithoutRoomsInput, Prisma.RoomClassUpdateWithoutRoomsInput>, Prisma.RoomClassUncheckedUpdateWithoutRoomsInput>
 }
 
+export type RoomClassCreateWithoutServiceTariffsInput = {
+  id?: string
+  code: string
+  name: string
+  description?: string | null
+  quota?: number | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rooms?: Prisma.RoomCreateNestedManyWithoutRoomClassInput
+}
+
+export type RoomClassUncheckedCreateWithoutServiceTariffsInput = {
+  id?: string
+  code: string
+  name: string
+  description?: string | null
+  quota?: number | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rooms?: Prisma.RoomUncheckedCreateNestedManyWithoutRoomClassInput
+}
+
+export type RoomClassCreateOrConnectWithoutServiceTariffsInput = {
+  where: Prisma.RoomClassWhereUniqueInput
+  create: Prisma.XOR<Prisma.RoomClassCreateWithoutServiceTariffsInput, Prisma.RoomClassUncheckedCreateWithoutServiceTariffsInput>
+}
+
+export type RoomClassUpsertWithoutServiceTariffsInput = {
+  update: Prisma.XOR<Prisma.RoomClassUpdateWithoutServiceTariffsInput, Prisma.RoomClassUncheckedUpdateWithoutServiceTariffsInput>
+  create: Prisma.XOR<Prisma.RoomClassCreateWithoutServiceTariffsInput, Prisma.RoomClassUncheckedCreateWithoutServiceTariffsInput>
+  where?: Prisma.RoomClassWhereInput
+}
+
+export type RoomClassUpdateToOneWithWhereWithoutServiceTariffsInput = {
+  where?: Prisma.RoomClassWhereInput
+  data: Prisma.XOR<Prisma.RoomClassUpdateWithoutServiceTariffsInput, Prisma.RoomClassUncheckedUpdateWithoutServiceTariffsInput>
+}
+
+export type RoomClassUpdateWithoutServiceTariffsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rooms?: Prisma.RoomUpdateManyWithoutRoomClassNestedInput
+}
+
+export type RoomClassUncheckedUpdateWithoutServiceTariffsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rooms?: Prisma.RoomUncheckedUpdateManyWithoutRoomClassNestedInput
+}
+
 export type RoomClassCreateWithoutRoomsInput = {
   id?: string
   code: string
@@ -487,6 +583,7 @@ export type RoomClassCreateWithoutRoomsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  serviceTariffs?: Prisma.ServiceTariffCreateNestedManyWithoutRoomClassInput
 }
 
 export type RoomClassUncheckedCreateWithoutRoomsInput = {
@@ -499,6 +596,7 @@ export type RoomClassUncheckedCreateWithoutRoomsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  serviceTariffs?: Prisma.ServiceTariffUncheckedCreateNestedManyWithoutRoomClassInput
 }
 
 export type RoomClassCreateOrConnectWithoutRoomsInput = {
@@ -527,6 +625,7 @@ export type RoomClassUpdateWithoutRoomsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  serviceTariffs?: Prisma.ServiceTariffUpdateManyWithoutRoomClassNestedInput
 }
 
 export type RoomClassUncheckedUpdateWithoutRoomsInput = {
@@ -539,6 +638,7 @@ export type RoomClassUncheckedUpdateWithoutRoomsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  serviceTariffs?: Prisma.ServiceTariffUncheckedUpdateManyWithoutRoomClassNestedInput
 }
 
 
@@ -548,10 +648,12 @@ export type RoomClassUncheckedUpdateWithoutRoomsInput = {
 
 export type RoomClassCountOutputType = {
   rooms: number
+  serviceTariffs: number
 }
 
 export type RoomClassCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rooms?: boolean | RoomClassCountOutputTypeCountRoomsArgs
+  serviceTariffs?: boolean | RoomClassCountOutputTypeCountServiceTariffsArgs
 }
 
 /**
@@ -571,6 +673,13 @@ export type RoomClassCountOutputTypeCountRoomsArgs<ExtArgs extends runtime.Types
   where?: Prisma.RoomWhereInput
 }
 
+/**
+ * RoomClassCountOutputType without action
+ */
+export type RoomClassCountOutputTypeCountServiceTariffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServiceTariffWhereInput
+}
+
 
 export type RoomClassSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -583,6 +692,7 @@ export type RoomClassSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   updatedAt?: boolean
   deletedAt?: boolean
   rooms?: boolean | Prisma.RoomClass$roomsArgs<ExtArgs>
+  serviceTariffs?: boolean | Prisma.RoomClass$serviceTariffsArgs<ExtArgs>
   _count?: boolean | Prisma.RoomClassCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["roomClass"]>
 
@@ -625,6 +735,7 @@ export type RoomClassSelectScalar = {
 export type RoomClassOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "quota" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["roomClass"]>
 export type RoomClassInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rooms?: boolean | Prisma.RoomClass$roomsArgs<ExtArgs>
+  serviceTariffs?: boolean | Prisma.RoomClass$serviceTariffsArgs<ExtArgs>
   _count?: boolean | Prisma.RoomClassCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RoomClassIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -634,6 +745,7 @@ export type $RoomClassPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "RoomClass"
   objects: {
     rooms: Prisma.$RoomPayload<ExtArgs>[]
+    serviceTariffs: Prisma.$ServiceTariffPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1047,6 +1159,7 @@ readonly fields: RoomClassFieldRefs;
 export interface Prisma__RoomClassClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   rooms<T extends Prisma.RoomClass$roomsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoomClass$roomsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  serviceTariffs<T extends Prisma.RoomClass$serviceTariffsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoomClass$serviceTariffsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceTariffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1499,6 +1612,30 @@ export type RoomClass$roomsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.RoomScalarFieldEnum | Prisma.RoomScalarFieldEnum[]
+}
+
+/**
+ * RoomClass.serviceTariffs
+ */
+export type RoomClass$serviceTariffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServiceTariff
+   */
+  select?: Prisma.ServiceTariffSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServiceTariff
+   */
+  omit?: Prisma.ServiceTariffOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServiceTariffInclude<ExtArgs> | null
+  where?: Prisma.ServiceTariffWhereInput
+  orderBy?: Prisma.ServiceTariffOrderByWithRelationInput | Prisma.ServiceTariffOrderByWithRelationInput[]
+  cursor?: Prisma.ServiceTariffWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServiceTariffScalarFieldEnum | Prisma.ServiceTariffScalarFieldEnum[]
 }
 
 /**

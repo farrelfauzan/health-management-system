@@ -12,5 +12,6 @@ export type CreateServiceTariffDtoCategory = typeof CreateServiceTariffDtoCatego
 export const CreateServiceTariffDtoCategory = {
   CONSULTATION: 'CONSULTATION',
   PROCEDURE: 'PROCEDURE',
+  ACCOMMODATION: 'ACCOMMODATION',
   OTHER: 'OTHER',
 } as const;

@@ -5,6 +5,7 @@ import type {
   ServiceTariffCategoryValue,
 } from '#billing/schemas';
 import type { EncounterStatusValue } from '#emr/schemas';
+import type { RoomClassSummaryRecord } from '#room-management/types';
 
 /**
  * A price-list row. `price` is rupiah; Decimal columns surface as numbers —
@@ -17,6 +18,8 @@ export type ServiceTariffRecord = {
   name: string;
   category: ServiceTariffCategoryValue;
   icd9cmCode: string | null;
+  /** Set exactly for ACCOMMODATION rows, which price a ward class (IMP-15). */
+  roomClass: RoomClassSummaryRecord | null;
   price: number;
   isActive: boolean;
   createdAt: Date;
@@ -50,7 +53,9 @@ export type InvoiceItemRecord = {
 export type InvoiceRecord = {
   id: string;
   invoiceNumber: string;
-  encounterId: string;
+  /** Null on an inpatient bill; exactly one of the two ids is set. */
+  encounterId: string | null;
+  admissionId: string | null;
   patientId: string;
   status: InvoiceStatusValue;
   totalAmount: number;
@@ -98,6 +103,7 @@ export type CreateServiceTariffRecordPayload = {
   name: string;
   category: ServiceTariffCategoryValue;
   icd9cmCode?: string;
+  roomClassId?: string;
   price: number;
   isActive: boolean;
 };
@@ -106,6 +112,7 @@ export type UpdateServiceTariffRecordPayload = {
   id: string;
   name?: string;
   category?: ServiceTariffCategoryValue;
+  roomClassId?: string;
   icd9cmCode?: string | null;
   price?: number;
   isActive?: boolean;
@@ -135,6 +142,7 @@ export type ListInvoicesParams = {
   status?: InvoiceStatusValue;
   patientId?: string;
   encounterId?: string;
+  admissionId?: string;
   createdFrom?: Date;
   createdTo?: Date;
 };
@@ -173,7 +181,9 @@ export type CreateInvoiceItemPayload = {
 };
 
 export type CreateInvoiceRecordPayload = {
-  encounterId: string;
+  /** Exactly one of these is set — the CHECK constraint says the same thing. */
+  encounterId?: string;
+  admissionId?: string;
   patientId: string;
   createdById: string;
   invoiceDate: Date;

@@ -15,6 +15,7 @@ import { SatusehatModule } from './common/satusehat/satusehat.module';
 import { RetentionModule } from './common/retention/retention.module';
 import { StorageModule } from './common/storage/storage.module';
 import { AdminManagementModule } from './modules/admin-management/admin-management.module';
+import { AdmissionFlowModule } from './modules/admission-flow/admission-flow.module';
 import { AuditQueryModule } from './modules/audit/audit-query.module';
 import { AiChatbotModule } from './modules/ai-chatbot/ai-chatbot.module';
 import { AppointmentManagementModule } from './modules/appointment-management/appointment-management.module';
@@ -35,6 +36,7 @@ import { PatientManagementModule } from './modules/patient-management/patient-ma
 import { PharmacyFlowModule } from './modules/pharmacy-flow/pharmacy-flow.module';
 import { RbacModule } from './modules/rbac/rbac.module';
 import { RegistrationFlowModule } from './modules/registration-flow/registration-flow.module';
+import { RoomManagementModule } from './modules/room-management/room-management.module';
 import { SatusehatIntegrationModule } from './modules/satusehat/satusehat-integration.module';
 import { SpecialtyModule } from './modules/specialty/specialty.module';
 import { TerminologyModule } from './modules/terminology/terminology.module';
@@ -70,6 +72,8 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     DoctorPatientModule,
     AppointmentManagementModule,
     RegistrationFlowModule,
+    RoomManagementModule,
+    AdmissionFlowModule,
     EmrModule,
     PharmacyFlowModule,
     BillingModule,

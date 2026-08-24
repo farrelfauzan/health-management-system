@@ -20,6 +20,9 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'link',
   'read-identifier',
   'import-identifier',
+  'admit',
+  'transfer',
+  'discharge',
   'block',
   'merge',
 ];
@@ -41,6 +44,23 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   inventory: 'Inventory',
   prescription: 'Prescription',
   dispense: 'DispenseRecord',
+  // IMP-16. Three inventory subjects rather than one, mirroring the three
+  // CASL subjects the API's permission catalogue defines — a role that may
+  // rename beds is not thereby a role that may close a ward, and the sidebar
+  // must not imply otherwise.
+  // Undotted on purpose: `permissionToRule` splits an `a.b.c` key into
+  // resource `a.b` and action `c`, so a `room.class.*` key would resolve to
+  // the `Room` subject and silently widen a class grant into a room grant.
+  roomclass: 'RoomClass',
+  ward: 'Ward',
+  room: 'Room',
+  bed: 'Bed',
+  // Both scopes collapse here, as they do for `document`. `permissionToRule`
+  // drops the `:own` / `:any` suffix, so this cannot tell a ward clerk's
+  // clinic-wide grant from a doctor's own-patients one — and must not try.
+  // It decides whether the Admissions entry is visible; the API decides
+  // whose stays come back.
+  admission: 'Admission',
   'service-tariff': 'ServiceTariff',
   invoice: 'Invoice',
   payment: 'Payment',

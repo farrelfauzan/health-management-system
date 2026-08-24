@@ -12,12 +12,22 @@ import { TariffIdentifierConflictError } from './tariff-identifier-conflict.erro
 
 const UNIQUE_VIOLATION_CODE = 'P2002';
 
+const SERVICE_TARIFF_INCLUDE = {
+  roomClass: { select: { id: true, code: true, name: true } },
+} satisfies Prisma.ServiceTariffInclude;
+
+const SERVICE_TARIFF_ORDER_BY = [
+  { category: 'asc' },
+  { code: 'asc' },
+] satisfies Prisma.ServiceTariffOrderByWithRelationInput[];
+
 type ServiceTariffRow = {
   id: string;
   code: string;
   name: string;
   category: ServiceTariffRecord['category'];
   icd9cmCode: string | null;
+  roomClass: ServiceTariffRecord['roomClass'];
   price: unknown;
   isActive: boolean;
   createdAt: Date;
@@ -46,7 +56,8 @@ export class ServiceTariffRepository {
         where,
         skip,
         take: limit,
-        orderBy: [{ category: 'asc' as const }, { code: 'asc' as const }],
+        orderBy: SERVICE_TARIFF_ORDER_BY,
+        include: SERVICE_TARIFF_INCLUDE,
       });
       const count = await this.prisma.countActive(tx.serviceTariff, { where });
       return [tariffs, count] as const;
@@ -56,7 +67,10 @@ export class ServiceTariffRepository {
   }
 
   async findServiceTariffById(id: string): Promise<ServiceTariffRecord | null> {
-    const row = await this.prisma.findFirstActive(this.prisma.serviceTariff, { where: { id } });
+    const row = await this.prisma.findFirstActive(this.prisma.serviceTariff, {
+      where: { id },
+      include: SERVICE_TARIFF_INCLUDE,
+    });
     return row ? this.toServiceTariffRecord(row) : null;
   }
 
@@ -64,6 +78,21 @@ export class ServiceTariffRepository {
     const rows = await this.prisma.findManyActive(this.prisma.serviceTariff, {
       where: { category: 'CONSULTATION' as const, isActive: true },
       orderBy: { code: 'asc' as const },
+      include: SERVICE_TARIFF_INCLUDE,
+    });
+    return rows.map((row) => this.toServiceTariffRecord(row));
+  }
+
+  /**
+   * The accommodation price list. One live row per ward class is guaranteed by
+   * `service_tariffs_room_class_live_key`, so the caller may match on
+   * `roomClass` without worrying which of two prices it got.
+   */
+  async findActiveAccommodationTariffs(): Promise<ServiceTariffRecord[]> {
+    const rows = await this.prisma.findManyActive(this.prisma.serviceTariff, {
+      where: { category: 'ACCOMMODATION' as const, isActive: true },
+      orderBy: { code: 'asc' as const },
+      include: SERVICE_TARIFF_INCLUDE,
     });
     return rows.map((row) => this.toServiceTariffRecord(row));
   }
@@ -74,6 +103,7 @@ export class ServiceTariffRepository {
     }
     const rows = await this.prisma.findManyActive(this.prisma.serviceTariff, {
       where: { icd9cmCode: { in: codes }, isActive: true },
+      include: SERVICE_TARIFF_INCLUDE,
     });
     return rows.map((row) => this.toServiceTariffRecord(row));
   }
@@ -88,9 +118,11 @@ export class ServiceTariffRepository {
           name: payload.name,
           category: payload.category,
           icd9cmCode: payload.icd9cmCode,
+          roomClassId: payload.roomClassId,
           price: payload.price,
           isActive: payload.isActive,
         },
+        include: SERVICE_TARIFF_INCLUDE,
       });
       return this.toServiceTariffRecord(created);
     } catch (err) {
@@ -106,6 +138,7 @@ export class ServiceTariffRepository {
       const updated = await this.prisma.serviceTariff.update({
         where: { id },
         data: changes,
+        include: SERVICE_TARIFF_INCLUDE,
       });
       return this.toServiceTariffRecord(updated);
     } catch (err) {
@@ -147,6 +180,7 @@ export class ServiceTariffRepository {
       name: row.name,
       category: row.category,
       icd9cmCode: row.icd9cmCode,
+      roomClass: row.roomClass,
       price: Number(row.price),
       isActive: row.isActive,
       createdAt: row.createdAt,
