@@ -6436,6 +6436,2469 @@ paths:
         - bearer: []
       summary: Update a registration
       tags: *a8
+  /api/v1/room-classes:
+    get:
+      operationId: RoomClassController_listRoomClasses_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+        - name: isActive
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+      responses:
+        "200":
+          description: The clinic’s kelas perawatan catalog, ordered by code.
+            `allocatedBeds` is the live bed count sitting in rooms of each
+            class, so a quota reads as "9 of 12" without a second request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        quota:
+                          type: integer
+                        allocatedBeds:
+                          type: integer
+                        isActive:
+                          type: boolean
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - code
+                        - name
+                        - description
+                        - quota
+                        - allocatedBeds
+                        - isActive
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                      code: KELAS_1
+                      name: Kelas 1
+                      description: Kelas perawatan 1
+                      quota: 12
+                      allocatedBeds: 9
+                      isActive: true
+                      createdAt: 2026-09-05T01:55:00.000Z
+                      updatedAt: 2026-09-05T01:55:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List room classes
+      tags: &a9
+        - Room Management
+    post:
+      operationId: RoomClassController_createRoomClass_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoomClassDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  code: SUITE
+                  name: Suite
+                  description: Kamar suite dengan ruang tamu
+                  quota: 2
+      responses:
+        "201":
+          description: The class was created. Omitting `quota` leaves it uncapped, which
+            is what a clinic that has not set a ceiling means.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      quota:
+                        type: integer
+                      allocatedBeds:
+                        type: integer
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - description
+                      - quota
+                      - allocatedBeds
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                    code: KELAS_1
+                    name: Kelas 1
+                    description: Kelas perawatan 1
+                    quota: 12
+                    allocatedBeds: 9
+                    isActive: true
+                    createdAt: 2026-09-05T01:55:00.000Z
+                    updatedAt: 2026-09-05T01:55:00.000Z
+                  message: Room class created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a room class
+      tags: *a9
+  /api/v1/room-classes/{id}:
+    get:
+      operationId: RoomClassController_getRoomClass_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: One room class with its current bed allocation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      quota:
+                        type: integer
+                      allocatedBeds:
+                        type: integer
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - description
+                      - quota
+                      - allocatedBeds
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                    code: KELAS_1
+                    name: Kelas 1
+                    description: Kelas perawatan 1
+                    quota: 12
+                    allocatedBeds: 9
+                    isActive: true
+                    createdAt: 2026-09-05T01:55:00.000Z
+                    updatedAt: 2026-09-05T01:55:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Room class not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Room class not found.
+      security:
+        - bearer: []
+      summary: Get a room class
+      tags: *a9
+    patch:
+      operationId: RoomClassController_updateRoomClass_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRoomClassDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Kelas 1 (AC)
+                  quota: 14
+      responses:
+        "200":
+          description: The class was updated. `code` is immutable — the accommodation
+            tariff points at it. Lowering `quota` below the beds already
+            allocated is refused with 409; sending `null` clears it back to
+            uncapped.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      quota:
+                        type: integer
+                      allocatedBeds:
+                        type: integer
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - description
+                      - quota
+                      - allocatedBeds
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                    code: KELAS_1
+                    name: Kelas 1
+                    description: Kelas perawatan 1
+                    quota: 12
+                    allocatedBeds: 9
+                    isActive: true
+                    createdAt: 2026-09-05T01:55:00.000Z
+                    updatedAt: 2026-09-05T01:55:00.000Z
+                  message: Room class updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Room class not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Room class not found.
+      security:
+        - bearer: []
+      summary: Update a room class
+      tags: *a9
+    delete:
+      operationId: RoomClassController_retireRoomClass_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The class was retired (soft-deleted), freeing its code. Refused
+            with 409 while rooms still carry it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Room class retired
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Room class not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Room class not found.
+      security:
+        - bearer: []
+      summary: Retire a room class
+      tags: *a9
+  /api/v1/wards:
+    get:
+      operationId: WardController_listWards_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+        - name: isActive
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+      responses:
+        "200":
+          description: The filtered, paginated ward list, ordered by code.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        isActive:
+                          type: boolean
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - code
+                        - name
+                        - description
+                        - isActive
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                      code: MELATI
+                      name: Bangsal Melati
+                      description: Bangsal perawatan dewasa lantai 2
+                      isActive: true
+                      createdAt: 2026-09-05T02:00:00.000Z
+                      updatedAt: 2026-09-05T02:00:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List wards
+      tags: &a10
+        - Room Management
+    post:
+      operationId: WardController_createWard_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWardDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  code: MELATI
+                  name: Bangsal Melati
+                  description: Bangsal perawatan dewasa lantai 2
+      responses:
+        "201":
+          description: The ward was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - description
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                    code: MELATI
+                    name: Bangsal Melati
+                    description: Bangsal perawatan dewasa lantai 2
+                    isActive: true
+                    createdAt: 2026-09-05T02:00:00.000Z
+                    updatedAt: 2026-09-05T02:00:00.000Z
+                  message: Ward created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a ward
+      tags: *a10
+  /api/v1/wards/{id}:
+    get:
+      operationId: WardController_getWard_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: One ward.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - description
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                    code: MELATI
+                    name: Bangsal Melati
+                    description: Bangsal perawatan dewasa lantai 2
+                    isActive: true
+                    createdAt: 2026-09-05T02:00:00.000Z
+                    updatedAt: 2026-09-05T02:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Ward not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Ward not found.
+      security:
+        - bearer: []
+      summary: Get a ward
+      tags: *a10
+    patch:
+      operationId: WardController_updateWard_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWardDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Bangsal Melati (Lantai 2)
+                  isActive: true
+      responses:
+        "200":
+          description: The ward was updated. `code` is immutable — retire the ward and
+            create its replacement instead.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - description
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                    code: MELATI
+                    name: Bangsal Melati
+                    description: Bangsal perawatan dewasa lantai 2
+                    isActive: true
+                    createdAt: 2026-09-05T02:00:00.000Z
+                    updatedAt: 2026-09-05T02:00:00.000Z
+                  message: Ward updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Ward not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Ward not found.
+      security:
+        - bearer: []
+      summary: Update a ward
+      tags: *a10
+    delete:
+      operationId: WardController_retireWard_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The ward was retired (soft-deleted). Refused with 409 while it
+            still holds rooms, so a cascade can never take beds a patient is
+            lying in.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Ward retired
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Ward not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Ward not found.
+      security:
+        - bearer: []
+      summary: Retire a ward
+      tags: *a10
+  /api/v1/rooms:
+    get:
+      operationId: RoomController_listRooms_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: wardId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: roomClassId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+        - name: isActive
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+      responses:
+        "200":
+          description: The filtered, paginated room list with its ward, ordered by ward
+            then code.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        wardId:
+                          type: string
+                        ward:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - id
+                            - code
+                            - name
+                        roomClassId:
+                          type: string
+                        roomClass:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - id
+                            - code
+                            - name
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        isActive:
+                          type: boolean
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - wardId
+                        - ward
+                        - roomClassId
+                        - roomClass
+                        - code
+                        - name
+                        - description
+                        - isActive
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                      wardId: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                      ward:
+                        id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                        code: MELATI
+                        name: Bangsal Melati
+                      roomClassId: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                      roomClass:
+                        id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                        code: KELAS_1
+                        name: Kelas 1
+                      code: "201"
+                      name: Kamar 201
+                      description: Dua tempat tidur, kamar mandi dalam
+                      isActive: true
+                      createdAt: 2026-09-05T02:05:00.000Z
+                      updatedAt: 2026-09-05T02:05:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List rooms
+      tags: &a11
+        - Room Management
+    post:
+      operationId: RoomController_createRoom_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoomDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  wardId: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                  roomClassId: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                  code: "201"
+                  name: Kamar 201
+      responses:
+        "201":
+          description: The room was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      wardId:
+                        type: string
+                      ward:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                      roomClassId:
+                        type: string
+                      roomClass:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - wardId
+                      - ward
+                      - roomClassId
+                      - roomClass
+                      - code
+                      - name
+                      - description
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                    wardId: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                    ward:
+                      id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                      code: MELATI
+                      name: Bangsal Melati
+                    roomClassId: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                    roomClass:
+                      id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                      code: KELAS_1
+                      name: Kelas 1
+                    code: "201"
+                    name: Kamar 201
+                    description: Dua tempat tidur, kamar mandi dalam
+                    isActive: true
+                    createdAt: 2026-09-05T02:05:00.000Z
+                    updatedAt: 2026-09-05T02:05:00.000Z
+                  message: Room created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a room
+      tags: *a11
+  /api/v1/rooms/{id}:
+    get:
+      operationId: RoomController_getRoom_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: One room with its ward.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      wardId:
+                        type: string
+                      ward:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                      roomClassId:
+                        type: string
+                      roomClass:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - wardId
+                      - ward
+                      - roomClassId
+                      - roomClass
+                      - code
+                      - name
+                      - description
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                    wardId: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                    ward:
+                      id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                      code: MELATI
+                      name: Bangsal Melati
+                    roomClassId: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                    roomClass:
+                      id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                      code: KELAS_1
+                      name: Kelas 1
+                    code: "201"
+                    name: Kamar 201
+                    description: Dua tempat tidur, kamar mandi dalam
+                    isActive: true
+                    createdAt: 2026-09-05T02:05:00.000Z
+                    updatedAt: 2026-09-05T02:05:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Room not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Room not found.
+      security:
+        - bearer: []
+      summary: Get a room
+      tags: *a11
+    patch:
+      operationId: RoomController_updateRoom_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRoomDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  roomClassId: 9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d
+      responses:
+        "200":
+          description: The room was updated. Re-classing changes what tonight costs and
+            leaves nights already billed alone.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      wardId:
+                        type: string
+                      ward:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                      roomClassId:
+                        type: string
+                      roomClass:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - wardId
+                      - ward
+                      - roomClassId
+                      - roomClass
+                      - code
+                      - name
+                      - description
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                    wardId: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                    ward:
+                      id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                      code: MELATI
+                      name: Bangsal Melati
+                    roomClassId: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                    roomClass:
+                      id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                      code: KELAS_1
+                      name: Kelas 1
+                    code: "201"
+                    name: Kamar 201
+                    description: Dua tempat tidur, kamar mandi dalam
+                    isActive: true
+                    createdAt: 2026-09-05T02:05:00.000Z
+                    updatedAt: 2026-09-05T02:05:00.000Z
+                  message: Room updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Room not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Room not found.
+      security:
+        - bearer: []
+      summary: Update a room
+      tags: *a11
+    delete:
+      operationId: RoomController_retireRoom_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The room was retired (soft-deleted). Refused with 409 while it
+            still holds beds.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Room retired
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Room not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Room not found.
+      security:
+        - bearer: []
+      summary: Retire a room
+      tags: *a11
+  /api/v1/beds:
+    get:
+      operationId: BedController_listBeds_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: wardId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: roomId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - AVAILABLE
+              - OCCUPIED
+              - MAINTENANCE
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+      responses:
+        "200":
+          description: The filtered, paginated bed list. Each row carries its room and
+            ward, so a bed picker renders a full address without a second
+            request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        roomId:
+                          type: string
+                        room:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            roomClass:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                              required:
+                                - id
+                                - code
+                                - name
+                          required:
+                            - id
+                            - code
+                            - name
+                            - roomClass
+                        ward:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - id
+                            - code
+                            - name
+                        code:
+                          type: string
+                        status:
+                          type: string
+                        notes:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - roomId
+                        - room
+                        - ward
+                        - code
+                        - status
+                        - notes
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 3b4c5d6e-7f80-4192-a314-c5d6e7f8a9b0
+                      roomId: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                      room:
+                        id: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                        code: "201"
+                        name: Kamar 201
+                        roomClass:
+                          id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                          code: KELAS_1
+                          name: Kelas 1
+                      ward:
+                        id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                        code: MELATI
+                        name: Bangsal Melati
+                      code: A
+                      status: AVAILABLE
+                      notes: Dekat jendela
+                      createdAt: 2026-09-05T02:10:00.000Z
+                      updatedAt: 2026-09-05T02:10:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List beds
+      tags: &a12
+        - Room Management
+    post:
+      operationId: BedController_createBed_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBedDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  roomId: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                  code: A
+      responses:
+        "201":
+          description: The bed was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      roomId:
+                        type: string
+                      room:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          roomClass:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              code:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                              - id
+                              - code
+                              - name
+                        required:
+                          - id
+                          - code
+                          - name
+                          - roomClass
+                      ward:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                      code:
+                        type: string
+                      status:
+                        type: string
+                      notes:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - roomId
+                      - room
+                      - ward
+                      - code
+                      - status
+                      - notes
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 3b4c5d6e-7f80-4192-a314-c5d6e7f8a9b0
+                    roomId: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                    room:
+                      id: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                      code: "201"
+                      name: Kamar 201
+                      roomClass:
+                        id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                        code: KELAS_1
+                        name: Kelas 1
+                    ward:
+                      id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                      code: MELATI
+                      name: Bangsal Melati
+                    code: A
+                    status: AVAILABLE
+                    notes: Dekat jendela
+                    createdAt: 2026-09-05T02:10:00.000Z
+                    updatedAt: 2026-09-05T02:10:00.000Z
+                  message: Bed created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a bed
+      tags: *a12
+  /api/v1/beds/{id}:
+    get:
+      operationId: BedController_getBed_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: One bed with its room and ward.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      roomId:
+                        type: string
+                      room:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          roomClass:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              code:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                              - id
+                              - code
+                              - name
+                        required:
+                          - id
+                          - code
+                          - name
+                          - roomClass
+                      ward:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                      code:
+                        type: string
+                      status:
+                        type: string
+                      notes:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - roomId
+                      - room
+                      - ward
+                      - code
+                      - status
+                      - notes
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 3b4c5d6e-7f80-4192-a314-c5d6e7f8a9b0
+                    roomId: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                    room:
+                      id: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                      code: "201"
+                      name: Kamar 201
+                      roomClass:
+                        id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                        code: KELAS_1
+                        name: Kelas 1
+                    ward:
+                      id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                      code: MELATI
+                      name: Bangsal Melati
+                    code: A
+                    status: AVAILABLE
+                    notes: Dekat jendela
+                    createdAt: 2026-09-05T02:10:00.000Z
+                    updatedAt: 2026-09-05T02:10:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Bed not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Bed not found.
+      security:
+        - bearer: []
+      summary: Get a bed
+      tags: *a12
+    patch:
+      operationId: BedController_updateBed_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBedDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  status: MAINTENANCE
+                  notes: Perbaikan rangka tempat tidur
+      responses:
+        "200":
+          description: The bed was updated. `status` accepts AVAILABLE and MAINTENANCE
+            only — OCCUPIED is written by the admission flow, never by an
+            inventory edit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      roomId:
+                        type: string
+                      room:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          roomClass:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              code:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                              - id
+                              - code
+                              - name
+                        required:
+                          - id
+                          - code
+                          - name
+                          - roomClass
+                      ward:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                      code:
+                        type: string
+                      status:
+                        type: string
+                      notes:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - roomId
+                      - room
+                      - ward
+                      - code
+                      - status
+                      - notes
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 3b4c5d6e-7f80-4192-a314-c5d6e7f8a9b0
+                    roomId: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                    room:
+                      id: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                      code: "201"
+                      name: Kamar 201
+                      roomClass:
+                        id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                        code: KELAS_1
+                        name: Kelas 1
+                    ward:
+                      id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                      code: MELATI
+                      name: Bangsal Melati
+                    code: A
+                    status: AVAILABLE
+                    notes: Dekat jendela
+                    createdAt: 2026-09-05T02:10:00.000Z
+                    updatedAt: 2026-09-05T02:10:00.000Z
+                  message: Bed updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Bed not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Bed not found.
+      security:
+        - bearer: []
+      summary: Update a bed
+      tags: *a12
+    delete:
+      operationId: BedController_retireBed_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The bed was retired (soft-deleted). Refused with 409 while a
+            patient is assigned to it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Bed retired
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Bed not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Bed not found.
+      security:
+        - bearer: []
+      summary: Retire a bed
+      tags: *a12
+  /api/v1/room-occupancy:
+    get:
+      operationId: RoomOccupancyController_getOccupancy_v1
+      parameters:
+        - name: wardId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: roomClassId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Bed counts per ward and room, with ward totals summed. Empty wards
+            and empty rooms appear with zeroes rather than being dropped.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        wardId:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        totalBeds:
+                          type: integer
+                        availableBeds:
+                          type: integer
+                        occupiedBeds:
+                          type: integer
+                        maintenanceBeds:
+                          type: integer
+                        rooms:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              roomId:
+                                type: string
+                              code:
+                                type: string
+                              name:
+                                type: string
+                              roomClass:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                  code:
+                                    type: string
+                                  name:
+                                    type: string
+                                required:
+                                  - id
+                                  - code
+                                  - name
+                              totalBeds:
+                                type: integer
+                              availableBeds:
+                                type: integer
+                              occupiedBeds:
+                                type: integer
+                              maintenanceBeds:
+                                type: integer
+                            required:
+                              - roomId
+                              - code
+                              - name
+                              - roomClass
+                              - totalBeds
+                              - availableBeds
+                              - occupiedBeds
+                              - maintenanceBeds
+                      required:
+                        - wardId
+                        - code
+                        - name
+                        - totalBeds
+                        - availableBeds
+                        - occupiedBeds
+                        - maintenanceBeds
+                        - rooms
+                required:
+                  - data
+                example:
+                  data:
+                    - wardId: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
+                      code: MELATI
+                      name: Bangsal Melati
+                      totalBeds: 4
+                      availableBeds: 2
+                      occupiedBeds: 1
+                      maintenanceBeds: 1
+                      rooms:
+                        - roomId: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
+                          code: "201"
+                          name: Kamar 201
+                          roomClass:
+                            id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
+                            code: KELAS_1
+                            name: Kelas 1
+                          totalBeds: 4
+                          availableBeds: 2
+                          occupiedBeds: 1
+                          maintenanceBeds: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get the occupancy board
+      tags:
+        - Room Management
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
@@ -6654,7 +9117,7 @@ paths:
       security:
         - bearer: []
       summary: List clinical encounters
-      tags: &a9
+      tags: &a13
         - Encounters
     post:
       operationId: EncounterController_openEncounter_v1
@@ -6821,7 +9284,7 @@ paths:
       security:
         - bearer: []
       summary: Open a clinical encounter
-      tags: *a9
+      tags: *a13
   /api/v1/encounters/{id}:
     get:
       operationId: EncounterController_getEncounterById_v1
@@ -7150,7 +9613,7 @@ paths:
       security:
         - bearer: []
       summary: Get a clinical encounter
-      tags: *a9
+      tags: *a13
     patch:
       operationId: EncounterController_updateEncounterSoap_v1
       parameters:
@@ -7333,7 +9796,7 @@ paths:
       security:
         - bearer: []
       summary: Write the SOAP note
-      tags: *a9
+      tags: *a13
   /api/v1/encounters/{id}/close:
     post:
       operationId: EncounterController_closeEncounter_v1
@@ -7498,7 +9961,7 @@ paths:
       security:
         - bearer: []
       summary: Close a clinical encounter
-      tags: *a9
+      tags: *a13
   /api/v1/encounters/{id}/cancel:
     post:
       operationId: EncounterController_cancelEncounter_v1
@@ -7663,7 +10126,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a clinical encounter
-      tags: *a9
+      tags: *a13
   /api/v1/encounters/{encounterId}/vital-signs:
     post:
       operationId: EncounterClinicalDataController_recordVitalSigns_v1
@@ -7812,7 +10275,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vital-signs measurement
-      tags: &a10
+      tags: &a14
         - Encounters
   /api/v1/encounters/{encounterId}/diagnoses:
     post:
@@ -7936,7 +10399,7 @@ paths:
       security:
         - bearer: []
       summary: Code a diagnosis
-      tags: *a10
+      tags: *a14
   /api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}:
     delete:
       operationId: EncounterClinicalDataController_removeDiagnosis_v1
@@ -7996,7 +10459,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a diagnosis
-      tags: *a10
+      tags: *a14
   /api/v1/encounters/{encounterId}/procedures:
     post:
       operationId: EncounterClinicalDataController_addProcedure_v1
@@ -8114,7 +10577,7 @@ paths:
       security:
         - bearer: []
       summary: Code a procedure
-      tags: *a10
+      tags: *a14
   /api/v1/encounters/{encounterId}/procedures/{procedureId}:
     delete:
       operationId: EncounterClinicalDataController_removeProcedure_v1
@@ -8173,7 +10636,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a procedure
-      tags: *a10
+      tags: *a14
   /api/v1/encounters/{encounterId}/bpjs-referral:
     put:
       operationId: EncounterClinicalDataController_saveBpjsReferral_v1
@@ -8297,7 +10760,7 @@ paths:
       security:
         - bearer: []
       summary: Record or replace the encounter’s BPJS rujukan
-      tags: *a10
+      tags: *a14
     get:
       operationId: EncounterClinicalDataController_getBpjsReferral_v1
       parameters:
@@ -8388,7 +10851,7 @@ paths:
       security:
         - bearer: []
       summary: Read the encounter’s recorded BPJS rujukan
-      tags: *a10
+      tags: *a14
     delete:
       operationId: EncounterClinicalDataController_removeBpjsReferral_v1
       parameters:
@@ -8442,7 +10905,7 @@ paths:
       security:
         - bearer: []
       summary: Retract the encounter’s BPJS rujukan
-      tags: *a10
+      tags: *a14
   /api/v1/medications:
     get:
       operationId: MedicationController_listMedications_v1
@@ -8603,7 +11066,7 @@ paths:
       security:
         - bearer: []
       summary: List medications
-      tags: &a11
+      tags: &a15
         - Pharmacy Flow
     post:
       operationId: MedicationController_createMedication_v1
@@ -8728,7 +11191,7 @@ paths:
       security:
         - bearer: []
       summary: Create a medication
-      tags: *a11
+      tags: *a15
   /api/v1/medications/{id}:
     patch:
       operationId: MedicationController_updateMedication_v1
@@ -8862,7 +11325,7 @@ paths:
       security:
         - bearer: []
       summary: Update a medication
-      tags: *a11
+      tags: *a15
   /api/v1/prescriptions:
     get:
       operationId: PrescriptionController_listPrescriptions_v1
@@ -9083,7 +11546,7 @@ paths:
       security:
         - bearer: []
       summary: List prescriptions
-      tags: &a12
+      tags: &a16
         - Pharmacy Flow
     post:
       operationId: PrescriptionController_createPrescription_v1
@@ -9275,7 +11738,7 @@ paths:
       security:
         - bearer: []
       summary: Create a prescription
-      tags: *a12
+      tags: *a16
   /api/v1/dispenses:
     post:
       operationId: DispenseController_createDispense_v1
@@ -9549,7 +12012,7 @@ paths:
       security:
         - bearer: []
       summary: List stock receipts
-      tags: &a13
+      tags: &a17
         - Pharmacy Inventory
     post:
       operationId: InventoryController_createReceipt_v1
@@ -9672,7 +12135,7 @@ paths:
       security:
         - bearer: []
       summary: Record a stock receipt
-      tags: *a13
+      tags: *a17
   /api/v1/inventory/summary:
     get:
       operationId: InventoryController_getSummary_v1
@@ -9771,7 +12234,7 @@ paths:
       security:
         - bearer: []
       summary: Get inventory summary
-      tags: *a13
+      tags: *a17
   /api/v1/inventory/expiry-report:
     get:
       operationId: InventoryController_getExpiryReport_v1
@@ -9899,7 +12362,7 @@ paths:
       security:
         - bearer: []
       summary: Get medication expiry report
-      tags: *a13
+      tags: *a17
   /api/v1/service-tariffs:
     get:
       operationId: ServiceTariffController_listServiceTariffs_v1
@@ -10035,7 +12498,7 @@ paths:
       security:
         - bearer: []
       summary: List service tariffs
-      tags: &a14
+      tags: &a18
         - Service Tariffs
     post:
       operationId: ServiceTariffController_createServiceTariff_v1
@@ -10137,7 +12600,7 @@ paths:
       security:
         - bearer: []
       summary: Create a service tariff
-      tags: *a14
+      tags: *a18
   /api/v1/service-tariffs/{id}:
     patch:
       operationId: ServiceTariffController_updateServiceTariff_v1
@@ -10251,7 +12714,7 @@ paths:
       security:
         - bearer: []
       summary: Update a service tariff
-      tags: *a14
+      tags: *a18
   /api/v1/invoices:
     get:
       operationId: InvoiceController_listInvoices_v1
@@ -10423,7 +12886,7 @@ paths:
       security:
         - bearer: []
       summary: List invoices
-      tags: &a15
+      tags: &a19
         - Invoices
     post:
       operationId: InvoiceController_generateInvoice_v1
@@ -10607,7 +13070,7 @@ paths:
       security:
         - bearer: []
       summary: Generate an invoice from a finished encounter
-      tags: *a15
+      tags: *a19
   /api/v1/invoices/{id}:
     get:
       operationId: InvoiceController_getInvoiceById_v1
@@ -10757,7 +13220,7 @@ paths:
       security:
         - bearer: []
       summary: Get an invoice
-      tags: *a15
+      tags: *a19
   /api/v1/invoices/{id}/issue:
     post:
       operationId: InvoiceController_issueInvoice_v1
@@ -10912,7 +13375,7 @@ paths:
       security:
         - bearer: []
       summary: Issue a draft invoice
-      tags: *a15
+      tags: *a19
   /api/v1/invoices/{id}/payment:
     post:
       operationId: InvoiceController_recordPayment_v1
@@ -11122,7 +13585,7 @@ paths:
       security:
         - bearer: []
       summary: Record the payment for an issued invoice
-      tags: *a15
+      tags: *a19
   /api/v1/invoices/{id}/void:
     post:
       operationId: InvoiceController_voidInvoice_v1
@@ -11303,7 +13766,7 @@ paths:
       security:
         - bearer: []
       summary: Void an invoice
-      tags: *a15
+      tags: *a19
   /api/v1/reports/cashier-daily:
     get:
       operationId: CashierReportController_getDailyReport_v1
@@ -11489,7 +13952,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a16
+      tags: &a20
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -11560,7 +14023,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a16
+      tags: *a20
   /api/v1/satusehat/submissions:
     get:
       operationId: SatusehatSubmissionController_listSubmissions_v1
@@ -11701,7 +14164,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: &a17
+      tags: &a21
         - SATUSEHAT
   /api/v1/satusehat/submissions/{id}/retry:
     post:
@@ -11810,7 +14273,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a17
+      tags: *a21
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -11924,7 +14387,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a18
+      tags: &a22
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -12062,7 +14525,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a18
+      tags: *a22
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -12121,7 +14584,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a18
+      tags: *a22
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -12187,7 +14650,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a18
+      tags: *a22
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -12275,7 +14738,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a19
+      tags: &a23
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -12342,7 +14805,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a19
+      tags: *a23
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -12436,7 +14899,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a19
+      tags: *a23
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -12542,7 +15005,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a19
+      tags: *a23
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -12630,7 +15093,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a20
+      tags: &a24
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -12724,7 +15187,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a20
+      tags: *a24
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -12813,7 +15276,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a20
+      tags: *a24
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -12907,7 +15370,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a20
+      tags: *a24
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -13207,7 +15670,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a21
+      tags: &a25
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -13316,7 +15779,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a21
+      tags: *a25
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -13563,7 +16026,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a22
+      tags: &a26
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -13704,7 +16167,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a22
+      tags: *a26
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -13763,7 +16226,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a22
+      tags: *a26
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -13829,7 +16292,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a22
+      tags: *a26
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -13899,7 +16362,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a22
+      tags: *a26
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -14001,7 +16464,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a22
+      tags: *a26
   /api/v1/admin/ai-providers:
     get:
       operationId: AiProviderController_listConfigs_v1
@@ -14123,7 +16586,7 @@ paths:
       security:
         - bearer: []
       summary: List the clinic’s AI provider configurations
-      tags: &a23
+      tags: &a27
         - AI Chatbot
     post:
       operationId: AiProviderController_createConfig_v1
@@ -14259,7 +16722,7 @@ paths:
       security:
         - bearer: []
       summary: Create an AI provider configuration
-      tags: *a23
+      tags: *a27
   /api/v1/admin/ai-providers/{id}:
     patch:
       operationId: AiProviderController_updateConfig_v1
@@ -14405,7 +16868,7 @@ paths:
       security:
         - bearer: []
       summary: Update an AI provider configuration
-      tags: *a23
+      tags: *a27
     delete:
       operationId: AiProviderController_deleteConfig_v1
       parameters:
@@ -14470,7 +16933,7 @@ paths:
       security:
         - bearer: []
       summary: Retire an AI provider configuration
-      tags: *a23
+      tags: *a27
   /api/v1/admin/ai-providers/{id}/activate:
     post:
       operationId: AiProviderController_activateConfig_v1
@@ -14595,7 +17058,7 @@ paths:
       security:
         - bearer: []
       summary: Route chat traffic to an AI provider configuration
-      tags: *a23
+      tags: *a27
   /api/v1/admin/ai-providers/{id}/test:
     post:
       operationId: AiProviderController_testConnection_v1
@@ -14668,7 +17131,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored AI provider credentials
-      tags: *a23
+      tags: *a27
   /api/v1/chat/availability:
     get:
       operationId: ChatController_getAvailability_v1
@@ -14728,7 +17191,7 @@ paths:
       security:
         - bearer: []
       summary: Check whether chat can answer right now
-      tags: &a24
+      tags: &a28
         - AI Chatbot
   /api/v1/chat/sessions:
     post:
@@ -14826,7 +17289,7 @@ paths:
       security:
         - bearer: []
       summary: Start a chat session
-      tags: *a24
+      tags: *a28
     get:
       operationId: ChatController_listSessions_v1
       parameters:
@@ -14930,7 +17393,7 @@ paths:
       security:
         - bearer: []
       summary: List your own chat sessions
-      tags: *a24
+      tags: *a28
   /api/v1/chat/admin/sessions:
     get:
       operationId: ChatController_listAllSessions_v1
@@ -15041,7 +17504,7 @@ paths:
       security:
         - bearer: []
       summary: List every chat session (admin support view)
-      tags: *a24
+      tags: *a28
   /api/v1/chat/sessions/{id}:
     get:
       operationId: ChatController_getSession_v1
@@ -15123,7 +17586,7 @@ paths:
       security:
         - bearer: []
       summary: Read one of your chat sessions
-      tags: *a24
+      tags: *a28
     delete:
       operationId: ChatController_deleteSession_v1
       parameters:
@@ -15189,7 +17652,7 @@ paths:
       security:
         - bearer: []
       summary: Delete one of your chat sessions
-      tags: *a24
+      tags: *a28
   /api/v1/chat/sessions/{id}/messages:
     post:
       operationId: ChatController_sendMessage_v1
@@ -15416,7 +17879,7 @@ paths:
       security:
         - bearer: []
       summary: Send a message and receive the assistant’s reply
-      tags: *a24
+      tags: *a28
     get:
       operationId: ChatController_listMessages_v1
       parameters:
@@ -15543,7 +18006,7 @@ paths:
       security:
         - bearer: []
       summary: Read a session transcript
-      tags: *a24
+      tags: *a28
   /api/v1/admin/documents/upload-url:
     post:
       operationId: DocumentAdminController_createUploadUrl_v1
@@ -15638,7 +18101,7 @@ paths:
       security:
         - bearer: []
       summary: Sign a browser-direct upload of a clinic document
-      tags: &a25
+      tags: &a29
         - Document Management
   /api/v1/admin/documents:
     post:
@@ -15783,7 +18246,7 @@ paths:
       security:
         - bearer: []
       summary: Record a completed upload as a clinic document
-      tags: *a25
+      tags: *a29
     get:
       operationId: DocumentAdminController_listDocuments_v1
       parameters:
@@ -15973,7 +18436,7 @@ paths:
       security:
         - bearer: []
       summary: List clinic documents
-      tags: *a25
+      tags: *a29
   /api/v1/admin/documents/{id}:
     get:
       operationId: DocumentAdminController_getDocument_v1
@@ -16095,7 +18558,7 @@ paths:
       security:
         - bearer: []
       summary: Read one clinic document
-      tags: *a25
+      tags: *a29
     patch:
       operationId: DocumentAdminController_updateDocument_v1
       parameters:
@@ -16243,7 +18706,7 @@ paths:
       security:
         - bearer: []
       summary: Edit a clinic document’s metadata
-      tags: *a25
+      tags: *a29
     delete:
       operationId: DocumentAdminController_deleteDocument_v1
       parameters:
@@ -16318,7 +18781,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a clinic document
-      tags: *a25
+      tags: *a29
   /api/v1/admin/documents/{id}/download:
     get:
       operationId: DocumentAdminController_getDownloadUrl_v1
@@ -16384,7 +18847,7 @@ paths:
       security:
         - bearer: []
       summary: Mint a signed download URL for a clinic document
-      tags: *a25
+      tags: *a29
   /api/v1/admin/documents/{id}/ingest:
     post:
       operationId: DocumentAdminController_reingestDocument_v1
@@ -16514,7 +18977,7 @@ paths:
       security:
         - bearer: []
       summary: Queue a clinic document for re-ingestion
-      tags: *a25
+      tags: *a29
   /api/v1/me/documents/upload-url:
     post:
       operationId: PersonalDocumentController_createUploadUrl_v1
@@ -16609,7 +19072,7 @@ paths:
       security:
         - bearer: []
       summary: Sign a browser-direct upload into your own knowledge base
-      tags: &a26
+      tags: &a30
         - Document Management
   /api/v1/me/documents:
     post:
@@ -16740,7 +19203,7 @@ paths:
       security:
         - bearer: []
       summary: Record a completed upload in your own knowledge base
-      tags: *a26
+      tags: *a30
     get:
       operationId: PersonalDocumentController_listDocuments_v1
       parameters:
@@ -16886,7 +19349,7 @@ paths:
       security:
         - bearer: []
       summary: List the documents in your own knowledge base
-      tags: *a26
+      tags: *a30
   /api/v1/me/documents/{id}:
     get:
       operationId: PersonalDocumentController_getDocument_v1
@@ -17000,7 +19463,7 @@ paths:
       security:
         - bearer: []
       summary: Read one document from your own knowledge base
-      tags: *a26
+      tags: *a30
     patch:
       operationId: PersonalDocumentController_updateDocument_v1
       parameters:
@@ -17138,7 +19601,7 @@ paths:
       security:
         - bearer: []
       summary: Edit one of your documents’ metadata
-      tags: *a26
+      tags: *a30
     delete:
       operationId: PersonalDocumentController_deleteDocument_v1
       parameters:
@@ -17212,7 +19675,7 @@ paths:
       security:
         - bearer: []
       summary: Remove a document from your own knowledge base
-      tags: *a26
+      tags: *a30
   /api/v1/me/documents/{id}/download:
     get:
       operationId: PersonalDocumentController_getDownloadUrl_v1
@@ -17278,7 +19741,7 @@ paths:
       security:
         - bearer: []
       summary: Mint a signed download URL for one of your documents
-      tags: *a26
+      tags: *a30
   /api/v1/me/documents/{id}/ingest:
     post:
       operationId: PersonalDocumentController_reingestDocument_v1
@@ -17397,7 +19860,7 @@ paths:
       security:
         - bearer: []
       summary: Queue one of your documents for re-ingestion
-      tags: *a26
+      tags: *a30
   /api/v1/admin/channel-gateway/whatsapp/session:
     get:
       operationId: ChannelGatewayAdminController_getSessionHealth_v1
@@ -17466,7 +19929,7 @@ paths:
       security:
         - bearer: []
       summary: Read the WhatsApp session’s health
-      tags: &a27
+      tags: &a31
         - Channel Gateway
   /api/v1/admin/channel-gateway/whatsapp/session/pairing:
     post:
@@ -17527,7 +19990,7 @@ paths:
       security:
         - bearer: []
       summary: Start a QR pairing for the WhatsApp session
-      tags: *a27
+      tags: *a31
   /api/v1/admin/channel-gateway/telegram/webhook:
     get:
       operationId: ChannelGatewayAdminController_getTelegramWebhookHealth_v1
@@ -17618,7 +20081,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Telegram webhook’s registration health
-      tags: *a27
+      tags: *a31
     post:
       operationId: ChannelGatewayAdminController_registerTelegramWebhook_v1
       parameters: []
@@ -17710,7 +20173,7 @@ paths:
       security:
         - bearer: []
       summary: Point Telegram at this deployment
-      tags: *a27
+      tags: *a31
   /api/v1/admin/conversations:
     get:
       operationId: CsAdminController_listConversations_v1
@@ -17860,7 +20323,7 @@ paths:
       security:
         - bearer: []
       summary: List channel conversations
-      tags: &a28
+      tags: &a32
         - Customer Service
   /api/v1/admin/conversations/handoff-summary:
     get:
@@ -17921,7 +20384,7 @@ paths:
       security:
         - bearer: []
       summary: Count the conversations waiting for a human
-      tags: *a28
+      tags: *a32
   /api/v1/admin/conversations/metrics:
     get:
       operationId: CsAdminController_getMetrics_v1
@@ -18068,7 +20531,7 @@ paths:
       security:
         - bearer: []
       summary: Read the channel’s operating metrics (§8.4)
-      tags: *a28
+      tags: *a32
   /api/v1/admin/conversations/{id}:
     get:
       operationId: CsAdminController_getTranscript_v1
@@ -18243,7 +20706,7 @@ paths:
       security:
         - bearer: []
       summary: Read one conversation transcript
-      tags: *a28
+      tags: *a32
   /api/v1/admin/conversations/{id}/takeover:
     post:
       operationId: CsAdminController_takeOver_v1
@@ -18353,7 +20816,7 @@ paths:
       security:
         - bearer: []
       summary: Take a conversation over from the bot
-      tags: *a28
+      tags: *a32
   /api/v1/admin/conversations/{id}/release:
     post:
       operationId: CsAdminController_release_v1
@@ -18461,7 +20924,7 @@ paths:
       security:
         - bearer: []
       summary: Hand a conversation back to the bot
-      tags: *a28
+      tags: *a32
   /api/v1/admin/conversations/{id}/reply:
     post:
       operationId: CsAdminController_reply_v1
@@ -18577,7 +21040,7 @@ paths:
       security:
         - bearer: []
       summary: Reply to the customer on their original channel
-      tags: *a28
+      tags: *a32
   /api/v1/admin/conversations/{id}/block:
     post:
       operationId: CsAdminController_block_v1
@@ -18705,7 +21168,7 @@ paths:
       security:
         - bearer: []
       summary: Block a chat (§8.3 abuse control)
-      tags: *a28
+      tags: *a32
     delete:
       operationId: CsAdminController_unblock_v1
       parameters:
@@ -18811,7 +21274,7 @@ paths:
       security:
         - bearer: []
       summary: Unblock a chat
-      tags: *a28
+      tags: *a32
   /api/v1/admin/channel-arrivals:
     get:
       operationId: ChannelArrivalController_listArrivals_v1
@@ -18976,7 +21439,7 @@ paths:
       security:
         - bearer: []
       summary: List channel-sourced bookings for the check-in desk
-      tags: &a29
+      tags: &a33
         - Customer Service
   /api/v1/admin/channel-arrivals/merge-candidates:
     get:
@@ -19063,7 +21526,7 @@ paths:
       security:
         - bearer: []
       summary: Find the records a chat-created draft could be merged into
-      tags: *a29
+      tags: *a33
   /api/v1/admin/channel-arrivals/patients/{draftPatientId}/merge:
     post:
       operationId: ChannelArrivalController_mergeDraftPatient_v1
@@ -19171,7 +21634,7 @@ paths:
       security:
         - bearer: []
       summary: Merge a chat-created draft into an existing patient
-      tags: *a29
+      tags: *a33
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -19250,7 +21713,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a30
+      tags: &a34
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -19367,7 +21830,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a30
+      tags: *a34
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -19490,7 +21953,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a31
+      tags: &a35
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -19577,7 +22040,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a31
+      tags: *a35
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -19657,7 +22120,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a31
+      tags: *a35
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -19776,7 +22239,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a31
+      tags: *a35
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -19875,7 +22338,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a31
+      tags: *a35
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -19951,7 +22414,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a31
+      tags: *a35
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -20097,7 +22560,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a31
+      tags: *a35
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -20189,7 +22652,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a31
+      tags: *a35
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -20281,7 +22744,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a31
+      tags: *a35
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -21313,6 +23776,163 @@ components:
         appointmentId:
           type: string
           format: uuid
+          nullable: true
+    CreateRoomClassDto:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+          pattern: ^[A-Za-z0-9][A-Za-z0-9\-_.]*$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        quota:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 9999
+          exclusiveMaximum: false
+        isActive:
+          type: boolean
+      required:
+        - code
+        - name
+    UpdateRoomClassDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+        quota:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 9999
+          exclusiveMaximum: false
+          nullable: true
+        isActive:
+          type: boolean
+    CreateWardDto:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+          pattern: ^[A-Za-z0-9][A-Za-z0-9\-_.]*$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        isActive:
+          type: boolean
+      required:
+        - code
+        - name
+    UpdateWardDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+        isActive:
+          type: boolean
+    CreateRoomDto:
+      type: object
+      properties:
+        wardId:
+          type: string
+          format: uuid
+        roomClassId:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+          pattern: ^[A-Za-z0-9][A-Za-z0-9\-_.]*$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        isActive:
+          type: boolean
+      required:
+        - wardId
+        - roomClassId
+        - code
+        - name
+    UpdateRoomDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        roomClassId:
+          type: string
+          format: uuid
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+        isActive:
+          type: boolean
+    CreateBedDto:
+      type: object
+      properties:
+        roomId:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+          pattern: ^[A-Za-z0-9][A-Za-z0-9\-_.]*$
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - MAINTENANCE
+        notes:
+          type: string
+          maxLength: 1000
+      required:
+        - roomId
+        - code
+    UpdateBedDto:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - MAINTENANCE
+        notes:
+          type: string
+          maxLength: 1000
           nullable: true
     OpenEncounterDto:
       type: object

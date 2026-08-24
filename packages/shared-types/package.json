@@ -69,6 +69,9 @@
     "#feature-entitlement/schemas": "./src/feature-entitlement/schemas.ts",
     "#feature-entitlement/contracts": "./src/feature-entitlement/contracts.ts",
     "#feature-entitlement/types": "./src/feature-entitlement/types.ts",
+    "#room-management/schemas": "./src/room-management/schemas.ts",
+    "#room-management/contracts": "./src/room-management/contracts.ts",
+    "#room-management/types": "./src/room-management/types.ts",
     "#audit/schemas": "./src/audit/schemas.ts",
     "#audit/contracts": "./src/audit/contracts.ts",
     "#audit/types": "./src/audit/types.ts"
