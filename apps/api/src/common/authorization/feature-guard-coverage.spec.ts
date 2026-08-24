@@ -45,6 +45,7 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   RoomController: 'room-management',
   BedController: 'room-management',
   RoomOccupancyController: 'room-management',
+  AdmissionFlowController: 'room-management',
 };
 
 /**
