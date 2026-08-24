@@ -563,3 +563,21 @@ export const ChannelVerificationMethod = {
 } as const
 
 export type ChannelVerificationMethod = (typeof ChannelVerificationMethod)[keyof typeof ChannelVerificationMethod]
+
+
+export const BedStatus = {
+  AVAILABLE: 'AVAILABLE',
+  OCCUPIED: 'OCCUPIED',
+  MAINTENANCE: 'MAINTENANCE'
+} as const
+
+export type BedStatus = (typeof BedStatus)[keyof typeof BedStatus]
+
+
+export const AdmissionStatus = {
+  ADMITTED: 'ADMITTED',
+  DISCHARGED: 'DISCHARGED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type AdmissionStatus = (typeof AdmissionStatus)[keyof typeof AdmissionStatus]

@@ -473,39 +473,41 @@ model User {
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
 
-  roles                    UserRole[]
-  assignedRoles            UserRole[]                   @relation("RoleAssignedBy")
-  unassignedRoles          UserRole[]                   @relation("RoleUnassignedBy")
-  patientProfiles          PatientProfile[]
-  doctorProfile            DoctorProfile?
-  assignedDoctorPatients   DoctorPatient[]              @relation("DoctorPatientAssignedBy")
-  unassignedDoctorPatients DoctorPatient[]              @relation("DoctorPatientUnassignedBy")
-  doctorPatientActivities  DoctorPatientActivity[]      @relation("DoctorPatientActivityActor")
-  createdAppointments      Appointment[]                @relation("AppointmentCreatedBy")
-  createdRegistrations     Registration[]               @relation("RegistrationCreatedBy")
-  createdEncounters        Encounter[]                  @relation("EncounterCreatedBy")
-  recordedVitalSigns       VitalSigns[]                 @relation("VitalSignsRecordedBy")
-  recordedDiagnoses        Diagnosis[]                  @relation("DiagnosisRecordedBy")
-  recordedProcedures       Procedure[]                  @relation("ProcedureRecordedBy")
-  recordedBpjsReferrals    BpjsReferral[]               @relation("BpjsReferralRecordedBy")
-  dispensedByRecords       DispenseRecord[]             @relation("DispensePharmacist")
-  medicationStockReceipts  MedicationStockReceipt[]     @relation("MedicationStockReceiptReceivedBy")
-  createdInvoices          Invoice[]                    @relation("InvoiceCreatedBy")
-  voidedInvoices           Invoice[]                    @relation("InvoiceVoidedBy")
-  receivedPayments         Payment[]                    @relation("PaymentCashier")
-  refreshTokens            RefreshToken[]
-  mfaCredential            MfaCredential?
-  mfaRecoveryCodes         MfaRecoveryCode[]
-  privacyNoticeRecords     PatientPrivacyNoticeRecord[] @relation("PrivacyNoticeActor")
-  chatSessions             ChatSession[]                @relation("ChatSessionOwner")
-  chatMessages             ChatMessage[]                @relation("ChatMessageAuthor")
-  createdAiProviderConfigs AiProviderConfig[]           @relation("AiProviderConfigCreatedBy")
-  updatedAiProviderConfigs AiProviderConfig[]           @relation("AiProviderConfigUpdatedBy")
-  uploadedDocuments        Document[]                   @relation("DocumentUploadedBy")
-  ownedDocuments           Document[]                   @relation("DocumentOwner")
-  blockedConversations     Conversation[]               @relation("ConversationBlockedBy")
-  conversationMessages     ConversationMessage[]        @relation("ConversationMessageAuthor")
-  updatedFeatureEntitlements FeatureEntitlement[]       @relation("FeatureEntitlementUpdatedBy")
+  roles                      UserRole[]
+  assignedRoles              UserRole[]                   @relation("RoleAssignedBy")
+  unassignedRoles            UserRole[]                   @relation("RoleUnassignedBy")
+  patientProfiles            PatientProfile[]
+  doctorProfile              DoctorProfile?
+  assignedDoctorPatients     DoctorPatient[]              @relation("DoctorPatientAssignedBy")
+  unassignedDoctorPatients   DoctorPatient[]              @relation("DoctorPatientUnassignedBy")
+  doctorPatientActivities    DoctorPatientActivity[]      @relation("DoctorPatientActivityActor")
+  createdAppointments        Appointment[]                @relation("AppointmentCreatedBy")
+  createdRegistrations       Registration[]               @relation("RegistrationCreatedBy")
+  createdEncounters          Encounter[]                  @relation("EncounterCreatedBy")
+  recordedVitalSigns         VitalSigns[]                 @relation("VitalSignsRecordedBy")
+  recordedDiagnoses          Diagnosis[]                  @relation("DiagnosisRecordedBy")
+  recordedProcedures         Procedure[]                  @relation("ProcedureRecordedBy")
+  recordedBpjsReferrals      BpjsReferral[]               @relation("BpjsReferralRecordedBy")
+  dispensedByRecords         DispenseRecord[]             @relation("DispensePharmacist")
+  medicationStockReceipts    MedicationStockReceipt[]     @relation("MedicationStockReceiptReceivedBy")
+  createdInvoices            Invoice[]                    @relation("InvoiceCreatedBy")
+  voidedInvoices             Invoice[]                    @relation("InvoiceVoidedBy")
+  receivedPayments           Payment[]                    @relation("PaymentCashier")
+  refreshTokens              RefreshToken[]
+  mfaCredential              MfaCredential?
+  mfaRecoveryCodes           MfaRecoveryCode[]
+  privacyNoticeRecords       PatientPrivacyNoticeRecord[] @relation("PrivacyNoticeActor")
+  chatSessions               ChatSession[]                @relation("ChatSessionOwner")
+  chatMessages               ChatMessage[]                @relation("ChatMessageAuthor")
+  createdAiProviderConfigs   AiProviderConfig[]           @relation("AiProviderConfigCreatedBy")
+  updatedAiProviderConfigs   AiProviderConfig[]           @relation("AiProviderConfigUpdatedBy")
+  uploadedDocuments          Document[]                   @relation("DocumentUploadedBy")
+  ownedDocuments             Document[]                   @relation("DocumentOwner")
+  blockedConversations       Conversation[]               @relation("ConversationBlockedBy")
+  conversationMessages       ConversationMessage[]        @relation("ConversationMessageAuthor")
+  updatedFeatureEntitlements FeatureEntitlement[]         @relation("FeatureEntitlementUpdatedBy")
+  createdAdmissions          Admission[]                  @relation("AdmissionCreatedBy")
+  createdBedAssignments      BedAssignment[]              @relation("BedAssignmentCreatedBy")
 
   @@map("users")
 }
@@ -794,6 +796,7 @@ model PatientProfile {
   bpjsEligibilityChecks BpjsEligibilityCheck[]
   privacyNoticeRecords  PatientPrivacyNoticeRecord[]
   channelLinks          ChannelPatientLink[]
+  admissions            Admission[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -958,6 +961,7 @@ model DoctorProfile {
   licenses            DoctorLicense[]
   educations          DoctorEducation[]
   encounters          Encounter[]
+  admissions          Admission[]
 
   @@index([deletedAt])
   @@index([isActive])
@@ -1296,6 +1300,7 @@ model Encounter {
   invoices            Invoice[]
   satusehatSubmission SatusehatSubmission?
   bpjsReferral        BpjsReferral?
+  admissions          Admission[]
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -2709,4 +2714,228 @@ model ChannelOtpChallenge {
   /// per day" count from one index.
   @@index([conversationId, createdAt])
   @@map("channel_otp_challenges")
+}
+
+/// Whether a bed can take a patient. MAINTENANCE is deliberately distinct from
+/// a soft-deleted bed: a bed being cleaned or repaired is still inventory the
+/// occupancy board must show, while a deleted one has left the ward.
+enum BedStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+
+  @@map("bed_status")
+}
+
+/// CANCELLED when the admission was opened in error. Like `EncounterStatus`,
+/// a settled admission is never re-opened — a correction is a new admission,
+/// so the original stays auditable.
+enum AdmissionStatus {
+  ADMITTED
+  DISCHARGED
+  CANCELLED
+
+  @@map("admission_status")
+}
+
+/// Room class (kelas perawatan) — the axis Indonesian clinics price
+/// accommodation on, as **master data the clinic owns** rather than an enum
+/// the vendor ships.
+///
+/// It started as an enum of the four classes BPJS recognises. That was wrong
+/// for the same reason `Specialty` is a table and not an enum: a clinic with a
+/// "Suite" or a "Kelas 3B" would need a migration, a redeploy, and a new
+/// `ServiceTariffCategory` value to sell a bed it already has. What the four
+/// standard classes get instead is a seeded baseline — present on every fresh
+/// database, editable and extendable from the admin screen.
+///
+/// `code` is the stable handle the seed converges on and the tariff table
+/// points at; `name` is what staff read and what a clinic may rename freely.
+/// Unique among live rows only, so a retired class frees its code — the same
+/// partial-index technique as {@link Ward.code}.
+model RoomClass {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String
+  name        String
+  description String?
+  /// How many beds the clinic plans to run in this class, clinic-wide. Null
+  /// means uncapped, which is why it is nullable rather than defaulted: a
+  /// clinic that has not thought about a ceiling must not be given one, and
+  /// zero would mean "no beds allowed" rather than "no limit". When it is set,
+  /// bed creation refuses to exceed it — a quota nothing checks is decoration.
+  quota       Int?
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  rooms Room[]
+
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("room_classes")
+}
+
+/// Inpatient ward (bangsal) — the root of the room inventory tree
+/// Ward → Room → Bed (IMP-11).
+///
+/// Master data, so soft-deleted rather than deleted: a discharged admission
+/// keeps pointing at the bed it used, and a ward that closes must not take its
+/// own history with it. `code` is what staff say out loud ("Melati"), and it is
+/// unique among live rows only — a hand-written partial unique index
+/// (`WHERE deleted_at IS NULL`) in the migration, so a closed ward's code can
+/// be reused by its replacement.
+model Ward {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String
+  name        String
+  description String?
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  rooms Room[]
+
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("wards")
+}
+
+/// One room in a ward. Its class prices it (IMP-15) and is a property of the
+/// room rather than of the bed: a transfer between classes is a transfer
+/// between rooms, which is exactly what the bill has to reflect.
+///
+/// `code` is unique per ward among live rows, hand-written as a partial unique
+/// index in the migration for the same reuse reason as {@link Ward.code}.
+model Room {
+  id          String    @id @default(uuid()) @db.Uuid
+  wardId      String    @map("ward_id") @db.Uuid
+  roomClassId String    @map("room_class_id") @db.Uuid
+  code        String
+  name        String
+  description String?
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  ward      Ward      @relation(fields: [wardId], references: [id], onDelete: Restrict)
+  roomClass RoomClass @relation(fields: [roomClassId], references: [id], onDelete: Restrict)
+  beds      Bed[]
+
+  @@index([wardId])
+  @@index([roomClassId])
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("rooms")
+}
+
+/// One bed — the unit an admission actually occupies.
+///
+/// `status` is a cached projection of the live `BedAssignment` set, kept in the
+/// same transaction that opens or closes an assignment. It is stored anyway
+/// because the occupancy board reads it on every render and because
+/// MAINTENANCE is a state no assignment can express.
+///
+/// The authority on double-booking is **not** this column: a partial unique
+/// index on `bed_assignments (bed_id) WHERE ended_at IS NULL` is, so two
+/// concurrent admits race to the same constraint and one of them loses.
+model Bed {
+  id        String    @id @default(uuid()) @db.Uuid
+  roomId    String    @map("room_id") @db.Uuid
+  code      String
+  status    BedStatus @default(AVAILABLE)
+  notes     String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  room        Room            @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  assignments BedAssignment[]
+
+  @@index([roomId])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("beds")
+}
+
+/// One inpatient stay — a **parallel aggregate to `Encounter`, not a child of
+/// it**.
+///
+/// The outpatient chain cannot carry an admission and must not be bent to:
+/// `Encounter.registrationId` is `@unique` (one encounter per registration by
+/// design) and `EncounterStatus` is terminal once closed, so a stay spanning
+/// days of care — with its own doctor, its own bed history, and its own
+/// discharge — has nowhere to live on that row.
+///
+/// `sourceEncounterId` records the outpatient consultation that referred the
+/// patient in, when there was one. Nullable and not unique: a direct admission
+/// has no source encounter, and a patient readmitted after the same
+/// consultation is two admissions, not a contradiction.
+///
+/// At most one ADMITTED admission per patient at a time, enforced by a
+/// hand-written partial unique index in the migration
+/// (`WHERE status = 'ADMITTED' AND deleted_at IS NULL`) — the same technique
+/// `invoices_encounter_id_live_key` uses.
+model Admission {
+  id                String          @id @default(uuid()) @db.Uuid
+  patientId         String          @map("patient_id") @db.Uuid
+  admittingDoctorId String          @map("admitting_doctor_id") @db.Uuid
+  sourceEncounterId String?         @map("source_encounter_id") @db.Uuid
+  status            AdmissionStatus @default(ADMITTED)
+  /// Why the patient was admitted, in the admitting doctor's words. The coded
+  /// conclusion stays on the encounter's `Diagnosis` rows.
+  reason            String?
+  admittedAt        DateTime        @default(now()) @map("admitted_at")
+  dischargedAt      DateTime?       @map("discharged_at")
+  dischargeSummary  String?         @map("discharge_summary")
+  cancelledAt       DateTime?       @map("cancelled_at")
+  cancelReason      String?         @map("cancel_reason")
+  createdById       String?         @map("created_by_id") @db.Uuid
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  deletedAt         DateTime?       @map("deleted_at")
+
+  patient         PatientProfile  @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  admittingDoctor DoctorProfile   @relation(fields: [admittingDoctorId], references: [id], onDelete: Restrict)
+  sourceEncounter Encounter?      @relation(fields: [sourceEncounterId], references: [id], onDelete: SetNull)
+  createdBy       User?           @relation("AdmissionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  bedAssignments  BedAssignment[]
+
+  @@index([patientId, admittedAt])
+  @@index([admittingDoctorId, admittedAt])
+  @@index([status, admittedAt])
+  @@index([sourceEncounterId])
+  @@index([deletedAt])
+  @@map("admissions")
+}
+
+/// Which bed an admission held, and when. A transfer closes one row and opens
+/// the next, so the table is the stay's full bed history rather than a current
+/// pointer — which is what IMP-15 prices, night by night, at the class the
+/// patient was actually in.
+///
+/// No `deletedAt`: an assignment is a fact about where a patient slept, like a
+/// `Payment` is money that changed hands. Rows are closed, never removed.
+model BedAssignment {
+  id          String    @id @default(uuid()) @db.Uuid
+  admissionId String    @map("admission_id") @db.Uuid
+  bedId       String    @map("bed_id") @db.Uuid
+  startedAt   DateTime  @default(now()) @map("started_at")
+  /// Null while the patient is in this bed. The partial unique index on
+  /// `(bed_id) WHERE ended_at IS NULL` makes that the double-booking guard.
+  endedAt     DateTime? @map("ended_at")
+  createdById String?   @map("created_by_id") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  admission Admission @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+  bed       Bed       @relation(fields: [bedId], references: [id], onDelete: Restrict)
+  createdBy User?     @relation("BedAssignmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([admissionId, startedAt])
+  @@index([bedId, startedAt])
+  @@index([endedAt])
+  @@map("bed_assignments")
 }
