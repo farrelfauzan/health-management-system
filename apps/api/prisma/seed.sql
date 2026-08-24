@@ -206,7 +206,55 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- matches on action and subject and never on scope — `feature.read:own`
     -- would have opened the admin list, notes and all, to every patient.
     -- `patient.read-identifier` splits an action the same way.
-    ('feature.read-availability:own', 'FeatureEntitlement', 'read-availability', 'OWN', 'Read which features this client may use')
+    ('feature.read-availability:own', 'FeatureEntitlement', 'read-availability', 'OWN', 'Read which features this client may use'),
+    -- IMP-12. Room inventory: the RoomClass -> Ward -> Room -> Bed tree from
+    -- IMP-11. Four resources rather than one `Inventory` because they are four
+    -- CASL subjects and a clinic that lets a ward clerk rename beds must not
+    -- thereby let them close a ward -- still less redefine what a class costs.
+    -- Read is separate from write for the ordinary reason: the admissions
+    -- screen needs the bed list to pick from, and picking a bed is not
+    -- managing the floor plan.
+    --
+    -- `roomclass` has no dot in its resource name because `permissionToRule`
+    -- on the web splits an `a.b.c` key into resource `a.b` and action `c` --
+    -- `room.class.read:any` would resolve to the `Room` subject and silently
+    -- widen a class grant into a room grant.
+    ('roomclass.read:any', 'RoomClass', 'read', 'ANY', 'Read the room class catalog'),
+    ('roomclass.create:any', 'RoomClass', 'create', 'ANY', 'Create room classes'),
+    ('roomclass.update:any', 'RoomClass', 'update', 'ANY', 'Update room classes, including their quota'),
+    ('roomclass.delete:any', 'RoomClass', 'delete', 'ANY', 'Retire room classes'),
+    ('ward.read:any', 'Ward', 'read', 'ANY', 'Read the ward list'),
+    ('ward.create:any', 'Ward', 'create', 'ANY', 'Create wards'),
+    ('ward.update:any', 'Ward', 'update', 'ANY', 'Update wards'),
+    ('ward.delete:any', 'Ward', 'delete', 'ANY', 'Retire wards'),
+    ('room.read:any', 'Room', 'read', 'ANY', 'Read the room list'),
+    ('room.create:any', 'Room', 'create', 'ANY', 'Create rooms'),
+    ('room.update:any', 'Room', 'update', 'ANY', 'Update rooms and their class'),
+    ('room.delete:any', 'Room', 'delete', 'ANY', 'Retire rooms'),
+    ('bed.read:any', 'Bed', 'read', 'ANY', 'Read beds and their occupancy status'),
+    ('bed.create:any', 'Bed', 'create', 'ANY', 'Create beds'),
+    ('bed.update:any', 'Bed', 'update', 'ANY', 'Update beds, including taking one out for maintenance'),
+    ('bed.delete:any', 'Bed', 'delete', 'ANY', 'Retire beds'),
+    -- IMP-12. Admissions. The lifecycle verbs are separate permissions rather
+    -- than one `admission.update`, because `PermissionsGuard` matches on
+    -- action and never on the shape of the body: without them, anyone who
+    -- could correct a typo in an admission note could also discharge the
+    -- patient.
+    --
+    -- Two absences are deliberate. There is no `admission.create` -- admitting
+    -- *is* creating, and a second key for the same act would be a grant that
+    -- either duplicates `admission.admit` or contradicts it. And there is no
+    -- `admission.delete`: an admission opened in error is CANCELLED, which is
+    -- why `AdmissionStatus` has that value, so a delete grant would be the
+    -- only way to make a stay disappear from the record PMK 24/2022 requires
+    -- be kept.
+    ('admission.read:any', 'Admission', 'read', 'ANY', 'Read every admission'),
+    ('admission.read:own', 'Admission', 'read', 'OWN', 'Read admissions this doctor admitted or cares for'),
+    ('admission.update:any', 'Admission', 'update', 'ANY', 'Correct admission details such as the reason for admission'),
+    ('admission.admit:any', 'Admission', 'admit', 'ANY', 'Admit a patient to a bed'),
+    ('admission.transfer:any', 'Admission', 'transfer', 'ANY', 'Transfer an admitted patient to another bed'),
+    ('admission.discharge:any', 'Admission', 'discharge', 'ANY', 'Discharge an admitted patient'),
+    ('admission.cancel:any', 'Admission', 'cancel', 'ANY', 'Cancel an admission opened in error')
 )
 INSERT INTO "permissions" (
   "id",
@@ -501,7 +549,58 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'feature.read-availability:own'),
     ('DOCTOR', 'feature.read-availability:own'),
     ('PHARMACIST', 'feature.read-availability:own'),
-    ('PATIENT', 'feature.read-availability:own')
+    ('PATIENT', 'feature.read-availability:own'),
+    -- IMP-12. Inventory is the ward clerk's job, so ADMIN owns the whole
+    -- RoomClass/Ward/Room/Bed tree.
+    ('ADMIN', 'roomclass.read:any'),
+    ('ADMIN', 'roomclass.create:any'),
+    ('ADMIN', 'roomclass.update:any'),
+    ('ADMIN', 'roomclass.delete:any'),
+    ('ADMIN', 'ward.read:any'),
+    ('ADMIN', 'ward.create:any'),
+    ('ADMIN', 'ward.update:any'),
+    ('ADMIN', 'ward.delete:any'),
+    ('ADMIN', 'room.read:any'),
+    ('ADMIN', 'room.create:any'),
+    ('ADMIN', 'room.update:any'),
+    ('ADMIN', 'room.delete:any'),
+    ('ADMIN', 'bed.read:any'),
+    ('ADMIN', 'bed.create:any'),
+    ('ADMIN', 'bed.update:any'),
+    ('ADMIN', 'bed.delete:any'),
+    -- Doctors read the floor plan and never edit it: the bed picker on the
+    -- admit form is a list of rooms and beds, and choosing one is not
+    -- managing inventory. The class read comes with it because a bed is
+    -- rendered with the class it sits in.
+    ('DOCTOR', 'roomclass.read:any'),
+    ('DOCTOR', 'ward.read:any'),
+    ('DOCTOR', 'room.read:any'),
+    ('DOCTOR', 'bed.read:any'),
+    -- IMP-12. Who may move a patient through a stay.
+    --
+    -- Both ADMIN and DOCTOR hold the lifecycle verbs, and that is not a
+    -- widening of the doctor's reach -- it is an admission of who actually
+    -- types. Admitting and discharging are transacted at the ward desk by the
+    -- clerk working from the admitting doctor's order; `admitting_doctor_id`
+    -- records the clinician responsible as *data*, which is a different
+    -- question from who operated the screen. IMP-16's acceptance criterion --
+    -- an admin running a full admit -> discharge from the UI -- is that same
+    -- fact stated from the other end.
+    --
+    -- The scopes differ, and that is where the two roles part company: ADMIN
+    -- reads every admission because the occupancy board is a whole-clinic
+    -- view, while DOCTOR reads only stays they admitted or are on the care
+    -- team for, resolved per-service the same way `patient.read:own` is.
+    ('ADMIN', 'admission.read:any'),
+    ('ADMIN', 'admission.update:any'),
+    ('ADMIN', 'admission.admit:any'),
+    ('ADMIN', 'admission.transfer:any'),
+    ('ADMIN', 'admission.discharge:any'),
+    ('ADMIN', 'admission.cancel:any'),
+    ('DOCTOR', 'admission.read:own'),
+    ('DOCTOR', 'admission.admit:any'),
+    ('DOCTOR', 'admission.transfer:any'),
+    ('DOCTOR', 'admission.discharge:any')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"
@@ -796,6 +895,53 @@ SET
   ),
   "updated_at" = NOW()
 WHERE "facility_id" = '00000000-0000-0000-0000-000000000000'::uuid;
+
+-- IMP-12. Room class (kelas perawatan) baseline. The four classes BPJS and
+-- private payers both recognise, so a fresh database can run a ward without
+-- anyone opening the master-data screen first.
+--
+-- `DO NOTHING`, emphatically not `DO UPDATE`, and for the same reason as the
+-- feature entitlements above: `name`, `description` and `quota` are the
+-- columns a customer owns. A clinic that renamed "Kelas 1" or capped VIP at
+-- four beds would find both undone by the next deploy, which is exactly the
+-- failure mode master data exists to prevent. What the seed does own is the
+-- baseline *set* -- a class the clinic added stays, and a class it retired
+-- stays retired, because the conflict target is the partial unique index over
+-- live rows.
+--
+-- `quota` is deliberately NULL here: a ceiling is a decision about a specific
+-- building, and shipping a guess would put a limit on a clinic that never
+-- asked for one.
+WITH seed_room_classes(code, name, description) AS (
+  VALUES
+    ('VIP', 'VIP', 'Kamar VIP, umumnya satu tempat tidur dengan kamar mandi dalam'),
+    ('KELAS_1', 'Kelas 1', 'Kelas perawatan 1'),
+    ('KELAS_2', 'Kelas 2', 'Kelas perawatan 2'),
+    ('KELAS_3', 'Kelas 3', 'Kelas perawatan 3')
+)
+INSERT INTO "room_classes" (
+  "id",
+  "code",
+  "name",
+  "description",
+  "quota",
+  "is_active",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('room_class:' || code)::uuid,
+  code,
+  name,
+  description,
+  NULL,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_room_classes
+ON CONFLICT ("code") WHERE "deleted_at" IS NULL DO NOTHING;
 
 -- Specialty catalog baseline. Safe to re-run; keeps names unique and revives soft-deleted rows.
 WITH seed_specialties(name) AS (
