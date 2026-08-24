@@ -73,12 +73,29 @@ describe('Prescription scope where-clause against Postgres', () => {
       }),
     ]);
     seededPatientIds.push(ownedPatient.id, foreignPatient.id);
+    // `createdAt` is supplied explicitly, and an hour apart, because the
+    // doctor-side assertion below reads the two rows back in that order. Left
+    // to its `@default(now())` these two concurrent inserts land on the same
+    // millisecond — `created_at` is `TIMESTAMP(3)` — and `ORDER BY created_at`
+    // becomes a tie that Postgres breaks by physical row order, which changes
+    // with what else is in the table. That made the assertion pass on an empty
+    // database and fail once the rest of the suite had written prescriptions
+    // ahead of it. The appointment proof this file mirrors avoids the same trap
+    // by ordering on the `scheduledAt` it supplies.
     const [ownPatientPrescription, foreignPatientPrescription] = await Promise.all([
       prisma.prescription.create({
-        data: { patientId: ownedPatient.id, doctorId: doctor.id },
+        data: {
+          patientId: ownedPatient.id,
+          doctorId: doctor.id,
+          createdAt: new Date('2027-03-01T09:00:00.000Z'),
+        },
       }),
       prisma.prescription.create({
-        data: { patientId: foreignPatient.id, doctorId: doctor.id },
+        data: {
+          patientId: foreignPatient.id,
+          doctorId: doctor.id,
+          createdAt: new Date('2027-03-01T10:00:00.000Z'),
+        },
       }),
     ]);
     ownPatientPrescriptionId = ownPatientPrescription.id;
