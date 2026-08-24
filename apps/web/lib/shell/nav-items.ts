@@ -102,7 +102,10 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         href: '/admin/rooms',
         label: 'Rooms',
         labelKey: 'rooms',
-        icon: 'king_bed',
+        // `meeting_room`, not a bed glyph: Admissions below is `bed`, and two
+        // near-identical bed icons made the pair indistinguishable at sidebar
+        // size. A door is the floor plan; the bed is the patient in it.
+        icon: 'meeting_room',
         ability: [
           { action: 'read', subject: 'RoomClass' },
           { action: 'read', subject: 'Ward' },
