@@ -397,6 +397,7 @@ export type MedicationCategory = (typeof MedicationCategory)[keyof typeof Medica
 export const ServiceTariffCategory = {
   CONSULTATION: 'CONSULTATION',
   PROCEDURE: 'PROCEDURE',
+  ACCOMMODATION: 'ACCOMMODATION',
   OTHER: 'OTHER'
 } as const
 
@@ -417,6 +418,7 @@ export const InvoiceItemType = {
   CONSULTATION: 'CONSULTATION',
   PROCEDURE: 'PROCEDURE',
   MEDICATION: 'MEDICATION',
+  ACCOMMODATION: 'ACCOMMODATION',
   OTHER: 'OTHER'
 } as const
 

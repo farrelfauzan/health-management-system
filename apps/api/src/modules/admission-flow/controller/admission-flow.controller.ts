@@ -148,9 +148,10 @@ export class AdmissionFlowController {
   @ApiEndpoint({
     summary: 'Discharge an admitted patient',
     responseDescription:
-      'The bed assignment was closed, the bed freed, and the patient set to DISCHARGED. Terminal — a readmission is a new admission.',
+      'The bed assignment was closed, the bed freed, and the patient set to DISCHARGED. Terminal — a readmission is a new admission. `meta.roomCharge` reports the accommodation invoice raised for the stay, including any ward class that had no live tariff.',
     responseExample: {
       data: ADMISSION_FLOW_EXAMPLES.admission.listItem,
+      meta: { roomCharge: ADMISSION_FLOW_EXAMPLES.admission.roomCharge },
       message: 'Patient discharged',
     },
     requestType: DischargeAdmissionDto,
@@ -162,14 +163,15 @@ export class AdmissionFlowController {
     @Body() payload: DischargeAdmissionDto,
     @AuthUser() currentUser?: CurrentUser,
   ) {
-    const admission = await this.admissionFlowService.dischargeAdmission(
+    const result = await this.admissionFlowService.dischargeAdmission(
       id,
       payload,
       this.requireUser(currentUser),
     );
 
     return {
-      data: admission,
+      data: result.admission,
+      meta: { roomCharge: result.roomCharge },
       message: 'Patient discharged',
     };
   }

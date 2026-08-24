@@ -12,4 +12,6 @@ export const INVOICE_GENERATION_GAP_MESSAGES: Record<InvoiceGenerationGapReason,
     'This procedure has no matching tariff. Add a tariff with its ICD-9-CM code to bill it.',
   UNPRICED_MEDICATION:
     'This dispensed medication has no price on its record, so it was left off the invoice.',
+  NO_ACCOMMODATION_TARIFF:
+    'This ward class has no active accommodation tariff, so its nights were left off the bill. Add one under Tariffs and reissue.',
 };

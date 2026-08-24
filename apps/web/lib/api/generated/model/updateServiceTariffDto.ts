@@ -20,6 +20,7 @@ export interface UpdateServiceTariffDto {
      * @nullable
      */
   icd9cmCode?: string | null;
+  roomClassId?: string;
   /**
      * @minimum 0
      * @maximum 9999999999.99

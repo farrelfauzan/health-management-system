@@ -22,6 +22,8 @@ export class BillingMapper {
       name: record.name,
       category: record.category,
       icd9cmCode: record.icd9cmCode ?? undefined,
+      roomClassId: record.roomClass?.id,
+      roomClass: record.roomClass ?? undefined,
       price: record.price,
       isActive: record.isActive,
       createdAt: record.createdAt.toISOString(),
@@ -33,7 +35,8 @@ export class BillingMapper {
     return {
       id: record.id,
       invoiceNumber: record.invoiceNumber,
-      encounterId: record.encounterId,
+      encounterId: record.encounterId ?? undefined,
+      admissionId: record.admissionId ?? undefined,
       patientId: record.patientId,
       patient: {
         id: record.patient.id,
@@ -54,7 +57,8 @@ export class BillingMapper {
     return {
       id: record.id,
       invoiceNumber: record.invoiceNumber,
-      encounterId: record.encounterId,
+      encounterId: record.encounterId ?? undefined,
+      admissionId: record.admissionId ?? undefined,
       patientId: record.patientId,
       patient: {
         id: record.patient.id,

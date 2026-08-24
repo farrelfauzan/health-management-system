@@ -846,10 +846,12 @@ export type EncounterCreateNestedOneWithoutInvoicesInput = {
   connect?: Prisma.EncounterWhereUniqueInput
 }
 
-export type EncounterUpdateOneRequiredWithoutInvoicesNestedInput = {
+export type EncounterUpdateOneWithoutInvoicesNestedInput = {
   create?: Prisma.XOR<Prisma.EncounterCreateWithoutInvoicesInput, Prisma.EncounterUncheckedCreateWithoutInvoicesInput>
   connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutInvoicesInput
   upsert?: Prisma.EncounterUpsertWithoutInvoicesInput
+  disconnect?: Prisma.EncounterWhereInput | boolean
+  delete?: Prisma.EncounterWhereInput | boolean
   connect?: Prisma.EncounterWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutInvoicesInput, Prisma.EncounterUpdateWithoutInvoicesInput>, Prisma.EncounterUncheckedUpdateWithoutInvoicesInput>
 }

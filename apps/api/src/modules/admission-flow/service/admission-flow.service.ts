@@ -1,6 +1,7 @@
 import {
   AdmissionRecord,
   AdmissionResponse,
+  AdmissionRoomChargeResult,
   AdmissionsListMeta,
   BedAssignmentRecord,
   canTransitionAdmissionStatus,
@@ -14,6 +15,7 @@ import {
 } from '@nestjs/common';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AccommodationBillingService } from '../../billing/service/accommodation-billing.service';
 import { BedService } from '../../room-management/service/bed.service';
 import { AdmitPatientDto } from '../dto/admit-patient.dto';
 import { CancelAdmissionDto } from '../dto/cancel-admission.dto';
@@ -44,6 +46,7 @@ export class AdmissionFlowService {
     private readonly admissionReferenceRepository: AdmissionReferenceRepository,
     private readonly admissionAccessService: AdmissionAccessService,
     private readonly bedService: BedService,
+    private readonly accommodationBillingService: AccommodationBillingService,
     private readonly admissionMapper: AdmissionMapper,
   ) {}
 
@@ -132,11 +135,20 @@ export class AdmissionFlowService {
     }
   }
 
+  /**
+   * Discharge, then bill (IMP-15).
+   *
+   * The room charges are raised *after* the discharge transaction commits, not
+   * inside it, and the billing service reports an unpriced ward class as a gap
+   * rather than throwing. A patient who is clinically ready to go home must not
+   * be held on the ward because the price list is incomplete — and a discharge
+   * that rolled back over a missing tariff would do exactly that.
+   */
   async dischargeAdmission(
     id: string,
     payload: DischargeAdmissionDto,
     currentUser: CurrentUser,
-  ): Promise<AdmissionResponse> {
+  ): Promise<{ admission: AdmissionResponse; roomCharge: AdmissionRoomChargeResult }> {
     await this.admissionAccessService.assertCanRunLifecycleOrThrow(currentUser, 'discharge');
     const admission = await this.getAdmissionOrThrow(id);
     this.assertTransitionAllowed(admission, 'DISCHARGED');
@@ -153,8 +165,12 @@ export class AdmissionFlowService {
       dischargedAt,
       dischargeSummary: payload.dischargeSummary,
     });
+    const roomCharge = await this.accommodationBillingService.generateRoomCharges({
+      admission: discharged,
+      createdById: currentUser.sub,
+    });
 
-    return this.admissionMapper.toAdmissionResponse(discharged);
+    return { admission: this.admissionMapper.toAdmissionResponse(discharged), roomCharge };
   }
 
   async cancelAdmission(

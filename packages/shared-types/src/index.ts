@@ -35,6 +35,7 @@ export * from '#registration-flow/schemas';
 export * from '#registration-flow/contracts';
 export * from '#registration-flow/types';
 export * from '#billing/schemas';
+export * from '#billing/accommodation-nights';
 export * from '#billing/contracts';
 export * from '#billing/types';
 export * from '#bpjs-pcare/schemas';

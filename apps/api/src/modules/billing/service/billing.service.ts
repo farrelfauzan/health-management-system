@@ -109,6 +109,7 @@ export class BillingService {
       status: query.status,
       patientId: query.patientId,
       encounterId: query.encounterId,
+      admissionId: query.admissionId,
       createdFrom: query.createdFrom ? parseBillingDateOnly(query.createdFrom) : undefined,
       createdTo: query.createdTo ? parseBillingDateOnly(query.createdTo) : undefined,
     });

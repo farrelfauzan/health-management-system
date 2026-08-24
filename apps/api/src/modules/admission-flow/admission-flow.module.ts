@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
+import { BillingModule } from '../billing/billing.module';
 import { RoomManagementModule } from '../room-management/room-management.module';
 import { AdmissionFlowController } from './controller/admission-flow.controller';
 import { AdmissionFlowRepository } from './repository/admission-flow.repository';
@@ -12,8 +13,11 @@ import { AdmissionMapper } from './service/admission.mapper';
 @Module({
   // `RoomManagementModule` exports `BedService`: bed availability is read
   // through the service that owns the inventory rules, never through that
-  // module's repositories.
-  imports: [AuthModule, RoomManagementModule],
+  // module's repositories. `BillingModule` exports
+  // `AccommodationBillingService` for the same reason — a discharge hands the
+  // finished stay to the module that owns money instead of writing invoice
+  // rows itself.
+  imports: [AuthModule, BillingModule, RoomManagementModule],
   controllers: [AdmissionFlowController],
   providers: [
     AdmissionFlowRepository,

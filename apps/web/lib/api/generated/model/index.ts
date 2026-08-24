@@ -60,6 +60,8 @@ export * from './admissionFlowControllerDischargeAdmissionV1200DataCurrentBedRoo
 export * from './admissionFlowControllerDischargeAdmissionV1200DataCurrentBedRoomRoomClass';
 export * from './admissionFlowControllerDischargeAdmissionV1200DataCurrentBedWard';
 export * from './admissionFlowControllerDischargeAdmissionV1200DataPatient';
+export * from './admissionFlowControllerDischargeAdmissionV1200Meta';
+export * from './admissionFlowControllerDischargeAdmissionV1200MetaRoomCharge';
 export * from './admissionFlowControllerGetAdmissionV1200';
 export * from './admissionFlowControllerGetAdmissionV1200Data';
 export * from './admissionFlowControllerGetAdmissionV1200DataAdmittingDoctor';

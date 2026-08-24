@@ -113,6 +113,13 @@ export class BillingRepository {
     });
   }
 
+  async findLiveInvoiceByAdmissionId(admissionId: string): Promise<{ id: string } | null> {
+    return this.prisma.invoice.findFirst({
+      where: { admissionId, deletedAt: null, status: { not: 'VOID' } },
+      select: { id: true },
+    });
+  }
+
   /**
    * Invoice number allocation and the invoice insert share one transaction: a
    * failed insert rolls the counter back, so the number goes to the next
@@ -128,6 +135,7 @@ export class BillingRepository {
         data: {
           invoiceNumber,
           encounterId: payload.encounterId,
+          admissionId: payload.admissionId,
           patientId: payload.patientId,
           createdById: payload.createdById,
           totalAmount: payload.totalAmount,
@@ -161,6 +169,7 @@ export class BillingRepository {
       ...(status ? { status } : {}),
       ...(patientId ? { patientId } : {}),
       ...(encounterId ? { encounterId } : {}),
+      ...(params.admissionId ? { admissionId: params.admissionId } : {}),
       ...this.buildCreatedAtFilter(params),
     };
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {
