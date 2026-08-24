@@ -941,6 +941,16 @@ SELECT
   NOW(),
   NULL
 FROM seed_room_classes
+-- NOT EXISTS by the derived id, not just the ON CONFLICT below. A *retired*
+-- class keeps its id but leaves the live-rows partial index, so without this
+-- the insert would fire again with the same primary key and fail the entire
+-- seed transaction -- turning "the clinic retired VIP" into "the clinic can
+-- never seed again". The ON CONFLICT still covers the other collision: a
+-- clinic that created the same code itself under a different id.
+WHERE NOT EXISTS (
+  SELECT 1 FROM "room_classes" existing
+  WHERE existing."id" = md5('room_class:' || seed_room_classes.code)::uuid
+)
 ON CONFLICT ("code") WHERE "deleted_at" IS NULL DO NOTHING;
 
 -- Specialty catalog baseline. Safe to re-run; keeps names unique and revives soft-deleted rows.
@@ -1898,5 +1908,97 @@ VALUES (
   'Demam dan batuk sejak dua hari terakhir.'
 )
 ON CONFLICT ("registration_id") DO NOTHING;
+
+-- Placed at the end of the file deliberately: the rooms below JOIN the
+-- room_class baseline rows and the beds JOIN the rooms, and the whole seed is
+-- one transaction executed top to bottom — earlier than this, the parents do
+-- not exist yet and the joins would skip every row without a word.
+-- Development demo room inventory. Replace or remove this block for
+-- production seeds — a real clinic's floor plan comes from the admin screens
+-- (IMP-13), never from here. Three wards, three rooms, three beds: enough for
+-- the occupancy board, the bed picker and an admit -> discharge walkthrough to
+-- have something to show on a fresh database.
+--
+-- Every insert is `DO NOTHING` against the live-rows partial unique index, so
+-- a renamed ward or a bed flipped to MAINTENANCE survives a re-seed. Rooms and
+-- beds resolve their parents by JOINing live rows on code rather than by a
+-- derived id: if a class or ward was retired and recreated from the UI, the
+-- demo rows attach to the row that is actually live — and if a referenced
+-- class is gone entirely, the row is skipped instead of failing the seed.
+WITH seed_wards(code, name, description) AS (
+  VALUES
+    ('MELATI', 'Bangsal Melati', 'Bangsal perawatan dewasa, lantai 2'),
+    ('ANGGREK', 'Bangsal Anggrek', 'Bangsal perawatan anak, lantai 3'),
+    ('MAWAR', 'Bangsal Mawar', 'Bangsal bersalin, lantai 1')
+)
+INSERT INTO "wards" ("id", "code", "name", "description", "is_active", "created_at", "updated_at", "deleted_at")
+SELECT
+  md5('ward:' || code)::uuid,
+  code,
+  name,
+  description,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_wards
+-- Same retired-row guard as the room_classes baseline: a retired ward keeps
+-- its derived id but leaves the partial index, and a bare insert would fail
+-- the seed on the primary key.
+WHERE NOT EXISTS (
+  SELECT 1 FROM "wards" existing WHERE existing."id" = md5('ward:' || seed_wards.code)::uuid
+)
+ON CONFLICT ("code") WHERE "deleted_at" IS NULL DO NOTHING;
+
+WITH seed_rooms(ward_code, room_class_code, code, name, description) AS (
+  VALUES
+    ('MELATI', 'KELAS_1', '201', 'Kamar 201', 'Dua tempat tidur, kamar mandi dalam'),
+    ('ANGGREK', 'KELAS_3', '301', 'Kamar 301', 'Enam tempat tidur'),
+    ('MAWAR', 'VIP', 'VIP-1', 'Kamar VIP 1', 'Satu tempat tidur, ruang keluarga')
+)
+INSERT INTO "rooms" ("id", "ward_id", "room_class_id", "code", "name", "description", "is_active", "created_at", "updated_at", "deleted_at")
+SELECT
+  md5('room:' || sr.ward_code || ':' || sr.code)::uuid,
+  w."id",
+  rc."id",
+  sr.code,
+  sr.name,
+  sr.description,
+  true,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_rooms sr
+JOIN "wards" w ON w."code" = sr.ward_code AND w."deleted_at" IS NULL
+JOIN "room_classes" rc ON rc."code" = sr.room_class_code AND rc."deleted_at" IS NULL
+WHERE NOT EXISTS (
+  SELECT 1 FROM "rooms" existing
+  WHERE existing."id" = md5('room:' || sr.ward_code || ':' || sr.code)::uuid
+)
+ON CONFLICT ("ward_id", "code") WHERE "deleted_at" IS NULL DO NOTHING;
+
+WITH seed_beds(ward_code, room_code, code) AS (
+  VALUES
+    ('MELATI', '201', 'A'),
+    ('ANGGREK', '301', 'A'),
+    ('MAWAR', 'VIP-1', 'A')
+)
+INSERT INTO "beds" ("id", "room_id", "code", "status", "created_at", "updated_at", "deleted_at")
+SELECT
+  md5('bed:' || sb.ward_code || ':' || sb.room_code || ':' || sb.code)::uuid,
+  r."id",
+  sb.code,
+  'AVAILABLE',
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_beds sb
+JOIN "wards" w ON w."code" = sb.ward_code AND w."deleted_at" IS NULL
+JOIN "rooms" r ON r."ward_id" = w."id" AND r."code" = sb.room_code AND r."deleted_at" IS NULL
+WHERE NOT EXISTS (
+  SELECT 1 FROM "beds" existing
+  WHERE existing."id" = md5('bed:' || sb.ward_code || ':' || sb.room_code || ':' || sb.code)::uuid
+)
+ON CONFLICT ("room_id", "code") WHERE "deleted_at" IS NULL DO NOTHING;
 
 COMMIT;
