@@ -99,8 +99,18 @@
         "admissions": "Rawat Inap"
       },
       "search": {
-        "label": "Cari pasien",
-        "placeholder": "Cari pasien berdasarkan nama atau ID..."
+        "label": "Cari",
+        "placeholder": "Cari pasien, dokter, pengguna...",
+        "title": "Pencarian global",
+        "description": "Cari pasien, dokter, pengguna, dan halaman.",
+        "empty": "Tidak ada hasil.",
+        "freeText": "Cari pasien untuk \"{query}\"",
+        "groups": {
+          "patients": "Pasien",
+          "doctors": "Dokter",
+          "users": "Pengguna",
+          "navigation": "Buka halaman"
+        }
       },
       "topBar": {
         "openAiAssistant": "Buka asisten AI"

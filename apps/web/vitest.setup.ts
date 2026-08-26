@@ -38,6 +38,10 @@ if (typeof window !== 'undefined' && typeof window.localStorage?.getItem !== 'fu
   });
 }
 
+if (typeof Element !== 'undefined' && !Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = vi.fn();
+}
+
 afterEach(() => {
   cleanup();
 });
