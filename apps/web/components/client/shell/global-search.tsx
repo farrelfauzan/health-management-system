@@ -23,6 +23,8 @@ import { useGlobalSearchResults } from '#lib/shell/use-global-search-results';
 
 const PATIENT_SEARCH_PATH = '/admin/patients';
 const SEARCH_DEBOUNCE_MS = 250;
+const MAC_SHORTCUT_HINT = '⌘K';
+const DEFAULT_SHORTCUT_HINT = 'Ctrl+K';
 
 export function GlobalSearch() {
   const router = useRouter();
@@ -32,6 +34,15 @@ export function GlobalSearch() {
   const navigationT = useTranslations('authShell.shell.navigation');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [query, setQuery] = useState<string>('');
+  // Resolved after mount: the server render cannot know the visitor's OS, and
+  // a wrong guess would show Windows users a ⌘ they do not have.
+  const [shortcutHint, setShortcutHint] = useState<string>(MAC_SHORTCUT_HINT);
+  useEffect(() => {
+    const isApplePlatform = /Mac|iPhone|iPad|iPod/i.test(
+      navigator.platform || navigator.userAgent,
+    );
+    setShortcutHint(isApplePlatform ? MAC_SHORTCUT_HINT : DEFAULT_SHORTCUT_HINT);
+  }, []);
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
   // Entity fan-out targets /admin detail pages, so the doctor shell keeps the
   // palette to navigation links only.
@@ -111,8 +122,11 @@ export function GlobalSearch() {
       >
         <Icon name="search" size={20} />
         <span className="flex-1 truncate">{t('placeholder')}</span>
-        <kbd className="pointer-events-none rounded border bg-muted px-1.5 py-0.5 font-mono text-[10px]">
-          ⌘K
+        <kbd
+          aria-hidden="true"
+          className="pointer-events-none rounded border bg-muted px-1.5 py-0.5 font-mono text-[10px]"
+        >
+          {shortcutHint}
         </kbd>
       </button>
       <CommandDialog
