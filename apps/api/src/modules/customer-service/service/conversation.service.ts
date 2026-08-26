@@ -16,6 +16,7 @@ import { ConversationRepository } from '../repository/conversation.repository';
 import { ChannelBookingService } from './channel-booking.service';
 import { ChannelVerificationService } from './channel-verification.service';
 import { CsSystemActorService } from './cs-system-actor.service';
+import { HandoffService } from './handoff.service';
 import { CS_REPLY_TEMPLATES } from './cs-reply-templates';
 import { CsSafetyPolicyService } from './cs-safety-policy.service';
 import { IntentOrchestratorService } from './intent-orchestrator.service';
@@ -83,6 +84,7 @@ export class ConversationService extends InboundMessageSink {
     private readonly verificationService: ChannelVerificationService,
     private readonly bookingService: ChannelBookingService,
     private readonly systemActorService: CsSystemActorService,
+    private readonly handoffService: HandoffService,
   ) {
     super();
     this.serviceConfig = this.intentOrchestrator.config;
@@ -157,7 +159,7 @@ export class ConversationService extends InboundMessageSink {
     if (decision.outcome === 'ANSWER_LOCALLY') {
       await this.replyWith(conversation, decision.replyContent, decision.safetyTags, 'SYSTEM');
       if (decision.shouldHandOff) {
-        await this.conversationRepository.updateState(conversation.id, 'NEEDS_HUMAN');
+        await this.handoffService.flagForHuman(conversation.id);
       }
       return;
     }
@@ -374,7 +376,7 @@ export class ConversationService extends InboundMessageSink {
       content: CS_REPLY_TEMPLATES.enumerationReviewNote,
       safetyTags: ['enumeration_suspected'],
     });
-    await this.conversationRepository.updateState(conversation.id, 'NEEDS_HUMAN');
+    await this.handoffService.flagForHuman(conversation.id);
   }
 
   private isDeclining(text: string): boolean {

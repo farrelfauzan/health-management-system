@@ -514,6 +514,7 @@ model User {
   updatedFeatureEntitlements FeatureEntitlement[]         @relation("FeatureEntitlementUpdatedBy")
   createdAdmissions          Admission[]                  @relation("AdmissionCreatedBy")
   createdBedAssignments      BedAssignment[]              @relation("BedAssignmentCreatedBy")
+  notifications              Notification[]               @relation("NotificationRecipient")
 
   @@map("users")
 }
@@ -2963,4 +2964,40 @@ model BedAssignment {
   @@index([bedId, startedAt])
   @@index([endedAt])
   @@map("bed_assignments")
+}
+
+/// The domain events that currently produce a notification. Kinds are
+/// distinct because each carries its own i18n copy and deep link, not because
+/// the feed treats them differently.
+enum NotificationType {
+  APPOINTMENT_APPROVED
+  APPOINTMENT_REJECTED
+  CONVERSATION_HANDOFF
+
+  @@map("notification_type")
+}
+
+/// One row of a user's in-app bell feed. `title_key`/`body_key` are i18n
+/// message keys with `params` as the ICU values — the API stores no rendered
+/// copy, so translations stay a frontend concern. `read_at` doubles as the
+/// unread flag; delivery is polling, so there is no dispatch state here.
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  titleKey  String           @map("title_key")
+  bodyKey   String           @map("body_key")
+  params    Json             @default("{}")
+  href      String?
+  readAt    DateTime?        @map("read_at")
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  deletedAt DateTime?        @map("deleted_at")
+
+  recipient User @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+  @@index([deletedAt])
+  @@map("notifications")
 }

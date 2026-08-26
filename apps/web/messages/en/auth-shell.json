@@ -108,20 +108,18 @@
       "notifications": {
         "open": "Open notifications",
         "title": "Notifications",
-        "labResults": {
-          "title": "Lab results ready",
-          "description": "CBC panel for patient MRN-2041 is ready for review.",
-          "time": "5 min ago"
+        "empty": "You're all caught up.",
+        "appointmentApproved": {
+          "title": "Appointment approved",
+          "body": "Your appointment request with {doctorName} has been approved."
         },
-        "appointmentCheckin": {
-          "title": "Appointment check-in",
-          "description": "A 10:30 consultation patient has arrived at the front desk.",
-          "time": "18 min ago"
+        "appointmentRejected": {
+          "title": "Appointment declined",
+          "body": "Your appointment request with {doctorName} was declined."
         },
-        "lowStock": {
-          "title": "Low stock alert",
-          "description": "Amoxicillin 500 mg dropped below its stock threshold.",
-          "time": "1 hr ago"
+        "conversationHandoff": {
+          "title": "Customer waiting for staff",
+          "body": "A {channel} conversation was handed off and is waiting for a reply."
         }
       },
       "profile": {

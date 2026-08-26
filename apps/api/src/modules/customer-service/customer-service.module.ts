@@ -6,6 +6,7 @@ import { AuthModule } from '../auth/auth.module';
 import { ChannelGatewayModule } from '../channel-gateway/channel-gateway.module';
 import { InboundMessageSink } from '../channel-gateway/service/inbound-message-sink.service';
 import { DocumentManagementModule } from '../document-management/document-management.module';
+import { NotificationModule } from '../notification/notification.module';
 import { PatientManagementModule } from '../patient-management/patient-management.module';
 import { ChannelArrivalController } from './controller/channel-arrival.controller';
 import { CsAdminController } from './controller/cs-admin.controller';
@@ -76,6 +77,7 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
     AppointmentManagementModule,
     AuthModule,
     DocumentManagementModule,
+    NotificationModule,
     PatientManagementModule,
   ],
   controllers: [CsAdminController, ChannelArrivalController],

@@ -12,6 +12,7 @@ import { ConversationRepository } from '../repository/conversation.repository';
 import { ChannelBookingService } from './channel-booking.service';
 import { ChannelVerificationService } from './channel-verification.service';
 import { ConversationService } from './conversation.service';
+import { HandoffService } from './handoff.service';
 import { CsSafetyPolicyService } from './cs-safety-policy.service';
 import { CsSystemActorService } from './cs-system-actor.service';
 import { CS_REPLY_TEMPLATES } from './cs-reply-templates';
@@ -30,6 +31,7 @@ describe('ConversationService', () => {
       | 'countProviderRepliesSince'
     >
   >;
+  let mockHandoff: jest.Mocked<Pick<HandoffService, 'flagForHuman'>>;
   let mockOrchestrator: jest.Mocked<Pick<IntentOrchestratorService, 'composeReply' | 'config'>>;
   let mockDispatcher: jest.Mocked<Pick<OutboundMessageDispatcherService, 'sendMessage'>>;
   let mockVerification: jest.Mocked<
@@ -108,6 +110,7 @@ describe('ConversationService', () => {
       mockVerification as unknown as ChannelVerificationService,
       mockBooking as unknown as ChannelBookingService,
       mockSystemActor as unknown as CsSystemActorService,
+      mockHandoff as unknown as HandoffService,
     );
   }
 
@@ -120,6 +123,9 @@ describe('ConversationService', () => {
       markNoticeSent: jest.fn().mockResolvedValue(undefined),
       countCustomerMessagesSince: jest.fn().mockResolvedValue(1),
       countProviderRepliesSince: jest.fn().mockResolvedValue(0),
+    };
+    mockHandoff = {
+      flagForHuman: jest.fn().mockResolvedValue(buildConversation({ state: 'NEEDS_HUMAN' })),
     };
     mockOrchestrator = {
       composeReply: jest.fn().mockResolvedValue({
@@ -299,7 +305,7 @@ describe('ConversationService', () => {
       expect(mockRepository.appendMessage).toHaveBeenCalledWith(
         expect.objectContaining({ safetyTags: ['enumeration_suspected'] }),
       );
-      expect(mockRepository.updateState).toHaveBeenCalledWith('conversation-1', 'NEEDS_HUMAN');
+      expect(mockHandoff.flagForHuman).toHaveBeenCalledWith('conversation-1');
     });
 
     it('still completes the booking, and tells the customer nothing', async () => {
@@ -349,7 +355,7 @@ describe('ConversationService', () => {
   it('flags a conversation for a human when the safety layer says so', async () => {
     await conversationService.handleInboundMessage(buildMessage('saya mau bicara dengan petugas'));
 
-    expect(mockRepository.updateState).toHaveBeenCalledWith('conversation-1', 'NEEDS_HUMAN');
+    expect(mockHandoff.flagForHuman).toHaveBeenCalledWith('conversation-1');
     expect(mockOrchestrator.composeReply).not.toHaveBeenCalled();
   });
 
