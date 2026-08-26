@@ -6,6 +6,8 @@ import { ChannelArrivalRepository } from './repository/channel-arrival.repositor
 import { ChannelArrivalService } from './service/channel-arrival.service';
 import { CsAdminService } from './service/cs-admin.service';
 import { HandoffService } from './service/handoff.service';
+import { NotificationRepository } from '../notification/repository/notification.repository';
+import { NotificationService } from '../notification/service/notification.service';
 import { ConversationRepository } from './repository/conversation.repository';
 import { OutboundMessageDispatcherService } from '../channel-gateway/service/outbound-message-dispatcher.service';
 import { CurrentUser } from '../../common/auth/current-user.type';
@@ -161,7 +163,10 @@ describe('customer-service admin surface against Postgres', () => {
     );
     csAdminService = new CsAdminService(
       adminConversationRepository,
-      new HandoffService(new ConversationRepository(prisma)),
+      new HandoffService(
+        new ConversationRepository(prisma),
+        new NotificationService(new NotificationRepository(prisma)),
+      ),
       { sendMessage: jest.fn() } as unknown as OutboundMessageDispatcherService,
     );
   });

@@ -60,6 +60,7 @@ export type AppSubject =
   | 'BpjsSubmission'
   | 'Satusehat'
   | 'SatusehatSubmission'
+  | 'Notification'
   | 'all';
 export type AppAbility = MongoAbility<[AppAction, AppSubject]>;
 export type AppRule = RawRuleOf<AppAbility>;

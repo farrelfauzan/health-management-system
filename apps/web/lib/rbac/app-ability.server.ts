@@ -43,6 +43,7 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   medication: 'Medication',
   inventory: 'Inventory',
   prescription: 'Prescription',
+  notification: 'Notification',
   dispense: 'DispenseRecord',
   // IMP-16. Three inventory subjects rather than one, mirroring the three
   // CASL subjects the API's permission catalogue defines — a role that may

@@ -94,4 +94,6 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'link', subject: 'Satusehat' },
   { action: 'read', subject: 'SatusehatSubmission' },
   { action: 'retry', subject: 'SatusehatSubmission' },
+  { action: 'read', subject: 'Notification' },
+  { action: 'manage', subject: 'Notification' },
 ];

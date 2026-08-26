@@ -118,20 +118,18 @@
       "notifications": {
         "open": "Buka notifikasi",
         "title": "Notifikasi",
-        "labResults": {
-          "title": "Hasil laboratorium tersedia",
-          "description": "Panel darah lengkap untuk pasien MRN-2041 siap ditinjau.",
-          "time": "5 menit lalu"
+        "empty": "Tidak ada notifikasi baru.",
+        "appointmentApproved": {
+          "title": "Janji temu disetujui",
+          "body": "Permintaan janji temu Anda dengan {doctorName} telah disetujui."
         },
-        "appointmentCheckin": {
-          "title": "Kedatangan pasien janji temu",
-          "description": "Pasien konsultasi pukul 10.30 telah tiba di meja pendaftaran.",
-          "time": "18 menit lalu"
+        "appointmentRejected": {
+          "title": "Janji temu ditolak",
+          "body": "Permintaan janji temu Anda dengan {doctorName} ditolak."
         },
-        "lowStock": {
-          "title": "Peringatan stok menipis",
-          "description": "Amoksisilin 500 mg telah berada di bawah batas stok.",
-          "time": "1 jam lalu"
+        "conversationHandoff": {
+          "title": "Pelanggan menunggu petugas",
+          "body": "Percakapan {channel} dialihkan dan menunggu balasan."
         }
       },
       "profile": {

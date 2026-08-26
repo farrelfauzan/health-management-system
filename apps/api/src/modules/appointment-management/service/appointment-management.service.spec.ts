@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DoctorPatientService } from '../../doctor-patient/service/doctor-patient.service';
+import { NotificationService } from '../../notification/service/notification.service';
 import { AppointmentManagementRepository } from '../repository/appointment-management.repository';
 import { AppointmentManagementService } from './appointment-management.service';
 
@@ -73,10 +74,15 @@ describe('AppointmentManagementService', () => {
     assignDoctorToPatient: jest.fn().mockResolvedValue({ assignment: {}, created: true }),
   } as unknown as DoctorPatientService;
 
+  const notificationServiceMock = {
+    createForUser: jest.fn().mockResolvedValue({}),
+  } as unknown as NotificationService;
+
   const service = new AppointmentManagementService(
     appointmentManagementRepositoryMock,
     authRepositoryMock,
     doctorPatientServiceMock,
+    notificationServiceMock,
     configServiceMock,
   );
 

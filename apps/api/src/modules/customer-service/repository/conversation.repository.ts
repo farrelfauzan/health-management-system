@@ -108,6 +108,14 @@ export class ConversationRepository {
     }));
   }
 
+  async findStateById(conversationId: string): Promise<ConversationStateValue | null> {
+    const row = await this.prismaService.conversation.findUnique({
+      where: { id: conversationId },
+      select: { state: true },
+    });
+    return row ? row.state : null;
+  }
+
   async updateState(
     conversationId: string,
     state: ConversationStateValue,

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { ConversationRecord, ConversationStateValue } from '@hms/shared-types';
 
+import { NotificationService } from '../../notification/service/notification.service';
 import { ConversationRepository } from '../repository/conversation.repository';
 
 /**
@@ -10,25 +11,33 @@ import { ConversationRepository } from '../repository/conversation.repository';
  * Small on purpose. The state column *is* the pause — `ConversationService`
  * refuses to call a provider in any state but `BOT_ACTIVE` — so handing off is
  * a single write, and this service exists to give that write a name and one
- * place to add notification from. The admin surface that calls
- * `takeOver`/`release` is `PCS-T08`; `flagForHuman` is already wired, called
- * whenever the safety layer decides a message needs a person.
+ * place to hang notifications from (IMP-21 does exactly that). The admin
+ * surface that calls `takeOver`/`release` is `PCS-T08`; `flagForHuman` is
+ * called whenever the safety layer decides a message needs a person.
  */
 @Injectable()
 export class HandoffService {
   private readonly logger = new Logger(HandoffService.name);
 
-  constructor(private readonly conversationRepository: ConversationRepository) {}
+  constructor(
+    private readonly conversationRepository: ConversationRepository,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   /**
-   * Queues a conversation for staff. Idempotent by nature — flagging one that
-   * is already flagged is the same write — which matters because a customer
-   * who asks for a human three times should not create three queue entries or
-   * three notifications.
+   * Queues a conversation for staff. Idempotent on purpose — a customer who
+   * asks for a human three times should not create three queue entries or
+   * three notifications, so the staff broadcast fires only on the transition
+   * into `NEEDS_HUMAN`, never on a re-flag.
    */
   async flagForHuman(conversationId: string): Promise<ConversationRecord> {
+    const previousState = await this.conversationRepository.findStateById(conversationId);
     this.logger.log(`Conversation ${conversationId} flagged for human handoff`);
-    return this.updateState(conversationId, 'NEEDS_HUMAN');
+    const conversation = await this.updateState(conversationId, 'NEEDS_HUMAN');
+    if (previousState !== 'NEEDS_HUMAN') {
+      await this.notifyStaffOfHandoff(conversation);
+    }
+    return conversation;
   }
 
   /**
@@ -56,5 +65,28 @@ export class HandoffService {
     state: ConversationStateValue,
   ): Promise<ConversationRecord> {
     return this.conversationRepository.updateState(conversationId, state);
+  }
+
+  /**
+   * A conversation names no HMS user on either end, so the recipients are
+   * resolved by grant: everyone who can read the queue. Best-effort — a
+   * failed broadcast never fails the handoff itself.
+   */
+  private async notifyStaffOfHandoff(conversation: ConversationRecord): Promise<void> {
+    try {
+      await this.notificationService.createForUsersWithPermission('conversation.read:any', {
+        type: 'CONVERSATION_HANDOFF',
+        titleKey: 'conversationHandoff.title',
+        bodyKey: 'conversationHandoff.body',
+        params: { channel: conversation.channel },
+        href: '/admin/conversations',
+      });
+    } catch (caughtError) {
+      this.logger.warn(
+        `Handoff notification failed for conversation ${conversation.id}: ${
+          caughtError instanceof Error ? caughtError.name : 'unknown'
+        }`,
+      );
+    }
   }
 }

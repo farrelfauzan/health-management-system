@@ -254,7 +254,13 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('admission.admit:any', 'Admission', 'admit', 'ANY', 'Admit a patient to a bed'),
     ('admission.transfer:any', 'Admission', 'transfer', 'ANY', 'Transfer an admitted patient to another bed'),
     ('admission.discharge:any', 'Admission', 'discharge', 'ANY', 'Discharge an admitted patient'),
-    ('admission.cancel:any', 'Admission', 'cancel', 'ANY', 'Cancel an admission opened in error')
+    ('admission.cancel:any', 'Admission', 'cancel', 'ANY', 'Cancel an admission opened in error'),
+    -- OWN-scope only, by construction: a notification names its recipient, so
+    -- an ANY grant would be a read on other people's inboxes with no surface
+    -- that needs it. `manage` covers marking read; there is no delete -- the
+    -- feed is append-only and rows age out of relevance, not existence.
+    ('notification.read:own', 'Notification', 'read', 'OWN', 'Read own in-app notifications'),
+    ('notification.manage:own', 'Notification', 'manage', 'OWN', 'Mark own in-app notifications as read')
 )
 INSERT INTO "permissions" (
   "id",
@@ -600,7 +606,18 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'admission.read:own'),
     ('DOCTOR', 'admission.admit:any'),
     ('DOCTOR', 'admission.transfer:any'),
-    ('DOCTOR', 'admission.discharge:any')
+    ('DOCTOR', 'admission.discharge:any'),
+    -- Every human role gets its own bell, the same way `auth.logout:own` is
+    -- universal. The two service accounts are deliberately absent: nothing
+    -- reads a feed on their behalf.
+    ('ADMIN', 'notification.read:own'),
+    ('ADMIN', 'notification.manage:own'),
+    ('DOCTOR', 'notification.read:own'),
+    ('DOCTOR', 'notification.manage:own'),
+    ('PHARMACIST', 'notification.read:own'),
+    ('PHARMACIST', 'notification.manage:own'),
+    ('PATIENT', 'notification.read:own'),
+    ('PATIENT', 'notification.manage:own')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"

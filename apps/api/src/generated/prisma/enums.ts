@@ -583,3 +583,12 @@ export const AdmissionStatus = {
 } as const
 
 export type AdmissionStatus = (typeof AdmissionStatus)[keyof typeof AdmissionStatus]
+
+
+export const NotificationType = {
+  APPOINTMENT_APPROVED: 'APPOINTMENT_APPROVED',
+  APPOINTMENT_REJECTED: 'APPOINTMENT_REJECTED',
+  CONVERSATION_HANDOFF: 'CONVERSATION_HANDOFF'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

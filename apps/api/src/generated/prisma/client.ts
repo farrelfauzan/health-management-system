@@ -856,3 +856,11 @@ export type Admission = Prisma.AdmissionModel
  * `Payment` is money that changed hands. Rows are closed, never removed.
  */
 export type BedAssignment = Prisma.BedAssignmentModel
+/**
+ * Model Notification
+ * One row of a user's in-app bell feed. `title_key`/`body_key` are i18n
+ * message keys with `params` as the ICU values — the API stores no rendered
+ * copy, so translations stay a frontend concern. `read_at` doubles as the
+ * unread flag; delivery is polling, so there is no dispatch state here.
+ */
+export type Notification = Prisma.NotificationModel

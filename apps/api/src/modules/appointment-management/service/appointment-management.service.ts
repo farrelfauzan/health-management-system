@@ -11,6 +11,7 @@ import {
   CreateSpecialRequestAppointmentInput,
   DoctorSessionCalendarItem,
   DoctorSessionListItem,
+  NotificationTypeValue,
   SESSION_BOOKING_CUTOFF_MINUTES,
   SPECIAL_REQUEST_MIN_LEAD_DAYS,
   SessionQueueEntry,
@@ -33,6 +34,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DoctorPatientService } from '../../doctor-patient/service/doctor-patient.service';
+import { NotificationService } from '../../notification/service/notification.service';
 import { ApproveAppointmentDto } from '../dto/approve-appointment.dto';
 import { CancelAppointmentDto } from '../dto/cancel-appointment.dto';
 import { ListAppointmentsQueryDto } from '../dto/list-appointments-query.dto';
@@ -62,6 +64,7 @@ export class AppointmentManagementService {
     private readonly appointmentManagementRepository: AppointmentManagementRepository,
     private readonly authRepository: AuthRepository,
     private readonly doctorPatientService: DoctorPatientService,
+    private readonly notificationService: NotificationService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -105,6 +108,39 @@ export class AppointmentManagementService {
       this.logger.warn(
         buildSafeErrorLog('appointment_care_team_link_failed', {
           appointmentDoctorId: params.doctorId,
+          reason: caughtError instanceof Error ? caughtError.name : 'unknown',
+        }),
+      );
+    }
+  }
+
+  /**
+   * Announces a special-request decision to the patient who filed it (IMP-21;
+   * this is the notification hook D-007 names). Chat-channel and front-desk
+   * patients have no HMS account, so a null owner is a quiet no-op — and like
+   * `ensureCareTeamLink`, a failure here never fails the decision itself.
+   */
+  private async emitAppointmentDecisionNotification(params: {
+    recipientUserId: string | null;
+    type: NotificationTypeValue;
+    messageKey: string;
+    doctorName: string;
+  }): Promise<void> {
+    if (!params.recipientUserId) {
+      return;
+    }
+    try {
+      await this.notificationService.createForUser({
+        userId: params.recipientUserId,
+        type: params.type,
+        titleKey: `${params.messageKey}.title`,
+        bodyKey: `${params.messageKey}.body`,
+        params: { doctorName: params.doctorName },
+        href: null,
+      });
+    } catch (caughtError) {
+      this.logger.warn(
+        buildSafeErrorLog('appointment_decision_notification_failed', {
           reason: caughtError instanceof Error ? caughtError.name : 'unknown',
         }),
       );
@@ -238,6 +274,13 @@ export class AppointmentManagementService {
       scheduledAt,
     });
 
+    await this.emitAppointmentDecisionNotification({
+      recipientUserId: appointment.patient.ownerUserId,
+      type: 'APPOINTMENT_APPROVED',
+      messageKey: 'appointmentApproved',
+      doctorName: appointment.doctor.fullName,
+    });
+
     return this.toAppointmentListItem(approved);
   }
 
@@ -249,6 +292,13 @@ export class AppointmentManagementService {
       id: appointment.id,
       status: 'REJECTED',
       notes: appointment.notes ? `${appointment.notes}\n${rejectionLine}` : rejectionLine,
+    });
+
+    await this.emitAppointmentDecisionNotification({
+      recipientUserId: appointment.patient.ownerUserId,
+      type: 'APPOINTMENT_REJECTED',
+      messageKey: 'appointmentRejected',
+      doctorName: appointment.doctor.fullName,
     });
 
     return this.toAppointmentListItem(rejected);
