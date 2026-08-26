@@ -90,6 +90,15 @@ describe('GlobalSearch', () => {
     vi.clearAllMocks();
   });
 
+  it('shows the platform-matching shortcut hint on the trigger', async () => {
+    mockEmptyResponses();
+    renderGlobalSearch(FULL_READ_RULES);
+
+    // jsdom reports no Apple platform, so the hint resolves to the Ctrl form.
+    expect(await screen.findByText('Ctrl+K')).toBeInTheDocument();
+    expect(screen.queryByText('⌘K')).not.toBeInTheDocument();
+  });
+
   it('opens the palette with the keyboard shortcut and shows grouped results', async () => {
     const user = userEvent.setup();
     patientsRequestMock.mockResolvedValue(
