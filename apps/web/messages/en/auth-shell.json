@@ -99,8 +99,18 @@
         "admissions": "Admissions"
       },
       "search": {
-        "label": "Search patients",
-        "placeholder": "Search patients by name or ID..."
+        "label": "Search",
+        "placeholder": "Search patients, doctors, users...",
+        "title": "Global search",
+        "description": "Search across patients, doctors, users, and pages.",
+        "empty": "No results found.",
+        "freeText": "Search patients for \"{query}\"",
+        "groups": {
+          "patients": "Patients",
+          "doctors": "Doctors",
+          "users": "Users",
+          "navigation": "Go to"
+        }
       },
       "topBar": {
         "openAiAssistant": "Open AI assistant"
