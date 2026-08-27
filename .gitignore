@@ -50,3 +50,10 @@ AGENTS.md
 # there. Regenerate with:
 #   node infra/wordlists/generate-weak-passwords.mjs > infra/wordlists/breached-passwords.txt
 infra/wordlists/*.txt
+
+# CDK synth output
+infra/cdk/cdk.out/
+
+# docs
+docs/business/
+docs/customer-service/
