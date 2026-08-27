@@ -72,6 +72,29 @@
         }
       }
     },
+    "invite": {
+      "metadataTitle": "Terima undangan | Saling Jaga",
+      "metadataDescription": "Tentukan kata sandi untuk akun staf Saling Jaga Anda",
+      "title": "Tentukan kata sandi",
+      "subtitle": "Anda diundang bergabung dengan Saling Jaga sebagai {email}.",
+      "expiresAt": "Tautan ini berlaku sampai {date}.",
+      "checking": "Memeriksa undangan Anda…",
+      "passwordLabel": "Kata sandi",
+      "confirmPasswordLabel": "Konfirmasi kata sandi",
+      "passwordMismatch": "Kedua kata sandi tidak sama.",
+      "submit": "Buat akun saya",
+      "submitting": "Membuat akun Anda…",
+      "acceptError": "Undangan Anda tidak dapat diselesaikan. Silakan coba lagi.",
+      "invalidTitle": "Tautan ini sudah tidak berlaku",
+      "invalidLink": "Tautan undangan ini tidak valid.",
+      "alreadyUsed": "Undangan ini sudah pernah dipakai. Silakan coba masuk.",
+      "noLongerValid": "Undangan ini sudah kedaluwarsa atau telah dicabut.",
+      "invalidHelp": "Minta administrator mengirimkan undangan baru.",
+      "successTitle": "Akun Anda siap",
+      "successBody": "Masuk sebagai {email} dengan kata sandi yang baru Anda pilih.",
+      "goToLogin": "Ke halaman masuk",
+      "footerNote": "Tidak ada seorang pun di klinik yang dapat melihat kata sandi yang Anda pilih di sini."
+    },
     "shell": {
       "brand": {
         "logoAlt": "Logo {facilityName}",

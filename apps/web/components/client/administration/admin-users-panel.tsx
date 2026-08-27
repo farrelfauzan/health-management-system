@@ -8,6 +8,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { AdminUserFormDialog } from '#components/client/administration/admin-user-form-dialog';
+import { AdminUserInviteDialog } from '#components/client/administration/admin-user-invite-dialog';
 import {
   AdminUsersFilterCard,
   type AdminUsersFilterValues,
@@ -35,7 +36,7 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const usersQuery = useAdminUsersList(initialQuery);
-  const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState<boolean>(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const toggleActiveMutation = useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
@@ -58,14 +59,8 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
     navigateWithParams({ page: 1, limit: initialQuery.limit });
   }
 
-  function handleOpenCreateDialog(): void {
-    setEditingUser(null);
-    setIsFormDialogOpen(true);
-  }
-
   function handleOpenEditDialog(user: AdminUser): void {
     setEditingUser(user);
-    setIsFormDialogOpen(true);
   }
 
   async function handleToggleActive(user: AdminUser): Promise<void> {
@@ -92,10 +87,10 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
             <Button
               type="button"
               className="bg-primary-container hover:bg-primary"
-              onClick={handleOpenCreateDialog}
+              onClick={() => setIsInviteDialogOpen(true)}
             >
               <Icon name="person_add" size={18} />
-              {t('addUser')}
+              {t('invitations.inviteUser')}
             </Button>
           </Can>
         }
@@ -135,18 +130,21 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
         </CardContent>
       </Card>
 
-      {isFormDialogOpen ? (
+      {editingUser ? (
         <AdminUserFormDialog
-          key={editingUser?.id ?? 'create'}
-          open={isFormDialogOpen}
+          key={editingUser.id}
+          open
           onOpenChange={(open) => {
-            setIsFormDialogOpen(open);
             if (!open) {
               setEditingUser(null);
             }
           }}
           user={editingUser}
         />
+      ) : null}
+
+      {isInviteDialogOpen ? (
+        <AdminUserInviteDialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen} />
       ) : null}
     </div>
   );

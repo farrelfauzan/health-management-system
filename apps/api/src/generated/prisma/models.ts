@@ -11,6 +11,7 @@
 export type * from './models/User'
 export type * from './models/LoginAttempt'
 export type * from './models/RefreshToken'
+export type * from './models/UserInvitation'
 export type * from './models/MfaCredential'
 export type * from './models/MfaRecoveryCode'
 export type * from './models/MrnCounter'

@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   LoginAttempt: 'LoginAttempt',
   RefreshToken: 'RefreshToken',
+  UserInvitation: 'UserInvitation',
   MfaCredential: 'MfaCredential',
   MfaRecoveryCode: 'MfaRecoveryCode',
   MrnCounter: 'MrnCounter',
@@ -179,6 +180,22 @@ export const RefreshTokenScalarFieldEnum = {
 } as const
 
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
+
+
+export const UserInvitationScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  tokenHash: 'tokenHash',
+  roleCodes: 'roleCodes',
+  invitedById: 'invitedById',
+  expiresAt: 'expiresAt',
+  consumedAt: 'consumedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserInvitationScalarFieldEnum = (typeof UserInvitationScalarFieldEnum)[keyof typeof UserInvitationScalarFieldEnum]
 
 
 export const MfaCredentialScalarFieldEnum = {

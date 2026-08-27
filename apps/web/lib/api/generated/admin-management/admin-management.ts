@@ -21,12 +21,21 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AcceptUserInvitationDto,
   AdminManagementControllerCreateAdminUserV1201,
   AdminManagementControllerListUsersV1200,
   AdminManagementControllerListUsersV1Params,
   AdminManagementControllerUpdateAdminUserV1200,
   CreateAdminUserDto,
-  UpdateAdminUserDto
+  CreateUserInvitationDto,
+  UpdateAdminUserDto,
+  UserInvitationAdminControllerCreateInvitationV1201,
+  UserInvitationAdminControllerListInvitationsV1200,
+  UserInvitationAdminControllerListInvitationsV1Params,
+  UserInvitationAdminControllerResendInvitationV1201,
+  UserInvitationAdminControllerRevokeInvitationV1200,
+  UserInvitationPublicControllerAcceptInvitationV1201,
+  UserInvitationPublicControllerPreviewInvitationV1200
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -326,6 +335,570 @@ export function useAdminManagementControllerUpdateAdminUserV1<TData = Awaited<Re
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAdminManagementControllerUpdateAdminUserV1QueryOptions(id,updateAdminUserDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List staff invitations
+ */
+export const userInvitationAdminControllerListInvitationsV1 = (
+    params?: UserInvitationAdminControllerListInvitationsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<UserInvitationAdminControllerListInvitationsV1200>(
+      {url: `/api/v1/users/invitations`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getUserInvitationAdminControllerListInvitationsV1QueryKey = (params?: UserInvitationAdminControllerListInvitationsV1Params,) => {
+    return [
+    `/api/v1/users/invitations`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getUserInvitationAdminControllerListInvitationsV1QueryOptions = <TData = Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError = unknown>(params?: UserInvitationAdminControllerListInvitationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserInvitationAdminControllerListInvitationsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>> = ({ signal }) => userInvitationAdminControllerListInvitationsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserInvitationAdminControllerListInvitationsV1QueryResult = NonNullable<Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>>
+export type UserInvitationAdminControllerListInvitationsV1QueryError = unknown
+
+
+export function useUserInvitationAdminControllerListInvitationsV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError = unknown>(
+ params: undefined |  UserInvitationAdminControllerListInvitationsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationAdminControllerListInvitationsV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError = unknown>(
+ params?: UserInvitationAdminControllerListInvitationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationAdminControllerListInvitationsV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError = unknown>(
+ params?: UserInvitationAdminControllerListInvitationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List staff invitations
+ */
+
+export function useUserInvitationAdminControllerListInvitationsV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError = unknown>(
+ params?: UserInvitationAdminControllerListInvitationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerListInvitationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserInvitationAdminControllerListInvitationsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Invite a staff user by email
+ */
+export const userInvitationAdminControllerCreateInvitationV1 = (
+    createUserInvitationDto: CreateUserInvitationDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<UserInvitationAdminControllerCreateInvitationV1201>(
+      {url: `/api/v1/users/invitations`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createUserInvitationDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getUserInvitationAdminControllerCreateInvitationV1QueryKey = (createUserInvitationDto?: CreateUserInvitationDto,) => {
+    return [
+    'POST', `/api/v1/users/invitations`, createUserInvitationDto
+    ] as const;
+    }
+
+
+export const getUserInvitationAdminControllerCreateInvitationV1QueryOptions = <TData = Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError = unknown>(createUserInvitationDto: CreateUserInvitationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserInvitationAdminControllerCreateInvitationV1QueryKey(createUserInvitationDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>> = ({ signal }) => userInvitationAdminControllerCreateInvitationV1(createUserInvitationDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserInvitationAdminControllerCreateInvitationV1QueryResult = NonNullable<Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>>
+export type UserInvitationAdminControllerCreateInvitationV1QueryError = unknown
+
+
+export function useUserInvitationAdminControllerCreateInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError = unknown>(
+ createUserInvitationDto: CreateUserInvitationDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationAdminControllerCreateInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError = unknown>(
+ createUserInvitationDto: CreateUserInvitationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationAdminControllerCreateInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError = unknown>(
+ createUserInvitationDto: CreateUserInvitationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Invite a staff user by email
+ */
+
+export function useUserInvitationAdminControllerCreateInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError = unknown>(
+ createUserInvitationDto: CreateUserInvitationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerCreateInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserInvitationAdminControllerCreateInvitationV1QueryOptions(createUserInvitationDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Resend a staff invitation
+ */
+export const userInvitationAdminControllerResendInvitationV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<UserInvitationAdminControllerResendInvitationV1201>(
+      {url: `/api/v1/users/invitations/${id}/resend`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getUserInvitationAdminControllerResendInvitationV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/users/invitations/${id}/resend`
+    ] as const;
+    }
+
+
+export const getUserInvitationAdminControllerResendInvitationV1QueryOptions = <TData = Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserInvitationAdminControllerResendInvitationV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>> = ({ signal }) => userInvitationAdminControllerResendInvitationV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserInvitationAdminControllerResendInvitationV1QueryResult = NonNullable<Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>>
+export type UserInvitationAdminControllerResendInvitationV1QueryError = unknown
+
+
+export function useUserInvitationAdminControllerResendInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationAdminControllerResendInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationAdminControllerResendInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Resend a staff invitation
+ */
+
+export function useUserInvitationAdminControllerResendInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerResendInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserInvitationAdminControllerResendInvitationV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Revoke a staff invitation
+ */
+export const userInvitationAdminControllerRevokeInvitationV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<UserInvitationAdminControllerRevokeInvitationV1200>(
+      {url: `/api/v1/users/invitations/${id}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getUserInvitationAdminControllerRevokeInvitationV1QueryKey = (id: string,) => {
+    return [
+    'DELETE', `/api/v1/users/invitations/${id}`
+    ] as const;
+    }
+
+
+export const getUserInvitationAdminControllerRevokeInvitationV1QueryOptions = <TData = Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserInvitationAdminControllerRevokeInvitationV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>> = ({ signal }) => userInvitationAdminControllerRevokeInvitationV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserInvitationAdminControllerRevokeInvitationV1QueryResult = NonNullable<Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>>
+export type UserInvitationAdminControllerRevokeInvitationV1QueryError = unknown
+
+
+export function useUserInvitationAdminControllerRevokeInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationAdminControllerRevokeInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationAdminControllerRevokeInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Revoke a staff invitation
+ */
+
+export function useUserInvitationAdminControllerRevokeInvitationV1<TData = Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationAdminControllerRevokeInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserInvitationAdminControllerRevokeInvitationV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Validate an invitation link
+ */
+export const userInvitationPublicControllerPreviewInvitationV1 = (
+    token: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<UserInvitationPublicControllerPreviewInvitationV1200>(
+      {url: `/api/v1/invitations/${token}`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getUserInvitationPublicControllerPreviewInvitationV1QueryKey = (token: string,) => {
+    return [
+    `/api/v1/invitations/${token}`
+    ] as const;
+    }
+
+
+export const getUserInvitationPublicControllerPreviewInvitationV1QueryOptions = <TData = Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError = unknown>(token: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserInvitationPublicControllerPreviewInvitationV1QueryKey(token);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>> = ({ signal }) => userInvitationPublicControllerPreviewInvitationV1(token, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: token !== null && token !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserInvitationPublicControllerPreviewInvitationV1QueryResult = NonNullable<Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>>
+export type UserInvitationPublicControllerPreviewInvitationV1QueryError = unknown
+
+
+export function useUserInvitationPublicControllerPreviewInvitationV1<TData = Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError = unknown>(
+ token: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationPublicControllerPreviewInvitationV1<TData = Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError = unknown>(
+ token: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationPublicControllerPreviewInvitationV1<TData = Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError = unknown>(
+ token: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Validate an invitation link
+ */
+
+export function useUserInvitationPublicControllerPreviewInvitationV1<TData = Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError = unknown>(
+ token: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerPreviewInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserInvitationPublicControllerPreviewInvitationV1QueryOptions(token,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Accept an invitation and set a password
+ */
+export const userInvitationPublicControllerAcceptInvitationV1 = (
+    token: string,
+    acceptUserInvitationDto: AcceptUserInvitationDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<UserInvitationPublicControllerAcceptInvitationV1201>(
+      {url: `/api/v1/invitations/${token}/accept`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: acceptUserInvitationDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getUserInvitationPublicControllerAcceptInvitationV1QueryKey = (token: string,
+    acceptUserInvitationDto?: AcceptUserInvitationDto,) => {
+    return [
+    'POST', `/api/v1/invitations/${token}/accept`, acceptUserInvitationDto
+    ] as const;
+    }
+
+
+export const getUserInvitationPublicControllerAcceptInvitationV1QueryOptions = <TData = Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError = unknown>(token: string,
+    acceptUserInvitationDto: AcceptUserInvitationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserInvitationPublicControllerAcceptInvitationV1QueryKey(token,acceptUserInvitationDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>> = ({ signal }) => userInvitationPublicControllerAcceptInvitationV1(token,acceptUserInvitationDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: token !== null && token !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserInvitationPublicControllerAcceptInvitationV1QueryResult = NonNullable<Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>>
+export type UserInvitationPublicControllerAcceptInvitationV1QueryError = unknown
+
+
+export function useUserInvitationPublicControllerAcceptInvitationV1<TData = Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError = unknown>(
+ token: string,
+    acceptUserInvitationDto: AcceptUserInvitationDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationPublicControllerAcceptInvitationV1<TData = Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError = unknown>(
+ token: string,
+    acceptUserInvitationDto: AcceptUserInvitationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>,
+          TError,
+          Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserInvitationPublicControllerAcceptInvitationV1<TData = Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError = unknown>(
+ token: string,
+    acceptUserInvitationDto: AcceptUserInvitationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Accept an invitation and set a password
+ */
+
+export function useUserInvitationPublicControllerAcceptInvitationV1<TData = Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError = unknown>(
+ token: string,
+    acceptUserInvitationDto: AcceptUserInvitationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userInvitationPublicControllerAcceptInvitationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserInvitationPublicControllerAcceptInvitationV1QueryOptions(token,acceptUserInvitationDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

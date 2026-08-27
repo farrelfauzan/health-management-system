@@ -3,12 +3,7 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  createAdminUserSchema,
-  type AdminUser,
-  type CreateAdminUserInput,
-  type UpdateAdminUserInput,
-} from '@hms/shared-types';
+import { adminUserEmailSchema, type AdminUser, type UpdateAdminUserInput } from '@hms/shared-types';
 import {
   Button,
   Checkbox,
@@ -24,10 +19,7 @@ import { useTranslations } from 'next-intl';
 
 import { AdminUserRolePicker } from '#components/client/administration/admin-user-role-picker';
 import { FieldError } from '#components/client/shared/field-error';
-import {
-  adminManagementControllerCreateAdminUserV1,
-  adminManagementControllerUpdateAdminUserV1,
-} from '#lib/api/generated/admin-management/admin-management';
+import { adminManagementControllerUpdateAdminUserV1 } from '#lib/api/generated/admin-management/admin-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateAdminUserQueries } from '#lib/admin-users/invalidate-admin-user-queries';
@@ -38,52 +30,49 @@ const MIN_PASSWORD_LENGTH = 8;
 type AdminUserFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user?: AdminUser | null;
+  user: AdminUser;
 };
 
+/**
+ * Editing an existing staff account. Creating one lives in
+ * `AdminUserInviteDialog` (IMP-23) — this dialog no longer has a create mode,
+ * because the only way to make an account is now to invite its owner and let
+ * them choose their own password.
+ *
+ * The optional password field survives here on purpose: it is an
+ * administrator resetting the credential of someone who has lost it, which is
+ * a different act from handing out a first password, and the alternative for a
+ * locked-out nurse is no route back in at all.
+ */
 export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormDialogProps) {
   const t = useTranslations('operations');
-  const isEditMode = Boolean(user);
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const rolesQuery = useRolesList();
-  const createMutation = useMutation({
-    mutationFn: (input: CreateAdminUserInput) => adminManagementControllerCreateAdminUserV1(input),
-  });
   const updateMutation = useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminUserInput }) =>
       adminManagementControllerUpdateAdminUserV1(id, input),
   });
   const form = useForm({
     defaultValues: {
-      email: user?.email ?? '',
+      email: user.email,
       password: '',
-      roleCodes: user?.roles.map((role) => role.code) ?? ([] as string[]),
-      isActive: user?.isActive ?? true,
+      roleCodes: user.roles.map((role) => role.code),
+      isActive: user.isActive,
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
       try {
-        if (isEditMode && user) {
-          const response = await updateMutation.mutateAsync({
-            id: user.id,
-            input: {
-              email: value.email,
-              roleCodes: value.roleCodes,
-              isActive: value.isActive,
-              ...(value.password.length > 0 ? { password: value.password } : {}),
-            },
-          });
-          parseApiSuccess<AdminUser>(response, t('administration.saveError'));
-        } else {
-          const response = await createMutation.mutateAsync({
+        const response = await updateMutation.mutateAsync({
+          id: user.id,
+          input: {
             email: value.email,
-            password: value.password,
             roleCodes: value.roleCodes,
             isActive: value.isActive,
-          });
-          parseApiSuccess<AdminUser>(response, t('administration.saveError'));
-        }
+            ...(value.password.length > 0 ? { password: value.password } : {}),
+          },
+        });
+        parseApiSuccess<AdminUser>(response, t('administration.saveError'));
         await invalidateAdminUserQueries(queryClient);
         onOpenChange(false);
       } catch (error) {
@@ -96,14 +85,8 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-heading">
-            {isEditMode ? t('administration.editUser') : t('administration.addUser')}
-          </DialogTitle>
-          <DialogDescription>
-            {isEditMode
-              ? 'Update the user account, roles, and status.'
-              : 'Create a new system user with at least one role.'}
-          </DialogDescription>
+          <DialogTitle className="font-heading">{t('administration.editUser')}</DialogTitle>
+          <DialogDescription>{t('administration.editUserDescription')}</DialogDescription>
         </DialogHeader>
         <form
           className="space-y-4"
@@ -123,7 +106,7 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
             </p>
           ) : null}
 
-          <form.Field name="email" validators={{ onSubmit: createAdminUserSchema.shape.email }}>
+          <form.Field name="email" validators={{ onSubmit: adminUserEmailSchema }}>
             {(field) => (
               <div className="space-y-1.5">
                 <label
@@ -150,7 +133,7 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
             name="password"
             validators={{
               onSubmit: ({ value }) =>
-                (isEditMode && value.length === 0) || value.length >= MIN_PASSWORD_LENGTH
+                value.length === 0 || value.length >= MIN_PASSWORD_LENGTH
                   ? undefined
                   : t('administration.passwordMinimum', { count: MIN_PASSWORD_LENGTH }),
             }}
@@ -161,15 +144,13 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
                   htmlFor={field.name}
                   className="block font-heading text-xs font-medium text-slate-600"
                 >
-                  {isEditMode ? t('administration.newPassword') : t('administration.password')}
+                  {t('administration.newPassword')}
                 </label>
                 <Input
                   id={field.name}
                   type="password"
                   value={field.state.value}
-                  placeholder={
-                    isEditMode ? 'Leave blank to keep current password' : 'Minimum 8 characters'
-                  }
+                  placeholder={t('administration.passwordUnchangedPlaceholder')}
                   onChange={(event) => field.handleChange(event.target.value)}
                   onBlur={field.handleBlur}
                   aria-invalid={field.state.meta.errors.length > 0}
@@ -232,11 +213,7 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
                   disabled={isSubmitting}
                   className="bg-primary-container hover:bg-primary"
                 >
-                  {isSubmitting
-                    ? t('administration.saving')
-                    : isEditMode
-                      ? t('administration.saveChanges')
-                      : t('administration.createUser')}
+                  {isSubmitting ? t('administration.saving') : t('administration.saveChanges')}
                 </Button>
               )}
             </form.Subscribe>

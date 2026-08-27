@@ -9,6 +9,7 @@ import { AuditModule } from './common/audit/audit.module';
 import { AuthorizationModule } from './common/authorization/authorization.module';
 import { BpjsPcareModule } from './common/bpjs-pcare/bpjs-pcare.module';
 import { CryptoModule } from './common/crypto/crypto.module';
+import { MailModule } from './common/mail/mail.module';
 import { MrnModule } from './common/mrn/mrn.module';
 import { ObservabilityModule } from './common/observability/observability.module';
 import { SatusehatModule } from './common/satusehat/satusehat.module';
@@ -41,6 +42,7 @@ import { RoomManagementModule } from './modules/room-management/room-management.
 import { SatusehatIntegrationModule } from './modules/satusehat/satusehat-integration.module';
 import { SpecialtyModule } from './modules/specialty/specialty.module';
 import { TerminologyModule } from './modules/terminology/terminology.module';
+import { UserInvitationModule } from './modules/user-invitation/user-invitation.module';
 
 @Module({
   imports: [
@@ -58,6 +60,7 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     ObservabilityModule,
     AuditModule,
     CryptoModule,
+    MailModule,
     MrnModule,
     RetentionModule,
     AuthorizationModule,
@@ -65,6 +68,7 @@ import { TerminologyModule } from './modules/terminology/terminology.module';
     SatusehatModule,
     BpjsPcareModule,
     AdminManagementModule,
+    UserInvitationModule,
     AuditQueryModule,
     PatientManagementModule,
     SpecialtyModule,

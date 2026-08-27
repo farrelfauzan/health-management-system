@@ -116,6 +116,16 @@ enum AuditAction {
   /// PDF. The object was deleted at confirm time; this row is how a pattern
   /// of forged uploads by one account is countable afterwards.
   DOCUMENT_UPLOAD_REJECTED
+  /// Staff onboarding by email (IMP-23). Three verbs rather than one because
+  /// they have three different actors: an administrator sends the invitation,
+  /// the invitee — not yet a session — accepts it, and an administrator
+  /// withdraws it. `USER_INVITE_ACCEPTED` is the only row in this table whose
+  /// actor is the subject, and it is the moment a `User` becomes able to log
+  /// in, so it is what "when did this account start existing for real" reads
+  /// back to.
+  USER_INVITED
+  USER_INVITE_ACCEPTED
+  USER_INVITE_REVOKED
 }
 
 enum BpjsSubmissionType {
@@ -515,6 +525,7 @@ model User {
   createdAdmissions          Admission[]                  @relation("AdmissionCreatedBy")
   createdBedAssignments      BedAssignment[]              @relation("BedAssignmentCreatedBy")
   notifications              Notification[]               @relation("NotificationRecipient")
+  sentInvitations            UserInvitation[]             @relation("UserInvitationInvitedBy")
 
   @@map("users")
 }
@@ -591,6 +602,52 @@ model RefreshToken {
   @@index([revokedAt])
   @@index([lastUsedAt])
   @@map("refresh_tokens")
+}
+
+/// One emailed invitation to join the clinic as a staff user (IMP-23),
+/// modelled on `RefreshToken` because it is the same problem: a bearer secret
+/// that must be presentable exactly once and revocable at any moment.
+///
+/// Only `tokenHash` is stored, for the same reason and with the same
+/// reasoning as refresh tokens — the input is 256 bits of CSPRNG output, so
+/// there is no dictionary a slow hash would defend against, and the raw token
+/// exists in exactly one place: the link in the email.
+///
+/// `consumedAt` and `revokedAt` are separate, again deliberately. Accepting an
+/// invitation and an administrator withdrawing it are different events with
+/// different follow-ups, and the accept route returns a different error code
+/// for each — "this invitation was already used" tells the invitee to log in,
+/// "this invitation was withdrawn" tells them to ask for another.
+///
+/// `roleCodes` is a denormalised string array rather than a join table. The
+/// grant is not live yet: nothing may be resolved from it until acceptance,
+/// and a `UserRole` row before then would be a real permission grant to an
+/// account that cannot log in. Codes are re-validated against `Role` at accept
+/// time, so a role deleted between invite and accept fails loudly.
+model UserInvitation {
+  id          String    @id @default(uuid()) @db.Uuid
+  email       String
+  tokenHash   String    @unique @map("token_hash")
+  roleCodes   String[]  @map("role_codes")
+  invitedById String    @map("invited_by_id") @db.Uuid
+  expiresAt   DateTime  @map("expires_at")
+  /// Set when the invitee set a password and the account went live.
+  consumedAt  DateTime? @map("consumed_at")
+  /// Set when an administrator withdrew the invitation, or when a resend
+  /// superseded it — a resend revokes the old row and writes a new one, so the
+  /// previous link stops working the moment the replacement is sent.
+  revokedAt   DateTime? @map("revoked_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  invitedBy User @relation("UserInvitationInvitedBy", fields: [invitedById], references: [id])
+
+  @@index([email])
+  @@index([expiresAt])
+  @@index([consumedAt])
+  @@index([revokedAt])
+  @@index([invitedById])
+  @@map("user_invitations")
 }
 
 /// One user's TOTP second factor (SJ-8). At most one per user — re-enrolling
