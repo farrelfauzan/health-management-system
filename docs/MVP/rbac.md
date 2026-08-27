@@ -330,14 +330,22 @@ export function getSidebarRoutes(ability: AppAbility): AppRoute[] {
 - Invalidate protected queries when role bindings change.
 - Use centralized 403 handler to show permission-aware messages.
 
-### 5.5 Permission Propagation and the Stale-Claim Window (D-022)
+### 5.5 Permission Propagation and the Stale-Claim Window (D-022, D-023)
 
-Two readers of one permission model, with deliberately different freshness:
+Three readers of one permission model, with deliberately different freshness:
 
 | Surface | Reads from | Freshness after a role edit |
 | --- | --- | --- |
 | `PermissionsGuard` (API) | Database, per request | Immediate — next request |
-| CASL ability, `proxy.ts`, session hint (web) | JWT `permissions` claim | Next token refresh — up to `JWT_ACCESS_EXPIRES_IN` |
+| `proxy.ts` shell gating (web) | JWT `permissions` claim — `portal.*` only | Next token refresh — up to `JWT_ACCESS_EXPIRES_IN` |
+| CASL ability (web) | `hms_session_hint`, `packedPermissions` | Next token refresh — reissued on the same call |
+
+The two web rows are one model split across two cookies (D-023), not two
+models. The access token carries `portal.*` alone because the full set made it
+4229 bytes against a 4096-byte browser cookie limit and the browser dropped it
+outright; everything else is packed into the session hint. Both cookies are
+rewritten together on every login and refresh, so they converge at the same
+moment and the window below applies to both.
 
 The claim is advisory by contract, so the web tier's staleness is a cosmetic
 lag, never an authorization gap: revoked users keep menus that 403 on use;
@@ -350,12 +358,23 @@ Rules for code in this window:
 - Never make a UI decision irreversible on the claim alone; render optimistic
   affordances only where the failing API call surfaces cleanly (the standing
   `notifyApiError` path).
-- `ADMIN_PORTAL_ADMIN_RULES` is a legacy fallback, not a merge: it applies
-  only when **no** claim maps to a rule and the token carries a seeded admin
-  role code. Real claims always win — a custom role's ability comes from its
-  claims exclusively (`app-ability.server.spec.ts`).
+- The fallback presets are fallbacks, not merges: one applies only when **no**
+  claim maps to a rule and the claims carry a seeded admin role code. Real
+  claims always win — a custom role's ability comes from its claims
+  exclusively (`app-ability.server.spec.ts`).
+- There are two presets, and which one applies matters.
+  `SUPER_ADMIN_PORTAL_RULES` is `manage all`, mirroring the catalogue-wide
+  grant `seed.sql` gives that role by construction rather than by
+  enumeration; `ADMIN_PORTAL_ADMIN_RULES` deliberately withholds
+  `role.create/update/delete`, because the seed withholds them from `ADMIN`.
+  Enumerating the super-admin case instead would drift silently on the next
+  permission seed — and drift here does not fail a build, it hides a button.
 - `proxy.ts` shares the same bound: shell access follows the `portal.*`
-  claims and converges at the same refresh.
+  claims and converges at the same refresh. Those keys keep their `:any` /
+  `:own` scope in the token because the proxy matches them exactly; the
+  packed hint entries have their scope stripped, since `permissionToRule`
+  discards it anyway. A web-tier check that genuinely needs a scope must read
+  `portal.*` or ask the API.
 
 ## 6. API and Data Requirements for RBAC
 
