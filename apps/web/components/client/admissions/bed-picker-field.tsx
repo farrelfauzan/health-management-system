@@ -1,6 +1,6 @@
 'use client';
 
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hms/ui';
+import { Combobox, Label } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { useBedsList } from '#lib/rooms/use-beds-list';
@@ -37,18 +37,19 @@ export function BedPickerField({
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger id={id} className="w-full">
-          <SelectValue placeholder={t('bed')} />
-        </SelectTrigger>
-        <SelectContent>
-          {beds.map((bed) => (
-            <SelectItem key={bed.id} value={bed.id}>
-              {bed.ward.name} / {bed.room.code} / {bed.code}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Combobox
+        id={id}
+        options={beds.map((bed) => ({
+          value: bed.id,
+          label: `${bed.ward.name} / ${bed.room.code} / ${bed.code}`,
+        }))}
+        value={value}
+        placeholder={t('bed')}
+        searchPlaceholder={t('searchBed')}
+        emptyMessage={t('noBed')}
+        isLoading={bedsQuery.isPending}
+        onChange={onChange}
+      />
       {!bedsQuery.isPending && beds.length === 0 ? (
         <p className="text-sm text-warning">{t('noFreeBeds')}</p>
       ) : null}

@@ -11,6 +11,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Icon,
+  Input,
   Skeleton,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
@@ -20,7 +22,12 @@ import { rbacControllerSetRolePermissionsV1 } from '#lib/api/generated/rbac/rbac
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateRoleQueries } from '#lib/rbac/invalidate-role-queries';
-import { buildPermissionMatrix, togglePermissionKey } from '#lib/rbac/permission-matrix';
+import {
+  buildPermissionMatrix,
+  filterPermissionMatrix,
+  toggleGroupKeys,
+  togglePermissionKey,
+} from '#lib/rbac/permission-matrix';
 import { usePermissionCatalog } from '#lib/rbac/use-permission-catalog';
 import { useRoleDetail } from '#lib/rbac/use-role-detail';
 
@@ -36,6 +43,7 @@ export function RolePermissionsDialog({ role, open, onOpenChange }: RolePermissi
   const catalogQuery = usePermissionCatalog(open);
   const detailQuery = useRoleDetail(open ? role.id : null);
   const [selectedKeys, setSelectedKeys] = useState<Set<string> | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const saveMutation = useMutation({
     mutationFn: (input: SetRolePermissionsInput) =>
       rbacControllerSetRolePermissionsV1(role.id, input),
@@ -52,7 +60,10 @@ export function RolePermissionsDialog({ role, open, onOpenChange }: RolePermissi
   }, [selectedKeys, attachedKeys]);
 
   const isLoading = catalogQuery.isPending || detailQuery.isPending || selectedKeys === null;
-  const matrixGroups = buildPermissionMatrix(catalogQuery.groups);
+  const matrixGroups = filterPermissionMatrix(
+    buildPermissionMatrix(catalogQuery.groups),
+    searchQuery,
+  );
 
   async function handleSave(): Promise<void> {
     if (selectedKeys === null) {
@@ -80,6 +91,23 @@ export function RolePermissionsDialog({ role, open, onOpenChange }: RolePermissi
           <DialogDescription>{t('permissionsDescription')}</DialogDescription>
         </DialogHeader>
 
+        <div role="search" className="relative w-full shrink-0">
+          <Icon
+            name="search"
+            size={20}
+            className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            type="search"
+            value={searchQuery}
+            placeholder={t('permissionsSearchPlaceholder')}
+            aria-label={t('permissionsSearchPlaceholder')}
+            disabled={isLoading}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            className="h-10 w-full rounded-lg pl-10"
+          />
+        </div>
+
         <div className="min-h-0 flex-1 overflow-y-auto pr-1">
           {isLoading ? (
             <div className="space-y-3">
@@ -90,8 +118,10 @@ export function RolePermissionsDialog({ role, open, onOpenChange }: RolePermissi
           ) : (
             <RolePermissionsMatrix
               groups={matrixGroups}
+              isFiltered={searchQuery.trim().length > 0}
               selectedKeys={selectedKeys}
               onToggleKey={(key) => setSelectedKeys(togglePermissionKey(selectedKeys, key))}
+              onToggleGroup={(group) => setSelectedKeys(toggleGroupKeys(selectedKeys, group))}
             />
           )}
         </div>
