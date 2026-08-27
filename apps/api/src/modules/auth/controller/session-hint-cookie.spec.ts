@@ -1,3 +1,5 @@
+import { unpackPermissionHint } from '@hms/shared-types';
+
 import { RefreshTokenCookieWriter } from '../auth.types';
 import { setSessionHintCookie } from './session-hint-cookie';
 
@@ -47,7 +49,9 @@ describe('setSessionHintCookie', () => {
     expect(decodePayload(captured[0]!.value).disabledFeatures).toEqual([]);
   });
 
-  it('still carries only portal permissions alongside the features', () => {
+  it('keeps the unpacked permission list to portal keys, scope intact', () => {
+    // `proxy.ts` matches these exactly, at the edge, where nothing else is
+    // available to match against.
     const { response, captured } = buildResponse();
 
     setSessionHintCookie(response, {
@@ -60,5 +64,51 @@ describe('setSessionHintCookie', () => {
     const payload = decodePayload(captured[0]!.value);
     expect(payload.permissions).toEqual(['portal.admin-access:any']);
     expect(payload.disabledFeatures).toEqual(['billing']);
+  });
+
+  it('carries the full permission set in packed form for the CASL ability', () => {
+    // This is the half that moved out of the JWT. Without it the web tier has
+    // only `portal.*`, which maps to no CASL rule, and every `<Can>` gate in
+    // the admin shell falls back to a hardcoded role preset.
+    const { response, captured } = buildResponse();
+
+    setSessionHintCookie(response, {
+      roles: ['SUPER_ADMIN'],
+      permissions: ['portal.admin-access:any', 'patient.read:any', 'role.create:any'],
+      disabledFeatures: [],
+      expiresAt,
+    });
+
+    const payload = decodePayload(captured[0]!.value);
+    const actualKeys = unpackPermissionHint(payload.packedPermissions as string).sort();
+    expect(actualKeys).toEqual(['patient.read', 'portal.admin-access', 'role.create']);
+  });
+
+  it('keeps the hint cookie under the browser cookie limit as the catalogue grows', () => {
+    // Headroom for roughly half again the current catalogue (127 keys over ~40
+    // resources), in the shape the catalogue actually has.
+    //
+    // The shape matters, and is the one real limit of this encoding: the win
+    // comes from writing each resource name once, so it scales with actions
+    // per resource and not with resources. Two hundred permissions spread over
+    // two hundred *distinct* resources would not fit, and no assertion here
+    // would catch it. The guard that tracks the real catalogue reads seed.sql
+    // directly — see `apps/web/lib/auth/permission-hint-codec.spec.ts`.
+    const { response, captured } = buildResponse();
+    const actions = ['read', 'create', 'update', 'delete', 'write'];
+    const manyPermissions = Array.from({ length: 200 }, (_, index) => {
+      const action = actions[index % actions.length];
+      return `resource-name-${Math.floor(index / actions.length)}.${action}:any`;
+    });
+
+    setSessionHintCookie(response, {
+      roles: ['SUPER_ADMIN'],
+      permissions: manyPermissions,
+      disabledFeatures: [],
+      expiresAt,
+    });
+
+    const cookieBytes = 'hms_session_hint='.length + captured[0]!.value.length;
+    expect(cookieBytes).toBeLessThan(4096);
   });
 });

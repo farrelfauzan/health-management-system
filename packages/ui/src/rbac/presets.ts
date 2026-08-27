@@ -97,3 +97,22 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'Notification' },
   { action: 'manage', subject: 'Notification' },
 ];
+
+/**
+ * The fallback rule set for a SUPER_ADMIN whose token carries no usable
+ * permission claim.
+ *
+ * `seed.sql` grants SUPER_ADMIN the catalog-wide union — every row in
+ * `permissions`, by construction rather than by enumeration — so the honest
+ * mirror of that on the client is CASL's own wildcard. Listing the grants
+ * instead would drift the moment a ticket seeds a new permission, and drift
+ * here is invisible: it does not fail a build, it silently hides a button.
+ * That is exactly how role creation disappeared for SUPER_ADMIN, which held
+ * `role.create:any` in the database while the preset above stopped at
+ * `read`.
+ *
+ * Visibility only, like every rule in this file. `PermissionsGuard` re-reads
+ * permissions from the database on every request, so a forged session hint
+ * claiming the SUPER_ADMIN code buys a fully-populated menu and no data.
+ */
+export const SUPER_ADMIN_PORTAL_RULES: AppRule[] = [{ action: 'manage', subject: 'all' }];

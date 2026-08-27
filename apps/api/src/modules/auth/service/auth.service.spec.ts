@@ -90,6 +90,9 @@ describe('AuthService', () => {
           permissions: [
             { permission: { permissionKey: 'patient.read:any' } },
             { permission: { permissionKey: 'encounter.write:any' } },
+            // The one family that still rides in the JWT: `proxy.ts` gates the
+            // shell at the edge and has no other source for it.
+            { permission: { permissionKey: 'portal.admin-access:any' } },
           ],
         },
       },
@@ -148,17 +151,48 @@ describe('AuthService', () => {
     });
   });
 
-  it('carries the granted permissions on the access token, de-duplicated', async () => {
+  /**
+   * The access token carries `portal.*` and nothing else.
+   *
+   * The full set used to ride here, and for a SUPER_ADMIN holding the whole
+   * catalogue that produced a 4212-byte JWT — 4229 bytes once the cookie name
+   * is counted, against a 4096-byte browser limit. The cookie write was
+   * discarded in silence, so the admin shell rendered from a fallback preset
+   * on every load. Everything but `portal.*` now travels in the session hint.
+   */
+  it('carries only the portal permissions on the access token', async () => {
     const actualSession = await loginForSession();
     const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualSession.tokens.accessToken, {
       secret: 'test-access-secret',
     });
 
-    expect(accessPayload.permissions).toEqual(['encounter.write:any', 'patient.read:any']);
+    expect(accessPayload.permissions).toEqual(['portal.admin-access:any']);
     expect(accessPayload.roles).toEqual(['ADMIN', 'DOCTOR']);
     expect(JSON.stringify((auditServiceMock.record as jest.Mock).mock.calls)).not.toContain(
       user.email,
     );
+  });
+
+  it('still returns the full de-duplicated permission set for the session hint', async () => {
+    // The controller writes this into `hms_session_hint`, which is where the
+    // web tier's CASL ability now comes from. Slimming the token must not slim
+    // what the shell knows.
+    const actualSession = await loginForSession();
+
+    expect(actualSession.permissions).toEqual([
+      'encounter.write:any',
+      'patient.read:any',
+      'portal.admin-access:any',
+    ]);
+  });
+
+  it('keeps the access token far below the browser cookie limit', async () => {
+    const actualSession = await loginForSession();
+
+    const cookieBytes =
+      'hms_access_token='.length + encodeURIComponent(actualSession.tokens.accessToken).length;
+
+    expect(cookieBytes).toBeLessThan(4096);
   });
 
   it('does not audit the supplied email when login fails', async () => {
@@ -178,11 +212,8 @@ describe('AuthService', () => {
 
   it('omits permissions granted only by an unassigned role', async () => {
     const actualSession = await loginForSession();
-    const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualSession.tokens.accessToken, {
-      secret: 'test-access-secret',
-    });
 
-    expect(accessPayload.permissions).not.toContain('dispense.write:any');
+    expect(actualSession.permissions).not.toContain('dispense.write:any');
   });
 
   /**
@@ -218,11 +249,15 @@ describe('AuthService', () => {
 
     const actualSession = await service.refresh('any-opaque-token', TEST_ORIGIN);
 
+    // Read off the session rather than the token: refresh resolves permissions
+    // from the database, and the token now carries only the `portal.*` slice
+    // of whatever it found.
+    expect(actualSession.permissions).toEqual(['user.read:any']);
     const accessPayload = await jwtService.verifyAsync<JwtPayload>(
       actualSession.tokens.accessToken,
       { secret: 'test-access-secret' },
     );
-    expect(accessPayload.permissions).toEqual(['user.read:any']);
+    expect(accessPayload.permissions).toEqual([]);
   });
 
   it('persists only a hash of the refresh token, never the token itself', async () => {

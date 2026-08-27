@@ -1,4 +1,7 @@
+import { packPermissionHint } from '@hms/shared-types';
+
 import { RefreshTokenCookieWriter } from '../auth.types';
+import { PORTAL_PERMISSION_PREFIX } from '../portal-permission-prefix';
 
 export const SESSION_HINT_COOKIE_NAME = 'hms_session_hint';
 
@@ -7,9 +10,6 @@ export const SESSION_HINT_COOKIE_NAME = 'hms_session_hint';
  * reason it exists.
  */
 const SESSION_HINT_COOKIE_PATH = '/';
-
-/** Only `portal.*` keys belong in the hint: shell choice is its entire job (IMP-3). */
-const PORTAL_PERMISSION_PREFIX = 'portal.';
 
 /**
  * A non-credential hint that lets the Next.js server render the right shell on
@@ -64,7 +64,13 @@ export function setSessionHintCookie(
   const payload = Buffer.from(
     JSON.stringify({
       roles: hint.roles,
+      // Scope intact and unpacked, because `proxy.ts` matches these exactly.
       permissions: portalPermissions,
+      // Everything the caller holds, in the compact grouped form. This used to
+      // live in the JWT and pushed it past the browser's 4096-byte cookie
+      // limit, so the token was silently dropped and the whole admin shell
+      // rendered from a fallback preset. See `packPermissionHint`.
+      packedPermissions: packPermissionHint(hint.permissions),
       disabledFeatures: hint.disabledFeatures,
       exp: Math.floor(hint.expiresAt.getTime() / 1000),
     }),

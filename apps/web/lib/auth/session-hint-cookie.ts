@@ -1,3 +1,5 @@
+import { unpackPermissionHint } from '@hms/shared-types';
+
 import type { AccessTokenClaims } from '#lib/auth/access-token-claims';
 
 export const SESSION_HINT_COOKIE_NAME = 'hms_session_hint';
@@ -5,6 +7,7 @@ export const SESSION_HINT_COOKIE_NAME = 'hms_session_hint';
 type SessionHint = {
   roles?: string[];
   permissions?: string[];
+  packedPermissions?: string;
   disabledFeatures?: string[];
   exp?: number;
 };
@@ -33,9 +36,22 @@ export function decodeSessionHint(hint: string | undefined): AccessTokenClaims |
     }
     // Older hints predate the permissions field (IMP-3); they keep working
     // through the role fallback in the proxy.
-    const permissions = Array.isArray(parsed.permissions)
+    const portalPermissions = Array.isArray(parsed.permissions)
       ? parsed.permissions.filter((entry): entry is string => typeof entry === 'string')
       : [];
+    // The full set, scope-stripped and grouped by resource so it fits a cookie.
+    // Absent on hints written before the access token was slimmed down; those
+    // still carry the `portal.*` keys above, so the shell still resolves and
+    // the CASL ability falls back to the role preset exactly as it used to.
+    const packedPermissions =
+      typeof parsed.packedPermissions === 'string'
+        ? unpackPermissionHint(parsed.packedPermissions)
+        : [];
+    // Union, not replacement: the `portal.*` entries keep their `:any` /
+    // `:own` scope for `proxy.ts`, while the packed entries have had theirs
+    // stripped. Both spellings of a portal key therefore coexist here, which
+    // is harmless — `permissionToRule` maps neither to a CASL subject.
+    const permissions = [...new Set([...portalPermissions, ...packedPermissions])];
     // Likewise for IMP-9's disabled feature keys. An older hint has none, and
     // the correct reading of that is "nothing is switched off" — the same
     // fail-open default the API's own guard applies.

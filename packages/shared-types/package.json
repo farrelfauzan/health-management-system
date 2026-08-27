@@ -54,6 +54,8 @@
     "#auth/schemas": "./src/auth/schemas.ts",
     "#auth/contracts": "./src/auth/contracts.ts",
     "#auth/types": "./src/auth/types.ts",
+    "#auth/pack-permission-hint": "./src/auth/pack-permission-hint.ts",
+    "#auth/unpack-permission-hint": "./src/auth/unpack-permission-hint.ts",
     "#rbac/schemas": "./src/rbac/schemas.ts",
     "#rbac/contracts": "./src/rbac/contracts.ts",
     "#rbac/types": "./src/rbac/types.ts",

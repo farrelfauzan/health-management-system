@@ -36,7 +36,22 @@ export function resolveSessionClaims({
     // only source, so it is merged in regardless of which side won above.
     // Without this the common case — a perfectly fresh token — would render a
     // shell with nothing hidden, which is every case that matters.
-    return { ...accessClaims, disabledFeatures: hintClaims?.disabledFeatures ?? [] };
+    //
+    // Permissions merge for the same reason and were split for a sharper one.
+    // The token carries `portal.*` only, because the full set made it 4229
+    // bytes against a 4096-byte cookie limit and the browser dropped it
+    // outright; the rest now rides in the hint. Union rather than either side
+    // alone: the token's copy keeps the `:any` / `:own` scope that `proxy.ts`
+    // matches on, the hint's copy is scope-stripped and is what builds the
+    // CASL ability. Both are visibility-only — `PermissionsGuard` re-reads the
+    // database on every request.
+    return {
+      ...accessClaims,
+      permissions: [
+        ...new Set([...(accessClaims?.permissions ?? []), ...(hintClaims?.permissions ?? [])]),
+      ],
+      disabledFeatures: hintClaims?.disabledFeatures ?? [],
+    };
   }
   return isAccessTokenExpired(hintClaims) ? null : hintClaims;
 }
