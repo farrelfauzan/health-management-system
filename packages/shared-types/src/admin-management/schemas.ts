@@ -29,8 +29,15 @@ export const listUsersQuerySchema = z.object({
     .optional(),
 });
 
+/**
+ * The address field, named so the edit form can validate against it directly.
+ * `updateAdminUserSchema` carries a `.refine`, which makes it a `ZodEffects`
+ * with no `.shape` to reach into.
+ */
+export const adminUserEmailSchema = z.string().email();
+
 export const createAdminUserSchema = z.object({
-  email: z.string().email(),
+  email: adminUserEmailSchema,
   password: passwordPolicySchema,
   isActive: z.boolean().optional().default(true),
   roleCodes: z.array(z.string().min(1)).min(1),
@@ -38,7 +45,7 @@ export const createAdminUserSchema = z.object({
 
 export const updateAdminUserSchema = z
   .object({
-    email: z.string().email().optional(),
+    email: adminUserEmailSchema.optional(),
     password: passwordPolicySchema.optional(),
     isActive: z.boolean().optional(),
     roleCodes: z.array(z.string().min(1)).min(1).optional(),

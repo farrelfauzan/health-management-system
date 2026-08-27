@@ -81,7 +81,10 @@
     "#room-management/types": "./src/room-management/types.ts",
     "#audit/schemas": "./src/audit/schemas.ts",
     "#audit/contracts": "./src/audit/contracts.ts",
-    "#audit/types": "./src/audit/types.ts"
+    "#audit/types": "./src/audit/types.ts",
+    "#user-invitation/schemas": "./src/user-invitation/schemas.ts",
+    "#user-invitation/contracts": "./src/user-invitation/contracts.ts",
+    "#user-invitation/types": "./src/user-invitation/types.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

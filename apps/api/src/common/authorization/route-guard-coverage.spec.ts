@@ -45,6 +45,11 @@ const PUBLIC_ROUTE_ALLOWLIST: readonly string[] = [
   'BpjsAntreanWsController.takeQueueNumber',
   'HealthController.getHealth',
   'TelegramWebhookController.receiveUpdate',
+  // IMP-23 — the invitee has no account yet, so there is no session to check.
+  // The invitation token is the credential: 256 bits from the CSPRNG, stored
+  // only as a SHA-256, single-use, and dead within `USER_INVITATION_TTL_HOURS`.
+  'UserInvitationPublicController.acceptInvitation',
+  'UserInvitationPublicController.previewInvitation',
   'WhatsappWebhookController.receiveEvent',
 ];
 

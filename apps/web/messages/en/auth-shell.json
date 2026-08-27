@@ -72,6 +72,29 @@
         }
       }
     },
+    "invite": {
+      "metadataTitle": "Accept your invitation | Saling Jaga",
+      "metadataDescription": "Set a password for your Saling Jaga staff account",
+      "title": "Set your password",
+      "subtitle": "You were invited to join Saling Jaga as {email}.",
+      "expiresAt": "This link expires on {date}.",
+      "checking": "Checking your invitation…",
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm password",
+      "passwordMismatch": "The two passwords do not match.",
+      "submit": "Create my account",
+      "submitting": "Creating your account…",
+      "acceptError": "We could not complete your invitation. Please try again.",
+      "invalidTitle": "This link no longer works",
+      "invalidLink": "This invitation link is not valid.",
+      "alreadyUsed": "This invitation has already been used. Try signing in instead.",
+      "noLongerValid": "This invitation has expired or was withdrawn.",
+      "invalidHelp": "Ask your administrator to send a new invitation.",
+      "successTitle": "Your account is ready",
+      "successBody": "Sign in as {email} with the password you just chose.",
+      "goToLogin": "Go to sign in",
+      "footerNote": "Nobody at the clinic can see the password you choose here."
+    },
     "shell": {
       "brand": {
         "logoAlt": "{facilityName} logo",

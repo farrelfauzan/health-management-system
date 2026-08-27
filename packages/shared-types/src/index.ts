@@ -90,3 +90,6 @@ export * from '#notification/types';
 export * from '#audit/schemas';
 export * from '#audit/contracts';
 export * from '#audit/types';
+export * from '#user-invitation/schemas';
+export * from '#user-invitation/contracts';
+export * from '#user-invitation/types';

@@ -9,5 +9,11 @@ import { AdminManagementService } from './service/admin-management.service';
   imports: [AuthModule],
   controllers: [AdminManagementController],
   providers: [AdminManagementRepository, AdminManagementService],
+  // The repository is exported for `UserInvitationModule` (IMP-23), which asks
+  // the same three questions this module already answers — does this email
+  // exist, do these role codes exist, what are their ids — on the accept path.
+  // Cross-module access still goes through this module's own boundary rather
+  // than a second Prisma caller for `user` and `role`.
+  exports: [AdminManagementRepository],
 })
 export class AdminManagementModule {}

@@ -55,6 +55,30 @@ export type LoginAttempt = Prisma.LoginAttemptModel
  */
 export type RefreshToken = Prisma.RefreshTokenModel
 /**
+ * Model UserInvitation
+ * One emailed invitation to join the clinic as a staff user (IMP-23),
+ * modelled on `RefreshToken` because it is the same problem: a bearer secret
+ * that must be presentable exactly once and revocable at any moment.
+ * 
+ * Only `tokenHash` is stored, for the same reason and with the same
+ * reasoning as refresh tokens — the input is 256 bits of CSPRNG output, so
+ * there is no dictionary a slow hash would defend against, and the raw token
+ * exists in exactly one place: the link in the email.
+ * 
+ * `consumedAt` and `revokedAt` are separate, again deliberately. Accepting an
+ * invitation and an administrator withdrawing it are different events with
+ * different follow-ups, and the accept route returns a different error code
+ * for each — "this invitation was already used" tells the invitee to log in,
+ * "this invitation was withdrawn" tells them to ask for another.
+ * 
+ * `roleCodes` is a denormalised string array rather than a join table. The
+ * grant is not live yet: nothing may be resolved from it until acceptance,
+ * and a `UserRole` row before then would be a real permission grant to an
+ * account that cannot log in. Codes are re-validated against `Role` at accept
+ * time, so a role deleted between invite and accept fails loudly.
+ */
+export type UserInvitation = Prisma.UserInvitationModel
+/**
  * Model MfaCredential
  * One user's TOTP second factor (SJ-8). At most one per user — re-enrolling
  * replaces the row rather than accumulating secrets, so "which of these is

@@ -10,7 +10,14 @@ export default async function AdminAdministrationPage({
 }: AdminAdministrationPageProps) {
   const params = await searchParams;
   const query = parseAdminUsersSearchParams(params);
-  const defaultTab = params.tab === 'roles' ? ('roles' as const) : ('users' as const);
+  const defaultTab = resolveDefaultTab(params.tab);
 
   return <AdministrationTabs initialQuery={query} defaultTab={defaultTab} />;
+}
+
+function resolveDefaultTab(tab: string | string[] | undefined): 'users' | 'invitations' | 'roles' {
+  if (tab === 'roles' || tab === 'invitations') {
+    return tab;
+  }
+  return 'users';
 }
