@@ -32,6 +32,17 @@ const PERMANENT_ERROR_CODES: readonly string[] = [
 const MAX_STORED_ERROR_LENGTH = 500;
 
 /**
+ * Captures the Encounter id from a transaction-response `location`. The
+ * platform answers with an absolute URL
+ * (`https://…/fhir-r4/v1/Encounter/<id>/_history/<version>`) even though FHIR
+ * also permits the relative `Encounter/<id>/_history/<version>` form, so the
+ * match anchors on a path-segment boundary and accepts both. Declared without
+ * the global flag on purpose: a `/g` regex carries `lastIndex` between
+ * `test` and `exec` calls and would skip every other match.
+ */
+const ENCOUNTER_LOCATION_PATTERN = /(?:^|\/)Encounter\/([^/?#]+)/;
+
+/**
  * Processes one outbox row end to end: rebuilds the encounter bundle from the
  * live clinical record, resolves (or automatically links) the patient and
  * practitioner IHS numbers, posts the transaction bundle, and records the
@@ -345,7 +356,7 @@ export class SatusehatSubmissionService {
     const encounterEntry = response.entry?.find(
       (entry) =>
         (typeof entry.response?.location === 'string' &&
-          entry.response.location.startsWith('Encounter/')) ||
+          ENCOUNTER_LOCATION_PATTERN.test(entry.response.location)) ||
         entry.resource?.resourceType === 'Encounter',
     );
     if (!encounterEntry) {
@@ -353,8 +364,10 @@ export class SatusehatSubmissionService {
     }
     const location = encounterEntry.response?.location;
     if (typeof location === 'string') {
-      const segments = location.split('/');
-      return segments[1] ?? null;
+      const matchedIhsId = ENCOUNTER_LOCATION_PATTERN.exec(location)?.[1];
+      if (matchedIhsId !== undefined && matchedIhsId !== '') {
+        return matchedIhsId;
+      }
     }
     const resourceId = encounterEntry.resource?.id;
     return typeof resourceId === 'string' ? resourceId : null;
