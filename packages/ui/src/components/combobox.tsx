@@ -32,6 +32,17 @@ type ComboboxProps = {
   isLoading?: boolean;
   disabled?: boolean;
   hasError?: boolean;
+  /**
+   * Label shown on the trigger when the selected option is not in `options` —
+   * needed with server-driven search, where a new query can drop the selected
+   * entry from the list.
+   */
+  selectedLabel?: string;
+  /** Controlled search text; pair with `onSearchValueChange` for server-driven search. */
+  searchValue?: string;
+  onSearchValueChange?: (searchValue: string) => void;
+  /** Set false when the option list is already filtered by the server. */
+  shouldFilter?: boolean;
   onChange: (value: string) => void;
 };
 
@@ -46,10 +57,15 @@ function Combobox({
   isLoading = false,
   disabled = false,
   hasError = false,
+  selectedLabel,
+  searchValue,
+  onSearchValueChange,
+  shouldFilter = true,
   onChange,
 }: ComboboxProps) {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const selectedOption = options.find((option) => option.value === value);
+  const resolvedSelectedLabel = selectedOption?.label ?? (value ? selectedLabel : undefined);
   const unselectedLabel = emptyOptionLabel ?? (isLoading ? 'Loading…' : placeholder);
 
   function handleSelect(nextValue: string): void {
@@ -73,17 +89,21 @@ function Combobox({
           <span
             className={cn(
               'truncate',
-              !selectedOption && !emptyOptionLabel && 'text-muted-foreground',
+              !resolvedSelectedLabel && !emptyOptionLabel && 'text-muted-foreground',
             )}
           >
-            {selectedOption?.label ?? unselectedLabel}
+            {resolvedSelectedLabel ?? unselectedLabel}
           </span>
           <ChevronsUpDownIcon className="size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
-        <Command>
-          <CommandInput placeholder={searchPlaceholder} />
+        <Command shouldFilter={shouldFilter}>
+          <CommandInput
+            placeholder={searchPlaceholder}
+            value={searchValue}
+            onValueChange={onSearchValueChange}
+          />
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>

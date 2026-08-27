@@ -5,24 +5,20 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AdmitPatientInput } from '@hms/shared-types';
 import {
   Button,
+  Combobox,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Input,
   Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Textarea,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { BedPickerField } from '#components/client/admissions/bed-picker-field';
+import { DoctorCombobox } from '#components/client/doctors/doctor-combobox';
 import { admissionFlowControllerAdmitPatientV1 } from '#lib/api/generated/admission-flow/admission-flow';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -30,6 +26,8 @@ import { invalidateAdmissionQueries } from '#lib/admissions/invalidate-admission
 import { useDoctorOptions } from '#lib/admissions/use-doctor-options';
 import { usePatientOptions } from '#lib/admissions/use-patient-options';
 import { formatStatusLabel } from '#lib/shared/status-label';
+
+const MIN_PATIENT_SEARCH_LENGTH = 2;
 
 type AdmitPatientDialogProps = {
   open: boolean;
@@ -41,6 +39,7 @@ export function AdmitPatientDialog({ open, onOpenChange }: AdmitPatientDialogPro
   const queryClient = useQueryClient();
   const [patientSearch, setPatientSearch] = useState<string>('');
   const [patientId, setPatientId] = useState<string>('');
+  const [patientLabel, setPatientLabel] = useState<string>('');
   const [admittingDoctorId, setAdmittingDoctorId] = useState<string>('');
   const [bedId, setBedId] = useState<string>('');
   const [reason, setReason] = useState<string>('');
@@ -50,6 +49,31 @@ export function AdmitPatientDialog({ open, onOpenChange }: AdmitPatientDialogPro
   const admitMutation = useMutation({
     mutationFn: (payload: AdmitPatientInput) => admissionFlowControllerAdmitPatientV1(payload),
   });
+  const isPatientSearchActive = patientSearch.trim().length >= MIN_PATIENT_SEARCH_LENGTH;
+  const patientEmptyMessage = !isPatientSearchActive
+    ? t('admissions.patientSearchHint')
+    : patientOptions.isFetching
+      ? t('common.loading')
+      : t('admissions.noPatient');
+
+  function handlePatientChange(nextPatientId: string): void {
+    setPatientId(nextPatientId);
+    /*
+      Name and current status, not MRN: the patient *list* contract does not
+      carry an MRN (only the detail response does), and status is the more
+      useful disambiguator here anyway — an IN_PATIENT in this list is someone
+      already in a bed. The label is kept aside because a later search can
+      drop the selected patient out of the fetched options.
+    */
+    const selectedPatient = patientOptions.patients.find(
+      (patient) => patient.id === nextPatientId,
+    );
+    setPatientLabel(
+      selectedPatient
+        ? `${selectedPatient.fullName} — ${formatStatusLabel(selectedPatient.status)}`
+        : '',
+    );
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -88,45 +112,33 @@ export function AdmitPatientDialog({ open, onOpenChange }: AdmitPatientDialogPro
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
           <div className="space-y-2">
-            <Label htmlFor="admit-patient-search">{t('admissions.search')}</Label>
-            <Input
-              id="admit-patient-search"
-              value={patientSearch}
-              onChange={(event) => setPatientSearch(event.target.value)}
+            <Label htmlFor="admit-patient">{t('admissions.patient')}</Label>
+            <Combobox
+              id="admit-patient"
+              options={patientOptions.patients.map((patient) => ({
+                value: patient.id,
+                label: `${patient.fullName} — ${formatStatusLabel(patient.status)}`,
+              }))}
+              value={patientId}
+              selectedLabel={patientLabel}
+              placeholder={t('admissions.selectPatient')}
+              searchPlaceholder={t('admissions.searchPatient')}
+              emptyMessage={patientEmptyMessage}
+              searchValue={patientSearch}
+              onSearchValueChange={setPatientSearch}
+              shouldFilter={false}
+              onChange={handlePatientChange}
             />
-            <Select value={patientId} onValueChange={setPatientId}>
-              <SelectTrigger className="w-full" aria-label={t('admissions.patient')}>
-                <SelectValue placeholder={t('admissions.patient')} />
-              </SelectTrigger>
-              <SelectContent>
-                {/*
-                  Name and current status, not MRN: the patient *list* contract
-                  does not carry an MRN (only the detail response does), and
-                  status is the more useful disambiguator here anyway — an
-                  IN_PATIENT in this list is someone already in a bed.
-                */}
-                {patientOptions.patients.map((patient) => (
-                  <SelectItem key={patient.id} value={patient.id}>
-                    {patient.fullName} — {formatStatusLabel(patient.status)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="admit-doctor">{t('admissions.doctor')}</Label>
-            <Select value={admittingDoctorId} onValueChange={setAdmittingDoctorId}>
-              <SelectTrigger id="admit-doctor" className="w-full">
-                <SelectValue placeholder={t('admissions.doctor')} />
-              </SelectTrigger>
-              <SelectContent>
-                {doctorOptions.doctors.map((doctor) => (
-                  <SelectItem key={doctor.id} value={doctor.id}>
-                    {doctor.fullName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <DoctorCombobox
+              id="admit-doctor"
+              doctors={doctorOptions.doctors}
+              value={admittingDoctorId}
+              isLoading={doctorOptions.isPending}
+              onChange={setAdmittingDoctorId}
+            />
           </div>
           <BedPickerField
             id="admit-bed"
