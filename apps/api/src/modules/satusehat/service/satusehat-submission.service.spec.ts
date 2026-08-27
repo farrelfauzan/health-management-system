@@ -234,6 +234,56 @@ describe('SatusehatSubmissionService', () => {
     );
   });
 
+  it('records the IHS encounter id when the platform answers with an absolute location URL', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(buildBundleData());
+    httpClientMock.sendRequest.mockResolvedValue({
+      entry: [
+        {
+          response: {
+            status: '201 Created',
+            location:
+              'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Encounter/ihs-enc-abs/_history/MTc4Nzg0MDExNzY2MDM4MTAwMA',
+          },
+        },
+        {
+          response: {
+            status: '201 Created',
+            location:
+              'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Condition/ihs-cond-abs/_history/MTc4Nzg0MDExNzY2MDM4MTAwMA',
+          },
+        },
+      ],
+    });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
+      buildSubmission().id,
+      'ihs-enc-abs',
+    );
+  });
+
+  it('records a null IHS encounter id when no entry carries an Encounter location', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(buildBundleData());
+    httpClientMock.sendRequest.mockResolvedValue({
+      entry: [
+        {
+          response: {
+            status: '201 Created',
+            location:
+              'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Condition/ihs-cond-only/_history/1',
+          },
+        },
+      ],
+    });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(buildSubmission().id, null);
+  });
+
   it('wires every Condition and Observation to the Encounter entry fullUrl and ranks the primary first', async () => {
     submissionRepositoryMock.findBundleData.mockResolvedValue(buildBundleData());
     httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
