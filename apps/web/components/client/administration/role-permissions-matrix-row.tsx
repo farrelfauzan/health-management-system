@@ -27,6 +27,7 @@ export function RolePermissionsMatrixRow({
             aria-label={row.anyKey}
             checked={selectedKeys.has(row.anyKey)}
             onCheckedChange={() => onToggleKey(row.anyKey as string)}
+            className="border-slate-400"
           />
         ) : null}
       </div>
@@ -36,6 +37,7 @@ export function RolePermissionsMatrixRow({
             aria-label={row.ownKey}
             checked={selectedKeys.has(row.ownKey)}
             onCheckedChange={() => onToggleKey(row.ownKey as string)}
+            className="border-slate-400"
           />
         ) : null}
       </div>

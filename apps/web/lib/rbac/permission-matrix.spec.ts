@@ -5,6 +5,9 @@ import type { PermissionCatalogGroup } from '@hms/shared-types';
 import {
   buildPermissionMatrix,
   countSelectedInGroup,
+  filterPermissionMatrix,
+  isGroupFullySelected,
+  toggleGroupKeys,
   togglePermissionKey,
 } from '#lib/rbac/permission-matrix';
 
@@ -83,5 +86,91 @@ describe('countSelectedInGroup', () => {
     const selected = new Set(['patient.read:any', 'patient.read:own', 'patient.merge:any']);
 
     expect(matrixGroup && countSelectedInGroup(matrixGroup, selected)).toBe(3);
+  });
+});
+
+describe('filterPermissionMatrix', () => {
+  it('returns every group untouched for a blank query', () => {
+    const inputMatrix = buildPermissionMatrix([buildCatalogGroup()]);
+
+    expect(filterPermissionMatrix(inputMatrix, '   ')).toEqual(inputMatrix);
+  });
+
+  it('keeps only the rows whose title matches, ignoring case', () => {
+    const inputMatrix = buildPermissionMatrix([buildCatalogGroup()]);
+
+    const actualMatrix = filterPermissionMatrix(inputMatrix, 'MERGE');
+
+    expect(actualMatrix).toHaveLength(1);
+    expect(actualMatrix[0]?.rows.map((row) => row.action)).toEqual(['merge']);
+  });
+
+  it('does not match on the description', () => {
+    const inputMatrix = buildPermissionMatrix([buildCatalogGroup()]);
+
+    expect(filterPermissionMatrix(inputMatrix, 'duplicate')).toEqual([]);
+  });
+
+  it('does not match on the permission key', () => {
+    const inputMatrix = buildPermissionMatrix([buildCatalogGroup()]);
+
+    expect(filterPermissionMatrix(inputMatrix, 'read:own')).toEqual([]);
+  });
+
+  it('does not match on the resource name', () => {
+    const inputMatrix = buildPermissionMatrix([buildCatalogGroup()]);
+
+    expect(filterPermissionMatrix(inputMatrix, 'patient')).toEqual([]);
+  });
+
+  it('drops groups that have no matching row', () => {
+    const inputMatrix = buildPermissionMatrix([buildCatalogGroup()]);
+
+    expect(filterPermissionMatrix(inputMatrix, 'invoice')).toEqual([]);
+  });
+});
+
+describe('isGroupFullySelected', () => {
+  it('is false when at least one key in the group is missing', () => {
+    const matrixGroup = buildPermissionMatrix([buildCatalogGroup()])[0];
+    const selected = new Set(['patient.read:any', 'patient.read:own']);
+
+    expect(matrixGroup && isGroupFullySelected(matrixGroup, selected)).toBe(false);
+  });
+
+  it('is true when every key in the group is selected', () => {
+    const matrixGroup = buildPermissionMatrix([buildCatalogGroup()])[0];
+    const selected = new Set(['patient.read:any', 'patient.read:own', 'patient.merge:any']);
+
+    expect(matrixGroup && isGroupFullySelected(matrixGroup, selected)).toBe(true);
+  });
+});
+
+describe('toggleGroupKeys', () => {
+  it('selects every key in the group when not fully selected, without mutating the input', () => {
+    const matrixGroup = buildPermissionMatrix([buildCatalogGroup()])[0];
+    const inputSelection = new Set(['patient.read:any']);
+
+    const actualSelection = matrixGroup && toggleGroupKeys(inputSelection, matrixGroup);
+
+    expect(actualSelection && Array.from(actualSelection).sort()).toEqual([
+      'patient.merge:any',
+      'patient.read:any',
+      'patient.read:own',
+    ]);
+    expect(Array.from(inputSelection)).toEqual(['patient.read:any']);
+  });
+
+  it('clears every key in the group when fully selected', () => {
+    const matrixGroup = buildPermissionMatrix([buildCatalogGroup()])[0];
+    const inputSelection = new Set([
+      'patient.read:any',
+      'patient.read:own',
+      'patient.merge:any',
+    ]);
+
+    const actualSelection = matrixGroup && toggleGroupKeys(inputSelection, matrixGroup);
+
+    expect(actualSelection && Array.from(actualSelection)).toEqual([]);
   });
 });

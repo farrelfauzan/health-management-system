@@ -37,6 +37,28 @@ export function buildPermissionMatrix(groups: PermissionCatalogGroup[]): Permiss
   });
 }
 
+/**
+ * Narrows the matrix to the rows whose title — the action shown on the row —
+ * matches the query. Descriptions, permission keys, and resource names are
+ * deliberately not searched, so a hit is always visible in the row it filters
+ * to. Blocks left with no matching row drop out.
+ */
+export function filterPermissionMatrix(
+  groups: PermissionMatrixGroup[],
+  query: string,
+): PermissionMatrixGroup[] {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (normalizedQuery.length === 0) {
+    return groups;
+  }
+  return groups
+    .map((group) => ({
+      resource: group.resource,
+      rows: group.rows.filter((row) => row.action.toLowerCase().includes(normalizedQuery)),
+    }))
+    .filter((group) => group.rows.length > 0);
+}
+
 export function togglePermissionKey(selected: ReadonlySet<string>, key: string): Set<string> {
   const next = new Set(selected);
   if (next.has(key)) {
@@ -56,4 +78,30 @@ export function countSelectedInGroup(
     const ownSelected = row.ownKey !== undefined && selected.has(row.ownKey) ? 1 : 0;
     return count + anySelected + ownSelected;
   }, 0);
+}
+
+export function getGroupKeys(group: PermissionMatrixGroup): string[] {
+  return group.rows.flatMap((row) => [row.anyKey, row.ownKey].filter((key) => key !== undefined));
+}
+
+export function isGroupFullySelected(
+  group: PermissionMatrixGroup,
+  selected: ReadonlySet<string>,
+): boolean {
+  const keys = getGroupKeys(group);
+  return keys.length > 0 && keys.every((key) => selected.has(key));
+}
+
+export function toggleGroupKeys(
+  selected: ReadonlySet<string>,
+  group: PermissionMatrixGroup,
+): Set<string> {
+  const keys = getGroupKeys(group);
+  const next = new Set(selected);
+  if (isGroupFullySelected(group, selected)) {
+    keys.forEach((key) => next.delete(key));
+  } else {
+    keys.forEach((key) => next.add(key));
+  }
+  return next;
 }
