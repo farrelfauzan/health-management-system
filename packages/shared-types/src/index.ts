@@ -68,6 +68,8 @@ export * from '#doctor-patient/types';
 export * from '#auth/schemas';
 export * from '#auth/contracts';
 export * from '#auth/types';
+export * from '#auth/pack-permission-hint';
+export * from '#auth/unpack-permission-hint';
 export * from '#rbac/schemas';
 export * from '#rbac/contracts';
 export * from '#rbac/types';

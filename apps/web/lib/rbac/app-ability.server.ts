@@ -1,8 +1,20 @@
-import { ADMIN_PORTAL_ADMIN_RULES, type AppAction, type AppRule, type AppSubject } from '@hms/ui';
+import {
+  ADMIN_PORTAL_ADMIN_RULES,
+  SUPER_ADMIN_PORTAL_RULES,
+  type AppAction,
+  type AppRule,
+  type AppSubject,
+} from '@hms/ui';
 
 import { hasAnyRole, type AccessTokenClaims } from '#lib/auth/access-token-claims';
 
-const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN'];
+// Split deliberately. These two codes do *not* hold the same rights: `seed.sql`
+// withholds `role.create/update/delete:any` from ADMIN on purpose — a role that
+// can mint roles holding any permission is a super-admin capability — while
+// SUPER_ADMIN picks them up from the catalog-wide grant. Collapsing both into
+// one fallback gave SUPER_ADMIN the ADMIN preset and hid role management.
+const SUPER_ADMIN_ROLES = ['SUPER_ADMIN'];
+const ADMIN_ROLES = ['ADMIN'];
 const SUPPORTED_ACTIONS: AppAction[] = [
   'create',
   'read',
@@ -124,6 +136,10 @@ export function resolveAppAbilityRules(claims: AccessTokenClaims | null): AppRul
 
   if (permissionRules.length > 0) {
     return permissionRules;
+  }
+
+  if (hasAnyRole(claims, SUPER_ADMIN_ROLES)) {
+    return SUPER_ADMIN_PORTAL_RULES;
   }
 
   if (hasAnyRole(claims, ADMIN_ROLES)) {

@@ -18,6 +18,7 @@ import { PasswordHasherService } from '../../../common/crypto/password-hasher.se
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { JwtSecretsService } from '../../../common/config/jwt-secrets.service';
 import { JwtExpiresIn, resolveJwtExpiresIn } from '../../../common/auth/jwt-expires.util';
+import { PORTAL_PERMISSION_PREFIX } from '../portal-permission-prefix';
 import { RequestContext } from '../../../common/observability/observability.types';
 import { AuditAction } from '../../../generated/prisma/client';
 import { LoginDto } from '../dto/login.dto';
@@ -550,8 +551,35 @@ export class AuthService {
     return [...new Set(permissionKeys)].sort();
   }
 
+  /**
+   * Signs the access token, carrying only the `portal.*` slice of the caller's
+   * permissions.
+   *
+   * The full set used to ride along here and it broke the session it was meant
+   * to describe. A SUPER_ADMIN holds 127 keys; as a JSON array in the payload
+   * that is a 4212-byte JWT, and `hms_access_token=` plus that value is 4229
+   * bytes against a 4096-byte per-cookie browser limit. The write from
+   * `setAccessTokenCookie` was silently discarded — no exception, no console
+   * warning — so the admin shell fell back to a hardcoded CASL preset on every
+   * single render and role management disappeared for the one role that
+   * actually held `role.create:any`.
+   *
+   * Only `portal.*` stays, because `proxy.ts` gates the shell at the edge
+   * where no API call is possible and it matches those keys exactly, scope
+   * included. Everything else is visibility data with no business inside a
+   * credential: `PermissionsGuard` re-reads permissions from the database on
+   * every request and has never trusted this claim. The web tier reads the
+   * full set from the session hint, which exists precisely to carry rendering
+   * hints — see `packPermissionHint`.
+   */
   private async issueAccessToken(claims: JwtPayload): Promise<string> {
-    return this.jwtService.signAsync(claims, {
+    const portalClaims: JwtPayload = {
+      ...claims,
+      permissions: claims.permissions.filter((permissionKey) =>
+        permissionKey.startsWith(PORTAL_PERMISSION_PREFIX),
+      ),
+    };
+    return this.jwtService.signAsync(portalClaims, {
       secret: this.jwtSecrets.getAccessSigningSecret(),
       expiresIn: resolveJwtExpiresIn(
         this.configService.get<string>('JWT_ACCESS_EXPIRES_IN'),

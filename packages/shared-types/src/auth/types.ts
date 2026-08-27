@@ -5,14 +5,26 @@ export type JwtPayload = {
   email: string;
   roles: string[];
   /**
-   * Permission strings (`patient.read:any`) granted through the user's active
-   * roles. Carried so the frontend can build its CASL ability from the same
-   * model the backend enforces, instead of inferring capability from role
-   * names. **Advisory only**: the API resolves permissions from the database
-   * on every request, so a token claim can never grant access on its own.
-   * After a role edit this claim stays stale until the next token refresh —
-   * an accepted, visibility-only window bounded by JWT_ACCESS_EXPIRES_IN
-   * (D-022 in docs/MVP/decisions.md).
+   * Permission strings granted through the user's active roles.
+   *
+   * On a signed access token this is the `portal.*` family **and nothing
+   * else** (D-023): `proxy.ts` decides which shell a request may enter from
+   * the edge runtime, where no API call is possible, and it matches these
+   * keys exactly with their `:any` / `:own` scope. The full set is carried by
+   * the session-hint cookie instead, packed by `packPermissionHint`, and is
+   * what builds the frontend's CASL ability. It moved because a SUPER_ADMIN's
+   * 127 keys made the token 4229 bytes against the browser's 4096-byte
+   * per-cookie limit, so the cookie write was silently discarded.
+   *
+   * In-process this field still carries the complete set — `AuthService`
+   * resolves it from the database and narrows it only at signing time, so
+   * `IssuedSession.permissions` and the hint both see everything.
+   *
+   * **Advisory only** wherever it is read: the API resolves permissions from
+   * the database on every request, so a claim can never grant access on its
+   * own. After a role edit it stays stale until the next token refresh — an
+   * accepted, visibility-only window bounded by JWT_ACCESS_EXPIRES_IN (D-022
+   * in docs/MVP/decisions.md).
    */
   permissions: string[];
 };

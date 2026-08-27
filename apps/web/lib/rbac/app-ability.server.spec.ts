@@ -143,10 +143,48 @@ describe('resolveAppAbilityRules legacy admin fallback (D-022)', () => {
   });
 
   it('applies the admin preset for a legacy token with no permissions claim', () => {
-    const ability = buildAppAbility(resolveAppAbilityRules({ roles: ['SUPER_ADMIN'] }));
+    const ability = buildAppAbility(resolveAppAbilityRules({ roles: ['ADMIN'] }));
 
     expect(ability.can('create', 'User')).toBe(true);
     expect(ability.can('read', 'Role')).toBe(true);
+  });
+
+  it('gives a fallback SUPER_ADMIN the role lifecycle the seed actually grants it', () => {
+    // The regression this branch exists for. SUPER_ADMIN holds
+    // `role.create/update/delete:any` through seed.sql's catalog-wide grant,
+    // but shared the ADMIN preset, which stops at `read` — so /admin/
+    // administration rendered the Roles tab with no New role, Edit or Delete.
+    const ability = buildAppAbility(resolveAppAbilityRules({ roles: ['SUPER_ADMIN'] }));
+
+    expect(ability.can('create', 'Role')).toBe(true);
+    expect(ability.can('update', 'Role')).toBe(true);
+    expect(ability.can('delete', 'Role')).toBe(true);
+    expect(ability.can('read', 'Role')).toBe(true);
+    expect(ability.can('create', 'User')).toBe(true);
+  });
+
+  it('still withholds the role lifecycle from a fallback ADMIN', () => {
+    // seed.sql withholds these from ADMIN deliberately; the fallback must not
+    // hand back what the grant table refuses.
+    const ability = buildAppAbility(resolveAppAbilityRules({ roles: ['ADMIN'] }));
+
+    expect(ability.can('create', 'Role')).toBe(false);
+    expect(ability.can('update', 'Role')).toBe(false);
+    expect(ability.can('delete', 'Role')).toBe(false);
+  });
+
+  it('falls back for a SUPER_ADMIN whose only claim is the portal key', () => {
+    // The real production path: the session-hint cookie carries `portal.*`
+    // keys only, and none of them map to a UI rule, so an oversized or
+    // expired access-token cookie lands every SUPER_ADMIN page load here.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        roles: ['SUPER_ADMIN'],
+        permissions: ['portal.admin-access:any'],
+      }),
+    );
+
+    expect(ability.can('create', 'Role')).toBe(true);
   });
 
   it('grants a custom role nothing when its only claims do not map to UI rules', () => {
