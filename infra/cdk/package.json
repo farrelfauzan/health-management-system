@@ -1,0 +1,25 @@
+{
+  "name": "@hms/infra-cdk",
+  "version": "0.1.0",
+  "private": true,
+  "bin": {
+    "hms": "bin/hms.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "synth": "cdk synth",
+    "diff": "cdk diff",
+    "deploy": "cdk deploy"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "aws-cdk": "^2.1135.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.264.0",
+    "constructs": "^10.8.1"
+  }
+}
