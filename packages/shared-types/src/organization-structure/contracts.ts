@@ -51,3 +51,23 @@ export type OrganizationUnitTreeResponse = {
   /** Deepest level present, so the UI can warn as the cap approaches. */
   maxDepth: number;
 };
+
+/**
+ * One person sitting in a unit (SJ-89).
+ *
+ * Roles ride along because the members list is read next to them — "who is in
+ * Nursing" is nearly always followed by "and what are they" — and the caller
+ * would otherwise fan out to the admin-users endpoint once per row.
+ */
+export type OrganizationUnitMemberResponse = {
+  userId: string;
+  email: string;
+  isActive: boolean;
+  roles: string[];
+};
+
+export type OrganizationUnitMemberListMeta = {
+  page: number;
+  limit: number;
+  total: number;
+};

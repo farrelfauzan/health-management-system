@@ -63,4 +63,15 @@ export const ORGANIZATION_STRUCTURE_EXAMPLES = {
     parentId: '8a1c4d5e-2b3f-4a6c-9d8e-7f0a1b2c3d4e',
     sortOrder: 0,
   },
+  member: {
+    userId: 'c7e1f2a3-4b5c-4d6e-8f90-1a2b3c4d5e6f',
+    email: 'maya.sari@clinic.local',
+    isActive: true,
+    roles: ['DOCTOR'],
+  },
+  memberListMeta: {
+    page: 1,
+    limit: 20,
+    total: 11,
+  },
 } as const;

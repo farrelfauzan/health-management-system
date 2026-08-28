@@ -90,7 +90,25 @@ export const listOrganizationUnitsQuerySchema = z.object({
     .optional(),
 });
 
+const DEFAULT_MEMBER_PAGE_SIZE = 20;
+
+const MAX_MEMBER_PAGE_SIZE = 100;
+
+/**
+ * Members of one unit (SJ-89). Paginated unlike the tree itself, because a
+ * unit's headcount is unbounded in a way the chart's depth is not — a clinic
+ * caps at six levels but a department can hold three hundred people.
+ */
+export const listOrganizationUnitMembersQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(MAX_MEMBER_PAGE_SIZE).default(DEFAULT_MEMBER_PAGE_SIZE),
+  search: z.string().trim().min(1).max(100).optional(),
+});
+
 export type CreateOrganizationUnitInput = z.infer<typeof createOrganizationUnitSchema>;
 export type UpdateOrganizationUnitInput = z.infer<typeof updateOrganizationUnitSchema>;
 export type MoveOrganizationUnitInput = z.infer<typeof moveOrganizationUnitSchema>;
 export type ListOrganizationUnitsQueryInput = z.infer<typeof listOrganizationUnitsQuerySchema>;
+export type ListOrganizationUnitMembersQueryInput = z.infer<
+  typeof listOrganizationUnitMembersQuerySchema
+>;

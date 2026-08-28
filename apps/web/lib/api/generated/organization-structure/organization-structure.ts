@@ -30,6 +30,10 @@ import type {
   OrganizationUnitControllerGetTreeV1Params,
   OrganizationUnitControllerMoveUnitV1200,
   OrganizationUnitControllerUpdateUnitV1200,
+  OrganizationUnitMemberControllerAssignMemberV1200,
+  OrganizationUnitMemberControllerListMembersV1200,
+  OrganizationUnitMemberControllerListMembersV1Params,
+  OrganizationUnitMemberControllerUnassignMemberV1200,
   UpdateOrganizationUnitDto
 } from '../model';
 
@@ -615,6 +619,304 @@ export function useOrganizationUnitControllerArchiveUnitV1<TData = Awaited<Retur
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getOrganizationUnitControllerArchiveUnitV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List the staff assigned to an organization unit
+ */
+export const organizationUnitMemberControllerListMembersV1 = (
+    id: string,
+    params?: OrganizationUnitMemberControllerListMembersV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<OrganizationUnitMemberControllerListMembersV1200>(
+      {url: `/api/v1/organization-units/${id}/members`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getOrganizationUnitMemberControllerListMembersV1QueryKey = (id: string,
+    params?: OrganizationUnitMemberControllerListMembersV1Params,) => {
+    return [
+    `/api/v1/organization-units/${id}/members`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getOrganizationUnitMemberControllerListMembersV1QueryOptions = <TData = Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError = unknown>(id: string,
+    params?: OrganizationUnitMemberControllerListMembersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrganizationUnitMemberControllerListMembersV1QueryKey(id,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>> = ({ signal }) => organizationUnitMemberControllerListMembersV1(id,params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrganizationUnitMemberControllerListMembersV1QueryResult = NonNullable<Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>>
+export type OrganizationUnitMemberControllerListMembersV1QueryError = unknown
+
+
+export function useOrganizationUnitMemberControllerListMembersV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError = unknown>(
+ id: string,
+    params: undefined |  OrganizationUnitMemberControllerListMembersV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>,
+          TError,
+          Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrganizationUnitMemberControllerListMembersV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError = unknown>(
+ id: string,
+    params?: OrganizationUnitMemberControllerListMembersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>,
+          TError,
+          Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrganizationUnitMemberControllerListMembersV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError = unknown>(
+ id: string,
+    params?: OrganizationUnitMemberControllerListMembersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List the staff assigned to an organization unit
+ */
+
+export function useOrganizationUnitMemberControllerListMembersV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError = unknown>(
+ id: string,
+    params?: OrganizationUnitMemberControllerListMembersV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerListMembersV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrganizationUnitMemberControllerListMembersV1QueryOptions(id,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Assign a person to an organization unit
+ */
+export const organizationUnitMemberControllerAssignMemberV1 = (
+    id: string,
+    userId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<OrganizationUnitMemberControllerAssignMemberV1200>(
+      {url: `/api/v1/organization-units/${id}/members/${userId}`, method: 'PUT', signal
+    },
+      );
+    }
+
+
+
+
+export const getOrganizationUnitMemberControllerAssignMemberV1QueryKey = (id: string,
+    userId: string,) => {
+    return [
+    'PUT', `/api/v1/organization-units/${id}/members/${userId}`
+    ] as const;
+    }
+
+
+export const getOrganizationUnitMemberControllerAssignMemberV1QueryOptions = <TData = Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError = unknown>(id: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrganizationUnitMemberControllerAssignMemberV1QueryKey(id,userId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>> = ({ signal }) => organizationUnitMemberControllerAssignMemberV1(id,userId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined && userId !== null && userId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrganizationUnitMemberControllerAssignMemberV1QueryResult = NonNullable<Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>>
+export type OrganizationUnitMemberControllerAssignMemberV1QueryError = unknown
+
+
+export function useOrganizationUnitMemberControllerAssignMemberV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError = unknown>(
+ id: string,
+    userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>,
+          TError,
+          Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrganizationUnitMemberControllerAssignMemberV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError = unknown>(
+ id: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>,
+          TError,
+          Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrganizationUnitMemberControllerAssignMemberV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError = unknown>(
+ id: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Assign a person to an organization unit
+ */
+
+export function useOrganizationUnitMemberControllerAssignMemberV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError = unknown>(
+ id: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerAssignMemberV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrganizationUnitMemberControllerAssignMemberV1QueryOptions(id,userId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Remove a person from an organization unit
+ */
+export const organizationUnitMemberControllerUnassignMemberV1 = (
+    id: string,
+    userId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<OrganizationUnitMemberControllerUnassignMemberV1200>(
+      {url: `/api/v1/organization-units/${id}/members/${userId}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getOrganizationUnitMemberControllerUnassignMemberV1QueryKey = (id: string,
+    userId: string,) => {
+    return [
+    'DELETE', `/api/v1/organization-units/${id}/members/${userId}`
+    ] as const;
+    }
+
+
+export const getOrganizationUnitMemberControllerUnassignMemberV1QueryOptions = <TData = Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError = unknown>(id: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOrganizationUnitMemberControllerUnassignMemberV1QueryKey(id,userId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>> = ({ signal }) => organizationUnitMemberControllerUnassignMemberV1(id,userId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined && userId !== null && userId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OrganizationUnitMemberControllerUnassignMemberV1QueryResult = NonNullable<Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>>
+export type OrganizationUnitMemberControllerUnassignMemberV1QueryError = unknown
+
+
+export function useOrganizationUnitMemberControllerUnassignMemberV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError = unknown>(
+ id: string,
+    userId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>,
+          TError,
+          Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrganizationUnitMemberControllerUnassignMemberV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError = unknown>(
+ id: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>,
+          TError,
+          Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrganizationUnitMemberControllerUnassignMemberV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError = unknown>(
+ id: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Remove a person from an organization unit
+ */
+
+export function useOrganizationUnitMemberControllerUnassignMemberV1<TData = Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError = unknown>(
+ id: string,
+    userId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof organizationUnitMemberControllerUnassignMemberV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOrganizationUnitMemberControllerUnassignMemberV1QueryOptions(id,userId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

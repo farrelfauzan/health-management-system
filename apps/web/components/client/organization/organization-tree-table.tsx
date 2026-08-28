@@ -23,6 +23,7 @@ type OrganizationTreeTableProps = {
   onMove: (unit: OrganizationUnitTreeNode) => void;
   onArchive: (unit: OrganizationUnitTreeNode) => void;
   onDelete: (unit: OrganizationUnitTreeNode) => void;
+  onViewMembers: (unit: OrganizationUnitTreeNode) => void;
 };
 
 export function OrganizationTreeTable({
@@ -35,6 +36,7 @@ export function OrganizationTreeTable({
   onMove,
   onArchive,
   onDelete,
+  onViewMembers,
 }: OrganizationTreeTableProps) {
   const t = useTranslations('operations.organization');
   const common = useTranslations('operations.common');
@@ -81,6 +83,7 @@ export function OrganizationTreeTable({
               onMove={onMove}
               onArchive={onArchive}
               onDelete={onDelete}
+              onViewMembers={onViewMembers}
             />
           ))
         )}

@@ -8,13 +8,14 @@ import { useState } from 'react';
 import { OrganizationUnitArchiveDialog } from '#components/client/organization/organization-unit-archive-dialog';
 import { OrganizationUnitDeleteDialog } from '#components/client/organization/organization-unit-delete-dialog';
 import { OrganizationUnitFormDialog } from '#components/client/organization/organization-unit-form-dialog';
+import { OrganizationUnitMembersDialog } from '#components/client/organization/organization-unit-members-dialog';
 import { OrganizationUnitMoveDialog } from '#components/client/organization/organization-unit-move-dialog';
 import { OrganizationTreeTable } from '#components/client/organization/organization-tree-table';
 import { PageHeader } from '#components/shared/page-header';
 import { useOrganizationTree } from '#lib/organization/use-organization-tree';
 
 type UnitDialogState = {
-  mode: 'archive' | 'create' | 'delete' | 'edit' | 'move' | null;
+  mode: 'archive' | 'create' | 'delete' | 'edit' | 'members' | 'move' | null;
   unit: OrganizationUnitTreeNode | null;
   parent: OrganizationUnitTreeNode | null;
 };
@@ -87,6 +88,7 @@ export function OrganizationWorkspace() {
             onMove={(unit) => setDialogState({ mode: 'move', unit, parent: null })}
             onArchive={(unit) => setDialogState({ mode: 'archive', unit, parent: null })}
             onDelete={(unit) => setDialogState({ mode: 'delete', unit, parent: null })}
+            onViewMembers={(unit) => setDialogState({ mode: 'members', unit, parent: null })}
           />
         </CardContent>
       </Card>
@@ -121,6 +123,19 @@ export function OrganizationWorkspace() {
 
       {dialogState.mode === 'archive' && dialogState.unit ? (
         <OrganizationUnitArchiveDialog
+          key={dialogState.unit.id}
+          open
+          unit={dialogState.unit}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              closeDialog();
+            }
+          }}
+        />
+      ) : null}
+
+      {dialogState.mode === 'members' && dialogState.unit ? (
+        <OrganizationUnitMembersDialog
           key={dialogState.unit.id}
           open
           unit={dialogState.unit}

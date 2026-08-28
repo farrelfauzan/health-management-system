@@ -18,6 +18,7 @@ type OrganizationTreeRowProps = {
   onMove: (unit: OrganizationUnitTreeNode) => void;
   onArchive: (unit: OrganizationUnitTreeNode) => void;
   onDelete: (unit: OrganizationUnitTreeNode) => void;
+  onViewMembers: (unit: OrganizationUnitTreeNode) => void;
 };
 
 export function OrganizationTreeRow({
@@ -28,37 +29,43 @@ export function OrganizationTreeRow({
   onMove,
   onArchive,
   onDelete,
+  onViewMembers,
 }: OrganizationTreeRowProps) {
   const t = useTranslations('operations.organization');
   const common = useTranslations('operations.common');
   const { unit, indent } = row;
   const isArchived = unit.archivedAt !== undefined;
-  // An archived unit offers no edits. Its only lawful next step is a restore,
-  // which this release does not have — so the menu says nothing rather than
-  // offering actions the API would refuse.
-  const actions = canManage
-    ? [
-        ...(isArchived
-          ? []
-          : [
-              { label: t('addChild'), icon: 'add', onSelect: () => onAddChild(unit) },
-              { label: common('edit'), icon: 'edit', onSelect: () => onEdit(unit) },
-              { label: t('move'), icon: 'drive_file_move', onSelect: () => onMove(unit) },
-              {
-                label: t('archive'),
-                icon: 'archive',
-                isDestructive: true,
-                onSelect: () => onArchive(unit),
-              },
-            ]),
-        {
-          label: t('delete'),
-          icon: 'delete_forever',
-          isDestructive: true,
-          onSelect: () => onDelete(unit),
-        },
-      ]
-    : [];
+  // Viewing members is available to anyone who can see the chart, archived
+  // units included — "who is still in the unit we just wound down" is exactly
+  // when that gets asked. Every other action needs `manage`.
+  const liveUnitActions =
+    canManage && !isArchived
+      ? [
+          { label: t('addChild'), icon: 'add', onSelect: () => onAddChild(unit) },
+          { label: common('edit'), icon: 'edit', onSelect: () => onEdit(unit) },
+          { label: t('move'), icon: 'drive_file_move', onSelect: () => onMove(unit) },
+          {
+            label: t('archive'),
+            icon: 'archive',
+            isDestructive: true,
+            onSelect: () => onArchive(unit),
+          },
+        ]
+      : [];
+  const actions = [
+    { label: t('members'), icon: 'group', onSelect: () => onViewMembers(unit) },
+    ...liveUnitActions,
+    ...(canManage
+      ? [
+          {
+            label: t('delete'),
+            icon: 'delete_forever',
+            isDestructive: true,
+            onSelect: () => onDelete(unit),
+          },
+        ]
+      : []),
+  ];
 
   return (
     <TableRow className="transition-colors hover:bg-slate-50">
