@@ -23,6 +23,7 @@ export type ShellNavigationKey =
   | 'clinicCorpus'
   | 'conversations'
   | 'integrations'
+  | 'organization'
   | 'administration'
   | 'today';
 
@@ -200,6 +201,16 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
           { action: 'manage', subject: 'BpjsConfig' },
           { action: 'manage', subject: 'BpjsMapping' },
         ],
+      },
+      {
+        // SJ-1. Gated on `read` alone, not `manage`: an account that may see
+        // the chart but not redraw it still needs the way in, and the page
+        // renders read-only for it.
+        href: '/admin/organization',
+        label: 'Organization',
+        labelKey: 'organization',
+        icon: 'account_tree',
+        ability: { action: 'read', subject: 'OrganizationUnit' },
       },
       {
         href: '/admin/administration',

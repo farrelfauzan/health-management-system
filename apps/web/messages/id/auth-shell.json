@@ -119,7 +119,8 @@
         "clinicCorpus": "Korpus Klinik",
         "conversations": "Percakapan",
         "rooms": "Kamar",
-        "admissions": "Rawat Inap"
+        "admissions": "Rawat Inap",
+        "organization": "Organisasi"
       },
       "search": {
         "label": "Cari",

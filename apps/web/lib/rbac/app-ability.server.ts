@@ -98,6 +98,14 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'bpjs.submission': 'BpjsSubmission',
   satusehat: 'Satusehat',
   'satusehat.submission': 'SatusehatSubmission',
+  // SJ-1. Dotted, and safely so: `permissionToRule` splits on the *last* dot,
+  // so `organization.structure.manage:any` resolves to resource
+  // `organization.structure` and action `manage` — the same two-segment shape
+  // as `doctor.schedule` and `appointment.session` above. Two entries rather
+  // than a single `organization`, because merging them would make a grant to
+  // maintain the chart also read as a grant over headcount.
+  'organization.structure': 'OrganizationUnit',
+  'organization.member': 'OrganizationUnitMember',
 };
 
 function isSupportedAction(action: string): action is AppAction {

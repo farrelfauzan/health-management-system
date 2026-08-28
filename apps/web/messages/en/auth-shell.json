@@ -119,7 +119,8 @@
         "clinicCorpus": "Clinic Corpus",
         "conversations": "Conversations",
         "rooms": "Rooms",
-        "admissions": "Admissions"
+        "admissions": "Admissions",
+        "organization": "Organization"
       },
       "search": {
         "label": "Search",
