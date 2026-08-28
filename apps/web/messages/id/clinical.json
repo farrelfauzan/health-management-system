@@ -150,6 +150,7 @@
         "editDescription": "Perbarui demografi dan status pasien.",
         "createDescription": "Daftarkan rekam pasien baru dan, bila perlu, tetapkan dokter awal.",
         "saveError": "Pasien gagal disimpan. Silakan coba lagi.",
+        "validationError": "Ada isian yang perlu diperbaiki. Periksa kolom yang ditandai di bawah.",
         "warnings": "Tersimpan dengan peringatan identitas:",
         "warningHelp": "Perbaiki bila ada kesalahan ketik, atau tutup dialog untuk mempertahankan nilai yang dimasukkan.",
         "fullName": "Nama Lengkap",
