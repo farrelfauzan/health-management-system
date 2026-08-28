@@ -267,4 +267,36 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
 
     expect(ability.can('create', 'Patient')).toBe(false);
   });
+
+  it('maps the three-segment organization keys to their own subjects', () => {
+    // SJ-1. `permissionToRule` splits on the last dot, so these resolve to
+    // resource `organization.structure` / `organization.member`. If either ever
+    // collapsed to a bare `organization`, a grant to maintain the chart would
+    // silently also read as a grant over headcount.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: [
+          'organization.structure.read:any',
+          'organization.structure.manage:any',
+          'organization.member.manage:any',
+        ],
+      }),
+    );
+
+    expect(ability.can('read', 'OrganizationUnit')).toBe(true);
+    expect(ability.can('manage', 'OrganizationUnit')).toBe(true);
+    expect(ability.can('manage', 'OrganizationUnitMember')).toBe(true);
+  });
+
+  it('lets a read-only organization grant see the chart without editing it', () => {
+    // This is the account SJ-2's read-only tree exists for: the nav entry and
+    // the page must resolve, and every edit control must not.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['organization.structure.read:any'] }),
+    );
+
+    expect(ability.can('read', 'OrganizationUnit')).toBe(true);
+    expect(ability.can('manage', 'OrganizationUnit')).toBe(false);
+    expect(ability.can('manage', 'OrganizationUnitMember')).toBe(false);
+  });
 });

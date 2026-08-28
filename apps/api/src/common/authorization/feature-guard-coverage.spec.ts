@@ -61,6 +61,11 @@ const NEVER_GATED_CONTROLLERS: readonly string[] = [
   'AuditController',
   'FeatureAdminController',
   'FeatureAvailabilityController',
+  // SJ-1. The org chart is back-office structure with no clinical surface
+  // hanging off it, so there is nothing an entitlement would be selling. It
+  // sits beside `admin-management` for the same reason: it describes the
+  // clinic itself, not a module the clinic bought.
+  'OrganizationUnitController',
 ];
 
 /**

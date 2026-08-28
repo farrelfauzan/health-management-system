@@ -95,3 +95,6 @@ export * from '#audit/types';
 export * from '#user-invitation/schemas';
 export * from '#user-invitation/contracts';
 export * from '#user-invitation/types';
+export * from '#organization-structure/schemas';
+export * from '#organization-structure/contracts';
+export * from '#organization-structure/types';

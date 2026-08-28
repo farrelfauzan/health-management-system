@@ -96,6 +96,12 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'retry', subject: 'SatusehatSubmission' },
   { action: 'read', subject: 'Notification' },
   { action: 'manage', subject: 'Notification' },
+  // SJ-1. Mirrors the three organization grants `seed.sql` gives ADMIN, so an
+  // admin whose session hint predates them still reaches the org chart rather
+  // than losing the nav entry to a silently narrower preset.
+  { action: 'read', subject: 'OrganizationUnit' },
+  { action: 'manage', subject: 'OrganizationUnit' },
+  { action: 'manage', subject: 'OrganizationUnitMember' },
 ];
 
 /**

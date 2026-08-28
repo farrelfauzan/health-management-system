@@ -61,6 +61,11 @@ export type AppSubject =
   | 'Satusehat'
   | 'SatusehatSubmission'
   | 'Notification'
+  // SJ-1. Two subjects rather than one, mirroring the API's catalogue: a role
+  // that maintains the boxes on the org chart is not thereby a role that
+  // decides which box an employee sits in.
+  | 'OrganizationUnit'
+  | 'OrganizationUnitMember'
   | 'all';
 export type AppAbility = MongoAbility<[AppAction, AppSubject]>;
 export type AppRule = RawRuleOf<AppAbility>;

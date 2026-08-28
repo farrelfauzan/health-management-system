@@ -86,7 +86,10 @@
     "#audit/types": "./src/audit/types.ts",
     "#user-invitation/schemas": "./src/user-invitation/schemas.ts",
     "#user-invitation/contracts": "./src/user-invitation/contracts.ts",
-    "#user-invitation/types": "./src/user-invitation/types.ts"
+    "#user-invitation/types": "./src/user-invitation/types.ts",
+    "#organization-structure/schemas": "./src/organization-structure/schemas.ts",
+    "#organization-structure/contracts": "./src/organization-structure/contracts.ts",
+    "#organization-structure/types": "./src/organization-structure/types.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

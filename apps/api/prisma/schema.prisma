@@ -126,6 +126,22 @@ enum AuditAction {
   USER_INVITED
   USER_INVITE_ACCEPTED
   USER_INVITE_REVOKED
+  /// Organization structure (SJ-1). Five verbs rather than the generic
+  /// CREATE/UPDATE/DELETE above because the question asked of this table
+  /// afterwards is "who reorganised the clinic", and a move is the one change
+  /// that rewrites rows nobody edited — every descendant's `path` shifts. It is
+  /// therefore its own verb, with the old and new parent in `metadata`, rather
+  /// than an UPDATE that looks identical to a rename.
+  ///
+  /// ARCHIVED and DELETED are separate for the same reason they are separate
+  /// operations: archiving is reversible and routine, hard deletion is refused
+  /// while anything still hangs off the unit and is the row an investigator
+  /// wants to find.
+  ORGANIZATION_UNIT_CREATED
+  ORGANIZATION_UNIT_UPDATED
+  ORGANIZATION_UNIT_MOVED
+  ORGANIZATION_UNIT_ARCHIVED
+  ORGANIZATION_UNIT_DELETED
 }
 
 enum BpjsSubmissionType {
@@ -485,10 +501,17 @@ model User {
   /// non-identity is that the login path refuses it outright, so no password,
   /// reset, or token grant can ever turn it into a session.
   isSystem     Boolean   @default(false) @map("is_system")
+  /// Which box on the org chart this person sits in (SJ-1). Nullable because
+  /// the chart is optional structure a clinic may never fill in, and because a
+  /// staff account must keep working while a reorganisation is half done.
+  /// Membership lives here rather than in a join table because a person belongs
+  /// to one unit — matrix reporting is a second edge type, not a second row.
+  organizationUnitId String? @map("organization_unit_id") @db.Uuid
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
 
+  organizationUnit           OrganizationUnit?            @relation("OrganizationUnitMember", fields: [organizationUnitId], references: [id], onDelete: Restrict)
   roles                      UserRole[]
   assignedRoles              UserRole[]                   @relation("RoleAssignedBy")
   unassignedRoles            UserRole[]                   @relation("RoleUnassignedBy")
@@ -527,6 +550,7 @@ model User {
   notifications              Notification[]               @relation("NotificationRecipient")
   sentInvitations            UserInvitation[]             @relation("UserInvitationInvitedBy")
 
+  @@index([organizationUnitId])
   @@map("users")
 }
 
@@ -3057,4 +3081,64 @@ model Notification {
   @@index([userId, createdAt])
   @@index([deletedAt])
   @@map("notifications")
+}
+
+/// What a unit *is* on the org chart (SJ-1). A label rather than a structural
+/// rule: nothing here constrains what may nest inside what, because real
+/// clinics put a team under a branch as readily as under a department, and a
+/// hierarchy that enforced one ordering would be wrong for the next clinic.
+/// Depth is capped instead — see `OrganizationUnit`.
+enum OrganizationUnitKind {
+  DIVISION
+  DEPARTMENT
+  TEAM
+  BRANCH
+
+  @@map("organization_unit_kind")
+}
+
+/// One node of the organization chart (SJ-1).
+///
+/// Single-parent adjacency list — `parentId` — with `path` materialised
+/// alongside it. The two are redundant by construction and that is the point:
+/// `parentId` is the truth an edit writes, `path` is the denormalisation that
+/// makes "everything under this unit" one indexed prefix scan instead of a
+/// recursive query per read. `path` is the slash-delimited chain of ancestor
+/// ids **including this row**, with both ends slashed (`/root/child/`), so a
+/// subtree is `path LIKE '/root/%'` and a unit's depth is its segment count.
+/// Every move recomputes it for the whole subtree inside one transaction;
+/// nothing else may write it.
+///
+/// There is no `depth` column. It is derivable from `path` in a line of code,
+/// and a second materialised copy of the same fact is a second thing that can
+/// drift out of agreement with `parentId`.
+///
+/// People are never rows here. Staff reference a unit through `User.organizationUnitId`,
+/// so a reorganisation moves boxes on a chart and never touches an employment
+/// record — which is also why both foreign keys are `Restrict`: the service
+/// refuses a hard delete while children or members remain, and the database
+/// refuses it again if that check is ever bypassed.
+model OrganizationUnit {
+  id        String               @id @default(uuid()) @db.Uuid
+  parentId  String?              @map("parent_id") @db.Uuid
+  name      String
+  kind      OrganizationUnitKind
+  /// Ancestor-id chain including self, e.g. `/a1b2.../c3d4.../`. Maintained by
+  /// the service; never accepted from a request.
+  path      String
+  /// Ordering among siblings. Ties break on `name` so a tree with an unset or
+  /// duplicated order still renders deterministically.
+  sortOrder Int                  @default(0) @map("sort_order")
+  createdAt DateTime             @default(now()) @map("created_at")
+  updatedAt DateTime             @updatedAt @map("updated_at")
+  deletedAt DateTime?            @map("deleted_at")
+
+  parent   OrganizationUnit?  @relation("OrganizationUnitParent", fields: [parentId], references: [id], onDelete: Restrict)
+  children OrganizationUnit[] @relation("OrganizationUnitParent")
+  members  User[]             @relation("OrganizationUnitMember")
+
+  @@index([parentId, sortOrder])
+  @@index([path])
+  @@index([deletedAt])
+  @@map("organization_units")
 }
