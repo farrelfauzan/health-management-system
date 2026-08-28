@@ -86,7 +86,12 @@ export const AuditAction = {
   DOCUMENT_UPLOAD_REJECTED: 'DOCUMENT_UPLOAD_REJECTED',
   USER_INVITED: 'USER_INVITED',
   USER_INVITE_ACCEPTED: 'USER_INVITE_ACCEPTED',
-  USER_INVITE_REVOKED: 'USER_INVITE_REVOKED'
+  USER_INVITE_REVOKED: 'USER_INVITE_REVOKED',
+  ORGANIZATION_UNIT_CREATED: 'ORGANIZATION_UNIT_CREATED',
+  ORGANIZATION_UNIT_UPDATED: 'ORGANIZATION_UNIT_UPDATED',
+  ORGANIZATION_UNIT_MOVED: 'ORGANIZATION_UNIT_MOVED',
+  ORGANIZATION_UNIT_ARCHIVED: 'ORGANIZATION_UNIT_ARCHIVED',
+  ORGANIZATION_UNIT_DELETED: 'ORGANIZATION_UNIT_DELETED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -595,3 +600,13 @@ export const NotificationType = {
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const OrganizationUnitKind = {
+  DIVISION: 'DIVISION',
+  DEPARTMENT: 'DEPARTMENT',
+  TEAM: 'TEAM',
+  BRANCH: 'BRANCH'
+} as const
+
+export type OrganizationUnitKind = (typeof OrganizationUnitKind)[keyof typeof OrganizationUnitKind]

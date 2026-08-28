@@ -260,7 +260,30 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- that needs it. `manage` covers marking read; there is no delete -- the
     -- feed is append-only and rows age out of relevance, not existence.
     ('notification.read:own', 'Notification', 'read', 'OWN', 'Read own in-app notifications'),
-    ('notification.manage:own', 'Notification', 'manage', 'OWN', 'Mark own in-app notifications as read')
+    ('notification.manage:own', 'Notification', 'manage', 'OWN', 'Mark own in-app notifications as read'),
+    -- SJ-1. The org chart. Read is split from write for the ordinary reason
+    -- and one specific one: the structure screen shows a read-only tree to
+    -- anyone who may look, so "may see the chart" has to be grantable without
+    -- "may redraw it".
+    --
+    -- Structure and membership are two keys, not one, because they are two
+    -- jobs: an office manager who maintains the boxes is not thereby the
+    -- person who decides which box an employee sits in, and the platforms this
+    -- was modelled on (Google Workspace, Entra ID) separate them for the same
+    -- reason. `manage` covers create/update/move/archive/delete as one grant --
+    -- unlike the room inventory above, where a separate `delete` exists,
+    -- because deletion here is already refused while anything hangs off the
+    -- unit, so it is not the sharper capability it is for a bed.
+    --
+    -- Three dot-segments is fine and deliberate: `permissionToRule` and
+    -- `packPermissionHint` both split on the *last* dot, so these resolve to
+    -- resource `organization.structure` / `organization.member` -- the same
+    -- shape as the existing `doctor.schedule.write:any` and
+    -- `appointment.session.read:any`. Both resources are registered in the
+    -- web's `SUBJECT_BY_RESOURCE`.
+    ('organization.structure.read:any', 'OrganizationUnit', 'read', 'ANY', 'Read the organization structure tree'),
+    ('organization.structure.manage:any', 'OrganizationUnit', 'manage', 'ANY', 'Create, rename, move, archive and delete organization units'),
+    ('organization.member.manage:any', 'OrganizationUnitMember', 'manage', 'ANY', 'Assign staff to organization units')
 )
 INSERT INTO "permissions" (
   "id",
@@ -617,7 +640,16 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PHARMACIST', 'notification.read:own'),
     ('PHARMACIST', 'notification.manage:own'),
     ('PATIENT', 'notification.read:own'),
-    ('PATIENT', 'notification.manage:own')
+    ('PATIENT', 'notification.manage:own'),
+    -- SJ-1. The clinic's own administrator owns its org chart, so ADMIN holds
+    -- all three. No other seeded role gets any of them: the chart is back-office
+    -- structure with nothing clinical hanging off it, and a role that needs
+    -- read-only access is composed in the IAM screens from
+    -- `organization.structure.read:any` alone -- which is exactly the case the
+    -- read-only tree exists to serve.
+    ('ADMIN', 'organization.structure.read:any'),
+    ('ADMIN', 'organization.structure.manage:any'),
+    ('ADMIN', 'organization.member.manage:any')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"

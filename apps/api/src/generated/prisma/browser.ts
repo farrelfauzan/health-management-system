@@ -866,3 +866,28 @@ export type BedAssignment = Prisma.BedAssignmentModel
  * unread flag; delivery is polling, so there is no dispatch state here.
  */
 export type Notification = Prisma.NotificationModel
+/**
+ * Model OrganizationUnit
+ * One node of the organization chart (SJ-1).
+ * 
+ * Single-parent adjacency list — `parentId` — with `path` materialised
+ * alongside it. The two are redundant by construction and that is the point:
+ * `parentId` is the truth an edit writes, `path` is the denormalisation that
+ * makes "everything under this unit" one indexed prefix scan instead of a
+ * recursive query per read. `path` is the slash-delimited chain of ancestor
+ * ids **including this row**, with both ends slashed (`/root/child/`), so a
+ * subtree is `path LIKE '/root/%'` and a unit's depth is its segment count.
+ * Every move recomputes it for the whole subtree inside one transaction;
+ * nothing else may write it.
+ * 
+ * There is no `depth` column. It is derivable from `path` in a line of code,
+ * and a second materialised copy of the same fact is a second thing that can
+ * drift out of agreement with `parentId`.
+ * 
+ * People are never rows here. Staff reference a unit through `User.organizationUnitId`,
+ * so a reorganisation moves boxes on a chart and never touches an employment
+ * record — which is also why both foreign keys are `Restrict`: the service
+ * refuses a hard delete while children or members remain, and the database
+ * refuses it again if that check is ever bypassed.
+ */
+export type OrganizationUnit = Prisma.OrganizationUnitModel

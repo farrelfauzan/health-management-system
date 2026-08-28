@@ -30,6 +30,7 @@ export type UserMinAggregateOutputType = {
   passwordHash: string | null
   isActive: boolean | null
   isSystem: boolean | null
+  organizationUnitId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -41,6 +42,7 @@ export type UserMaxAggregateOutputType = {
   passwordHash: string | null
   isActive: boolean | null
   isSystem: boolean | null
+  organizationUnitId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -52,6 +54,7 @@ export type UserCountAggregateOutputType = {
   passwordHash: number
   isActive: number
   isSystem: number
+  organizationUnitId: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -65,6 +68,7 @@ export type UserMinAggregateInputType = {
   passwordHash?: true
   isActive?: true
   isSystem?: true
+  organizationUnitId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -76,6 +80,7 @@ export type UserMaxAggregateInputType = {
   passwordHash?: true
   isActive?: true
   isSystem?: true
+  organizationUnitId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -87,6 +92,7 @@ export type UserCountAggregateInputType = {
   passwordHash?: true
   isActive?: true
   isSystem?: true
+  organizationUnitId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -171,6 +177,7 @@ export type UserGroupByOutputType = {
   passwordHash: string
   isActive: boolean
   isSystem: boolean
+  organizationUnitId: string | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -203,9 +210,11 @@ export type UserWhereInput = {
   passwordHash?: Prisma.StringFilter<"User"> | string
   isActive?: Prisma.BoolFilter<"User"> | boolean
   isSystem?: Prisma.BoolFilter<"User"> | boolean
+  organizationUnitId?: Prisma.UuidNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  organizationUnit?: Prisma.XOR<Prisma.OrganizationUnitNullableScalarRelationFilter, Prisma.OrganizationUnitWhereInput> | null
   roles?: Prisma.UserRoleListRelationFilter
   assignedRoles?: Prisma.UserRoleListRelationFilter
   unassignedRoles?: Prisma.UserRoleListRelationFilter
@@ -251,9 +260,11 @@ export type UserOrderByWithRelationInput = {
   passwordHash?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
+  organizationUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  organizationUnit?: Prisma.OrganizationUnitOrderByWithRelationInput
   roles?: Prisma.UserRoleOrderByRelationAggregateInput
   assignedRoles?: Prisma.UserRoleOrderByRelationAggregateInput
   unassignedRoles?: Prisma.UserRoleOrderByRelationAggregateInput
@@ -302,9 +313,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   passwordHash?: Prisma.StringFilter<"User"> | string
   isActive?: Prisma.BoolFilter<"User"> | boolean
   isSystem?: Prisma.BoolFilter<"User"> | boolean
+  organizationUnitId?: Prisma.UuidNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  organizationUnit?: Prisma.XOR<Prisma.OrganizationUnitNullableScalarRelationFilter, Prisma.OrganizationUnitWhereInput> | null
   roles?: Prisma.UserRoleListRelationFilter
   assignedRoles?: Prisma.UserRoleListRelationFilter
   unassignedRoles?: Prisma.UserRoleListRelationFilter
@@ -350,6 +363,7 @@ export type UserOrderByWithAggregationInput = {
   passwordHash?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
+  organizationUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -367,6 +381,7 @@ export type UserScalarWhereWithAggregatesInput = {
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   isSystem?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  organizationUnitId?: Prisma.UuidNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
@@ -381,6 +396,7 @@ export type UserCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -426,6 +442,7 @@ export type UserUncheckedCreateInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -477,6 +494,7 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -522,6 +540,7 @@ export type UserUncheckedUpdateInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -570,6 +589,7 @@ export type UserCreateManyInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -592,6 +612,7 @@ export type UserUncheckedUpdateManyInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -603,6 +624,7 @@ export type UserCountOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
+  organizationUnitId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -614,6 +636,7 @@ export type UserMaxOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
+  organizationUnitId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -625,6 +648,7 @@ export type UserMinOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
+  organizationUnitId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -638,6 +662,16 @@ export type UserScalarRelationFilter = {
 export type UserNullableScalarRelationFilter = {
   is?: Prisma.UserWhereInput | null
   isNot?: Prisma.UserWhereInput | null
+}
+
+export type UserListRelationFilter = {
+  every?: Prisma.UserWhereInput
+  some?: Prisma.UserWhereInput
+  none?: Prisma.UserWhereInput
+}
+
+export type UserOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -654,6 +688,10 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type UserCreateNestedOneWithoutRefreshTokensInput = {
@@ -1224,6 +1262,48 @@ export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
 }
 
+export type UserCreateNestedManyWithoutOrganizationUnitInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOrganizationUnitInput, Prisma.UserUncheckedCreateWithoutOrganizationUnitInput> | Prisma.UserCreateWithoutOrganizationUnitInput[] | Prisma.UserUncheckedCreateWithoutOrganizationUnitInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOrganizationUnitInput | Prisma.UserCreateOrConnectWithoutOrganizationUnitInput[]
+  createMany?: Prisma.UserCreateManyOrganizationUnitInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUncheckedCreateNestedManyWithoutOrganizationUnitInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOrganizationUnitInput, Prisma.UserUncheckedCreateWithoutOrganizationUnitInput> | Prisma.UserCreateWithoutOrganizationUnitInput[] | Prisma.UserUncheckedCreateWithoutOrganizationUnitInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOrganizationUnitInput | Prisma.UserCreateOrConnectWithoutOrganizationUnitInput[]
+  createMany?: Prisma.UserCreateManyOrganizationUnitInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUpdateManyWithoutOrganizationUnitNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOrganizationUnitInput, Prisma.UserUncheckedCreateWithoutOrganizationUnitInput> | Prisma.UserCreateWithoutOrganizationUnitInput[] | Prisma.UserUncheckedCreateWithoutOrganizationUnitInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOrganizationUnitInput | Prisma.UserCreateOrConnectWithoutOrganizationUnitInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutOrganizationUnitInput | Prisma.UserUpsertWithWhereUniqueWithoutOrganizationUnitInput[]
+  createMany?: Prisma.UserCreateManyOrganizationUnitInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutOrganizationUnitInput | Prisma.UserUpdateWithWhereUniqueWithoutOrganizationUnitInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutOrganizationUnitInput | Prisma.UserUpdateManyWithWhereWithoutOrganizationUnitInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUncheckedUpdateManyWithoutOrganizationUnitNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOrganizationUnitInput, Prisma.UserUncheckedCreateWithoutOrganizationUnitInput> | Prisma.UserCreateWithoutOrganizationUnitInput[] | Prisma.UserUncheckedCreateWithoutOrganizationUnitInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOrganizationUnitInput | Prisma.UserCreateOrConnectWithoutOrganizationUnitInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutOrganizationUnitInput | Prisma.UserUpsertWithWhereUniqueWithoutOrganizationUnitInput[]
+  createMany?: Prisma.UserCreateManyOrganizationUnitInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutOrganizationUnitInput | Prisma.UserUpdateWithWhereUniqueWithoutOrganizationUnitInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutOrganizationUnitInput | Prisma.UserUpdateManyWithWhereWithoutOrganizationUnitInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
 export type UserCreateWithoutRefreshTokensInput = {
   id?: string
   email: string
@@ -1233,6 +1313,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -1277,6 +1358,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1343,6 +1425,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -1387,6 +1470,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1437,6 +1521,7 @@ export type UserCreateWithoutSentInvitationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -1481,6 +1566,7 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1547,6 +1633,7 @@ export type UserUpdateWithoutSentInvitationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -1591,6 +1678,7 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1641,6 +1729,7 @@ export type UserCreateWithoutMfaCredentialInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -1685,6 +1774,7 @@ export type UserUncheckedCreateWithoutMfaCredentialInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1751,6 +1841,7 @@ export type UserUpdateWithoutMfaCredentialInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -1795,6 +1886,7 @@ export type UserUncheckedUpdateWithoutMfaCredentialInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1845,6 +1937,7 @@ export type UserCreateWithoutMfaRecoveryCodesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -1889,6 +1982,7 @@ export type UserUncheckedCreateWithoutMfaRecoveryCodesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1955,6 +2049,7 @@ export type UserUpdateWithoutMfaRecoveryCodesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -1999,6 +2094,7 @@ export type UserUncheckedUpdateWithoutMfaRecoveryCodesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2049,6 +2145,7 @@ export type UserCreateWithoutUpdatedFeatureEntitlementsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -2093,6 +2190,7 @@ export type UserUncheckedCreateWithoutUpdatedFeatureEntitlementsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2159,6 +2257,7 @@ export type UserUpdateWithoutUpdatedFeatureEntitlementsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -2203,6 +2302,7 @@ export type UserUncheckedUpdateWithoutUpdatedFeatureEntitlementsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2253,6 +2353,7 @@ export type UserCreateWithoutPatientProfilesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -2297,6 +2398,7 @@ export type UserUncheckedCreateWithoutPatientProfilesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2363,6 +2465,7 @@ export type UserUpdateWithoutPatientProfilesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -2407,6 +2510,7 @@ export type UserUncheckedUpdateWithoutPatientProfilesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2457,6 +2561,7 @@ export type UserCreateWithoutPrivacyNoticeRecordsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -2501,6 +2606,7 @@ export type UserUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2567,6 +2673,7 @@ export type UserUpdateWithoutPrivacyNoticeRecordsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -2611,6 +2718,7 @@ export type UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2661,6 +2769,7 @@ export type UserCreateWithoutDoctorProfileInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -2705,6 +2814,7 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2771,6 +2881,7 @@ export type UserUpdateWithoutDoctorProfileInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -2815,6 +2926,7 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2865,6 +2977,7 @@ export type UserCreateWithoutAssignedDoctorPatientsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -2909,6 +3022,7 @@ export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2964,6 +3078,7 @@ export type UserCreateWithoutUnassignedDoctorPatientsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -3008,6 +3123,7 @@ export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3074,6 +3190,7 @@ export type UserUpdateWithoutAssignedDoctorPatientsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -3118,6 +3235,7 @@ export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3179,6 +3297,7 @@ export type UserUpdateWithoutUnassignedDoctorPatientsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -3223,6 +3342,7 @@ export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3273,6 +3393,7 @@ export type UserCreateWithoutDoctorPatientActivitiesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -3317,6 +3438,7 @@ export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3383,6 +3505,7 @@ export type UserUpdateWithoutDoctorPatientActivitiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -3427,6 +3550,7 @@ export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3477,6 +3601,7 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -3521,6 +3646,7 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3587,6 +3713,7 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -3631,6 +3758,7 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3681,6 +3809,7 @@ export type UserCreateWithoutCreatedRegistrationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -3725,6 +3854,7 @@ export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3791,6 +3921,7 @@ export type UserUpdateWithoutCreatedRegistrationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -3835,6 +3966,7 @@ export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3885,6 +4017,7 @@ export type UserCreateWithoutCreatedEncountersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -3929,6 +4062,7 @@ export type UserUncheckedCreateWithoutCreatedEncountersInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3995,6 +4129,7 @@ export type UserUpdateWithoutCreatedEncountersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -4039,6 +4174,7 @@ export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4089,6 +4225,7 @@ export type UserCreateWithoutRecordedVitalSignsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -4133,6 +4270,7 @@ export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4199,6 +4337,7 @@ export type UserUpdateWithoutRecordedVitalSignsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -4243,6 +4382,7 @@ export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4293,6 +4433,7 @@ export type UserCreateWithoutRecordedDiagnosesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -4337,6 +4478,7 @@ export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4403,6 +4545,7 @@ export type UserUpdateWithoutRecordedDiagnosesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -4447,6 +4590,7 @@ export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4497,6 +4641,7 @@ export type UserCreateWithoutRecordedProceduresInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -4541,6 +4686,7 @@ export type UserUncheckedCreateWithoutRecordedProceduresInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4607,6 +4753,7 @@ export type UserUpdateWithoutRecordedProceduresInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -4651,6 +4798,7 @@ export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4701,6 +4849,7 @@ export type UserCreateWithoutDispensedByRecordsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -4745,6 +4894,7 @@ export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4811,6 +4961,7 @@ export type UserUpdateWithoutDispensedByRecordsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -4855,6 +5006,7 @@ export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4905,6 +5057,7 @@ export type UserCreateWithoutMedicationStockReceiptsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -4949,6 +5102,7 @@ export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -5015,6 +5169,7 @@ export type UserUpdateWithoutMedicationStockReceiptsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -5059,6 +5214,7 @@ export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5109,6 +5265,7 @@ export type UserCreateWithoutVoidedInvoicesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -5153,6 +5310,7 @@ export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -5208,6 +5366,7 @@ export type UserCreateWithoutCreatedInvoicesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -5252,6 +5411,7 @@ export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -5318,6 +5478,7 @@ export type UserUpdateWithoutVoidedInvoicesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -5362,6 +5523,7 @@ export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5423,6 +5585,7 @@ export type UserUpdateWithoutCreatedInvoicesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -5467,6 +5630,7 @@ export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5517,6 +5681,7 @@ export type UserCreateWithoutReceivedPaymentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -5561,6 +5726,7 @@ export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -5627,6 +5793,7 @@ export type UserUpdateWithoutReceivedPaymentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -5671,6 +5838,7 @@ export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5721,6 +5889,7 @@ export type UserCreateWithoutRolesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
   patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
@@ -5765,6 +5934,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -5820,6 +5990,7 @@ export type UserCreateWithoutAssignedRolesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
   patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
@@ -5864,6 +6035,7 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -5919,6 +6091,7 @@ export type UserCreateWithoutUnassignedRolesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
@@ -5963,6 +6136,7 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -6029,6 +6203,7 @@ export type UserUpdateWithoutRolesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
   patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
@@ -6073,6 +6248,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6134,6 +6310,7 @@ export type UserUpdateWithoutAssignedRolesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
   patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
@@ -6178,6 +6355,7 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6239,6 +6417,7 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
@@ -6283,6 +6462,7 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6333,6 +6513,7 @@ export type UserCreateWithoutRecordedBpjsReferralsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -6377,6 +6558,7 @@ export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -6443,6 +6625,7 @@ export type UserUpdateWithoutRecordedBpjsReferralsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -6487,6 +6670,7 @@ export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6537,6 +6721,7 @@ export type UserCreateWithoutCreatedAiProviderConfigsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -6581,6 +6766,7 @@ export type UserUncheckedCreateWithoutCreatedAiProviderConfigsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -6636,6 +6822,7 @@ export type UserCreateWithoutUpdatedAiProviderConfigsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -6680,6 +6867,7 @@ export type UserUncheckedCreateWithoutUpdatedAiProviderConfigsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -6746,6 +6934,7 @@ export type UserUpdateWithoutCreatedAiProviderConfigsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -6790,6 +6979,7 @@ export type UserUncheckedUpdateWithoutCreatedAiProviderConfigsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6851,6 +7041,7 @@ export type UserUpdateWithoutUpdatedAiProviderConfigsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -6895,6 +7086,7 @@ export type UserUncheckedUpdateWithoutUpdatedAiProviderConfigsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -6945,6 +7137,7 @@ export type UserCreateWithoutChatSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -6989,6 +7182,7 @@ export type UserUncheckedCreateWithoutChatSessionsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -7055,6 +7249,7 @@ export type UserUpdateWithoutChatSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -7099,6 +7294,7 @@ export type UserUncheckedUpdateWithoutChatSessionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7149,6 +7345,7 @@ export type UserCreateWithoutChatMessagesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -7193,6 +7390,7 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -7259,6 +7457,7 @@ export type UserUpdateWithoutChatMessagesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -7303,6 +7502,7 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7353,6 +7553,7 @@ export type UserCreateWithoutUploadedDocumentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -7397,6 +7598,7 @@ export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -7452,6 +7654,7 @@ export type UserCreateWithoutOwnedDocumentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -7496,6 +7699,7 @@ export type UserUncheckedCreateWithoutOwnedDocumentsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -7562,6 +7766,7 @@ export type UserUpdateWithoutUploadedDocumentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -7606,6 +7811,7 @@ export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7667,6 +7873,7 @@ export type UserUpdateWithoutOwnedDocumentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -7711,6 +7918,7 @@ export type UserUncheckedUpdateWithoutOwnedDocumentsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7761,6 +7969,7 @@ export type UserCreateWithoutBlockedConversationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -7805,6 +8014,7 @@ export type UserUncheckedCreateWithoutBlockedConversationsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -7871,6 +8081,7 @@ export type UserUpdateWithoutBlockedConversationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -7915,6 +8126,7 @@ export type UserUncheckedUpdateWithoutBlockedConversationsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -7965,6 +8177,7 @@ export type UserCreateWithoutConversationMessagesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -8009,6 +8222,7 @@ export type UserUncheckedCreateWithoutConversationMessagesInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -8075,6 +8289,7 @@ export type UserUpdateWithoutConversationMessagesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -8119,6 +8334,7 @@ export type UserUncheckedUpdateWithoutConversationMessagesInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8169,6 +8385,7 @@ export type UserCreateWithoutCreatedAdmissionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -8213,6 +8430,7 @@ export type UserUncheckedCreateWithoutCreatedAdmissionsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -8279,6 +8497,7 @@ export type UserUpdateWithoutCreatedAdmissionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -8323,6 +8542,7 @@ export type UserUncheckedUpdateWithoutCreatedAdmissionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8373,6 +8593,7 @@ export type UserCreateWithoutCreatedBedAssignmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -8417,6 +8638,7 @@ export type UserUncheckedCreateWithoutCreatedBedAssignmentsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -8483,6 +8705,7 @@ export type UserUpdateWithoutCreatedBedAssignmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -8527,6 +8750,7 @@ export type UserUncheckedUpdateWithoutCreatedBedAssignmentsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8577,6 +8801,7 @@ export type UserCreateWithoutNotificationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
   unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
@@ -8621,6 +8846,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   passwordHash: string
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -8687,6 +8913,7 @@ export type UserUpdateWithoutNotificationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
   unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
@@ -8731,6 +8958,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8770,6 +8998,261 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
   createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
   sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserCreateWithoutOrganizationUnitInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserUncheckedCreateWithoutOrganizationUnitInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserCreateOrConnectWithoutOrganizationUnitInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutOrganizationUnitInput, Prisma.UserUncheckedCreateWithoutOrganizationUnitInput>
+}
+
+export type UserCreateManyOrganizationUnitInputEnvelope = {
+  data: Prisma.UserCreateManyOrganizationUnitInput | Prisma.UserCreateManyOrganizationUnitInput[]
+  skipDuplicates?: boolean
+}
+
+export type UserUpsertWithWhereUniqueWithoutOrganizationUnitInput = {
+  where: Prisma.UserWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserUpdateWithoutOrganizationUnitInput, Prisma.UserUncheckedUpdateWithoutOrganizationUnitInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutOrganizationUnitInput, Prisma.UserUncheckedCreateWithoutOrganizationUnitInput>
+}
+
+export type UserUpdateWithWhereUniqueWithoutOrganizationUnitInput = {
+  where: Prisma.UserWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutOrganizationUnitInput, Prisma.UserUncheckedUpdateWithoutOrganizationUnitInput>
+}
+
+export type UserUpdateManyWithWhereWithoutOrganizationUnitInput = {
+  where: Prisma.UserScalarWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutOrganizationUnitInput>
+}
+
+export type UserScalarWhereInput = {
+  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  OR?: Prisma.UserScalarWhereInput[]
+  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  id?: Prisma.UuidFilter<"User"> | string
+  email?: Prisma.StringFilter<"User"> | string
+  passwordHash?: Prisma.StringFilter<"User"> | string
+  isActive?: Prisma.BoolFilter<"User"> | boolean
+  isSystem?: Prisma.BoolFilter<"User"> | boolean
+  organizationUnitId?: Prisma.UuidNullableFilter<"User"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+}
+
+export type UserCreateManyOrganizationUnitInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type UserUpdateWithoutOrganizationUnitInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutOrganizationUnitInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserUncheckedUpdateManyWithoutOrganizationUnitInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -9115,9 +9598,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordHash?: boolean
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
+  organizationUnit?: boolean | Prisma.User$organizationUnitArgs<ExtArgs>
   roles?: boolean | Prisma.User$rolesArgs<ExtArgs>
   assignedRoles?: boolean | Prisma.User$assignedRolesArgs<ExtArgs>
   unassignedRoles?: boolean | Prisma.User$unassignedRolesArgs<ExtArgs>
@@ -9164,9 +9649,11 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
+  organizationUnit?: boolean | Prisma.User$organizationUnitArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -9175,9 +9662,11 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
+  organizationUnit?: boolean | Prisma.User$organizationUnitArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -9186,13 +9675,15 @@ export type UserSelectScalar = {
   passwordHash?: boolean
   isActive?: boolean
   isSystem?: boolean
+  organizationUnitId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "isActive" | "isSystem" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "isActive" | "isSystem" | "organizationUnitId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  organizationUnit?: boolean | Prisma.User$organizationUnitArgs<ExtArgs>
   roles?: boolean | Prisma.User$rolesArgs<ExtArgs>
   assignedRoles?: boolean | Prisma.User$assignedRolesArgs<ExtArgs>
   unassignedRoles?: boolean | Prisma.User$unassignedRolesArgs<ExtArgs>
@@ -9232,12 +9723,17 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   sentInvitations?: boolean | Prisma.User$sentInvitationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  organizationUnit?: boolean | Prisma.User$organizationUnitArgs<ExtArgs>
+}
+export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  organizationUnit?: boolean | Prisma.User$organizationUnitArgs<ExtArgs>
+}
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
+    organizationUnit: Prisma.$OrganizationUnitPayload<ExtArgs> | null
     roles: Prisma.$UserRolePayload<ExtArgs>[]
     assignedRoles: Prisma.$UserRolePayload<ExtArgs>[]
     unassignedRoles: Prisma.$UserRolePayload<ExtArgs>[]
@@ -9290,6 +9786,14 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
      * reset, or token grant can ever turn it into a session.
      */
     isSystem: boolean
+    /**
+     * Which box on the org chart this person sits in (SJ-1). Nullable because
+     * the chart is optional structure a clinic may never fill in, and because a
+     * staff account must keep working while a reorganisation is half done.
+     * Membership lives here rather than in a join table because a person belongs
+     * to one unit — matrix reporting is a second edge type, not a second row.
+     */
+    organizationUnitId: string | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -9687,6 +10191,7 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  organizationUnit<T extends Prisma.User$organizationUnitArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$organizationUnitArgs<ExtArgs>>): Prisma.Prisma__OrganizationUnitClient<runtime.Types.Result.GetResult<Prisma.$OrganizationUnitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   roles<T extends Prisma.User$rolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedRoles<T extends Prisma.User$assignedRolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedRolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   unassignedRoles<T extends Prisma.User$unassignedRolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$unassignedRolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -9758,6 +10263,7 @@ export interface UserFieldRefs {
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
   readonly isSystem: Prisma.FieldRef<"User", 'Boolean'>
+  readonly organizationUnitId: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"User", 'DateTime'>
@@ -10015,6 +10521,10 @@ export type UserCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.UserCreateManyInput | Prisma.UserCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -10085,6 +10595,10 @@ export type UserUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Users to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -10151,6 +10665,25 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Users to delete.
    */
   limit?: number
+}
+
+/**
+ * User.organizationUnit
+ */
+export type User$organizationUnitArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrganizationUnit
+   */
+  select?: Prisma.OrganizationUnitSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrganizationUnit
+   */
+  omit?: Prisma.OrganizationUnitOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrganizationUnitInclude<ExtArgs> | null
+  where?: Prisma.OrganizationUnitWhereInput
 }
 
 /**

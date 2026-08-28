@@ -34,6 +34,7 @@ import { FeatureEntitlementModule } from './modules/feature-entitlement/feature-
 import { BillingModule } from './modules/billing/billing.module';
 import { EmrModule } from './modules/emr/emr.module';
 import { HealthModule } from './modules/health/health.module';
+import { OrganizationStructureModule } from './modules/organization-structure/organization-structure.module';
 import { PatientManagementModule } from './modules/patient-management/patient-management.module';
 import { PharmacyFlowModule } from './modules/pharmacy-flow/pharmacy-flow.module';
 import { RbacModule } from './modules/rbac/rbac.module';
@@ -69,6 +70,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     BpjsPcareModule,
     AdminManagementModule,
     UserInvitationModule,
+    OrganizationStructureModule,
     AuditQueryModule,
     PatientManagementModule,
     SpecialtyModule,
