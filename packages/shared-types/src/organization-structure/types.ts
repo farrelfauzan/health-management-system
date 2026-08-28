@@ -68,6 +68,8 @@ export type MoveOrganizationUnitRecordPayload = {
 export type OrganizationUnitMemberRecord = {
   userId: string;
   email: string;
+  /** From the owning `DoctorProfile`; null for accounts that have no profile. */
+  fullName: string | null;
   isActive: boolean;
   roles: string[];
   /** Which unit the person sits in, so a reassignment can name the old one. */

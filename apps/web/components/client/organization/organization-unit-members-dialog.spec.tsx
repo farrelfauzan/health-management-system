@@ -72,9 +72,18 @@ describe('OrganizationUnitMembersDialog', () => {
       headers: {},
       data: {
         data: [
-          { userId: 'user-1', email: 'maya.sari@clinic.local', isActive: true, roles: ['DOCTOR'] },
+          {
+            userId: 'user-1',
+            fullName: 'dr. Maya Sari, Sp.A',
+            email: 'maya.sari@clinic.local',
+            isActive: true,
+            roles: ['DOCTOR'],
+          },
+          // No fullName: `users` has no name column, so an administrator has no
+          // name for the API to return.
+          { userId: 'user-2', email: 'admin@salingjaga.com', isActive: true, roles: ['ADMIN'] },
         ],
-        meta: { page: 1, limit: 20, total: 1 },
+        meta: { page: 1, limit: 20, total: 2 },
       },
     } as never);
     listUsersMock.mockResolvedValue({
@@ -87,11 +96,23 @@ describe('OrganizationUnitMembersDialog', () => {
     } as never);
   });
 
-  it('lists the members of the unit', async () => {
+  it('shows a name when the platform has one, with the email beneath it', async () => {
     renderDialog(MANAGE_RULES);
 
-    expect(await screen.findByText('maya.sari@clinic.local')).toBeInTheDocument();
+    expect(await screen.findByText('dr. Maya Sari, Sp.A')).toBeInTheDocument();
+    // Email stays visible even when a name is shown: it is the identifier that
+    // is guaranteed unique, and is what someone checks when two people share a
+    // name.
+    expect(screen.getByText('maya.sari@clinic.local')).toBeInTheDocument();
     expect(screen.getByText('DOCTOR')).toBeInTheDocument();
+  });
+
+  it('falls back to the email for an account that has no name', async () => {
+    // Not a blank cell and not a name invented from the email's local part —
+    // `users` has no name column, so an administrator genuinely has none.
+    renderDialog(MANAGE_RULES);
+
+    expect(await screen.findByText('admin@salingjaga.com')).toBeInTheDocument();
   });
 
   it('offers the add-member picker to an account holding the member grant', async () => {

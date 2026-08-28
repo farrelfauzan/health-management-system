@@ -811,6 +811,8 @@ paths:
                       properties:
                         id:
                           type: string
+                        fullName:
+                          type: string
                         email:
                           type: string
                         isActive:
@@ -857,6 +859,7 @@ paths:
                 example:
                   data:
                     - id: 33333333-3333-4333-8333-333333333333
+                      fullName: dr. Maya Sari, Sp.A
                       email: admin@example.com
                       isActive: true
                       createdAt: 2026-07-20T08:00:00.000Z
@@ -922,6 +925,8 @@ paths:
                     properties:
                       id:
                         type: string
+                      fullName:
+                        type: string
                       email:
                         type: string
                       isActive:
@@ -957,6 +962,7 @@ paths:
                 example:
                   data:
                     id: 33333333-3333-4333-8333-333333333333
+                    fullName: dr. Maya Sari, Sp.A
                     email: admin@example.com
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -1031,6 +1037,8 @@ paths:
                     properties:
                       id:
                         type: string
+                      fullName:
+                        type: string
                       email:
                         type: string
                       isActive:
@@ -1066,6 +1074,7 @@ paths:
                 example:
                   data:
                     id: 33333333-3333-4333-8333-333333333333
+                    fullName: dr. Maya Sari, Sp.A
                     email: admin@example.com
                     isActive: true
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -2392,6 +2401,8 @@ paths:
                       properties:
                         userId:
                           type: string
+                        fullName:
+                          type: string
                         email:
                           type: string
                         isActive:
@@ -2424,6 +2435,7 @@ paths:
                 example:
                   data:
                     - userId: c7e1f2a3-4b5c-4d6e-8f90-1a2b3c4d5e6f
+                      fullName: dr. Maya Sari, Sp.A
                       email: maya.sari@clinic.local
                       isActive: true
                       roles:
@@ -2495,6 +2507,8 @@ paths:
                     properties:
                       userId:
                         type: string
+                      fullName:
+                        type: string
                       email:
                         type: string
                       isActive:
@@ -2516,6 +2530,7 @@ paths:
                 example:
                   data:
                     userId: c7e1f2a3-4b5c-4d6e-8f90-1a2b3c4d5e6f
+                    fullName: dr. Maya Sari, Sp.A
                     email: maya.sari@clinic.local
                     isActive: true
                     roles:

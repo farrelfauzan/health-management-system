@@ -8,11 +8,19 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { Prisma } from '../../../generated/prisma/client';
 
+/**
+ * `users` carries no name of its own — the only human-readable name a staff
+ * account can have lives on the `DoctorProfile` that owns it. So a clinician
+ * resolves to a real name and an administrator or pharmacist does not, and the
+ * response has to be honest about which it got rather than inventing one from
+ * the local part of an email address.
+ */
 const MEMBER_SELECT = {
   id: true,
   email: true,
   isActive: true,
   organizationUnitId: true,
+  doctorProfile: { select: { fullName: true } },
   roles: {
     where: { unassignedAt: null, deletedAt: null },
     select: { role: { select: { code: true } } },
@@ -24,6 +32,7 @@ type MemberRow = {
   email: string;
   isActive: boolean;
   organizationUnitId: string | null;
+  doctorProfile: { fullName: string } | null;
   roles: { role: { code: string } }[];
 };
 
@@ -95,6 +104,7 @@ export class OrganizationUnitMemberRepository {
     return {
       userId: row.id,
       email: row.email,
+      fullName: row.doctorProfile?.fullName ?? null,
       isActive: row.isActive,
       roles: row.roles.map((entry) => entry.role.code),
       organizationUnitId: row.organizationUnitId,

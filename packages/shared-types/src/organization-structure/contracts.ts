@@ -61,6 +61,16 @@ export type OrganizationUnitTreeResponse = {
  */
 export type OrganizationUnitMemberResponse = {
   userId: string;
+  /**
+   * The person's name, when the platform knows one.
+   *
+   * Absent for most staff, and that is a fact about the data model rather than
+   * a gap in this endpoint: `users` has no name column, so the only name a
+   * staff account can carry comes from the `DoctorProfile` that owns it. A
+   * clinician therefore has one and an administrator does not. Clients should
+   * fall back to `email`, which every account has and which is unique.
+   */
+  fullName?: string;
   email: string;
   isActive: boolean;
   roles: string[];

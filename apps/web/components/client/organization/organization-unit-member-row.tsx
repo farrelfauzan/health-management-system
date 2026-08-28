@@ -33,7 +33,14 @@ export function OrganizationUnitMemberRow({
 
   return (
     <TableRow className="transition-colors hover:bg-slate-50">
-      <TableCell className="px-4 py-3 text-sm text-slate-800">{member.email}</TableCell>
+      <TableCell className="px-4 py-3">
+        {/* Name when the platform has one — only accounts owning a DoctorProfile
+            do. Email stays on every row regardless: it is the identifier that
+            is guaranteed present and unique, so it is what someone checks when
+            two people share a name. */}
+        <p className="text-sm font-medium text-slate-900">{member.fullName ?? member.email}</p>
+        {member.fullName ? <p className="text-xs text-slate-500">{member.email}</p> : null}
+      </TableCell>
       <TableCell className="px-4 text-sm text-slate-600">
         {member.roles.length > 0 ? member.roles.join(', ') : '—'}
       </TableCell>
@@ -44,7 +51,7 @@ export function OrganizationUnitMemberRow({
         {actions.length > 0 ? (
           <RowActionsMenu
             actions={actions}
-            triggerLabel={common('actionsFor', { name: member.email })}
+            triggerLabel={common('actionsFor', { name: member.fullName ?? member.email })}
           />
         ) : (
           <span className="text-sm text-slate-400">—</span>

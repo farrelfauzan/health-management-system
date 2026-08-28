@@ -63,15 +63,13 @@ describe('Organization unit membership against Postgres', () => {
   let otherUnitId: string;
 
   function asMemberManager(method: 'delete' | 'get' | 'put' | 'post', path: string) {
-    return request(app.getHttpServer())
-      [method](path)
-      .set('Authorization', `Bearer ${memberManagerToken}`);
+    const agent = request(app.getHttpServer());
+    return agent[method](path).set('Authorization', `Bearer ${memberManagerToken}`);
   }
 
   function asStructureOnly(method: 'delete' | 'get' | 'put' | 'post', path: string) {
-    return request(app.getHttpServer())
-      [method](path)
-      .set('Authorization', `Bearer ${structureOnlyToken}`);
+    const agent = request(app.getHttpServer());
+    return agent[method](path).set('Authorization', `Bearer ${structureOnlyToken}`);
   }
 
   async function signTokenFor(userId: string): Promise<string> {

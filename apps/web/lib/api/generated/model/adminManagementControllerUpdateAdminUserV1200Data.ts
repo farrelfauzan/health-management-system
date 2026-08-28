@@ -9,6 +9,7 @@ import type { AdminManagementControllerUpdateAdminUserV1200DataRolesItem } from 
 
 export type AdminManagementControllerUpdateAdminUserV1200Data = {
   id: string;
+  fullName?: string;
   email: string;
   isActive: boolean;
   createdAt: string;

@@ -34,6 +34,7 @@ describe('OrganizationUnitMemberService', () => {
     return {
       userId: MEMBER_USER_ID,
       email: 'maya.sari@clinic.local',
+      fullName: 'dr. Maya Sari, Sp.A',
       isActive: true,
       roles: ['DOCTOR'],
       organizationUnitId: null,
@@ -100,6 +101,7 @@ describe('OrganizationUnitMemberService', () => {
       const actual = await service.assignMember(UNIT_ID, MEMBER_USER_ID, ACTOR_USER_ID);
 
       expect(actual.email).toBe('maya.sari@clinic.local');
+      expect(actual.fullName).toBe('dr. Maya Sari, Sp.A');
       expect(mockMemberRepository.assignMember).toHaveBeenCalledWith(MEMBER_USER_ID, UNIT_ID);
       expect(mockAuditService.record).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -144,6 +146,21 @@ describe('OrganizationUnitMemberService', () => {
         service.assignMember(UNIT_ID, MEMBER_USER_ID, ACTOR_USER_ID),
       ).rejects.toBeInstanceOf(NotFoundException);
       expect(mockMemberRepository.assignMember).not.toHaveBeenCalled();
+    });
+
+    it('omits fullName entirely for an account with no doctor profile', async () => {
+      // `users` has no name column, so an administrator or pharmacist genuinely
+      // has no name to return. The field is absent rather than null or an empty
+      // string, so a client cannot render a blank where a name should be.
+      const { service, mockMemberRepository } = buildService();
+      mockMemberRepository.findLiveMemberById.mockResolvedValue(
+        buildMember({ fullName: null, email: 'admin@salingjaga.com', roles: ['ADMIN'] }),
+      );
+
+      const actual = await service.assignMember(UNIT_ID, MEMBER_USER_ID, ACTOR_USER_ID);
+
+      expect(actual).not.toHaveProperty('fullName');
+      expect(actual.email).toBe('admin@salingjaga.com');
     });
 
     it('refuses a soft-deleted user', async () => {

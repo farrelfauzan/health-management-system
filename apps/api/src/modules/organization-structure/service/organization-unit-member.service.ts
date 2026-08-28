@@ -134,6 +134,7 @@ export class OrganizationUnitMemberService {
   private toResponse(member: OrganizationUnitMemberRecord): OrganizationUnitMemberResponse {
     return {
       userId: member.userId,
+      ...(member.fullName ? { fullName: member.fullName } : {}),
       email: member.email,
       isActive: member.isActive,
       roles: member.roles,

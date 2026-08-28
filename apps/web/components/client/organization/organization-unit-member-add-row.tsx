@@ -81,7 +81,10 @@ export function OrganizationUnitMemberAddRow({
           <SelectContent>
             {options.map((user) => (
               <SelectItem key={user.id} value={user.id}>
-                {user.email}
+                {/* Name when the platform has one, email otherwise — and the
+                    email alongside it either way, since two people can share a
+                    name and only the address is unique. */}
+                {user.fullName ? `${user.fullName} · ${user.email}` : user.email}
               </SelectItem>
             ))}
           </SelectContent>

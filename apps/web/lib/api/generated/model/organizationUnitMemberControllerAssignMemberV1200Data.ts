@@ -8,6 +8,7 @@
 
 export type OrganizationUnitMemberControllerAssignMemberV1200Data = {
   userId: string;
+  fullName?: string;
   email: string;
   isActive: boolean;
   roles: string[];

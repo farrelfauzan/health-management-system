@@ -52,6 +52,16 @@ export class AdminManagementRepository {
               role: true,
             },
           },
+          // SJ-89. `users` carries no name of its own, so the only name a staff
+          // account can have comes from the DoctorProfile that owns it. Joined
+          // here so a picker can label a clinician by name; absent for every
+          // other account, which is a fact about the data model rather than a
+          // gap to paper over.
+          doctorProfile: {
+            select: {
+              fullName: true,
+            },
+          },
         },
       });
 

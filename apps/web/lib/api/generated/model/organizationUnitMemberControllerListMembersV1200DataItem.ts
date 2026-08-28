@@ -8,6 +8,7 @@
 
 export type OrganizationUnitMemberControllerListMembersV1200DataItem = {
   userId: string;
+  fullName?: string;
   email: string;
   isActive: boolean;
   roles: string[];

@@ -1,3 +1,5 @@
+import { optionalExample } from './api-endpoint.decorator';
+
 /**
  * Canonical org-chart payloads for the generated OpenAPI document (SJ-1).
  *
@@ -65,6 +67,9 @@ export const ORGANIZATION_STRUCTURE_EXAMPLES = {
   },
   member: {
     userId: 'c7e1f2a3-4b5c-4d6e-8f90-1a2b3c4d5e6f',
+    // Optional in the schema, not just in this example: only accounts owning a
+    // DoctorProfile carry a name, so an administrator's row omits it entirely.
+    fullName: optionalExample('dr. Maya Sari, Sp.A'),
     email: 'maya.sari@clinic.local',
     isActive: true,
     roles: ['DOCTOR'],

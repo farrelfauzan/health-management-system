@@ -50,6 +50,7 @@ export class AdminManagementService {
       items: result.items.map((user) => ({
         id: user.id,
         email: user.email,
+        ...(user.doctorProfile?.fullName ? { fullName: user.doctorProfile.fullName } : {}),
         isActive: user.isActive,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,

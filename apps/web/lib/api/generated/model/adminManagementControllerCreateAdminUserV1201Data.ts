@@ -9,6 +9,7 @@ import type { AdminManagementControllerCreateAdminUserV1201DataRolesItem } from 
 
 export type AdminManagementControllerCreateAdminUserV1201Data = {
   id: string;
+  fullName?: string;
   email: string;
   isActive: boolean;
   createdAt: string;
