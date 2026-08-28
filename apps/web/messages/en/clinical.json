@@ -145,6 +145,7 @@
         "editDescription": "Update the patient demographics and status.",
         "createDescription": "Register a new patient record, optionally assigning initial doctors.",
         "saveError": "Unable to save the patient. Please try again.",
+        "validationError": "Some fields need attention. Check the highlighted fields below.",
         "warnings": "Saved with identifier warnings:",
         "warningHelp": "Correct a typing error, or close this dialog to retain the entered value.",
         "fullName": "Full Name",

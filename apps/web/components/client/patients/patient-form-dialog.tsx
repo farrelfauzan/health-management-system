@@ -46,6 +46,8 @@ import {
 } from '#lib/api/generated/patient-management/patient-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
+import { buildPatientCoreFields } from '#lib/patients/build-patient-core-fields';
+import { buildPatientFieldValidator } from '#lib/patients/build-patient-field-validator';
 import { buildPatientOptionalFields } from '#lib/patients/build-patient-optional-fields';
 import { invalidatePatientQueries } from '#lib/patients/invalidate-patient-queries';
 import { useActiveDoctors } from '#lib/patients/use-active-doctors';
@@ -103,15 +105,14 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
       let envelope: ApiSuccess<PatientProfile>;
       try {
         if (isEditMode && patient) {
+          // A partial payload on purpose: a chat-draft patient has no birth
+          // date, sex or address yet, and the front desk fills those in over
+          // several visits. Blank stays blank instead of being sent as '',
+          // which the update schema would reject.
           const response = await updateMutation.mutateAsync({
             id: patient.id,
             input: {
-              fullName: value.fullName,
-              dateOfBirth: value.dateOfBirth,
-              sex: value.sex as UpdatePatientInput['sex'],
-              status: value.status as UpdatePatientInput['status'],
-              phoneNumber: value.phoneNumber,
-              address: value.address,
+              ...buildPatientCoreFields(value),
               ...buildPatientOptionalFields(value),
             },
           });
@@ -156,6 +157,13 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
       } catch (error) {
         setFormError(notifyApiError(error, t('patients.form.saveError')));
       }
+    },
+    // Without this a blocked submit is indistinguishable from a dead button:
+    // the field errors render far down a dialog that scrolls, so the summary
+    // at the top is the only feedback the person pressing Save can see.
+    onSubmitInvalid: () => {
+      setIdentifierWarnings([]);
+      setFormError(t('patients.form.validationError'));
     },
   });
 
@@ -216,7 +224,15 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
             </div>
           ) : null}
 
-          <form.Field name="fullName" validators={{ onSubmit: createPatientSchema.shape.fullName }}>
+          <form.Field
+            name="fullName"
+            validators={{
+              onSubmit: buildPatientFieldValidator({
+                schema: createPatientSchema.shape.fullName,
+                allowBlank: isEditMode,
+              }),
+            }}
+          >
             {(field) => (
               <div className="space-y-1.5">
                 <label
@@ -241,7 +257,12 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
           <div className="grid grid-cols-2 gap-3">
             <form.Field
               name="dateOfBirth"
-              validators={{ onSubmit: createPatientSchema.shape.dateOfBirth }}
+              validators={{
+                onSubmit: buildPatientFieldValidator({
+                  schema: createPatientSchema.shape.dateOfBirth,
+                  allowBlank: isEditMode,
+                }),
+              }}
             >
               {(field) => (
                 <div className="space-y-1.5">
@@ -266,7 +287,8 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
             <form.Field
               name="sex"
               validators={{
-                onSubmit: ({ value }) => (value ? undefined : t('patients.form.sexRequired')),
+                onSubmit: ({ value }) =>
+                  value || isEditMode ? undefined : t('patients.form.sexRequired'),
               }}
             >
               {(field) => (
@@ -331,7 +353,12 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
 
           <form.Field
             name="phoneNumber"
-            validators={{ onSubmit: createPatientSchema.shape.phoneNumber }}
+            validators={{
+              onSubmit: buildPatientFieldValidator({
+                schema: createPatientSchema.shape.phoneNumber,
+                allowBlank: isEditMode,
+              }),
+            }}
           >
             {(field) => (
               <div className="space-y-1.5">
@@ -354,7 +381,15 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
             )}
           </form.Field>
 
-          <form.Field name="address" validators={{ onSubmit: createPatientSchema.shape.address }}>
+          <form.Field
+            name="address"
+            validators={{
+              onSubmit: buildPatientFieldValidator({
+                schema: createPatientSchema.shape.address,
+                allowBlank: isEditMode,
+              }),
+            }}
+          >
             {(field) => (
               <div className="space-y-1.5">
                 <label
