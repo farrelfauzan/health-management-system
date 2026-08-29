@@ -489,6 +489,10 @@ export const PHASE_THREE_EXAMPLES = {
     },
     item: {
       id: userId,
+      // SJ-89. Optional in the schema, not merely absent from this example:
+      // `users` has no name column, so only an account owning a DoctorProfile
+      // resolves to one and an administrator's row omits it entirely.
+      fullName: optionalExample('dr. Maya Sari, Sp.A'),
       email: 'admin@example.com',
       isActive: true,
       createdAt: timestamp,

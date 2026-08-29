@@ -66,6 +66,7 @@ const NEVER_GATED_CONTROLLERS: readonly string[] = [
   // sits beside `admin-management` for the same reason: it describes the
   // clinic itself, not a module the clinic bought.
   'OrganizationUnitController',
+  'OrganizationUnitMemberController',
 ];
 
 /**

@@ -9,6 +9,7 @@ import type { AdminManagementControllerListUsersV1200DataItemRolesItem } from '.
 
 export type AdminManagementControllerListUsersV1200DataItem = {
   id: string;
+  fullName?: string;
   email: string;
   isActive: boolean;
   createdAt: string;

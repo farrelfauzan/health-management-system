@@ -63,3 +63,34 @@ export type MoveOrganizationUnitRecordPayload = {
   sortOrder?: number;
   pathUpdates: OrganizationUnitPathUpdate[];
 };
+
+/** Repository projection of one member row (SJ-89). */
+export type OrganizationUnitMemberRecord = {
+  userId: string;
+  email: string;
+  /** From the owning `DoctorProfile`; null for accounts that have no profile. */
+  fullName: string | null;
+  isActive: boolean;
+  roles: string[];
+  /** Which unit the person sits in, so a reassignment can name the old one. */
+  organizationUnitId: string | null;
+};
+
+export type ListOrganizationUnitMembersParams = {
+  organizationUnitId: string;
+  page: number;
+  limit: number;
+  search?: string;
+};
+
+/**
+ * Paged repository result for the members list. Mirrors the room module's
+ * `PagedRecords`, but declared here rather than imported so the two domains
+ * stay independent.
+ */
+export type PagedOrganizationUnitMembers = {
+  items: OrganizationUnitMemberRecord[];
+  page: number;
+  limit: number;
+  total: number;
+};

@@ -51,3 +51,33 @@ export type OrganizationUnitTreeResponse = {
   /** Deepest level present, so the UI can warn as the cap approaches. */
   maxDepth: number;
 };
+
+/**
+ * One person sitting in a unit (SJ-89).
+ *
+ * Roles ride along because the members list is read next to them — "who is in
+ * Nursing" is nearly always followed by "and what are they" — and the caller
+ * would otherwise fan out to the admin-users endpoint once per row.
+ */
+export type OrganizationUnitMemberResponse = {
+  userId: string;
+  /**
+   * The person's name, when the platform knows one.
+   *
+   * Absent for most staff, and that is a fact about the data model rather than
+   * a gap in this endpoint: `users` has no name column, so the only name a
+   * staff account can carry comes from the `DoctorProfile` that owns it. A
+   * clinician therefore has one and an administrator does not. Clients should
+   * fall back to `email`, which every account has and which is unique.
+   */
+  fullName?: string;
+  email: string;
+  isActive: boolean;
+  roles: string[];
+};
+
+export type OrganizationUnitMemberListMeta = {
+  page: number;
+  limit: number;
+  total: number;
+};

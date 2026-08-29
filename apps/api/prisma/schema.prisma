@@ -142,6 +142,13 @@ enum AuditAction {
   ORGANIZATION_UNIT_MOVED
   ORGANIZATION_UNIT_ARCHIVED
   ORGANIZATION_UNIT_DELETED
+  /// Membership (SJ-89). Separate from the structure verbs above because they
+  /// answer to a different permission and a different person: one records who
+  /// redrew the chart, these record who was moved between its boxes.
+  /// `metadata` on ASSIGNED carries the unit the person came *from*, which on a
+  /// reassignment is the half nobody looks at until they need it.
+  ORGANIZATION_UNIT_MEMBER_ASSIGNED
+  ORGANIZATION_UNIT_MEMBER_UNASSIGNED
 }
 
 enum BpjsSubmissionType {
