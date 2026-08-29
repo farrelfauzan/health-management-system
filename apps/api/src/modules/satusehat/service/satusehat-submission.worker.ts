@@ -18,9 +18,14 @@ const POLL_BATCH_LIMIT = 5;
  * Interval poller for the SATUSEHAT outbox. Starts only when the adapter is
  * configured and the worker flag is on, so dev, CI, and unconfigured
  * deployments boot without background activity. Rows are processed
- * sequentially in small batches — this is a single-instance modular monolith,
- * and the per-row backoff state lives in the table, not in memory, so a
- * restart loses nothing.
+ * sequentially in small batches, and the per-row backoff state lives in the
+ * table, not in memory, so a restart loses nothing.
+ *
+ * Safe to run on more than one instance: rows are claimed under a lease with
+ * `FOR UPDATE SKIP LOCKED` rather than merely read, so two replicas polling at
+ * the same instant divide the queue instead of both submitting the same
+ * encounter to Kemenkes (SJ-76). `isPolling` remains a per-process guard
+ * against overlapping cycles; it is not what makes concurrency safe.
  */
 @Injectable()
 export class SatusehatSubmissionWorker implements OnApplicationBootstrap, OnApplicationShutdown {
@@ -65,7 +70,10 @@ export class SatusehatSubmissionWorker implements OnApplicationBootstrap, OnAppl
     }
     this.isPolling = true;
     try {
-      const dueSubmissions = await this.submissionRepository.findDueSubmissions(POLL_BATCH_LIMIT);
+      const dueSubmissions = await this.submissionRepository.claimDueSubmissions({
+        limit: POLL_BATCH_LIMIT,
+        leaseMs: this.satusehatConfig.submissionLeaseMs,
+      });
       for (const submission of dueSubmissions) {
         await this.submissionService.processSubmission(submission);
       }

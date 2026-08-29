@@ -160,7 +160,7 @@ function buildPharmacyBundleData() {
 
 describe('SatusehatSubmissionService', () => {
   const submissionRepositoryMock = {
-    findDueSubmissions: jest.fn(),
+    claimDueSubmissions: jest.fn(),
     findBundleData: jest.fn(),
     markSubmitted: jest.fn(),
     scheduleRetry: jest.fn(),

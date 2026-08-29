@@ -152,3 +152,13 @@ export type SatusehatSandboxPractitioner = {
   readonly nik: string;
   readonly name: string;
 };
+
+/**
+ * Arguments for one outbox claim. `leaseMs` is how long the claimed rows stay
+ * invisible to other workers, which is what keeps a horizontally scaled
+ * deployment from submitting the same encounter twice.
+ */
+export type ClaimDueSubmissionsPayload = {
+  limit: number;
+  leaseMs: number;
+};
