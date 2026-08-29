@@ -674,7 +674,10 @@
       "memberInactive": "Inactive",
       "memberActive": "Active",
       "archivedNoAssign": "This unit is archived; members cannot be added to it.",
-      "memberEmail": "Name"
+      "memberEmail": "Name",
+      "viewList": "List",
+      "viewChart": "Chart",
+      "chartHint": "Click a unit to see its members."
     }
   },
   "channelArrivals": {
