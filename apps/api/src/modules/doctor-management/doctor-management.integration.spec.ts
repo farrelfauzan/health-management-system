@@ -1,6 +1,7 @@
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
+import { ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 
 import { AppModule } from '../../app.module';
@@ -95,6 +96,11 @@ describe('DoctorManagement integration', () => {
       .compile();
 
     app = moduleRef.createNestApplication();
+    // Same pipe `main.ts` installs at bootstrap. Without it none of these
+    // requests are validated against their Zod DTO, so a payload the real API
+    // rejects with a 400 sails through, and a query string reaches the
+    // repository as raw text instead of the coerced type it declares.
+    app.useGlobalPipes(new ZodValidationPipe());
     app.enableVersioning({
       defaultVersion: '1',
       prefix: 'v',
