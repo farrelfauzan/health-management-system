@@ -674,7 +674,10 @@
       "memberInactive": "Nonaktif",
       "memberActive": "Aktif",
       "archivedNoAssign": "Unit ini diarsipkan; anggota tidak dapat ditambahkan.",
-      "memberEmail": "Nama"
+      "memberEmail": "Nama",
+      "viewList": "Daftar",
+      "viewChart": "Bagan",
+      "chartHint": "Klik unit untuk melihat anggotanya."
     }
   },
   "channelArrivals": {
