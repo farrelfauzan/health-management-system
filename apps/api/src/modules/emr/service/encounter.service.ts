@@ -12,6 +12,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 
@@ -35,6 +36,8 @@ function parseEncounterDateOnly(value: string): Date {
  */
 @Injectable()
 export class EncounterService {
+  private readonly logger = new Logger(EncounterService.name);
+
   constructor(
     private readonly encounterRepository: EncounterRepository,
     private readonly encounterAccessService: EncounterAccessService,
@@ -101,8 +104,27 @@ export class EncounterService {
       doctorId,
       createdById: currentUser.sub,
     });
+    const listItem = this.encounterMapper.toEncounterListItem(created);
+    this.warnIfNotReportable(listItem);
 
-    return this.encounterMapper.toEncounterListItem(created);
+    return listItem;
+  }
+
+  /**
+   * A doctor with no NIK cannot be resolved in the SATUSEHAT master
+   * practitioner index, so every encounter they open is unreportable and will
+   * settle as permanently FAILED in the outbox (SJ-75). Opening it is still
+   * allowed — a registry gap must not stop a consultation — so the record is
+   * the warning: it names the doctor an admin has to fix, at the moment the
+   * unreportable encounter is created rather than hours later in the queue.
+   */
+  private warnIfNotReportable(encounter: EncounterListItem): void {
+    if (encounter.doctor.satusehatReportable) {
+      return;
+    }
+    this.logger.warn(
+      `Encounter ${encounter.id} opened for doctor ${encounter.doctor.id}, who has no NIK on record; it cannot be reported to SATUSEHAT until one is added`,
+    );
   }
 
   async updateEncounterSoap(

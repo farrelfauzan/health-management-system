@@ -20,7 +20,12 @@ const ENCOUNTER = {
   createdAt: '2026-07-30T08:00:00.000Z',
   updatedAt: '2026-07-30T08:00:00.000Z',
   patient: { id: 'patient-1', mrn: 'MRN-001', fullName: 'Aisha Rahman' },
-  doctor: { id: 'doctor-1', licenseNumber: 'SIP-001', fullName: 'dr. Budi' },
+  doctor: {
+    id: 'doctor-1',
+    licenseNumber: 'SIP-001',
+    fullName: 'dr. Budi',
+    satusehatReportable: true,
+  },
   vitalSigns: [],
   diagnoses: [],
   procedures: [],

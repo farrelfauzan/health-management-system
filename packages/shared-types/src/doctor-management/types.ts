@@ -19,6 +19,8 @@ export type ListDoctorsParams = {
   specialtyId?: string;
   patientId?: string;
   isActive?: boolean;
+  /** `true` keeps only doctors with no NIK on file, `false` only those with one. */
+  missingNik?: boolean;
 };
 
 export type CreateDoctorRecordPayload = {
@@ -28,7 +30,7 @@ export type CreateDoctorRecordPayload = {
   phoneNumber: string;
   title?: string;
   degrees?: string;
-  nik?: string;
+  nik: string;
   satusehatPractitionerId?: string;
   licenses?: DoctorLicenseWritePayload[];
   educations?: DoctorEducationInput[];
@@ -44,7 +46,7 @@ export type UpdateDoctorRecordPayload = {
   phoneNumber?: string;
   title?: string | null;
   degrees?: string | null;
-  nik?: string | null;
+  nik?: string;
   satusehatPractitionerId?: string | null;
   /** When present, replaces the whole active license list. */
   licenses?: DoctorLicenseWritePayload[];

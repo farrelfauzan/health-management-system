@@ -234,6 +234,10 @@
       },
       "scheduleNone": "No schedule",
       "scheduleVaries": "varies",
+      "satusehatFilter": "SATUSEHAT",
+      "nikMissing": "No NIK",
+      "nikPresent": "NIK on file",
+      "nikMissingHint": "No NIK on file — encounters for this doctor cannot be reported to SATUSEHAT until one is added.",
       "weekdays": {
         "0": "Sun",
         "1": "Mon",

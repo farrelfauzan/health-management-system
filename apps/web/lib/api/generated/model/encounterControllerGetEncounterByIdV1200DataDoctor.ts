@@ -10,4 +10,5 @@ export type EncounterControllerGetEncounterByIdV1200DataDoctor = {
   id: string;
   licenseNumber: string;
   fullName: string;
+  satusehatReportable: boolean;
 };

@@ -37,6 +37,7 @@ export class EncounterMapper {
       doctor: {
         id: encounter.doctor.id,
         fullName: encounter.doctor.fullName,
+        satusehatReportable: encounter.doctor.nikLast4 !== null,
       },
       vitalSignsCount: encounter._count.vitalSigns,
       diagnosisCount: encounter._count.diagnoses,
@@ -56,6 +57,7 @@ export class EncounterMapper {
         id: encounter.doctor.id,
         licenseNumber: encounter.doctor.licenseNumber,
         fullName: encounter.doctor.fullName,
+        satusehatReportable: encounter.doctor.nikLast4 !== null,
       },
       vitalSigns: encounter.vitalSigns.map((row) => this.toVitalSignsResponse(row)),
       diagnoses: encounter.diagnoses.map((row) => this.toDiagnosisResponse(row)),

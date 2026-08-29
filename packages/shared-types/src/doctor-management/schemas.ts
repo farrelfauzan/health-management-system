@@ -161,6 +161,14 @@ export const listDoctorsQuerySchema = z.object({
     .enum(['true', 'false'])
     .transform((value) => value === 'true')
     .optional(),
+  // Finds the doctors whose encounters cannot reach SATUSEHAT at all, so the
+  // gap is visible on the directory before a submission fails permanently
+  // (SJ-75). Query strings are always text, so the wire form stays an enum and
+  // coerces here — same shape as `isActive`.
+  missingNik: z
+    .enum(['true', 'false'])
+    .transform((value) => value === 'true')
+    .optional(),
 });
 
 export const createDoctorSchema = z.object({
@@ -172,9 +180,12 @@ export const createDoctorSchema = z.object({
   phoneNumber: z.string().trim().min(6).max(32),
   title: doctorTitleSchema.optional(),
   degrees: doctorDegreesSchema.optional(),
-  // Nullable: required for SATUSEHAT practitioner lookup, but legacy records
-  // and foreign practitioners may not have one yet.
-  nik: nikSchema.optional(),
+  // Required. The IHS practitioner number is resolved from the master
+  // practitioner index by NIK and nothing else, so a doctor without one can
+  // never have their encounters reported to SATUSEHAT — and the failure is
+  // permanent, not retryable (SJ-75). Legacy rows predating this rule may still
+  // hold null; `listDoctorsQuerySchema.missingNik` is how they are found.
+  nik: nikSchema,
   satusehatPractitionerId: satusehatPractitionerIdSchema.optional(),
   licenses: doctorLicensesSchema.optional(),
   educations: doctorEducationsSchema.optional(),
@@ -195,7 +206,9 @@ export const updateDoctorSchema = z
     phoneNumber: z.string().trim().min(6).max(32).optional(),
     title: doctorTitleSchema.nullable().optional(),
     degrees: doctorDegreesSchema.nullable().optional(),
-    nik: nikSchema.nullable().optional(),
+    // Settable but not clearable: a doctor who has a NIK must keep one, or
+    // their next encounter silently becomes unreportable (SJ-75).
+    nik: nikSchema.optional(),
     satusehatPractitionerId: satusehatPractitionerIdSchema.nullable().optional(),
     // Replaces the whole list: the client always submits the complete set of
     // active licenses, and removed entries are soft-deleted rather than
