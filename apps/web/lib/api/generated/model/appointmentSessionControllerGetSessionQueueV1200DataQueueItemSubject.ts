@@ -6,8 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AppointmentSessionControllerGetSessionQueueV1200DataQueueItemPatient = {
+export type AppointmentSessionControllerGetSessionQueueV1200DataQueueItemSubject = {
+  kind: string;
   id: string;
-  mrn: string;
+  mrn?: string;
   fullName: string;
 };

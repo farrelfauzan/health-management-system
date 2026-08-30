@@ -8,7 +8,8 @@
 
 export type AppointmentManagementControllerCreateAppointmentV1201Data = {
   id: string;
-  patientId: string;
+  patientId?: string;
+  prospectivePatientId?: string;
   doctorId: string;
   type: string;
   sessionId: string;

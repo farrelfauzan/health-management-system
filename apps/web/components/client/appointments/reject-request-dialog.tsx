@@ -58,7 +58,7 @@ export function RejectRequestDialog({ open, onOpenChange, request }: RejectReque
         <DialogHeader>
           <DialogTitle className="font-heading">{t('appointments.labels.rejectTitle')}</DialogTitle>
           <DialogDescription>
-            {request.patient.fullName} with {request.doctor.fullName} — the patient will see the
+            {request.subject.fullName} with {request.doctor.fullName} — the patient will see the
             rejection reason.
           </DialogDescription>
         </DialogHeader>

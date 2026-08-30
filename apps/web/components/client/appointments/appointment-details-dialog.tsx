@@ -22,6 +22,7 @@ import { appointmentManagementControllerUpdateAppointmentV1 } from '#lib/api/gen
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateAppointmentQueries } from '#lib/appointments/invalidate-appointment-queries';
+import { AppointmentSubjectMrn } from './appointment-subject-mrn';
 
 const RESCHEDULABLE_STATUSES: AppointmentListItem['status'][] = ['SCHEDULED', 'CONFIRMED'];
 
@@ -103,10 +104,10 @@ export function AppointmentDetailsDialog({
           ) : null}
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <AvatarInitials name={appointment.patient.fullName} />
+              <AvatarInitials name={appointment.subject.fullName} />
               <div>
-                <p className="text-sm font-medium text-slate-900">{appointment.patient.fullName}</p>
-                <p className="font-mono text-xs text-slate-500">{appointment.patient.mrn}</p>
+                <p className="text-sm font-medium text-slate-900">{appointment.subject.fullName}</p>
+                <AppointmentSubjectMrn subject={appointment.subject} />
               </div>
             </div>
             <StatusBadge

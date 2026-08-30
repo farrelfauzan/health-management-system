@@ -27,7 +27,7 @@ export function MonthViewEventChip({ appointment, onSelect }: MonthViewEventChip
       <span className="shrink-0 font-mono">
         {format.dateTime(new Date(appointment.scheduledAt), { timeStyle: 'short' })}
       </span>
-      <span className="truncate">{appointment.patient.fullName}</span>
+      <span className="truncate">{appointment.subject.fullName}</span>
     </button>
   );
 }

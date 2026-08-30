@@ -75,7 +75,7 @@ export function RescheduleAppointmentDialog({
         <DialogHeader>
           <DialogTitle className="font-heading">{t('appointments.labels.reschedule')}</DialogTitle>
           <DialogDescription>
-            Pick a new slot for {appointment.patient.fullName} with {appointment.doctor.fullName}.
+            Pick a new slot for {appointment.subject.fullName} with {appointment.doctor.fullName}.
           </DialogDescription>
         </DialogHeader>
         <form

@@ -5,6 +5,7 @@ import { Button } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
+import { AppointmentSubjectMrn } from './appointment-subject-mrn';
 
 type AppointmentRequestRowProps = {
   request: AppointmentListItem;
@@ -25,12 +26,12 @@ export function AppointmentRequestRow({
   return (
     <li className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 px-3 py-2">
       <div className="flex min-w-0 items-center gap-3">
-        <AvatarInitials name={request.patient.fullName} />
+        <AvatarInitials name={request.subject.fullName} />
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-slate-900">
-            {request.patient.fullName}
-            <span className="ml-2 font-mono text-xs font-normal text-slate-500">
-              {request.patient.mrn}
+            {request.subject.fullName}
+            <span className="ml-2 font-normal">
+              <AppointmentSubjectMrn subject={request.subject} />
             </span>
           </p>
           <p className="truncate text-xs text-slate-500">

@@ -6,11 +6,12 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AppointmentManagementControllerListAppointmentsV1200DataItemDoctor } from './appointmentManagementControllerListAppointmentsV1200DataItemDoctor';
-import type { AppointmentManagementControllerListAppointmentsV1200DataItemPatient } from './appointmentManagementControllerListAppointmentsV1200DataItemPatient';
+import type { AppointmentManagementControllerListAppointmentsV1200DataItemSubject } from './appointmentManagementControllerListAppointmentsV1200DataItemSubject';
 
 export type AppointmentManagementControllerListAppointmentsV1200DataItem = {
   id: string;
-  patientId: string;
+  patientId?: string;
+  prospectivePatientId?: string;
   doctorId: string;
   type: string;
   sessionId: string;
@@ -22,6 +23,6 @@ export type AppointmentManagementControllerListAppointmentsV1200DataItem = {
   createdById: string;
   createdAt: string;
   updatedAt: string;
-  patient: AppointmentManagementControllerListAppointmentsV1200DataItemPatient;
+  subject: AppointmentManagementControllerListAppointmentsV1200DataItemSubject;
   doctor: AppointmentManagementControllerListAppointmentsV1200DataItemDoctor;
 };

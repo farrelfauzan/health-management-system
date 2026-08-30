@@ -120,6 +120,7 @@
       "loadingSession": "Loading session...",
       "loadingQueue": "Loading queue...",
       "noSessionPatients": "No patients booked into this session yet.",
+      "notYetRegistered": "Not yet registered",
       "cancelling": "Cancelling...",
       "labels": {
         "newAppointment": "New Appointment",

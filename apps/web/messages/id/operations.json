@@ -120,6 +120,7 @@
       "loadingSession": "Memuat sesi...",
       "loadingQueue": "Memuat antrean...",
       "noSessionPatients": "Belum ada pasien yang memesan sesi ini.",
+      "notYetRegistered": "Belum terdaftar",
       "cancelling": "Membatalkan...",
       "labels": {
         "newAppointment": "Janji Temu Baru",

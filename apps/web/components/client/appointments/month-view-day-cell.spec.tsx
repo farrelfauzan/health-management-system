@@ -26,7 +26,7 @@ function buildAppointment(id: string, fullName: string): AppointmentListItem {
     status: 'SCHEDULED',
     createdAt: '2026-07-01T00:00:00.000Z',
     updatedAt: '2026-07-01T00:00:00.000Z',
-    patient: { id: `patient-${id}`, mrn: `MRN-${id}`, fullName },
+    subject: { kind: 'PATIENT', id: `patient-${id}`, mrn: `MRN-${id}`, fullName },
     doctor: { id: 'doctor-1', fullName: 'Dr. Budi Santoso', specialty: 'Cardiology' },
   };
 }

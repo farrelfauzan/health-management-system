@@ -1192,7 +1192,17 @@ model DoctorPatientActivity {
 
 model Appointment {
   id                   String            @id @default(uuid()) @db.Uuid
-  patientId            String            @map("patient_id") @db.Uuid
+  /// Exactly one of `patientId` and `prospectivePatientId` is set, enforced by
+  /// a CHECK in the migration -- the same shape `Invoice.encounterId` /
+  /// `admissionId` uses. A booking either names a patient the clinic has, or a
+  /// person who has asked to become one, and never both (`P17-T02`).
+  patientId            String?           @map("patient_id") @db.Uuid
+  /// Set for a chat booking taken before the person has ever attended
+  /// (`P17-T01`). Conversion at the counter repoints the appointment to the
+  /// real `patientId` in the same transaction that allocates the MRN, so this
+  /// column is how a booking survives the wait without a medical record
+  /// existing for someone who may never arrive.
+  prospectivePatientId String?           @map("prospective_patient_id") @db.Uuid
   doctorId             String            @map("doctor_id") @db.Uuid
   type                 AppointmentType   @default(SESSION)
   sessionId            String?           @map("session_id") @db.Uuid
@@ -1232,7 +1242,8 @@ model Appointment {
   updatedAt            DateTime          @updatedAt @map("updated_at")
   deletedAt            DateTime?         @map("deleted_at")
 
-  patient      PatientProfile      @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  patient            PatientProfile?     @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  prospectivePatient ProspectivePatient? @relation(fields: [prospectivePatientId], references: [id], onDelete: Restrict)
   doctor       DoctorProfile       @relation(fields: [doctorId], references: [id], onDelete: Restrict)
   session      AppointmentSession? @relation(fields: [sessionId], references: [id], onDelete: Restrict)
   createdBy    User?               @relation("AppointmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
@@ -1242,6 +1253,7 @@ model Appointment {
   @@index([bookingSource, scheduledAt])
   @@index([doctorId, scheduledAt])
   @@index([patientId, scheduledAt])
+  @@index([prospectivePatientId, scheduledAt])
   @@index([status, scheduledAt])
   @@index([sessionId])
   @@index([deletedAt])
@@ -2796,10 +2808,10 @@ enum ProspectivePatientStatus {
 /// Everything a clinical record needs is collected at the counter, where a
 /// human is looking at an ID document, and the MRN is allocated there.
 ///
-/// The appointment side of this -- `Appointment.prospectivePatientId` and the
-/// CHECK that exactly one of the two patient keys is set -- lands with
-/// `P17-T02`. Until then nothing books against these rows, so the table can
-/// ship, be seeded and be swept without touching scheduling.
+/// `P17-T02` landed the appointment side: `Appointment.prospectivePatientId`
+/// and the CHECK that exactly one of the two patient keys is set. Nothing
+/// *writes* a prospective booking until `P17-T03` repoints the chat path at
+/// it, so every appointment in the database still names a real patient today.
 model ProspectivePatient {
   id             String                   @id @default(uuid()) @db.Uuid
   fullName       String                   @map("full_name")
@@ -2833,7 +2845,8 @@ model ProspectivePatient {
   createdAt      DateTime                 @default(now()) @map("created_at")
   updatedAt      DateTime                 @updatedAt @map("updated_at")
 
-  patient PatientProfile? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  patient      PatientProfile? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  appointments Appointment[]
 
   /// The expiry sweep's only question: which unresolved rows are past their
   /// date. Leading with `status` keeps the scan off the `CONVERTED` and

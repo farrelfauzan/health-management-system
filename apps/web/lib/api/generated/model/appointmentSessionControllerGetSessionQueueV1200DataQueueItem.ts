@@ -5,12 +5,12 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
-import type { AppointmentSessionControllerGetSessionQueueV1200DataQueueItemPatient } from './appointmentSessionControllerGetSessionQueueV1200DataQueueItemPatient';
+import type { AppointmentSessionControllerGetSessionQueueV1200DataQueueItemSubject } from './appointmentSessionControllerGetSessionQueueV1200DataQueueItemSubject';
 
 export type AppointmentSessionControllerGetSessionQueueV1200DataQueueItem = {
   appointmentId: string;
   queueNumber: number;
   status: string;
   reason: string;
-  patient: AppointmentSessionControllerGetSessionQueueV1200DataQueueItemPatient;
+  subject: AppointmentSessionControllerGetSessionQueueV1200DataQueueItemSubject;
 };
