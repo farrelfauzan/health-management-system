@@ -43,4 +43,17 @@ describe('doctors search params', () => {
 
     expect(parseDoctorsSearchParams(raw)).toEqual(query);
   });
+
+  it('round-trips the missing-NIK filter', () => {
+    const query = { page: 1, limit: 10, missingNik: 'true' as const };
+    const raw = Object.fromEntries(buildDoctorsSearchParams(query).entries());
+
+    expect(parseDoctorsSearchParams(raw)).toEqual(query);
+  });
+
+  it('drops a missing-NIK value that is not a boolean string', () => {
+    const parsed = parseDoctorsSearchParams({ missingNik: 'maybe' });
+
+    expect(parsed.missingNik).toBeUndefined();
+  });
 });

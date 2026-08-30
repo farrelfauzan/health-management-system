@@ -6,6 +6,8 @@ export type DoctorsSearchParams = {
   search?: string;
   specialtyId?: string;
   isActive?: 'true' | 'false';
+  /** Kept as the wire string so it round-trips through the URL unchanged. */
+  missingNik?: 'true' | 'false';
 };
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
@@ -24,12 +26,14 @@ function pickFirst(value: string | string[] | undefined): string | undefined {
 
 export function parseDoctorsSearchParams(raw: RawSearchParams): DoctorsSearchParams {
   const active = pickFirst(raw.active);
+  const missingNik = pickFirst(raw.missingNik);
   const parsed = listDoctorsQuerySchema.safeParse({
     page: pickFirst(raw.page),
     limit: pickFirst(raw.limit),
     search: pickFirst(raw.q),
     specialtyId: pickFirst(raw.specialtyId),
     isActive: active,
+    missingNik,
   });
 
   if (!parsed.success) {
@@ -42,6 +46,7 @@ export function parseDoctorsSearchParams(raw: RawSearchParams): DoctorsSearchPar
     search: parsed.data.search,
     specialtyId: parsed.data.specialtyId,
     isActive: active === 'true' || active === 'false' ? active : undefined,
+    missingNik: missingNik === 'true' || missingNik === 'false' ? missingNik : undefined,
   };
 }
 
@@ -59,6 +64,9 @@ export function buildDoctorsSearchParams(next: DoctorsSearchParams): URLSearchPa
   }
   if (next.isActive) {
     params.set('active', next.isActive);
+  }
+  if (next.missingNik) {
+    params.set('missingNik', next.missingNik);
   }
 
   return params;

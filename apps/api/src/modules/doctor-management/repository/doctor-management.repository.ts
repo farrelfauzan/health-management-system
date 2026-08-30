@@ -145,12 +145,16 @@ export class DoctorManagementRepository {
   ) {}
 
   async listDoctors(params: ListDoctorsParams) {
-    const { page, limit, search, specialtyId, patientId, isActive } = params;
+    const { page, limit, search, specialtyId, patientId, isActive, missingNik } = params;
     const skip = (page - 1) * limit;
 
     const where = {
       ...(isActive === undefined ? {} : { isActive }),
       ...(specialtyId ? { specialtyId } : {}),
+      // `nikIndex` rather than `nikCiphertext`: it is the column the lookup
+      // actually needs, and the one carrying the uniqueness constraint, so a
+      // half-written row reads as missing here instead of as present.
+      ...(missingNik === undefined ? {} : { nikIndex: missingNik ? null : { not: null } }),
       ...(patientId
         ? {
             patients: {
@@ -402,7 +406,7 @@ export class DoctorManagementRepository {
             satusehatPractitionerId: payload.satusehatPractitionerId ?? null,
             ownerUserId: payload.ownerUserId ?? null,
             isActive: payload.isActive,
-            ...this.buildNikColumns(payload.nik ?? null),
+            ...this.buildNikColumns(payload.nik),
             licenses: {
               create: (payload.licenses ?? []).map(toLicenseCreateData),
             },
@@ -498,19 +502,21 @@ export class DoctorManagementRepository {
 
   /**
    * Maps a plaintext NIK onto its persistence columns. `undefined` leaves the
-   * identifier untouched, `null` clears it, and a value re-encrypts and
-   * re-indexes it under the current key version.
+   * identifier untouched; a value re-encrypts and re-indexes it under the
+   * current key version. There is deliberately no clearing branch — a doctor
+   * who loses their NIK loses SATUSEHAT reporting permanently (SJ-75), so
+   * neither schema accepts `null` any more.
    */
-  private buildNikColumns(nik: string | null | undefined): Record<string, string | number | null> {
+  private buildNikColumns(nik: string | undefined): Record<string, string | number> {
     if (nik === undefined) {
       return {};
     }
-    const encrypted = nik ? this.identifierCrypto.encryptSearchableIdentifier(nik) : null;
+    const encrypted = this.identifierCrypto.encryptSearchableIdentifier(nik);
     return {
-      nikCiphertext: encrypted?.ciphertext ?? null,
-      nikIndex: encrypted?.index ?? null,
-      nikLast4: encrypted?.last4 ?? null,
-      nikKeyVersion: encrypted?.keyVersion ?? null,
+      nikCiphertext: encrypted.ciphertext,
+      nikIndex: encrypted.index,
+      nikLast4: encrypted.last4,
+      nikKeyVersion: encrypted.keyVersion,
     };
   }
 

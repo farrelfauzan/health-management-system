@@ -13,7 +13,7 @@ function buildEncounter(overrides: Partial<EncounterListItem> = {}): EncounterLi
     status: 'IN_PROGRESS' as EncounterStatusValue,
     startedAt: '2026-07-18T08:00:00.000Z',
     patient: { id: 'patient-1', fullName: 'John Doe' },
-    doctor: { id: 'doctor-1', fullName: 'Dr. Budi Santoso' },
+    doctor: { id: 'doctor-1', fullName: 'Dr. Budi Santoso', satusehatReportable: true },
     vitalSignsCount: 2,
     diagnosisCount: 1,
     procedureCount: 0,

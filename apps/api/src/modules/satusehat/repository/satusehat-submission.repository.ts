@@ -1,4 +1,5 @@
 import {
+  ClaimDueSubmissionsPayload,
   ListSatusehatSubmissionsParams,
   MarkSubmissionFailedPayload,
   MarkSubmissionRetryPayload,
@@ -13,6 +14,26 @@ import { Injectable } from '@nestjs/common';
 
 import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { ClaimedSubmissionRow } from './claimed-submission-row.types';
+
+const MILLISECONDS_PER_SECOND = 1000;
+
+/** Renames one claimed row onto the camel-case record the services consume. */
+function toSubmissionRecord(row: ClaimedSubmissionRow): SatusehatSubmissionRecord {
+  return {
+    id: row.id,
+    encounterId: row.encounter_id,
+    status: row.status,
+    attempts: row.attempts,
+    lastError: row.last_error,
+    nextAttemptAt: row.next_attempt_at,
+    lastAttemptAt: row.last_attempt_at,
+    submittedAt: row.submitted_at,
+    satusehatEncounterId: row.satusehat_encounter_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
 
 const MEDICATION_SELECT = {
   select: { id: true, code: true, kfaCode: true, name: true, unit: true },
@@ -57,15 +78,44 @@ export class SatusehatSubmissionRepository {
     private readonly cryptoService: NationalIdentifierCryptoService,
   ) {}
 
-  async findDueSubmissions(limit: number): Promise<SatusehatSubmissionRecord[]> {
-    return this.prisma.satusehatSubmission.findMany({
-      where: {
-        status: 'PENDING',
-        nextAttemptAt: { lte: new Date() },
-      },
-      orderBy: { nextAttemptAt: 'asc' },
-      take: limit,
-    });
+  /**
+   * Claims up to `limit` due rows for this worker and returns them. Selecting
+   * and updating in one statement is what makes running more than one API
+   * instance safe: `FOR UPDATE SKIP LOCKED` hands each row to exactly one
+   * concurrent claimer instead of letting both read it and submit the same
+   * encounter to Kemenkes twice.
+   *
+   * The claim is a lease, not a status change: `nextAttemptAt` is pushed
+   * `leaseMs` into the future, so the row stops being due for anyone else while
+   * this worker holds it. A worker that dies mid-batch therefore releases its
+   * rows when the lease lapses, with no reaper and no half-processed state to
+   * clean up — the same "backoff lives in the table" property the outbox
+   * already relies on across restarts. The real outcome overwrites the lease:
+   * success marks the row SUBMITTED, a transient failure reschedules it on the
+   * backoff, a permanent one settles it FAILED.
+   */
+  async claimDueSubmissions(
+    payload: ClaimDueSubmissionsPayload,
+  ): Promise<SatusehatSubmissionRecord[]> {
+    const leaseSeconds = payload.leaseMs / MILLISECONDS_PER_SECOND;
+    const rows = await this.prisma.$queryRaw<ClaimedSubmissionRow[]>`
+      UPDATE "satusehat_submissions"
+      SET "next_attempt_at" = now() + make_interval(secs => ${leaseSeconds}::double precision),
+          "updated_at" = now()
+      WHERE "id" IN (
+        SELECT "id"
+        FROM "satusehat_submissions"
+        WHERE "status" = 'PENDING'::"SatusehatSubmissionStatus"
+          AND "next_attempt_at" <= now()
+        ORDER BY "next_attempt_at" ASC
+        LIMIT ${payload.limit}::integer
+        FOR UPDATE SKIP LOCKED
+      )
+      RETURNING "id", "encounter_id", "status", "attempts", "last_error",
+                "next_attempt_at", "last_attempt_at", "submitted_at",
+                "satusehat_encounter_id", "created_at", "updated_at"
+    `;
+    return rows.map((row) => toSubmissionRecord(row));
   }
 
   async findSubmissionById(id: string): Promise<SatusehatSubmissionRecord | null> {

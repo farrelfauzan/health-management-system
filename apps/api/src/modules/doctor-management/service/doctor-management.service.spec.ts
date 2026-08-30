@@ -1,3 +1,4 @@
+import { updateDoctorSchema } from '@hms/shared-types';
 import {
   BadRequestException,
   ConflictException,
@@ -176,6 +177,7 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. First',
           specialtyId,
           phoneNumber: '0812345678',
+          nik: inputDoctorNik,
           isActive: true,
         },
         currentUser,
@@ -205,6 +207,7 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. Second',
           specialtyId: neurologySpecialtyId,
           phoneNumber: '0812345679',
+          nik: inputDoctorNik,
           ownerUserId: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
           isActive: true,
         },
@@ -235,6 +238,7 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. Second',
           specialtyId: neurologySpecialtyId,
           phoneNumber: '0812345679',
+          nik: inputDoctorNik,
           isActive: true,
           patientIds: [
             '3a6d785d-f729-4af2-b415-30f96439dad0',
@@ -270,6 +274,7 @@ describe('DoctorManagementService', () => {
         fullName: 'Dr. First',
         specialtyId,
         phoneNumber: '0812345678',
+        nik: inputDoctorNik,
         isActive: true,
         patientIds: ['3a6d785d-f729-4af2-b415-30f96439dad0', '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8'],
       },
@@ -478,20 +483,10 @@ describe('DoctorManagementService', () => {
       );
     });
 
-    it('clears the NIK when the update sends null', async () => {
-      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
-        buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
-      );
-      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
-      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue(doctorRecord);
+    it('refuses to clear the NIK, which would make the doctor unreportable', () => {
+      const actual = updateDoctorSchema.safeParse({ nik: null });
 
-      const result = await service.updateDoctor(doctorId, { nik: null }, currentUser);
-
-      expect(doctorManagementRepositoryMock.updateDoctor).toHaveBeenCalledWith(
-        doctorId,
-        expect.objectContaining({ nik: null }),
-      );
-      expect(result.nikMasked).toBeUndefined();
+      expect(actual.success).toBe(false);
     });
 
     it('replaces the license list on update', async () => {
@@ -596,6 +591,7 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. First',
           specialtyId,
           phoneNumber: '0812345678',
+          nik: inputDoctorNik,
           title: 'dr.',
           degrees: 'Sp.JP',
           educations: inputEducations,

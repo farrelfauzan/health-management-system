@@ -141,3 +141,24 @@ export type SatusehatSubmissionPage = {
   items: SatusehatSubmissionRecord[];
   total: number;
 };
+
+/**
+ * One practitioner test identity for the SATUSEHAT staging sandbox. There is
+ * deliberately no IHS number: the published values do not match what the live
+ * index returns, so the IHS number is only ever resolved from the NIK at link
+ * time.
+ */
+export type SatusehatSandboxPractitioner = {
+  readonly nik: string;
+  readonly name: string;
+};
+
+/**
+ * Arguments for one outbox claim. `leaseMs` is how long the claimed rows stay
+ * invisible to other workers, which is what keeps a horizontally scaled
+ * deployment from submitting the same encounter twice.
+ */
+export type ClaimDueSubmissionsPayload = {
+  limit: number;
+  leaseMs: number;
+};

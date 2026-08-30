@@ -774,7 +774,12 @@ export const PHASE_THREE_EXAMPLES = {
     listItem: {
       ...encounter,
       patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
-      doctor: { id: doctorId, licenseNumber: doctor.licenseNumber, fullName: doctor.fullName },
+      doctor: {
+        id: doctorId,
+        licenseNumber: doctor.licenseNumber,
+        fullName: doctor.fullName,
+        satusehatReportable: true,
+      },
       vitalSignsCount: 1,
       diagnosisCount: 1,
       procedureCount: 1,
@@ -782,7 +787,12 @@ export const PHASE_THREE_EXAMPLES = {
     detail: {
       ...encounter,
       patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
-      doctor: { id: doctorId, licenseNumber: doctor.licenseNumber, fullName: doctor.fullName },
+      doctor: {
+        id: doctorId,
+        licenseNumber: doctor.licenseNumber,
+        fullName: doctor.fullName,
+        satusehatReportable: true,
+      },
       vitalSigns: [vitalSigns],
       diagnoses: [diagnosis],
       procedures: [procedureRecord],

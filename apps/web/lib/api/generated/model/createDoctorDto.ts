@@ -35,7 +35,7 @@ export interface CreateDoctorDto {
      * @maxLength 120
      */
   degrees?: string;
-  nik?: string;
+  nik: string;
   /**
      * @minLength 1
      * @maxLength 64

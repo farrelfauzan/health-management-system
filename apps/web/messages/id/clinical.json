@@ -239,6 +239,10 @@
       },
       "scheduleNone": "Belum ada jadwal",
       "scheduleVaries": "bervariasi",
+      "satusehatFilter": "SATUSEHAT",
+      "nikMissing": "Tanpa NIK",
+      "nikPresent": "NIK tersedia",
+      "nikMissingHint": "NIK belum terisi — kunjungan dokter ini tidak dapat dikirim ke SATUSEHAT sampai NIK ditambahkan.",
       "weekdays": {
         "0": "Min",
         "1": "Sen",

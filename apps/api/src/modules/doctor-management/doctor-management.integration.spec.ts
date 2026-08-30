@@ -1,6 +1,7 @@
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
+import { ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 
 import { AppModule } from '../../app.module';
@@ -95,6 +96,11 @@ describe('DoctorManagement integration', () => {
       .compile();
 
     app = moduleRef.createNestApplication();
+    // Same pipe `main.ts` installs at bootstrap. Without it none of these
+    // requests are validated against their Zod DTO, so a payload the real API
+    // rejects with a 400 sails through, and a query string reaches the
+    // repository as raw text instead of the coerced type it declares.
+    app.useGlobalPipes(new ZodValidationPipe());
     app.enableVersioning({
       defaultVersion: '1',
       prefix: 'v',
@@ -169,6 +175,7 @@ describe('DoctorManagement integration', () => {
         fullName: 'Dr. First',
         specialtyId,
         phoneNumber: '0812345678',
+        nik: '3173011503800002',
       });
 
     expect(response.status).toBe(201);
@@ -196,9 +203,42 @@ describe('DoctorManagement integration', () => {
         fullName: 'Dr. First',
         specialtyId,
         phoneNumber: '0812345678',
+        nik: '3173011503800002',
       });
 
     expect(response.status).toBe(409);
+  });
+
+  it('rejects a doctor created without a NIK, which SATUSEHAT linking needs', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/doctors')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        licenseNumber: 'LIC-0003',
+        fullName: 'Dr. Third',
+        specialtyId,
+        phoneNumber: '0812345678',
+      });
+
+    expect(response.status).toBe(400);
+    expect(doctorRepositoryMock.createDoctor).not.toHaveBeenCalled();
+  });
+
+  it('passes the missing-NIK filter through to the repository', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Doctor', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/doctors?missingNik=true')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(doctorRepositoryMock.listDoctors).toHaveBeenCalledWith(
+      expect.objectContaining({ missingNik: true }),
+    );
   });
 
   it('returns 403 when own-scope user writes another doctor schedule', async () => {

@@ -4478,6 +4478,14 @@ paths:
             enum:
               - "true"
               - "false"
+        - name: missingNik
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
       responses:
         "200":
           description: A paginated list of doctors.
@@ -14522,10 +14530,13 @@ paths:
                               type: string
                             fullName:
                               type: string
+                            satusehatReportable:
+                              type: boolean
                           required:
                             - id
                             - licenseNumber
                             - fullName
+                            - satusehatReportable
                         vitalSignsCount:
                           type: integer
                         diagnosisCount:
@@ -14590,6 +14601,7 @@ paths:
                         id: 22222222-2222-4222-8222-222222222222
                         licenseNumber: SIP-2026-0001
                         fullName: Dr. Budi Santoso
+                        satusehatReportable: true
                       vitalSignsCount: 1
                       diagnosisCount: 1
                       procedureCount: 1
@@ -14694,10 +14706,13 @@ paths:
                             type: string
                           fullName:
                             type: string
+                          satusehatReportable:
+                            type: boolean
                         required:
                           - id
                           - licenseNumber
                           - fullName
+                          - satusehatReportable
                       vitalSignsCount:
                         type: integer
                       diagnosisCount:
@@ -14751,6 +14766,7 @@ paths:
                       id: 22222222-2222-4222-8222-222222222222
                       licenseNumber: SIP-2026-0001
                       fullName: Dr. Budi Santoso
+                      satusehatReportable: true
                     vitalSignsCount: 1
                     diagnosisCount: 1
                     procedureCount: 1
@@ -14855,10 +14871,13 @@ paths:
                             type: string
                           fullName:
                             type: string
+                          satusehatReportable:
+                            type: boolean
                         required:
                           - id
                           - licenseNumber
                           - fullName
+                          - satusehatReportable
                       vitalSigns:
                         type: array
                         items:
@@ -15042,6 +15061,7 @@ paths:
                       id: 22222222-2222-4222-8222-222222222222
                       licenseNumber: SIP-2026-0001
                       fullName: Dr. Budi Santoso
+                      satusehatReportable: true
                     vitalSigns:
                       - id: aaaaaaa2-aaaa-4aaa-8aaa-aaaaaaaaaaaa
                         encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
@@ -15197,10 +15217,13 @@ paths:
                             type: string
                           fullName:
                             type: string
+                          satusehatReportable:
+                            type: boolean
                         required:
                           - id
                           - licenseNumber
                           - fullName
+                          - satusehatReportable
                       vitalSignsCount:
                         type: integer
                       diagnosisCount:
@@ -15254,6 +15277,7 @@ paths:
                       id: 22222222-2222-4222-8222-222222222222
                       licenseNumber: SIP-2026-0001
                       fullName: Dr. Budi Santoso
+                      satusehatReportable: true
                     vitalSignsCount: 1
                     diagnosisCount: 1
                     procedureCount: 1
@@ -15367,10 +15391,13 @@ paths:
                             type: string
                           fullName:
                             type: string
+                          satusehatReportable:
+                            type: boolean
                         required:
                           - id
                           - licenseNumber
                           - fullName
+                          - satusehatReportable
                       vitalSignsCount:
                         type: integer
                       diagnosisCount:
@@ -15427,6 +15454,7 @@ paths:
                       id: 22222222-2222-4222-8222-222222222222
                       licenseNumber: SIP-2026-0001
                       fullName: Dr. Budi Santoso
+                      satusehatReportable: true
                     vitalSignsCount: 1
                     diagnosisCount: 1
                     procedureCount: 1
@@ -15532,10 +15560,13 @@ paths:
                             type: string
                           fullName:
                             type: string
+                          satusehatReportable:
+                            type: boolean
                         required:
                           - id
                           - licenseNumber
                           - fullName
+                          - satusehatReportable
                       vitalSignsCount:
                         type: integer
                       diagnosisCount:
@@ -15592,6 +15623,7 @@ paths:
                       id: 22222222-2222-4222-8222-222222222222
                       licenseNumber: SIP-2026-0001
                       fullName: Dr. Budi Santoso
+                      satusehatReportable: true
                     vitalSignsCount: 1
                     diagnosisCount: 1
                     procedureCount: 1
@@ -27546,6 +27578,7 @@ components:
         - fullName
         - specialtyId
         - phoneNumber
+        - nik
     UpdateDoctorDto:
       type: object
       properties:
@@ -27572,7 +27605,6 @@ components:
           nullable: true
         nik:
           type: string
-          nullable: true
         satusehatPractitionerId:
           type: string
           minLength: 1

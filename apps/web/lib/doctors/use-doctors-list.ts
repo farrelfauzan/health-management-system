@@ -15,6 +15,7 @@ export function useDoctorsList(params: DoctorsSearchParams) {
     search: params.search,
     specialtyId: params.specialtyId,
     isActive: params.isActive,
+    missingNik: params.missingNik,
   };
 
   const query = useApiQuery<DoctorListItem[]>({

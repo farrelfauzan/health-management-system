@@ -84,11 +84,24 @@ export type EncounterRelatedDoctor = {
   id: string;
   licenseNumber: string;
   fullName: string;
+  /**
+   * `false` when the attending doctor has no NIK on file, which means this
+   * encounter can never reach SATUSEHAT: the IHS practitioner number is
+   * resolved from the master index by NIK alone, so submission fails
+   * permanently rather than retrying (SJ-75). Opening the encounter is
+   * deliberately still allowed — care is not blocked by a registry gap — so
+   * this flag is how the gap becomes visible instead. Only an admin can fix
+   * it, on the doctor record.
+   */
+  satusehatReportable: boolean;
 };
 
 export type EncounterListRelatedPatient = Pick<EncounterRelatedPatient, 'id' | 'fullName'>;
 
-export type EncounterListRelatedDoctor = Pick<EncounterRelatedDoctor, 'id' | 'fullName'>;
+export type EncounterListRelatedDoctor = Pick<
+  EncounterRelatedDoctor,
+  'id' | 'fullName' | 'satusehatReportable'
+>;
 
 /**
  * A prescription written during the visit, summarised rather than expanded:
