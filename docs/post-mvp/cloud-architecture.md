@@ -44,15 +44,15 @@ It is worth being explicit, because it is the single design constraint that rule
 
 ### 2.3 The outbox worker is still deployed as a singleton — but no longer for correctness
 
-`SATUSEHAT_WORKER_ENABLED` already anticipates this.
+`SATUSEHAT_WORKER_ENABLED` and `BPJS_WORKER_ENABLED` already anticipate this.
 
-The **SATUSEHAT** worker is now safe to run on more than one instance (SJ-76): it claims outbox rows with `FOR UPDATE SKIP LOCKED` under a lease rather than merely reading them, so two replicas polling at the same instant divide the queue instead of both submitting the same encounter. A duplicate-submission bug is no longer one misconfigured scaling policy away.
+**Both** outbox workers are now safe to run on more than one instance (SJ-76). Each claims its due rows with `FOR UPDATE SKIP LOCKED` under a lease (`SATUSEHAT_SUBMISSION_LEASE_MS`, `BPJS_SUBMISSION_LEASE_MS`) rather than merely reading them, so two replicas polling at the same instant divide the queue instead of both reporting the same visit upstream. A duplicate-submission bug is no longer one misconfigured scaling policy away for either integration.
 
-The **BPJS PCare** worker has not had the same treatment — `BpjsSubmissionRepository.findDueSubmissions` is still a plain read — so the singleton constraint continues to bind for it.
+One caveat worth carrying into a scaling decision: the BPJS lease defaults to twice SATUSEHAT's, because an `OBAT` row posts once per dispensed medication rather than one bundle per row. The lease must outlast a whole claimed batch, so a facility that dispenses unusually long prescriptions should raise `BPJS_SUBMISSION_LEASE_MS` before it raises the replica count.
 
 Under multi-tenancy the worker additionally has to poll **every tenant database**, which turns a single `setInterval` into an N-database sweep. Consequences for the design:
 
-- Still exactly **one** worker task, deployed separately from the API service with its own scaling policy fixed at 1 — now a deliberate simplification (and a BPJS requirement) rather than the only thing standing between the clinic and double-reporting.
+- Still exactly **one** worker task, deployed separately from the API service with its own scaling policy fixed at 1 — now a deliberate simplification rather than the only thing standing between the clinic and double-reporting.
 - Its poll cost grows with tenant count. At a few dozen tenants a sequential sweep is fine; past ~100 it needs batching or per-tenant scheduling. Flagged, not solved here.
 
 ---

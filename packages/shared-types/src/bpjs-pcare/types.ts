@@ -337,3 +337,13 @@ export type BpjsSubmissionSourceData = {
   /** The sibling `ANTREAN_ADD` row, read by `panggil` and `batal` to know a queue entry exists upstream. */
   antreanAdd: BpjsSubmissionSiblingRow | null;
 };
+
+/**
+ * Arguments for one BPJS outbox claim. `leaseMs` is how long the claimed rows
+ * stay invisible to other workers, which is what keeps a horizontally scaled
+ * deployment from reporting the same visit to BPJS twice.
+ */
+export type ClaimDueBpjsSubmissionsPayload = {
+  limit: number;
+  leaseMs: number;
+};

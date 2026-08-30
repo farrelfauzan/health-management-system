@@ -22,7 +22,19 @@ describe('resolveBpjsPcareAdapterConfig', () => {
       workerPollIntervalMs: 15_000,
       submissionMaxAttempts: 8,
       submissionRetryBaseDelayMs: 60_000,
+      submissionLeaseMs: 1_800_000,
     });
+  });
+
+  it('reads the claim lease and rejects a non-positive value', () => {
+    const actualConfig = resolveBpjsPcareAdapterConfig(
+      buildConfigService({ BPJS_SUBMISSION_LEASE_MS: '300000' }),
+    );
+
+    expect(actualConfig.submissionLeaseMs).toBe(300_000);
+    expect(() =>
+      resolveBpjsPcareAdapterConfig(buildConfigService({ BPJS_SUBMISSION_LEASE_MS: '0' })),
+    ).toThrow('BPJS_SUBMISSION_LEASE_MS must be a positive integer');
   });
 
   it('turns the worker flag off only on an explicit false', () => {
