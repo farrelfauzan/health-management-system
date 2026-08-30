@@ -170,6 +170,12 @@ export type EncounterRelatedDoctorRecord = {
   licenseNumber: string;
   fullName: string;
   ownerUserId: string | null;
+  /**
+   * Masked NIK tail, read only to decide `satusehatReportable` on the mapped
+   * response — the plaintext, ciphertext, and blind index all stay in the
+   * doctor repository.
+   */
+  nikLast4: string | null;
 };
 
 export type EncounterChildCounts = {

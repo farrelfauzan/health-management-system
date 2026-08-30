@@ -84,7 +84,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
       />
 
       <DoctorsFilterCard
-        key={`${initialQuery.search ?? ''}|${initialQuery.specialtyId ?? ''}|${initialQuery.isActive ?? ''}`}
+        key={`${initialQuery.search ?? ''}|${initialQuery.specialtyId ?? ''}|${initialQuery.isActive ?? ''}|${initialQuery.missingNik ?? ''}`}
         initialQuery={initialQuery}
         onApply={handleApplyFilters}
         onReset={handleResetFilters}

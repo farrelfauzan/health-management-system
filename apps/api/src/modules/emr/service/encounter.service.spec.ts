@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 
@@ -91,6 +92,7 @@ describe('EncounterService', () => {
       licenseNumber: 'SIP-2026-0001',
       fullName: 'Dr. Budi Santoso',
       ownerUserId: doctorUser.sub,
+      nikLast4: '0001',
     },
     _count: { vitalSigns: 0, diagnoses: 0, procedures: 0 },
   };
@@ -284,6 +286,34 @@ describe('EncounterService', () => {
         createdById: adminUser.sub,
       });
       expect(actual.status).toBe('IN_PROGRESS');
+      expect(actual.doctor.satusehatReportable).toBe(true);
+    });
+
+    it('opens the record but flags it unreportable when the doctor has no NIK', async () => {
+      const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+      mockAdminWriter();
+      (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue(
+        checkedInRegistration,
+      );
+      (encounterRepositoryMock.findEncounterIdByRegistrationId as jest.Mock).mockResolvedValue(null);
+      (encounterRepositoryMock.findActiveDoctorById as jest.Mock).mockResolvedValue({
+        id: doctorId,
+        ownerUserId: doctorUser.sub,
+      });
+      (encounterRepositoryMock.createEncounter as jest.Mock).mockResolvedValue({
+        ...encounterRecord,
+        doctor: { ...encounterRecord.doctor, nikLast4: null },
+      });
+
+      const actual = await service.openEncounter(
+        { registrationId, doctorId } as OpenEncounterDto,
+        adminUser,
+      );
+
+      expect(actual.status).toBe('IN_PROGRESS');
+      expect(actual.doctor.satusehatReportable).toBe(false);
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('no NIK on record'));
+      warnSpy.mockRestore();
     });
 
     it('refuses a registration that has not checked in', async () => {

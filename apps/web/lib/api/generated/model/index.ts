@@ -438,6 +438,7 @@ export * from './doctorManagementControllerGetDoctorByIdV1200DataSchedulesItem';
 export * from './doctorManagementControllerGetDoctorIdentifiersV1200';
 export * from './doctorManagementControllerGetDoctorIdentifiersV1200Data';
 export * from './doctorManagementControllerListDoctorsV1IsActive';
+export * from './doctorManagementControllerListDoctorsV1MissingNik';
 export * from './doctorManagementControllerListDoctorsV1Params';
 export * from './doctorManagementControllerListDoctorsV1200';
 export * from './doctorManagementControllerListDoctorsV1200DataItem';

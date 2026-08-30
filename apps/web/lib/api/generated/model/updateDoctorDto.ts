@@ -32,8 +32,7 @@ export interface UpdateDoctorDto {
      * @nullable
      */
   degrees?: string | null;
-  /** @nullable */
-  nik?: string | null;
+  nik?: string;
   /**
      * @minLength 1
      * @maxLength 64

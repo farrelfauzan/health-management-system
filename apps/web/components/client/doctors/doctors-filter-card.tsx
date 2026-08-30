@@ -23,6 +23,7 @@ export type DoctorsFilterValues = {
   search?: string;
   specialtyId?: string;
   isActive?: 'true' | 'false';
+  missingNik?: 'true' | 'false';
 };
 
 type DoctorsFilterCardProps = {
@@ -36,6 +37,7 @@ export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFil
   const [search, setSearch] = useState<string>(initialQuery.search ?? '');
   const [specialtyId, setSpecialtyId] = useState<string>(initialQuery.specialtyId ?? '');
   const [status, setStatus] = useState<string>(initialQuery.isActive ?? ALL_STATUSES_VALUE);
+  const [nikState, setNikState] = useState<string>(initialQuery.missingNik ?? ALL_STATUSES_VALUE);
   const specialtiesQuery = useSpecialtiesList();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
@@ -46,6 +48,7 @@ export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFil
       search: trimmedSearch.length > 0 ? trimmedSearch : undefined,
       specialtyId: specialtyId.length > 0 ? specialtyId : undefined,
       isActive: status === ALL_STATUSES_VALUE ? undefined : (status as 'true' | 'false'),
+      missingNik: nikState === ALL_STATUSES_VALUE ? undefined : (nikState as 'true' | 'false'),
     });
   }
 
@@ -53,6 +56,7 @@ export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFil
     setSearch('');
     setSpecialtyId('');
     setStatus(ALL_STATUSES_VALUE);
+    setNikState(ALL_STATUSES_VALUE);
     onReset();
   }
 
@@ -115,6 +119,24 @@ export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFil
               <SelectItem value={ALL_STATUSES_VALUE}>{t('common.allStatuses')}</SelectItem>
               <SelectItem value="true">{t('common.active')}</SelectItem>
               <SelectItem value="false">{t('common.inactive')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-48">
+          <label
+            htmlFor="doctors-nik-filter"
+            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          >
+            {t('doctors.satusehatFilter')}
+          </label>
+          <Select value={nikState} onValueChange={setNikState}>
+            <SelectTrigger id="doctors-nik-filter" className="w-full">
+              <SelectValue placeholder={t('common.allStatuses')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_STATUSES_VALUE}>{t('common.allStatuses')}</SelectItem>
+              <SelectItem value="true">{t('doctors.nikMissing')}</SelectItem>
+              <SelectItem value="false">{t('doctors.nikPresent')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

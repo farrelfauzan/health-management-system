@@ -33,6 +33,13 @@ const ENCOUNTER_DOCTOR_SELECT = {
   licenseNumber: true,
   fullName: true,
   ownerUserId: true,
+  // Stands in for "this doctor has a NIK", which is what decides whether the
+  // encounter can ever be reported to SATUSEHAT (SJ-75). The masked last four
+  // are the cheapest column that answers it — `nikIndex` would answer the same
+  // question but is the searchable blind index, and it stays in the doctor
+  // repository. All four NIK columns are written together, so a non-null
+  // `nikLast4` means the ciphertext and index are there too.
+  nikLast4: true,
 } satisfies Prisma.DoctorProfileSelect;
 
 const ENCOUNTER_LIST_INCLUDE = {

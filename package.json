@@ -22,6 +22,7 @@
     "db:validate": "pnpm --filter @hms/api prisma:validate",
     "db:seed": "pnpm --filter @hms/api prisma:seed",
     "db:reset": "pnpm --filter @hms/api prisma:migrate:reset",
+    "db:seed:sandbox-practitioner-nik": "pnpm --filter @hms/api seed:sandbox-practitioner-nik",
     "api:openapi:export": "pnpm --filter @hms/api openapi:export",
     "web:api:generate": "pnpm --filter @hms/web orval:generate",
     "api:contract:sync": "pnpm api:openapi:export && pnpm web:api:generate",

@@ -48,14 +48,14 @@ const FULL_ACCESS_RULES: AppRule[] = [
 
 const READ_ONLY_RULES: AppRule[] = [{ action: 'read', subject: 'Doctor' }];
 
-function renderRow(rules: AppRule[]): void {
+function renderRow(rules: AppRule[], doctor: DoctorListItem = DOCTOR): void {
   render(
     <NextIntlClientProvider locale="id" messages={messages}>
       <AbilityProvider ability={buildAppAbility(rules)}>
         <Table>
           <TableBody>
             <DoctorsTableRow
-              doctor={DOCTOR}
+              doctor={doctor}
               onView={vi.fn()}
               onEdit={vi.fn()}
               onManageSchedule={vi.fn()}
@@ -78,6 +78,18 @@ describe('DoctorsTableRow', () => {
     expect(screen.getByText('Sen–Sel · 08:00–16:00')).toBeInTheDocument();
     expect(screen.getByText('4')).toBeInTheDocument();
     expect(screen.getByText('Aktif')).toBeInTheDocument();
+  });
+
+  it('warns that a doctor with no NIK cannot be reported to SATUSEHAT', () => {
+    renderRow(READ_ONLY_RULES);
+
+    expect(screen.getByText('Tanpa NIK')).toBeInTheDocument();
+  });
+
+  it('drops the warning once a NIK is on file', () => {
+    renderRow(READ_ONLY_RULES, { ...DOCTOR, nikMasked: '••••••••0001' });
+
+    expect(screen.queryByText('Tanpa NIK')).not.toBeInTheDocument();
   });
 
   it('shows edit, schedule, and assign actions when the ability allows them', async () => {

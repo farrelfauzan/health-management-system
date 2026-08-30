@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { DoctorManagementControllerListDoctorsV1IsActive } from './doctorManagementControllerListDoctorsV1IsActive';
+import type { DoctorManagementControllerListDoctorsV1MissingNik } from './doctorManagementControllerListDoctorsV1MissingNik';
 
 export type DoctorManagementControllerListDoctorsV1Params = {
 /**
@@ -24,4 +25,5 @@ search?: string;
 specialtyId?: string;
 patientId?: string;
 isActive?: DoctorManagementControllerListDoctorsV1IsActive;
+missingNik?: DoctorManagementControllerListDoctorsV1MissingNik;
 };

@@ -159,6 +159,7 @@ export function DoctorFormDialog({
             patientIds: value.patientIds.length > 0 ? value.patientIds : undefined,
             ...profileFields,
             ...credentials,
+            nik: trimmedNik,
           });
           parseApiSuccess<DoctorProfile>(response, t('doctors.form.saveError'));
         }
@@ -359,7 +360,14 @@ export function DoctorFormDialog({
               {/* Email is not here on purpose: it is the address the doctor
                   signs in with, managed on their user account under
                   Administration, and read back through that relation. */}
-              <form.Field name="nik">
+              {/* Required on create, optional on edit: the API demands a NIK
+                  for every new doctor because SATUSEHAT resolves the IHS
+                  practitioner number from it and nothing else, while an edit
+                  leaves the stored value alone when the box is blank. */}
+              <form.Field
+                name="nik"
+                validators={isEditMode ? {} : { onSubmit: createDoctorSchema.shape.nik }}
+              >
                 {(field) => (
                   <div className="space-y-1.5">
                     <label
@@ -377,7 +385,9 @@ export function DoctorFormDialog({
                       )}
                       onChange={(event) => field.handleChange(event.target.value)}
                       onBlur={field.handleBlur}
+                      aria-invalid={field.state.meta.errors.length > 0}
                     />
+                    <FieldError errors={field.state.meta.errors} />
                   </div>
                 )}
               </form.Field>

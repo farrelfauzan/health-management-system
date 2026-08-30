@@ -141,3 +141,14 @@ export type SatusehatSubmissionPage = {
   items: SatusehatSubmissionRecord[];
   total: number;
 };
+
+/**
+ * One practitioner test identity for the SATUSEHAT staging sandbox. There is
+ * deliberately no IHS number: the published values do not match what the live
+ * index returns, so the IHS number is only ever resolved from the NIK at link
+ * time.
+ */
+export type SatusehatSandboxPractitioner = {
+  readonly nik: string;
+  readonly name: string;
+};
