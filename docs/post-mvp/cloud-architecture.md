@@ -32,6 +32,12 @@ Health records are *data pribadi bersifat spesifik* under **UU PDP No. 27/2022**
 
 Consequence: not every service is available in Jakarta, and Jakarta list prices run above Singapore. Both are priced that way in §6.
 
+**One deliberate exception: transactional email.** SES has no SMTP endpoint in `ap-southeast-3` — its API is available there, its SMTP interface is not, and `email-smtp.ap-southeast-3.amazonaws.com` resolves to nothing ([AWS SES endpoints](https://docs.aws.amazon.com/general/latest/gr/ses.html)). `SmtpMailService` therefore cannot send a single message from Jakarta, and fails silently when it tries: `ENOTFOUND` is swallowed by the transport's catch, which returns `accepted: false` while the invitation row commits. So `SalingJagaMail` alone deploys to `ap-southeast-1`, guarded by `SMTP_ENABLED_REGIONS` in `mail-stack.ts` and wired through `CDK_MAIL_REGION` rather than `CDK_DEPLOY_REGION`.
+
+The scope is what makes this defensible, and it is worth stating plainly rather than leaving to inference: **no patient data is in scope.** The mail path carries staff names, staff email addresses, and single-use invitation tokens — it never touches a health record, which is what UU PDP classifies as *data pribadi bersifat spesifik*. Every store that does hold patient data stays in Jakarta. The alternative that preserves strict single-region purity is rewriting `SmtpMailService` onto the SES API, which is a real option and remains open; it was declined here because it trades the transport's provider-neutrality for it.
+
+⚠️ **This is an engineering judgement, not legal advice, and it has not been reviewed by counsel.** Staff email addresses are still personal data under UU PDP even though they are not health data. If §2.1's "data pasien disimpan di Indonesia" is used as a sales claim, confirm this exception does not undercut it before it appears in a contract.
+
 ### 2.2 GOWA is the workload that breaks serverless
 
 It is worth being explicit, because it is the single design constraint that rules options out on **both** clouds:

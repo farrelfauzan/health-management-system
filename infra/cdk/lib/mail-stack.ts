@@ -1,4 +1,4 @@
-import { CfnOutput, RemovalPolicy, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, RemovalPolicy, SecretValue, Stack, StackProps, Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
@@ -9,6 +9,44 @@ const SMTP_USER_NAME = 'saling-jaga-mail-smtp';
 const CREDENTIALS_SECRET_NAME = 'saling-jaga/mail/ses-smtp-credentials';
 const CONFIGURATION_SET_NAME = 'saling-jaga-transactional';
 const SMTP_STARTTLS_PORT = 587;
+
+/**
+ * Regions where SES exposes its **SMTP interface**, per
+ * https://docs.aws.amazon.com/general/latest/gr/ses.html.
+ *
+ * SES's API is available in strictly more regions than its SMTP endpoint, and
+ * `email-smtp.<region>.amazonaws.com` is a delegated zone in *every* region —
+ * it answers NOERROR with no address record where the interface does not
+ * exist. So the wrong region does not fail at deploy, or at boot, or with a
+ * DNS error a reader would recognise: it fails as `ENOTFOUND` inside
+ * `SmtpMailService`'s catch, which reports `accepted: false` and commits the
+ * invitation anyway. Every staff member is told to check an inbox that will
+ * never receive anything.
+ *
+ * Notably absent, and the reason this list exists: `ap-southeast-3` (Jakarta),
+ * which the rest of this deployment uses for data residency.
+ */
+const SMTP_ENABLED_REGIONS: readonly string[] = [
+  'us-east-1',
+  'us-east-2',
+  'us-west-1',
+  'us-west-2',
+  'ap-northeast-1',
+  'ap-northeast-2',
+  'ap-northeast-3',
+  'ap-south-1',
+  'ap-southeast-1',
+  'ap-southeast-2',
+  'ca-central-1',
+  'eu-central-1',
+  'eu-north-1',
+  'eu-west-1',
+  'eu-west-2',
+  'eu-west-3',
+  'sa-east-1',
+  'us-gov-east-1',
+  'us-gov-west-1',
+];
 
 export type MailStackProps = StackProps & {
   /**
@@ -40,6 +78,29 @@ export type MailStackProps = StackProps & {
    */
   readonly hostedZoneName?: string;
 };
+
+/**
+ * Fails synth when the target region has no SES SMTP endpoint.
+ *
+ * Deliberately a hard throw rather than a warning. The failure it prevents is
+ * silent and total, and it surfaces in production as "invitations do not
+ * arrive" weeks after a deploy that CloudFormation reported as successful.
+ */
+function assertRegionHasSmtpEndpoint(region: string): void {
+  // An env-agnostic synth leaves the region an unresolved token; there is no
+  // value to check and nothing is being deployed yet.
+  if (Token.isUnresolved(region)) {
+    return;
+  }
+  if (SMTP_ENABLED_REGIONS.includes(region)) {
+    return;
+  }
+  throw new Error(
+    `MailStack: SES has no SMTP endpoint in ${region}, so SmtpMailService could never connect. ` +
+      `Deploy this stack to one of: ${SMTP_ENABLED_REGIONS.join(', ')} ` +
+      `(set CDK_MAIL_REGION), or switch the API to the SES API transport.`,
+  );
+}
 
 /**
  * Amazon SES as the transport behind `MailService` (IMP-23).
@@ -76,6 +137,7 @@ export class MailStack extends Stack {
 
   constructor(scope: Construct, id: string, props: MailStackProps) {
     super(scope, id, props);
+    assertRegionHasSmtpEndpoint(this.region);
 
     const configurationSet = new ses.ConfigurationSet(this, 'TransactionalConfigurationSet', {
       configurationSetName: CONFIGURATION_SET_NAME,
@@ -90,13 +152,22 @@ export class MailStack extends Stack {
       ? [this.addDomainIdentity(props.mailDomain, props.hostedZoneName, configurationSet)]
       : [this.addAddressIdentity('SenderIdentity', props.senderAddress, configurationSet)];
 
-    // Recipient identities exist only to satisfy the sandbox. They are not
-    // added to `sendableIdentityArns` — the SMTP user must never be able to
-    // send *as* a colleague's mailbox just because it was verified for
-    // delivery.
-    for (const [index, recipient] of (props.verifiedRecipients ?? []).entries()) {
-      this.addAddressIdentity(`RecipientIdentity${index}`, recipient, configurationSet);
-    }
+    // Recipient identities exist only to satisfy the sandbox, where SES refuses
+    // to deliver to an address it has not separately verified.
+    //
+    // They are kept out of `sendableIdentityArns` — the SMTP user must never be
+    // able to send *as* a colleague's mailbox just because it was verified for
+    // delivery — but they still have to appear in the policy's resource list.
+    // In the sandbox SES authorises `ses:SendRawEmail` against each
+    // **destination** identity as well as the sender, so omitting them entirely
+    // produces `554 Access denied ... on resource identity/<recipient>` and no
+    // mail is sent at all. The `ses:FromAddress` condition below is what makes
+    // this safe: it pins every message to no-reply@<domain> regardless of which
+    // identity ARNs are listed, so granting the action on a recipient confers no
+    // ability to impersonate them.
+    const recipientIdentityArns = (props.verifiedRecipients ?? []).map((recipient, index) =>
+      this.addAddressIdentity(`RecipientIdentity${index}`, recipient, configurationSet),
+    );
 
     const smtpUser = new iam.User(this, 'MailSmtpUser', {
       userName: SMTP_USER_NAME,
@@ -110,6 +181,7 @@ export class MailStack extends Stack {
         actions: ['ses:SendRawEmail'],
         resources: [
           ...sendableIdentityArns,
+          ...recipientIdentityArns,
           `arn:aws:ses:${this.region}:${this.account}:configuration-set/${CONFIGURATION_SET_NAME}`,
         ],
         conditions: {
