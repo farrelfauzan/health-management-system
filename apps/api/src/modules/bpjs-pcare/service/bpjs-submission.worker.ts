@@ -22,6 +22,12 @@ const POLL_BATCH_LIMIT = 5;
  * BPJS_WORKER_ENABLED — unlike SATUSEHAT there are no env credentials to
  * check at bootstrap, because credentials are database rows and the enqueue
  * hooks already skip visits when bridging is not configured.
+ *
+ * Safe to run on more than one instance: rows are claimed under a lease with
+ * `FOR UPDATE SKIP LOCKED` rather than merely read, so two replicas polling at
+ * the same instant divide the queue instead of both reporting the same visit
+ * to BPJS (SJ-76). `isPolling` remains a per-process guard against overlapping
+ * cycles; it is not what makes concurrency safe.
  */
 @Injectable()
 export class BpjsSubmissionWorker implements OnApplicationBootstrap, OnApplicationShutdown {
@@ -62,7 +68,10 @@ export class BpjsSubmissionWorker implements OnApplicationBootstrap, OnApplicati
     }
     this.isPolling = true;
     try {
-      const dueSubmissions = await this.submissionRepository.findDueSubmissions(POLL_BATCH_LIMIT);
+      const dueSubmissions = await this.submissionRepository.claimDueSubmissions({
+        limit: POLL_BATCH_LIMIT,
+        leaseMs: this.adapterConfig.submissionLeaseMs,
+      });
       for (const submission of dueSubmissions) {
         await this.submissionService.processSubmission(submission);
       }

@@ -1,7 +1,7 @@
 import { BpjsSubmissionWorker } from './bpjs-submission.worker';
 
 describe('BpjsSubmissionWorker', () => {
-  const submissionRepositoryMock = { findDueSubmissions: jest.fn() };
+  const submissionRepositoryMock = { claimDueSubmissions: jest.fn() };
   const submissionServiceMock = { processSubmission: jest.fn() };
 
   function createWorker(env: Record<string, string | undefined> = {}): BpjsSubmissionWorker {
@@ -15,7 +15,7 @@ describe('BpjsSubmissionWorker', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    submissionRepositoryMock.findDueSubmissions.mockResolvedValue([]);
+    submissionRepositoryMock.claimDueSubmissions.mockResolvedValue([]);
     submissionServiceMock.processSubmission.mockResolvedValue(undefined);
   });
 
@@ -26,14 +26,14 @@ describe('BpjsSubmissionWorker', () => {
     worker.onApplicationBootstrap();
     jest.advanceTimersByTime(60_000);
 
-    expect(submissionRepositoryMock.findDueSubmissions).not.toHaveBeenCalled();
+    expect(submissionRepositoryMock.claimDueSubmissions).not.toHaveBeenCalled();
     worker.onApplicationShutdown();
     jest.useRealTimers();
   });
 
   it('processes each due submission in order', async () => {
     const inputSubmissions = [{ id: 'submission-1' }, { id: 'submission-2' }];
-    submissionRepositoryMock.findDueSubmissions.mockResolvedValue(inputSubmissions);
+    submissionRepositoryMock.claimDueSubmissions.mockResolvedValue(inputSubmissions);
     const worker = createWorker();
 
     const actualCount = await worker.pollOnce();
@@ -49,9 +49,20 @@ describe('BpjsSubmissionWorker', () => {
     );
   });
 
+  it('claims rows under the configured lease rather than merely reading them', async () => {
+    const worker = createWorker({ BPJS_SUBMISSION_LEASE_MS: '300000' });
+
+    await worker.pollOnce();
+
+    expect(submissionRepositoryMock.claimDueSubmissions).toHaveBeenCalledWith({
+      limit: 5,
+      leaseMs: 300_000,
+    });
+  });
+
   it('skips an overlapping poll cycle instead of queueing it', async () => {
     let releaseFirstCycle: () => void = () => undefined;
-    submissionRepositoryMock.findDueSubmissions.mockImplementation(
+    submissionRepositoryMock.claimDueSubmissions.mockImplementation(
       () =>
         new Promise((resolve) => {
           releaseFirstCycle = () => resolve([]);
@@ -65,11 +76,11 @@ describe('BpjsSubmissionWorker', () => {
     await firstCycle;
 
     expect(overlappingCount).toBe(0);
-    expect(submissionRepositoryMock.findDueSubmissions).toHaveBeenCalledTimes(1);
+    expect(submissionRepositoryMock.claimDueSubmissions).toHaveBeenCalledTimes(1);
   });
 
   it('survives a throwing due-row query', async () => {
-    submissionRepositoryMock.findDueSubmissions.mockRejectedValue(new Error('database gone'));
+    submissionRepositoryMock.claimDueSubmissions.mockRejectedValue(new Error('database gone'));
     const worker = createWorker();
 
     await expect(worker.pollOnce()).resolves.toBe(0);
@@ -84,12 +95,12 @@ describe('BpjsSubmissionWorker', () => {
       jest.advanceTimersByTime(1_000);
       await jest.advanceTimersByTimeAsync(0);
     }
-    expect(submissionRepositoryMock.findDueSubmissions).toHaveBeenCalledTimes(3);
+    expect(submissionRepositoryMock.claimDueSubmissions).toHaveBeenCalledTimes(3);
 
     worker.onApplicationShutdown();
     jest.advanceTimersByTime(3_000);
     await jest.advanceTimersByTimeAsync(0);
-    expect(submissionRepositoryMock.findDueSubmissions).toHaveBeenCalledTimes(3);
+    expect(submissionRepositoryMock.claimDueSubmissions).toHaveBeenCalledTimes(3);
     jest.useRealTimers();
   });
 });

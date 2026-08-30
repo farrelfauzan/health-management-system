@@ -8,6 +8,7 @@ import {
   BpjsSubmissionSiblingRow,
   BpjsSubmissionSourceData,
   BpjsSubmissionStatusValue,
+  ClaimDueBpjsSubmissionsPayload,
   ListBpjsSubmissionsParams,
   MarkBpjsSubmissionFailedPayload,
   MarkBpjsSubmissionRetryPayload,
@@ -18,8 +19,10 @@ import { Injectable } from '@nestjs/common';
 import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { BpjsSubmission } from '../../../generated/prisma/client';
+import { ClaimedBpjsSubmissionRow } from './claimed-bpjs-submission-row.types';
 
 const MAX_REPORTED_FAILURES = 100;
+const MILLISECONDS_PER_SECOND = 1000;
 
 const DOCTOR_MAPPING_SELECT = {
   fullName: true,
@@ -39,8 +42,9 @@ type DoctorMappingRow = {
  * {@link findSubmissionSourceData} re-reads the clinical record live at send
  * time, and this repository is the only place the patient's sealed BPJS
  * number is decrypted for a submission — solely into the outbound request.
- * Due-row claiming relies on the worker's in-process re-entrancy guard, the
- * same single-instance assumption the SATUSEHAT worker documents.
+ * Due rows are claimed under a lease with `FOR UPDATE SKIP LOCKED` rather
+ * than merely read, so more than one API instance can drain this outbox
+ * without reporting the same visit to BPJS twice.
  */
 @Injectable()
 export class BpjsSubmissionRepository {
@@ -49,13 +53,50 @@ export class BpjsSubmissionRepository {
     private readonly identifierCryptoService: NationalIdentifierCryptoService,
   ) {}
 
-  async findDueSubmissions(limit: number): Promise<BpjsSubmissionRecord[]> {
-    const rows = await this.prismaService.bpjsSubmission.findMany({
-      where: { status: 'PENDING', nextAttemptAt: { lte: new Date() } },
-      orderBy: { nextAttemptAt: 'asc' },
-      take: limit,
-    });
-    return rows.map((row) => this.toRecord(row));
+  /**
+   * Claims up to `limit` due rows for this worker and returns them. Selecting
+   * and updating in one statement is what makes running more than one API
+   * instance safe: `FOR UPDATE SKIP LOCKED` hands each row to exactly one
+   * concurrent claimer instead of letting both read it and report the same
+   * visit to BPJS twice (SJ-76, the same defect fixed for the SATUSEHAT outbox).
+   *
+   * The claim is a lease, not a status change: `nextAttemptAt` is pushed
+   * `leaseMs` into the future, so the row stops being due for anyone else while
+   * this worker holds it. A worker that dies mid-batch therefore releases its
+   * rows when the lease lapses, with no reaper and no half-processed state to
+   * clean up — the same "backoff lives in the table" property the outbox
+   * already relies on across restarts. The real outcome overwrites the lease:
+   * success marks the row SUBMITTED, a transient failure reschedules it on the
+   * backoff, a permanent one settles it FAILED.
+   *
+   * The ordering is `nextAttemptAt` ascending, exactly as the plain read was:
+   * the PENDAFTARAN -> KUNJUNGAN -> OBAT sequence is enforced by the sibling
+   * checks in the submission service, not by claim order, so a claim that
+   * splits a visit's rows across two workers is still correct — the dependent
+   * row simply reschedules until its predecessor lands.
+   */
+  async claimDueSubmissions(
+    payload: ClaimDueBpjsSubmissionsPayload,
+  ): Promise<BpjsSubmissionRecord[]> {
+    const leaseSeconds = payload.leaseMs / MILLISECONDS_PER_SECOND;
+    const rows = await this.prismaService.$queryRaw<ClaimedBpjsSubmissionRow[]>`
+      UPDATE "bpjs_submissions"
+      SET "next_attempt_at" = now() + make_interval(secs => ${leaseSeconds}::double precision),
+          "updated_at" = now()
+      WHERE "id" IN (
+        SELECT "id"
+        FROM "bpjs_submissions"
+        WHERE "status" = 'PENDING'::"BpjsSubmissionStatus"
+          AND "next_attempt_at" <= now()
+        ORDER BY "next_attempt_at" ASC
+        LIMIT ${payload.limit}::integer
+        FOR UPDATE SKIP LOCKED
+      )
+      RETURNING "id", "registration_id", "type", "status", "attempts", "last_error",
+                "next_attempt_at", "last_attempt_at", "submitted_at",
+                "bpjs_reference_no", "submitted_kd_poli", "created_at"
+    `;
+    return rows.map((row) => this.toClaimedRecord(row));
   }
 
   async findSubmissionById(id: string): Promise<BpjsSubmissionRecord | null> {
@@ -467,6 +508,24 @@ export class BpjsSubmissionRepository {
     }
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  /** Renames one claimed row onto the camel-case record the services consume. */
+  private toClaimedRecord(row: ClaimedBpjsSubmissionRow): BpjsSubmissionRecord {
+    return {
+      id: row.id,
+      registrationId: row.registration_id,
+      type: row.type,
+      status: row.status,
+      attempts: row.attempts,
+      lastError: row.last_error,
+      nextAttemptAt: row.next_attempt_at,
+      lastAttemptAt: row.last_attempt_at,
+      submittedAt: row.submitted_at,
+      bpjsReferenceNo: row.bpjs_reference_no,
+      submittedKdPoli: row.submitted_kd_poli,
+      createdAt: row.created_at,
+    };
   }
 
   private toRecord(row: BpjsSubmission): BpjsSubmissionRecord {
