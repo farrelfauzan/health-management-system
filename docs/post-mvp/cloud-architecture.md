@@ -42,11 +42,17 @@ It is worth being explicit, because it is the single design constraint that rule
 
 **Therefore: GOWA runs on a plain VM with a persistent disk on both clouds.** Not Fargate, not Cloud Run. This is a small, boring, deliberately unfashionable piece of the design.
 
-### 2.3 The outbox worker must be a singleton
+### 2.3 The outbox worker is still deployed as a singleton — but no longer for correctness
 
-`SATUSEHAT_WORKER_ENABLED` already anticipates this. Under multi-tenancy the worker additionally has to poll **every tenant database**, which turns a single `setInterval` into an N-database sweep. Two consequences for the design:
+`SATUSEHAT_WORKER_ENABLED` already anticipates this.
 
-- Exactly **one** worker task, deployed separately from the API service, with its own scaling policy fixed at 1.
+The **SATUSEHAT** worker is now safe to run on more than one instance (SJ-76): it claims outbox rows with `FOR UPDATE SKIP LOCKED` under a lease rather than merely reading them, so two replicas polling at the same instant divide the queue instead of both submitting the same encounter. A duplicate-submission bug is no longer one misconfigured scaling policy away.
+
+The **BPJS PCare** worker has not had the same treatment — `BpjsSubmissionRepository.findDueSubmissions` is still a plain read — so the singleton constraint continues to bind for it.
+
+Under multi-tenancy the worker additionally has to poll **every tenant database**, which turns a single `setInterval` into an N-database sweep. Consequences for the design:
+
+- Still exactly **one** worker task, deployed separately from the API service with its own scaling policy fixed at 1 — now a deliberate simplification (and a BPJS requirement) rather than the only thing standing between the clinic and double-reporting.
 - Its poll cost grows with tenant count. At a few dozen tenants a sequential sweep is fine; past ~100 it needs batching or per-tenant scheduling. Flagged, not solved here.
 
 ---

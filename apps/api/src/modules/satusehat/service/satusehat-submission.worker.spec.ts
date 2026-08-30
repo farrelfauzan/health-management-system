@@ -22,7 +22,7 @@ describe('SatusehatSubmissionWorker', () => {
     processSubmission: jest.fn(),
   };
   const submissionRepositoryMock = {
-    findDueSubmissions: jest.fn(),
+    claimDueSubmissions: jest.fn(),
   };
 
   function buildWorker(values: Record<string, string>): SatusehatSubmissionWorker {
@@ -48,7 +48,7 @@ describe('SatusehatSubmissionWorker', () => {
     worker.onApplicationBootstrap();
     jest.advanceTimersByTime(60_000);
 
-    expect(submissionRepositoryMock.findDueSubmissions).not.toHaveBeenCalled();
+    expect(submissionRepositoryMock.claimDueSubmissions).not.toHaveBeenCalled();
     worker.onApplicationShutdown();
   });
 
@@ -58,14 +58,14 @@ describe('SatusehatSubmissionWorker', () => {
     worker.onApplicationBootstrap();
     jest.advanceTimersByTime(60_000);
 
-    expect(submissionRepositoryMock.findDueSubmissions).not.toHaveBeenCalled();
+    expect(submissionRepositoryMock.claimDueSubmissions).not.toHaveBeenCalled();
     worker.onApplicationShutdown();
   });
 
   it('processes each due submission in order during a poll cycle', async () => {
     const firstSubmission = { id: 'submission-1' };
     const secondSubmission = { id: 'submission-2' };
-    submissionRepositoryMock.findDueSubmissions.mockResolvedValue([
+    submissionRepositoryMock.claimDueSubmissions.mockResolvedValue([
       firstSubmission,
       secondSubmission,
     ]);
@@ -79,9 +79,21 @@ describe('SatusehatSubmissionWorker', () => {
     expect(submissionServiceMock.processSubmission).toHaveBeenNthCalledWith(2, secondSubmission);
   });
 
+  it('claims rows under the configured lease rather than merely reading them', async () => {
+    submissionRepositoryMock.claimDueSubmissions.mockResolvedValue([]);
+    const worker = buildWorker({ ...CONFIGURED_VALUES, SATUSEHAT_SUBMISSION_LEASE_MS: '300000' });
+
+    await worker.pollOnce();
+
+    expect(submissionRepositoryMock.claimDueSubmissions).toHaveBeenCalledWith({
+      limit: 5,
+      leaseMs: 300_000,
+    });
+  });
+
   it('skips a poll cycle that would overlap a running one', async () => {
     let releasePoll: () => void = () => undefined;
-    submissionRepositoryMock.findDueSubmissions.mockReturnValue(
+    submissionRepositoryMock.claimDueSubmissions.mockReturnValue(
       new Promise((resolve) => {
         releasePoll = () => resolve([]);
       }),
@@ -94,30 +106,30 @@ describe('SatusehatSubmissionWorker', () => {
     await firstCycle;
 
     expect(overlappingCount).toBe(0);
-    expect(submissionRepositoryMock.findDueSubmissions).toHaveBeenCalledTimes(1);
+    expect(submissionRepositoryMock.claimDueSubmissions).toHaveBeenCalledTimes(1);
   });
 
   it('survives a poll cycle whose query throws', async () => {
-    submissionRepositoryMock.findDueSubmissions.mockRejectedValue(new Error('connection reset'));
+    submissionRepositoryMock.claimDueSubmissions.mockRejectedValue(new Error('connection reset'));
     const worker = buildWorker(CONFIGURED_VALUES);
 
     const actualProcessedCount = await worker.pollOnce();
 
     expect(actualProcessedCount).toBe(0);
-    submissionRepositoryMock.findDueSubmissions.mockResolvedValue([]);
+    submissionRepositoryMock.claimDueSubmissions.mockResolvedValue([]);
     await expect(worker.pollOnce()).resolves.toBe(0);
   });
 
   it('starts and stops the interval when configured', async () => {
-    submissionRepositoryMock.findDueSubmissions.mockResolvedValue([]);
+    submissionRepositoryMock.claimDueSubmissions.mockResolvedValue([]);
     const worker = buildWorker(CONFIGURED_VALUES);
 
     worker.onApplicationBootstrap();
     await jest.advanceTimersByTimeAsync(15_000);
-    expect(submissionRepositoryMock.findDueSubmissions).toHaveBeenCalledTimes(1);
+    expect(submissionRepositoryMock.claimDueSubmissions).toHaveBeenCalledTimes(1);
 
     worker.onApplicationShutdown();
     await jest.advanceTimersByTimeAsync(60_000);
-    expect(submissionRepositoryMock.findDueSubmissions).toHaveBeenCalledTimes(1);
+    expect(submissionRepositoryMock.claimDueSubmissions).toHaveBeenCalledTimes(1);
   });
 });

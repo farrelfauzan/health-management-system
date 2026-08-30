@@ -36,7 +36,19 @@ describe('resolveSatusehatConfig', () => {
       workerPollIntervalMs: 15_000,
       submissionMaxAttempts: 8,
       submissionRetryBaseDelayMs: 60_000,
+      submissionLeaseMs: 900_000,
     });
+  });
+
+  it('reads the claim lease and rejects a non-positive value', () => {
+    const actualConfig = resolveSatusehatConfig(
+      buildConfigService({ SATUSEHAT_SUBMISSION_LEASE_MS: '300000' }),
+    );
+
+    expect(actualConfig.submissionLeaseMs).toBe(300_000);
+    expect(() =>
+      resolveSatusehatConfig(buildConfigService({ SATUSEHAT_SUBMISSION_LEASE_MS: '0' })),
+    ).toThrow('SATUSEHAT_SUBMISSION_LEASE_MS must be a positive integer');
   });
 
   it('parses the worker flag and rejects a non-boolean value', () => {

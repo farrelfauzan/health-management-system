@@ -16,6 +16,8 @@ export type SatusehatConfig = {
   readonly workerPollIntervalMs: number;
   readonly submissionMaxAttempts: number;
   readonly submissionRetryBaseDelayMs: number;
+  /** Lease held on a claimed outbox row, keeping other workers off it. */
+  readonly submissionLeaseMs: number;
 };
 
 export type SatusehatErrorCode =

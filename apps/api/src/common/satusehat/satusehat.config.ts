@@ -12,6 +12,16 @@ const DEFAULT_CIRCUIT_BREAKER_OPEN_DURATION_MS = 30_000;
 const DEFAULT_WORKER_POLL_INTERVAL_MS = 15_000;
 const DEFAULT_SUBMISSION_MAX_ATTEMPTS = 8;
 const DEFAULT_SUBMISSION_RETRY_BASE_DELAY_MS = 60_000;
+/**
+ * How long a claimed outbox row stays invisible to other workers. Must exceed
+ * the worst case for a whole batch — `POLL_BATCH_LIMIT` rows processed
+ * sequentially, each bounded by the request timeout and its retries — or a
+ * lease expires while the claiming worker is still working through the batch
+ * and a second worker submits the row again. Fifteen minutes leaves a wide
+ * margin over the ~7.5 minute worst case at the shipped defaults, while still
+ * releasing the row reasonably quickly after a crash.
+ */
+const DEFAULT_SUBMISSION_LEASE_MS = 900_000;
 
 function readOptionalValue(configService: ConfigService, key: string): string | undefined {
   const rawValue = configService.get<string>(key)?.trim();
@@ -143,6 +153,11 @@ export function resolveSatusehatConfig(configService: ConfigService): SatusehatC
       configService,
       'SATUSEHAT_SUBMISSION_RETRY_BASE_DELAY_MS',
       DEFAULT_SUBMISSION_RETRY_BASE_DELAY_MS,
+    ),
+    submissionLeaseMs: readPositiveInteger(
+      configService,
+      'SATUSEHAT_SUBMISSION_LEASE_MS',
+      DEFAULT_SUBMISSION_LEASE_MS,
     ),
   };
 }

@@ -42,7 +42,7 @@ describe('SATUSEHAT submission ops integration', () => {
   };
 
   const submissionRepositoryMock = {
-    findDueSubmissions: jest.fn().mockResolvedValue([]),
+    claimDueSubmissions: jest.fn().mockResolvedValue([]),
     findSubmissionById: jest.fn(),
     findSubmissionPage: jest.fn(),
     requeueSubmission: jest.fn(),
@@ -314,7 +314,7 @@ describe('SATUSEHAT submission ops integration', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    submissionRepositoryMock.findDueSubmissions.mockResolvedValue([]);
+    submissionRepositoryMock.claimDueSubmissions.mockResolvedValue([]);
   });
 
   it('returns 401 when the bearer token is missing', async () => {
