@@ -16,6 +16,7 @@ import { ChannelMetricsRepository } from './repository/channel-metrics.repositor
 import { ChannelOtpChallengeRepository } from './repository/channel-otp-challenge.repository';
 import { ChannelPatientLinkRepository } from './repository/channel-patient-link.repository';
 import { ConversationRepository } from './repository/conversation.repository';
+import { ProspectivePatientRepository } from './repository/prospective-patient.repository';
 import { ChannelArrivalService } from './service/channel-arrival.service';
 import { ChannelMetricsService } from './service/channel-metrics.service';
 import { ChannelBookingService } from './service/channel-booking.service';
@@ -88,6 +89,7 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
     ChannelOtpChallengeRepository,
     ChannelPatientLinkRepository,
     ConversationRepository,
+    ProspectivePatientRepository,
     ChannelArrivalService,
     ChannelMetricsService,
     CsAdminService,
@@ -112,6 +114,6 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
       useClass: WhatsappOtpDeliveryAdapter,
     },
   ],
-  exports: [ConversationRepository, HandoffService, InboundMessageSink],
+  exports: [ConversationRepository, ProspectivePatientRepository, HandoffService, InboundMessageSink],
 })
 export class CustomerServiceModule {}

@@ -1312,6 +1312,23 @@ export type EnumChannelVerificationStatusWithAggregatesFilter<$PrismaModel = nev
   _max?: Prisma.NestedEnumChannelVerificationStatusFilter<$PrismaModel>
 }
 
+export type EnumProspectivePatientStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProspectivePatientStatus | Prisma.EnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ProspectivePatientStatus[] | Prisma.ListEnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProspectivePatientStatus[] | Prisma.ListEnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProspectivePatientStatusFilter<$PrismaModel> | $Enums.ProspectivePatientStatus
+}
+
+export type EnumProspectivePatientStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProspectivePatientStatus | Prisma.EnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ProspectivePatientStatus[] | Prisma.ListEnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProspectivePatientStatus[] | Prisma.ListEnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProspectivePatientStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProspectivePatientStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumProspectivePatientStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumProspectivePatientStatusFilter<$PrismaModel>
+}
+
 export type EnumChannelVerificationMethodFilter<$PrismaModel = never> = {
   equals?: $Enums.ChannelVerificationMethod | Prisma.EnumChannelVerificationMethodFieldRefInput<$PrismaModel>
   in?: $Enums.ChannelVerificationMethod[] | Prisma.ListEnumChannelVerificationMethodFieldRefInput<$PrismaModel>
@@ -2726,6 +2743,23 @@ export type NestedEnumChannelVerificationStatusWithAggregatesFilter<$PrismaModel
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumChannelVerificationStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumChannelVerificationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumProspectivePatientStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProspectivePatientStatus | Prisma.EnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ProspectivePatientStatus[] | Prisma.ListEnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProspectivePatientStatus[] | Prisma.ListEnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProspectivePatientStatusFilter<$PrismaModel> | $Enums.ProspectivePatientStatus
+}
+
+export type NestedEnumProspectivePatientStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProspectivePatientStatus | Prisma.EnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ProspectivePatientStatus[] | Prisma.ListEnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProspectivePatientStatus[] | Prisma.ListEnumProspectivePatientStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProspectivePatientStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProspectivePatientStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumProspectivePatientStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumProspectivePatientStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumChannelVerificationMethodFilter<$PrismaModel = never> = {

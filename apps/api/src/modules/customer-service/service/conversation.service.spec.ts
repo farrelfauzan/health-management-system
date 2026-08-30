@@ -148,6 +148,7 @@ describe('ConversationService', () => {
           enumerationChatThreshold: 3,
           maxActiveBookingsPerPhone: 3,
           maxDraftBookingsPerDay: 50,
+          prospectivePatientRetentionDays: 90,
         },
       },
     };
