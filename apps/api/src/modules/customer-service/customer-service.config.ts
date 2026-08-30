@@ -36,6 +36,20 @@ const DEFAULT_LINK_REVERIFY_DAYS = 180;
 const DEFAULT_MAX_ACTIVE_BOOKINGS_PER_PHONE = 3;
 const DEFAULT_MAX_DRAFT_BOOKINGS_PER_DAY = 50;
 
+/**
+ * How long an unresolved prospective patient is kept, in days (`P17-T01`,
+ * design §6).
+ *
+ * **Not an RME retention period.** The row is a booking enquiry holding a name
+ * and a phone number for somebody who was never a patient, so PMK 24/2022's
+ * twenty-five years does not apply to it and applying it would be the mistake
+ * the whole table exists to undo. UU PDP 27/2022 governs instead, and ninety
+ * days is what that asks for: long enough for a booking made well ahead and a
+ * customer who reschedules twice, short enough that the clinic is not holding
+ * a list of strangers' phone numbers indefinitely.
+ */
+const DEFAULT_PROSPECTIVE_PATIENT_RETENTION_DAYS = 90;
+
 function readPositiveInteger(configService: ConfigService, key: string, fallback: number): number {
   const rawValue = configService.get<string>(key)?.trim();
   if (rawValue === undefined || rawValue === '') {
@@ -114,6 +128,11 @@ export function resolveCustomerServiceConfig(configService: ConfigService): Cust
         configService,
         'CS_MAX_DRAFT_BOOKINGS_PER_DAY',
         DEFAULT_MAX_DRAFT_BOOKINGS_PER_DAY,
+      ),
+      prospectivePatientRetentionDays: readPositiveInteger(
+        configService,
+        'CS_PROSPECTIVE_PATIENT_RETENTION_DAYS',
+        DEFAULT_PROSPECTIVE_PATIENT_RETENTION_DAYS,
       ),
     },
   };

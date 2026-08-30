@@ -765,6 +765,30 @@ export type ConversationMessage = Prisma.ConversationMessageModel
  */
 export type ChannelPatientLink = Prisma.ChannelPatientLinkModel
 /**
+ * Model ProspectivePatient
+ * Someone who asked for an appointment through a messaging channel and has
+ * not yet arrived (`P17-T01`).
+ * 
+ * Deliberately **not** a `PatientProfile`, and the three reasons are the
+ * argument for the whole table. A chat booking used to create one, so an MRN
+ * was issued to anyone who typed a name and a phone number into WhatsApp and
+ * the sequence never reused it; a medical record existed -- kept twenty-five
+ * years under PMK 24/2022 -- for somebody who may have been a wrong number;
+ * and `dateOfBirth`, `sex` and `address` are nullable on a clinical record
+ * *only* so that row could exist.
+ * 
+ * The chatbot may collect a name and a phone number and nothing else
+ * (`PCS-T07`, strategy 5.1), and that is exactly what this table requires.
+ * Everything a clinical record needs is collected at the counter, where a
+ * human is looking at an ID document, and the MRN is allocated there.
+ * 
+ * The appointment side of this -- `Appointment.prospectivePatientId` and the
+ * CHECK that exactly one of the two patient keys is set -- lands with
+ * `P17-T02`. Until then nothing books against these rows, so the table can
+ * ship, be seeded and be swept without touching scheduling.
+ */
+export type ProspectivePatient = Prisma.ProspectivePatientModel
+/**
  * Model ChannelOtpChallenge
  * 
  */

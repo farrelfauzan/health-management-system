@@ -891,6 +891,7 @@ model PatientProfile {
   bpjsEligibilityChecks BpjsEligibilityCheck[]
   privacyNoticeRecords  PatientPrivacyNoticeRecord[]
   channelLinks          ChannelPatientLink[]
+  prospectiveRecords    ProspectivePatient[]
   admissions            Admission[]
 
   @@index([deletedAt])
@@ -2761,6 +2762,86 @@ model ChannelPatientLink {
   @@unique([channel, externalChatId, phoneNumber])
   @@index([patientId])
   @@map("channel_patient_links")
+}
+
+/// Where a prospective patient's booking ended up (`P17-T01`).
+enum ProspectivePatientStatus {
+  AWAITING_ARRIVAL
+  /// Became a new `PatientProfile` at the counter, which is where the MRN was
+  /// finally allocated.
+  CONVERTED
+  /// Matched to a `PatientProfile` that already existed -- the merge case
+  /// `PCS-T08` already implements.
+  LINKED
+  /// Never arrived. No MRN was ever spent and no medical record was created,
+  /// which is the whole point of the table.
+  EXPIRED
+
+  @@map("prospective_patient_status")
+}
+
+/// Someone who asked for an appointment through a messaging channel and has
+/// not yet arrived (`P17-T01`).
+///
+/// Deliberately **not** a `PatientProfile`, and the three reasons are the
+/// argument for the whole table. A chat booking used to create one, so an MRN
+/// was issued to anyone who typed a name and a phone number into WhatsApp and
+/// the sequence never reused it; a medical record existed -- kept twenty-five
+/// years under PMK 24/2022 -- for somebody who may have been a wrong number;
+/// and `dateOfBirth`, `sex` and `address` are nullable on a clinical record
+/// *only* so that row could exist.
+///
+/// The chatbot may collect a name and a phone number and nothing else
+/// (`PCS-T07`, strategy 5.1), and that is exactly what this table requires.
+/// Everything a clinical record needs is collected at the counter, where a
+/// human is looking at an ID document, and the MRN is allocated there.
+///
+/// The appointment side of this -- `Appointment.prospectivePatientId` and the
+/// CHECK that exactly one of the two patient keys is set -- lands with
+/// `P17-T02`. Until then nothing books against these rows, so the table can
+/// ship, be seeded and be swept without touching scheduling.
+model ProspectivePatient {
+  id             String                   @id @default(uuid()) @db.Uuid
+  fullName       String                   @map("full_name")
+  /// Normalised by `normalizePhoneNumber` before storage, the same way
+  /// `ChannelPatientLink.phoneNumber` is, so the arrival match against the
+  /// registry stays an exact comparison rather than four spellings of one
+  /// number.
+  phoneNumber    String                   @map("phone_number")
+  channel        ChannelKind
+  externalChatId String?                  @map("external_chat_id")
+  status         ProspectivePatientStatus @default(AWAITING_ARRIVAL)
+  /// Set when the record becomes, or is matched to, a real patient. The row is
+  /// kept rather than deleted: it is how a second booking from the same number
+  /// resolves to the same person next time, and it is the provenance of that
+  /// patient's first contact with the clinic.
+  patientId      String?                  @map("patient_id") @db.Uuid
+  convertedAt    DateTime?                @map("converted_at")
+  /// The front-desk user who resolved it. A plain id rather than a relation,
+  /// as every other actor column in this schema is.
+  convertedById  String?                  @map("converted_by_id") @db.Uuid
+  /// When an unresolved record stops being kept.
+  ///
+  /// A booking enquiry is **not** clinical data, so the 25-year RME floor does
+  /// not apply to it and must not be applied. What governs it is UU PDP
+  /// 27/2022, and the answer that shape takes is
+  /// `CS_PROSPECTIVE_PATIENT_RETENTION_DAYS` -- 90 days by default, long
+  /// enough for a booking made well ahead and two reschedules, short enough
+  /// that the clinic is not holding a list of strangers' phone numbers
+  /// indefinitely. A `LINKED` or `CONVERTED` row is past this date and stays.
+  expiresAt      DateTime                 @map("expires_at")
+  createdAt      DateTime                 @default(now()) @map("created_at")
+  updatedAt      DateTime                 @updatedAt @map("updated_at")
+
+  patient PatientProfile? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+
+  /// The expiry sweep's only question: which unresolved rows are past their
+  /// date. Leading with `status` keeps the scan off the `CONVERTED` and
+  /// `LINKED` rows, which accumulate forever and are never its answer.
+  @@index([status, expiresAt])
+  @@index([phoneNumber])
+  @@index([patientId])
+  @@map("prospective_patients")
 }
 
 /// One outstanding possession challenge and the booking it is holding open

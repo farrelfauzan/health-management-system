@@ -15,6 +15,27 @@ export const channelKindSchema = z.enum(CHANNEL_KINDS);
 export type ChannelKindValue = z.infer<typeof channelKindSchema>;
 
 /**
+ * Where a prospective patient's booking ended up (`P17-T01`). Mirrors the
+ * Prisma `ProspectivePatientStatus` enum.
+ *
+ * `CONVERTED` and `LINKED` are both "this person is now a patient", and they
+ * are kept apart because the answer to *which* matters at the counter:
+ * `CONVERTED` allocated an MRN, `LINKED` found one that already existed. A
+ * single `RESOLVED` value would hide the only number worth watching here --
+ * how often the clinic creates a second record for somebody it already knew.
+ */
+export const PROSPECTIVE_PATIENT_STATUSES = [
+  'AWAITING_ARRIVAL',
+  'CONVERTED',
+  'LINKED',
+  'EXPIRED',
+] as const;
+
+export const prospectivePatientStatusSchema = z.enum(PROSPECTIVE_PATIENT_STATUSES);
+
+export type ProspectivePatientStatusValue = z.infer<typeof prospectivePatientStatusSchema>;
+
+/**
  * The longest inbound message body the gateway will carry.
  *
  * Telegram caps a text message at 4096 characters, so anything longer is not a

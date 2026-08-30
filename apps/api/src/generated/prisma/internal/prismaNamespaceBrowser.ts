@@ -114,6 +114,7 @@ export const ModelName = {
   Conversation: 'Conversation',
   ConversationMessage: 'ConversationMessage',
   ChannelPatientLink: 'ChannelPatientLink',
+  ProspectivePatient: 'ProspectivePatient',
   ChannelOtpChallenge: 'ChannelOtpChallenge',
   RoomClass: 'RoomClass',
   Ward: 'Ward',
@@ -1186,6 +1187,24 @@ export const ChannelPatientLinkScalarFieldEnum = {
 } as const
 
 export type ChannelPatientLinkScalarFieldEnum = (typeof ChannelPatientLinkScalarFieldEnum)[keyof typeof ChannelPatientLinkScalarFieldEnum]
+
+
+export const ProspectivePatientScalarFieldEnum = {
+  id: 'id',
+  fullName: 'fullName',
+  phoneNumber: 'phoneNumber',
+  channel: 'channel',
+  externalChatId: 'externalChatId',
+  status: 'status',
+  patientId: 'patientId',
+  convertedAt: 'convertedAt',
+  convertedById: 'convertedById',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProspectivePatientScalarFieldEnum = (typeof ProspectivePatientScalarFieldEnum)[keyof typeof ProspectivePatientScalarFieldEnum]
 
 
 export const ChannelOtpChallengeScalarFieldEnum = {

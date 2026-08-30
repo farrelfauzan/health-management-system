@@ -569,6 +569,16 @@ export const ChannelVerificationStatus = {
 export type ChannelVerificationStatus = (typeof ChannelVerificationStatus)[keyof typeof ChannelVerificationStatus]
 
 
+export const ProspectivePatientStatus = {
+  AWAITING_ARRIVAL: 'AWAITING_ARRIVAL',
+  CONVERTED: 'CONVERTED',
+  LINKED: 'LINKED',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type ProspectivePatientStatus = (typeof ProspectivePatientStatus)[keyof typeof ProspectivePatientStatus]
+
+
 export const ChannelVerificationMethod = {
   CONTACT_SHARE: 'CONTACT_SHARE',
   OTP: 'OTP'

@@ -6,6 +6,7 @@ import {
   ConversationMessageRoleValue,
   ConversationStateValue,
   CsSafetyTagValue,
+  ProspectivePatientStatusValue,
   WaGatewayKindValue,
 } from '#customer-service/schemas';
 
@@ -241,6 +242,50 @@ export type CustomerServiceConfig = {
   readonly booking: CustomerServiceBookingConfig;
 };
 
+
+/**
+ * One prospective patient as the service layer sees it (`P17-T01`).
+ *
+ * A person who asked for an appointment through a messaging channel and has
+ * never attended. Deliberately not a patient: no MRN has been spent on them,
+ * no medical record exists, and the fields are exactly the two the chatbot is
+ * allowed to collect.
+ */
+export type ProspectivePatientRecord = {
+  id: string;
+  fullName: string;
+  /** Already normalised by `normalizePhoneNumber` — never the raw input. */
+  phoneNumber: string;
+  channel: ChannelKindValue;
+  externalChatId: string | null;
+  status: ProspectivePatientStatusValue;
+  patientId: string | null;
+  convertedAt: string | null;
+  convertedById: string | null;
+  expiresAt: string;
+  createdAt: string;
+};
+
+/** What the chat booking path supplies to open a prospective record. */
+export type CreateProspectivePatientParams = {
+  fullName: string;
+  /** Must already be normalised; the repository does not normalise for you. */
+  phoneNumber: string;
+  channel: ChannelKindValue;
+  externalChatId: string | null;
+  /** Computed from `prospectivePatientRetentionDays` by the caller that owns the clock. */
+  expiresAt: Date;
+};
+
+/** What the counter supplies when an arrival resolves to a patient. */
+export type ResolveProspectivePatientParams = {
+  prospectivePatientId: string;
+  patientId: string;
+  /** The front-desk user who resolved it. */
+  convertedById: string;
+  convertedAt: Date;
+};
+
 /** What redaction did to one message body. */
 export type RedactCustomerMessageResult = {
   content: string;
@@ -293,6 +338,22 @@ export type CustomerServiceBookingConfig = {
   readonly maxActiveBookingsPerPhone: number;
   /** §8.3's clinic-wide daily cap on bookings for numbers matching no record. */
   readonly maxDraftBookingsPerDay: number;
+  /**
+   * `CS_PROSPECTIVE_PATIENT_RETENTION_DAYS`, default 90 — how long an
+   * unresolved {@link ProspectivePatientRecord} is kept (`P17-T01`).
+   *
+   * This is **not** an RME retention period and the 25-year PMK 24/2022 floor
+   * must never be applied to it. The row is a booking enquiry holding a name
+   * and a phone number for somebody who was never a patient, so what governs
+   * it is UU PDP 27/2022, and 90 days is the shape that takes: long enough for
+   * a booking made well ahead plus two reschedules, short enough that the
+   * clinic is not holding a list of strangers' phone numbers indefinitely.
+   *
+   * A record that resolved to a patient is past this date and stays — it is
+   * the provenance of that patient's first contact, and it is what makes a
+   * repeat booking from the same number find them again.
+   */
+  readonly prospectivePatientRetentionDays: number;
 };
 
 /**
