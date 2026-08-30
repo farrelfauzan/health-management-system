@@ -10,9 +10,23 @@ const DEFAULT_REGION = 'ap-southeast-3';
 
 const app: App = new App();
 
+// SES has no SMTP endpoint in Jakarta (see `SMTP_ENABLED_REGIONS` in
+// mail-stack.ts), so mail — and *only* mail — deploys to the nearest region
+// that has one. This is scoped deliberately: §2.1's residency constraint is
+// about health records, and nothing in this stack touches them. It carries
+// staff names, staff email addresses, and single-use invitation tokens.
+// Everything holding patient data stays in ap-southeast-3, which is why this
+// is a separate region rather than a change to DEFAULT_REGION.
+const MAIL_DEFAULT_REGION = 'ap-southeast-1';
+
 const env = {
   account: process.env.CDK_DEPLOY_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_DEPLOY_REGION ?? DEFAULT_REGION,
+};
+
+const mailEnv = {
+  account: env.account,
+  region: process.env.CDK_MAIL_REGION ?? MAIL_DEFAULT_REGION,
 };
 
 new DevAssetsStack(app, 'SalingJagaDevAssets', {
@@ -33,7 +47,7 @@ if (mailSender) {
     .map((address) => address.trim())
     .filter((address) => address !== '');
   new MailStack(app, 'SalingJagaMail', {
-    env,
+    env: mailEnv,
     description: 'SES SMTP transport for staff invitations (IMP-23)',
     senderAddress: mailSender,
     verifiedRecipients,
