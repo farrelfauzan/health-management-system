@@ -1758,6 +1758,54 @@ model DispenseItemStockAllocation {
   @@map("dispense_item_stock_allocations")
 }
 
+/// The clinic's own identity (P16-T02) — the source of every `clinic.*`
+/// variable an invoice or clinical document renders. Until this row exists,
+/// clinic identity lives only in `CS_CLINIC_NAME`, an env var the
+/// customer-service prompt reads, which is not something a document can cite.
+///
+/// Every field except the name is nullable because a clinic configures this
+/// once, incrementally, and a half-filled profile must still render: an
+/// invoice missing a tax ID is an invoice missing a line, while a profile the
+/// admin cannot save until they have found the licence number is a feature
+/// nobody turns on.
+///
+/// `logoStorageKey` is a storage key and never a URL (D-018). URLs into the
+/// bucket are signed, short-lived, and minted per request; one persisted in a
+/// column would be a stale link at best and a bearer token with no expiry
+/// written into the database at worst.
+///
+/// `facilityId` is null on the single-tenant deployment — Postgres unique
+/// indexes treat NULLs as distinct, so a hand-written partial unique index in
+/// the migration is what actually keeps that row a singleton, exactly as it
+/// does for the two BPJS config tables.
+model ClinicProfile {
+  id             String    @id @default(uuid()) @db.Uuid
+  facilityId     String?   @unique @map("facility_id") @db.Uuid
+  name           String
+  legalName      String?   @map("legal_name")
+  address        String?
+  phoneNumber    String?   @map("phone_number")
+  email          String?
+  /// Izin operasional klinik — the operating licence a receipt is expected to
+  /// carry in Indonesia.
+  licenseNumber  String?   @map("license_number")
+  /// NPWP. Stored as written; HMS neither validates nor formats it, because a
+  /// receipt reproduces what the clinic was issued.
+  taxId          String?   @map("tax_id")
+  /// Server-minted object key for the re-encoded logo, or null. The bytes
+  /// behind it are always this service's own re-encode, never what the
+  /// browser uploaded (docs/security/file-uploads.md §1).
+  logoStorageKey String?   @map("logo_storage_key")
+  /// What the stored object actually is, so the signed download pins
+  /// `ResponseContentType` to a validated value rather than to a constant
+  /// that a future re-encode target would silently make wrong.
+  logoMimeType   String?   @map("logo_mime_type")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@map("clinic_profiles")
+}
+
 /// Price-list row for services the clinic charges — consultation fees and
 /// clinical actions (tindakan). Reference data like the terminology catalogs:
 /// rows are deactivated, never deleted, because invoice items snapshot the

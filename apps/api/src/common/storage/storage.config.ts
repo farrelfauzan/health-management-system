@@ -7,14 +7,29 @@ const DEFAULT_BUCKET = 'hms-dev-objects';
 const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
 const DEFAULT_SIGNED_URL_EXPIRES_IN_SECONDS = 300;
 const DEFAULT_MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024;
-// The default is exactly what the document store accepts (P15-T10) — the
-// only feature uploading today. Image types were removed under SJ-21's
-// per-surface allowlist rule: no shipped feature stores images, and a bucket
-// that quietly accepts them is standing room for a future surface to skip
-// the re-encode-through-`sharp` step SJ-21 requires of image uploads. An
-// image-bearing feature widens this via `S3_ALLOWED_MIME_TYPES` (or a new
-// default) in the same change that adds its re-encode.
-const DEFAULT_ALLOWED_MIME_TYPES = ['application/pdf', 'text/markdown', 'text/plain'];
+// The union of what the two uploading surfaces accept, and no wider. The
+// document store (P15-T10) takes the three text-ish types; the clinic logo
+// (P16-T02) takes the three image types.
+//
+// Image types were removed from this default under SJ-21 with the condition
+// that an image-bearing feature re-add them *in the same change that adds its
+// re-encode* — which is what P16-T02 did (`common/image/reencode-image.ts`,
+// called at confirm time before anything is kept). The condition still binds
+// the next surface: a bucket that quietly accepts a type no feature validates
+// is standing room for one that skips the step.
+//
+// Widening this list never widens what may be uploaded as a document or as a
+// logo. Each surface declares its own allowlist in `@hms/shared-types`
+// (`DOCUMENT_UPLOAD_MIME_TYPES`, `CLINIC_LOGO_UPLOAD_MIME_TYPES`) and is
+// checked against it before this one is consulted.
+const DEFAULT_ALLOWED_MIME_TYPES = [
+  'application/pdf',
+  'text/markdown',
+  'text/plain',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+];
 const MAX_SIGNED_URL_EXPIRES_IN_SECONDS = 3_600;
 const MIME_TYPE_PATTERN = /^[a-z0-9!#$&^_.+-]+\/[a-z0-9!#$&^_.+-]+$/i;
 

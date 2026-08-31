@@ -395,6 +395,30 @@ export type MedicationStockReceipt = Prisma.MedicationStockReceiptModel
  */
 export type DispenseItemStockAllocation = Prisma.DispenseItemStockAllocationModel
 /**
+ * Model ClinicProfile
+ * The clinic's own identity (P16-T02) — the source of every `clinic.*`
+ * variable an invoice or clinical document renders. Until this row exists,
+ * clinic identity lives only in `CS_CLINIC_NAME`, an env var the
+ * customer-service prompt reads, which is not something a document can cite.
+ * 
+ * Every field except the name is nullable because a clinic configures this
+ * once, incrementally, and a half-filled profile must still render: an
+ * invoice missing a tax ID is an invoice missing a line, while a profile the
+ * admin cannot save until they have found the licence number is a feature
+ * nobody turns on.
+ * 
+ * `logoStorageKey` is a storage key and never a URL (D-018). URLs into the
+ * bucket are signed, short-lived, and minted per request; one persisted in a
+ * column would be a stale link at best and a bearer token with no expiry
+ * written into the database at worst.
+ * 
+ * `facilityId` is null on the single-tenant deployment — Postgres unique
+ * indexes treat NULLs as distinct, so a hand-written partial unique index in
+ * the migration is what actually keeps that row a singleton, exactly as it
+ * does for the two BPJS config tables.
+ */
+export type ClinicProfile = Prisma.ClinicProfileModel
+/**
  * Model ServiceTariff
  * Price-list row for services the clinic charges — consultation fees and
  * clinical actions (tindakan). Reference data like the terminology catalogs:

@@ -490,6 +490,44 @@
         "deleting": "Menghapus…",
         "deleteSuccess": "{count, plural, =0 {Peran dihapus} other {Peran dihapus; # penetapan dicabut}}",
         "deleteError": "Gagal menghapus peran"
+      },
+      "clinicProfile": {
+        "tab": "Profil klinik",
+        "title": "Profil klinik",
+        "subtitle": "Identitas klinik yang tercetak pada faktur, kuitansi, dan dokumen klinis.",
+        "save": "Simpan profil",
+        "saving": "Menyimpan...",
+        "saved": "Profil klinik tersimpan.",
+        "fields": {
+          "name": "Nama klinik",
+          "legalName": "Nama badan hukum",
+          "address": "Alamat",
+          "phoneNumber": "Nomor telepon",
+          "email": "Email",
+          "licenseNumber": "Nomor izin operasional",
+          "taxId": "NPWP"
+        },
+        "logo": {
+          "label": "Logo",
+          "choose": "Pilih berkas",
+          "uploading": "Mengunggah...",
+          "remove": "Hapus",
+          "empty": "Belum ada logo",
+          "previewAlt": "Logo klinik",
+          "hint": "JPEG, PNG, atau WebP, maksimal 2 MB. Gambar akan dikodekan ulang dan diubah ukurannya sebelum disimpan.",
+          "errors": {
+            "unsupportedType": "Pilih gambar JPEG, PNG, atau WebP.",
+            "tooLarge": "Ukuran gambar melebihi 2 MB.",
+            "failed": "Logo gagal diunggah. Silakan coba lagi."
+          }
+        },
+        "states": {
+          "loading": "Memuat profil klinik...",
+          "loadFailed": "Profil klinik gagal dimuat. Silakan coba lagi."
+        },
+        "errors": {
+          "saveFailed": "Profil klinik gagal disimpan. Silakan coba lagi."
+        }
       }
     },
     "rooms": {

@@ -228,3 +228,41 @@ export type CashierReportDayRange = {
   startInclusive: Date;
   endExclusive: Date;
 };
+
+/**
+ * The clinic profile row as the repository returns it. `logoStorageKey` stays
+ * a key all the way to the service — the signed URL is minted at the edge of
+ * the response and nothing below the mapper ever holds one.
+ */
+export type ClinicProfileRecord = {
+  id: string;
+  name: string;
+  legalName: string | null;
+  address: string | null;
+  phoneNumber: string | null;
+  email: string | null;
+  licenseNumber: string | null;
+  taxId: string | null;
+  logoStorageKey: string | null;
+  logoMimeType: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/**
+ * A write into the singleton row. Every field is optional in the same
+ * three-state sense the PATCH schema uses: absent leaves the column alone,
+ * `null` clears it. `name` cannot be null because the table refuses a blank
+ * one.
+ */
+export type SaveClinicProfileData = {
+  name?: string;
+  legalName?: string | null;
+  address?: string | null;
+  phoneNumber?: string | null;
+  email?: string | null;
+  licenseNumber?: string | null;
+  taxId?: string | null;
+  logoStorageKey?: string | null;
+  logoMimeType?: string | null;
+};

@@ -84,6 +84,11 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'merge', subject: 'Patient' },
   { action: 'read', subject: 'AiProviderConfig' },
   { action: 'write', subject: 'AiProviderConfig' },
+  // P16-T02. Both grants, mirroring what `seed.sql` gives ADMIN, so an admin
+  // whose session hint predates them still reaches the clinic-profile tab
+  // rather than losing it to a silently narrower preset.
+  { action: 'read', subject: 'ClinicProfile' },
+  { action: 'write', subject: 'ClinicProfile' },
   { action: 'manage', subject: 'BpjsConfig' },
   { action: 'sync', subject: 'BpjsReference' },
   { action: 'read', subject: 'BpjsReference' },

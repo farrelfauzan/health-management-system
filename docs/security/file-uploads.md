@@ -1,7 +1,7 @@
 # File-upload hardening (SJ-21)
 
-**Status: implemented for the document store; standing standard for every
-future upload surface.**
+**Status: implemented for the document store and the clinic logo; standing
+standard for every future upload surface.**
 
 An uploaded file must not be able to execute in the app's origin, lie about
 its type, exhaust storage, or carry malware to the next staff member who
@@ -39,8 +39,26 @@ API never streams file bytes in either direction.
 
 The bucket-wide default allowlist was narrowed to exactly the document store's
 three types. Image types (`image/jpeg|png|webp`) were removed deliberately:
-no shipped feature stores images, and re-adding them must arrive in the same
-change as the re-encode step below.
+no shipped feature stored images, and re-adding them had to arrive in the same
+change as the re-encode step below. `P16-T02` is that change — the clinic logo
+re-encodes through `sharp` at claim time, so the three image types are back in
+the default allowlist and the condition now binds the *next* image surface.
+
+## Controls in force (clinic logo: `/api/v1/clinic-profile`, P16-T02)
+
+The same architecture with one extra move, and the extra move is the point:
+**the stored object is never the uploaded object.**
+
+| SJ-21 requirement | Where it lives |
+|---|---|
+| Server-minted keys | `ObjectStorageService.generateObjectKey` under two prefixes. The browser PUTs to `clinic-profile/logo/staged/<uuid>`; the server writes its re-encode to `clinic-profile/logo/stored/<uuid>.png`. Only a `stored/` key is ever recorded on the row, so a client-supplied key cannot become the letterhead |
+| Per-surface MIME allowlist | `CLINIC_LOGO_UPLOAD_MIME_TYPES` (`@hms/shared-types`): `image/jpeg`, `image/png`, `image/webp`. **SVG is deliberately excluded** — it is a document format with script and external-reference semantics wearing an `image/` prefix |
+| Size cap | `CLINIC_LOGO_MAX_UPLOAD_SIZE_BYTES` (2 MiB), validated before signing, signed into the URL, and **re-read from the stored object at claim time** — the signed length bounds the PUT, the stored length bounds what the decoder is handed |
+| Magic-byte validation | `common/image/validate-image-content.ts` at claim time: the signature must sit at offset zero, so a polyglot with a prologue is refused. WebP is checked as a RIFF container *plus* its `WEBP` form type, or a WAV would pass |
+| **Re-encode, not store-verbatim** | `common/image/reencode-image.ts`: decode → apply EXIF orientation → bound to 1024 px on the longest edge → re-serialise as PNG. Strips EXIF/GPS (PHI-adjacent on a phone photo), destroys polyglots (only the pixels make the trip), and bounds the `data:` URI an invoice will embed. `limitInputPixels` caps the decode at 50 MP, because a size cap does not bound a decompression bomb |
+| Rejected uploads leave nothing behind | The staged object is deleted **before** the request fails, then audit-logged as `DOCUMENT_UPLOAD_REJECTED` — the same verb the document store writes, so "which account keeps uploading forged files" is one count rather than one per surface |
+| Inert serving | The signed GET pins `attachment; filename="clinic-logo.png"` and `image/png`. Browsers ignore `Content-Disposition` on a subresource load, so `<img src>` still renders the admin preview — what the header changes is that *navigating* to the URL downloads instead of rendering |
+| Upload ties to a record | Claim-or-nothing: a signed URL nobody claims leaves a staged object and no row. Replacing a logo deletes the previous object **after** the write commits, so a failed write never leaves the profile pointing at bytes that are gone |
 
 ## The standard for any new upload surface
 

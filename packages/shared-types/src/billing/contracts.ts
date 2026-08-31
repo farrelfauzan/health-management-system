@@ -152,3 +152,38 @@ export type AdmissionRoomChargeResult = {
   nights: number;
   gaps: InvoiceGenerationGap[];
 };
+
+/**
+ * The clinic's identity as an API consumer sees it (P16-T02).
+ *
+ * `logoUrl` is a **short-lived signed GET minted for this response**, never
+ * the stored value (D-018). It is absent when no logo is configured, and it
+ * must not be cached, persisted, or handed to anyone the request was not
+ * answering — it expires on the storage layer's own schedule and is a bearer
+ * credential until it does.
+ */
+export type ClinicProfileView = {
+  name: string;
+  legalName: string | null;
+  address: string | null;
+  phoneNumber: string | null;
+  email: string | null;
+  licenseNumber: string | null;
+  taxId: string | null;
+  hasLogo: boolean;
+  logoUrl?: string;
+  updatedAt: string;
+};
+
+/**
+ * One signed browser-direct logo upload. `requiredHeaders` must be sent
+ * verbatim on the PUT — they are part of the signature, so a client that
+ * changes the declared type or length is rejected by the provider rather than
+ * quietly storing something else.
+ */
+export type ClinicLogoUploadUrlView = {
+  url: string;
+  storageKey: string;
+  expiresAt: string;
+  requiredHeaders: Readonly<Record<string, string>>;
+};

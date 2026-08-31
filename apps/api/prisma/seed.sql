@@ -147,6 +147,14 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('invoice.read:any', 'Invoice', 'read', 'ANY', 'Read all invoices'),
     ('invoice.write:any', 'Invoice', 'write', 'ANY', 'Generate, issue, and void invoices'),
     ('payment.write:any', 'Payment', 'write', 'ANY', 'Record invoice payments'),
+    -- P16-T02. Read is deliberately wider than write: the clinic's name,
+    -- address and licence number are what every printed document is headed
+    -- with, so any role that produces one has to be able to read them. Write
+    -- is custody of the clinic's own identity — a changed name or licence
+    -- number on a receipt is a document that misrepresents the facility — and
+    -- sits with ADMIN alone, beside the other back-office grants.
+    ('clinic-profile.read:any', 'ClinicProfile', 'read', 'ANY', 'Read the clinic identity printed on invoices and clinical documents'),
+    ('clinic-profile.write:any', 'ClinicProfile', 'write', 'ANY', 'Edit the clinic identity and upload its logo'),
     ('satusehat.link:any', 'Satusehat', 'link', 'ANY', 'Link patients and practitioners to SATUSEHAT IHS records'),
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
@@ -375,6 +383,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'invoice.read:any'),
     ('ADMIN', 'invoice.write:any'),
     ('ADMIN', 'payment.write:any'),
+    ('ADMIN', 'clinic-profile.read:any'),
+    ('ADMIN', 'clinic-profile.write:any'),
     -- SATUSEHAT linkage is a national-identifier operation performed at the
     -- front desk / back office, never by doctors or patients themselves.
     ('ADMIN', 'satusehat.link:any'),
@@ -496,6 +506,11 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- clinician.
     ('DOCTOR', 'document.read:own'),
     ('DOCTOR', 'document.write:own'),
+    -- Read only, for the same reason PHARMACIST has it (P16-T02): a
+    -- prescription, a referral letter and a medical certificate are all
+    -- headed with the clinic's identity, and a doctor who cannot read it
+    -- cannot produce one. Editing it is not a clinical act.
+    ('DOCTOR', 'clinic-profile.read:any'),
     ('PHARMACIST', 'auth.logout:own'),
     ('PHARMACIST', 'medication.read:any'),
     ('PHARMACIST', 'medication.create:any'),
@@ -504,6 +519,9 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PHARMACIST', 'dispense.write:any'),
     ('PHARMACIST', 'inventory.read:any'),
     ('PHARMACIST', 'inventory.write:any'),
+    -- Read only, and only because a dispensing label and a pharmacy receipt
+    -- carry the clinic's name (P16-T02). Nothing a pharmacist does edits it.
+    ('PHARMACIST', 'clinic-profile.read:any'),
     ('PATIENT', 'portal.patient-access:own'),
     ('PATIENT', 'auth.logout:own'),
     ('PATIENT', 'patient.read:own'),

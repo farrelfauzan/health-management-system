@@ -15,8 +15,10 @@ export default async function AdminAdministrationPage({
   return <AdministrationTabs initialQuery={query} defaultTab={defaultTab} />;
 }
 
-function resolveDefaultTab(tab: string | string[] | undefined): 'users' | 'invitations' | 'roles' {
-  if (tab === 'roles' || tab === 'invitations') {
+function resolveDefaultTab(
+  tab: string | string[] | undefined,
+): 'users' | 'invitations' | 'roles' | 'clinic' {
+  if (tab === 'roles' || tab === 'invitations' || tab === 'clinic') {
     return tab;
   }
   return 'users';
