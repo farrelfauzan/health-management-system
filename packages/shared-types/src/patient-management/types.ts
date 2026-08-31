@@ -87,7 +87,36 @@ export type CreatePatientRecordPayload = {
   allergies?: PatientAllergyInput[];
   actorUserId: string;
   privacyNotice: PrivacyNoticeEvidenceInput;
+  /**
+   * Set only by the arrival-conversion path (`P17-T04`): the prospective
+   * record this create is resolving.
+   *
+   * It rides on the create payload rather than being a second call afterwards
+   * because the two writes have to be one transaction. The MRN is allocated
+   * inside this insert, and a conversion that allocated a number and then
+   * failed to repoint the booking would leave a person holding a reference
+   * code that names a record nobody can find — with the number already spent.
+   */
+  convertsProspectivePatient?: ConvertsProspectivePatient;
 } & PatientDemographicFields;
+
+/** The prospective record an arrival conversion resolves (`P17-T04`). */
+export type ConvertsProspectivePatient = {
+  prospectivePatientId: string;
+  convertedAt: Date;
+};
+
+/**
+ * A create that also resolved a prospective record (`P17-T04`).
+ *
+ * `movedAppointments` is counted inside the transaction rather than re-read
+ * after it, so the number the counter is shown is the number that actually
+ * committed.
+ */
+export type CreatePatientFromProspectiveResult = {
+  patient: PatientRecord;
+  movedAppointments: number;
+};
 
 export type UpdatePatientRecordPayload = {
   fullName?: string;

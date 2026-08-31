@@ -16,6 +16,7 @@ import {
   type CreatePatientInput,
   type PatientMutationMeta,
   type PatientProfile,
+  type ProspectiveArrivalResolutionView,
   type UpdatePatientInput,
 } from '@hms/shared-types';
 import {
@@ -40,6 +41,7 @@ import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice
 import { FieldError } from '#components/client/shared/field-error';
 import type { CreatePatientDto } from '#lib/api/generated/model/createPatientDto';
 import type { CreatePatientDtoPrivacyNotice } from '#lib/api/generated/model/createPatientDtoPrivacyNotice';
+import { prospectivePatientControllerConvertToNewPatientV1 } from '#lib/api/generated/customer-service/customer-service';
 import {
   patientManagementControllerCreatePatientV1,
   patientManagementControllerUpdatePatientV1,
@@ -51,22 +53,49 @@ import { buildPatientFieldValidator } from '#lib/patients/build-patient-field-va
 import { buildPatientOptionalFields } from '#lib/patients/build-patient-optional-fields';
 import { invalidatePatientQueries } from '#lib/patients/invalidate-patient-queries';
 import { useActiveDoctors } from '#lib/patients/use-active-doctors';
+import type { PatientConversionResult } from '#lib/prospective-arrivals/patient-conversion-result';
+import type { PatientFormConversion } from '#lib/prospective-arrivals/patient-form-conversion';
+import { invalidateProspectiveArrivalQueries } from '#lib/prospective-arrivals/invalidate-prospective-arrival-queries';
 
 type PatientFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   patient?: PatientProfile | null;
+  /**
+   * Set when the form was opened from a prospective booking (`P17-T04`).
+   *
+   * It re-points the create at the conversion endpoint instead of adding a
+   * second registration form: a conversion produces an ordinary patient
+   * record, so it must answer to this form's validation and this form's
+   * privacy-notice capture. What the endpoint adds is the half a form cannot
+   * do — repointing the booking and retiring the enquiry in the same
+   * transaction that allocates the MRN.
+   */
+  conversion?: PatientFormConversion;
+  onConverted?: (result: PatientConversionResult) => void;
 };
 
-export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDialogProps) {
+export function PatientFormDialog({
+  open,
+  onOpenChange,
+  patient,
+  conversion,
+  onConverted,
+}: PatientFormDialogProps) {
   const isEditMode = Boolean(patient);
   const t = useTranslations('clinical');
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const [identifierWarnings, setIdentifierWarnings] = useState<string[]>([]);
   const doctorsQuery = useActiveDoctors(open && !isEditMode);
-  const createMutation = useMutation({
-    mutationFn: (input: CreatePatientDto) => patientManagementControllerCreatePatientV1(input),
+  // Typed to the envelope both endpoints answer with rather than to either
+  // one's generated payload: the two return different `data` shapes — a patient
+  // profile and a resolution view — and each branch parses its own below.
+  const createMutation = useMutation<{ status: number; data: unknown }, Error, CreatePatientDto>({
+    mutationFn: (input: CreatePatientDto) =>
+      conversion
+        ? prospectivePatientControllerConvertToNewPatientV1(conversion.prospectivePatientId, input)
+        : patientManagementControllerCreatePatientV1(input),
   });
   const updateMutation = useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdatePatientInput }) =>
@@ -74,11 +103,13 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
   });
   const form = useForm({
     defaultValues: {
-      fullName: patient?.fullName ?? '',
+      // Prefilled from the booking on a conversion, so the clerk confirms a
+      // name rather than retyping one.
+      fullName: patient?.fullName ?? conversion?.fullName ?? '',
       dateOfBirth: patient?.dateOfBirth ?? '',
       sex: patient?.sex ?? '',
       status: patient?.status ?? 'OUT_PATIENT',
-      phoneNumber: patient?.phoneNumber ?? '',
+      phoneNumber: patient?.phoneNumber ?? conversion?.phoneNumber ?? '',
       address: patient?.address ?? '',
       placeOfBirth: patient?.placeOfBirth ?? '',
       email: patient?.email ?? '',
@@ -142,6 +173,26 @@ export function PatientFormDialog({ open, onOpenChange, patient }: PatientFormDi
             privacyNotice: value.privacyNotice,
             ...buildPatientOptionalFields(value),
           });
+          if (conversion) {
+            const conversionEnvelope = parseApiSuccess<ProspectiveArrivalResolutionView>(
+              response,
+              t('patients.form.saveError'),
+            );
+            await invalidateProspectiveArrivalQueries(queryClient);
+            // The dialog closes even when a NIK warning came back, unlike the
+            // ordinary create. The record exists and its MRN is spent; keeping
+            // the form open would invite a second submit, and a second submit
+            // here is the duplicate patient this whole flow exists to prevent.
+            // The warning travels up and is shown alongside the MRN.
+            onConverted?.({
+              resolution: conversionEnvelope.data,
+              identifierWarnings:
+                (conversionEnvelope.meta as PatientMutationMeta | undefined)?.identifierWarnings ??
+                [],
+            });
+            onOpenChange(false);
+            return;
+          }
           envelope = parseApiSuccess<PatientProfile>(response, t('patients.form.saveError'));
         }
         await invalidatePatientQueries(queryClient);

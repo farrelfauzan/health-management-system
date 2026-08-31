@@ -10,6 +10,8 @@ import {
 import {
   Actor,
   collectNikDemographicWarnings,
+  ConvertsProspectivePatient,
+  CreatePatientFromProspectiveResult,
   CreatePatientRecordPayload,
   maskIdentifierLast4,
   PatientIdentifierPlaintext,
@@ -173,6 +175,66 @@ export class PatientManagementService {
   }
 
   async createPatient(payload: CreatePatientDto, currentUser: CurrentUser) {
+    await this.assertPatientCreatable(payload, currentUser);
+
+    const created = await this.createPatientRecord(payload, currentUser);
+
+    return {
+      patient: this.toPatientResponse(created),
+      identifierWarnings: this.collectIdentifierWarnings({
+        nik: payload.nik,
+        dateOfBirth: payload.dateOfBirth,
+        sex: payload.sex,
+      }),
+    };
+  }
+
+  /**
+   * Registers the person who arrived on a prospective booking, and resolves
+   * that booking, in one transaction (`P17-T04`).
+   *
+   * Called by the customer-service arrival flow rather than by a route of its
+   * own, because this is where `patient.create` is checked and where the
+   * privacy-notice and identifier rules live — a conversion endpoint that
+   * assembled its own create would be a second front door to the registry with
+   * its own copy of those checks, and copies drift.
+   *
+   * The caller is responsible for having established that the prospective
+   * record exists and is still awaiting arrival. This method owns the
+   * registry's rules; it does not own the channel's.
+   */
+  async createPatientFromProspective(
+    payload: CreatePatientDto,
+    prospectivePatientId: string,
+    currentUser: CurrentUser,
+  ) {
+    await this.assertPatientCreatable(payload, currentUser);
+
+    const result = await this.runPatientCreateFromProspective({
+      ...this.buildCreatePayload(payload, currentUser),
+      convertsProspectivePatient: { prospectivePatientId, convertedAt: new Date() },
+    });
+
+    return {
+      patient: this.toPatientResponse(result.patient),
+      movedAppointments: result.movedAppointments,
+      identifierWarnings: this.collectIdentifierWarnings({
+        nik: payload.nik,
+        dateOfBirth: payload.dateOfBirth,
+        sex: payload.sex,
+      }),
+    };
+  }
+
+  /**
+   * Every check a create must pass before a row is written, in one place so
+   * the ordinary create and the arrival conversion cannot pass different sets
+   * of them.
+   */
+  private async assertPatientCreatable(
+    payload: CreatePatientDto,
+    currentUser: CurrentUser,
+  ): Promise<void> {
     const actor = await this.getActorOrThrow(currentUser);
     const createScope = this.resolveScope(actor, 'Patient', 'create');
 
@@ -192,17 +254,6 @@ export class PatientManagementService {
 
     await this.assertAssignableDoctorIds(payload.doctorIds);
     await this.assertIdentifiersAvailable({ nik: payload.nik, bpjsNumber: payload.bpjsNumber });
-
-    const created = await this.createPatientRecord(payload, currentUser);
-
-    return {
-      patient: this.toPatientResponse(created),
-      identifierWarnings: this.collectIdentifierWarnings({
-        nik: payload.nik,
-        dateOfBirth: payload.dateOfBirth,
-        sex: payload.sex,
-      }),
-    };
   }
 
   /**
@@ -467,11 +518,44 @@ export class PatientManagementService {
     }
   }
 
+  /**
+   * The conversion's own reach into the repository. Separate from {@link
+   * runPatientCreate} only because it returns what the transaction moved as
+   * well as what it created; the two error translations are identical and
+   * deliberately stay identical.
+   */
+  private async runPatientCreateFromProspective(
+    payload: CreatePatientRecordPayload & {
+      convertsProspectivePatient: ConvertsProspectivePatient;
+    },
+  ): Promise<CreatePatientFromProspectiveResult> {
+    try {
+      return await this.patientManagementRepository.createPatientFromProspective(payload);
+    } catch (err) {
+      if (err instanceof CurrentPrivacyNoticeEvidenceRequiredError) {
+        throw new BadRequestException(err.message);
+      }
+      throw this.toIdentifierConflictException(err);
+    }
+  }
+
   private async createPatientRecord(
     payload: CreatePatientDto & { mrn?: string },
     currentUser: CurrentUser,
   ): Promise<PatientRecord> {
-    return this.runPatientCreate({
+    return this.runPatientCreate(this.buildCreatePayload(payload, currentUser));
+  }
+
+  /**
+   * The DTO as the repository wants it. Shared by the ordinary create and the
+   * arrival conversion so a field added to the form reaches both paths, rather
+   * than reaching one and being silently dropped by the other.
+   */
+  private buildCreatePayload(
+    payload: CreatePatientDto & { mrn?: string },
+    currentUser: CurrentUser,
+  ): CreatePatientRecordPayload {
+    return {
       // Absent on the ordinary create path, where the repository allocates
       // the next number from the counter.
       mrn: payload.mrn,
@@ -500,7 +584,7 @@ export class PatientManagementService {
       doctorIds: payload.doctorIds,
       actorUserId: currentUser.sub,
       privacyNotice: payload.privacyNotice,
-    });
+    };
   }
 
   private async updatePatientRecord(

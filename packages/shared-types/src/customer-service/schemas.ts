@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { createPatientSchema, nikSchema } from '#patient-management/schemas';
+
 /**
  * The messaging channels the customer-service gateway speaks. Mirrors the
  * Prisma `ChannelKind` enum.
@@ -880,3 +882,94 @@ export const channelMetricsQuerySchema = z.object({
 });
 
 export type ChannelMetricsQueryInput = z.infer<typeof channelMetricsQuerySchema>;
+
+/**
+ * Why the counter is being shown a particular record as a possible match
+ * (`P17-T04`).
+ *
+ * Reasons rather than a bare score, because a clerk about to spend — or not
+ * spend — an MRN is making an identity decision, and "0.82" tells them nothing
+ * about what to check. `PHONE_EXACT` means look at the number on the card;
+ * `NAME_SIMILAR` means look at the person. The two are not interchangeable and
+ * a single confidence number would flatten them into one.
+ *
+ * Ordered strongest first: a NIK is an issued national identifier, a phone
+ * number is a shared household object, and a name is a coincidence waiting to
+ * happen.
+ */
+export const PROSPECTIVE_MATCH_REASONS = ['NIK_EXACT', 'PHONE_EXACT', 'NAME_SIMILAR'] as const;
+
+export const prospectiveMatchReasonSchema = z.enum(PROSPECTIVE_MATCH_REASONS);
+
+export type ProspectiveMatchReasonValue = z.infer<typeof prospectiveMatchReasonSchema>;
+
+/**
+ * The arrival worklist's own list, keyed on the prospective record rather than
+ * on the appointment (`P17-T04`).
+ *
+ * Distinct from `listChannelArrivalsQuerySchema`, which lists *bookings* in a
+ * date window. This lists *people the clinic has not registered yet*, and the
+ * two diverge exactly when it matters: somebody who booked for next Tuesday
+ * and walked in today is absent from the day's arrival window and is standing
+ * at the counter.
+ */
+export const listProspectivePatientsQuerySchema = z.object({
+  status: prospectivePatientStatusSchema.default('AWAITING_ARRIVAL'),
+  limit: z.coerce.number().int().min(1).max(100).default(25),
+});
+
+export type ListProspectivePatientsQueryInput = z.infer<typeof listProspectivePatientsQuerySchema>;
+
+/**
+ * The search that has to happen before an MRN can be spent (`P17-T04`).
+ *
+ * Every field is optional and the endpoint still searches: with nothing
+ * supplied it seeds from the prospective record's own name and phone number,
+ * which is the search the clerk would have typed anyway. `search` overrides
+ * that once they start typing what the person actually said their name was,
+ * and `nik` is the exact lookup they run off the ID document in their hand.
+ *
+ * `nik` is a query parameter and never lands in a response. It is hashed to
+ * the blind index, compared, and discarded — this route can confirm that a
+ * record holds a given NIK, and can never be used to read one back out.
+ */
+export const listProspectiveMatchCandidatesQuerySchema = z.object({
+  search: z.string().trim().min(2).max(120).optional(),
+  nik: nikSchema.optional(),
+  limit: z.coerce.number().int().min(1).max(25).default(8),
+});
+
+export type ListProspectiveMatchCandidatesQueryInput = z.infer<
+  typeof listProspectiveMatchCandidatesQuerySchema
+>;
+
+/**
+ * The person at the counter turned out to be a patient the clinic already has
+ * (`P17-T04`).
+ *
+ * One id, for the same reason `mergeChannelDraftPatientSchema` carries one:
+ * linking moves a booking, it does not edit a registry record. A request that
+ * could do both would let the arrival screen rewrite demographics on a patient
+ * it merely matched.
+ */
+export const linkProspectivePatientSchema = z.object({
+  patientId: z.string().uuid(),
+});
+
+export type LinkProspectivePatientInput = z.infer<typeof linkProspectivePatientSchema>;
+
+/**
+ * The person at the counter is genuinely new, so this is where the MRN is
+ * spent (`P17-T04`).
+ *
+ * **Deliberately `createPatientSchema` itself and not a variant of it.** The
+ * whole safety of the conversion path is that it produces an ordinary patient
+ * record through the ordinary create — same required demographics, same
+ * identifier validation, same privacy-notice evidence, same encryption path. A
+ * loosened "conversion create" would become the way a record gets registered
+ * without a date of birth, which is the thing `P17-T01` opened the prospective
+ * table to avoid in the first place.
+ */
+export const convertProspectivePatientSchema = createPatientSchema;
+
+export type ConvertProspectivePatientInput = z.infer<typeof convertProspectivePatientSchema>;
