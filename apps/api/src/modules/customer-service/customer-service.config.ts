@@ -50,6 +50,31 @@ const DEFAULT_MAX_DRAFT_BOOKINGS_PER_DAY = 50;
  */
 const DEFAULT_PROSPECTIVE_PATIENT_RETENTION_DAYS = 90;
 
+/**
+ * Once a day. Retention is measured in days, so sweeping more often just
+ * queries the same nothing; the knob exists for tests and for an operator
+ * draining a backlog, not as a tuning dial.
+ */
+const DEFAULT_PROSPECTIVE_EXPIRY_POLL_INTERVAL_MS = 24 * 60 * 60 * 1_000;
+
+/**
+ * Records purged per sweep. Bounded so a first run against a long backlog
+ * cannot hold one transaction open over thousands of rows; the next interval
+ * takes the remainder.
+ */
+const DEFAULT_PROSPECTIVE_EXPIRY_BATCH_LIMIT = 200;
+
+function readBooleanFlag(configService: ConfigService, key: string, fallback: boolean): boolean {
+  const rawValue = configService.get<string>(key)?.trim();
+  if (rawValue === undefined || rawValue === '') {
+    return fallback;
+  }
+  if (rawValue !== 'true' && rawValue !== 'false') {
+    throw new Error(`Customer-service configuration error: ${key} must be "true" or "false"`);
+  }
+  return rawValue === 'true';
+}
+
 function readPositiveInteger(configService: ConfigService, key: string, fallback: number): number {
   const rawValue = configService.get<string>(key)?.trim();
   if (rawValue === undefined || rawValue === '') {
@@ -133,6 +158,22 @@ export function resolveCustomerServiceConfig(configService: ConfigService): Cust
         configService,
         'CS_PROSPECTIVE_PATIENT_RETENTION_DAYS',
         DEFAULT_PROSPECTIVE_PATIENT_RETENTION_DAYS,
+      ),
+    },
+    prospectiveExpiry: {
+      // Defaults on, unlike most worker flags: not sweeping is the compliance
+      // failure this job exists to prevent, so switching it off has to be the
+      // deliberate act rather than forgetting to switch it on.
+      workerEnabled: readBooleanFlag(configService, 'CS_PROSPECTIVE_EXPIRY_WORKER_ENABLED', true),
+      workerPollIntervalMs: readPositiveInteger(
+        configService,
+        'CS_PROSPECTIVE_EXPIRY_WORKER_POLL_INTERVAL_MS',
+        DEFAULT_PROSPECTIVE_EXPIRY_POLL_INTERVAL_MS,
+      ),
+      workerBatchLimit: readPositiveInteger(
+        configService,
+        'CS_PROSPECTIVE_EXPIRY_WORKER_BATCH_LIMIT',
+        DEFAULT_PROSPECTIVE_EXPIRY_BATCH_LIMIT,
       ),
     },
   };

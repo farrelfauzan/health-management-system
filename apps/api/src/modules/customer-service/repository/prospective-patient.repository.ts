@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   ChannelKindValue,
   CreateProspectivePatientParams,
+  OverdueProspectivePatientRecord,
   ProspectivePatientRecord,
   ProspectivePatientStatusValue,
   ResolveProspectivePatientParams,
@@ -114,20 +115,90 @@ export class ProspectivePatientRepository {
   }
 
   /**
-   * Marks unresolved records whose date has passed, and reports how many.
+   * Unresolved records whose date has passed, with the two appointment counts
+   * that decide what happens to each (`P17-T06`).
    *
-   * Guarded on `status` as well as `expiresAt` so a re-run is a no-op and a
-   * resolved record can never be expired out from under a real patient's
-   * provenance. Purging the marked rows is the sweep's own job (`P17-T06`);
-   * this only makes the transition, so that the count is auditable before
-   * anything is deleted.
+   * Guarded on `status` as well as `expiresAt`, so a record that resolved to a
+   * real patient can never be swept out from under that patient's provenance —
+   * `LINKED` and `CONVERTED` rows are past this date and stay forever.
+   *
+   * Reading rather than updating: the transition to `EXPIRED` and the deletion
+   * happen together in {@link purgeOverdueRecord}, per record, so that a row
+   * the sweep declines to purge is never left marked `EXPIRED` while a live
+   * booking still points at it.
    */
-  async expireOverdue(now: Date): Promise<number> {
-    const result = await this.prismaService.prospectivePatient.updateMany({
-      where: { status: 'AWAITING_ARRIVAL', expiresAt: { lte: now } },
-      data: { status: 'EXPIRED' },
+  async findOverdueRecords(params: {
+    now: Date;
+    limit: number;
+  }): Promise<OverdueProspectivePatientRecord[]> {
+    const rows = await this.prismaService.prospectivePatient.findMany({
+      where: { status: 'AWAITING_ARRIVAL', expiresAt: { lte: params.now } },
+      // Oldest first: the rows furthest past their retention date are the ones
+      // the clinic has been holding longest without a reason to.
+      orderBy: { expiresAt: 'asc' },
+      take: params.limit,
+      select: {
+        id: true,
+        appointments: { select: { id: true, status: true, deletedAt: true } },
+      },
     });
-    return result.count;
+    return rows.map((row) => toOverdueRecord(row));
+  }
+
+  /**
+   * Deletes one overdue record, or declines to (`P17-T06`).
+   *
+   * The live-booking check is repeated **inside the transaction** rather than
+   * trusted from {@link findOverdueRecords}. A customer can book between the
+   * two calls, and the failure mode of trusting the earlier read is deleting
+   * the subject of a booking somebody is about to arrive for.
+   *
+   * Stale appointments are deleted with the record and this is deliberate, not
+   * incidental: `Appointment.prospectivePatient` is `onDelete: Restrict`, so a
+   * single cancelled booking would otherwise pin the row — and its name and
+   * phone number — in the table forever, which is the exact outcome the
+   * retention rule exists to prevent. A cancelled booking by somebody who
+   * never became a patient carries the same personal data and no clinical
+   * history.
+   *
+   * The status is set to `EXPIRED` before the delete in the same transaction.
+   * The row does not survive to carry it, but a trigger or a replica reading
+   * the write stream sees the transition rather than a bare disappearance.
+   */
+  async purgeOverdueRecord(params: {
+    prospectivePatientId: string;
+    now: Date;
+  }): Promise<boolean> {
+    return this.prismaService.executeTransaction(async (tx) => {
+      const liveAppointments = await tx.appointment.count({
+        where: {
+          prospectivePatientId: params.prospectivePatientId,
+          deletedAt: null,
+          status: { notIn: [...NON_LIVE_APPOINTMENT_STATUSES] },
+        },
+      });
+      if (liveAppointments > 0) {
+        return false;
+      }
+      const record = await tx.prospectivePatient.updateMany({
+        where: {
+          id: params.prospectivePatientId,
+          status: 'AWAITING_ARRIVAL',
+          expiresAt: { lte: params.now },
+        },
+        data: { status: 'EXPIRED' },
+      });
+      // Somebody resolved it at the counter while the sweep was running. The
+      // guarded `updateMany` matched nothing, and nothing is deleted.
+      if (record.count === 0) {
+        return false;
+      }
+      await tx.appointment.deleteMany({
+        where: { prospectivePatientId: params.prospectivePatientId },
+      });
+      await tx.prospectivePatient.delete({ where: { id: params.prospectivePatientId } });
+      return true;
+    });
   }
 
   private async markResolved(
@@ -161,4 +232,33 @@ export class ProspectivePatientRepository {
       createdAt: row.createdAt.toISOString(),
     };
   }
+}
+
+/**
+ * The two statuses that mean a booking is over.
+ *
+ * Everything else — including `COMPLETED` and `NO_SHOW` — counts as live for
+ * the sweep's purposes. A completed appointment against a record still marked
+ * `AWAITING_ARRIVAL` means somebody was seen without being registered, which
+ * is a data-quality problem for a human to look at, not a row for a background
+ * job to delete.
+ */
+const NON_LIVE_APPOINTMENT_STATUSES = ['CANCELLED', 'REJECTED'] as const;
+
+type OverdueRow = {
+  id: string;
+  appointments: { id: string; status: string; deletedAt: Date | null }[];
+};
+
+function toOverdueRecord(row: OverdueRow): OverdueProspectivePatientRecord {
+  const live = row.appointments.filter(
+    (appointment) =>
+      appointment.deletedAt === null &&
+      !NON_LIVE_APPOINTMENT_STATUSES.some((status) => status === appointment.status),
+  );
+  return {
+    id: row.id,
+    liveAppointments: live.length,
+    staleAppointments: row.appointments.length - live.length,
+  };
 }

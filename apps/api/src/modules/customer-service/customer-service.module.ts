@@ -30,6 +30,7 @@ import { CsSystemActorService } from './service/cs-system-actor.service';
 import { HandoffService } from './service/handoff.service';
 import { IntentOrchestratorService } from './service/intent-orchestrator.service';
 import { ProspectiveArrivalService } from './service/prospective-arrival.service';
+import { ProspectivePatientExpiryWorker } from './service/prospective-patient-expiry.worker';
 import { OtpDeliveryService } from './service/otp-delivery.service';
 import { WhatsappOtpDeliveryAdapter } from './service/whatsapp-otp-delivery.adapter';
 import { BookAppointmentTool } from './tools/definitions/book-appointment.tool';
@@ -103,6 +104,7 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
     ChannelBookingService,
     IntentOrchestratorService,
     ProspectiveArrivalService,
+    ProspectivePatientExpiryWorker,
     HandoffService,
     ConversationService,
     CsToolRegistry,

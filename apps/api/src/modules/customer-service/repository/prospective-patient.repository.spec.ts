@@ -132,20 +132,102 @@ describe('ProspectivePatientRepository', () => {
     expect(actualRecord.status).toBe('CONVERTED');
   });
 
-  it('expires only unresolved records, so a resolved one is never swept', async () => {
+  it('looks for overdue records only among unresolved ones, so a resolved one is never swept', async () => {
     const inputNow = new Date('2026-11-30T00:00:00.000Z');
-    const mockUpdateMany = jest.fn().mockResolvedValue({ count: 3 });
+    const mockFindMany = jest.fn().mockResolvedValue([]);
     const mockPrisma = {
-      prospectivePatient: { updateMany: mockUpdateMany },
+      prospectivePatient: { findMany: mockFindMany },
     } as unknown as PrismaService;
     const repository = new ProspectivePatientRepository(mockPrisma);
 
-    const actualCount = await repository.expireOverdue(inputNow);
+    await repository.findOverdueRecords({ now: inputNow, limit: 50 });
 
-    expect(mockUpdateMany).toHaveBeenCalledWith({
+    expect(mockFindMany.mock.calls[0]?.[0]).toMatchObject({
       where: { status: 'AWAITING_ARRIVAL', expiresAt: { lte: inputNow } },
-      data: { status: 'EXPIRED' },
+      take: 50,
     });
-    expect(actualCount).toBe(3);
+  });
+
+  it('separates live bookings from cancelled ones on an overdue record', async () => {
+    // The two counts mean opposite things (`P17-T06`): a live booking is
+    // somebody who has not arrived *yet* and must be left alone, a cancelled
+    // one is a row that has to go with the record or it pins it forever.
+    const mockFindMany = jest.fn().mockResolvedValue([
+      {
+        id: prospectivePatientId,
+        appointments: [
+          { id: 'a1', status: 'SCHEDULED', deletedAt: null },
+          { id: 'a2', status: 'CANCELLED', deletedAt: null },
+          { id: 'a3', status: 'REJECTED', deletedAt: null },
+          // Soft-deleted: not live, and still a row the delete has to clear.
+          { id: 'a4', status: 'SCHEDULED', deletedAt: new Date() },
+        ],
+      },
+    ]);
+    const mockPrisma = {
+      prospectivePatient: { findMany: mockFindMany },
+    } as unknown as PrismaService;
+    const repository = new ProspectivePatientRepository(mockPrisma);
+
+    const actual = await repository.findOverdueRecords({
+      now: new Date('2026-11-30T00:00:00.000Z'),
+      limit: 50,
+    });
+
+    expect(actual).toEqual([
+      { id: prospectivePatientId, liveAppointments: 1, staleAppointments: 3 },
+    ]);
+  });
+
+  it('declines to purge when a booking arrived after the record was selected', async () => {
+    // The read and the write are separate statements, and a customer can book
+    // between them. Trusting the earlier read would delete the subject of a
+    // booking somebody is about to arrive for.
+    const mockCount = jest.fn().mockResolvedValue(1);
+    const mockUpdateMany = jest.fn();
+    const mockDelete = jest.fn();
+    const mockPrisma = {
+      executeTransaction: jest.fn(
+        (run: (tx: unknown) => Promise<boolean>) =>
+          run({
+            appointment: { count: mockCount, deleteMany: jest.fn() },
+            prospectivePatient: { updateMany: mockUpdateMany, delete: mockDelete },
+          }),
+      ),
+    } as unknown as PrismaService;
+    const repository = new ProspectivePatientRepository(mockPrisma);
+
+    const actual = await repository.purgeOverdueRecord({
+      prospectivePatientId,
+      now: new Date('2026-11-30T00:00:00.000Z'),
+    });
+
+    expect(actual).toBe(false);
+    expect(mockUpdateMany).not.toHaveBeenCalled();
+    expect(mockDelete).not.toHaveBeenCalled();
+  });
+
+  it('declines to purge a record the counter resolved mid-sweep', async () => {
+    const mockUpdateMany = jest.fn().mockResolvedValue({ count: 0 });
+    const mockDelete = jest.fn();
+    const mockPrisma = {
+      executeTransaction: jest.fn(
+        (run: (tx: unknown) => Promise<boolean>) =>
+          run({
+            appointment: { count: jest.fn().mockResolvedValue(0), deleteMany: jest.fn() },
+            prospectivePatient: { updateMany: mockUpdateMany, delete: mockDelete },
+          }),
+      ),
+    } as unknown as PrismaService;
+    const repository = new ProspectivePatientRepository(mockPrisma);
+
+    const actual = await repository.purgeOverdueRecord({
+      prospectivePatientId,
+      now: new Date('2026-11-30T00:00:00.000Z'),
+    });
+
+    // The guarded `updateMany` matched nothing, so nothing is deleted.
+    expect(actual).toBe(false);
+    expect(mockDelete).not.toHaveBeenCalled();
   });
 });
