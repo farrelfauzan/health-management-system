@@ -150,6 +150,11 @@ describe('ConversationService', () => {
           maxDraftBookingsPerDay: 50,
           prospectivePatientRetentionDays: 90,
         },
+        prospectiveExpiry: {
+          workerEnabled: false,
+          workerPollIntervalMs: 86_400_000,
+          workerBatchLimit: 200,
+        },
       },
     };
     mockDispatcher = { sendMessage: jest.fn().mockResolvedValue(undefined) };

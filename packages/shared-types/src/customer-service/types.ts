@@ -240,6 +240,36 @@ export type CustomerServiceConfig = {
   readonly clinicName: string;
   /** The booking and verification half (`PCS-T07`). */
   readonly booking: CustomerServiceBookingConfig;
+  /** The retention sweep that empties the prospective table (`P17-T06`). */
+  readonly prospectiveExpiry: ProspectiveExpiryWorkerConfig;
+};
+
+/**
+ * The sweep that stops the clinic holding a list of strangers' phone numbers
+ * (`P17-T06`, UU PDP 27/2022).
+ *
+ * Defaults to **on**, unlike most worker flags. Not running this job is the
+ * compliance failure it exists to prevent, so a deployment that forgot to set
+ * the variable should sweep rather than silently accumulate — switching it off
+ * is the deliberate act, not switching it on.
+ */
+export type ProspectiveExpiryWorkerConfig = {
+  /** `CS_PROSPECTIVE_EXPIRY_WORKER_ENABLED`, default true. */
+  readonly workerEnabled: boolean;
+  /**
+   * `CS_PROSPECTIVE_EXPIRY_WORKER_POLL_INTERVAL_MS`, default 24 hours.
+   *
+   * Retention is measured in days, so a sweep more often than daily costs
+   * queries to delete the same nothing. The interval exists as a knob for
+   * tests and for an operator draining a backlog, not as a tuning dial.
+   */
+  readonly workerPollIntervalMs: number;
+  /**
+   * How many records one sweep will purge, so a first run against a long
+   * backlog cannot hold a transaction open over thousands of rows. The next
+   * interval picks up the remainder.
+   */
+  readonly workerBatchLimit: number;
 };
 
 
@@ -538,6 +568,35 @@ export type ChannelDraftMergeResult = {
 export type ListChannelMergeCandidatesParams = {
   search: string;
   limit: number;
+};
+
+/**
+ * One prospective record the sweep has found past its date (`P17-T06`).
+ *
+ * The two appointment counts are separate because they mean opposite things.
+ * A **live** booking means this person has not arrived *yet* — a booking made
+ * far ahead, or rescheduled — and the record must be left exactly as it is.
+ * A **stale** one is cancelled or rejected; it holds the same personal data as
+ * the record and has to go with it, because `Appointment.prospectivePatient`
+ * is `onDelete: Restrict` and would otherwise pin the row forever.
+ */
+export type OverdueProspectivePatientRecord = {
+  id: string;
+  liveAppointments: number;
+  staleAppointments: number;
+};
+
+/**
+ * What one retention sweep did (`P17-T06`).
+ *
+ * Counts only, and that is the audit record too: the rows this job deletes are
+ * a name and a phone number belonging to somebody who was never a patient, and
+ * a log line naming them would outlive the deletion it describes.
+ */
+export type ProspectiveExpirySweepResult = {
+  purged: number;
+  /** Past their date but still carrying a live booking. */
+  skipped: number;
 };
 
 /** What the counter's list asks the repository for (`P17-T04`). */
