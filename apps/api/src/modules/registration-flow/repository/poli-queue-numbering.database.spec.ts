@@ -36,6 +36,7 @@ describe('Per-poli queue numbering against PostgreSQL', () => {
   async function createPatient(name: string): Promise<string> {
     const patient = await prisma.patientProfile.create({
       data: {
+        sex: 'FEMALE',
         mrn: `POLI-${randomUUID()}`,
         fullName: name,
         dateOfBirth: new Date('1990-01-01T00:00:00Z'),

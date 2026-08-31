@@ -112,6 +112,7 @@ describe('BPJS submission outbox against Postgres', () => {
   }): Promise<{ registrationId: string; patientId: string }> {
     const patient = await prisma.patientProfile.create({
       data: {
+        sex: 'FEMALE',
         mrn: `BPJSOB-${randomUUID().slice(0, 18)}`,
         fullName: 'BPJS Outbox Spec Patient',
         dateOfBirth: new Date('1990-01-01'),

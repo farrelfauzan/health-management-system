@@ -88,6 +88,9 @@ describe('Audit log against Postgres', () => {
   async function createPatient(): Promise<string> {
     const patient = await prisma.patientProfile.create({
       data: {
+        dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+        sex: 'FEMALE',
+        address: 'Jl. Uji Coba No. 1',
         mrn: `${TEST_MARKER}-${Date.now()}`,
         fullName: `${TEST_MARKER} Patient`,
         phoneNumber: '081200000000',

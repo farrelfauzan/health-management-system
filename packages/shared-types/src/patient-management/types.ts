@@ -60,20 +60,19 @@ export type CreatePatientRecordPayload = {
   mrn?: string;
   fullName: string;
   /**
-   * Null only on the chat-created draft path (`PCS-T07`): §5.3 forbids asking
-   * for a date of birth over an unauthenticated channel, and a placeholder
-   * date in a 25-year clinical record is worse than an absence. Every
-   * human-facing create still supplies it — `createPatientSchema` keeps it
-   * required.
+   * Required again since `P17-T05`, matching the database.
+   *
+   * It was nullable for the chat-created draft path (`PCS-T07`), which
+   * `P17-T03` removed. Leaving the type nullable after the column stopped
+   * being would turn a compile error into a runtime insert failure — the type
+   * would be advertising a create this database now refuses.
    */
-  dateOfBirth: Date | null;
+  dateOfBirth: Date;
   placeOfBirth?: string;
-  /** Null on the draft path, for the same reason as {@link dateOfBirth}. */
-  sex: PatientSexValue | null;
+  sex: PatientSexValue;
   status: PatientStatusValue;
   phoneNumber: string;
-  /** Null on the draft path, for the same reason as {@link dateOfBirth}. */
-  address: string | null;
+  address: string;
   /**
    * Defaults to `FRONT_DESK` at the database, so only the channel path names
    * it.
@@ -143,13 +142,19 @@ export type PatientRecord = {
   id: string;
   mrn: string;
   fullName: string;
-  /** Absent on a chat-created draft until the counter completes it (§5.2). */
+  /**
+   * Non-null in the database since `P17-T05`. The type stays wide because the
+   * `PCS-T08` draft surface still reads it as optional; narrowing it belongs
+   * with removing that surface, which now guards a record shape nothing can
+   * create.
+   */
   dateOfBirth: Date | null;
   placeOfBirth: string | null;
+  /** Non-null in the database since `P17-T05`; see {@link dateOfBirth}. */
   sex: PatientSexValue | null;
   status: PatientStatusValue;
   phoneNumber: string;
-  /** Absent on a chat-created draft until the counter completes it (§5.2). */
+  /** Non-null in the database since `P17-T05`; see {@link dateOfBirth}. */
   address: string | null;
   source: PatientRecordSourceValue;
   nikLast4: string | null;

@@ -290,11 +290,11 @@ export type EnumPatientRecordSourceFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumPatientRecordSourceFilter<$PrismaModel> | $Enums.PatientRecordSource
 }
 
-export type EnumPatientSexNullableFilter<$PrismaModel = never> = {
-  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel> | null
-  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel> | $Enums.PatientSex | null
+export type EnumPatientSexFilter<$PrismaModel = never> = {
+  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel>
+  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPatientSexFilter<$PrismaModel> | $Enums.PatientSex
 }
 
 export type EnumPatientStatusFilter<$PrismaModel = never> = {
@@ -353,14 +353,14 @@ export type EnumPatientRecordSourceWithAggregatesFilter<$PrismaModel = never> = 
   _max?: Prisma.NestedEnumPatientRecordSourceFilter<$PrismaModel>
 }
 
-export type EnumPatientSexNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel> | null
-  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumPatientSexNullableWithAggregatesFilter<$PrismaModel> | $Enums.PatientSex | null
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
+export type EnumPatientSexWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel>
+  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPatientSexWithAggregatesFilter<$PrismaModel> | $Enums.PatientSex
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPatientSexFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPatientSexFilter<$PrismaModel>
 }
 
 export type EnumPatientStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -1761,11 +1761,11 @@ export type NestedEnumPatientRecordSourceFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumPatientRecordSourceFilter<$PrismaModel> | $Enums.PatientRecordSource
 }
 
-export type NestedEnumPatientSexNullableFilter<$PrismaModel = never> = {
-  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel> | null
-  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel> | $Enums.PatientSex | null
+export type NestedEnumPatientSexFilter<$PrismaModel = never> = {
+  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel>
+  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPatientSexFilter<$PrismaModel> | $Enums.PatientSex
 }
 
 export type NestedEnumPatientStatusFilter<$PrismaModel = never> = {
@@ -1813,14 +1813,14 @@ export type NestedEnumPatientRecordSourceWithAggregatesFilter<$PrismaModel = nev
   _max?: Prisma.NestedEnumPatientRecordSourceFilter<$PrismaModel>
 }
 
-export type NestedEnumPatientSexNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel> | null
-  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumPatientSexNullableWithAggregatesFilter<$PrismaModel> | $Enums.PatientSex | null
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
+export type NestedEnumPatientSexWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel>
+  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPatientSexWithAggregatesFilter<$PrismaModel> | $Enums.PatientSex
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPatientSexFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPatientSexFilter<$PrismaModel>
 }
 
 export type NestedEnumPatientStatusWithAggregatesFilter<$PrismaModel = never> = {

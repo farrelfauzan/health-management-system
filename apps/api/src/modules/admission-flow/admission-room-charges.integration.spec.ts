@@ -141,7 +141,10 @@ describe('Admission room charges against Postgres', () => {
           id: patientId,
           mrn,
           fullName: `${TEST_MARKER} patient`,
+          dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+          sex: 'FEMALE',
           phoneNumber: '081200000000',
+          address: 'Jl. Uji Coba No. 1',
           status: 'OUT_PATIENT',
         },
       });

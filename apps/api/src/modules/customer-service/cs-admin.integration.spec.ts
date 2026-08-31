@@ -80,9 +80,12 @@ describe('customer-service admin surface against Postgres', () => {
         fullName: `${TEST_MARKER} ${params.suffix}`,
         phoneNumber: '628121000009',
         source: params.source,
-        ...(params.source === 'FRONT_DESK'
-          ? { dateOfBirth: new Date('1990-05-12T00:00:00.000Z'), address: 'Jakarta' }
-          : {}),
+        // Complete whatever the source, since `P17-T05`: the three columns are
+        // NOT NULL, so the half-filled chat draft this helper used to build is
+        // a row the database no longer accepts.
+        dateOfBirth: new Date('1990-05-12T00:00:00.000Z'),
+        sex: 'FEMALE',
+        address: 'Jakarta',
       },
       select: { id: true },
     });
@@ -278,10 +281,13 @@ describe('customer-service admin surface against Postgres', () => {
       expect(row?.patientIsDraft).toBe(false);
     });
 
-    it('flags a chat-created draft and names what the desk has to ask for', async () => {
-      const draftId = await createPatient({ suffix: 'worklist-draft', source: 'CHANNEL_BOOKING' });
+    it('no longer flags a chat-created record, because it can no longer be incomplete', async () => {
+      const chatCreatedId = await createPatient({
+        suffix: 'worklist-draft',
+        source: 'CHANNEL_BOOKING',
+      });
       await createChannelAppointment({
-        patientId: draftId,
+        patientId: chatCreatedId,
         scheduledAt: new Date('2026-09-02T03:00:00.000Z'),
         referenceCode: `${TEST_MARKER}-worklist`,
       });
@@ -295,10 +301,17 @@ describe('customer-service admin surface against Postgres', () => {
       const row = result.items.find(
         (item) => item.bookingReferenceCode === `${TEST_MARKER}-worklist`,
       );
-      expect(row?.patientIsDraft).toBe(true);
-      expect(row?.missingFields).toEqual(
-        expect.arrayContaining(['dateOfBirth', 'address', 'nik', 'bpjsNumber']),
-      );
+      // This assertion used to be `true`, on a record with a null date of
+      // birth and address. `P17-T05` made those columns NOT NULL, so the shape
+      // is unrepresentable and the only rows the worklist still flags are
+      // prospective ones (`P17-T03`), which carry no patient record at all.
+      //
+      // The identifiers are still reported as missing — a patient may
+      // genuinely have neither a NIK on them nor BPJS coverage — but their
+      // absence has never kept a row on the worklist.
+      expect(row?.patientIsDraft).toBe(false);
+      expect(row?.missingFields).toEqual(expect.arrayContaining(['nik', 'bpjsNumber']));
+      expect(row?.missingFields).not.toContain('dateOfBirth');
     });
   });
 

@@ -42,6 +42,7 @@ describe('Antrean outbox enqueue against PostgreSQL', () => {
   async function createInsuredPatient(): Promise<string> {
     const patient = await prisma.patientProfile.create({
       data: {
+        sex: 'FEMALE',
         mrn: `ANTOUT-${randomUUID()}`,
         fullName: 'Antrean Outbox Patient',
         dateOfBirth: new Date('1990-01-01T00:00:00Z'),

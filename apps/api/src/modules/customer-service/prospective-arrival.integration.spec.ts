@@ -340,6 +340,7 @@ describe('prospective arrival conversion against Postgres', () => {
     it('repoints the booking without touching the MRN counter', async () => {
       const existing = await prisma.patientProfile.create({
         data: {
+          sex: 'FEMALE',
           mrn: `${TEST_MARKER}-existing`,
           fullName: `${TEST_MARKER} Siti Rahayu Wulandari`,
           phoneNumber: '0812 1000-004',
@@ -384,6 +385,7 @@ describe('prospective arrival conversion against Postgres', () => {
     it('finds the returning patient whose stored number is written differently', async () => {
       const existing = await prisma.patientProfile.create({
         data: {
+          sex: 'FEMALE',
           mrn: `${TEST_MARKER}-match`,
           fullName: `${TEST_MARKER} Budi Santoso`,
           // Written the way a front desk types it years earlier; the booking
