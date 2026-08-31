@@ -136,6 +136,65 @@ services:
       timeout: 5s
       retries: 5
 
+  # The HTML→PDF renderer (P16-T01, D-026). Behind the `pdf` profile because
+  # it is a 2.4 GB image that only the billing-document and clinical-document
+  # surfaces need, and a `docker compose up` that pulled Chromium and
+  # LibreOffice for someone working on appointments would be a poor trade.
+  #
+  # Four things here are load-bearing rather than incidental:
+  #
+  #   * **No `ports:` mapping, and `networks: [renderer]` only.** The renderer
+  #     is on an `internal: true` network (see the bottom of this file), which
+  #     has no gateway — so this container can reach the API and nothing else.
+  #     Not the internet, not the host, not postgres or minio on `default`.
+  #     That is NFR-SEC-03 enforced by Docker rather than by asking Chromium
+  #     nicely. Reach it in development with `docker compose exec` or a
+  #     throwaway `docker run --network`, never by adding a port.
+  #   * **Chromium's own outbound filtering is on as well.** Denying both
+  #     private and public IPs with no allow-list rejects every sub-resource
+  #     URL at the application layer too, so the posture survives a deployment
+  #     that puts this container on a routable network by mistake. HMS only
+  #     ever posts self-contained HTML — assets inlined as `data:` URIs — so
+  #     nothing legitimate is being blocked.
+  #   * **LibreOffice and PDF-engine routes are disabled.** HMS uses exactly
+  #     one route, `/forms/chromium/convert/html`. Office-document conversion
+  #     and PDF manipulation are the two largest parsers in this image and
+  #     neither is reachable from any code path we have.
+  #   * **The tag is pinned to a patch.** Chromium decides line breaks and
+  #     page breaks; a floating `:8` would re-paginate previously issued
+  #     invoices on an unrelated `docker pull`, and an invoice document is
+  #     snapshotted precisely because it must not change after issue.
+  gotenberg:
+    image: gotenberg/gotenberg:8.36.0
+    container_name: hms-gotenberg
+    profiles: ['pdf']
+    restart: unless-stopped
+    networks:
+      - renderer
+    command:
+      - gotenberg
+      # Matches PDF_RENDERER_TIMEOUT_MS below. The API aborting first is the
+      # intended order — the client owns the deadline — but a renderer with no
+      # limit of its own would keep working on a document nobody is waiting
+      # for and hold one of six Chromium slots while doing it.
+      - --api-timeout=30s
+      - --chromium-deny-private-ips
+      - --chromium-deny-public-ips
+      - --chromium-clear-cache
+      - --chromium-clear-cookies
+      - --chromium-clear-storage
+      - --libreoffice-disable-routes
+      - --pdfengines-disable-routes
+    healthcheck:
+      test: ['CMD', 'curl', '--silent', '--fail', 'http://localhost:3000/health']
+      interval: 10s
+      timeout: 5s
+      # Chromium is not launched until the first conversion (`--chromium-auto-start`
+      # is off), so /health answers quickly; the long start_period covers the
+      # container's own boot on a cold machine.
+      start_period: 20s
+      retries: 10
+
   api:
     build:
       context: ../..
@@ -179,6 +238,20 @@ services:
       # but only one is bound.
       WA_GATEWAY_API_KEY: ${WA_GATEWAY_API_KEY:-hmsdevwahakey}
       WA_GATEWAY_SESSION_NAME: ${WA_GATEWAY_SESSION_NAME:-default}
+      # The HTML→PDF sidecar, addressed by service name on the private
+      # `renderer` network. Set even when the `pdf` profile is not up, for the
+      # same reason the WhatsApp gateway above is: the adapter fails the one
+      # render that wanted it rather than refusing to boot, so a stack without
+      # the renderer still serves billing and still records payments.
+      PDF_RENDERER_BASE_URL: ${PDF_RENDERER_BASE_URL:-http://gotenberg:3000}
+      PDF_RENDERER_TIMEOUT_MS: ${PDF_RENDERER_TIMEOUT_MS:-30000}
+    # Explicit because naming any network opts a service out of the implicit
+    # `default`. The API is the only service on both: it needs postgres, minio
+    # and the outside world on `default`, and it is the only thing allowed to
+    # talk to the renderer on `renderer`.
+    networks:
+      - default
+      - renderer
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     ports:
@@ -271,6 +344,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+networks:
+  # The ordinary bridge. Every service that does not name a network joins it,
+  # and it has a gateway to the host and the internet.
+  default:
+  # The renderer's network, and nothing else's. `internal: true` is what makes
+  # NFR-SEC-03 true rather than aspirational: Docker attaches no gateway, so a
+  # container on this network alone has no route off it. A template that
+  # somehow retains a remote reference fetches nothing because there is
+  # nowhere to fetch from — not because Chromium chose not to.
+  renderer:
+    internal: true
 
 volumes:
   hms-postgres-data:

@@ -30,6 +30,7 @@
     "docker:dev:up": "docker compose -f infra/docker/docker-compose.dev.yml up -d postgres minio minio-init",
     "docker:dev:migrate": "docker compose -f infra/docker/docker-compose.dev.yml --profile tools run --rm migrate",
     "docker:dev:start": "docker compose -f infra/docker/docker-compose.dev.yml up -d api web",
+    "docker:dev:pdf": "docker compose -f infra/docker/docker-compose.dev.yml --profile pdf up -d gotenberg",
     "docker:dev:down": "docker compose -f infra/docker/docker-compose.dev.yml down"
   },
   "pnpm": {
