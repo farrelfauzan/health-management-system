@@ -22,6 +22,7 @@
     "seed:sandbox-practitioner-nik": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/seed-sandbox-practitioner-niks.js",
     "icd10:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-terminology-codes.js icd10",
     "icd9cm:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-terminology-codes.js icd9cm",
+    "report:draft-patients": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/report-draft-patients.js",
     "openapi:export": "curl -fsS \"${OPENAPI_URL:-http://localhost:3001/api/openapi.yaml}\" -o ./openapi.yaml",
     "eval:faq-retrieval": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/run-faq-retrieval-eval.js",
     "eval:tool-selection": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/run-tool-selection-eval.js"
