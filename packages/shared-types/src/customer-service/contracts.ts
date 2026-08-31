@@ -3,6 +3,8 @@ import type {
   ChannelKindValue,
   ConversationMessageRoleValue,
   ConversationStateValue,
+  ProspectiveMatchReasonValue,
+  ProspectivePatientStatusValue,
   WaGatewayKindValue,
 } from '#customer-service/schemas';
 import type { ChannelArrivalSubjectKind } from '#customer-service/types';
@@ -317,4 +319,71 @@ export type ChannelMetricsView = {
   budgetExhaustedTurns: number;
   enumerationFlags: number;
   blockedConversations: number;
+};
+
+/**
+ * One person who has asked to become a patient and has not arrived yet
+ * (`P17-T04`).
+ *
+ * Carries no MRN and no clinical field, because there are none — that is what
+ * makes this row a prospective record rather than a patient. `expiresAt` is on
+ * it so the desk can see that an enquiry from three months ago is about to
+ * stop being kept, rather than discovering it vanished.
+ */
+export type ProspectivePatientView = {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
+  channel: ChannelKindValue;
+  status: ProspectivePatientStatusValue;
+  /** Set once the record resolved — the patient it became, or was found to be. */
+  patientId: string | null;
+  /** How many bookings are still riding on this record. */
+  openAppointments: number;
+  expiresAt: string;
+  createdAt: string;
+};
+
+/**
+ * A registry record the person at the counter might already be (`P17-T04`).
+ *
+ * `score` orders the list and `reasons` explains it; the clerk acts on the
+ * reasons. A candidate offered on `NAME_SIMILAR` alone is a prompt to keep
+ * looking at the ID document, not a record to link — and presenting it with
+ * the same weight as an exact NIK hit is how a booking ends up on a stranger's
+ * chart.
+ *
+ * `nikMasked` shows only the last four digits, and only so the clerk can check
+ * them against the card. The plaintext NIK stays behind
+ * `patient.read-identifier` on the patient-edit screen, where reading one is
+ * an audited act rather than a side effect of searching.
+ */
+export type ProspectiveMatchCandidateView = {
+  id: string;
+  mrn: string;
+  fullName: string;
+  phoneNumber: string;
+  dateOfBirth: string | null;
+  nikMasked: string | null;
+  score: number;
+  reasons: ProspectiveMatchReasonValue[];
+};
+
+/**
+ * What resolving a prospective record did (`P17-T04`).
+ *
+ * `resolution` is the field worth reading: `CONVERTED` means an MRN was just
+ * spent on a new record, `LINKED` means one already existed and none was. The
+ * counts are here for the same reason the merge view carries them — the clerk
+ * is about to check this person in, and a resolution that moved zero bookings
+ * resolved the wrong record.
+ */
+export type ProspectiveArrivalResolutionView = {
+  prospectivePatientId: string;
+  resolution: Extract<ProspectivePatientStatusValue, 'CONVERTED' | 'LINKED'>;
+  patientId: string;
+  /** Allocated by the conversion; pre-existing on a link. */
+  mrn: string;
+  patientFullName: string;
+  movedAppointments: number;
 };

@@ -715,7 +715,8 @@
     "actions": {
       "complete": "Lengkapi data",
       "merge": "Gabungkan ke pasien terdaftar",
-      "notYetAPatient": "Daftarkan di loket"
+      "notYetAPatient": "Daftarkan di loket",
+      "registerArrival": "Daftarkan kedatangan ini"
     },
     "merge": {
       "title": "Gabungkan draf ini ke pasien terdaftar",
@@ -729,6 +730,31 @@
       "merging": "Menggabungkan…",
       "merged": "Draf berhasil digabungkan ke pasien terdaftar.",
       "failed": "Draf gagal digabungkan."
+    },
+    "prospective": {
+      "title": "Daftarkan kedatangan ini",
+      "description": "{name} memesan dari {phone} dan belum punya rekam medis. Periksa dulu data pasien yang ada — nomor rekam medis tidak bisa ditarik kembali.",
+      "searchLabel": "Cari data pasien",
+      "searchPlaceholder": "Nama, nomor rekam medis, atau telepon",
+      "nikLabel": "NIK dari kartu identitas",
+      "nikPlaceholder": "16 digit",
+      "seededHint": "Pencarian sudah mencakup nama dan nomor telepon yang dipakai memesan. Tambahkan keterangan yang diberikan di loket.",
+      "searching": "Mencari data pasien…",
+      "searchFailed": "Tidak dapat mencari data pasien.",
+      "noCandidates": "Tidak ada data pasien yang cocok.",
+      "link": "Tautkan",
+      "linked": "Pemesanan kini menunjuk ke data pasien yang sudah ada. Tidak ada nomor rekam medis baru.",
+      "linkFailed": "Pemesanan tidak dapat ditautkan.",
+      "createNew": "Daftarkan sebagai pasien baru",
+      "searchFirstHint": "Tunggu hasil pencarian data pasien sebelum membuat rekam medis.",
+      "createHint": "Hanya jika tidak ada satu pun data di atas yang merupakan orang ini.",
+      "converted": "{name} sudah terdaftar. Nomor rekam medis {mrn}.",
+      "reasons": {
+        "NIK_EXACT": "NIK sama",
+        "PHONE_EXACT": "Telepon sama",
+        "NAME_SIMILAR": "Nama mirip",
+        "SEARCH_ONLY": "Hanya cocok dengan pencarian"
+      }
     }
   },
   "channelGateway": {

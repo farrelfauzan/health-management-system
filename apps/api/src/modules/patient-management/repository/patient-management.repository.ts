@@ -1,4 +1,6 @@
 import {
+  ConvertsProspectivePatient,
+  CreatePatientFromProspectiveResult,
   CreatePatientRecordPayload,
   ListPatientsParams,
   PatientAllergyInput,
@@ -16,6 +18,7 @@ import { NationalIdentifierCryptoService } from '../../../common/crypto/national
 import { MrnAllocatorRepository } from '../../../common/mrn/mrn-allocator.repository';
 import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { buildPatientScopeWhere } from './build-patient-scope-where';
 import { PatientIdentifierConflictError } from './patient-identifier-conflict.error';
 
@@ -539,72 +542,136 @@ export class PatientManagementRepository {
 
   async createPatient(payload: CreatePatientRecordPayload): Promise<PatientRecord> {
     const patient = await this.prisma
-      .executeTransaction(async (tx) => {
-        // Allocation shares this transaction on purpose: the row lock behind
-        // the counter update serialises concurrent registrations, and a
-        // rolled-back create rolls the counter back with it rather than leaving
-        // a hole in the sequence.
-        const mrn = payload.mrn ?? (await this.mrnAllocator.allocateMrn(tx));
-
-        if (payload.mrn) {
-          await this.mrnAllocator.raiseCounterAbove(tx, payload.mrn);
-        }
-
-        const created = await tx.patientProfile.create({
-          data: {
-            mrn,
-            fullName: payload.fullName,
-            dateOfBirth: payload.dateOfBirth,
-            placeOfBirth: payload.placeOfBirth ?? null,
-            sex: payload.sex,
-            status: payload.status,
-            phoneNumber: payload.phoneNumber,
-            address: payload.address,
-            ...(payload.source === undefined ? {} : { source: payload.source }),
-            ownerUserId: payload.ownerUserId ?? null,
-            isActive: payload.isActive,
-            ...this.buildIdentifierColumns({
-              nik: payload.nik ?? null,
-              bpjsNumber: payload.bpjsNumber ?? null,
-            }),
-            ...buildDemographicColumns(payload),
-            allergies: {
-              create: (payload.allergies ?? []).map(toAllergyCreateData),
-            },
-          },
-          select: PATIENT_RECORD_SELECT,
-        });
-
-        await this.privacyNoticeRepository.captureCurrent(
-          tx,
-          created.id,
-          payload.actorUserId,
-          payload.privacyNotice,
-        );
-
-        for (const doctorId of payload.doctorIds ?? []) {
-          const assignment = await tx.doctorPatient.create({
-            data: {
-              doctorId,
-              patientId: created.id,
-              assignedById: payload.actorUserId,
-            },
-          });
-
-          await tx.doctorPatientActivity.create({
-            data: {
-              assignmentId: assignment.id,
-              action: 'ASSIGNED',
-              actorUserId: payload.actorUserId,
-            },
-          });
-        }
-
-        return created;
-      })
+      .executeTransaction((tx) => this.insertPatient(tx, payload))
       .catch(rethrowIdentifierConflict);
 
     return toPatientRecord(patient);
+  }
+
+  /**
+   * Registers the person standing at the counter and resolves the prospective
+   * record they arrived on, in one transaction (`P17-T04`).
+   *
+   * It reuses {@link insertPatient} rather than assembling its own insert, and
+   * that reuse is the point: the encrypted identifier columns have exactly one
+   * write path, so the conversion cannot drift from the ordinary create in how
+   * a NIK is encrypted, indexed, or validated. What this method adds is the
+   * two writes that must not be able to happen separately — the appointments
+   * move onto the new record, and the prospective row is marked `CONVERTED`.
+   *
+   * The MRN is allocated inside this same transaction by the same allocator,
+   * so a conversion that fails anywhere rolls the number back rather than
+   * burning it on a record that never existed.
+   */
+  async createPatientFromProspective(
+    payload: CreatePatientRecordPayload & { convertsProspectivePatient: ConvertsProspectivePatient },
+  ): Promise<CreatePatientFromProspectiveResult> {
+    const result = await this.prisma
+      .executeTransaction(async (tx) => {
+        const created = await this.insertPatient(tx, payload);
+        const conversion = payload.convertsProspectivePatient;
+        const moved = await tx.appointment.updateMany({
+          where: {
+            prospectivePatientId: conversion.prospectivePatientId,
+            deletedAt: null,
+          },
+          // Both columns, because the appointment's CHECK allows exactly one of
+          // them to be set (`P17-T02`). Repointing without clearing the old
+          // side would violate it and abort the transaction.
+          data: { patientId: created.id, prospectivePatientId: null },
+        });
+        await tx.prospectivePatient.update({
+          where: { id: conversion.prospectivePatientId },
+          data: {
+            status: 'CONVERTED',
+            patientId: created.id,
+            convertedById: payload.actorUserId,
+            convertedAt: conversion.convertedAt,
+          },
+        });
+        return { created, movedAppointments: moved.count };
+      })
+      .catch(rethrowIdentifierConflict);
+
+    return {
+      patient: toPatientRecord(result.created),
+      movedAppointments: result.movedAppointments,
+    };
+  }
+
+  /**
+   * The insert itself, without a transaction of its own.
+   *
+   * Split out so the conversion path can extend the transaction rather than
+   * copy the body. Every caller must already be inside one: the MRN allocation
+   * below takes a row lock that is only meaningful for as long as the insert
+   * it serialises.
+   */
+  private async insertPatient(
+    tx: PrismaTransactionClient,
+    payload: CreatePatientRecordPayload,
+  ): Promise<PatientProfileRow> {
+    // Allocation shares this transaction on purpose: the row lock behind
+    // the counter update serialises concurrent registrations, and a
+    // rolled-back create rolls the counter back with it rather than leaving
+    // a hole in the sequence.
+    const mrn = payload.mrn ?? (await this.mrnAllocator.allocateMrn(tx));
+
+    if (payload.mrn) {
+      await this.mrnAllocator.raiseCounterAbove(tx, payload.mrn);
+    }
+
+    const created = await tx.patientProfile.create({
+      data: {
+        mrn,
+        fullName: payload.fullName,
+        dateOfBirth: payload.dateOfBirth,
+        placeOfBirth: payload.placeOfBirth ?? null,
+        sex: payload.sex,
+        status: payload.status,
+        phoneNumber: payload.phoneNumber,
+        address: payload.address,
+        ...(payload.source === undefined ? {} : { source: payload.source }),
+        ownerUserId: payload.ownerUserId ?? null,
+        isActive: payload.isActive,
+        ...this.buildIdentifierColumns({
+          nik: payload.nik ?? null,
+          bpjsNumber: payload.bpjsNumber ?? null,
+        }),
+        ...buildDemographicColumns(payload),
+        allergies: {
+          create: (payload.allergies ?? []).map(toAllergyCreateData),
+        },
+      },
+      select: PATIENT_RECORD_SELECT,
+    });
+
+    await this.privacyNoticeRepository.captureCurrent(
+      tx,
+      created.id,
+      payload.actorUserId,
+      payload.privacyNotice,
+    );
+
+    for (const doctorId of payload.doctorIds ?? []) {
+      const assignment = await tx.doctorPatient.create({
+        data: {
+          doctorId,
+          patientId: created.id,
+          assignedById: payload.actorUserId,
+        },
+      });
+
+      await tx.doctorPatientActivity.create({
+        data: {
+          assignmentId: assignment.id,
+          action: 'ASSIGNED',
+          actorUserId: payload.actorUserId,
+        },
+      });
+    }
+
+    return created;
   }
 
   async updatePatient(id: string, payload: UpdatePatientRecordPayload): Promise<PatientRecord> {

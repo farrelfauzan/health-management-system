@@ -7,6 +7,8 @@ import idOperationsMessages from '../../../messages/id/operations.json';
 
 const listArrivalsMock = vi.hoisted(() => vi.fn());
 
+const listMatchCandidatesMock = vi.hoisted(() => vi.fn());
+
 vi.mock('#lib/api/generated/customer-service/customer-service', () => ({
   channelArrivalControllerListArrivalsV1: listArrivalsMock,
   channelArrivalControllerListMergeCandidatesV1: vi.fn(),
@@ -18,6 +20,16 @@ vi.mock('#lib/api/generated/customer-service/customer-service', () => ({
   getChannelArrivalControllerListMergeCandidatesV1QueryKey: (params: unknown) => [
     'channel-merge-candidates',
     params,
+  ],
+  prospectivePatientControllerListMatchCandidatesV1: listMatchCandidatesMock,
+  prospectivePatientControllerLinkToExistingPatientV1: vi.fn(),
+  prospectivePatientControllerConvertToNewPatientV1: vi.fn(),
+  getProspectivePatientControllerListMatchCandidatesV1QueryKey: (
+    prospectivePatientId: string,
+    params: unknown,
+  ) => ['prospective-match-candidates', prospectivePatientId, params],
+  getProspectivePatientControllerListProspectivePatientsV1QueryKey: () => [
+    'prospective-patients',
   ],
 }));
 
@@ -121,11 +133,12 @@ describe('ChannelArrivalsPanel', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows a prospective booking without an MRN, a merge, or a dead patient link', async () => {
+  it('offers a prospective booking the arrival conversion and nothing else', async () => {
     listArrivalsMock.mockResolvedValue({
       status: 200,
       data: { data: [buildProspectiveArrival()] },
     });
+    listMatchCandidatesMock.mockResolvedValue({ status: 200, data: { data: [] } });
 
     renderPanel();
 
@@ -133,8 +146,12 @@ describe('ChannelArrivalsPanel', () => {
     // "Belum ada RM" rather than a blank: no medical record number has been
     // spent on this person, which is the whole point of the record.
     expect(screen.getByText(/Belum ada RM/)).toBeInTheDocument();
-    // Neither action applies. The complete link would point at
-    // /admin/patients/null, and merge only accepts a draft profile as a source.
+    expect(
+      screen.getByRole('button', { name: 'Daftarkan kedatangan ini' }),
+    ).toBeInTheDocument();
+    // Neither of the other two applies (`P17-T04`). The complete link would
+    // point at /admin/patients/null, and merge only accepts a draft profile as
+    // a source.
     expect(
       screen.queryByRole('button', { name: 'Gabungkan ke pasien terdaftar' }),
     ).not.toBeInTheDocument();

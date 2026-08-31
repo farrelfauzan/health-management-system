@@ -539,3 +539,81 @@ export type ListChannelMergeCandidatesParams = {
   search: string;
   limit: number;
 };
+
+/** What the counter's list asks the repository for (`P17-T04`). */
+export type ListProspectivePatientsParams = {
+  status: ProspectivePatientStatusValue;
+  limit: number;
+};
+
+/**
+ * One prospective record as the counter's list reads it (`P17-T04`).
+ *
+ * Carries the live booking count rather than the bookings, because the
+ * worklist's question is only whether anything is still riding on the record —
+ * a record whose single appointment was cancelled is one nobody has to resolve
+ * today.
+ */
+export type ProspectivePatientListRow = {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
+  channel: ChannelKindValue;
+  status: ProspectivePatientStatusValue;
+  patientId: string | null;
+  expiresAt: Date;
+  createdAt: Date;
+  _count: { appointments: number };
+};
+
+/**
+ * What the match search needs, already reduced to comparable forms
+ * (`P17-T04`).
+ *
+ * The phone number arrives normalised and the NIK arrives as a **blind
+ * index**, both computed by the service. The repository never sees a NIK: it
+ * compares one hash against another, so the plaintext identifier's reach stops
+ * at the layer that was given permission to handle it.
+ */
+export type ListProspectiveMatchCandidatesParams = {
+  normalisedPhoneNumber: string;
+  /** Free-text name or number the clerk typed; absent until they type one. */
+  search?: string;
+  nikIndex?: string;
+  limit: number;
+};
+
+/**
+ * One registry row the match search found, before it is scored (`P17-T04`).
+ *
+ * `nikLast4` rather than the ciphertext, for the same reason the arrival
+ * worklist selects blind indexes: deciding whether two people are the same
+ * person does not require a decryption key, and a search path that held one
+ * would be a search path worth stealing.
+ */
+export type ProspectiveMatchCandidateRow = {
+  id: string;
+  mrn: string;
+  fullName: string;
+  phoneNumber: string;
+  dateOfBirth: Date | null;
+  nikLast4: string | null;
+  nikIndex: string | null;
+};
+
+/**
+ * What the counter supplies when an arrival turns out to be an existing
+ * patient (`P17-T04`).
+ *
+ * Distinct from {@link ResolveProspectivePatientParams} because this one names
+ * a transaction rather than a row update: the appointments are repointed and
+ * the record is marked in the same write, and a caller that could do one
+ * without the other would leave a booking pointing at a record the desk has
+ * already stopped looking at.
+ */
+export type LinkProspectivePatientParams = {
+  prospectivePatientId: string;
+  patientId: string;
+  linkedById: string;
+  linkedAt: Date;
+};

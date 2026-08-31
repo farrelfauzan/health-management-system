@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import { ChannelArrivalMergeDialog } from '#components/client/channel-arrivals/channel-arrival-merge-dialog';
+import { ProspectiveArrivalDrawer } from '#components/client/channel-arrivals/prospective-arrival-drawer';
 
 type ChannelArrivalRowActionsProps = {
   arrival: ChannelArrivalView;
@@ -28,12 +29,11 @@ type ChannelArrivalRowActionsProps = {
  * endpoint will accept: a verified customer's booking already hangs off their
  * real record and has nothing to merge.
  *
- * **A prospective booking gets neither** (`P17-T03`). There is no patient
- * record to complete — that is the point of the row — so the link would go to
- * `/admin/patients/null`, and merge only accepts a draft profile as its source.
- * The conversion that gives this person a record, and spends the MRN, is
- * `P17-T04`; until it ships the desk registers them the ordinary way and the
- * row says so rather than offering a button that 404s.
+ * **A prospective booking gets its own action** (`P17-T04`). Neither of the
+ * other two fits: there is no patient record to complete — that is the point
+ * of the row — and merge only accepts a draft profile as its source. What that
+ * row needs is the conversion drawer, which searches the registry first and
+ * only then offers to spend an MRN.
  */
 export function ChannelArrivalRowActions({
   arrival,
@@ -42,6 +42,25 @@ export function ChannelArrivalRowActions({
 }: ChannelArrivalRowActionsProps) {
   const t = useTranslations('channelArrivals.actions');
   const [isMergeOpen, setIsMergeOpen] = useState(false);
+  const [isArrivalOpen, setIsArrivalOpen] = useState(false);
+
+  if (arrival.prospectivePatientId !== null) {
+    return (
+      <div className="flex items-center justify-end gap-2">
+        <Button type="button" size="sm" onClick={() => setIsArrivalOpen(true)}>
+          {t('registerArrival')}
+        </Button>
+        <ProspectiveArrivalDrawer
+          open={isArrivalOpen}
+          onOpenChange={setIsArrivalOpen}
+          arrival={arrival}
+          prospectivePatientId={arrival.prospectivePatientId}
+          onResolved={onResult}
+          onFailed={onFailed}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-end gap-2">

@@ -715,7 +715,8 @@
     "actions": {
       "complete": "Complete record",
       "merge": "Merge into existing patient",
-      "notYetAPatient": "Register at the counter"
+      "notYetAPatient": "Register at the counter",
+      "registerArrival": "Register this arrival"
     },
     "merge": {
       "title": "Merge this draft into an existing patient",
@@ -729,6 +730,31 @@
       "merging": "Merging…",
       "merged": "The draft was merged into the existing patient.",
       "failed": "The draft could not be merged."
+    },
+    "prospective": {
+      "title": "Register this arrival",
+      "description": "{name} booked from {phone} and has no record yet. Check the registry before creating one — an MRN cannot be taken back.",
+      "searchLabel": "Search the registry",
+      "searchPlaceholder": "Name, medical record number, or phone",
+      "nikLabel": "NIK from the ID document",
+      "nikPlaceholder": "16 digits",
+      "seededHint": "The search already covers the name and phone number this person booked with. Add what they told you at the counter.",
+      "searching": "Searching the registry…",
+      "searchFailed": "Unable to search patient records.",
+      "noCandidates": "No existing record matches this person.",
+      "link": "Link",
+      "linked": "The booking now points at the existing patient record. No new MRN was created.",
+      "linkFailed": "The booking could not be linked.",
+      "createNew": "Register as a new patient",
+      "searchFirstHint": "Wait for the registry search before creating a record.",
+      "createHint": "Only if none of the records above is this person.",
+      "converted": "{name} is registered. Medical record number {mrn}.",
+      "reasons": {
+        "NIK_EXACT": "Same NIK",
+        "PHONE_EXACT": "Same phone",
+        "NAME_SIMILAR": "Similar name",
+        "SEARCH_ONLY": "Matched your search only"
+      }
     }
   },
   "channelGateway": {

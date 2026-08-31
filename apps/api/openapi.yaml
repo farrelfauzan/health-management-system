@@ -25681,6 +25681,490 @@ paths:
         - bearer: []
       summary: Merge a chat-created draft into an existing patient
       tags: *a39
+  /api/v1/prospective-patients:
+    get:
+      operationId: ProspectivePatientController_listProspectivePatients_v1
+      parameters:
+        - name: status
+          required: false
+          in: query
+          schema:
+            default: AWAITING_ARRIVAL
+            type: string
+            enum:
+              - AWAITING_ARRIVAL
+              - CONVERTED
+              - LINKED
+              - EXPIRED
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 25
+            type: integer
+      responses:
+        "200":
+          description: Prospective records in the requested status, oldest enquiry first —
+            a worklist, so the record closest to expiring unresolved leads it.
+            Defaults to AWAITING_ARRIVAL. No MRN and no clinical field appears
+            here because none exists yet; `openAppointments` counts what is
+            still riding on the record, so a row whose only booking was
+            cancelled reads as nothing to do.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        fullName:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        channel:
+                          type: string
+                        status:
+                          type: string
+                        patientId:
+                          type: string
+                        openAppointments:
+                          type: integer
+                        expiresAt:
+                          type: string
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - fullName
+                        - phoneNumber
+                        - channel
+                        - status
+                        - openAppointments
+                        - expiresAt
+                        - createdAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 9a1b2c3d-4e5f-4061-8a72-b3c4d5e6f708
+                      fullName: Siti Rahayu
+                      phoneNumber: "628123456789"
+                      channel: TELEGRAM
+                      status: AWAITING_ARRIVAL
+                      patientId: 6d90a1c3-2f84-4b57-8e10-3c7f5a9d0b28
+                      openAppointments: 1
+                      expiresAt: 2026-11-06T14:22:00.000Z
+                      createdAt: 2026-08-08T14:22:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List people who booked through a channel and have not been registered
+      tags: &a40
+        - Customer Service
+  /api/v1/prospective-patients/{prospectivePatientId}/match-candidates:
+    get:
+      operationId: ProspectivePatientController_listMatchCandidates_v1
+      parameters:
+        - name: prospectivePatientId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 2
+            maxLength: 120
+            type: string
+        - name: nik
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 25
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 8
+            type: integer
+      responses:
+        "200":
+          description: Registry records the arriving person might already be, strongest
+            evidence first. With no query it seeds from the booking’s own name
+            and phone number; `search` is the name the person actually gave, and
+            `nik` is the exact lookup from the ID document. `reasons` is what
+            the clerk acts on — an exact NIK outranks a registered number, which
+            outranks a similar name, because a phone is a household object and
+            two people called Siti is the ordinary case. `nik` is hashed to its
+            blind index and compared; it is never echoed back, and only the last
+            four digits of a stored NIK are ever returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        mrn:
+                          type: string
+                        fullName:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        dateOfBirth:
+                          type: string
+                        nikMasked:
+                          type: string
+                        score:
+                          type: integer
+                        reasons:
+                          type: array
+                          items:
+                            type: string
+                      required:
+                        - id
+                        - mrn
+                        - fullName
+                        - phoneNumber
+                        - score
+                        - reasons
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77
+                      mrn: RM-000119
+                      fullName: Siti Rahayu Wulandari
+                      phoneNumber: "628123456789"
+                      dateOfBirth: 1991-03-14
+                      nikMasked: ••••••••3271
+                      score: 71
+                      reasons:
+                        - PHONE_EXACT
+                        - NAME_SIMILAR
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Prospective patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Prospective patient not found.
+      security:
+        - bearer: []
+      summary: Search the registry before spending an MRN on this person
+      tags: *a40
+  /api/v1/prospective-patients/{prospectivePatientId}/link:
+    post:
+      operationId: ProspectivePatientController_linkToExistingPatient_v1
+      parameters:
+        - name: prospectivePatientId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LinkProspectivePatientDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  patientId: 2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77
+      responses:
+        "200":
+          description: Repoints the booking onto the existing record and marks the enquiry
+            LINKED, in one transaction. **No MRN is allocated**, which is the
+            whole difference between this route and convert. Returns 400 when
+            the enquiry has already been resolved or expired — a second click on
+            a stale screen must not resolve it twice — or when the target record
+            is deactivated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      prospectivePatientId:
+                        type: string
+                      resolution:
+                        type: string
+                      patientId:
+                        type: string
+                      mrn:
+                        type: string
+                      patientFullName:
+                        type: string
+                      movedAppointments:
+                        type: integer
+                    required:
+                      - prospectivePatientId
+                      - resolution
+                      - patientId
+                      - mrn
+                      - patientFullName
+                      - movedAppointments
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    prospectivePatientId: 9a1b2c3d-4e5f-4061-8a72-b3c4d5e6f708
+                    resolution: LINKED
+                    patientId: 2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77
+                    mrn: RM-000119
+                    patientFullName: Siti Rahayu Wulandari
+                    movedAppointments: 1
+                  message: Booking linked to the existing patient
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Prospective patient or target patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Prospective patient or target patient not found.
+      security:
+        - bearer: []
+      summary: The arriving person is already a patient — point the booking at their
+        record
+      tags: *a40
+  /api/v1/prospective-patients/{prospectivePatientId}/convert:
+    post:
+      operationId: ProspectivePatientController_convertToNewPatient_v1
+      parameters:
+        - name: prospectivePatientId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConvertProspectivePatientDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  fullName: Aisha Rahman
+                  dateOfBirth: 1990-05-12
+                  placeOfBirth: Bandung
+                  sex: FEMALE
+                  status: OUT_PATIENT
+                  phoneNumber: "+628123456789"
+                  address: Jakarta
+                  nik: "3201015205900001"
+                  bpjsNumber: "0001234567890"
+                  email: aisha.rahman@example.com
+                  bloodType: O
+                  rhesusFactor: POSITIVE
+                  maritalStatus: MARRIED
+                  occupation: Teacher
+                  religion: ISLAM
+                  emergencyContactName: Rahmat Rahman
+                  emergencyContactPhone: "+628123456700"
+                  allergies:
+                    - substance: Penicillin
+                      reaction: Urticaria and swelling
+                      severity: SEVERE
+                  ownerUserId: 33333333-3333-4333-8333-333333333333
+                  doctorIds:
+                    - 22222222-2222-4222-8222-222222222222
+      responses:
+        "201":
+          description: "**The one route in the system where arriving at the clinic
+            allocates an MRN.** Takes the ordinary patient-create payload, so
+            the same required demographics, identifier validation,
+            privacy-notice evidence and encryption path apply — a conversion
+            produces an ordinary registry record, not a special one. The create,
+            the MRN allocation, the appointment repoint and the CONVERTED mark
+            are one transaction: a failure anywhere rolls the number back rather
+            than burning it. Returns 400 when the enquiry has already been
+            resolved."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      prospectivePatientId:
+                        type: string
+                      resolution:
+                        type: string
+                      patientId:
+                        type: string
+                      mrn:
+                        type: string
+                      patientFullName:
+                        type: string
+                      movedAppointments:
+                        type: integer
+                    required:
+                      - prospectivePatientId
+                      - resolution
+                      - patientId
+                      - mrn
+                      - patientFullName
+                      - movedAppointments
+                  meta:
+                    type: object
+                    properties:
+                      identifierWarnings:
+                        type: array
+                        items: {}
+                    required:
+                      - identifierWarnings
+                  message:
+                    type: string
+                required:
+                  - data
+                  - meta
+                  - message
+                example:
+                  data:
+                    prospectivePatientId: 9a1b2c3d-4e5f-4061-8a72-b3c4d5e6f708
+                    resolution: CONVERTED
+                    patientId: c41d8f6a-72b5-4e39-90a1-5d2e7c8b4f60
+                    mrn: RM-000483
+                    patientFullName: Siti Rahayu
+                    movedAppointments: 1
+                  meta:
+                    identifierWarnings: []
+                  message: Patient registered from the booking
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Prospective patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Prospective patient not found.
+      security:
+        - bearer: []
+      summary: The arriving person is new — register them and allocate their MRN
+      tags: *a40
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -25759,7 +26243,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a40
+      tags: &a41
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -25876,7 +26360,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a40
+      tags: *a41
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -25999,7 +26483,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a41
+      tags: &a42
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -26086,7 +26570,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a41
+      tags: *a42
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -26166,7 +26650,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a41
+      tags: *a42
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -26285,7 +26769,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a41
+      tags: *a42
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -26384,7 +26868,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a41
+      tags: *a42
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -26460,7 +26944,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a41
+      tags: *a42
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -26606,7 +27090,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a41
+      tags: *a42
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -26698,7 +27182,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a41
+      tags: *a42
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -26790,7 +27274,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a41
+      tags: *a42
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -29035,6 +29519,195 @@ components:
           format: uuid
       required:
         - targetPatientId
+    LinkProspectivePatientDto:
+      type: object
+      properties:
+        patientId:
+          type: string
+          format: uuid
+      required:
+        - patientId
+    ConvertProspectivePatientDto:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        dateOfBirth:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        placeOfBirth:
+          type: string
+          minLength: 2
+          maxLength: 120
+        sex:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+        status:
+          type: string
+          enum:
+            - IN_PATIENT
+            - OUT_PATIENT
+            - DISCHARGED
+          default: OUT_PATIENT
+        phoneNumber:
+          type: string
+          minLength: 6
+          maxLength: 32
+        address:
+          type: string
+          minLength: 3
+          maxLength: 300
+        nik:
+          type: string
+        bpjsNumber:
+          type: string
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        bloodType:
+          type: string
+          enum:
+            - A
+            - B
+            - AB
+            - O
+        rhesusFactor:
+          type: string
+          enum:
+            - POSITIVE
+            - NEGATIVE
+        maritalStatus:
+          type: string
+          enum:
+            - SINGLE
+            - MARRIED
+            - DIVORCED
+            - WIDOWED
+        occupation:
+          type: string
+          minLength: 2
+          maxLength: 120
+        religion:
+          type: string
+          enum:
+            - ISLAM
+            - PROTESTANTISM
+            - CATHOLICISM
+            - HINDUISM
+            - BUDDHISM
+            - CONFUCIANISM
+            - OTHER
+        emergencyContactName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        emergencyContactPhone:
+          type: string
+          minLength: 6
+          maxLength: 32
+        guardianName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        guardianRelation:
+          type: string
+          minLength: 2
+          maxLength: 60
+        allergies:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            properties:
+              substance:
+                type: string
+                minLength: 2
+                maxLength: 120
+              reaction:
+                type: string
+                minLength: 2
+                maxLength: 300
+              severity:
+                type: string
+                enum:
+                  - MILD
+                  - MODERATE
+                  - SEVERE
+            required:
+              - substance
+              - severity
+        ownerUserId:
+          type: string
+          format: uuid
+        isActive:
+          type: boolean
+          default: true
+        doctorIds:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            type: string
+            format: uuid
+        privacyNotice:
+          type: object
+          properties:
+            privacyNoticeVersionId:
+              type: string
+              format: uuid
+            locale:
+              type: string
+              enum:
+                - id
+                - en
+            outcome:
+              type: string
+              enum:
+                - ACKNOWLEDGED
+                - PROVIDED_ACKNOWLEDGEMENT_DECLINED
+                - DEFERRED_EMERGENCY
+                - DEFERRED_REMOTE_REGISTRATION
+            subjectType:
+              type: string
+              enum:
+                - SELF
+                - REPRESENTATIVE
+            representativeName:
+              type: string
+              minLength: 2
+              maxLength: 120
+            representativeRelation:
+              type: string
+              minLength: 2
+              maxLength: 60
+            provenance:
+              type: string
+              enum:
+                - FRONT_DESK
+                - PATIENT_PORTAL
+                - LEGACY_IMPORT
+                - EMERGENCY
+                - BPJS_ANTREAN
+                - CHANNEL_BOOKING
+          required:
+            - privacyNoticeVersionId
+            - locale
+            - outcome
+            - subjectType
+            - provenance
+          x-nestjs_zod-self-required: true
+      required:
+        - fullName
+        - dateOfBirth
+        - sex
+        - phoneNumber
+        - address
+        - privacyNotice
     UpdateFeatureEntitlementDto:
       type: object
       properties:

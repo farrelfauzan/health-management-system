@@ -27,6 +27,7 @@ import type {
   ChannelArrivalControllerListMergeCandidatesV1200,
   ChannelArrivalControllerListMergeCandidatesV1Params,
   ChannelArrivalControllerMergeDraftPatientV1200,
+  ConvertProspectivePatientDto,
   CsAdminControllerBlockV1200,
   CsAdminControllerGetHandoffSummaryV1200,
   CsAdminControllerGetMetricsV1200,
@@ -39,7 +40,14 @@ import type {
   CsAdminControllerReplyV1201,
   CsAdminControllerTakeOverV1200,
   CsAdminControllerUnblockV1200,
+  LinkProspectivePatientDto,
   MergeChannelDraftPatientDto,
+  ProspectivePatientControllerConvertToNewPatientV1201,
+  ProspectivePatientControllerLinkToExistingPatientV1200,
+  ProspectivePatientControllerListMatchCandidatesV1200,
+  ProspectivePatientControllerListMatchCandidatesV1Params,
+  ProspectivePatientControllerListProspectivePatientsV1200,
+  ProspectivePatientControllerListProspectivePatientsV1Params,
   ReplyToConversationDto
 } from '../model';
 
@@ -1195,6 +1203,401 @@ export function useChannelArrivalControllerMergeDraftPatientV1<TData = Awaited<R
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getChannelArrivalControllerMergeDraftPatientV1QueryOptions(draftPatientId,mergeChannelDraftPatientDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List people who booked through a channel and have not been registered
+ */
+export const prospectivePatientControllerListProspectivePatientsV1 = (
+    params?: ProspectivePatientControllerListProspectivePatientsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ProspectivePatientControllerListProspectivePatientsV1200>(
+      {url: `/api/v1/prospective-patients`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getProspectivePatientControllerListProspectivePatientsV1QueryKey = (params?: ProspectivePatientControllerListProspectivePatientsV1Params,) => {
+    return [
+    `/api/v1/prospective-patients`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getProspectivePatientControllerListProspectivePatientsV1QueryOptions = <TData = Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError = unknown>(params?: ProspectivePatientControllerListProspectivePatientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getProspectivePatientControllerListProspectivePatientsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>> = ({ signal }) => prospectivePatientControllerListProspectivePatientsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ProspectivePatientControllerListProspectivePatientsV1QueryResult = NonNullable<Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>>
+export type ProspectivePatientControllerListProspectivePatientsV1QueryError = unknown
+
+
+export function useProspectivePatientControllerListProspectivePatientsV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError = unknown>(
+ params: undefined |  ProspectivePatientControllerListProspectivePatientsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>,
+          TError,
+          Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProspectivePatientControllerListProspectivePatientsV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError = unknown>(
+ params?: ProspectivePatientControllerListProspectivePatientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>,
+          TError,
+          Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProspectivePatientControllerListProspectivePatientsV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError = unknown>(
+ params?: ProspectivePatientControllerListProspectivePatientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List people who booked through a channel and have not been registered
+ */
+
+export function useProspectivePatientControllerListProspectivePatientsV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError = unknown>(
+ params?: ProspectivePatientControllerListProspectivePatientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListProspectivePatientsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getProspectivePatientControllerListProspectivePatientsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Search the registry before spending an MRN on this person
+ */
+export const prospectivePatientControllerListMatchCandidatesV1 = (
+    prospectivePatientId: string,
+    params?: ProspectivePatientControllerListMatchCandidatesV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ProspectivePatientControllerListMatchCandidatesV1200>(
+      {url: `/api/v1/prospective-patients/${prospectivePatientId}/match-candidates`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getProspectivePatientControllerListMatchCandidatesV1QueryKey = (prospectivePatientId: string,
+    params?: ProspectivePatientControllerListMatchCandidatesV1Params,) => {
+    return [
+    `/api/v1/prospective-patients/${prospectivePatientId}/match-candidates`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getProspectivePatientControllerListMatchCandidatesV1QueryOptions = <TData = Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError = unknown>(prospectivePatientId: string,
+    params?: ProspectivePatientControllerListMatchCandidatesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getProspectivePatientControllerListMatchCandidatesV1QueryKey(prospectivePatientId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>> = ({ signal }) => prospectivePatientControllerListMatchCandidatesV1(prospectivePatientId,params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: prospectivePatientId !== null && prospectivePatientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ProspectivePatientControllerListMatchCandidatesV1QueryResult = NonNullable<Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>>
+export type ProspectivePatientControllerListMatchCandidatesV1QueryError = unknown
+
+
+export function useProspectivePatientControllerListMatchCandidatesV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    params: undefined |  ProspectivePatientControllerListMatchCandidatesV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>,
+          TError,
+          Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProspectivePatientControllerListMatchCandidatesV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    params?: ProspectivePatientControllerListMatchCandidatesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>,
+          TError,
+          Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProspectivePatientControllerListMatchCandidatesV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    params?: ProspectivePatientControllerListMatchCandidatesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Search the registry before spending an MRN on this person
+ */
+
+export function useProspectivePatientControllerListMatchCandidatesV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    params?: ProspectivePatientControllerListMatchCandidatesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerListMatchCandidatesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getProspectivePatientControllerListMatchCandidatesV1QueryOptions(prospectivePatientId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary The arriving person is already a patient — point the booking at their record
+ */
+export const prospectivePatientControllerLinkToExistingPatientV1 = (
+    prospectivePatientId: string,
+    linkProspectivePatientDto: LinkProspectivePatientDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ProspectivePatientControllerLinkToExistingPatientV1200>(
+      {url: `/api/v1/prospective-patients/${prospectivePatientId}/link`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: linkProspectivePatientDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getProspectivePatientControllerLinkToExistingPatientV1QueryKey = (prospectivePatientId: string,
+    linkProspectivePatientDto?: LinkProspectivePatientDto,) => {
+    return [
+    'POST', `/api/v1/prospective-patients/${prospectivePatientId}/link`, linkProspectivePatientDto
+    ] as const;
+    }
+
+
+export const getProspectivePatientControllerLinkToExistingPatientV1QueryOptions = <TData = Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError = unknown>(prospectivePatientId: string,
+    linkProspectivePatientDto: LinkProspectivePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getProspectivePatientControllerLinkToExistingPatientV1QueryKey(prospectivePatientId,linkProspectivePatientDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>> = ({ signal }) => prospectivePatientControllerLinkToExistingPatientV1(prospectivePatientId,linkProspectivePatientDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: prospectivePatientId !== null && prospectivePatientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ProspectivePatientControllerLinkToExistingPatientV1QueryResult = NonNullable<Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>>
+export type ProspectivePatientControllerLinkToExistingPatientV1QueryError = unknown
+
+
+export function useProspectivePatientControllerLinkToExistingPatientV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    linkProspectivePatientDto: LinkProspectivePatientDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>,
+          TError,
+          Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProspectivePatientControllerLinkToExistingPatientV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    linkProspectivePatientDto: LinkProspectivePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>,
+          TError,
+          Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProspectivePatientControllerLinkToExistingPatientV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    linkProspectivePatientDto: LinkProspectivePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary The arriving person is already a patient — point the booking at their record
+ */
+
+export function useProspectivePatientControllerLinkToExistingPatientV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    linkProspectivePatientDto: LinkProspectivePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerLinkToExistingPatientV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getProspectivePatientControllerLinkToExistingPatientV1QueryOptions(prospectivePatientId,linkProspectivePatientDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary The arriving person is new — register them and allocate their MRN
+ */
+export const prospectivePatientControllerConvertToNewPatientV1 = (
+    prospectivePatientId: string,
+    convertProspectivePatientDto: ConvertProspectivePatientDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ProspectivePatientControllerConvertToNewPatientV1201>(
+      {url: `/api/v1/prospective-patients/${prospectivePatientId}/convert`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: convertProspectivePatientDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getProspectivePatientControllerConvertToNewPatientV1QueryKey = (prospectivePatientId: string,
+    convertProspectivePatientDto?: ConvertProspectivePatientDto,) => {
+    return [
+    'POST', `/api/v1/prospective-patients/${prospectivePatientId}/convert`, convertProspectivePatientDto
+    ] as const;
+    }
+
+
+export const getProspectivePatientControllerConvertToNewPatientV1QueryOptions = <TData = Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError = unknown>(prospectivePatientId: string,
+    convertProspectivePatientDto: ConvertProspectivePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getProspectivePatientControllerConvertToNewPatientV1QueryKey(prospectivePatientId,convertProspectivePatientDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>> = ({ signal }) => prospectivePatientControllerConvertToNewPatientV1(prospectivePatientId,convertProspectivePatientDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: prospectivePatientId !== null && prospectivePatientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ProspectivePatientControllerConvertToNewPatientV1QueryResult = NonNullable<Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>>
+export type ProspectivePatientControllerConvertToNewPatientV1QueryError = unknown
+
+
+export function useProspectivePatientControllerConvertToNewPatientV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    convertProspectivePatientDto: ConvertProspectivePatientDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>,
+          TError,
+          Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProspectivePatientControllerConvertToNewPatientV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    convertProspectivePatientDto: ConvertProspectivePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>,
+          TError,
+          Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useProspectivePatientControllerConvertToNewPatientV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    convertProspectivePatientDto: ConvertProspectivePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary The arriving person is new — register them and allocate their MRN
+ */
+
+export function useProspectivePatientControllerConvertToNewPatientV1<TData = Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError = unknown>(
+ prospectivePatientId: string,
+    convertProspectivePatientDto: ConvertProspectivePatientDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prospectivePatientControllerConvertToNewPatientV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getProspectivePatientControllerConvertToNewPatientV1QueryOptions(prospectivePatientId,convertProspectivePatientDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

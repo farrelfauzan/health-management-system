@@ -126,4 +126,47 @@ export const CUSTOMER_SERVICE_ADMIN_EXAMPLES = {
     movedRegistrations: 0,
     movedChannelLinks: 1,
   },
+  prospectivePatient: {
+    id: '9a1b2c3d-4e5f-4061-8a72-b3c4d5e6f708',
+    fullName: 'Siti Rahayu',
+    phoneNumber: '628123456789',
+    channel: 'TELEGRAM',
+    status: 'AWAITING_ARRIVAL',
+    patientId: optionalExample('6d90a1c3-2f84-4b57-8e10-3c7f5a9d0b28'),
+    openAppointments: 1,
+    expiresAt: '2026-11-06T14:22:00.000Z',
+    createdAt: '2026-08-08T14:22:00.000Z',
+  },
+  prospectiveMatchCandidate: {
+    id: '2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77',
+    mrn: 'RM-000119',
+    fullName: 'Siti Rahayu Wulandari',
+    phoneNumber: '628123456789',
+    dateOfBirth: optionalExample('1991-03-14'),
+    // Last four digits only, and only so the clerk can check them against the
+    // card. Reading a NIK back out is the patient-edit screen's audited job.
+    nikMasked: optionalExample('••••••••3271'),
+    score: 71,
+    reasons: ['PHONE_EXACT', 'NAME_SIMILAR'],
+  },
+  prospectiveLinkRequest: {
+    patientId: '2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77',
+  },
+  prospectiveLink: {
+    prospectivePatientId: '9a1b2c3d-4e5f-4061-8a72-b3c4d5e6f708',
+    resolution: 'LINKED',
+    patientId: '2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77',
+    mrn: 'RM-000119',
+    patientFullName: 'Siti Rahayu Wulandari',
+    movedAppointments: 1,
+  },
+  prospectiveConversion: {
+    prospectivePatientId: '9a1b2c3d-4e5f-4061-8a72-b3c4d5e6f708',
+    resolution: 'CONVERTED',
+    patientId: 'c41d8f6a-72b5-4e39-90a1-5d2e7c8b4f60',
+    // Allocated by this request, and by nothing else in the system.
+    mrn: 'RM-000483',
+    patientFullName: 'Siti Rahayu',
+    movedAppointments: 1,
+  },
 } as const;

@@ -10,12 +10,14 @@ import { NotificationModule } from '../notification/notification.module';
 import { PatientManagementModule } from '../patient-management/patient-management.module';
 import { ChannelArrivalController } from './controller/channel-arrival.controller';
 import { CsAdminController } from './controller/cs-admin.controller';
+import { ProspectivePatientController } from './controller/prospective-patient.controller';
 import { AdminConversationRepository } from './repository/admin-conversation.repository';
 import { ChannelArrivalRepository } from './repository/channel-arrival.repository';
 import { ChannelMetricsRepository } from './repository/channel-metrics.repository';
 import { ChannelOtpChallengeRepository } from './repository/channel-otp-challenge.repository';
 import { ChannelPatientLinkRepository } from './repository/channel-patient-link.repository';
 import { ConversationRepository } from './repository/conversation.repository';
+import { ProspectiveArrivalRepository } from './repository/prospective-arrival.repository';
 import { ProspectivePatientRepository } from './repository/prospective-patient.repository';
 import { ChannelArrivalService } from './service/channel-arrival.service';
 import { ChannelMetricsService } from './service/channel-metrics.service';
@@ -27,6 +29,7 @@ import { CsSafetyPolicyService } from './service/cs-safety-policy.service';
 import { CsSystemActorService } from './service/cs-system-actor.service';
 import { HandoffService } from './service/handoff.service';
 import { IntentOrchestratorService } from './service/intent-orchestrator.service';
+import { ProspectiveArrivalService } from './service/prospective-arrival.service';
 import { OtpDeliveryService } from './service/otp-delivery.service';
 import { WhatsappOtpDeliveryAdapter } from './service/whatsapp-otp-delivery.adapter';
 import { BookAppointmentTool } from './tools/definitions/book-appointment.tool';
@@ -81,7 +84,7 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
     NotificationModule,
     PatientManagementModule,
   ],
-  controllers: [CsAdminController, ChannelArrivalController],
+  controllers: [CsAdminController, ChannelArrivalController, ProspectivePatientController],
   providers: [
     AdminConversationRepository,
     ChannelArrivalRepository,
@@ -89,6 +92,7 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
     ChannelOtpChallengeRepository,
     ChannelPatientLinkRepository,
     ConversationRepository,
+    ProspectiveArrivalRepository,
     ProspectivePatientRepository,
     ChannelArrivalService,
     ChannelMetricsService,
@@ -98,6 +102,7 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
     ChannelVerificationService,
     ChannelBookingService,
     IntentOrchestratorService,
+    ProspectiveArrivalService,
     HandoffService,
     ConversationService,
     CsToolRegistry,
