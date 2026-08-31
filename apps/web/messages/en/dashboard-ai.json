@@ -357,7 +357,7 @@
       "description": "The file goes straight to secure storage. It becomes answerable once processing finishes.",
       "fields": {
         "file": "File",
-        "fileHint": "PDF, Markdown or plain text.",
+        "fileHint": "PDF, Markdown, plain text, or a scan (JPEG, PNG, WebP). Up to 20 MB.",
         "title": "Title",
         "language": "Language"
       },
@@ -475,7 +475,7 @@
       "description": "The file goes straight to secure storage. It becomes answerable once processing finishes.",
       "fields": {
         "file": "File",
-        "fileHint": "PDF, Markdown or plain text.",
+        "fileHint": "PDF, Markdown, plain text, or a scan (JPEG, PNG, WebP). Up to 20 MB.",
         "title": "Title",
         "visibility": "Who can be shown this",
         "visibilityHint": "Staff only is the safe default. Choosing patients means passages from this document can be quoted to anyone who messages the clinic.",

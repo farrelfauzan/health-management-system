@@ -11,6 +11,7 @@ import {
   ConfirmPersonalDocumentUploadInput,
   CreatePersonalDocumentUploadUrlInput,
   DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE,
+  DOCUMENT_MAX_UPLOAD_SIZE_BYTES,
   DOCUMENT_UPLOAD_MIME_TYPES,
   DeletedPersonalDocumentView,
   DocumentOwnerTypeValue,
@@ -22,6 +23,7 @@ import {
   PersonalDocumentUploadUrlView,
   PersonalDocumentView,
   UpdatePersonalDocumentInput,
+  isDocumentImageMimeType,
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
@@ -115,10 +117,11 @@ export class PersonalDocumentService {
     }
     const storedObject = await this.readUploadedObject(input.storageKey);
     const mimeType = this.resolveStoredMimeType(storedObject.contentType);
-    if (storedObject.sizeBytes <= 0) {
-      throw new BadRequestException('Uploaded file is empty');
-    }
-    await this.uploadedDocumentGuardService.assertUploadedContentMatches({
+    this.assertStoredSizeWithinLimit(storedObject.sizeBytes);
+    // The size on the row comes from the guard, not from the head above: an
+    // image is re-encoded in place, so what the client uploaded and what the
+    // bucket now holds are different objects of different lengths.
+    const guarded = await this.uploadedDocumentGuardService.guardUploadedDocument({
       storageKey: input.storageKey,
       declaredMimeType: mimeType,
       actorUserId: actor.sub,
@@ -131,12 +134,16 @@ export class PersonalDocumentService {
         title: input.title,
         storageKey: input.storageKey,
         mimeType,
-        sizeBytes: storedObject.sizeBytes,
+        sizeBytes: guarded.sizeBytes,
         // A personal document is scoped by owner, not by channel, so channel
         // visibility is left at the column default and never read for it.
         visibility: 'BOTH',
         language: input.language,
-        ingestStatus: 'PENDING',
+        // Images are stored but never ingested (`P16-T03`): HMS runs no OCR,
+        // so a photographed page carries no text for retrieval to find, and
+        // `PENDING` would only queue it for a worker that can mark it
+        // `FAILED`.
+        ingestStatus: isDocumentImageMimeType(mimeType) ? 'NOT_APPLICABLE' : 'PENDING',
         uploadedById: actor.sub,
       });
       return this.toView(record);
@@ -318,6 +325,21 @@ export class PersonalDocumentService {
         );
       }
       throw err;
+    }
+  }
+
+  /**
+   * The stored object's real length against the surface's cap. The cap was
+   * signed into the upload URL, so the provider has already refused anything
+   * larger — this is the check that keeps that true if a future path ever
+   * writes into the bucket without going through a signature.
+   */
+  private assertStoredSizeWithinLimit(sizeBytes: number): void {
+    if (sizeBytes <= 0) {
+      throw new BadRequestException('Uploaded file is empty');
+    }
+    if (sizeBytes > DOCUMENT_MAX_UPLOAD_SIZE_BYTES) {
+      throw new BadRequestException('Uploaded file is larger than the permitted size');
     }
   }
 

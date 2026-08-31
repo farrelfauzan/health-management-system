@@ -29,20 +29,27 @@ API never streams file bytes in either direction.
 | SJ-21 requirement | Where it lives |
 |---|---|
 | Server-minted UUID object keys, no client input in any path | `S3StorageService.generateObjectKey`, `GENERATED_OBJECT_KEY_PATTERN` refuses foreign keys at presign; confirm refuses keys outside the surface's own prefix |
-| Per-surface MIME allowlist (pdf/markdown/plain), never a denylist | `DOCUMENT_UPLOAD_MIME_TYPES` (`@hms/shared-types`), re-checked against the bucket allowlist before signing |
-| Size cap enforced where the bytes flow | `S3_MAX_UPLOAD_SIZE_BYTES` (default 5 MiB) validated before signing and **signed into the URL** — the provider aborts an oversize PUT; the API buffers nothing because the bytes never pass through it |
-| Magic-byte validation: bytes must agree with the declared type | `validate-document-content.ts`, run by `UploadedDocumentGuardService` at confirm: PDF signature at offset zero (mid-file `%PDF-` polyglots refused), encrypted PDFs refused, text must be NUL-free valid UTF-8 with no known binary signature |
+| Per-surface MIME allowlist, never a denylist | `DOCUMENT_UPLOAD_MIME_TYPES` (`@hms/shared-types`): pdf/markdown/plain plus jpeg/png/webp since `P16-T03` — scans get photographed. Re-checked against the bucket allowlist before signing. **SVG is deliberately absent**, here as on every surface |
+| Size cap enforced where the bytes flow | `DOCUMENT_MAX_UPLOAD_SIZE_BYTES` (20 MiB — a scanned multi-page radiology report does not fit in 5 MiB) in the surface's own schema, under the `S3_MAX_UPLOAD_SIZE_BYTES` bucket ceiling. Validated before signing, **signed into the URL** so the provider aborts an oversize PUT, re-checked against the stored object at confirm, and checked in the browser before a URL is even requested (`DocumentFilePicker`) so the person who chose the file is told the limit |
+| Magic-byte validation: bytes must agree with the declared type | `validate-document-content.ts`, run by `UploadedDocumentGuardService` at confirm: PDF signature at offset zero (mid-file `%PDF-` polyglots refused), encrypted PDFs refused, text must be NUL-free valid UTF-8 with no known binary signature. Images delegate to `common/image/validate-image-content.ts` — the same check the clinic logo runs, so the two surfaces cannot drift on what a PNG looks like |
+| **Images are re-encoded, never stored verbatim** (`P16-T03`) | `UploadedDocumentGuardService` decodes the uploaded image and **overwrites the stored object** with `common/image/reencode-image.ts`'s output before any row is written. Same format in, same format out (unlike the logo's PNG normalisation — re-encoding a 15 MiB scan as PNG would multiply its size) and **no resize**, because the point of a 300 dpi scan is that the small print is readable. The row records the re-encoded length, since that is what is in the bucket |
+| Images are never ingested | HMS runs no OCR, so an image carries no text for retrieval to find. `ingestStatus` rests at `NOT_APPLICABLE` whatever the purpose, and a re-ingest request is refused — `PENDING` would queue it for a worker that could only mark it `FAILED` |
 | Rejected uploads leave nothing behind | The guard deletes the object **before** failing the confirm, then audit-logs `DOCUMENT_UPLOAD_REJECTED` with actor, key, declared type, and reason |
 | Inert serving | Download URLs are signed with `ResponseContentDisposition: attachment; filename=…` (RFC 6266/5987-encoded from the title, injection-safe) and `ResponseContentType` pinned to the validated stored type — the storage origin never renders a stored file inline |
 | Upload ties to a record | Confirm-or-nothing: a signed URL nobody confirms leaves no row; a duplicate confirm is a 409 via the unique `storage_key` |
 | Deletion follows retention rules | Document delete is soft (SJ-12); chunks are hard-deleted in the same write |
 
-The bucket-wide default allowlist was narrowed to exactly the document store's
-three types. Image types (`image/jpeg|png|webp`) were removed deliberately:
-no shipped feature stored images, and re-adding them had to arrive in the same
-change as the re-encode step below. `P16-T02` is that change — the clinic logo
-re-encodes through `sharp` at claim time, so the three image types are back in
-the default allowlist and the condition now binds the *next* image surface.
+The bucket-wide allowlist is the **union** across shipped surfaces, and every
+surface narrows it in its own schema. The same holds for size: the bucket
+ceiling (`S3_MAX_UPLOAD_SIZE_BYTES`, 20 MiB) sits at or above the largest
+surface cap, and a surface can only narrow it — raising the ceiling alone
+widens nothing, because a request is refused by its surface's own `.max()`
+before it reaches the signing call.
+
+Image types were held out of that allowlist under SJ-21 with one condition:
+they return *in the same change as the re-encode*. That condition has now been
+met twice — `P16-T02` for the clinic logo, `P16-T03` for the document store —
+and it still binds the next image-bearing surface.
 
 ## Controls in force (clinic logo: `/api/v1/clinic-profile`, P16-T02)
 
@@ -99,7 +106,9 @@ plus:
   becomes the primary threat, and the async quarantine pipeline should be
   ticketed before that feature ships.
 - **`pdf-parse` runs in the API process** at ingestion. A hostile PDF is a
-  parser-DoS/CVE surface. Bounded today by the 5 MiB size cap, the magic-byte
+  parser-DoS/CVE surface. Bounded today by the 20 MiB size cap — raised from
+  5 MiB in `P16-T03`, which loosens this bound and is the reason the cap is a
+  per-surface number rather than one global one — the magic-byte
   gate, staff-only upload, and ingestion running in a background worker whose
   failure marks the document `FAILED` rather than crashing a request. Moving
   extraction to an isolated worker process is the upgrade path if this ever

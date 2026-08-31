@@ -357,7 +357,7 @@
       "description": "Berkas langsung masuk ke penyimpanan aman. Dokumen baru bisa dipakai menjawab setelah pemrosesan selesai.",
       "fields": {
         "file": "Berkas",
-        "fileHint": "PDF, Markdown, atau teks biasa.",
+        "fileHint": "PDF, Markdown, teks biasa, atau hasil pindai (JPEG, PNG, WebP). Maksimal 20 MB.",
         "title": "Judul",
         "language": "Bahasa"
       },
@@ -475,7 +475,7 @@
       "description": "Berkas langsung masuk ke penyimpanan aman. Bisa dipakai menjawab setelah pemrosesan selesai.",
       "fields": {
         "file": "Berkas",
-        "fileHint": "PDF, Markdown, atau teks biasa.",
+        "fileHint": "PDF, Markdown, teks biasa, atau hasil pindai (JPEG, PNG, WebP). Maksimal 20 MB.",
         "title": "Judul",
         "visibility": "Boleh ditunjukkan ke",
         "visibilityHint": "Staf saja adalah pilihan paling aman. Memilih pasien berarti cuplikan dokumen ini bisa dikutip ke siapa pun yang menghubungi klinik.",

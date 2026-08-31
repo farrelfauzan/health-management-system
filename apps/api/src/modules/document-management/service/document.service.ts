@@ -15,6 +15,7 @@ import {
   ConfirmClinicDocumentUploadInput,
   CreateClinicDocumentUploadUrlInput,
   DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE,
+  DOCUMENT_MAX_UPLOAD_SIZE_BYTES,
   DOCUMENT_UPLOAD_MIME_TYPES,
   DeletedClinicDocumentView,
   DocumentIngestStatusValue,
@@ -24,6 +25,7 @@ import {
   INGESTIBLE_DOCUMENT_PURPOSES,
   ListClinicDocumentsQueryInput,
   UpdateClinicDocumentInput,
+  isDocumentImageMimeType,
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
@@ -103,10 +105,11 @@ export class DocumentService {
     }
     const storedObject = await this.readUploadedObject(input.storageKey);
     const mimeType = this.resolveStoredMimeType(storedObject.contentType);
-    if (storedObject.sizeBytes <= 0) {
-      throw new BadRequestException('Uploaded file is empty');
-    }
-    await this.uploadedDocumentGuardService.assertUploadedContentMatches({
+    this.assertStoredSizeWithinLimit(storedObject.sizeBytes);
+    // The size on the row comes from the guard, not from the head above: an
+    // image is re-encoded in place, so what the client uploaded and what the
+    // bucket now holds are different objects of different lengths.
+    const guarded = await this.uploadedDocumentGuardService.guardUploadedDocument({
       storageKey: input.storageKey,
       declaredMimeType: mimeType,
       actorUserId: actor.sub,
@@ -119,10 +122,10 @@ export class DocumentService {
         title: input.title,
         storageKey: input.storageKey,
         mimeType,
-        sizeBytes: storedObject.sizeBytes,
+        sizeBytes: guarded.sizeBytes,
         visibility: input.visibility,
         language: input.language,
-        ingestStatus: this.resolveInitialIngestStatus(input.purpose),
+        ingestStatus: this.resolveInitialIngestStatus(input.purpose, mimeType),
         uploadedById: actor.sub,
       });
       return this.toView(record);
@@ -203,7 +206,7 @@ export class DocumentService {
         visibility: input.visibility,
         language: input.language,
         ingestStatus: hasRetrievalChange
-          ? this.resolveInitialIngestStatus(record.purpose)
+          ? this.resolveInitialIngestStatus(record.purpose, record.mimeType)
           : undefined,
       },
       hasRetrievalChange,
@@ -239,7 +242,12 @@ export class DocumentService {
   async reingestDocument(id: string, actor: CurrentUser): Promise<ClinicDocumentView> {
     await this.assertClinicCorpusScope(actor, 'write');
     const record = await this.requireClinicDocument(id);
-    if (this.resolveInitialIngestStatus(record.purpose) !== 'PENDING') {
+    if (isDocumentImageMimeType(record.mimeType)) {
+      throw new BadRequestException(
+        'Images are stored but never ingested; there is no text to extract',
+      );
+    }
+    if (this.resolveInitialIngestStatus(record.purpose, record.mimeType) !== 'PENDING') {
       throw new BadRequestException(
         `Documents with purpose ${record.purpose} are stored but never ingested`,
       );
@@ -283,12 +291,39 @@ export class DocumentService {
    * everything else. Derived from the shared purpose list rather than a local
    * branch, so a purpose added later cannot default itself into the
    * retrieval corpus by omission.
+   *
+   * An image is never ingestible, whatever its purpose (`P16-T03`). HMS runs
+   * no OCR, so a photographed referral letter carries no text for retrieval
+   * to find — and `PENDING` would send it to a worker that can only mark it
+   * `FAILED`, filling the admin list with red rows for files doing exactly
+   * what they were uploaded to do.
    */
-  private resolveInitialIngestStatus(purpose: DocumentPurposeValue): DocumentIngestStatusValue {
+  private resolveInitialIngestStatus(
+    purpose: DocumentPurposeValue,
+    mimeType: string,
+  ): DocumentIngestStatusValue {
+    if (isDocumentImageMimeType(mimeType)) {
+      return 'NOT_APPLICABLE';
+    }
     const isIngestible = INGESTIBLE_DOCUMENT_PURPOSES.some(
       (ingestiblePurpose) => ingestiblePurpose === purpose,
     );
     return isIngestible ? 'PENDING' : 'NOT_APPLICABLE';
+  }
+
+  /**
+   * The stored object's real length against the surface's cap. The cap was
+   * signed into the upload URL, so the provider has already refused anything
+   * larger — this is the check that keeps that true if a future path ever
+   * writes into the bucket without going through a signature.
+   */
+  private assertStoredSizeWithinLimit(sizeBytes: number): void {
+    if (sizeBytes <= 0) {
+      throw new BadRequestException('Uploaded file is empty');
+    }
+    if (sizeBytes > DOCUMENT_MAX_UPLOAD_SIZE_BYTES) {
+      throw new BadRequestException('Uploaded file is larger than the permitted size');
+    }
   }
 
   private async requireClinicDocument(id: string): Promise<DocumentRecord> {

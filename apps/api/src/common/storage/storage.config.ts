@@ -6,7 +6,14 @@ const DEFAULT_REGION = 'us-east-1';
 const DEFAULT_BUCKET = 'hms-dev-objects';
 const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
 const DEFAULT_SIGNED_URL_EXPIRES_IN_SECONDS = 300;
-const DEFAULT_MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024;
+// The bucket ceiling, not a surface's limit. It sits at the largest cap any
+// shipped surface declares — the document store's 20 MiB (P16-T03), sized for
+// a scanned multi-page radiology report — and every surface narrows it from
+// there in its own schema (`DOCUMENT_MAX_UPLOAD_SIZE_BYTES`,
+// `CLINIC_LOGO_MAX_UPLOAD_SIZE_BYTES`, which is 2 MiB). Raising this alone
+// widens nothing: a request is refused by the surface's own `.max()` before
+// it ever reaches the signing call.
+const DEFAULT_MAX_UPLOAD_SIZE_BYTES = 20 * 1024 * 1024;
 // The union of what the two uploading surfaces accept, and no wider. The
 // document store (P15-T10) takes the three text-ish types; the clinic logo
 // (P16-T02) takes the three image types.

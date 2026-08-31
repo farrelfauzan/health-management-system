@@ -2,12 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  DOCUMENT_LANGUAGES,
-  DOCUMENT_UPLOAD_MIME_TYPES,
-  type DocumentLanguageValue,
-  type DocumentUploadMimeTypeValue,
-} from '@hms/shared-types';
+import { DOCUMENT_LANGUAGES, type DocumentLanguageValue } from '@hms/shared-types';
 import {
   Button,
   Dialog,
@@ -26,9 +21,11 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { DocumentFilePicker } from '#components/client/documents/document-file-picker';
 import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
 import { NoPatientDataNotice } from '#components/client/personal-documents/no-patient-data-notice';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { isAcceptedDocumentMimeType } from '#lib/documents/is-accepted-document-mime-type';
 import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 import { invalidatePersonalDocumentQueries } from '#lib/personal-documents/invalidate-personal-document-queries';
 import { uploadPersonalDocument } from '#lib/personal-documents/upload-personal-document';
@@ -38,10 +35,6 @@ type PersonalDocumentUploadDialogProps = {
   onOpenChange: (open: boolean) => void;
   onUploaded: (message: string) => void;
 };
-
-function isAcceptedMimeType(value: string): value is DocumentUploadMimeTypeValue {
-  return DOCUMENT_UPLOAD_MIME_TYPES.some((mimeType) => mimeType === value);
-}
 
 /**
  * The upload flow, and the only place the no-patient-data notice can do its
@@ -66,7 +59,7 @@ export function PersonalDocumentUploadDialog({
       if (!file) {
         throw new Error(t('errors.noFile'));
       }
-      if (!isAcceptedMimeType(file.type)) {
+      if (!isAcceptedDocumentMimeType(file.type)) {
         throw new Error(t('errors.unsupportedType'));
       }
       await uploadPersonalDocument({
@@ -125,19 +118,16 @@ export function PersonalDocumentUploadDialog({
         </DialogHeader>
         <NoPatientDataNotice />
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="personal-document-file">{t('fields.file')}</Label>
-            <Input
-              id="personal-document-file"
-              type="file"
-              accept={DOCUMENT_UPLOAD_MIME_TYPES.join(',')}
-              onChange={(event) => {
-                setError(null);
-                setFile(event.target.files?.[0] ?? null);
-              }}
-            />
-            <p className="text-xs text-slate-500">{t('fields.fileHint')}</p>
-          </div>
+          <DocumentFilePicker
+            id="personal-document-file"
+            label={t('fields.file')}
+            hint={t('fields.fileHint')}
+            onFileSelected={(selected) => {
+              setError(null);
+              setFile(selected);
+            }}
+            onRejected={setError}
+          />
           <div className="space-y-2">
             <Label htmlFor="personal-document-title">{t('fields.title')}</Label>
             <Input

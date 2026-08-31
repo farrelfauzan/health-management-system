@@ -73,6 +73,7 @@ describe('DocumentService', () => {
       listDocuments: jest.fn(),
       updateDocument: jest.fn(),
       softDeleteDocument: jest.fn(),
+      markDocumentPending: jest.fn(),
     } as unknown as jest.Mocked<DocumentRepository>;
     mockObjectStorageService = {
       generateObjectKey: jest.fn().mockReturnValue(CLINIC_KEY),
@@ -84,7 +85,7 @@ describe('DocumentService', () => {
       findUserById: jest.fn().mockResolvedValue(buildActorWithPermissions(ANY_SCOPE_PERMISSIONS)),
     } as unknown as jest.Mocked<AuthRepository>;
     mockUploadedDocumentGuardService = {
-      assertUploadedContentMatches: jest.fn().mockResolvedValue(undefined),
+      guardUploadedDocument: jest.fn().mockResolvedValue({ sizeBytes: 999 }),
     } as unknown as jest.Mocked<UploadedDocumentGuardService>;
     documentService = new DocumentService(
       mockDocumentRepository,
@@ -143,10 +144,13 @@ describe('DocumentService', () => {
       language: 'ID' as const,
     };
 
-    it('takes size and MIME type from the stored object, not from the request', async () => {
+    it('takes the MIME type from the stored object and the size from the guard, never from the request', async () => {
+      // The guard is the authority on size because it may have replaced the
+      // object: an image is re-encoded in place, so the length the head
+      // reported is the length of bytes that are no longer there.
       mockObjectStorageService.headObject.mockResolvedValue({
         key: CLINIC_KEY,
-        sizeBytes: 999,
+        sizeBytes: 4096,
         contentType: 'text/markdown',
       });
       mockDocumentRepository.createDocument.mockResolvedValue(buildDocumentRecord());
@@ -168,7 +172,7 @@ describe('DocumentService', () => {
 
       await documentService.confirmUpload(CONFIRM_INPUT, ACTOR);
 
-      expect(mockUploadedDocumentGuardService.assertUploadedContentMatches).toHaveBeenCalledWith({
+      expect(mockUploadedDocumentGuardService.guardUploadedDocument).toHaveBeenCalledWith({
         storageKey: CLINIC_KEY,
         declaredMimeType: 'application/pdf',
         actorUserId: ACTOR.sub,
@@ -181,7 +185,7 @@ describe('DocumentService', () => {
         sizeBytes: 2048,
         contentType: 'application/pdf',
       });
-      mockUploadedDocumentGuardService.assertUploadedContentMatches.mockRejectedValue(
+      mockUploadedDocumentGuardService.guardUploadedDocument.mockRejectedValue(
         new BadRequestException('File does not begin with the PDF signature its upload declared'),
       );
 
@@ -206,16 +210,54 @@ describe('DocumentService', () => {
       expect(mockDocumentRepository.createDocument).not.toHaveBeenCalled();
     });
 
-    it('refuses a stored object whose type the ingestion pipeline could never parse', async () => {
+    it('refuses a stored object of a type no document surface accepts', async () => {
       mockObjectStorageService.headObject.mockResolvedValue({
         key: CLINIC_KEY,
         sizeBytes: 2048,
-        contentType: 'image/png',
+        contentType: 'application/zip',
       });
 
       await expect(documentService.confirmUpload(CONFIRM_INPUT, ACTOR)).rejects.toBeInstanceOf(
         BadRequestException,
       );
+      expect(mockDocumentRepository.createDocument).not.toHaveBeenCalled();
+    });
+
+    it('accepts an image but never queues it for ingestion (P16-T03)', async () => {
+      // HMS runs no OCR, so a photographed page carries no text for retrieval
+      // to find. `PENDING` would queue it for a worker that can only mark it
+      // `FAILED` — a red row for a file doing exactly what it was uploaded to
+      // do.
+      mockObjectStorageService.headObject.mockResolvedValue({
+        key: CLINIC_KEY,
+        sizeBytes: 2048,
+        contentType: 'image/jpeg',
+      });
+      mockDocumentRepository.createDocument.mockResolvedValue(buildDocumentRecord());
+
+      await documentService.confirmUpload(CONFIRM_INPUT, ACTOR);
+
+      expect(mockDocumentRepository.createDocument).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mimeType: 'image/jpeg',
+          // FAQ_KNOWLEDGE_BASE is an ingestible purpose; the type overrides it.
+          purpose: 'FAQ_KNOWLEDGE_BASE',
+          ingestStatus: 'NOT_APPLICABLE',
+        }),
+      );
+    });
+
+    it('refuses a stored object larger than the surface cap', async () => {
+      mockObjectStorageService.headObject.mockResolvedValue({
+        key: CLINIC_KEY,
+        sizeBytes: 32 * 1024 * 1024,
+        contentType: 'image/jpeg',
+      });
+
+      await expect(documentService.confirmUpload(CONFIRM_INPUT, ACTOR)).rejects.toThrow(
+        'larger than the permitted size',
+      );
+      expect(mockUploadedDocumentGuardService.guardUploadedDocument).not.toHaveBeenCalled();
       expect(mockDocumentRepository.createDocument).not.toHaveBeenCalled();
     });
 
@@ -333,8 +375,7 @@ describe('DocumentService', () => {
 
       expect(mockObjectStorageService.getSignedUrl).toHaveBeenCalledWith({
         key: CLINIC_KEY,
-        responseContentDisposition:
-          `attachment; filename="SOP Pendaftaran.pdf"; filename*=UTF-8''SOP%20Pendaftaran.pdf`,
+        responseContentDisposition: `attachment; filename="SOP Pendaftaran.pdf"; filename*=UTF-8''SOP%20Pendaftaran.pdf`,
         responseContentType: 'application/pdf',
       });
       expect(actualView).toEqual({
@@ -493,6 +534,22 @@ describe('DocumentService', () => {
       }
       expect(mockDocumentRepository.listDocuments).not.toHaveBeenCalled();
       expect(mockDocumentRepository.createDocument).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('reingestDocument', () => {
+    it('refuses to re-ingest an image, which has no text to extract', async () => {
+      // The row is `NOT_APPLICABLE` by design, not by failure, so the retry
+      // an admin would reach for has to say why rather than queue a job that
+      // can only fail.
+      mockDocumentRepository.findDocumentById.mockResolvedValue(
+        buildDocumentRecord({ mimeType: 'image/jpeg', ingestStatus: 'NOT_APPLICABLE' }),
+      );
+
+      await expect(
+        documentService.reingestDocument('2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11', ACTOR),
+      ).rejects.toThrow('never ingested');
+      expect(mockDocumentRepository.markDocumentPending).not.toHaveBeenCalled();
     });
   });
 });

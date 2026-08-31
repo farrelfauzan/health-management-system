@@ -29738,10 +29738,15 @@ components:
             - application/pdf
             - text/markdown
             - text/plain
+            - image/jpeg
+            - image/png
+            - image/webp
         sizeBytes:
           type: integer
           minimum: 0
           exclusiveMinimum: true
+          maximum: 20971520
+          exclusiveMaximum: false
       required:
         - mimeType
         - sizeBytes
@@ -29806,10 +29811,15 @@ components:
             - application/pdf
             - text/markdown
             - text/plain
+            - image/jpeg
+            - image/png
+            - image/webp
         sizeBytes:
           type: integer
           minimum: 0
           exclusiveMinimum: true
+          maximum: 20971520
+          exclusiveMaximum: false
       required:
         - mimeType
         - sizeBytes

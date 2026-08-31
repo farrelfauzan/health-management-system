@@ -9,6 +9,9 @@ import type { CreateClinicDocumentUploadUrlDtoMimeType } from './createClinicDoc
 
 export interface CreateClinicDocumentUploadUrlDto {
   mimeType: CreateClinicDocumentUploadUrlDtoMimeType;
-  /** @exclusiveMinimum 0 */
+  /**
+     * @maximum 20971520
+     * @exclusiveMinimum 0
+     */
   sizeBytes: number;
 }

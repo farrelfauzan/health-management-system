@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   DOCUMENT_LANGUAGES,
-  DOCUMENT_UPLOAD_MIME_TYPES,
   DOCUMENT_VISIBILITIES,
   type DocumentLanguageValue,
-  type DocumentUploadMimeTypeValue,
   type DocumentVisibilityValue,
 } from '@hms/shared-types';
 import {
@@ -28,10 +26,12 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { DocumentFilePicker } from '#components/client/documents/document-file-picker';
 import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
 import { invalidateClinicDocumentQueries } from '#lib/clinic-documents/invalidate-clinic-document-queries';
 import { uploadClinicDocument } from '#lib/clinic-documents/upload-clinic-document';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import { isAcceptedDocumentMimeType } from '#lib/documents/is-accepted-document-mime-type';
 import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 
 type ClinicDocumentUploadDialogProps = {
@@ -39,10 +39,6 @@ type ClinicDocumentUploadDialogProps = {
   onOpenChange: (open: boolean) => void;
   onUploaded: (message: string) => void;
 };
-
-function isAcceptedMimeType(value: string): value is DocumentUploadMimeTypeValue {
-  return DOCUMENT_UPLOAD_MIME_TYPES.some((mimeType) => mimeType === value);
-}
 
 /**
  * The upload flow for the shared corpus.
@@ -72,7 +68,7 @@ export function ClinicDocumentUploadDialog({
       if (!file) {
         throw new Error(t('errors.noFile'));
       }
-      if (!isAcceptedMimeType(file.type)) {
+      if (!isAcceptedDocumentMimeType(file.type)) {
         throw new Error(t('errors.unsupportedType'));
       }
       await uploadClinicDocument({
@@ -136,19 +132,16 @@ export function ClinicDocumentUploadDialog({
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="clinic-document-file">{t('fields.file')}</Label>
-            <Input
-              id="clinic-document-file"
-              type="file"
-              accept={DOCUMENT_UPLOAD_MIME_TYPES.join(',')}
-              onChange={(event) => {
-                setError(null);
-                setFile(event.target.files?.[0] ?? null);
-              }}
-            />
-            <p className="text-xs text-slate-500">{t('fields.fileHint')}</p>
-          </div>
+          <DocumentFilePicker
+            id="clinic-document-file"
+            label={t('fields.file')}
+            hint={t('fields.fileHint')}
+            onFileSelected={(selected) => {
+              setError(null);
+              setFile(selected);
+            }}
+            onRejected={setError}
+          />
           <div className="space-y-2">
             <Label htmlFor="clinic-document-title">{t('fields.title')}</Label>
             <Input
