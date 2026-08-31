@@ -25,6 +25,7 @@ describe('Pharmacy inventory concurrency against PostgreSQL', () => {
     });
     const patient = await prisma.patientProfile.create({
       data: {
+        sex: 'FEMALE',
         mrn: `RACE-${randomUUID()}`,
         fullName: 'Inventory Race Patient',
         dateOfBirth: new Date('1990-01-01T00:00:00Z'),

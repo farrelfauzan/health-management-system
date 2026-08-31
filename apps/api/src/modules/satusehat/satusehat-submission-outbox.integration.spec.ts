@@ -46,6 +46,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
   async function createOpenEncounter(): Promise<{ encounterId: string; registrationId: string }> {
     const patient = await prisma.patientProfile.create({
       data: {
+        sex: 'FEMALE',
         mrn: `OUTBOX-${randomUUID().slice(0, 18)}`,
         fullName: 'Outbox Spec Patient',
         dateOfBirth: new Date('1990-01-01'),

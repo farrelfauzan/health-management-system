@@ -60,6 +60,9 @@ describe('Appointment scope where-clauses against Postgres', () => {
     const [ownedPatient, foreignPatient] = await Promise.all([
       prisma.patientProfile.create({
         data: {
+          dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+          sex: 'FEMALE',
+          address: 'Jl. Uji Coba No. 1',
           mrn: `MRN-${seedSuffix}-A`,
           fullName: 'Owned Patient',
           phoneNumber: '0800000001',
@@ -68,6 +71,9 @@ describe('Appointment scope where-clauses against Postgres', () => {
       }),
       prisma.patientProfile.create({
         data: {
+          dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+          sex: 'FEMALE',
+          address: 'Jl. Uji Coba No. 1',
           mrn: `MRN-${seedSuffix}-B`,
           fullName: 'Foreign Patient',
           phoneNumber: '0800000002',

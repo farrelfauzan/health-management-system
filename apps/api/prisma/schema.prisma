@@ -826,19 +826,24 @@ model PatientProfile {
   mrn          String              @unique
   source       PatientRecordSource @default(FRONT_DESK)
   fullName     String              @map("full_name")
-  /// Nullable since `PCS-T07`. Every record a human creates still supplies it
-  /// — `createPatientSchema` keeps it required — but a chat-created draft
-  /// genuinely does not have one, and the alternatives were both worse than a
-  /// null: refusing to book, or writing a placeholder date into a record that
-  /// PMK 24/2022 says is kept for 25 years.
-  dateOfBirth  DateTime?           @map("date_of_birth") @db.Date
+  /// Required again since `P17-T05`.
+  ///
+  /// It was nullable for one release cycle, for `PCS-T07`: the chat booking
+  /// flow created patient records without a birth date, because §5.3 forbids
+  /// asking for one over an unauthenticated channel and a placeholder date in
+  /// a record PMK 24/2022 keeps for 25 years is worse than a null.
+  ///
+  /// `P17-T03` removed that flow — a chat booking now opens a
+  /// `ProspectivePatient`, which costs no MRN and holds no clinical field — so
+  /// nothing creates a record without this column any more and the schema
+  /// stops advertising a state the product cannot produce.
+  dateOfBirth  DateTime            @map("date_of_birth") @db.Date
   placeOfBirth String?             @map("place_of_birth")
-  sex          PatientSex?
+  sex          PatientSex
   status       PatientStatus       @default(OUT_PATIENT)
   phoneNumber  String              @map("phone_number")
-  /// Nullable for the same reason as {@link dateOfBirth}, and only for
-  /// chat-created drafts.
-  address      String?
+  /// Required again since `P17-T05`, for the same reason as {@link dateOfBirth}.
+  address      String
   ownerUserId  String?             @map("owner_user_id") @db.Uuid
   isActive     Boolean             @default(true) @map("is_active")
   createdAt    DateTime            @default(now()) @map("created_at")

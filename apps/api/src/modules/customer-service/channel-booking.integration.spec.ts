@@ -127,7 +127,9 @@ describe('customer-service channel booking against Postgres', () => {
       const patientId = await createPatient('081299990001');
       await prisma.patientProfile.update({
         where: { id: patientId },
-        data: { source: 'CHANNEL_BOOKING', dateOfBirth: null, address: null },
+        // Source alone, since `P17-T05`: the demographics columns are NOT NULL,
+        // and this test is about provenance rather than completeness anyway.
+        data: { source: 'CHANNEL_BOOKING' },
       });
 
       const matches = await patientRepository.findActivePatientsByNormalisedPhoneNumber(

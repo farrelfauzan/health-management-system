@@ -35,6 +35,7 @@ describe('BPJS outbox claim concurrency against PostgreSQL', () => {
 
     const patient = await prisma.patientProfile.create({
       data: {
+        sex: 'FEMALE',
         mrn: `BPJS-CLAIM-${randomUUID()}`,
         fullName: 'BPJS Claim Race Patient',
         dateOfBirth: new Date('1990-01-01T00:00:00Z'),

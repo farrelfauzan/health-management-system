@@ -85,6 +85,7 @@ describe('customer-service abuse controls against Postgres', () => {
     await deleteTestRows();
     const patient = await prisma.patientProfile.create({
       data: {
+        sex: 'FEMALE',
         mrn: `${TEST_MARKER}-target`,
         fullName: `${TEST_MARKER} target`,
         phoneNumber: '628123456789',
