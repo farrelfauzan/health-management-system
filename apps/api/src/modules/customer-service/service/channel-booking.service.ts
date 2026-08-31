@@ -18,6 +18,7 @@ import { AppointmentManagementService } from '../../appointment-management/servi
 import { PatientManagementService } from '../../patient-management/service/patient-management.service';
 import { resolveCustomerServiceConfig } from '../customer-service.config';
 import { ChannelPatientLinkRepository } from '../repository/channel-patient-link.repository';
+import { ProspectivePatientRepository } from '../repository/prospective-patient.repository';
 import { ChannelVerificationService } from './channel-verification.service';
 import { buildBookingConfirmationReply } from './build-booking-confirmation-reply';
 import { CS_REPLY_TEMPLATES } from './cs-reply-templates';
@@ -77,6 +78,7 @@ export class ChannelBookingService {
     private readonly appointmentService: AppointmentManagementService,
     private readonly patientService: PatientManagementService,
     private readonly linkRepository: ChannelPatientLinkRepository,
+    private readonly prospectivePatientRepository: ProspectivePatientRepository,
     private readonly verificationService: ChannelVerificationService,
   ) {
     this.serviceConfig = resolveCustomerServiceConfig(configService);
@@ -123,7 +125,12 @@ export class ChannelBookingService {
       params.actor,
     );
 
-    const capRejection = await this.checkBookingCaps(matches, params.actor, now);
+    const capRejection = await this.checkBookingCaps(
+      matches,
+      normalisedPhoneNumber,
+      params.actor,
+      now,
+    );
     if (capRejection !== null) {
       return this.reject(capRejection);
     }
@@ -213,11 +220,12 @@ export class ChannelBookingService {
       }
     }
 
-    return this.completeAsDraft({
+    return this.completeAsProspective({
       channel: params.channel,
+      externalChatId: params.externalChatId,
       actor: params.actor,
-      matches,
       pendingBooking,
+      now,
     });
   }
 
@@ -231,9 +239,11 @@ export class ChannelBookingService {
    */
   async completePendingBooking(params: {
     channel: ChannelKindValue;
+    externalChatId: string | null;
     actor: CurrentUser;
     pendingBooking: PendingChannelBooking;
     verifiedPatientId: string | null;
+    now: Date;
   }): Promise<ChannelBookingOutcome> {
     if (params.verifiedPatientId !== null) {
       return this.completeBooking({
@@ -243,15 +253,12 @@ export class ChannelBookingService {
         pendingBooking: params.pendingBooking,
       });
     }
-    const matches = await this.patientService.findChannelPhoneMatches(
-      params.pendingBooking.phoneNumber,
-      params.actor,
-    );
-    return this.completeAsDraft({
+    return this.completeAsProspective({
       channel: params.channel,
+      externalChatId: params.externalChatId,
       actor: params.actor,
-      matches,
       pendingBooking: params.pendingBooking,
+      now: params.now,
     });
   }
 
@@ -330,51 +337,76 @@ export class ChannelBookingService {
   }
 
   /**
-   * Books against a draft patient — reusing one this chat already created for
-   * the same number **and the same name**, or creating one.
+   * Books for somebody the registry does not know, against a
+   * `ProspectivePatient` (`P17-T03`).
    *
-   * The name qualifier is what makes a shared household number usable. Reusing
-   * on the number alone was deliberate once, as the thing that stopped one
-   * customer accumulating a draft per booking; but it also meant a number
-   * could only ever represent its first patient, so a parent booking for a
-   * child got the child's appointment filed under the parent. The daily draft
-   * cap is the anti-accumulation control now, which is the control that was
-   * always meant to hold that line.
+   * **This used to create a `PatientProfile`, and that is the whole point of
+   * the change.** A draft profile spent an MRN on anyone who typed a name and
+   * a phone number into WhatsApp, and opened a medical record — kept
+   * twenty-five years under PMK 24/2022 — for somebody who may never arrive.
+   * Nothing here allocates an MRN; the counter is touched at the counter, by
+   * `P17-T04`, for a person a human has seen an ID document for.
+   *
+   * An existing record for the same number **and the same name** is reused,
+   * exactly as the draft branch did. The name qualifier is what makes a shared
+   * household number usable: reusing on the number alone meant a number could
+   * only ever represent its first patient, so a parent booking for a child got
+   * the child's appointment filed under the parent.
    */
-  private async completeAsDraft(params: {
+  private async completeAsProspective(params: {
     channel: ChannelKindValue;
+    externalChatId: string | null;
     actor: CurrentUser;
-    matches: readonly PatientPhoneMatch[];
     pendingBooking: PendingChannelBooking;
+    now: Date;
   }): Promise<ChannelBookingOutcome> {
     const claimedName = normalizeClaimedName(params.pendingBooking.patientFullName);
-    const existingDraft = params.matches.find(
-      (match) =>
-        match.source === 'CHANNEL_BOOKING' && normalizeClaimedName(match.fullName) === claimedName,
+    const awaiting = await this.prospectivePatientRepository.findAwaitingArrivalByPhoneNumber(
+      params.pendingBooking.phoneNumber,
     );
-    const patientId =
-      existingDraft?.id ??
+    const existing = awaiting.find(
+      (record) => normalizeClaimedName(record.fullName) === claimedName,
+    );
+    const prospectivePatientId =
+      existing?.id ??
       (
-        await this.patientService.createChannelDraftPatient(
-          {
-            fullName: params.pendingBooking.patientFullName,
-            // Stored normalised so the *next* booking from this number finds
-            // this draft instead of making a second one.
-            phoneNumber: params.pendingBooking.phoneNumber,
-          },
-          params.actor,
-        )
+        await this.prospectivePatientRepository.createAwaitingArrival({
+          fullName: params.pendingBooking.patientFullName,
+          // Stored normalised so the *next* booking from this number finds this
+          // record instead of opening a second one, and so the arrival match
+          // against the registry stays an exact comparison.
+          phoneNumber: params.pendingBooking.phoneNumber,
+          channel: params.channel,
+          externalChatId: params.externalChatId,
+          expiresAt: this.resolveProspectiveExpiry(params.now),
+        })
       ).id;
     return this.completeBooking({
-      patientId,
+      prospectivePatientId,
       channel: params.channel,
       actor: params.actor,
       pendingBooking: params.pendingBooking,
     });
   }
 
+  /**
+   * When an unconverted prospective record stops being kept.
+   *
+   * Not an RME retention period, and PMK 24/2022's twenty-five years must never
+   * be applied to it: no MRN was spent and no clinical record exists. UU PDP
+   * 27/2022 governs, and the window is
+   * `CS_PROSPECTIVE_PATIENT_RETENTION_DAYS`.
+   */
+  private resolveProspectiveExpiry(now: Date): Date {
+    return new Date(
+      now.getTime() + this.serviceConfig.booking.prospectivePatientRetentionDays * DAY_IN_MS,
+    );
+  }
+
   private async completeBooking(params: {
-    patientId: string;
+    /** Exactly one of these; the appointment CHECK enforces it (`P17-T02`). */
+    patientId?: string;
+    prospectivePatientId?: string;
     channel: ChannelKindValue;
     actor: CurrentUser;
     pendingBooking: PendingChannelBooking;
@@ -392,7 +424,10 @@ export class ChannelBookingService {
     const referenceCode = generateBookingReferenceCode();
     const booking = await this.appointmentService.bookSessionForChannel(
       {
-        patientId: params.patientId,
+        ...(params.patientId === undefined ? {} : { patientId: params.patientId }),
+        ...(params.prospectivePatientId === undefined
+          ? {}
+          : { prospectivePatientId: params.prospectivePatientId }),
         doctorId: session.doctorId,
         scheduleId: params.pendingBooking.scheduleId,
         sessionDate: params.pendingBooking.sessionDate,
@@ -430,16 +465,20 @@ export class ChannelBookingService {
    */
   private async checkBookingCaps(
     matches: readonly PatientPhoneMatch[],
+    phoneNumber: string,
     actor: CurrentUser,
     now: Date,
   ): Promise<CsBookingRejectionReasonValue | null> {
+    // Both sides of the number's identity (`P17-T03`). A cap that counted only
+    // patient records would stop counting the moment chat bookings moved off
+    // them -- it would still run, still pass, and bound nothing.
+    const awaiting = await this.prospectivePatientRepository.findAwaitingArrivalByPhoneNumber(
+      phoneNumber,
+    );
     const counts = await this.appointmentService.countChannelBookingLimits(
       {
         patientIds: matches.map((match) => match.id),
-        // Empty until `P17-T03` moves chat bookings onto prospective records
-        // and this lookup starts resolving them; the count already reads the
-        // column, so that ticket only has to fill this list.
-        prospectivePatientIds: [],
+        prospectivePatientIds: awaiting.map((record) => record.id),
         activeFrom: now,
         draftsSince: new Date(now.getTime() - DAY_IN_MS),
       },

@@ -286,10 +286,18 @@ export class AppointmentManagementRepository {
         return { outcome: 'SESSION_NOT_OPEN' };
       }
 
+      // Keyed on whichever side names the subject (`P17-T02`). Passing an
+      // `undefined` patient id here would drop the predicate entirely and match
+      // the *first* open booking in the session, so every prospective booking
+      // after the first would come back ALREADY_BOOKED for a stranger's slot.
+      const subjectWhere =
+        payload.patientId === undefined
+          ? { prospectivePatientId: payload.prospectivePatientId }
+          : { patientId: payload.patientId };
       const existingBooking = await tx.appointment.findFirst({
         where: {
           sessionId: session.id,
-          patientId: payload.patientId,
+          ...subjectWhere,
           status: {
             in: OPEN_APPOINTMENT_STATUSES,
           },
@@ -343,7 +351,8 @@ export class AppointmentManagementRepository {
 
       const created = await tx.appointment.create({
         data: {
-          patientId: payload.patientId,
+          patientId: payload.patientId ?? null,
+          prospectivePatientId: payload.prospectivePatientId ?? null,
           doctorId: payload.doctorId,
           type: 'SESSION',
           sessionId: session.id,

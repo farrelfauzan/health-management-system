@@ -25398,9 +25398,13 @@ paths:
                           type: string
                         specialty:
                           type: string
+                        subjectKind:
+                          type: string
                         patientId:
                           type: string
                         patientMrn:
+                          type: string
+                        prospectivePatientId:
                           type: string
                         patientFullName:
                           type: string
@@ -25421,8 +25425,7 @@ paths:
                         - scheduledAt
                         - appointmentStatus
                         - doctorName
-                        - patientId
-                        - patientMrn
+                        - subjectKind
                         - patientFullName
                         - patientPhoneNumber
                         - patientIsDraft
@@ -25447,8 +25450,10 @@ paths:
                       appointmentStatus: SCHEDULED
                       doctorName: dr. Andi Pratama
                       specialty: Dokter Umum
+                      subjectKind: PATIENT
                       patientId: 6d90a1c3-2f84-4b57-8e10-3c7f5a9d0b28
                       patientMrn: RM-000482
+                      prospectivePatientId: 9a1b2c3d-4e5f-4061-8a72-b3c4d5e6f708
                       patientFullName: Rina Kusuma
                       patientPhoneNumber: "628123456789"
                       patientIsDraft: true

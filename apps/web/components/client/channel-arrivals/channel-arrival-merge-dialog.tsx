@@ -25,6 +25,18 @@ type ChannelArrivalMergeDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   arrival: ChannelArrivalView;
+  /**
+   * The draft profile being merged, passed explicitly rather than read off
+   * `arrival` (`P17-T03`).
+   *
+   * Both are nullable on the view now that a prospective booking can appear on
+   * this worklist, and a prospective record has nothing to merge — it is not a
+   * patient record, so there is no second record to fold it into. Taking them
+   * as required props makes that state unrepresentable here instead of leaving
+   * a `null` to reach the endpoint as the string "null".
+   */
+  draftPatientId: string;
+  draftPatientMrn: string;
   onMerged: (message: string) => void;
   onFailed: (message: string) => void;
 };
@@ -49,6 +61,8 @@ export function ChannelArrivalMergeDialog({
   open,
   onOpenChange,
   arrival,
+  draftPatientId,
+  draftPatientMrn,
   onMerged,
   onFailed,
 }: ChannelArrivalMergeDialogProps) {
@@ -60,11 +74,11 @@ export function ChannelArrivalMergeDialog({
   // The API already excludes drafts, so the draft being merged cannot appear —
   // this filter is the belt to that braces, and costs nothing.
   const candidates = candidatesQuery.candidates.filter(
-    (patient) => patient.id !== arrival.patientId,
+    (patient) => patient.id !== draftPatientId,
   );
   const mergeMutation = useMutation({
     mutationFn: async (patientId: string) => {
-      await channelArrivalControllerMergeDraftPatientV1(arrival.patientId, {
+      await channelArrivalControllerMergeDraftPatientV1(draftPatientId, {
         targetPatientId: patientId,
       });
     },
@@ -87,7 +101,7 @@ export function ChannelArrivalMergeDialog({
           <DialogDescription>
             {t('description', {
               name: arrival.patientFullName,
-              mrn: arrival.patientMrn,
+              mrn: draftPatientMrn,
             })}
           </DialogDescription>
         </DialogHeader>

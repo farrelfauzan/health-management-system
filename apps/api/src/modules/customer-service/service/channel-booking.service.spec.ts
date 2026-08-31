@@ -6,6 +6,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AppointmentManagementService } from '../../appointment-management/service/appointment-management.service';
 import { PatientManagementService } from '../../patient-management/service/patient-management.service';
 import { ChannelPatientLinkRepository } from '../repository/channel-patient-link.repository';
+import { ProspectivePatientRepository } from '../repository/prospective-patient.repository';
 import { ChannelBookingService } from './channel-booking.service';
 import { ChannelVerificationService } from './channel-verification.service';
 import { encodeChannelSessionReference } from './channel-session-reference';
@@ -28,8 +29,12 @@ describe('ChannelBookingService', () => {
       'listSessionsCalendar' | 'bookSessionForChannel' | 'countChannelBookingLimits'
     >
   >;
-  let mockPatientService: jest.Mocked<
-    Pick<PatientManagementService, 'findChannelPhoneMatches' | 'createChannelDraftPatient'>
+  let mockPatientService: jest.Mocked<Pick<PatientManagementService, 'findChannelPhoneMatches'>>;
+  let mockProspectiveRepository: jest.Mocked<
+    Pick<
+      ProspectivePatientRepository,
+      'createAwaitingArrival' | 'findAwaitingArrivalByPhoneNumber'
+    >
   >;
   let mockLinkRepository: jest.Mocked<
     Pick<ChannelPatientLinkRepository, 'recordClaim' | 'markVerified'>
@@ -77,12 +82,30 @@ describe('ChannelBookingService', () => {
     };
   }
 
+  /** An open prospective record on this number, as `P17-T03` reuses it. */
+  function buildAwaiting(id: string, fullName: string) {
+    return {
+      id,
+      fullName,
+      phoneNumber: '628123456789',
+      channel: 'TELEGRAM' as const,
+      externalChatId: '12345',
+      status: 'AWAITING_ARRIVAL' as const,
+      patientId: null,
+      convertedAt: null,
+      convertedById: null,
+      expiresAt: '2026-11-29T00:00:00.000Z',
+      createdAt: '2026-08-31T00:00:00.000Z',
+    };
+  }
+
   function buildService(): ChannelBookingService {
     return new ChannelBookingService(
       new ConfigService({}),
       mockAppointmentService as unknown as AppointmentManagementService,
       mockPatientService as unknown as PatientManagementService,
       mockLinkRepository as unknown as ChannelPatientLinkRepository,
+      mockProspectiveRepository as unknown as ProspectivePatientRepository,
       mockVerificationService as unknown as ChannelVerificationService,
     );
   }
@@ -99,9 +122,22 @@ describe('ChannelBookingService', () => {
     };
     mockPatientService = {
       findChannelPhoneMatches: jest.fn().mockResolvedValue([]),
-      createChannelDraftPatient: jest
-        .fn()
-        .mockResolvedValue({ id: 'draft-1', mrn: '00000009', fullName: 'Siti Aminah' }),
+    };
+    mockProspectiveRepository = {
+      findAwaitingArrivalByPhoneNumber: jest.fn().mockResolvedValue([]),
+      createAwaitingArrival: jest.fn().mockResolvedValue({
+        id: 'prospective-1',
+        fullName: 'Siti Aminah',
+        phoneNumber: '628123456789',
+        channel: 'TELEGRAM',
+        externalChatId: '12345',
+        status: 'AWAITING_ARRIVAL',
+        patientId: null,
+        convertedAt: null,
+        convertedById: null,
+        expiresAt: '2026-11-29T00:00:00.000Z',
+        createdAt: '2026-08-31T00:00:00.000Z',
+      }),
     };
     mockLinkRepository = {
       recordClaim: jest.fn().mockResolvedValue({
@@ -125,28 +161,54 @@ describe('ChannelBookingService', () => {
     bookingService = buildService();
   });
 
-  it('books against a fresh draft when the number matches nothing', async () => {
+  it('opens a prospective record when the number matches nothing, and spends no MRN', async () => {
     const outcome = await bookingService.bookFromChannel(buildBookingParams());
 
-    expect(mockPatientService.createChannelDraftPatient).toHaveBeenCalledWith(
-      // Stored normalised, so the customer's *next* booking finds this draft
-      // instead of creating a second one.
-      { fullName: 'Siti Aminah', phoneNumber: '628123456789' },
+    expect(mockProspectiveRepository.createAwaitingArrival).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fullName: 'Siti Aminah',
+        // Stored normalised, so the customer's *next* booking finds this record
+        // instead of opening a second one.
+        phoneNumber: '628123456789',
+        channel: 'TELEGRAM',
+        externalChatId: '12345',
+      }),
+    );
+    // The whole point of P17-T03: no PatientProfile, so no MRN.
+    expect(mockAppointmentService.bookSessionForChannel).toHaveBeenCalledWith(
+      expect.objectContaining({ prospectivePatientId: 'prospective-1' }),
       inputActor,
+    );
+    expect(mockAppointmentService.bookSessionForChannel.mock.calls[0]?.[0]).not.toHaveProperty(
+      'patientId',
     );
     expect(outcome.result.outcome).toBe('CONFIRMED');
   });
 
-  it('reuses a draft this chat already created for the same number', async () => {
-    mockPatientService.findChannelPhoneMatches.mockResolvedValue([
-      { id: 'draft-1', fullName: 'Siti Aminah', source: 'CHANNEL_BOOKING' },
-    ] satisfies PatientPhoneMatch[]);
+  it('gives the record an expiry from the configured retention window', async () => {
+    await bookingService.bookFromChannel(buildBookingParams());
+
+    const [payload] = mockProspectiveRepository.createAwaitingArrival.mock.calls[0] as [
+      { expiresAt: Date },
+    ];
+    const daysAhead = Math.round(
+      (payload.expiresAt.getTime() - Date.now()) / 86_400_000,
+    );
+    // 90 days by default, and not the 25-year RME floor — no MRN was spent and
+    // no clinical record exists, so UU PDP 27/2022 governs, not PMK 24/2022.
+    expect(daysAhead).toBe(90);
+  });
+
+  it('reuses a prospective record this number already opened', async () => {
+    mockProspectiveRepository.findAwaitingArrivalByPhoneNumber.mockResolvedValue([
+      buildAwaiting('prospective-existing', 'Siti Aminah'),
+    ]);
 
     await bookingService.bookFromChannel(buildBookingParams());
 
-    expect(mockPatientService.createChannelDraftPatient).not.toHaveBeenCalled();
+    expect(mockProspectiveRepository.createAwaitingArrival).not.toHaveBeenCalled();
     expect(mockAppointmentService.bookSessionForChannel).toHaveBeenCalledWith(
-      expect.objectContaining({ patientId: 'draft-1' }),
+      expect.objectContaining({ prospectivePatientId: 'prospective-existing' }),
       inputActor,
     );
   });
@@ -158,37 +220,36 @@ describe('ChannelBookingService', () => {
    * following it onto the wrong record.
    */
   describe('satu nomor, beberapa pasien', () => {
-    it('creates a separate draft when the same number books for somebody else', async () => {
-      mockPatientService.findChannelPhoneMatches.mockResolvedValue([
-        { id: 'draft-parent', fullName: 'Rizky Pratama', source: 'CHANNEL_BOOKING' },
-      ] satisfies PatientPhoneMatch[]);
+    it('opens a separate record when the same number books for somebody else', async () => {
+      mockProspectiveRepository.findAwaitingArrivalByPhoneNumber.mockResolvedValue([
+        buildAwaiting('prospective-parent', 'Rizky Pratama'),
+      ]);
 
       await bookingService.bookFromChannel(
         buildBookingParams({ patientFullName: 'Alya Pratama' }),
       );
 
-      expect(mockPatientService.createChannelDraftPatient).toHaveBeenCalledWith(
-        { fullName: 'Alya Pratama', phoneNumber: '628123456789' },
-        inputActor,
+      expect(mockProspectiveRepository.createAwaitingArrival).toHaveBeenCalledWith(
+        expect.objectContaining({ fullName: 'Alya Pratama', phoneNumber: '628123456789' }),
       );
       expect(mockAppointmentService.bookSessionForChannel).not.toHaveBeenCalledWith(
-        expect.objectContaining({ patientId: 'draft-parent' }),
+        expect.objectContaining({ prospectivePatientId: 'prospective-parent' }),
         inputActor,
       );
     });
 
-    it('still reuses the draft when the same person books again, spelled loosely', async () => {
-      mockPatientService.findChannelPhoneMatches.mockResolvedValue([
-        { id: 'draft-parent', fullName: 'Rizky Pratama', source: 'CHANNEL_BOOKING' },
-      ] satisfies PatientPhoneMatch[]);
+    it('still reuses the record when the same person books again, spelled loosely', async () => {
+      mockProspectiveRepository.findAwaitingArrivalByPhoneNumber.mockResolvedValue([
+        buildAwaiting('prospective-parent', 'Rizky Pratama'),
+      ]);
 
       await bookingService.bookFromChannel(
         buildBookingParams({ patientFullName: '  rizky   pratama ' }),
       );
 
-      expect(mockPatientService.createChannelDraftPatient).not.toHaveBeenCalled();
+      expect(mockProspectiveRepository.createAwaitingArrival).not.toHaveBeenCalled();
       expect(mockAppointmentService.bookSessionForChannel).toHaveBeenCalledWith(
-        expect.objectContaining({ patientId: 'draft-parent' }),
+        expect.objectContaining({ prospectivePatientId: 'prospective-parent' }),
         inputActor,
       );
     });
@@ -205,9 +266,8 @@ describe('ChannelBookingService', () => {
       // No challenge either: there is nothing about the child to prove against
       // the parent's record, so this is an ordinary first booking.
       expect(outcome.result.outcome).toBe('CONFIRMED');
-      expect(mockPatientService.createChannelDraftPatient).toHaveBeenCalledWith(
-        { fullName: 'Alya Pratama', phoneNumber: '628123456789' },
-        inputActor,
+      expect(mockProspectiveRepository.createAwaitingArrival).toHaveBeenCalledWith(
+        expect.objectContaining({ fullName: 'Alya Pratama', phoneNumber: '628123456789' }),
       );
     });
 
@@ -237,9 +297,8 @@ describe('ChannelBookingService', () => {
         expect.objectContaining({ patientId: 'patient-parent' }),
         inputActor,
       );
-      expect(mockPatientService.createChannelDraftPatient).toHaveBeenCalledWith(
-        { fullName: 'Alya Pratama', phoneNumber: '628123456789' },
-        inputActor,
+      expect(mockProspectiveRepository.createAwaitingArrival).toHaveBeenCalledWith(
+        expect.objectContaining({ fullName: 'Alya Pratama', phoneNumber: '628123456789' }),
       );
     });
   });
@@ -310,9 +369,10 @@ describe('ChannelBookingService', () => {
     const outcome = await bookingService.bookFromChannel(buildBookingParams());
 
     // §5.1.1's no-registry-oracle rule: the existing record is untouched, a
-    // draft is created instead, and the reply is the ordinary confirmation.
+    // prospective record is opened instead, and the reply is the ordinary
+    // confirmation.
     expect(mockAppointmentService.bookSessionForChannel).toHaveBeenCalledWith(
-      expect.objectContaining({ patientId: 'draft-1' }),
+      expect.objectContaining({ prospectivePatientId: 'prospective-1' }),
       inputActor,
     );
     expect(outcome.result.outcome).toBe('CONFIRMED');
@@ -379,7 +439,7 @@ describe('ChannelBookingService', () => {
     // A capped booking must leave no draft behind, or the cap becomes a way to
     // fill the patient table.
     expect(outcome.result).toEqual({ outcome: 'REJECTED', reason: 'TOO_MANY_ACTIVE_BOOKINGS' });
-    expect(mockPatientService.createChannelDraftPatient).not.toHaveBeenCalled();
+    expect(mockProspectiveRepository.createAwaitingArrival).not.toHaveBeenCalled();
   });
 
   it('applies the clinic-wide daily cap on unknown-number bookings', async () => {

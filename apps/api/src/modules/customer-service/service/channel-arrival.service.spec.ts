@@ -27,15 +27,34 @@ describe('ChannelArrivalService', () => {
       appointmentStatus: 'SCHEDULED',
       doctorName: 'dr. Andi',
       specialty: 'Dokter Umum',
+      subjectKind: 'PATIENT',
       patientId: 'patient-draft',
       patientMrn: 'RM-000482',
+      patientSource: 'CHANNEL_BOOKING',
+      prospectivePatientId: null,
       patientFullName: 'Rina',
       patientPhoneNumber: '628123456789',
-      patientSource: 'CHANNEL_BOOKING',
       missingFields: ['dateOfBirth', 'address', 'nik'],
       createdAt: '2026-08-08T14:22:00.000Z',
       ...overrides,
     };
+  }
+
+  /** A booking taken after `P17-T03`: no patient record, no MRN spent. */
+  function buildProspectiveArrival(
+    overrides: Partial<ChannelArrivalRecord> = {},
+  ): ChannelArrivalRecord {
+    return buildArrival({
+      appointmentId: 'appointment-2',
+      subjectKind: 'PROSPECTIVE_PATIENT',
+      patientId: null,
+      patientMrn: null,
+      patientSource: null,
+      prospectivePatientId: 'prospective-1',
+      patientFullName: 'Siti Rahayu',
+      missingFields: ['dateOfBirth', 'sex', 'address', 'nik', 'bpjsNumber'],
+      ...overrides,
+    });
   }
 
   function buildPatient(overrides: Record<string, unknown> = {}) {
@@ -112,6 +131,43 @@ describe('ChannelArrivalService', () => {
       // identifiers are still reported, but they do not hold the row open.
       expect(actual.items[0]?.patientIsDraft).toBe(false);
       expect(actual.items[0]?.missingFields).toEqual(['nik', 'bpjsNumber']);
+    });
+
+    it('holds a prospective booking open and carries no patient id', async () => {
+      mockRepository.listArrivals.mockResolvedValue({
+        items: [buildProspectiveArrival()],
+        nextCursor: null,
+      });
+
+      const actual = await channelArrivalService.listArrivals({ limit: 25 });
+
+      // Incomplete by construction: the table holds a name and a phone number
+      // and has no column a date of birth could have come from.
+      expect(actual.items[0]?.patientIsDraft).toBe(true);
+      expect(actual.items[0]?.subjectKind).toBe('PROSPECTIVE_PATIENT');
+      // Null, not a blank string — there is no record and no MRN was spent, and
+      // the desk converts against `prospectivePatientId` instead.
+      expect(actual.items[0]?.patientId).toBeNull();
+      expect(actual.items[0]?.patientMrn).toBeNull();
+      expect(actual.items[0]?.prospectivePatientId).toBe('prospective-1');
+      expect(actual.items[0]?.patientFullName).toBe('Siti Rahayu');
+    });
+
+    it('lists a legacy draft and a prospective booking side by side', async () => {
+      // Both shapes coexist until `P17-T05` drains the old ones, and the desk
+      // sees one worklist rather than two screens.
+      mockRepository.listArrivals.mockResolvedValue({
+        items: [buildArrival(), buildProspectiveArrival()],
+        nextCursor: null,
+      });
+
+      const actual = await channelArrivalService.listArrivals({ limit: 25 });
+
+      expect(actual.items.map((item) => item.subjectKind)).toEqual([
+        'PATIENT',
+        'PROSPECTIVE_PATIENT',
+      ]);
+      expect(actual.items.every((item) => item.patientIsDraft)).toBe(true);
     });
 
     it('does not mark a verified customer’s booking as a draft', async () => {

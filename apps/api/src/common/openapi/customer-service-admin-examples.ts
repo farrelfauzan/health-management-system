@@ -75,8 +75,14 @@ export const CUSTOMER_SERVICE_ADMIN_EXAMPLES = {
     appointmentStatus: 'SCHEDULED',
     doctorName: 'dr. Andi Pratama',
     specialty: optionalExample('Dokter Umum'),
-    patientId: '6d90a1c3-2f84-4b57-8e10-3c7f5a9d0b28',
-    patientMrn: 'RM-000482',
+    // Two shapes of booking share this worklist until `P17-T05` drains the old
+    // ones (`P17-T03`). This row is a legacy draft profile, which has a patient
+    // id and an MRN already spent on it; a prospective booking has neither and
+    // carries `prospectivePatientId` instead — so all three are optional.
+    subjectKind: 'PATIENT',
+    patientId: optionalExample('6d90a1c3-2f84-4b57-8e10-3c7f5a9d0b28'),
+    patientMrn: optionalExample('RM-000482'),
+    prospectivePatientId: optionalExample('9a1b2c3d-4e5f-4061-8a72-b3c4d5e6f708'),
     patientFullName: 'Rina Kusuma',
     patientPhoneNumber: '628123456789',
     patientIsDraft: true,

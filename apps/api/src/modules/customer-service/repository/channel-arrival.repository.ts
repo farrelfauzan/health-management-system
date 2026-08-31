@@ -56,9 +56,20 @@ type ArrivalRow = {
   scheduledAt: Date;
   status: string;
   createdAt: Date;
-  /** Non-null by the query's own `patientId: { not: null }` predicate. */
-  patient: ArrivalPatientRow;
+  /**
+   * Exactly one of these, mirroring the appointment's own CHECK (`P17-T02`).
+   * A booking taken before `P17-T03` names a draft `patient`; one taken after
+   * names a `prospectivePatient` that cost no MRN.
+   */
+  patient: ArrivalPatientRow | null;
+  prospectivePatient: ArrivalProspectiveRow | null;
   doctor: { fullName: string; specialty: { name: string } };
+};
+
+type ArrivalProspectiveRow = {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
 };
 
 /**
@@ -100,17 +111,6 @@ export class ChannelArrivalRepository {
       where: {
         deletedAt: null,
         bookingSource: params.channel === undefined ? { not: null } : params.channel,
-        // Draft-profile bookings only, which is every channel booking there is
-        // until `P17-T03` starts writing prospective records instead.
-        //
-        // Explicit rather than implied by the old NOT NULL column (`P17-T02`).
-        // The row type below is projected through a cast, so without this
-        // predicate the first prospective booking would reach `toRecord` as a
-        // null `patient` and throw on a worklist the front desk depends on.
-        // Adding the prospective source is `P17-T04`'s work, and it is gated on
-        // design Q3 -- whether a prospective patient belongs in the ordinary
-        // registry search or only in this worklist.
-        patientId: { not: null },
         scheduledAt: { gte: new Date(params.from), lt: new Date(params.to) },
         ...(params.referenceCode === undefined
           ? {}
@@ -246,13 +246,60 @@ export class ChannelArrivalRepository {
       appointmentStatus: row.status,
       doctorName: row.doctor.fullName,
       specialty: row.doctor.specialty.name,
+      ...this.toSubject(row),
+      createdAt: row.createdAt.toISOString(),
+    };
+  }
+
+  /**
+   * The half of an arrival row that depends on which side of `P17-T02`'s key
+   * the booking names.
+   *
+   * A prospective record is missing **every** field a clinical record needs, and
+   * that is stated rather than computed: the table has no column to read a date
+   * of birth or an address out of, because the chatbot may not ask for either.
+   * Listing them all is what makes the worklist say "this person needs a full
+   * registration" instead of showing an empty checklist that reads as complete.
+   */
+  private toSubject(
+    row: ArrivalRow,
+  ): Pick<
+    ChannelArrivalRecord,
+    | 'subjectKind'
+    | 'patientId'
+    | 'patientMrn'
+    | 'patientSource'
+    | 'prospectivePatientId'
+    | 'patientFullName'
+    | 'patientPhoneNumber'
+    | 'missingFields'
+  > {
+    if (row.prospectivePatient !== null) {
+      return {
+        subjectKind: 'PROSPECTIVE_PATIENT',
+        patientId: null,
+        patientMrn: null,
+        patientSource: null,
+        prospectivePatientId: row.prospectivePatient.id,
+        patientFullName: row.prospectivePatient.fullName,
+        patientPhoneNumber: row.prospectivePatient.phoneNumber,
+        missingFields: [...CHANNEL_DRAFT_MISSING_FIELDS],
+      };
+    }
+    if (row.patient === null) {
+      throw new Error(
+        'Arrival row names neither a patient nor a prospective patient; the appointment CHECK should make this unreachable',
+      );
+    }
+    return {
+      subjectKind: 'PATIENT',
       patientId: row.patient.id,
       patientMrn: row.patient.mrn,
+      patientSource: row.patient.source,
+      prospectivePatientId: null,
       patientFullName: row.patient.fullName,
       patientPhoneNumber: row.patient.phoneNumber,
-      patientSource: row.patient.source,
       missingFields: readMissingFields(row.patient),
-      createdAt: row.createdAt.toISOString(),
     };
   }
 }
@@ -292,5 +339,6 @@ const ARRIVAL_SELECT = {
   status: true,
   createdAt: true,
   patient: { select: ARRIVAL_PATIENT_SELECT },
+  prospectivePatient: { select: { id: true, fullName: true, phoneNumber: true } },
   doctor: { select: { fullName: true, specialty: { select: { name: true } } } },
 } as const;

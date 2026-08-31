@@ -486,7 +486,16 @@ export type ListChannelArrivalsParams = {
   limit: number;
 };
 
-/** One arrival row as the repository projects it, before completeness is judged. */
+/**
+ * One arrival row as the repository projects it, before completeness is judged.
+ *
+ * Two shapes of booking reach this worklist, and they will keep doing so until
+ * `P17-T05` drains the old ones: a **legacy draft profile** the channel created
+ * before `P17-T03`, which has a patient id and an MRN already spent on it; and a
+ * **prospective record**, which has neither. `subjectKind` says which, and the
+ * two id fields follow it — the desk needs the right id to convert against, and
+ * guessing from a null would be guessing.
+ */
 export type ChannelArrivalRecord = {
   appointmentId: string;
   bookingReferenceCode: string | null;
@@ -495,14 +504,28 @@ export type ChannelArrivalRecord = {
   appointmentStatus: string;
   doctorName: string;
   specialty: string | null;
-  patientId: string;
-  patientMrn: string;
+  subjectKind: ChannelArrivalSubjectKind;
+  /** Set only when `subjectKind` is `PATIENT` — a legacy draft profile. */
+  patientId: string | null;
+  patientMrn: string | null;
+  patientSource: 'FRONT_DESK' | 'CHANNEL_BOOKING' | null;
+  /** Set only when `subjectKind` is `PROSPECTIVE_PATIENT`. */
+  prospectivePatientId: string | null;
   patientFullName: string;
   patientPhoneNumber: string;
-  patientSource: 'FRONT_DESK' | 'CHANNEL_BOOKING';
   missingFields: ChannelDraftMissingFieldValue[];
   createdAt: string;
 };
+
+/**
+ * Which table the person on an arrival row lives in.
+ *
+ * Not merged into one id, because the two mean different things at the counter:
+ * a `PATIENT` row already cost an MRN and is completed through the patient-edit
+ * route, while a `PROSPECTIVE_PATIENT` row has cost nothing and is converted —
+ * which is where the MRN is finally spent.
+ */
+export type ChannelArrivalSubjectKind = 'PATIENT' | 'PROSPECTIVE_PATIENT';
 
 /** What a draft merge moved, as the transaction reports it. */
 export type ChannelDraftMergeResult = {

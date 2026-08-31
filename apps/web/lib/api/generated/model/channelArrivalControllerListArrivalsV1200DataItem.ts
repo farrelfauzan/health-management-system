@@ -14,8 +14,10 @@ export type ChannelArrivalControllerListArrivalsV1200DataItem = {
   appointmentStatus: string;
   doctorName: string;
   specialty?: string;
-  patientId: string;
-  patientMrn: string;
+  subjectKind: string;
+  patientId?: string;
+  patientMrn?: string;
+  prospectivePatientId?: string;
   patientFullName: string;
   patientPhoneNumber: string;
   patientIsDraft: boolean;

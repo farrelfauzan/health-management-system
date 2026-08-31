@@ -45,7 +45,14 @@ export type CreateAppointmentRecordPayload = {
 };
 
 export type BookSessionSlotPayload = {
-  patientId: string;
+  /**
+   * Exactly one of these names who the slot is for (`P17-T02`). A booking made
+   * at the desk, in the portal or by BPJS carries `patientId`; one taken over
+   * a messaging channel from somebody the registry does not know carries
+   * `prospectivePatientId` and spends no MRN (`P17-T03`).
+   */
+  patientId?: string;
+  prospectivePatientId?: string;
   doctorId: string;
   scheduleId: string;
   sessionDate: string;
@@ -83,7 +90,14 @@ export type BookSessionSlotPayload = {
  * message.
  */
 export type BookChannelSessionInput = {
-  patientId: string;
+  /**
+   * Exactly one of these. A verified customer's booking attaches to the
+   * `PatientProfile` the registry already holds; a booking from a number the
+   * registry does not know names a `ProspectivePatient` instead and spends no
+   * MRN (`P17-T03`).
+   */
+  patientId?: string;
+  prospectivePatientId?: string;
   doctorId: string;
   scheduleId: string;
   /** ISO calendar date in the clinic timezone. */
