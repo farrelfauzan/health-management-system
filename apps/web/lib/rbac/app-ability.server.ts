@@ -85,6 +85,10 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // either end for an `:own` scope to resolve against.
   conversation: 'Conversation',
   'ai-provider': 'AiProviderConfig',
+  // P16-T02. Hyphen, not dot: `permissionToRule` splits on dots, so
+  // `clinic-profile.read:any` resolves to resource `clinic-profile` and
+  // action `read` — one segment, the way `service-tariff` does.
+  'clinic-profile': 'ClinicProfile',
   // Both scopes collapse to one subject here. `permissionToRule` drops the
   // `:own` / `:any` suffix, so this cannot distinguish an admin's clinic-corpus
   // grant from a clinician's personal one — and must not try to. It decides

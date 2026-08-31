@@ -421,6 +421,7 @@ export const ModelName = {
   DispenseItem: 'DispenseItem',
   MedicationStockReceipt: 'MedicationStockReceipt',
   DispenseItemStockAllocation: 'DispenseItemStockAllocation',
+  ClinicProfile: 'ClinicProfile',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -472,7 +473,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3211,6 +3212,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DispenseItemStockAllocationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DispenseItemStockAllocationCountAggregateOutputType> | number
+        }
+      }
+    }
+    ClinicProfile: {
+      payload: Prisma.$ClinicProfilePayload<ExtArgs>
+      fields: Prisma.ClinicProfileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ClinicProfileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ClinicProfileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload>
+        }
+        findFirst: {
+          args: Prisma.ClinicProfileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ClinicProfileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload>
+        }
+        findMany: {
+          args: Prisma.ClinicProfileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload>[]
+        }
+        create: {
+          args: Prisma.ClinicProfileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload>
+        }
+        createMany: {
+          args: Prisma.ClinicProfileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ClinicProfileCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload>[]
+        }
+        delete: {
+          args: Prisma.ClinicProfileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload>
+        }
+        update: {
+          args: Prisma.ClinicProfileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload>
+        }
+        deleteMany: {
+          args: Prisma.ClinicProfileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ClinicProfileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ClinicProfileUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload>[]
+        }
+        upsert: {
+          args: Prisma.ClinicProfileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicProfilePayload>
+        }
+        aggregate: {
+          args: Prisma.ClinicProfileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateClinicProfile>
+        }
+        groupBy: {
+          args: Prisma.ClinicProfileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicProfileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ClinicProfileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicProfileCountAggregateOutputType> | number
         }
       }
     }
@@ -6517,6 +6592,25 @@ export const DispenseItemStockAllocationScalarFieldEnum = {
 export type DispenseItemStockAllocationScalarFieldEnum = (typeof DispenseItemStockAllocationScalarFieldEnum)[keyof typeof DispenseItemStockAllocationScalarFieldEnum]
 
 
+export const ClinicProfileScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  name: 'name',
+  legalName: 'legalName',
+  address: 'address',
+  phoneNumber: 'phoneNumber',
+  email: 'email',
+  licenseNumber: 'licenseNumber',
+  taxId: 'taxId',
+  logoStorageKey: 'logoStorageKey',
+  logoMimeType: 'logoMimeType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClinicProfileScalarFieldEnum = (typeof ClinicProfileScalarFieldEnum)[keyof typeof ClinicProfileScalarFieldEnum]
+
+
 export const ServiceTariffScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -8219,6 +8313,7 @@ export type GlobalOmitConfig = {
   dispenseItem?: Prisma.DispenseItemOmit
   medicationStockReceipt?: Prisma.MedicationStockReceiptOmit
   dispenseItemStockAllocation?: Prisma.DispenseItemStockAllocationOmit
+  clinicProfile?: Prisma.ClinicProfileOmit
   serviceTariff?: Prisma.ServiceTariffOmit
   invoiceCounter?: Prisma.InvoiceCounterOmit
   invoice?: Prisma.InvoiceOmit

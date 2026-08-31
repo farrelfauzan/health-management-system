@@ -88,6 +88,7 @@ export const ModelName = {
   DispenseItem: 'DispenseItem',
   MedicationStockReceipt: 'MedicationStockReceipt',
   DispenseItemStockAllocation: 'DispenseItemStockAllocation',
+  ClinicProfile: 'ClinicProfile',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -740,6 +741,25 @@ export const DispenseItemStockAllocationScalarFieldEnum = {
 } as const
 
 export type DispenseItemStockAllocationScalarFieldEnum = (typeof DispenseItemStockAllocationScalarFieldEnum)[keyof typeof DispenseItemStockAllocationScalarFieldEnum]
+
+
+export const ClinicProfileScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  name: 'name',
+  legalName: 'legalName',
+  address: 'address',
+  phoneNumber: 'phoneNumber',
+  email: 'email',
+  licenseNumber: 'licenseNumber',
+  taxId: 'taxId',
+  logoStorageKey: 'logoStorageKey',
+  logoMimeType: 'logoMimeType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClinicProfileScalarFieldEnum = (typeof ClinicProfileScalarFieldEnum)[keyof typeof ClinicProfileScalarFieldEnum]
 
 
 export const ServiceTariffScalarFieldEnum = {

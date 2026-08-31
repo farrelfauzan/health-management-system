@@ -236,3 +236,83 @@ export type RecordPaymentInput = z.infer<typeof recordPaymentSchema>;
 export type VoidInvoiceInput = z.infer<typeof voidInvoiceSchema>;
 export type ListInvoicesQueryInput = z.infer<typeof listInvoicesQuerySchema>;
 export type CashierDailyReportQueryInput = z.infer<typeof cashierDailyReportQuerySchema>;
+
+/**
+ * What a browser may hand the clinic-logo upload (P16-T02).
+ *
+ * Three types, not the bucket's list: `docs/security/file-uploads.md` §2
+ * requires every surface to declare its own allowlist rather than inherit the
+ * storage default. WebP is here because phone cameras and design tools both
+ * emit it; SVG deliberately is not — it is a document format with script and
+ * external-reference semantics, and the one thing a logo must not be able to
+ * do is execute or phone home from inside a rendered invoice.
+ */
+export const CLINIC_LOGO_UPLOAD_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
+
+export const clinicLogoUploadMimeTypeSchema = z.enum(CLINIC_LOGO_UPLOAD_MIME_TYPES);
+
+export type ClinicLogoUploadMimeTypeValue = z.infer<typeof clinicLogoUploadMimeTypeSchema>;
+
+/**
+ * What the server stores, whatever arrived. Every accepted image is decoded
+ * and re-encoded to PNG before it is kept: lossless for the flat colour a
+ * logo is made of, universally renderable by the PDF engine, and alpha-
+ * preserving so a transparent mark does not gain a white box on a coloured
+ * invoice header.
+ */
+export const CLINIC_LOGO_STORED_MIME_TYPE = 'image/png';
+
+/**
+ * 2 MiB, well under the bucket's own 5 MiB ceiling. A logo is a few tens of
+ * kilobytes; anything approaching this is a photograph someone dropped in by
+ * mistake, and refusing it before signing costs the clinic one clear message
+ * instead of a slow upload that the re-encode then has to chew through.
+ */
+export const CLINIC_LOGO_MAX_UPLOAD_SIZE_BYTES = 2 * 1024 * 1024;
+
+/**
+ * The longest edge the stored logo keeps. An invoice header renders it at a
+ * few centimetres, and the resolved `clinic.logo` variable is embedded in the
+ * document as a `data:` URI — so every pixel above what print needs is
+ * base64 in the HTML the renderer has to parse, twice, on every invoice.
+ */
+export const CLINIC_LOGO_MAX_EDGE_PIXELS = 1024;
+
+export const createClinicLogoUploadUrlSchema = z.object({
+  mimeType: clinicLogoUploadMimeTypeSchema,
+  sizeBytes: z.number().int().positive().max(CLINIC_LOGO_MAX_UPLOAD_SIZE_BYTES),
+});
+
+const optionalClinicProfileTextSchema = z.string().trim().max(255);
+
+/**
+ * Every field is optional because this is a PATCH over a record clinics fill
+ * in over time, and `.nullable()` on the optional ones is what lets a value be
+ * *cleared* — `undefined` means "leave it alone", `null` means "remove it".
+ * `name` is the exception in both directions: it cannot be cleared, and it is
+ * required on the first save, which the service enforces because only it knows
+ * whether a row exists yet.
+ */
+export const updateClinicProfileSchema = z
+  .object({
+    name: z.string().trim().min(1).max(255).optional(),
+    legalName: optionalClinicProfileTextSchema.nullable().optional(),
+    address: z.string().trim().max(1000).nullable().optional(),
+    phoneNumber: optionalClinicProfileTextSchema.nullable().optional(),
+    email: z.string().trim().email().max(255).nullable().optional(),
+    licenseNumber: optionalClinicProfileTextSchema.nullable().optional(),
+    taxId: optionalClinicProfileTextSchema.nullable().optional(),
+    /**
+     * A key this API minted for a logo upload, `null` to remove the current
+     * logo, or absent to leave it untouched. The key is proven rather than
+     * trusted at the service — a confirm naming another feature's object must
+     * not become this clinic's letterhead.
+     */
+    logoStorageKey: z.string().trim().min(1).max(255).nullable().optional(),
+  })
+  .refine((input) => Object.values(input).some((value) => value !== undefined), {
+    message: 'At least one field must be provided',
+  });
+
+export type CreateClinicLogoUploadUrlInput = z.infer<typeof createClinicLogoUploadUrlSchema>;
+export type UpdateClinicProfileInput = z.infer<typeof updateClinicProfileSchema>;

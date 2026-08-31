@@ -159,17 +159,35 @@ describe('S3StorageService', () => {
     expect(result).toEqual({ key: 'patients/photos/object-key', etag: '"etag-value"' });
   });
 
-  it('rejects image uploads under the default allowlist (SJ-21)', async () => {
-    // Image types leave the default until an image-bearing feature ships
-    // with its re-encode step — a bucket that quietly accepts them is
-    // standing room for a surface that skips it.
+  it('accepts the image types the clinic logo re-encodes (SJ-21, P16-T02)', async () => {
+    // Image types were held out of the default until an image-bearing feature
+    // shipped with its re-encode step. P16-T02 is that feature: the clinic
+    // logo decodes and rewrites every accepted image before storing it, so
+    // the bucket no longer has to refuse the type outright.
+    mockSend.mockResolvedValue({ ETag: '"etag-value"', $metadata: { requestId: 'req-1' } });
+    const service = new S3StorageService(buildConfigService());
+
+    await service.uploadObject({
+      key: 'clinic-profile/logo/stored/object-key.png',
+      body: Buffer.from('content'),
+      contentType: 'image/png',
+    });
+
+    expect(mockSend).toHaveBeenCalledTimes(1);
+  });
+
+  it('still refuses a type no surface declares (SJ-21)', async () => {
+    // The allowlist is the union of what the shipped surfaces accept, never a
+    // convenience list. SVG is the case worth naming: a document format with
+    // script and external-reference semantics wearing an `image/` prefix, and
+    // deliberately absent from the clinic logo's own allowlist too.
     const service = new S3StorageService(buildConfigService());
 
     await expect(
       service.uploadObject({
-        key: 'patients/photos/object-key',
-        body: Buffer.from('content'),
-        contentType: 'image/png',
+        key: 'clinic-profile/logo/stored/object-key.svg',
+        body: Buffer.from('<svg/>'),
+        contentType: 'image/svg+xml',
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(mockSend).not.toHaveBeenCalled();

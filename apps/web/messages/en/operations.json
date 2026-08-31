@@ -490,6 +490,44 @@
         "deleting": "Deleting…",
         "deleteSuccess": "{count, plural, =0 {Role deleted} one {Role deleted; # assignment revoked} other {Role deleted; # assignments revoked}}",
         "deleteError": "Failed to delete the role"
+      },
+      "clinicProfile": {
+        "tab": "Clinic profile",
+        "title": "Clinic profile",
+        "subtitle": "The clinic identity printed on invoices, receipts, and clinical documents.",
+        "save": "Save profile",
+        "saving": "Saving...",
+        "saved": "Clinic profile saved.",
+        "fields": {
+          "name": "Clinic name",
+          "legalName": "Legal entity name",
+          "address": "Address",
+          "phoneNumber": "Phone number",
+          "email": "Email",
+          "licenseNumber": "Operating licence number",
+          "taxId": "Tax ID (NPWP)"
+        },
+        "logo": {
+          "label": "Logo",
+          "choose": "Choose file",
+          "uploading": "Uploading...",
+          "remove": "Remove",
+          "empty": "No logo",
+          "previewAlt": "Clinic logo",
+          "hint": "JPEG, PNG, or WebP, up to 2 MB. The image is re-encoded and resized before it is stored.",
+          "errors": {
+            "unsupportedType": "Choose a JPEG, PNG, or WebP image.",
+            "tooLarge": "That image is larger than 2 MB.",
+            "failed": "Unable to upload the logo. Please try again."
+          }
+        },
+        "states": {
+          "loading": "Loading the clinic profile...",
+          "loadFailed": "Unable to load the clinic profile. Please try again."
+        },
+        "errors": {
+          "saveFailed": "Unable to save the clinic profile. Please try again."
+        }
       }
     },
     "rooms": {

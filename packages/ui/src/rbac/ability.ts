@@ -53,6 +53,10 @@ export type AppSubject =
   | 'Conversation'
   | 'AiProviderConfig'
   | 'Document'
+  // P16-T02. The clinic's own identity, printed on everything the clinic
+  // hands out — read by every role that produces a document, written by
+  // administrators alone.
+  | 'ClinicProfile'
   | 'BpjsConfig'
   | 'BpjsReference'
   | 'BpjsMapping'
