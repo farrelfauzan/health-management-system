@@ -76,3 +76,49 @@ Dev credentials were **not** obtainable in this spike: BPJS issues them per faci
   3. **The tenant database is the clinic's.** Under the per-tenant-database decision, anything stored there is reachable by whoever holds the connection. A vendor-only role stored inside the tenant it is meant to govern is a soft boundary dressed as a hard one.
   Worth recording alongside this: `SUPER_ADMIN` is **not** vendor-only today — `seed.sql` assigns it to `admin@salingjaga.com`, the clinic's own administrator. The separation this ADR assumes does not exist yet in either direction, and §6.4 is what creates it.
 - **Consequence:** `IMP-6` … `IMP-8` stand unchanged and no rework is implied. `FeatureGuard` must keep reading the entitlement on the tenant's own connection — moving enforcement to the control plane would put a network hop in front of every guarded request, which is the one thing `IMP-8`'s cache exists to avoid. `IMP-9` is unaffected: `GET /features/availability` is a tenant route answering for the signed-in user, not a management surface. No ticket is filed for a clinic-portal features screen; the interim runbook folds into `IMP-10` instead, so the board carries no row that would build the rejected version. At M0 the entitlement becomes a control-plane table, the tenant row becomes a projection refreshed on write, and `PUT /admin/features/:key` stops being an operator-facing endpoint and becomes the control plane's write path into a tenant. Platform-staff access, whenever it lands, follows §6.4 unchanged — distinct token type, explicit time-boxed impersonation, `TENANT_IMPERSONATION_STARTED` / `_ENDED` written to both the control plane and the clinic's own audit log. Left deliberately open: whether `feature.read:any` and `feature.manage:any` survive in the tenant permission catalog once the control plane owns the write path, or are retired in favour of a platform token — that is decided at M0 with the routing layer in front of it, not now.
+
+## D-026: HTML→PDF Rendering Runs in a Network-Denied Gotenberg Sidecar (P16-T01 Spike)
+
+- **Status:** Accepted
+- **Decision:** Render invoice and clinical documents by POSTing self-contained HTML to a **Gotenberg 8 sidecar** on `/forms/chromium/convert/html`, and reach it through an internal port at `apps/api/src/common/pdf/` (`PdfRendererService` abstract class, `GotenbergPdfRendererService` adapter, `PdfModule`) that mirrors `ObjectStorageService`. The container is pinned to `gotenberg/gotenberg:8.36.0`, sits behind the `pdf` compose profile with **no published port** on an `internal: true` Docker network with **no gateway**, runs with Chromium's own outbound filtering denying both private and public IPs, and has the LibreOffice and PDF-engine routes disabled. Reject Puppeteer-in-the-API-image, `@react-pdf/renderer`/`pdfmake`, and `wkhtmltopdf`.
+- **Why:** The template is authored as HTML in a WYSIWYG editor, so fidelity means a real browser engine, and that narrows the field to Chromium in-process or Chromium in a sidecar. The sidecar wins on the property that matters here: **Chromium is the largest untrusted-input parser this product will ever hold, and a renderer bug must not land in the process holding the database connection and the application's credentials.** The measurements below then removed the two objections the PRD raised against it (§R-1: ops cost; latency). Everything in the table was measured in this spike, not estimated.
+
+### What was measured
+
+Host: Apple Silicon, Docker Desktop 28.0.1, `gotenberg/gotenberg:8.36.0` (Chromium m151, `Producer: Skia/PDF m151`). Document under test: a 3-page A4 invoice — header block with a `data:` URI logo, 70 line items, totals, *terbilang* line, 7.7 KB of self-contained HTML in, 39.8 KB of PDF out.
+
+| Measure | Result |
+| --- | --- |
+| Image — registry download | 690 MB (arm64) / 698 MB (amd64), 18 layers |
+| Image — unpacked on disk | 2.45 GB |
+| Cold start → `/health` answering | 229 / 233 / 332 ms over three fresh containers |
+| Cold start → first PDF in hand | 561 / 625 / 811 ms (Chromium launches lazily on the first conversion) |
+| Warm render, serial (n=30) | p50 **75 ms**, p90 80 ms, p95 **89 ms**, max 120 ms |
+| Warm render, 6 concurrent (n=36) | p50 228 ms, p95 456 ms, max 503 ms |
+| Resident memory, Chromium warm | ~285 MiB |
+
+The PRD's §8 budget for a PDF download is 5 s. The p95 is 89 ms warm and under a second from a container that does not exist yet, so latency is not a design constraint on `P16-T06` — it is free headroom. Six concurrent renders is Chromium's own `--chromium-max-concurrency` ceiling; past it Gotenberg queues rather than degrading, which is the correct failure shape for a burst of cashiers hitting *Download*.
+
+### Outbound denial, proven rather than asserted
+
+NFR-SEC-03 says the renderer must not be able to fetch a remote reference a template retained. That was tested as an A/B against a tracking HTTP server, not read off the documentation:
+
+| Configuration | Remote `<link>` + `<img>` in the template | Render |
+| --- | --- | --- |
+| Routable bridge, no deny flags (**control**) | **2 hits** — both the stylesheet and the image were fetched | 200 |
+| Routable bridge, `--chromium-deny-private-ips --chromium-deny-public-ips` | **0 hits** | 200, 3 pages |
+| Compose `internal: true` network | **0 hits**; container has no default route, `curl` to a public IP fails with connect-refused and DNS does not resolve | 200, 3 pages |
+
+The middle row is the one that isolates the cause. That container was started with `--add-host host.docker.internal:host-gateway` and a shell `curl` from inside it reached the tracker and was recorded — so the host was reachable, and Chromium still fetched nothing. Both layers are kept: Docker's `internal` network is the guarantee, and Chromium's filtering is what preserves the posture if a deployment ever puts this container on a routable network by mistake.
+
+`gotenberg-pdf-renderer.integration.spec.ts` carries the A/B as a test. It passes against the hardened container and **fails** against an unhardened one, which is the only reason to trust it.
+
+### Findings that change downstream work
+
+1. **Chromium emits `%PDF-1.4`, not 1.7.** Skia's PDF backend has always written a 1.4 header. Nothing in E1 depends on the version, but `P16-T37` (password protection) does: PDF 1.4 encryption is RC4/40–128-bit, so that task must apply AES-256 encryption in the API with its own library and rewrite the version marker, not ask the renderer for it. Gotenberg has no encryption route at all, so this was never going to be a form field.
+2. **`failOnConsoleExceptions=true` does not trip on blocked sub-resources.** A denied stylesheet or image is a network failure, not a console exception, so the adapter can keep the flag on — a template whose *script* throws still fails loudly — while a stray remote reference still renders. That is what makes the PRD's stated behaviour ("renders empty + a warning, never a failed PDF") achievable with the strict flag set.
+3. **The entry point is identified by filename.** Gotenberg renders the multipart part named `index.html` and treats every other part as an asset; a part named anything else produces `400 form file 'index.html' is required`. The adapter pins the name and the unit spec asserts it.
+4. **No published port means a host-run API cannot render.** This is the posture working, not a misconfiguration, and it is the one ergonomic cost of the decision: the everyday `pnpm dev` loop on the host has no renderer, so PDF work is done with the API itself in compose (`pnpm docker:dev:pdf` alongside `pnpm docker:dev:start`), and the integration suite is opt-in against a throwaway container. Publishing the port to make the host loop nicer would put the renderer on the developer's LAN, which is precisely the trade this ADR refuses.
+5. **The image is large and it is Chromium plus LibreOffice.** 690 MB pulled, 2.45 GB unpacked. HMS uses exactly one of Gotenberg's routes, so LibreOffice and PDF-engine routes are disabled — the two biggest parsers in the image are unreachable from any code path we have. That does mean PDF/A conversion is not available without re-enabling `pdfengines`; nothing in Phase 16 asks for it, and re-enabling is one flag if that changes.
+
+- **Consequence:** `P16-T06` builds the render service on `PdfRendererService` unchanged — resolve variables, produce self-contained HTML, call `render`, checksum and store the bytes — and inherits the fail-closed contract: an unconfigured, unreachable, slow, or non-PDF-answering renderer is a `ServiceUnavailableException` carrying a status but never the upstream body, because Gotenberg's error text can quote the document it was handed and those documents are invoices and clinical letters. `InvoiceDocument.status = FAILED` is written from that, and recording a payment is never blocked by it. The **self-contained HTML rule is now load-bearing rather than stylistic**: `P16-T05`'s sanitiser and `P16-T12`'s publish-time validation are what keep remote references out of templates, and this container is what makes a leak harmless rather than a data-exfiltration path. Deployment manifests must reproduce **both** halves of the isolation — a Kubernetes NetworkPolicy denying egress plus the same Chromium flags — or the guarantee is compose-only; the pinned patch tag is part of the decision, because Chromium decides line and page breaks and a floating `:8` would re-paginate already-issued invoices on an unrelated pull, which is the exact thing snapshotting an issued document exists to prevent. Rollback stays as the PRD described it: remove the container and PDF requests fail closed with a clear error while billing continues.
