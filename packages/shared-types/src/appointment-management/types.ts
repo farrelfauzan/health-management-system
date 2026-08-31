@@ -157,7 +157,9 @@ export type UpdateAppointmentSessionRecordPayload = {
 
 export type AppointmentRecord = {
   id: string;
-  patientId: string;
+  /** Exactly one of these is set (`P17-T02`). */
+  patientId: string | null;
+  prospectivePatientId: string | null;
   doctorId: string;
   type: AppointmentTypeValue;
   sessionId: string | null;
@@ -191,6 +193,19 @@ export type DoctorScheduleWindowRecord = {
   maxPatients: number | null;
 };
 
+/**
+ * Every identity one phone number resolved to, for §8.3's per-number cap on
+ * active future bookings (`P17-T02`).
+ *
+ * Two lists rather than one, because the ids address different tables and a
+ * merged list would have to guess which. Either may be empty; both empty means
+ * the number resolved to nobody and the count is zero.
+ */
+export type CountActiveFutureAppointmentsSubjectIds = {
+  patientIds: readonly string[];
+  prospectivePatientIds: readonly string[];
+};
+
 export type AppointmentPatientProjection = {
   id: string;
   mrn: string;
@@ -205,7 +220,22 @@ export type AppointmentDoctorProjection = {
   ownerUserId: string | null;
 };
 
+/**
+ * The prospective side of `P17-T02`'s dual key, as the repository projects it.
+ *
+ * There is no `mrn` and no `ownerUserId`, and neither is an oversight. No
+ * medical record number has been spent on this person, and they have no portal
+ * account to own the row — which is also why the `OWN` appointment scope
+ * reaches these bookings through the doctor side only.
+ */
+export type AppointmentProspectivePatientProjection = {
+  id: string;
+  fullName: string;
+};
+
 export type AppointmentWithRelationsRecord = AppointmentRecord & {
-  patient: AppointmentPatientProjection;
+  /** Exactly one of these is non-null, mirroring the two ids. */
+  patient: AppointmentPatientProjection | null;
+  prospectivePatient: AppointmentProspectivePatientProjection | null;
   doctor: AppointmentDoctorProjection;
 };

@@ -56,6 +56,7 @@ type ArrivalRow = {
   scheduledAt: Date;
   status: string;
   createdAt: Date;
+  /** Non-null by the query's own `patientId: { not: null }` predicate. */
   patient: ArrivalPatientRow;
   doctor: { fullName: string; specialty: { name: string } };
 };
@@ -99,6 +100,17 @@ export class ChannelArrivalRepository {
       where: {
         deletedAt: null,
         bookingSource: params.channel === undefined ? { not: null } : params.channel,
+        // Draft-profile bookings only, which is every channel booking there is
+        // until `P17-T03` starts writing prospective records instead.
+        //
+        // Explicit rather than implied by the old NOT NULL column (`P17-T02`).
+        // The row type below is projected through a cast, so without this
+        // predicate the first prospective booking would reach `toRecord` as a
+        // null `patient` and throw on a worklist the front desk depends on.
+        // Adding the prospective source is `P17-T04`'s work, and it is gated on
+        // design Q3 -- whether a prospective patient belongs in the ordinary
+        // registry search or only in this worklist.
+        patientId: { not: null },
         scheduledAt: { gte: new Date(params.from), lt: new Date(params.to) },
         ...(params.referenceCode === undefined
           ? {}

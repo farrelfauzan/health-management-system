@@ -8,6 +8,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { StatusBadge } from '#components/shared/status-badge';
+import { AppointmentSubjectMrn } from './appointment-subject-mrn';
 
 const RESCHEDULABLE_STATUSES: AppointmentListItem['status'][] = ['SCHEDULED', 'CONFIRMED'];
 
@@ -67,10 +68,10 @@ export function AppointmentsTableRow({
       </TableCell>
       <TableCell className="px-4 py-3">
         <div className="flex items-center gap-3">
-          <AvatarInitials name={appointment.patient.fullName} />
+          <AvatarInitials name={appointment.subject.fullName} />
           <div>
-            <p className="text-sm font-medium text-slate-900">{appointment.patient.fullName}</p>
-            <p className="font-mono text-xs text-slate-500">{appointment.patient.mrn}</p>
+            <p className="text-sm font-medium text-slate-900">{appointment.subject.fullName}</p>
+            <AppointmentSubjectMrn subject={appointment.subject} />
           </div>
         </div>
       </TableCell>
@@ -90,7 +91,7 @@ export function AppointmentsTableRow({
       <TableCell className="px-4 text-right">
         <RowActionsMenu
           actions={actions}
-          triggerLabel={t('common.actionsFor', { name: appointment.patient.fullName })}
+          triggerLabel={t('common.actionsFor', { name: appointment.subject.fullName })}
         />
       </TableCell>
     </TableRow>

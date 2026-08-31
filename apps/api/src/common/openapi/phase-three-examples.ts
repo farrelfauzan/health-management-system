@@ -219,7 +219,11 @@ const doctorEducations = [
 const sessionId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const appointment = {
   id: appointmentId,
-  patientId,
+  // Exactly one of the two is present (`P17-T02`), so neither is required:
+  // a booking taken over chat before the person ever attended carries
+  // `prospectivePatientId` and no `patientId`.
+  patientId: optionalExample(patientId),
+  prospectivePatientId: optionalExample('88888888-8888-4888-8888-888888888888'),
   doctorId,
   type: 'SESSION',
   sessionId,
@@ -686,7 +690,13 @@ export const PHASE_THREE_EXAMPLES = {
     item: appointment,
     listItem: {
       ...appointment,
-      patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
+      subject: {
+        kind: 'PATIENT',
+        id: patientId,
+        // Absent when `kind` is PROSPECTIVE_PATIENT: no MRN has been spent yet.
+        mrn: optionalExample(patient.mrn),
+        fullName: patient.fullName,
+      },
       doctor: {
         id: doctorId,
         fullName: doctor.fullName,
@@ -702,7 +712,26 @@ export const PHASE_THREE_EXAMPLES = {
           queueNumber: 3,
           status: 'SCHEDULED',
           reason: 'Routine consultation',
-          patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
+          subject: {
+            kind: 'PATIENT',
+            id: patientId,
+            mrn: optionalExample(patient.mrn),
+            fullName: patient.fullName,
+          },
+        },
+        {
+          appointmentId: '77777777-7777-4777-8777-777777777777',
+          queueNumber: 4,
+          status: 'SCHEDULED',
+          reason: 'Booked over WhatsApp, has not arrived yet',
+          // The other half of the dual key (`P17-T02`): a booking for someone
+          // who is not a patient yet, so there is no MRN to show and the
+          // counter must search the registry before registering them.
+          subject: {
+            kind: 'PROSPECTIVE_PATIENT',
+            id: '88888888-8888-4888-8888-888888888888',
+            fullName: 'Siti Rahayu',
+          },
         },
       ],
     },

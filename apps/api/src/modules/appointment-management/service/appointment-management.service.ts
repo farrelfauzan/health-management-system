@@ -35,6 +35,7 @@ import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DoctorPatientService } from '../../doctor-patient/service/doctor-patient.service';
 import { NotificationService } from '../../notification/service/notification.service';
+import { resolveAppointmentSubject } from './resolve-appointment-subject';
 import { ApproveAppointmentDto } from '../dto/approve-appointment.dto';
 import { CancelAppointmentDto } from '../dto/cancel-appointment.dto';
 import { ListAppointmentsQueryDto } from '../dto/list-appointments-query.dto';
@@ -275,7 +276,7 @@ export class AppointmentManagementService {
     });
 
     await this.emitAppointmentDecisionNotification({
-      recipientUserId: appointment.patient.ownerUserId,
+      recipientUserId: appointment.patient?.ownerUserId ?? null,
       type: 'APPOINTMENT_APPROVED',
       messageKey: 'appointmentApproved',
       doctorName: appointment.doctor.fullName,
@@ -295,7 +296,7 @@ export class AppointmentManagementService {
     });
 
     await this.emitAppointmentDecisionNotification({
-      recipientUserId: appointment.patient.ownerUserId,
+      recipientUserId: appointment.patient?.ownerUserId ?? null,
       type: 'APPOINTMENT_REJECTED',
       messageKey: 'appointmentRejected',
       doctorName: appointment.doctor.fullName,
@@ -490,7 +491,7 @@ export class AppointmentManagementService {
       queueNumber: appointment.queueNumber,
       status: appointment.status,
       reason: appointment.reason ?? undefined,
-      patient: appointment.patient,
+      subject: resolveAppointmentSubject(appointment),
     }));
 
     return {
@@ -777,7 +778,12 @@ export class AppointmentManagementService {
    * another module's tables through its service and never its repository.
    */
   async countChannelBookingLimits(
-    params: { patientIds: readonly string[]; activeFrom: Date; draftsSince: Date },
+    params: {
+      patientIds: readonly string[];
+      prospectivePatientIds: readonly string[];
+      activeFrom: Date;
+      draftsSince: Date;
+    },
     currentUser: CurrentUser,
   ): Promise<{ activeFutureBookings: number; draftBookingsToday: number }> {
     const actor = await this.getActorOrThrow(currentUser);
@@ -786,7 +792,10 @@ export class AppointmentManagementService {
     }
     const [activeFutureBookings, draftBookingsToday] = await Promise.all([
       this.appointmentManagementRepository.countActiveFutureAppointments(
-        params.patientIds,
+        {
+          patientIds: params.patientIds,
+          prospectivePatientIds: params.prospectivePatientIds,
+        },
         params.activeFrom,
       ),
       this.appointmentManagementRepository.countChannelDraftBookingsSince(params.draftsSince),
@@ -1204,7 +1213,8 @@ export class AppointmentManagementService {
   private toAppointmentListItem(appointment: AppointmentWithRelationsRecord): AppointmentListItem {
     return {
       id: appointment.id,
-      patientId: appointment.patientId,
+      patientId: appointment.patientId ?? undefined,
+      prospectivePatientId: appointment.prospectivePatientId ?? undefined,
       doctorId: appointment.doctorId,
       type: appointment.type,
       sessionId: appointment.sessionId ?? undefined,
@@ -1216,11 +1226,7 @@ export class AppointmentManagementService {
       createdById: appointment.createdById ?? undefined,
       createdAt: appointment.createdAt.toISOString(),
       updatedAt: appointment.updatedAt.toISOString(),
-      patient: {
-        id: appointment.patient.id,
-        mrn: appointment.patient.mrn,
-        fullName: appointment.patient.fullName,
-      },
+      subject: resolveAppointmentSubject(appointment),
       doctor: {
         id: appointment.doctor.id,
         fullName: appointment.doctor.fullName,

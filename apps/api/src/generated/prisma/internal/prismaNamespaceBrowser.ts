@@ -466,6 +466,7 @@ export type DoctorPatientActivityScalarFieldEnum = (typeof DoctorPatientActivity
 export const AppointmentScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
+  prospectivePatientId: 'prospectivePatientId',
   doctorId: 'doctorId',
   type: 'type',
   sessionId: 'sessionId',

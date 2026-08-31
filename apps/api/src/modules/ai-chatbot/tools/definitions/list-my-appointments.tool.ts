@@ -91,11 +91,17 @@ export class ListMyAppointmentsTool implements ChatTool {
   }
 
   /**
-   * The §4.3 allowlist. The backing projection carries the patient's `mrn`
+   * The §4.3 allowlist. The backing projection carries the subject's `mrn`
    * and the appointment's free-text `reason` and `notes` — the two fields
    * most likely to hold a clinical narrative someone typed in a hurry — plus
    * `createdById` and the row timestamps. None is named here, so a future
    * edit widening that projection cannot leak through this tool.
+   *
+   * `subject` rather than `patient` since `P17-T02`, and the name is doing
+   * work: the id this returns is a `ProspectivePatient` id when the booking
+   * came from a chat and nobody has arrived yet. It is safe for the assistant
+   * to *say* — it is the name the customer gave — but it is not a patient id
+   * and must never be handed to a tool that reads a medical record.
    */
   private toAppointmentItem(appointment: {
     id: string;
@@ -103,12 +109,12 @@ export class ListMyAppointmentsTool implements ChatTool {
     status: string;
     type: string;
     queueNumber?: number;
-    patient: { id: string; fullName: string };
+    subject: { id: string; fullName: string };
   }): ChatToolAppointmentItem {
     return {
       appointmentId: appointment.id,
-      patientId: appointment.patient.id,
-      patientName: appointment.patient.fullName,
+      patientId: appointment.subject.id,
+      patientName: appointment.subject.fullName,
       scheduledAt: appointment.scheduledAt,
       status: appointment.status,
       type: appointment.type,

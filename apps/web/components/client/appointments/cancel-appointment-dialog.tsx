@@ -67,7 +67,7 @@ export function CancelAppointmentDialog({
         <DialogHeader>
           <DialogTitle className="font-heading">{t('cancel')}</DialogTitle>
           <DialogDescription>
-            Cancel {appointment.patient.fullName}&apos;s visit with {appointment.doctor.fullName} ·{' '}
+            Cancel {appointment.subject.fullName}&apos;s visit with {appointment.doctor.fullName} ·{' '}
             {format.dateTime(new Date(appointment.scheduledAt), {
               dateStyle: 'medium',
               timeStyle: 'short',

@@ -20,6 +20,21 @@ export const appointmentTypeSchema = z.enum(APPOINTMENT_TYPES);
 
 export type AppointmentTypeValue = z.infer<typeof appointmentTypeSchema>;
 
+/**
+ * Who an appointment is for (`P17-T02`).
+ *
+ * The two are kept apart in the wire shape rather than flattened to a name and
+ * a nullable MRN, because the difference decides what the counter does next: a
+ * `PATIENT` is registered and queued, a `PROSPECTIVE_PATIENT` must first be
+ * searched for in the registry and then linked or converted. A caller that
+ * reads only the name cannot accidentally treat the second as the first.
+ */
+export const APPOINTMENT_SUBJECT_KINDS = ['PATIENT', 'PROSPECTIVE_PATIENT'] as const;
+
+export const appointmentSubjectKindSchema = z.enum(APPOINTMENT_SUBJECT_KINDS);
+
+export type AppointmentSubjectKindValue = z.infer<typeof appointmentSubjectKindSchema>;
+
 export const SESSION_BOOKING_CUTOFF_MINUTES = 60;
 
 export const SPECIAL_REQUEST_MIN_LEAD_DAYS = 3;

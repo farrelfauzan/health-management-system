@@ -782,10 +782,10 @@ export type ChannelPatientLink = Prisma.ChannelPatientLinkModel
  * Everything a clinical record needs is collected at the counter, where a
  * human is looking at an ID document, and the MRN is allocated there.
  * 
- * The appointment side of this -- `Appointment.prospectivePatientId` and the
- * CHECK that exactly one of the two patient keys is set -- lands with
- * `P17-T02`. Until then nothing books against these rows, so the table can
- * ship, be seeded and be swept without touching scheduling.
+ * `P17-T02` landed the appointment side: `Appointment.prospectivePatientId`
+ * and the CHECK that exactly one of the two patient keys is set. Nothing
+ * *writes* a prospective booking until `P17-T03` repoints the chat path at
+ * it, so every appointment in the database still names a real patient today.
  */
 export type ProspectivePatient = Prisma.ProspectivePatientModel
 /**

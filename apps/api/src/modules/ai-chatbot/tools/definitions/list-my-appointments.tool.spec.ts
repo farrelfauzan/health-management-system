@@ -29,7 +29,12 @@ describe('ListMyAppointmentsTool', () => {
       createdById: 'staff-9',
       createdAt: '2026-07-01T00:00:00.000Z',
       updatedAt: '2026-07-01T00:00:00.000Z',
-      patient: { id: 'patient-1', mrn: 'MRN00000042', fullName: 'Budi Santoso' },
+      subject: {
+        kind: 'PATIENT',
+        id: 'patient-1',
+        mrn: 'MRN00000042',
+        fullName: 'Budi Santoso',
+      },
       doctor: { id: 'doctor-1', fullName: 'dr. Siti', specialty: 'Umum' },
       ...overrides,
     };

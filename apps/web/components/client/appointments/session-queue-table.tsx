@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, cn } fro
 
 import { StatusBadge } from '#components/shared/status-badge';
 import { useTranslations } from 'next-intl';
+import { AppointmentSubjectMrn } from './appointment-subject-mrn';
 
 type SessionQueueTableProps = {
   queue: SessionQueueEntry[];
@@ -31,7 +32,7 @@ export function SessionQueueTable({ queue, onSelectEntry }: SessionQueueTablePro
               ? {
                   role: 'button',
                   tabIndex: 0,
-                  'aria-label': `View appointment for ${entry.patient.fullName}`,
+                  'aria-label': `View appointment for ${entry.subject.fullName}`,
                   onClick: () => onSelectEntry(entry),
                   onKeyDown: (event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
@@ -45,9 +46,9 @@ export function SessionQueueTable({ queue, onSelectEntry }: SessionQueueTablePro
             <TableCell className="font-mono text-sm">{entry.queueNumber ?? '—'}</TableCell>
             <TableCell>
               <span className="block text-sm font-medium text-slate-900">
-                {entry.patient.fullName}
+                {entry.subject.fullName}
               </span>
-              <span className="block font-mono text-xs text-slate-500">{entry.patient.mrn}</span>
+              <AppointmentSubjectMrn subject={entry.subject} />
             </TableCell>
             <TableCell>
               <StatusBadge status={entry.status} />

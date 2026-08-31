@@ -6,8 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AppointmentManagementControllerListAppointmentsV1200DataItemPatient = {
+export type AppointmentManagementControllerListAppointmentsV1200DataItemSubject = {
+  kind: string;
   id: string;
-  mrn: string;
+  mrn?: string;
   fullName: string;
 };

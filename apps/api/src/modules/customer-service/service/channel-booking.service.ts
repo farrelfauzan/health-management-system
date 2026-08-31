@@ -436,6 +436,10 @@ export class ChannelBookingService {
     const counts = await this.appointmentService.countChannelBookingLimits(
       {
         patientIds: matches.map((match) => match.id),
+        // Empty until `P17-T03` moves chat bookings onto prospective records
+        // and this lookup starts resolving them; the count already reads the
+        // column, so that ticket only has to fill this list.
+        prospectivePatientIds: [],
         activeFrom: now,
         draftsSince: new Date(now.getTime() - DAY_IN_MS),
       },

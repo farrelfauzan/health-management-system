@@ -8,6 +8,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { RowActionsMenu } from '#components/client/shared/row-actions-menu';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { StatusBadge } from '#components/shared/status-badge';
+import { AppointmentSubjectMrn } from '#components/client/appointments/appointment-subject-mrn';
 
 type UpcomingAppointmentsRowProps = {
   appointment: AppointmentListItem;
@@ -21,12 +22,12 @@ export function UpcomingAppointmentsRow({ appointment }: UpcomingAppointmentsRow
     <TableRow className="hover:bg-slate-50">
       <TableCell className="px-4 py-3">
         <span className="flex items-center gap-3">
-          <AvatarInitials name={appointment.patient.fullName} />
+          <AvatarInitials name={appointment.subject.fullName} />
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-sm font-medium text-slate-900">
-              {appointment.patient.fullName}
+              {appointment.subject.fullName}
             </span>
-            <span className="font-mono text-xs text-slate-500">{appointment.patient.mrn}</span>
+            <AppointmentSubjectMrn subject={appointment.subject} />
           </span>
         </span>
       </TableCell>

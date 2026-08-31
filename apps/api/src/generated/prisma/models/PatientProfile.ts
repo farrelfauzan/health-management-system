@@ -1275,10 +1275,12 @@ export type PatientProfileCreateNestedOneWithoutAppointmentsInput = {
   connect?: Prisma.PatientProfileWhereUniqueInput
 }
 
-export type PatientProfileUpdateOneRequiredWithoutAppointmentsNestedInput = {
+export type PatientProfileUpdateOneWithoutAppointmentsNestedInput = {
   create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutAppointmentsInput, Prisma.PatientProfileUncheckedCreateWithoutAppointmentsInput>
   connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutAppointmentsInput
   upsert?: Prisma.PatientProfileUpsertWithoutAppointmentsInput
+  disconnect?: Prisma.PatientProfileWhereInput | boolean
+  delete?: Prisma.PatientProfileWhereInput | boolean
   connect?: Prisma.PatientProfileWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.PatientProfileUpdateToOneWithWhereWithoutAppointmentsInput, Prisma.PatientProfileUpdateWithoutAppointmentsInput>, Prisma.PatientProfileUncheckedUpdateWithoutAppointmentsInput>
 }

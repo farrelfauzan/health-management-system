@@ -1,6 +1,7 @@
 import {
   AppointmentScopeActor,
   BookSessionSlotPayload,
+  CountActiveFutureAppointmentsSubjectIds,
   BookSessionSlotResult,
   CancelAppointmentRecordPayload,
   CreateAppointmentRecordPayload,
@@ -26,6 +27,16 @@ const APPOINTMENT_RELATIONS_INCLUDE = {
       mrn: true,
       fullName: true,
       ownerUserId: true,
+    },
+  },
+  // The other half of `P17-T02`'s dual key. Selected on every read that
+  // selects `patient`, so `resolveAppointmentSubject` always has both sides in
+  // hand -- a read that included only one would resolve to `null` for exactly
+  // the bookings the prospective column exists to carry.
+  prospectivePatient: {
+    select: {
+      id: true,
+      fullName: true,
     },
   },
   doctor: {
@@ -363,14 +374,31 @@ export class AppointmentManagementRepository {
    * one being booked against, because a customer who books three times under
    * three spellings of their name creates three drafts, and a cap that counted
    * one of them at a time would not be a cap.
+   *
+   * Both sides of `P17-T02`'s key, for that same reason. Once `P17-T03` moves
+   * chat bookings onto prospective records, a patient-only count would see
+   * nothing at all on the channel this cap was written for -- the cap would
+   * still run, still pass, and no longer bound anything.
    */
-  async countActiveFutureAppointments(patientIds: readonly string[], from: Date): Promise<number> {
-    if (patientIds.length === 0) {
+  async countActiveFutureAppointments(
+    subjectIds: CountActiveFutureAppointmentsSubjectIds,
+    from: Date,
+  ): Promise<number> {
+    const subjectFilters: Prisma.AppointmentWhereInput[] = [];
+    if (subjectIds.patientIds.length > 0) {
+      subjectFilters.push({ patientId: { in: [...subjectIds.patientIds] } });
+    }
+    if (subjectIds.prospectivePatientIds.length > 0) {
+      subjectFilters.push({
+        prospectivePatientId: { in: [...subjectIds.prospectivePatientIds] },
+      });
+    }
+    if (subjectFilters.length === 0) {
       return 0;
     }
     return this.prisma.appointment.count({
       where: {
-        patientId: { in: [...patientIds] },
+        OR: subjectFilters,
         deletedAt: null,
         scheduledAt: { gte: from },
         status: { in: [...OPEN_APPOINTMENT_STATUSES] },
@@ -395,7 +423,11 @@ export class AppointmentManagementRepository {
         bookingSource: { not: null },
         createdAt: { gte: since },
         deletedAt: null,
-        patient: { source: 'CHANNEL_BOOKING' },
+        // Either shape of unknown-number booking: the draft profile the channel
+        // used to create, and the prospective record `P17-T03` replaces it
+        // with. Both, not one -- this is a security valve, and the window in
+        // which the two coexist is exactly when it must not quietly read zero.
+        OR: [{ patient: { source: 'CHANNEL_BOOKING' } }, { prospectivePatientId: { not: null } }],
       },
     });
   }
@@ -524,6 +556,12 @@ export class AppointmentManagementRepository {
           select: {
             id: true,
             mrn: true,
+            fullName: true,
+          },
+        },
+        prospectivePatient: {
+          select: {
+            id: true,
             fullName: true,
           },
         },

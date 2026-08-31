@@ -8,7 +8,8 @@
 
 export type AppointmentManagementControllerRejectAppointmentV1200Data = {
   id: string;
-  patientId: string;
+  patientId?: string;
+  prospectivePatientId?: string;
   doctorId: string;
   type: string;
   sessionId: string;

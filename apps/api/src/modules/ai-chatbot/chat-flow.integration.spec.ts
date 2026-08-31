@@ -794,7 +794,33 @@ describe('Chat flow integration', () => {
             reason: 'Kontrol tekanan darah',
             notes: 'Bawa hasil lab terakhir',
             createdById: 'staff-9',
-            patient: { id: PATIENT_ID, mrn: 'MRN00000042', fullName: 'Budi Santoso' },
+            subject: {
+              kind: 'PATIENT',
+              id: PATIENT_ID,
+              mrn: 'MRN00000042',
+              fullName: 'Budi Santoso',
+            },
+            doctor: { id: 'doctor-1', fullName: 'dr. Siti', specialty: 'Umum' },
+          },
+          {
+            // The other side of `P17-T02`'s key: a slot booked over WhatsApp by
+            // someone who has never attended. The tool must name them without
+            // an MRN — there is none to leak — rather than fail the whole
+            // lookup and leave the doctor's schedule unanswerable.
+            id: 'appointment-2',
+            prospectivePatientId: 'prospective-1',
+            doctorId: 'doctor-1',
+            type: 'SESSION',
+            queueNumber: 5,
+            scheduledAt: '2026-08-03T03:00:00.000Z',
+            status: 'SCHEDULED',
+            reason: 'Belum pernah berkunjung',
+            createdById: 'staff-9',
+            subject: {
+              kind: 'PROSPECTIVE_PATIENT',
+              id: 'prospective-1',
+              fullName: 'Siti Rahayu',
+            },
             doctor: { id: 'doctor-1', fullName: 'dr. Siti', specialty: 'Umum' },
           },
         ],
@@ -872,6 +898,9 @@ describe('Chat flow integration', () => {
 
       const result = JSON.stringify(response.body.meta.toolResults[0].result);
       expect(result).toContain('Budi Santoso');
+      // A booking with no patient record behind it still appears on the
+      // schedule, named and without an MRN (`P17-T02`).
+      expect(result).toContain('Siti Rahayu');
       expect(result).not.toContain('MRN00000042');
       expect(result).not.toContain('Kontrol tekanan darah');
       expect(result).not.toContain('Bawa hasil lab');

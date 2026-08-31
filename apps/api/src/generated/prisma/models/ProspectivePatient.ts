@@ -30,10 +30,10 @@ import type * as Prisma from "../internal/prismaNamespace"
  * Everything a clinical record needs is collected at the counter, where a
  * human is looking at an ID document, and the MRN is allocated there.
  * 
- * The appointment side of this -- `Appointment.prospectivePatientId` and the
- * CHECK that exactly one of the two patient keys is set -- lands with
- * `P17-T02`. Until then nothing books against these rows, so the table can
- * ship, be seeded and be swept without touching scheduling.
+ * `P17-T02` landed the appointment side: `Appointment.prospectivePatientId`
+ * and the CHECK that exactly one of the two patient keys is set. Nothing
+ * *writes* a prospective booking until `P17-T03` repoints the chat path at
+ * it, so every appointment in the database still names a real patient today.
  */
 export type ProspectivePatientModel = runtime.Types.Result.DefaultSelection<Prisma.$ProspectivePatientPayload>
 
@@ -258,6 +258,7 @@ export type ProspectivePatientWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ProspectivePatient"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProspectivePatient"> | Date | string
   patient?: Prisma.XOR<Prisma.PatientProfileNullableScalarRelationFilter, Prisma.PatientProfileWhereInput> | null
+  appointments?: Prisma.AppointmentListRelationFilter
 }
 
 export type ProspectivePatientOrderByWithRelationInput = {
@@ -274,6 +275,7 @@ export type ProspectivePatientOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   patient?: Prisma.PatientProfileOrderByWithRelationInput
+  appointments?: Prisma.AppointmentOrderByRelationAggregateInput
 }
 
 export type ProspectivePatientWhereUniqueInput = Prisma.AtLeast<{
@@ -293,6 +295,7 @@ export type ProspectivePatientWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"ProspectivePatient"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProspectivePatient"> | Date | string
   patient?: Prisma.XOR<Prisma.PatientProfileNullableScalarRelationFilter, Prisma.PatientProfileWhereInput> | null
+  appointments?: Prisma.AppointmentListRelationFilter
 }, "id">
 
 export type ProspectivePatientOrderByWithAggregationInput = {
@@ -344,6 +347,7 @@ export type ProspectivePatientCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   patient?: Prisma.PatientProfileCreateNestedOneWithoutProspectiveRecordsInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutProspectivePatientInput
 }
 
 export type ProspectivePatientUncheckedCreateInput = {
@@ -359,6 +363,7 @@ export type ProspectivePatientUncheckedCreateInput = {
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutProspectivePatientInput
 }
 
 export type ProspectivePatientUpdateInput = {
@@ -374,6 +379,7 @@ export type ProspectivePatientUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   patient?: Prisma.PatientProfileUpdateOneWithoutProspectiveRecordsNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutProspectivePatientNestedInput
 }
 
 export type ProspectivePatientUncheckedUpdateInput = {
@@ -389,6 +395,7 @@ export type ProspectivePatientUncheckedUpdateInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutProspectivePatientNestedInput
 }
 
 export type ProspectivePatientCreateManyInput = {
@@ -443,6 +450,11 @@ export type ProspectivePatientListRelationFilter = {
 
 export type ProspectivePatientOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type ProspectivePatientNullableScalarRelationFilter = {
+  is?: Prisma.ProspectivePatientWhereInput | null
+  isNot?: Prisma.ProspectivePatientWhereInput | null
 }
 
 export type ProspectivePatientCountOrderByAggregateInput = {
@@ -532,6 +544,22 @@ export type ProspectivePatientUncheckedUpdateManyWithoutPatientNestedInput = {
   deleteMany?: Prisma.ProspectivePatientScalarWhereInput | Prisma.ProspectivePatientScalarWhereInput[]
 }
 
+export type ProspectivePatientCreateNestedOneWithoutAppointmentsInput = {
+  create?: Prisma.XOR<Prisma.ProspectivePatientCreateWithoutAppointmentsInput, Prisma.ProspectivePatientUncheckedCreateWithoutAppointmentsInput>
+  connectOrCreate?: Prisma.ProspectivePatientCreateOrConnectWithoutAppointmentsInput
+  connect?: Prisma.ProspectivePatientWhereUniqueInput
+}
+
+export type ProspectivePatientUpdateOneWithoutAppointmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProspectivePatientCreateWithoutAppointmentsInput, Prisma.ProspectivePatientUncheckedCreateWithoutAppointmentsInput>
+  connectOrCreate?: Prisma.ProspectivePatientCreateOrConnectWithoutAppointmentsInput
+  upsert?: Prisma.ProspectivePatientUpsertWithoutAppointmentsInput
+  disconnect?: Prisma.ProspectivePatientWhereInput | boolean
+  delete?: Prisma.ProspectivePatientWhereInput | boolean
+  connect?: Prisma.ProspectivePatientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProspectivePatientUpdateToOneWithWhereWithoutAppointmentsInput, Prisma.ProspectivePatientUpdateWithoutAppointmentsInput>, Prisma.ProspectivePatientUncheckedUpdateWithoutAppointmentsInput>
+}
+
 export type EnumProspectivePatientStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProspectivePatientStatus
 }
@@ -548,6 +576,7 @@ export type ProspectivePatientCreateWithoutPatientInput = {
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutProspectivePatientInput
 }
 
 export type ProspectivePatientUncheckedCreateWithoutPatientInput = {
@@ -562,6 +591,7 @@ export type ProspectivePatientUncheckedCreateWithoutPatientInput = {
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutProspectivePatientInput
 }
 
 export type ProspectivePatientCreateOrConnectWithoutPatientInput = {
@@ -608,6 +638,82 @@ export type ProspectivePatientScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"ProspectivePatient"> | Date | string
 }
 
+export type ProspectivePatientCreateWithoutAppointmentsInput = {
+  id?: string
+  fullName: string
+  phoneNumber: string
+  channel: $Enums.ChannelKind
+  externalChatId?: string | null
+  status?: $Enums.ProspectivePatientStatus
+  convertedAt?: Date | string | null
+  convertedById?: string | null
+  expiresAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutProspectiveRecordsInput
+}
+
+export type ProspectivePatientUncheckedCreateWithoutAppointmentsInput = {
+  id?: string
+  fullName: string
+  phoneNumber: string
+  channel: $Enums.ChannelKind
+  externalChatId?: string | null
+  status?: $Enums.ProspectivePatientStatus
+  patientId?: string | null
+  convertedAt?: Date | string | null
+  convertedById?: string | null
+  expiresAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProspectivePatientCreateOrConnectWithoutAppointmentsInput = {
+  where: Prisma.ProspectivePatientWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProspectivePatientCreateWithoutAppointmentsInput, Prisma.ProspectivePatientUncheckedCreateWithoutAppointmentsInput>
+}
+
+export type ProspectivePatientUpsertWithoutAppointmentsInput = {
+  update: Prisma.XOR<Prisma.ProspectivePatientUpdateWithoutAppointmentsInput, Prisma.ProspectivePatientUncheckedUpdateWithoutAppointmentsInput>
+  create: Prisma.XOR<Prisma.ProspectivePatientCreateWithoutAppointmentsInput, Prisma.ProspectivePatientUncheckedCreateWithoutAppointmentsInput>
+  where?: Prisma.ProspectivePatientWhereInput
+}
+
+export type ProspectivePatientUpdateToOneWithWhereWithoutAppointmentsInput = {
+  where?: Prisma.ProspectivePatientWhereInput
+  data: Prisma.XOR<Prisma.ProspectivePatientUpdateWithoutAppointmentsInput, Prisma.ProspectivePatientUncheckedUpdateWithoutAppointmentsInput>
+}
+
+export type ProspectivePatientUpdateWithoutAppointmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumChannelKindFieldUpdateOperationsInput | $Enums.ChannelKind
+  externalChatId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumProspectivePatientStatusFieldUpdateOperationsInput | $Enums.ProspectivePatientStatus
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  patient?: Prisma.PatientProfileUpdateOneWithoutProspectiveRecordsNestedInput
+}
+
+export type ProspectivePatientUncheckedUpdateWithoutAppointmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumChannelKindFieldUpdateOperationsInput | $Enums.ChannelKind
+  externalChatId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumProspectivePatientStatusFieldUpdateOperationsInput | $Enums.ProspectivePatientStatus
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  convertedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ProspectivePatientCreateManyPatientInput = {
   id?: string
   fullName: string
@@ -634,6 +740,7 @@ export type ProspectivePatientUpdateWithoutPatientInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  appointments?: Prisma.AppointmentUpdateManyWithoutProspectivePatientNestedInput
 }
 
 export type ProspectivePatientUncheckedUpdateWithoutPatientInput = {
@@ -648,6 +755,7 @@ export type ProspectivePatientUncheckedUpdateWithoutPatientInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutProspectivePatientNestedInput
 }
 
 export type ProspectivePatientUncheckedUpdateManyWithoutPatientInput = {
@@ -665,6 +773,35 @@ export type ProspectivePatientUncheckedUpdateManyWithoutPatientInput = {
 }
 
 
+/**
+ * Count Type ProspectivePatientCountOutputType
+ */
+
+export type ProspectivePatientCountOutputType = {
+  appointments: number
+}
+
+export type ProspectivePatientCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  appointments?: boolean | ProspectivePatientCountOutputTypeCountAppointmentsArgs
+}
+
+/**
+ * ProspectivePatientCountOutputType without action
+ */
+export type ProspectivePatientCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProspectivePatientCountOutputType
+   */
+  select?: Prisma.ProspectivePatientCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ProspectivePatientCountOutputType without action
+ */
+export type ProspectivePatientCountOutputTypeCountAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AppointmentWhereInput
+}
+
 
 export type ProspectivePatientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -680,6 +817,8 @@ export type ProspectivePatientSelect<ExtArgs extends runtime.Types.Extensions.In
   createdAt?: boolean
   updatedAt?: boolean
   patient?: boolean | Prisma.ProspectivePatient$patientArgs<ExtArgs>
+  appointments?: boolean | Prisma.ProspectivePatient$appointmentsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProspectivePatientCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["prospectivePatient"]>
 
 export type ProspectivePatientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -732,6 +871,8 @@ export type ProspectivePatientSelectScalar = {
 export type ProspectivePatientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "phoneNumber" | "channel" | "externalChatId" | "status" | "patientId" | "convertedAt" | "convertedById" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["prospectivePatient"]>
 export type ProspectivePatientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.ProspectivePatient$patientArgs<ExtArgs>
+  appointments?: boolean | Prisma.ProspectivePatient$appointmentsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProspectivePatientCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProspectivePatientIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.ProspectivePatient$patientArgs<ExtArgs>
@@ -744,6 +885,7 @@ export type $ProspectivePatientPayload<ExtArgs extends runtime.Types.Extensions.
   name: "ProspectivePatient"
   objects: {
     patient: Prisma.$PatientProfilePayload<ExtArgs> | null
+    appointments: Prisma.$AppointmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1180,6 +1322,7 @@ readonly fields: ProspectivePatientFieldRefs;
 export interface Prisma__ProspectivePatientClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   patient<T extends Prisma.ProspectivePatient$patientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProspectivePatient$patientArgs<ExtArgs>>): Prisma.Prisma__PatientProfileClient<runtime.Types.Result.GetResult<Prisma.$PatientProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  appointments<T extends Prisma.ProspectivePatient$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProspectivePatient$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1638,6 +1781,30 @@ export type ProspectivePatient$patientArgs<ExtArgs extends runtime.Types.Extensi
    */
   include?: Prisma.PatientProfileInclude<ExtArgs> | null
   where?: Prisma.PatientProfileWhereInput
+}
+
+/**
+ * ProspectivePatient.appointments
+ */
+export type ProspectivePatient$appointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Appointment
+   */
+  select?: Prisma.AppointmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Appointment
+   */
+  omit?: Prisma.AppointmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AppointmentInclude<ExtArgs> | null
+  where?: Prisma.AppointmentWhereInput
+  orderBy?: Prisma.AppointmentOrderByWithRelationInput | Prisma.AppointmentOrderByWithRelationInput[]
+  cursor?: Prisma.AppointmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
 }
 
 /**

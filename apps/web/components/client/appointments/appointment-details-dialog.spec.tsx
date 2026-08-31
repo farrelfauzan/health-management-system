@@ -36,7 +36,7 @@ function buildAppointment(status: AppointmentStatusValue): AppointmentListItem {
     reason: 'Routine check',
     createdAt: '2026-07-01T00:00:00.000Z',
     updatedAt: '2026-07-01T00:00:00.000Z',
-    patient: { id: 'patient-1', mrn: 'MRN-0001', fullName: 'John Doe' },
+    subject: { kind: 'PATIENT', id: 'patient-1', mrn: 'MRN-0001', fullName: 'John Doe' },
     doctor: { id: 'doctor-1', fullName: 'Dr. Budi Santoso', specialty: 'Cardiology' },
   };
 }

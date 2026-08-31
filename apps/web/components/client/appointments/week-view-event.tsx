@@ -27,7 +27,7 @@ export function WeekViewEvent({ appointment, onSelect }: WeekViewEventProps) {
         {appointment.reason ?? meta.label}
       </span>
       <span className="w-full truncate text-[10px] text-slate-600">
-        {appointment.patient.fullName} • {appointment.doctor.fullName}
+        {appointment.subject.fullName} • {appointment.doctor.fullName}
       </span>
       <span className="w-full truncate text-[10px] text-slate-500">
         {format.dateTime(new Date(appointment.scheduledAt), { timeStyle: 'short' })}
