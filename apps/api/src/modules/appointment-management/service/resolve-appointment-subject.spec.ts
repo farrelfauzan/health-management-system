@@ -47,6 +47,19 @@ describe('resolveAppointmentSubject', () => {
     expect(actualSubject.kind).toBe('PATIENT');
   });
 
+  it('treats an omitted relation the same as a null one', () => {
+    // A projection that leaves the key out arrives as `undefined`, and a strict
+    // `!== null` check would take the branch for the side that is not there.
+    // This is exactly what a loosely-typed test stub produces, and it is how the
+    // chat schedule tool broke in CI rather than in tsc.
+    const actualSubject = resolveAppointmentSubject({
+      prospectivePatient: inputProspective,
+    } as unknown as Parameters<typeof resolveAppointmentSubject>[0]);
+
+    expect(actualSubject.kind).toBe('PROSPECTIVE_PATIENT');
+    expect(actualSubject.fullName).toBe('Siti Rahayu');
+  });
+
   it('throws rather than inventing a subject when neither side is set', () => {
     expect(() =>
       resolveAppointmentSubject({ patient: null, prospectivePatient: null }),

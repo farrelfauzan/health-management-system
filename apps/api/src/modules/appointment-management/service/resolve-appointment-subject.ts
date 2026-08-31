@@ -15,13 +15,20 @@ type AppointmentSubjectSources = {
  * prospective patient as a registered one — showing a blank MRN where a clerk
  * reads a real record, which is the mistake that ends in a duplicate patient.
  *
+ * Both sides are tested for a *value* rather than against `null`, because a
+ * projection that omits the key entirely arrives as `undefined` — and
+ * `undefined !== null` is true, so a strict null check would take the branch
+ * for the side that is not there and fail on a property of nothing. A missing
+ * relation and a null relation mean the same thing here and must behave the
+ * same way.
+ *
  * Throws rather than defaulting when neither side is set. The database CHECK
  * makes that state unreachable, so reaching it means the constraint was dropped
  * or a query forgot to select the relations — and a placeholder subject would
  * turn either into a booking silently attributed to nobody.
  */
 export function resolveAppointmentSubject(sources: AppointmentSubjectSources): AppointmentSubject {
-  if (sources.patient !== null) {
+  if (sources.patient) {
     return {
       kind: 'PATIENT',
       id: sources.patient.id,
@@ -29,7 +36,7 @@ export function resolveAppointmentSubject(sources: AppointmentSubjectSources): A
       mrn: sources.patient.mrn,
     };
   }
-  if (sources.prospectivePatient !== null) {
+  if (sources.prospectivePatient) {
     return {
       kind: 'PROSPECTIVE_PATIENT',
       id: sources.prospectivePatient.id,
