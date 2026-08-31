@@ -328,9 +328,11 @@ export class ConversationService extends InboundMessageSink {
       }
       const outcome = await this.bookingService.completePendingBooking({
         channel: conversation.channel,
+        externalChatId: conversation.externalChatId,
         actor,
         pendingBooking: challenge.pendingBooking,
         verifiedPatientId,
+        now,
       });
       await this.replyWith(
         conversation,

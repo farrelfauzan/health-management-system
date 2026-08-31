@@ -739,6 +739,7 @@ export class AppointmentManagementService {
     }
     const result = await this.appointmentManagementRepository.bookSessionSlot({
       patientId: input.patientId,
+      prospectivePatientId: input.prospectivePatientId,
       doctorId: input.doctorId,
       scheduleId: window.id,
       sessionDate: input.sessionDate,
@@ -761,11 +762,17 @@ export class AppointmentManagementService {
       };
     }
     const appointment = await this.resolveBookedAppointment(result);
-    await this.ensureCareTeamLink({
-      doctorId: input.doctorId,
-      patientId: input.patientId,
-      currentUser,
-    });
+    // Only for a real patient. A care team is a relationship between a doctor
+    // and somebody the clinic holds a record for, and a prospective patient is
+    // neither -- the link is formed at conversion (`P17-T04`), when there is a
+    // `PatientProfile` for it to point at.
+    if (input.patientId !== undefined) {
+      await this.ensureCareTeamLink({
+        doctorId: input.doctorId,
+        patientId: input.patientId,
+        currentUser,
+      });
+    }
 
     return { outcome: 'BOOKED', appointment };
   }

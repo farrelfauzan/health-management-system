@@ -6,6 +6,7 @@ import { MrnAllocatorRepository } from '../../common/mrn/mrn-allocator.repositor
 import { PrivacyNoticeRepository } from '../../common/privacy-notice/privacy-notice.repository';
 import { PatientManagementRepository } from '../patient-management/repository/patient-management.repository';
 import { ChannelOtpChallengeRepository } from './repository/channel-otp-challenge.repository';
+import { ProspectivePatientRepository } from './repository/prospective-patient.repository';
 import { normalizePhoneNumber } from './service/normalize-phone-number';
 
 /**
@@ -37,6 +38,7 @@ describe('customer-service channel booking against Postgres', () => {
   let prisma: PrismaService;
   let patientRepository: PatientManagementRepository;
   let challengeRepository: ChannelOtpChallengeRepository;
+  let prospectiveRepository: ProspectivePatientRepository;
   let createdPatientIds: string[] = [];
 
   async function createPatient(phoneNumber: string): Promise<string> {
@@ -65,6 +67,9 @@ describe('customer-service channel booking against Postgres', () => {
     await prisma.channelPatientLink.deleteMany({
       where: { externalChatId: { startsWith: TEST_MARKER } },
     });
+    await prisma.prospectivePatient.deleteMany({
+      where: { fullName: { startsWith: TEST_MARKER } },
+    });
     await prisma.patientProfile.deleteMany({ where: { mrn: { startsWith: TEST_MARKER } } });
     createdPatientIds = [];
   }
@@ -80,6 +85,7 @@ describe('customer-service channel booking against Postgres', () => {
       new PrivacyNoticeRepository(prisma),
     );
     challengeRepository = new ChannelOtpChallengeRepository(prisma, identifierCrypto);
+    prospectiveRepository = new ProspectivePatientRepository(prisma);
     await deleteTestRows();
   });
 
@@ -147,6 +153,75 @@ describe('customer-service channel booking against Postgres', () => {
       );
 
       expect(matches.map((match) => match.id)).toEqual([]);
+    });
+  });
+
+  /**
+   * `P17-T03`'s whole claim, checked where it is actually true: in the tables.
+   *
+   * A chat booking used to create a `PatientProfile`, which spent an MRN from
+   * `MrnCounter` — an atomic `INSERT … ON CONFLICT … RETURNING` that never
+   * reuses a number — on anyone who typed a name into WhatsApp. The unit tests
+   * prove the service calls a different repository; only the database can prove
+   * that the counter did not move.
+   */
+  describe('a chat booking spends no medical record number', () => {
+    async function readMrnCounters(): Promise<Record<string, string>> {
+      const rows = await prisma.mrnCounter.findMany({
+        select: { facilityId: true, nextValue: true },
+      });
+      return Object.fromEntries(rows.map((row) => [row.facilityId, row.nextValue.toString()]));
+    }
+
+    it('creates no patient profile and does not advance the MRN counter', async () => {
+      const countersBefore = await readMrnCounters();
+      const profilesBefore = await prisma.patientProfile.count();
+
+      const created = await prospectiveRepository.createAwaitingArrival({
+        fullName: `${TEST_MARKER} prospective`,
+        phoneNumber: normalizePhoneNumber('0812-9000-0001'),
+        channel: 'WHATSAPP',
+        externalChatId: `${TEST_MARKER}-chat-1`,
+        expiresAt: new Date(Date.now() + 90 * 86_400_000),
+      });
+
+      expect(created.status).toBe('AWAITING_ARRIVAL');
+      expect(created.patientId).toBeNull();
+      expect(await prisma.patientProfile.count()).toBe(profilesBefore);
+      expect(await readMrnCounters()).toEqual(countersBefore);
+    });
+
+    it('offers only unresolved records back to the next booking', async () => {
+      const phoneNumber = normalizePhoneNumber('0812-9000-0002');
+      const stillWaiting = await prospectiveRepository.createAwaitingArrival({
+        fullName: `${TEST_MARKER} waiting`,
+        phoneNumber,
+        channel: 'WHATSAPP',
+        externalChatId: `${TEST_MARKER}-chat-2`,
+        expiresAt: new Date(Date.now() + 90 * 86_400_000),
+      });
+      const alreadyArrived = await prospectiveRepository.createAwaitingArrival({
+        fullName: `${TEST_MARKER} arrived`,
+        phoneNumber,
+        channel: 'WHATSAPP',
+        externalChatId: `${TEST_MARKER}-chat-2`,
+        expiresAt: new Date(Date.now() + 90 * 86_400_000),
+      });
+      const patientId = await createPatient('081290000002');
+      await prospectiveRepository.markConverted({
+        prospectivePatientId: alreadyArrived.id,
+        patientId,
+        convertedById: patientId,
+        convertedAt: new Date(),
+      });
+
+      const awaiting = await prospectiveRepository.findAwaitingArrivalByPhoneNumber(phoneNumber);
+
+      // A number whose earlier booking already converted must not drag the
+      // resolved record back into a new booking — that person is a patient now,
+      // and reusing their prospective row would file the new appointment under
+      // somebody the clinic has already registered.
+      expect(awaiting.map((record) => record.id)).toEqual([stillWaiting.id]);
     });
   });
 

@@ -32,8 +32,10 @@ function buildArrival(overrides: Record<string, unknown> = {}): Record<string, u
     appointmentStatus: 'SCHEDULED',
     doctorName: 'dr. Andi Pratama',
     specialty: 'Dokter Umum',
+    subjectKind: 'PATIENT',
     patientId: 'patient-1',
     patientMrn: 'RM-000482',
+    prospectivePatientId: null,
     patientFullName: 'Rina Kusuma',
     patientPhoneNumber: '628123456789',
     patientIsDraft: true,
@@ -41,6 +43,21 @@ function buildArrival(overrides: Record<string, unknown> = {}): Record<string, u
     createdAt: '2026-08-08T14:22:00.000Z',
     ...overrides,
   };
+}
+
+/** A booking taken after `P17-T03`: no patient record and no MRN spent. */
+function buildProspectiveArrival(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return buildArrival({
+    appointmentId: 'appointment-2',
+    subjectKind: 'PROSPECTIVE_PATIENT',
+    patientId: null,
+    patientMrn: null,
+    prospectivePatientId: 'prospective-1',
+    patientFullName: 'Siti Rahayu',
+    patientIsDraft: true,
+    missingFields: ['dateOfBirth', 'sex', 'address', 'nik', 'bpjsNumber'],
+    ...overrides,
+  });
 }
 
 function renderPanel(): void {
@@ -102,6 +119,26 @@ describe('ChannelArrivalsPanel', () => {
     expect(
       screen.queryByRole('button', { name: 'Gabungkan ke pasien terdaftar' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('shows a prospective booking without an MRN, a merge, or a dead patient link', async () => {
+    listArrivalsMock.mockResolvedValue({
+      status: 200,
+      data: { data: [buildProspectiveArrival()] },
+    });
+
+    renderPanel();
+
+    expect(await screen.findByText('Siti Rahayu')).toBeInTheDocument();
+    // "Belum ada RM" rather than a blank: no medical record number has been
+    // spent on this person, which is the whole point of the record.
+    expect(screen.getByText(/Belum ada RM/)).toBeInTheDocument();
+    // Neither action applies. The complete link would point at
+    // /admin/patients/null, and merge only accepts a draft profile as a source.
+    expect(
+      screen.queryByRole('button', { name: 'Gabungkan ke pasien terdaftar' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Lengkapi data' })).not.toBeInTheDocument();
   });
 
   it('puts incomplete records above complete ones', async () => {

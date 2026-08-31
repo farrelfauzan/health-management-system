@@ -700,7 +700,9 @@
         "doctor": "Doctor",
         "scheduled": "Session",
         "actions": "Actions"
-      }
+      },
+      "prospective": "Not registered yet",
+      "noMrnYet": "No MRN yet"
     },
     "fields": {
       "complete": "Nothing outstanding",
@@ -712,7 +714,8 @@
     },
     "actions": {
       "complete": "Complete record",
-      "merge": "Merge into existing patient"
+      "merge": "Merge into existing patient",
+      "notYetAPatient": "Register at the counter"
     },
     "merge": {
       "title": "Merge this draft into an existing patient",

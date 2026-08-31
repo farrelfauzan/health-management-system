@@ -10,7 +10,6 @@ import {
 import {
   Actor,
   collectNikDemographicWarnings,
-  CreateChannelDraftPatientInput,
   CreatePatientRecordPayload,
   maskIdentifierLast4,
   PatientIdentifierPlaintext,
@@ -204,65 +203,6 @@ export class PatientManagementService {
         sex: payload.sex,
       }),
     };
-  }
-
-  /**
-   * Creates the draft a WhatsApp/Telegram customer's booking hangs off
-   * (`PCS-T07`, strategy §5.1).
-   *
-   * Separate from {@link createPatient} rather than a flag on it, because the
-   * two accept different things and must keep accepting different things: the
-   * counter path requires a date of birth and an address, and this one has no
-   * parameter that could carry either. A shared entry point with optional
-   * fields would let a future caller create an incomplete record from a
-   * surface where someone *was* standing there to be asked.
-   *
-   * **System actors only.** The record it writes is marked as still owing its
-   * subject a privacy notice, and that deferral is only true because the
-   * channel had nobody present to receive one — a human caller claiming it
-   * would be fabricating legal evidence.
-   */
-  async createChannelDraftPatient(
-    payload: CreateChannelDraftPatientInput,
-    currentUser: CurrentUser,
-  ): Promise<{ id: string; mrn: string; fullName: string }> {
-    const actor = await this.getActorOrThrow(currentUser);
-
-    if (!this.resolveScope(actor, 'Patient', 'create').hasAny) {
-      throw new ForbiddenException('You are not allowed to create patients');
-    }
-
-    if (actor.isSystem !== true) {
-      throw new ForbiddenException('Channel draft patients are created by system integrations only');
-    }
-
-    const currentNotice = await this.privacyNoticeRepository.findCurrentVersion();
-
-    if (currentNotice === null) {
-      throw new BadRequestException('No current privacy notice version is published');
-    }
-
-    const created = await this.runPatientCreate({
-      fullName: payload.fullName,
-      // The three nulls are the point. See the schema's note.
-      dateOfBirth: null,
-      sex: null,
-      address: null,
-      status: 'OUT_PATIENT',
-      phoneNumber: payload.phoneNumber,
-      source: 'CHANNEL_BOOKING',
-      isActive: true,
-      actorUserId: currentUser.sub,
-      privacyNotice: {
-        privacyNoticeVersionId: currentNotice.id,
-        locale: 'id',
-        outcome: 'DEFERRED_REMOTE_REGISTRATION',
-        subjectType: 'SELF',
-        provenance: 'CHANNEL_BOOKING',
-      },
-    });
-
-    return { id: created.id, mrn: created.mrn, fullName: created.fullName };
   }
 
   /**

@@ -700,7 +700,9 @@
         "doctor": "Dokter",
         "scheduled": "Sesi",
         "actions": "Aksi"
-      }
+      },
+      "prospective": "Belum terdaftar",
+      "noMrnYet": "Belum ada RM"
     },
     "fields": {
       "complete": "Tidak ada yang kurang",
@@ -712,7 +714,8 @@
     },
     "actions": {
       "complete": "Lengkapi data",
-      "merge": "Gabungkan ke pasien terdaftar"
+      "merge": "Gabungkan ke pasien terdaftar",
+      "notYetAPatient": "Daftarkan di loket"
     },
     "merge": {
       "title": "Gabungkan draf ini ke pasien terdaftar",

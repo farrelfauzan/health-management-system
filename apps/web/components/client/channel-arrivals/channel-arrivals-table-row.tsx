@@ -39,11 +39,15 @@ export function ChannelArrivalsTableRow({
       <TableCell>
         <p className="font-medium text-slate-900">{arrival.patientFullName}</p>
         <p className="text-xs text-slate-500">
-          {arrival.patientMrn} · {arrival.patientPhoneNumber}
+          {/* No MRN on a prospective booking, and it is not a load failure:
+              none has been spent on this person yet (`P17-T03`). */}
+          {arrival.patientMrn ?? t('noMrnYet')} · {arrival.patientPhoneNumber}
         </p>
       </TableCell>
       <TableCell>
-        {arrival.patientIsDraft ? (
+        {arrival.subjectKind === 'PROSPECTIVE_PATIENT' ? (
+          <Badge className="bg-amber-100 text-amber-900">{t('prospective')}</Badge>
+        ) : arrival.patientIsDraft ? (
           <Badge className="bg-amber-100 text-amber-900">{t('draft')}</Badge>
         ) : (
           <Badge className="bg-slate-100 text-slate-700">{t('linked')}</Badge>

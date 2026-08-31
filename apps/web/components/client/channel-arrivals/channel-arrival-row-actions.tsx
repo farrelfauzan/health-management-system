@@ -27,6 +27,13 @@ type ChannelArrivalRowActionsProps = {
  * "Merge" is offered only for a draft, because that is the only record this
  * endpoint will accept: a verified customer's booking already hangs off their
  * real record and has nothing to merge.
+ *
+ * **A prospective booking gets neither** (`P17-T03`). There is no patient
+ * record to complete — that is the point of the row — so the link would go to
+ * `/admin/patients/null`, and merge only accepts a draft profile as its source.
+ * The conversion that gives this person a record, and spends the MRN, is
+ * `P17-T04`; until it ships the desk registers them the ordinary way and the
+ * row says so rather than offering a button that 404s.
  */
 export function ChannelArrivalRowActions({
   arrival,
@@ -38,21 +45,29 @@ export function ChannelArrivalRowActions({
 
   return (
     <div className="flex items-center justify-end gap-2">
-      <Button asChild type="button" variant="outline" size="sm">
-        <Link href={`/admin/patients/${arrival.patientId}`}>{t('complete')}</Link>
-      </Button>
-      {arrival.patientIsDraft ? (
-        <Button type="button" variant="outline" size="sm" onClick={() => setIsMergeOpen(true)}>
-          {t('merge')}
+      {arrival.patientId === null ? (
+        <span className="text-xs text-slate-500">{t('notYetAPatient')}</span>
+      ) : (
+        <Button asChild type="button" variant="outline" size="sm">
+          <Link href={`/admin/patients/${arrival.patientId}`}>{t('complete')}</Link>
         </Button>
+      )}
+      {arrival.patientIsDraft && arrival.patientId !== null && arrival.patientMrn !== null ? (
+        <>
+          <Button type="button" variant="outline" size="sm" onClick={() => setIsMergeOpen(true)}>
+            {t('merge')}
+          </Button>
+          <ChannelArrivalMergeDialog
+            open={isMergeOpen}
+            onOpenChange={setIsMergeOpen}
+            arrival={arrival}
+            draftPatientId={arrival.patientId}
+            draftPatientMrn={arrival.patientMrn}
+            onMerged={onResult}
+            onFailed={onFailed}
+          />
+        </>
       ) : null}
-      <ChannelArrivalMergeDialog
-        open={isMergeOpen}
-        onOpenChange={setIsMergeOpen}
-        arrival={arrival}
-        onMerged={onResult}
-        onFailed={onFailed}
-      />
     </div>
   );
 }

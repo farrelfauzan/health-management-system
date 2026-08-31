@@ -5,6 +5,7 @@ import type {
   ConversationStateValue,
   WaGatewayKindValue,
 } from '#customer-service/schemas';
+import type { ChannelArrivalSubjectKind } from '#customer-service/types';
 
 /**
  * One conversation as the admin inbox lists it (`PCS-T08`, §4.2).
@@ -118,10 +119,19 @@ export type ChannelArrivalView = {
   appointmentStatus: string;
   doctorName: string;
   specialty: string | null;
-  patientId: string;
-  patientMrn: string;
+  subjectKind: ChannelArrivalSubjectKind;
+  /** Null for a prospective record — no MRN has been spent on that person. */
+  patientId: string | null;
+  patientMrn: string | null;
+  /** Null for a legacy draft profile. */
+  prospectivePatientId: string | null;
   patientFullName: string;
   patientPhoneNumber: string;
+  /**
+   * True when this row cannot be registered as it stands — a legacy draft
+   * missing required columns, or any prospective record, which is missing all
+   * of them by definition.
+   */
   patientIsDraft: boolean;
   /**
    * Column names from the draft that a human still has to supply.

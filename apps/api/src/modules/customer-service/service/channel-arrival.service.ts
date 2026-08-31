@@ -203,11 +203,15 @@ export class ChannelArrivalService {
    * ask — the difference is between a prompt and a blocker.
    */
   private toView(record: ChannelArrivalRecord): ChannelArrivalView {
+    // A prospective record is incomplete by construction — it holds a name and
+    // a phone number and nothing else — so it needs no field inspection to know
+    // it cannot be registered as it stands (`P17-T03`).
     const isDraft =
-      record.patientSource === 'CHANNEL_BOOKING' &&
-      CHANNEL_DRAFT_REQUIRED_FIELDS.some((field) =>
-        record.missingFields.some((missing) => missing === field),
-      );
+      record.subjectKind === 'PROSPECTIVE_PATIENT' ||
+      (record.patientSource === 'CHANNEL_BOOKING' &&
+        CHANNEL_DRAFT_REQUIRED_FIELDS.some((field) =>
+          record.missingFields.some((missing) => missing === field),
+        ));
     return {
       appointmentId: record.appointmentId,
       bookingReferenceCode: record.bookingReferenceCode,
@@ -216,8 +220,10 @@ export class ChannelArrivalService {
       appointmentStatus: record.appointmentStatus,
       doctorName: record.doctorName,
       specialty: record.specialty,
+      subjectKind: record.subjectKind,
       patientId: record.patientId,
       patientMrn: record.patientMrn,
+      prospectivePatientId: record.prospectivePatientId,
       patientFullName: record.patientFullName,
       patientPhoneNumber: record.patientPhoneNumber,
       patientIsDraft: isDraft,

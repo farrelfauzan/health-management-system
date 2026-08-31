@@ -410,28 +410,6 @@ export const createPatientSchema = z.object({
 });
 
 /**
- * The chat-created draft (`PCS-T07`, strategy §5.1).
- *
- * **What is absent is the design.** There is no `nik`, no `bpjsNumber`, no
- * `dateOfBirth`, no `address` and no `sex` — not because the prompt tells the
- * model not to ask, but because there is nowhere to put an answer if it did
- * (D-CS-03). §5.2 has the front desk complete the record when the person
- * arrives, and until then a null is the truthful representation of "we have
- * not asked".
- *
- * `privacyNotice` is absent for a different reason: it is not the caller's to
- * choose. Nobody was present to receive the notice, so the only honest
- * evidence is the remote-registration deferral, and the service supplies it
- * rather than accepting one.
- */
-export const createChannelDraftPatientSchema = z.object({
-  fullName: z.string().trim().min(2).max(120),
-  phoneNumber: z.string().trim().min(6).max(32),
-});
-
-export type CreateChannelDraftPatientInput = z.infer<typeof createChannelDraftPatientSchema>;
-
-/**
  * Legacy import. Identical to a create except that the MRN comes from the
  * clinic's previous system, so it must be accepted verbatim — the number is
  * already printed on a folder and cannot be renumbered. Gated by
