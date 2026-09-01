@@ -21,8 +21,17 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CreateDocumentTemplateDto,
+  DocumentTemplateControllerArchiveTemplateV1200,
+  DocumentTemplateControllerCreateTemplateV1201,
+  DocumentTemplateControllerListTemplatesV1200,
+  DocumentTemplateControllerListTemplatesV1Params,
+  DocumentTemplateControllerPublishTemplateV1200,
+  DocumentTemplateControllerSetDefaultTemplateV1200,
+  DocumentTemplateControllerUpdateTemplateV1200,
   DocumentTemplateVariableControllerListTemplateVariablesV1200,
-  DocumentTemplateVariableControllerListTemplateVariablesV1Params
+  DocumentTemplateVariableControllerListTemplateVariablesV1Params,
+  UpdateDocumentTemplateDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -44,6 +53,570 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+/**
+ * @summary List document templates of one kind
+ */
+export const documentTemplateControllerListTemplatesV1 = (
+    params: DocumentTemplateControllerListTemplatesV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerListTemplatesV1200>(
+      {url: `/api/v1/document-templates`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerListTemplatesV1QueryKey = (params?: DocumentTemplateControllerListTemplatesV1Params,) => {
+    return [
+    `/api/v1/document-templates`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerListTemplatesV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError = unknown>(params: DocumentTemplateControllerListTemplatesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerListTemplatesV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>> = ({ signal }) => documentTemplateControllerListTemplatesV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerListTemplatesV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>>
+export type DocumentTemplateControllerListTemplatesV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerListTemplatesV1<TData = Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError = unknown>(
+ params: DocumentTemplateControllerListTemplatesV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerListTemplatesV1<TData = Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError = unknown>(
+ params: DocumentTemplateControllerListTemplatesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerListTemplatesV1<TData = Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError = unknown>(
+ params: DocumentTemplateControllerListTemplatesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List document templates of one kind
+ */
+
+export function useDocumentTemplateControllerListTemplatesV1<TData = Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError = unknown>(
+ params: DocumentTemplateControllerListTemplatesV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerListTemplatesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerListTemplatesV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Create a document template
+ */
+export const documentTemplateControllerCreateTemplateV1 = (
+    createDocumentTemplateDto: CreateDocumentTemplateDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerCreateTemplateV1201>(
+      {url: `/api/v1/document-templates`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createDocumentTemplateDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerCreateTemplateV1QueryKey = (createDocumentTemplateDto?: CreateDocumentTemplateDto,) => {
+    return [
+    'POST', `/api/v1/document-templates`, createDocumentTemplateDto
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerCreateTemplateV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError = unknown>(createDocumentTemplateDto: CreateDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerCreateTemplateV1QueryKey(createDocumentTemplateDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>> = ({ signal }) => documentTemplateControllerCreateTemplateV1(createDocumentTemplateDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerCreateTemplateV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>>
+export type DocumentTemplateControllerCreateTemplateV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerCreateTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError = unknown>(
+ createDocumentTemplateDto: CreateDocumentTemplateDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerCreateTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError = unknown>(
+ createDocumentTemplateDto: CreateDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerCreateTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError = unknown>(
+ createDocumentTemplateDto: CreateDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Create a document template
+ */
+
+export function useDocumentTemplateControllerCreateTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError = unknown>(
+ createDocumentTemplateDto: CreateDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerCreateTemplateV1QueryOptions(createDocumentTemplateDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Update a document template
+ */
+export const documentTemplateControllerUpdateTemplateV1 = (
+    id: string,
+    updateDocumentTemplateDto: UpdateDocumentTemplateDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerUpdateTemplateV1200>(
+      {url: `/api/v1/document-templates/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateDocumentTemplateDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerUpdateTemplateV1QueryKey = (id: string,
+    updateDocumentTemplateDto?: UpdateDocumentTemplateDto,) => {
+    return [
+    'PATCH', `/api/v1/document-templates/${id}`, updateDocumentTemplateDto
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerUpdateTemplateV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError = unknown>(id: string,
+    updateDocumentTemplateDto: UpdateDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerUpdateTemplateV1QueryKey(id,updateDocumentTemplateDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>> = ({ signal }) => documentTemplateControllerUpdateTemplateV1(id,updateDocumentTemplateDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerUpdateTemplateV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>>
+export type DocumentTemplateControllerUpdateTemplateV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerUpdateTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError = unknown>(
+ id: string,
+    updateDocumentTemplateDto: UpdateDocumentTemplateDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerUpdateTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError = unknown>(
+ id: string,
+    updateDocumentTemplateDto: UpdateDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerUpdateTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError = unknown>(
+ id: string,
+    updateDocumentTemplateDto: UpdateDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Update a document template
+ */
+
+export function useDocumentTemplateControllerUpdateTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError = unknown>(
+ id: string,
+    updateDocumentTemplateDto: UpdateDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerUpdateTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerUpdateTemplateV1QueryOptions(id,updateDocumentTemplateDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Archive a document template
+ */
+export const documentTemplateControllerArchiveTemplateV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerArchiveTemplateV1200>(
+      {url: `/api/v1/document-templates/${id}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerArchiveTemplateV1QueryKey = (id: string,) => {
+    return [
+    'DELETE', `/api/v1/document-templates/${id}`
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerArchiveTemplateV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerArchiveTemplateV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>> = ({ signal }) => documentTemplateControllerArchiveTemplateV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerArchiveTemplateV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>>
+export type DocumentTemplateControllerArchiveTemplateV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerArchiveTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerArchiveTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerArchiveTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Archive a document template
+ */
+
+export function useDocumentTemplateControllerArchiveTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerArchiveTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerArchiveTemplateV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Publish an immutable version of a template
+ */
+export const documentTemplateControllerPublishTemplateV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerPublishTemplateV1200>(
+      {url: `/api/v1/document-templates/${id}/publish`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerPublishTemplateV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/document-templates/${id}/publish`
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerPublishTemplateV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerPublishTemplateV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>> = ({ signal }) => documentTemplateControllerPublishTemplateV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerPublishTemplateV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>>
+export type DocumentTemplateControllerPublishTemplateV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerPublishTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerPublishTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerPublishTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Publish an immutable version of a template
+ */
+
+export function useDocumentTemplateControllerPublishTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPublishTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerPublishTemplateV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Make a template the default for its kind
+ */
+export const documentTemplateControllerSetDefaultTemplateV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerSetDefaultTemplateV1200>(
+      {url: `/api/v1/document-templates/${id}/set-default`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerSetDefaultTemplateV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/document-templates/${id}/set-default`
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerSetDefaultTemplateV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerSetDefaultTemplateV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>> = ({ signal }) => documentTemplateControllerSetDefaultTemplateV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerSetDefaultTemplateV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>>
+export type DocumentTemplateControllerSetDefaultTemplateV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerSetDefaultTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerSetDefaultTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerSetDefaultTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Make a template the default for its kind
+ */
+
+export function useDocumentTemplateControllerSetDefaultTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerSetDefaultTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerSetDefaultTemplateV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
 
 /**
  * @summary List the variables a template of this kind may reference

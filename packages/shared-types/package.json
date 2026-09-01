@@ -27,7 +27,6 @@
     "#registration-flow/contracts": "./src/registration-flow/contracts.ts",
     "#registration-flow/types": "./src/registration-flow/types.ts",
     "#billing/accommodation-nights": "./src/billing/accommodation-nights.ts",
-    "#billing/template-variables": "./src/billing/template-variables.ts",
     "#billing/schemas": "./src/billing/schemas.ts",
     "#billing/contracts": "./src/billing/contracts.ts",
     "#billing/types": "./src/billing/types.ts",
@@ -90,7 +89,11 @@
     "#user-invitation/types": "./src/user-invitation/types.ts",
     "#organization-structure/schemas": "./src/organization-structure/schemas.ts",
     "#organization-structure/contracts": "./src/organization-structure/contracts.ts",
-    "#organization-structure/types": "./src/organization-structure/types.ts"
+    "#organization-structure/types": "./src/organization-structure/types.ts",
+    "#document-templates/template-variables": "./src/document-templates/template-variables.ts",
+    "#document-templates/schemas": "./src/document-templates/schemas.ts",
+    "#document-templates/contracts": "./src/document-templates/contracts.ts",
+    "#document-templates/types": "./src/document-templates/types.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

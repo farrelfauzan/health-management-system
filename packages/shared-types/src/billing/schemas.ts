@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import { TEMPLATE_VARIABLE_KINDS } from '#billing/template-variables';
-
 /**
  * ACCOMMODATION (IMP-15) is the one category priced per ward class rather than
  * per service — the room class *is* the product — which is why a tariff in it
@@ -318,16 +316,3 @@ export const updateClinicProfileSchema = z
 
 export type CreateClinicLogoUploadUrlInput = z.infer<typeof createClinicLogoUploadUrlSchema>;
 export type UpdateClinicProfileInput = z.infer<typeof updateClinicProfileSchema>;
-
-export const templateVariableKindSchema = z.enum(TEMPLATE_VARIABLE_KINDS);
-
-/**
- * Which registry the palette is asking for. Required rather than defaulted to
- * `INVOICE`: the second document kind (`E2`) will make a silent default the
- * wrong answer for whoever forgot to pass one.
- */
-export const listTemplateVariablesQuerySchema = z.object({
-  kind: templateVariableKindSchema,
-});
-
-export type ListTemplateVariablesQueryInput = z.infer<typeof listTemplateVariablesQuerySchema>;

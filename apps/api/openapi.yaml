@@ -14731,89 +14731,6 @@ paths:
         - bearer: []
       summary: Sign a browser-direct logo upload
       tags: *a21
-  /api/v1/document-templates/variables:
-    get:
-      operationId: DocumentTemplateVariableController_listTemplateVariables_v1
-      parameters:
-        - name: kind
-          required: true
-          in: query
-          schema:
-            type: string
-            enum:
-              - INVOICE
-      responses:
-        "200":
-          description: Every token the editor may offer and publish-time validation will
-            accept, with both labels, its type, and a realistic sample.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        token:
-                          type: string
-                        labelId:
-                          type: string
-                        labelEn:
-                          type: string
-                        type:
-                          type: string
-                        sample:
-                          type: string
-                      required:
-                        - token
-                        - labelId
-                        - labelEn
-                        - type
-                        - sample
-                required:
-                  - data
-                example:
-                  data:
-                    - token: clinic.name
-                      labelId: Nama klinik
-                      labelEn: Clinic name
-                      type: text
-                      sample: Klinik Sehat Bersama
-                    - token: invoice.totalInWords
-                      labelId: Terbilang
-                      labelEn: Total in words
-                      type: text
-                      sample: dua ratus tujuh puluh lima ribu rupiah
-                    - token: items
-                      labelId: Rincian tagihan
-                      labelEn: Line items
-                      type: block
-                      sample: 4 baris
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: List the variables a template of this kind may reference
-      tags:
-        - Document Templates
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
@@ -26543,6 +26460,937 @@ paths:
         - bearer: []
       summary: The arriving person is new — register them and allocate their MRN
       tags: *a41
+  /api/v1/document-templates:
+    get:
+      operationId: DocumentTemplateController_listTemplates_v1
+      parameters:
+        - name: kind
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - INVOICE
+      responses:
+        "200":
+          description: Every live template of the kind, default first, each with its
+            latest published version if any.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        kind:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        status:
+                          type: string
+                        isDefault:
+                          type: boolean
+                        contentHtml:
+                          type: string
+                        settings:
+                          type: object
+                          properties:
+                            paperSize:
+                              type: string
+                            orientation:
+                              type: string
+                            marginMm:
+                              type: object
+                              properties:
+                                top:
+                                  type: integer
+                                right:
+                                  type: integer
+                                bottom:
+                                  type: integer
+                                left:
+                                  type: integer
+                              required:
+                                - top
+                                - right
+                                - bottom
+                                - left
+                          required:
+                            - paperSize
+                            - orientation
+                            - marginMm
+                        latestPublishedVersion:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            versionNumber:
+                              type: integer
+                            publishedAt:
+                              type: string
+                            publishedById:
+                              type: string
+                          required:
+                            - id
+                            - versionNumber
+                            - publishedAt
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - kind
+                        - name
+                        - status
+                        - isDefault
+                        - contentHtml
+                        - settings
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 0d9e2f34-6f3a-4c9e-9b1e-2a45b1c0d217
+                      kind: INVOICE
+                      name: Kuitansi A5
+                      description: Layout kuitansi setengah halaman untuk kasir
+                      status: PUBLISHED
+                      isDefault: true
+                      contentHtml: <div><h1><span data-hms-var="clinic.name"></span></h1><p>No. <span
+                        data-hms-var="invoice.number"></span></p><div
+                        data-hms-var="items"></div></div>
+                      settings:
+                        paperSize: A4
+                        orientation: PORTRAIT
+                        marginMm:
+                          top: 10
+                          right: 10
+                          bottom: 10
+                          left: 10
+                      latestPublishedVersion:
+                        id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
+                        versionNumber: 3
+                        publishedAt: 2026-09-01T04:20:00.000Z
+                        publishedById: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                      createdAt: 2026-08-30T08:00:00.000Z
+                      updatedAt: 2026-09-01T04:20:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List document templates of one kind
+      tags: &a42
+        - Document Templates
+    post:
+      operationId: DocumentTemplateController_createTemplate_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDocumentTemplateDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  kind: INVOICE
+                  name: Kuitansi A5
+                  description: Layout kuitansi setengah halaman untuk kasir
+                  contentHtml: <div><h1><span data-hms-var="clinic.name"></span></h1></div>
+                  settings:
+                    paperSize: A4
+                    orientation: PORTRAIT
+                    marginMm:
+                      top: 10
+                      right: 10
+                      bottom: 10
+                      left: 10
+      responses:
+        "201":
+          description: The template was created as a DRAFT working copy. Its HTML was
+            sanitised server-side before being stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      kind:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      status:
+                        type: string
+                      isDefault:
+                        type: boolean
+                      contentHtml:
+                        type: string
+                      settings:
+                        type: object
+                        properties:
+                          paperSize:
+                            type: string
+                          orientation:
+                            type: string
+                          marginMm:
+                            type: object
+                            properties:
+                              top:
+                                type: integer
+                              right:
+                                type: integer
+                              bottom:
+                                type: integer
+                              left:
+                                type: integer
+                            required:
+                              - top
+                              - right
+                              - bottom
+                              - left
+                        required:
+                          - paperSize
+                          - orientation
+                          - marginMm
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - kind
+                      - name
+                      - status
+                      - isDefault
+                      - contentHtml
+                      - settings
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5b7c1a02-88d4-4f0f-bb0e-9f2ad4e6a913
+                    kind: INVOICE
+                    name: Faktur percobaan
+                    description: Draf baru yang belum diterbitkan
+                    status: DRAFT
+                    isDefault: false
+                    contentHtml: <div><h1><span data-hms-var="clinic.name"></span></h1></div>
+                    settings:
+                      paperSize: A4
+                      orientation: PORTRAIT
+                      marginMm:
+                        top: 10
+                        right: 10
+                        bottom: 10
+                        left: 10
+                    createdAt: 2026-09-01T04:00:00.000Z
+                    updatedAt: 2026-09-01T04:00:00.000Z
+                  message: Document template created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a document template
+      tags: *a42
+  /api/v1/document-templates/{id}:
+    patch:
+      operationId: DocumentTemplateController_updateTemplate_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDocumentTemplateDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Kuitansi A5 (revisi)
+                  contentHtml: <div><h1><span data-hms-var="clinic.name"></span></h1><p><span
+                    data-hms-var="patient.fullName"></span></p></div>
+      responses:
+        "200":
+          description: The working copy was updated; its HTML was sanitised server-side.
+            Published versions are immutable and unaffected.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      kind:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      status:
+                        type: string
+                      isDefault:
+                        type: boolean
+                      contentHtml:
+                        type: string
+                      settings:
+                        type: object
+                        properties:
+                          paperSize:
+                            type: string
+                          orientation:
+                            type: string
+                          marginMm:
+                            type: object
+                            properties:
+                              top:
+                                type: integer
+                              right:
+                                type: integer
+                              bottom:
+                                type: integer
+                              left:
+                                type: integer
+                            required:
+                              - top
+                              - right
+                              - bottom
+                              - left
+                        required:
+                          - paperSize
+                          - orientation
+                          - marginMm
+                      latestPublishedVersion:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          versionNumber:
+                            type: integer
+                          publishedAt:
+                            type: string
+                          publishedById:
+                            type: string
+                        required:
+                          - id
+                          - versionNumber
+                          - publishedAt
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - kind
+                      - name
+                      - status
+                      - isDefault
+                      - contentHtml
+                      - settings
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 0d9e2f34-6f3a-4c9e-9b1e-2a45b1c0d217
+                    kind: INVOICE
+                    name: Kuitansi A5
+                    description: Layout kuitansi setengah halaman untuk kasir
+                    status: PUBLISHED
+                    isDefault: true
+                    contentHtml: <div><h1><span data-hms-var="clinic.name"></span></h1><p>No. <span
+                      data-hms-var="invoice.number"></span></p><div
+                      data-hms-var="items"></div></div>
+                    settings:
+                      paperSize: A4
+                      orientation: PORTRAIT
+                      marginMm:
+                        top: 10
+                        right: 10
+                        bottom: 10
+                        left: 10
+                    latestPublishedVersion:
+                      id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
+                      versionNumber: 3
+                      publishedAt: 2026-09-01T04:20:00.000Z
+                      publishedById: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                    createdAt: 2026-08-30T08:00:00.000Z
+                    updatedAt: 2026-09-01T04:20:00.000Z
+                  message: Document template updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document template not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document template not found.
+      security:
+        - bearer: []
+      summary: Update a document template
+      tags: *a42
+    delete:
+      operationId: DocumentTemplateController_archiveTemplate_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The working copy was soft-deleted. Published versions are retained
+            — rendered documents keep pointing at them. The default template is
+            refused.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      archivedAt:
+                        type: string
+                    required:
+                      - id
+                      - archivedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5b7c1a02-88d4-4f0f-bb0e-9f2ad4e6a913
+                    archivedAt: 2026-09-01T05:00:00.000Z
+                  message: Document template archived
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document template not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document template not found.
+      security:
+        - bearer: []
+      summary: Archive a document template
+      tags: *a42
+  /api/v1/document-templates/{id}/publish:
+    post:
+      operationId: DocumentTemplateController_publishTemplate_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A new immutable version was cut from the working copy. Rendered
+            documents point at versions, so later edits never rewrite what this
+            publish produced.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      kind:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      status:
+                        type: string
+                      isDefault:
+                        type: boolean
+                      contentHtml:
+                        type: string
+                      settings:
+                        type: object
+                        properties:
+                          paperSize:
+                            type: string
+                          orientation:
+                            type: string
+                          marginMm:
+                            type: object
+                            properties:
+                              top:
+                                type: integer
+                              right:
+                                type: integer
+                              bottom:
+                                type: integer
+                              left:
+                                type: integer
+                            required:
+                              - top
+                              - right
+                              - bottom
+                              - left
+                        required:
+                          - paperSize
+                          - orientation
+                          - marginMm
+                      latestPublishedVersion:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          versionNumber:
+                            type: integer
+                          publishedAt:
+                            type: string
+                          publishedById:
+                            type: string
+                        required:
+                          - id
+                          - versionNumber
+                          - publishedAt
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - kind
+                      - name
+                      - status
+                      - isDefault
+                      - contentHtml
+                      - settings
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 0d9e2f34-6f3a-4c9e-9b1e-2a45b1c0d217
+                    kind: INVOICE
+                    name: Kuitansi A5
+                    description: Layout kuitansi setengah halaman untuk kasir
+                    status: PUBLISHED
+                    isDefault: true
+                    contentHtml: <div><h1><span data-hms-var="clinic.name"></span></h1><p>No. <span
+                      data-hms-var="invoice.number"></span></p><div
+                      data-hms-var="items"></div></div>
+                    settings:
+                      paperSize: A4
+                      orientation: PORTRAIT
+                      marginMm:
+                        top: 10
+                        right: 10
+                        bottom: 10
+                        left: 10
+                    latestPublishedVersion:
+                      id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
+                      versionNumber: 3
+                      publishedAt: 2026-09-01T04:20:00.000Z
+                      publishedById: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                    createdAt: 2026-08-30T08:00:00.000Z
+                    updatedAt: 2026-09-01T04:20:00.000Z
+                  message: Document template published
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document template not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document template not found.
+      security:
+        - bearer: []
+      summary: Publish an immutable version of a template
+      tags: *a42
+  /api/v1/document-templates/{id}/set-default:
+    post:
+      operationId: DocumentTemplateController_setDefaultTemplate_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The default flag moved to this template in one transaction — at
+            most one default per kind exists at any instant.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      kind:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      status:
+                        type: string
+                      isDefault:
+                        type: boolean
+                      contentHtml:
+                        type: string
+                      settings:
+                        type: object
+                        properties:
+                          paperSize:
+                            type: string
+                          orientation:
+                            type: string
+                          marginMm:
+                            type: object
+                            properties:
+                              top:
+                                type: integer
+                              right:
+                                type: integer
+                              bottom:
+                                type: integer
+                              left:
+                                type: integer
+                            required:
+                              - top
+                              - right
+                              - bottom
+                              - left
+                        required:
+                          - paperSize
+                          - orientation
+                          - marginMm
+                      latestPublishedVersion:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          versionNumber:
+                            type: integer
+                          publishedAt:
+                            type: string
+                          publishedById:
+                            type: string
+                        required:
+                          - id
+                          - versionNumber
+                          - publishedAt
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - kind
+                      - name
+                      - status
+                      - isDefault
+                      - contentHtml
+                      - settings
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 0d9e2f34-6f3a-4c9e-9b1e-2a45b1c0d217
+                    kind: INVOICE
+                    name: Kuitansi A5
+                    description: Layout kuitansi setengah halaman untuk kasir
+                    status: PUBLISHED
+                    isDefault: true
+                    contentHtml: <div><h1><span data-hms-var="clinic.name"></span></h1><p>No. <span
+                      data-hms-var="invoice.number"></span></p><div
+                      data-hms-var="items"></div></div>
+                    settings:
+                      paperSize: A4
+                      orientation: PORTRAIT
+                      marginMm:
+                        top: 10
+                        right: 10
+                        bottom: 10
+                        left: 10
+                    latestPublishedVersion:
+                      id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
+                      versionNumber: 3
+                      publishedAt: 2026-09-01T04:20:00.000Z
+                      publishedById: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                    createdAt: 2026-08-30T08:00:00.000Z
+                    updatedAt: 2026-09-01T04:20:00.000Z
+                  message: Default template updated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document template not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document template not found.
+      security:
+        - bearer: []
+      summary: Make a template the default for its kind
+      tags: *a42
+  /api/v1/document-templates/variables:
+    get:
+      operationId: DocumentTemplateVariableController_listTemplateVariables_v1
+      parameters:
+        - name: kind
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - INVOICE
+      responses:
+        "200":
+          description: Every token the editor may offer and publish-time validation will
+            accept, with both labels, its type, and a realistic sample.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        token:
+                          type: string
+                        labelId:
+                          type: string
+                        labelEn:
+                          type: string
+                        type:
+                          type: string
+                        sample:
+                          type: string
+                      required:
+                        - token
+                        - labelId
+                        - labelEn
+                        - type
+                        - sample
+                required:
+                  - data
+                example:
+                  data:
+                    - token: clinic.name
+                      labelId: Nama klinik
+                      labelEn: Clinic name
+                      type: text
+                      sample: Klinik Sehat Bersama
+                    - token: invoice.totalInWords
+                      labelId: Terbilang
+                      labelEn: Total in words
+                      type: text
+                      sample: dua ratus tujuh puluh lima ribu rupiah
+                    - token: items
+                      labelId: Rincian tagihan
+                      labelEn: Line items
+                      type: block
+                      sample: 4 baris
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List the variables a template of this kind may reference
+      tags:
+        - Document Templates
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -26621,7 +27469,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a42
+      tags: &a43
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -26738,7 +27586,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a42
+      tags: *a43
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -26861,7 +27709,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a43
+      tags: &a44
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -26948,7 +27796,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a43
+      tags: *a44
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -27028,7 +27876,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a43
+      tags: *a44
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -27147,7 +27995,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a43
+      tags: *a44
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -27246,7 +28094,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a43
+      tags: *a44
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -27322,7 +28170,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a43
+      tags: *a44
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -27468,7 +28316,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a43
+      tags: *a44
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -27560,7 +28408,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a43
+      tags: *a44
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -27652,7 +28500,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a43
+      tags: *a44
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -30151,6 +30999,142 @@ components:
         - phoneNumber
         - address
         - privacyNotice
+    CreateDocumentTemplateDto:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - INVOICE
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+        contentHtml:
+          type: string
+          maxLength: 200000
+          default: ""
+        settings:
+          type: object
+          properties:
+            paperSize:
+              type: string
+              enum:
+                - A4
+                - A5
+                - LETTER
+              default: A4
+            orientation:
+              type: string
+              enum:
+                - PORTRAIT
+                - LANDSCAPE
+              default: PORTRAIT
+            marginMm:
+              type: object
+              properties:
+                top:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: false
+                  maximum: 50
+                  exclusiveMaximum: false
+                  default: 10
+                right:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: false
+                  maximum: 50
+                  exclusiveMaximum: false
+                  default: 10
+                bottom:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: false
+                  maximum: 50
+                  exclusiveMaximum: false
+                  default: 10
+                left:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: false
+                  maximum: 50
+                  exclusiveMaximum: false
+                  default: 10
+              default: {}
+          default: {}
+          x-nestjs_zod-self-required: false
+      required:
+        - kind
+        - name
+    UpdateDocumentTemplateDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+          nullable: true
+        contentHtml:
+          type: string
+          maxLength: 200000
+        settings:
+          type: object
+          properties:
+            paperSize:
+              type: string
+              enum:
+                - A4
+                - A5
+                - LETTER
+              default: A4
+            orientation:
+              type: string
+              enum:
+                - PORTRAIT
+                - LANDSCAPE
+              default: PORTRAIT
+            marginMm:
+              type: object
+              properties:
+                top:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: false
+                  maximum: 50
+                  exclusiveMaximum: false
+                  default: 10
+                right:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: false
+                  maximum: 50
+                  exclusiveMaximum: false
+                  default: 10
+                bottom:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: false
+                  maximum: 50
+                  exclusiveMaximum: false
+                  default: 10
+                left:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: false
+                  maximum: 50
+                  exclusiveMaximum: false
+                  default: 10
+              default: {}
+          x-nestjs_zod-self-required: false
     UpdateFeatureEntitlementDto:
       type: object
       properties:

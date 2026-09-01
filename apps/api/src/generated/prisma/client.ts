@@ -508,6 +508,34 @@ export type InvoiceItem = Prisma.InvoiceItemModel
  */
 export type Payment = Prisma.PaymentModel
 /**
+ * Model DocumentTemplate
+ * The editable working copy of a printable document layout (P16-T05). A
+ * rendered invoice never points here — it points at the immutable
+ * `DocumentTemplateVersion` published from it: the `InvoiceItem` snapshot
+ * rule applied to layout.
+ * 
+ * `contentHtml` is sanitised server-side on every write (NFR-SEC-01) and is
+ * never rendered in the app origin — only inside the network-denied PDF
+ * renderer (D-026). Variable tokens are stored as
+ * `<span data-hms-var="…"></span>`: an inert attribute that survives
+ * sanitisation and cannot collide with real copy.
+ * 
+ * `settings` is validated Json (`templateSettingsSchema`) rather than
+ * columns because its shape grows with the editor (P16-T11 adds the
+ * repeating-block column config) and the database never queries into it.
+ */
+export type DocumentTemplate = Prisma.DocumentTemplateModel
+/**
+ * Model DocumentTemplateVersion
+ * One immutable published snapshot of a template (P16-T05). Publishing is
+ * transactional: the working copy's HTML and settings are copied here with
+ * the next `versionNumber`, and nothing ever updates the row afterwards —
+ * there is deliberately no `updatedAt` to invite it. Editing the template
+ * after publish touches only the working copy; the AC is that a published
+ * version stays byte-identical.
+ */
+export type DocumentTemplateVersion = Prisma.DocumentTemplateVersionModel
+/**
  * Model Role
  * 
  */
