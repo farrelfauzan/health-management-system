@@ -266,3 +266,123 @@ export type SaveClinicProfileData = {
   logoStorageKey?: string | null;
   logoMimeType?: string | null;
 };
+
+/**
+ * One token the resolver could not fill (`P16-T04`).
+ *
+ * Warnings exist so a missing value is *visible* rather than silent. An
+ * invoice that renders a blank where the doctor's name should be is a
+ * document somebody has to explain; the warning is what lets the render
+ * service record why, and what `P16-T12`'s preview shows an admin before they
+ * publish a template that depends on a field their clinic never fills.
+ */
+export type TemplateVariableWarning = {
+  readonly token: string;
+  readonly reason: string;
+};
+
+/**
+ * Everything `resolveInvoiceVariables` needs, assembled by its caller.
+ *
+ * The resolver is pure, so nothing here is fetched: the render service
+ * (`P16-T06`) reads the invoice, the clinic profile, the encounter and the
+ * stay, decrypts what it is allowed to, and hands the result over. That is
+ * what keeps the resolver testable against fixtures and keeps the decision
+ * about *which* patient identifiers may be read where it belongs — behind the
+ * permission guard, not inside a formatter.
+ *
+ * Every field is nullable because a real invoice is routinely missing most of
+ * them: an outpatient bill has no admission, an unpaid one has no payment,
+ * and a clinic that has not filled in its licence number still prints
+ * receipts.
+ */
+export type ResolveInvoiceVariablesParams = {
+  /** IANA zone the clinic's dates are formatted in, e.g. `Asia/Jakarta`. */
+  readonly timeZone: string;
+  readonly clinic: ResolveInvoiceClinicInput | null;
+  readonly invoice: ResolveInvoiceInput;
+  readonly patient: ResolveInvoicePatientInput | null;
+  readonly encounter: ResolveInvoiceEncounterInput | null;
+  readonly admission: ResolveInvoiceAdmissionInput | null;
+  readonly payment: ResolveInvoicePaymentInput | null;
+  readonly items: readonly ResolveInvoiceItemInput[];
+};
+
+export type ResolveInvoiceClinicInput = {
+  readonly name: string | null;
+  readonly legalName: string | null;
+  readonly address: string | null;
+  readonly phoneNumber: string | null;
+  readonly email: string | null;
+  readonly licenseNumber: string | null;
+  readonly taxId: string | null;
+  /** Already inlined as a `data:` URI — the renderer fetches nothing. */
+  readonly logoDataUri: string | null;
+};
+
+export type ResolveInvoiceInput = {
+  readonly invoiceNumber: string;
+  readonly status: string;
+  readonly totalAmount: number;
+  readonly issuedAt: Date | null;
+  readonly qrVerifyDataUri: string | null;
+};
+
+/**
+ * `nik` is the plaintext identifier and the resolver's only use for it is to
+ * mask it. No token exposes it, and nothing the resolver returns contains it.
+ */
+export type ResolveInvoicePatientInput = {
+  readonly fullName: string | null;
+  readonly mrn: string | null;
+  readonly dateOfBirth: Date | null;
+  readonly sex: string | null;
+  readonly address: string | null;
+  readonly phoneNumber: string | null;
+  readonly nik: string | null;
+};
+
+export type ResolveInvoiceEncounterInput = {
+  readonly date: Date | null;
+  readonly doctorName: string | null;
+  readonly specialty: string | null;
+};
+
+export type ResolveInvoiceAdmissionInput = {
+  readonly roomLabel: string | null;
+  readonly nights: number | null;
+};
+
+export type ResolveInvoicePaymentInput = {
+  readonly method: string | null;
+  readonly paidAt: Date | null;
+  readonly referenceNumber: string | null;
+  readonly cashierName: string | null;
+};
+
+export type ResolveInvoiceItemInput = {
+  readonly description: string;
+  readonly quantity: number;
+  readonly unitPrice: number;
+  readonly amount: number;
+};
+
+/**
+ * The resolved template context.
+ *
+ * `values` is keyed by registry token and every value is a display string —
+ * a template substitutes text, so a number that reached the renderer as a
+ * number would be formatted by whatever happened to stringify it. `items` is
+ * one map per invoice line, keyed by the `item.*` tokens, because the
+ * repeating block renders rows rather than a single value.
+ *
+ * A token that could not be filled is present and **empty**, never the raw
+ * token: `{{patient.phone}}` printed on a receipt is worse than a blank,
+ * because a blank reads as "not recorded" and the token reads as broken
+ * software.
+ */
+export type ResolvedInvoiceVariables = {
+  readonly values: Readonly<Record<string, string>>;
+  readonly items: ReadonlyArray<Readonly<Record<string, string>>>;
+  readonly warnings: readonly TemplateVariableWarning[];
+};

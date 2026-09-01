@@ -14731,6 +14731,89 @@ paths:
         - bearer: []
       summary: Sign a browser-direct logo upload
       tags: *a21
+  /api/v1/document-templates/variables:
+    get:
+      operationId: DocumentTemplateVariableController_listTemplateVariables_v1
+      parameters:
+        - name: kind
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - INVOICE
+      responses:
+        "200":
+          description: Every token the editor may offer and publish-time validation will
+            accept, with both labels, its type, and a realistic sample.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        token:
+                          type: string
+                        labelId:
+                          type: string
+                        labelEn:
+                          type: string
+                        type:
+                          type: string
+                        sample:
+                          type: string
+                      required:
+                        - token
+                        - labelId
+                        - labelEn
+                        - type
+                        - sample
+                required:
+                  - data
+                example:
+                  data:
+                    - token: clinic.name
+                      labelId: Nama klinik
+                      labelEn: Clinic name
+                      type: text
+                      sample: Klinik Sehat Bersama
+                    - token: invoice.totalInWords
+                      labelId: Terbilang
+                      labelEn: Total in words
+                      type: text
+                      sample: dua ratus tujuh puluh lima ribu rupiah
+                    - token: items
+                      labelId: Rincian tagihan
+                      labelEn: Line items
+                      type: block
+                      sample: 4 baris
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List the variables a template of this kind may reference
+      tags:
+        - Document Templates
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
