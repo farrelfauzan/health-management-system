@@ -371,3 +371,130 @@ export const listPersonalDocumentsQuerySchema = z.object({
 });
 
 export type ListPersonalDocumentsQueryInput = z.infer<typeof listPersonalDocumentsQuerySchema>;
+
+const patientDocumentDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD format');
+
+export const PATIENT_DOCUMENT_NOTES_MAX_LENGTH = 2000;
+
+export const PATIENT_DOCUMENT_DELETE_REASON_MAX_LENGTH = 500;
+
+/**
+ * Signs one browser-direct upload of a patient clinical file (`P16-T08`).
+ * Same two facts as every other upload surface: type and size are validated
+ * before signing and then signed into the URL. The patient is named by the
+ * route, never the body, and nothing is persisted until confirm.
+ */
+export const createPatientDocumentUploadUrlSchema = z.object({
+  mimeType: documentUploadMimeTypeSchema,
+  sizeBytes: z.coerce.number().int().positive().max(DOCUMENT_MAX_UPLOAD_SIZE_BYTES),
+});
+
+export type CreatePatientDocumentUploadUrlInput = z.infer<
+  typeof createPatientDocumentUploadUrlSchema
+>;
+
+/**
+ * Records a completed upload as one patient clinical file (`P16-T08`).
+ *
+ * `purpose`, `ownerType`, and `ingestStatus` are never accepted — the
+ * repository states them (`PATIENT_CLINICAL`, `PATIENT`-owned, never
+ * ingested). `mimeType` and `sizeBytes` are read back from the stored object.
+ * At most one care episode may be named: a document arose from a visit or an
+ * admission, not both, and the migration CHECK enforces the same rule below
+ * the API.
+ */
+export const confirmPatientDocumentUploadSchema = z
+  .object({
+    storageKey: z.string().min(1).max(512),
+    title: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX_LENGTH),
+    category: documentCategorySchema,
+    documentDate: patientDocumentDateSchema.optional(),
+    notes: z.string().trim().min(1).max(PATIENT_DOCUMENT_NOTES_MAX_LENGTH).optional(),
+    encounterId: z.string().uuid().optional(),
+    admissionId: z.string().uuid().optional(),
+    language: documentLanguageSchema.default('ID'),
+  })
+  .refine((value) => value.encounterId === undefined || value.admissionId === undefined, {
+    message: 'A document may be linked to an encounter or an admission, not both',
+  });
+
+export type ConfirmPatientDocumentUploadInput = z.infer<typeof confirmPatientDocumentUploadSchema>;
+
+/**
+ * Edits a clinical file's metadata, or moves its care-episode link. The
+ * stored file is immutable — a wrong scan is deleted (with a reason) and
+ * re-uploaded, never replaced in place. `null` unlinks an episode, which is
+ * the documented remedy when a linked encounter must be retired: `Restrict`
+ * on the FK refuses the encounter delete until the document lets go.
+ */
+export const updatePatientDocumentSchema = z
+  .object({
+    title: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX_LENGTH).optional(),
+    category: documentCategorySchema.optional(),
+    documentDate: patientDocumentDateSchema.nullable().optional(),
+    notes: z.string().trim().min(1).max(PATIENT_DOCUMENT_NOTES_MAX_LENGTH).nullable().optional(),
+    encounterId: z.string().uuid().nullable().optional(),
+    admissionId: z.string().uuid().nullable().optional(),
+  })
+  .refine((value) => Object.values(value).some((field) => field !== undefined), {
+    message: 'At least one field must be provided',
+  })
+  .refine(
+    (value) =>
+      value.encounterId === undefined ||
+      value.admissionId === undefined ||
+      value.encounterId === null ||
+      value.admissionId === null,
+    { message: 'A document may be linked to an encounter or an admission, not both' },
+  );
+
+export type UpdatePatientDocumentInput = z.infer<typeof updatePatientDocumentSchema>;
+
+/**
+ * Lists one patient's clinical files, newest-first by document date
+ * (FR-E2-04). The patient is named by the route; the filters narrow, never
+ * widen.
+ */
+export const listPatientDocumentsQuerySchema = z.object({
+  category: documentCategorySchema.optional(),
+  encounterId: z.string().uuid().optional(),
+  admissionId: z.string().uuid().optional(),
+  documentDateFrom: patientDocumentDateSchema.optional(),
+  documentDateTo: patientDocumentDateSchema.optional(),
+  cursor: z.string().uuid().optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(DOCUMENT_PAGE_MAX_LIMIT)
+    .default(DOCUMENT_PAGE_DEFAULT_LIMIT),
+});
+
+export type ListPatientDocumentsQueryInput = z.infer<typeof listPatientDocumentsQuerySchema>;
+
+/**
+ * Retires one clinical file (FR-E2-11). The reason is required — clinical
+ * files sit under the 25-year RME retention floor, so every removal must say
+ * why — and the delete is soft: the row is retired, the stored object stays.
+ */
+export const deletePatientDocumentSchema = z.object({
+  reason: z.string().trim().min(1).max(PATIENT_DOCUMENT_DELETE_REASON_MAX_LENGTH),
+});
+
+export type DeletePatientDocumentInput = z.infer<typeof deletePatientDocumentSchema>;
+
+/** Lists the caller's own released documents in the patient portal. */
+export const listPortalDocumentsQuerySchema = z.object({
+  category: documentCategorySchema.optional(),
+  cursor: z.string().uuid().optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(DOCUMENT_PAGE_MAX_LIMIT)
+    .default(DOCUMENT_PAGE_DEFAULT_LIMIT),
+});
+
+export type ListPortalDocumentsQueryInput = z.infer<typeof listPortalDocumentsQuerySchema>;
