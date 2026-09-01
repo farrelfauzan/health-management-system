@@ -31,6 +31,7 @@ import { DoctorPatientModule } from './modules/doctor-patient/doctor-patient.mod
 import { ChannelGatewayModule } from './modules/channel-gateway/channel-gateway.module';
 import { CustomerServiceModule } from './modules/customer-service/customer-service.module';
 import { DocumentManagementModule } from './modules/document-management/document-management.module';
+import { DocumentTemplateModule } from './modules/document-template/document-template.module';
 import { FeatureEntitlementModule } from './modules/feature-entitlement/feature-entitlement.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { EmrModule } from './modules/emr/emr.module';
@@ -95,6 +96,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     ChannelGatewayModule,
     CustomerServiceModule,
     DocumentManagementModule,
+    DocumentTemplateModule,
     FeatureEntitlementModule,
     AuthModule,
     RbacModule,

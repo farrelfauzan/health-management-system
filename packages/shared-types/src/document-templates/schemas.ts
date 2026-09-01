@@ -1,0 +1,141 @@
+import { z } from 'zod';
+
+import { TEMPLATE_VARIABLE_KINDS } from '#document-templates/template-variables';
+
+/**
+ * OQ-2 resolved: no thermal-roll sizes. Clinics print on lightweight sheet
+ * stock, so the three sheet sizes the printer tray actually holds are the
+ * whole requirement (`P16-T05`).
+ */
+export const PAPER_SIZES = ['A4', 'A5', 'LETTER'] as const;
+
+export const paperSizeSchema = z.enum(PAPER_SIZES);
+
+export type PaperSizeValue = z.infer<typeof paperSizeSchema>;
+
+export const PAGE_ORIENTATIONS = ['PORTRAIT', 'LANDSCAPE'] as const;
+
+export const pageOrientationSchema = z.enum(PAGE_ORIENTATIONS);
+
+export type PageOrientationValue = z.infer<typeof pageOrientationSchema>;
+
+/**
+ * A template moves DRAFT → PUBLISHED when its first immutable version is cut,
+ * and ARCHIVED when it is retired. ARCHIVED is terminal for the working copy
+ * only — published versions stay forever, because rendered documents point at
+ * them.
+ */
+export const DOCUMENT_TEMPLATE_STATUSES = ['DRAFT', 'PUBLISHED', 'ARCHIVED'] as const;
+
+export const documentTemplateStatusSchema = z.enum(DOCUMENT_TEMPLATE_STATUSES);
+
+export type DocumentTemplateStatusValue = z.infer<typeof documentTemplateStatusSchema>;
+
+/**
+ * The template kind reuses the variable-registry kinds on purpose: a template
+ * of kind X is authored against registry X, and a kind with no registry would
+ * be a layout nothing can fill.
+ */
+export const documentTemplateKindSchema = z.enum(TEMPLATE_VARIABLE_KINDS);
+
+export type DocumentTemplateKindValue = z.infer<typeof documentTemplateKindSchema>;
+
+const MAX_TEMPLATE_NAME_LENGTH = 120;
+
+const MAX_TEMPLATE_DESCRIPTION_LENGTH = 500;
+
+/**
+ * 200k characters ≈ 200 KB of layout HTML — an order of magnitude above any
+ * real invoice template, and small enough that the sanitiser and the renderer
+ * never chew through megabytes someone pasted in by mistake.
+ */
+export const MAX_TEMPLATE_CONTENT_HTML_LENGTH = 200_000;
+
+const MAX_PAGE_MARGIN_MM = 50;
+
+const DEFAULT_PAGE_MARGIN_MM = 10;
+
+const pageMarginMmSchema = z.number().min(0).max(MAX_PAGE_MARGIN_MM);
+
+/**
+ * Layout settings snapshotted with every published version. `P16-T11` extends
+ * this with the repeating-block column config; keeping it strict (not
+ * passthrough) means an unknown key is a validation error today rather than a
+ * silently ignored one that a later release starts honouring.
+ */
+export const templateSettingsSchema = z
+  .object({
+    paperSize: paperSizeSchema.default('A4'),
+    orientation: pageOrientationSchema.default('PORTRAIT'),
+    marginMm: z
+      .object({
+        top: pageMarginMmSchema.default(DEFAULT_PAGE_MARGIN_MM),
+        right: pageMarginMmSchema.default(DEFAULT_PAGE_MARGIN_MM),
+        bottom: pageMarginMmSchema.default(DEFAULT_PAGE_MARGIN_MM),
+        left: pageMarginMmSchema.default(DEFAULT_PAGE_MARGIN_MM),
+      })
+      .strict()
+      .default({}),
+  })
+  .strict();
+
+export type TemplateSettingsValue = z.infer<typeof templateSettingsSchema>;
+
+export function resolveDefaultTemplateSettings(): TemplateSettingsValue {
+  return templateSettingsSchema.parse({});
+}
+
+/**
+ * `contentHtml` may be empty on create — a template starts as a blank page in
+ * the editor — but publish refuses an empty layout, because a published
+ * version is what real invoices render from.
+ */
+export const createDocumentTemplateSchema = z.object({
+  kind: documentTemplateKindSchema,
+  name: z.string().trim().min(1).max(MAX_TEMPLATE_NAME_LENGTH),
+  description: z.string().trim().min(1).max(MAX_TEMPLATE_DESCRIPTION_LENGTH).optional(),
+  contentHtml: z.string().max(MAX_TEMPLATE_CONTENT_HTML_LENGTH).default(''),
+  settings: templateSettingsSchema.default({}),
+});
+
+export const updateDocumentTemplateSchema = z
+  .object({
+    name: z.string().trim().min(1).max(MAX_TEMPLATE_NAME_LENGTH).optional(),
+    description: z
+      .string()
+      .trim()
+      .min(1)
+      .max(MAX_TEMPLATE_DESCRIPTION_LENGTH)
+      .nullable()
+      .optional(),
+    contentHtml: z.string().max(MAX_TEMPLATE_CONTENT_HTML_LENGTH).optional(),
+    settings: templateSettingsSchema.optional(),
+  })
+  .refine((input) => Object.values(input).some((value) => value !== undefined), {
+    message: 'At least one field must be provided',
+  });
+
+/**
+ * `kind` is required rather than defaulted for the same reason the variables
+ * route requires it: the second document kind will make a silent default the
+ * wrong answer for whoever forgot to pass one.
+ */
+export const listDocumentTemplatesQuerySchema = z.object({
+  kind: documentTemplateKindSchema,
+});
+
+export const templateVariableKindSchema = documentTemplateKindSchema;
+
+/**
+ * Which registry the palette is asking for. Required rather than defaulted to
+ * `INVOICE`: the second document kind (`E2`) will make a silent default the
+ * wrong answer for whoever forgot to pass one.
+ */
+export const listTemplateVariablesQuerySchema = z.object({
+  kind: templateVariableKindSchema,
+});
+
+export type CreateDocumentTemplateInput = z.infer<typeof createDocumentTemplateSchema>;
+export type UpdateDocumentTemplateInput = z.infer<typeof updateDocumentTemplateSchema>;
+export type ListDocumentTemplatesQueryInput = z.infer<typeof listDocumentTemplatesQuerySchema>;
+export type ListTemplateVariablesQueryInput = z.infer<typeof listTemplateVariablesQuerySchema>;

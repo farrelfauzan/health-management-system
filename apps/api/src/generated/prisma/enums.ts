@@ -445,6 +445,22 @@ export const PaymentMethod = {
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
 
 
+export const DocumentTemplateKind = {
+  INVOICE: 'INVOICE'
+} as const
+
+export type DocumentTemplateKind = (typeof DocumentTemplateKind)[keyof typeof DocumentTemplateKind]
+
+
+export const DocumentTemplateStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type DocumentTemplateStatus = (typeof DocumentTemplateStatus)[keyof typeof DocumentTemplateStatus]
+
+
 export const AiProviderKind = {
   OPENAI: 'OPENAI',
   DEEPSEEK: 'DEEPSEEK',
