@@ -9,6 +9,7 @@ import { BillingRepository } from '../repository/billing.repository';
 import { ServiceTariffRepository } from '../repository/service-tariff.repository';
 import { BillingMapper } from './billing.mapper';
 import { BillingService } from './billing.service';
+import { InvoiceDocumentService } from './invoice-document.service';
 
 describe('BillingService', () => {
   const billingRepositoryMock = {
@@ -38,11 +39,16 @@ describe('BillingService', () => {
     get: jest.fn().mockReturnValue('Asia/Jakarta'),
   };
 
+  const invoiceDocumentServiceMock = {
+    snapshotOnIssue: jest.fn().mockResolvedValue(undefined),
+  };
+
   const service = new BillingService(
     billingRepositoryMock as unknown as BillingRepository,
     serviceTariffRepositoryMock as unknown as ServiceTariffRepository,
     new BillingMapper(),
     auditServiceMock as unknown as AuditService,
+    invoiceDocumentServiceMock as unknown as InvoiceDocumentService,
     configServiceMock as unknown as ConfigService,
   );
 

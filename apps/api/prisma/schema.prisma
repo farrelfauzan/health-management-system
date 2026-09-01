@@ -477,6 +477,16 @@ enum DocumentTemplateStatus {
   ARCHIVED
 }
 
+/// Lifecycle of one rendered invoice PDF (P16-T06). PENDING rows exist before
+/// the first successful render — the snapshot is cut at issue, the bytes are
+/// produced on request. FAILED is retryable: the next render request runs the
+/// pipeline again against the same snapshot.
+enum InvoiceDocumentStatus {
+  PENDING
+  READY
+  FAILED
+}
+
 /// Upstream AI vendor a clinic points the chatbot at (P13-T01). HMS runs no
 /// inference of its own — every kind here is an external HTTP endpoint the
 /// clinic supplies credentials for. The split is by *wire protocol*, not by
@@ -1921,6 +1931,7 @@ model Invoice {
   createdBy User?          @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   items     InvoiceItem[]
   payment   Payment?
+  documents InvoiceDocument[]
 
   @@index([encounterId])
   @@index([admissionId])
@@ -2056,10 +2067,56 @@ model DocumentTemplateVersion {
 
   template    DocumentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
   publishedBy User?            @relation("DocumentTemplateVersionPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+  renders     InvoiceDocument[]
 
   @@unique([templateId, versionNumber])
   @@index([publishedById])
   @@map("document_template_versions")
+}
+
+/// One rendered invoice PDF (P16-T06). `renderedData` is the resolved
+/// variable payload captured when the snapshot was cut — the document is
+/// reproducible from this row alone, so a later template edit, tariff
+/// reprice, or patient rename cannot rewrite a receipt that is already in a
+/// patient's hands. The stored object is the other half of the same rule: a
+/// re-download serves the bytes that were rendered, never a fresh render.
+///
+/// `templateVersionId` is null when no published template existed and the
+/// built-in fallback layout produced the document. `hasVoidWatermark`
+/// separates the pre-void document (retained — it may already be in a
+/// patient's hands) from the watermarked one rendered after a void; two
+/// hand-written partial unique indexes make each of the four combinations a
+/// singleton, so two cashiers racing the first render insert one row and the
+/// loser reads the winner's.
+model InvoiceDocument {
+  id                    String                @id @default(uuid()) @db.Uuid
+  invoiceId             String                @map("invoice_id") @db.Uuid
+  templateVersionId     String?               @map("template_version_id") @db.Uuid
+  hasVoidWatermark      Boolean               @default(false) @map("has_void_watermark")
+  /// True when the snapshot was cut at first render request rather than at
+  /// issue — a pre-Phase-16 invoice bound its template retroactively, and the
+  /// download surface says so instead of hiding it.
+  wasBoundRetroactively Boolean               @default(false) @map("was_bound_retroactively")
+  renderedData          Json                  @map("rendered_data")
+  status                InvoiceDocumentStatus @default(PENDING)
+  storageKey            String?               @map("storage_key")
+  /// SHA-256 of the stored PDF bytes. Two downloads of one document match it.
+  checksum              String?
+  sizeBytes             Int?                  @map("size_bytes")
+  pageCount             Int?                  @map("page_count")
+  renderWarnings        Json                  @default("[]") @map("render_warnings")
+  renderError           String?               @map("render_error")
+  renderedAt            DateTime?             @map("rendered_at")
+  createdAt             DateTime              @default(now()) @map("created_at")
+  updatedAt             DateTime              @updatedAt @map("updated_at")
+
+  invoice         Invoice                  @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  templateVersion DocumentTemplateVersion? @relation(fields: [templateVersionId], references: [id], onDelete: Restrict)
+
+  @@index([invoiceId, createdAt])
+  @@index([templateVersionId])
+  @@index([status])
+  @@map("invoice_documents")
 }
 
 model Role {

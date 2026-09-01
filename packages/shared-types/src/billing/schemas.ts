@@ -316,3 +316,13 @@ export const updateClinicProfileSchema = z
 
 export type CreateClinicLogoUploadUrlInput = z.infer<typeof createClinicLogoUploadUrlSchema>;
 export type UpdateClinicProfileInput = z.infer<typeof updateClinicProfileSchema>;
+
+/**
+ * Lifecycle of one rendered invoice PDF (P16-T06). PENDING before the first
+ * successful render, FAILED is retryable, READY names stored bytes.
+ */
+export const INVOICE_DOCUMENT_STATUSES = ['PENDING', 'READY', 'FAILED'] as const;
+
+export const invoiceDocumentStatusSchema = z.enum(INVOICE_DOCUMENT_STATUSES);
+
+export type InvoiceDocumentStatusValue = z.infer<typeof invoiceDocumentStatusSchema>;

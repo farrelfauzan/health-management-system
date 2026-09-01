@@ -29,6 +29,9 @@ import type {
   InvoiceControllerListInvoicesV1Params,
   InvoiceControllerRecordPaymentV1200,
   InvoiceControllerVoidInvoiceV1200,
+  InvoiceDocumentControllerDownloadDocumentV1200,
+  InvoiceDocumentControllerGetDocumentV1200,
+  InvoiceDocumentControllerRenderDocumentV1200,
   RecordPaymentDto,
   VoidInvoiceDto
 } from '../model';
@@ -615,6 +618,282 @@ export function useInvoiceControllerVoidInvoiceV1<TData = Awaited<ReturnType<typ
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getInvoiceControllerVoidInvoiceV1QueryOptions(id,voidInvoiceDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Render the invoice PDF, or return the existing document
+ */
+export const invoiceDocumentControllerRenderDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<InvoiceDocumentControllerRenderDocumentV1200>(
+      {url: `/api/v1/invoices/${id}/document`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getInvoiceDocumentControllerRenderDocumentV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/invoices/${id}/document`
+    ] as const;
+    }
+
+
+export const getInvoiceDocumentControllerRenderDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInvoiceDocumentControllerRenderDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>> = ({ signal }) => invoiceDocumentControllerRenderDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type InvoiceDocumentControllerRenderDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>>
+export type InvoiceDocumentControllerRenderDocumentV1QueryError = unknown
+
+
+export function useInvoiceDocumentControllerRenderDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceDocumentControllerRenderDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceDocumentControllerRenderDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Render the invoice PDF, or return the existing document
+ */
+
+export function useInvoiceDocumentControllerRenderDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerRenderDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getInvoiceDocumentControllerRenderDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Get the invoice document metadata
+ */
+export const invoiceDocumentControllerGetDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<InvoiceDocumentControllerGetDocumentV1200>(
+      {url: `/api/v1/invoices/${id}/document`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getInvoiceDocumentControllerGetDocumentV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/invoices/${id}/document`
+    ] as const;
+    }
+
+
+export const getInvoiceDocumentControllerGetDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInvoiceDocumentControllerGetDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>> = ({ signal }) => invoiceDocumentControllerGetDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type InvoiceDocumentControllerGetDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>>
+export type InvoiceDocumentControllerGetDocumentV1QueryError = unknown
+
+
+export function useInvoiceDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get the invoice document metadata
+ */
+
+export function useInvoiceDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerGetDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getInvoiceDocumentControllerGetDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Get a short-lived download URL for the rendered PDF
+ */
+export const invoiceDocumentControllerDownloadDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<InvoiceDocumentControllerDownloadDocumentV1200>(
+      {url: `/api/v1/invoices/${id}/document/download`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getInvoiceDocumentControllerDownloadDocumentV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/invoices/${id}/document/download`
+    ] as const;
+    }
+
+
+export const getInvoiceDocumentControllerDownloadDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInvoiceDocumentControllerDownloadDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>> = ({ signal }) => invoiceDocumentControllerDownloadDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type InvoiceDocumentControllerDownloadDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>>
+export type InvoiceDocumentControllerDownloadDocumentV1QueryError = unknown
+
+
+export function useInvoiceDocumentControllerDownloadDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceDocumentControllerDownloadDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceDocumentControllerDownloadDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a short-lived download URL for the rendered PDF
+ */
+
+export function useInvoiceDocumentControllerDownloadDocumentV1<TData = Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceDocumentControllerDownloadDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getInvoiceDocumentControllerDownloadDocumentV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

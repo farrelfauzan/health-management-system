@@ -28,6 +28,7 @@ import { VoidInvoiceDto } from '../dto/void-invoice.dto';
 import { BillingRepository } from '../repository/billing.repository';
 import { ServiceTariffRepository } from '../repository/service-tariff.repository';
 import { BillingMapper } from './billing.mapper';
+import { InvoiceDocumentService } from './invoice-document.service';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
@@ -67,6 +68,7 @@ export class BillingService {
     private readonly serviceTariffRepository: ServiceTariffRepository,
     private readonly billingMapper: BillingMapper,
     private readonly auditService: AuditService,
+    private readonly invoiceDocumentService: InvoiceDocumentService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -135,6 +137,12 @@ export class BillingService {
     const invoice = await this.findInvoiceOrThrow(id);
     this.assertAllowedStatusTransition(invoice.status, 'ISSUED');
     const issued = await this.billingRepository.issueInvoice(id, new Date());
+    // FR-E1-09: issuing snapshots the render — the template version and the
+    // resolved values are pinned now, so the document a re-render produces
+    // next year is the one issued today. Best-effort by contract: a snapshot
+    // failure logs and the first render request re-cuts it; issuing is never
+    // blocked by the document pipeline.
+    await this.invoiceDocumentService.snapshotOnIssue(id);
 
     return this.billingMapper.toInvoiceDetail(issued);
   }
