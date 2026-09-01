@@ -429,6 +429,7 @@ export const ModelName = {
   Payment: 'Payment',
   DocumentTemplate: 'DocumentTemplate',
   DocumentTemplateVersion: 'DocumentTemplateVersion',
+  InvoiceDocument: 'InvoiceDocument',
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
@@ -475,7 +476,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3809,6 +3810,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InvoiceDocument: {
+      payload: Prisma.$InvoiceDocumentPayload<ExtArgs>
+      fields: Prisma.InvoiceDocumentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvoiceDocumentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvoiceDocumentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload>
+        }
+        findFirst: {
+          args: Prisma.InvoiceDocumentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvoiceDocumentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload>
+        }
+        findMany: {
+          args: Prisma.InvoiceDocumentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload>[]
+        }
+        create: {
+          args: Prisma.InvoiceDocumentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload>
+        }
+        createMany: {
+          args: Prisma.InvoiceDocumentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InvoiceDocumentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload>[]
+        }
+        delete: {
+          args: Prisma.InvoiceDocumentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload>
+        }
+        update: {
+          args: Prisma.InvoiceDocumentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvoiceDocumentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvoiceDocumentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InvoiceDocumentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload>[]
+        }
+        upsert: {
+          args: Prisma.InvoiceDocumentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDocumentPayload>
+        }
+        aggregate: {
+          args: Prisma.InvoiceDocumentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvoiceDocument>
+        }
+        groupBy: {
+          args: Prisma.InvoiceDocumentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceDocumentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvoiceDocumentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceDocumentCountAggregateOutputType> | number
+        }
+      }
+    }
     Role: {
       payload: Prisma.$RolePayload<ExtArgs>
       fields: Prisma.RoleFieldRefs
@@ -6872,6 +6947,28 @@ export const DocumentTemplateVersionScalarFieldEnum = {
 export type DocumentTemplateVersionScalarFieldEnum = (typeof DocumentTemplateVersionScalarFieldEnum)[keyof typeof DocumentTemplateVersionScalarFieldEnum]
 
 
+export const InvoiceDocumentScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  templateVersionId: 'templateVersionId',
+  hasVoidWatermark: 'hasVoidWatermark',
+  wasBoundRetroactively: 'wasBoundRetroactively',
+  renderedData: 'renderedData',
+  status: 'status',
+  storageKey: 'storageKey',
+  checksum: 'checksum',
+  sizeBytes: 'sizeBytes',
+  pageCount: 'pageCount',
+  renderWarnings: 'renderWarnings',
+  renderError: 'renderError',
+  renderedAt: 'renderedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceDocumentScalarFieldEnum = (typeof InvoiceDocumentScalarFieldEnum)[keyof typeof InvoiceDocumentScalarFieldEnum]
+
+
 export const RoleScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -7985,6 +8082,20 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'InvoiceDocumentStatus'
+ */
+export type EnumInvoiceDocumentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceDocumentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'InvoiceDocumentStatus[]'
+ */
+export type ListEnumInvoiceDocumentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceDocumentStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'PermissionScope'
  */
 export type EnumPermissionScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PermissionScope'>
@@ -8530,6 +8641,7 @@ export type GlobalOmitConfig = {
   payment?: Prisma.PaymentOmit
   documentTemplate?: Prisma.DocumentTemplateOmit
   documentTemplateVersion?: Prisma.DocumentTemplateVersionOmit
+  invoiceDocument?: Prisma.InvoiceDocumentOmit
   role?: Prisma.RoleOmit
   permission?: Prisma.PermissionOmit
   rolePermission?: Prisma.RolePermissionOmit

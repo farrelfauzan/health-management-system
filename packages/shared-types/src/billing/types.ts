@@ -1,4 +1,5 @@
 import type {
+  InvoiceDocumentStatusValue,
   InvoiceItemTypeValue,
   InvoiceStatusValue,
   PaymentMethodValue,
@@ -385,4 +386,91 @@ export type ResolvedInvoiceVariables = {
   readonly values: Readonly<Record<string, string>>;
   readonly items: ReadonlyArray<Readonly<Record<string, string>>>;
   readonly warnings: readonly TemplateVariableWarning[];
+};
+
+/** The VOID overlay the document builder stamps on a cancelled bill. */
+export type InvoiceDocumentWatermark = {
+  readonly isVoid: boolean;
+  readonly reason: string | null;
+  readonly voidedByName: string | null;
+};
+
+/**
+ * One rendered-document row as the repository returns it (`P16-T06`).
+ * `renderedData` is the persisted `ResolvedInvoiceVariables` snapshot; the
+ * repository parses the Json column back into that shape at the Prisma
+ * boundary.
+ */
+export type InvoiceDocumentRecord = {
+  id: string;
+  invoiceId: string;
+  templateVersionId: string | null;
+  hasVoidWatermark: boolean;
+  wasBoundRetroactively: boolean;
+  renderedData: ResolvedInvoiceVariables;
+  status: InvoiceDocumentStatusValue;
+  storageKey: string | null;
+  checksum: string | null;
+  sizeBytes: number | null;
+  pageCount: number | null;
+  renderWarnings: TemplateVariableWarning[];
+  renderError: string | null;
+  renderedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CreateInvoiceDocumentRecordPayload = {
+  invoiceId: string;
+  templateVersionId: string | null;
+  hasVoidWatermark: boolean;
+  wasBoundRetroactively: boolean;
+  renderedData: ResolvedInvoiceVariables;
+  renderWarnings: TemplateVariableWarning[];
+};
+
+export type CompleteInvoiceDocumentRenderPayload = {
+  id: string;
+  storageKey: string;
+  checksum: string;
+  sizeBytes: number;
+  pageCount: number | null;
+  renderedAt: Date;
+};
+
+/**
+ * Everything one render needs, fetched in a single repository read. Patient
+ * identifiers stay masked at the source: `nikLast4` is the only identifier
+ * column read — the ciphertext is never fetched, so the render path holds no
+ * plaintext NIK at any point.
+ */
+export type InvoiceRenderContextRecord = {
+  invoice: InvoiceRecord;
+  items: InvoiceItemRecord[];
+  patient: {
+    fullName: string;
+    mrn: string;
+    dateOfBirth: Date | null;
+    sex: string | null;
+    address: string | null;
+    phoneNumber: string | null;
+    nikLast4: string | null;
+  } | null;
+  encounter: {
+    startedAt: Date;
+    doctorName: string | null;
+    specialtyName: string | null;
+  } | null;
+  admission: {
+    admittedAt: Date;
+    dischargedAt: Date | null;
+    roomLabel: string | null;
+  } | null;
+  payment: {
+    method: PaymentMethodValue;
+    paidAt: Date;
+    referenceNumber: string | null;
+    cashierName: string | null;
+  } | null;
+  voidedByName: string | null;
 };

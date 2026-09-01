@@ -1,10 +1,12 @@
 import type { RoomClassSummary } from '#room-management/contracts';
 import type {
+  InvoiceDocumentStatusValue,
   InvoiceItemTypeValue,
   InvoiceStatusValue,
   PaymentMethodValue,
   ServiceTariffCategoryValue,
 } from '#billing/schemas';
+import type { TemplateVariableWarning } from '#billing/types';
 
 export type ServiceTariffResponse = {
   id: string;
@@ -186,4 +188,40 @@ export type ClinicLogoUploadUrlView = {
   storageKey: string;
   expiresAt: string;
   requiredHeaders: Readonly<Record<string, string>>;
+};
+
+/**
+ * The rendered-document metadata an invoice exposes (P16-T06). `warnings`
+ * carries every token the resolver could not fill plus pipeline-level notes
+ * (fallback layout used, logo unreadable) — a blank on the receipt is always
+ * accounted for here. `wasBoundRetroactively` marks a pre-Phase-16 invoice
+ * whose snapshot was cut at first render request rather than at issue; the
+ * download surface states it rather than hiding it.
+ */
+export type InvoiceDocumentView = {
+  id: string;
+  invoiceId: string;
+  status: InvoiceDocumentStatusValue;
+  templateVersionId?: string;
+  hasVoidWatermark: boolean;
+  wasBoundRetroactively: boolean;
+  checksum?: string;
+  sizeBytes?: number;
+  pageCount?: number;
+  warnings: TemplateVariableWarning[];
+  renderError?: string;
+  renderedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/**
+ * A short-lived signed download for the stored PDF. The URL is minted per
+ * request and never persisted (D-018); `fileName` is what the disposition
+ * header pins, `INV-<compact invoice number>.pdf`.
+ */
+export type InvoiceDocumentDownloadView = {
+  url: string;
+  fileName: string;
+  expiresAt: string;
 };

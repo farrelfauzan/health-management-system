@@ -152,6 +152,11 @@ export class DocumentTemplateRepository {
     return this.toRecord(row);
   }
 
+  async findVersionById(id: string): Promise<DocumentTemplateVersionRecord | null> {
+    const row = await this.prismaService.documentTemplateVersion.findUnique({ where: { id } });
+    return row === null ? null : this.toVersionRecord(row);
+  }
+
   async findLatestPublishedVersionByKind(
     kind: DocumentTemplateKindValue,
   ): Promise<DocumentTemplateVersionRecord | null> {

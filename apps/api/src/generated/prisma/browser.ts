@@ -514,6 +514,24 @@ export type DocumentTemplate = Prisma.DocumentTemplateModel
  */
 export type DocumentTemplateVersion = Prisma.DocumentTemplateVersionModel
 /**
+ * Model InvoiceDocument
+ * One rendered invoice PDF (P16-T06). `renderedData` is the resolved
+ * variable payload captured when the snapshot was cut — the document is
+ * reproducible from this row alone, so a later template edit, tariff
+ * reprice, or patient rename cannot rewrite a receipt that is already in a
+ * patient's hands. The stored object is the other half of the same rule: a
+ * re-download serves the bytes that were rendered, never a fresh render.
+ * 
+ * `templateVersionId` is null when no published template existed and the
+ * built-in fallback layout produced the document. `hasVoidWatermark`
+ * separates the pre-void document (retained — it may already be in a
+ * patient's hands) from the watermarked one rendered after a void; two
+ * hand-written partial unique indexes make each of the four combinations a
+ * singleton, so two cashiers racing the first render insert one row and the
+ * loser reads the winner's.
+ */
+export type InvoiceDocument = Prisma.InvoiceDocumentModel
+/**
  * Model Role
  * 
  */
