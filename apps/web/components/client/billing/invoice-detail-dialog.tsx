@@ -14,6 +14,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InvoiceDocumentActions } from '#components/client/billing/invoice-document-actions';
 import { InvoiceItemsList } from '#components/client/billing/invoice-items-list';
 import { InvoicePaymentSummary } from '#components/client/billing/invoice-payment-summary';
 import { RecordPaymentForm } from '#components/client/billing/record-payment-form';
@@ -94,6 +95,8 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
             <InvoiceItemsList items={invoice.items} totalAmount={invoice.totalAmount} />
 
             {invoice.payment ? <InvoicePaymentSummary payment={invoice.payment} /> : null}
+
+            <InvoiceDocumentActions invoice={invoice} />
 
             {actionError ? (
               <p
