@@ -7256,6 +7256,16 @@ export const DocumentScalarFieldEnum = {
   ingestError: 'ingestError',
   ingestedAt: 'ingestedAt',
   uploadedById: 'uploadedById',
+  patientId: 'patientId',
+  encounterId: 'encounterId',
+  admissionId: 'admissionId',
+  category: 'category',
+  documentDate: 'documentDate',
+  notes: 'notes',
+  releasedToPatient: 'releasedToPatient',
+  releasedAt: 'releasedAt',
+  releasedById: 'releasedById',
+  deleteReason: 'deleteReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -8344,6 +8354,20 @@ export type EnumDocumentIngestStatusFieldRefInput<$PrismaModel> = FieldRefInputT
  * Reference to a field of type 'DocumentIngestStatus[]'
  */
 export type ListEnumDocumentIngestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentIngestStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentCategory'
+ */
+export type EnumDocumentCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentCategory[]'
+ */
+export type ListEnumDocumentCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentCategory[]'>
     
 
 

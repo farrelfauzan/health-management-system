@@ -576,6 +576,7 @@ model User {
   updatedAiProviderConfigs   AiProviderConfig[]           @relation("AiProviderConfigUpdatedBy")
   uploadedDocuments          Document[]                   @relation("DocumentUploadedBy")
   ownedDocuments             Document[]                   @relation("DocumentOwner")
+  releasedDocuments          Document[]                   @relation("DocumentReleasedBy")
   blockedConversations       Conversation[]               @relation("ConversationBlockedBy")
   conversationMessages       ConversationMessage[]        @relation("ConversationMessageAuthor")
   updatedFeatureEntitlements FeatureEntitlement[]         @relation("FeatureEntitlementUpdatedBy")
@@ -927,6 +928,7 @@ model PatientProfile {
   channelLinks          ChannelPatientLink[]
   prospectiveRecords    ProspectivePatient[]
   admissions            Admission[]
+  clinicalDocuments     Document[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -1443,6 +1445,7 @@ model Encounter {
   satusehatSubmission SatusehatSubmission?
   bpjsReferral        BpjsReferral?
   admissions          Admission[]
+  clinicalDocuments   Document[]
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -2613,9 +2616,16 @@ enum DocumentOwnerType {
 /// into chunks; `GENERAL` is stored and served but never embedded, which is
 /// how the future document features share this table without joining the
 /// retrieval corpus by accident.
+///
+/// `PATIENT_CLINICAL` (P16-T07) is a patient's clinical file — a lab result,
+/// a referral letter, a scanned consent form. Its resting `ingestStatus` is
+/// `NOT_APPLICABLE` and it is absent from `INGESTIBLE_DOCUMENT_PURPOSES`:
+/// clinical files must never enter the chatbot's embedding space, and the
+/// ingestion pipeline's purpose assertion is the backstop for that rule.
 enum DocumentPurpose {
   FAQ_KNOWLEDGE_BASE
   PERSONAL_KNOWLEDGE_BASE
+  PATIENT_CLINICAL
   GENERAL
 }
 
@@ -2651,6 +2661,23 @@ enum DocumentLanguage {
   EN
 }
 
+/// What kind of clinical file a `PATIENT_CLINICAL` document is (P16-T07).
+/// A closed set rather than free text because the patient tab filters by it,
+/// and because "what lab results does this patient have" must not depend on
+/// how someone spelled "lab".
+enum DocumentCategory {
+  LAB_RESULT
+  RADIOLOGY
+  EXTERNAL_MEDICAL_RECORD
+  REFERRAL_LETTER
+  CONSENT_FORM
+  DISCHARGE_SUMMARY
+  MEDICAL_CERTIFICATE
+  INSURANCE
+  IDENTITY
+  OTHER
+}
+
 /// One stored file in the shared document store. This table serves the clinic
 /// FAQ corpus, the Phase 15 retrieval corpora, personal knowledge bases, and
 /// the future patient/doctor document features — one ingestion pipeline, one
@@ -2682,12 +2709,40 @@ model Document {
   ingestError  String?              @map("ingest_error")
   ingestedAt   DateTime?            @map("ingested_at")
   uploadedById String               @map("uploaded_by_id") @db.Uuid
-  createdAt    DateTime             @default(now()) @map("created_at")
-  updatedAt    DateTime             @updatedAt @map("updated_at")
-  deletedAt    DateTime?            @map("deleted_at")
+
+  // Clinical-file columns (P16-T07). Meaningful only when `purpose` is
+  // `PATIENT_CLINICAL`; CHECKs in the migration tie purpose, owner type and
+  // `patientId` together, and allow at most one of `encounterId` /
+  // `admissionId` — a file belongs to a visit or a stay, never both.
+  /// The subject of a clinical file. `Restrict`, deliberately: losing a
+  /// patient row must never orphan (or cascade away) their documents.
+  patientId         String?           @map("patient_id") @db.Uuid
+  encounterId       String?           @map("encounter_id") @db.Uuid
+  admissionId       String?           @map("admission_id") @db.Uuid
+  category          DocumentCategory?
+  /// The clinical date on the file itself — when the lab drew blood — as
+  /// distinct from `createdAt`, which is when someone scanned it in.
+  documentDate      DateTime?         @map("document_date") @db.Date
+  notes             String?
+  /// Whether the patient may see this file from the portal (P16-T15 wires the
+  /// flow; the columns land with the model so the release fact has one home).
+  releasedToPatient Boolean           @default(false) @map("released_to_patient")
+  releasedAt        DateTime?         @map("released_at")
+  releasedById      String?           @map("released_by_id") @db.Uuid
+  /// Why a clinical file was soft-deleted. A medical record entry does not
+  /// just vanish; the reason is part of the deletion.
+  deleteReason      String?           @map("delete_reason")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   uploadedBy User            @relation("DocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: Restrict)
   owner      User?           @relation("DocumentOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  patient    PatientProfile? @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  encounter  Encounter?      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  admission  Admission?      @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+  releasedBy User?           @relation("DocumentReleasedBy", fields: [releasedById], references: [id], onDelete: Restrict)
   chunks     DocumentChunk[]
 
   /// One row per stored object. Confirming an upload is the only way a row
@@ -2700,6 +2755,11 @@ model Document {
   @@index([ownerType, ownerId])
   @@index([purpose, ingestStatus])
   @@index([uploadedById])
+  @@index([patientId, documentDate])
+  @@index([encounterId])
+  @@index([admissionId])
+  @@index([purpose, category])
+  @@index([releasedById])
   @@map("documents")
 }
 
@@ -3298,9 +3358,10 @@ model Admission {
   patient         PatientProfile  @relation(fields: [patientId], references: [id], onDelete: Restrict)
   admittingDoctor DoctorProfile   @relation(fields: [admittingDoctorId], references: [id], onDelete: Restrict)
   sourceEncounter Encounter?      @relation(fields: [sourceEncounterId], references: [id], onDelete: SetNull)
-  createdBy       User?           @relation("AdmissionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  bedAssignments  BedAssignment[]
-  invoices        Invoice[]
+  createdBy         User?           @relation("AdmissionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  bedAssignments    BedAssignment[]
+  invoices          Invoice[]
+  clinicalDocuments Document[]
 
   @@index([patientId, admittedAt])
   @@index([admittingDoctorId, admittedAt])

@@ -1,6 +1,6 @@
 import type {
+  CorpusDocumentPurposeValue,
   DocumentLanguageValue,
-  DocumentPurposeValue,
   DocumentUploadMimeTypeValue,
   DocumentVisibilityValue,
 } from '@hms/shared-types';
@@ -17,7 +17,7 @@ type UploadClinicDocumentParams = {
   file: File;
   title: string;
   mimeType: DocumentUploadMimeTypeValue;
-  purpose: DocumentPurposeValue;
+  purpose: CorpusDocumentPurposeValue;
   visibility: DocumentVisibilityValue;
   language: DocumentLanguageValue;
   onProgress?: (progress: DocumentUploadProgress) => void;
