@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { StorageModule } from '../../common/storage/storage.module';
 import { CashierReportController } from './controller/cashier-report.controller';
 import { ClinicProfileController } from './controller/clinic-profile.controller';
+import { DocumentTemplateVariableController } from './controller/document-template-variable.controller';
 import { InvoiceController } from './controller/invoice.controller';
 import { ServiceTariffController } from './controller/service-tariff.controller';
 import { BillingRepository } from './repository/billing.repository';
@@ -25,6 +26,7 @@ import { ServiceTariffService } from './service/service-tariff.service';
     InvoiceController,
     CashierReportController,
     ClinicProfileController,
+    DocumentTemplateVariableController,
   ],
   providers: [
     InvoiceNumberAllocatorRepository,
