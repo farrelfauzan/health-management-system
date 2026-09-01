@@ -58,6 +58,16 @@ export type DocumentMinAggregateOutputType = {
   ingestError: string | null
   ingestedAt: Date | null
   uploadedById: string | null
+  patientId: string | null
+  encounterId: string | null
+  admissionId: string | null
+  category: $Enums.DocumentCategory | null
+  documentDate: Date | null
+  notes: string | null
+  releasedToPatient: boolean | null
+  releasedAt: Date | null
+  releasedById: string | null
+  deleteReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -78,6 +88,16 @@ export type DocumentMaxAggregateOutputType = {
   ingestError: string | null
   ingestedAt: Date | null
   uploadedById: string | null
+  patientId: string | null
+  encounterId: string | null
+  admissionId: string | null
+  category: $Enums.DocumentCategory | null
+  documentDate: Date | null
+  notes: string | null
+  releasedToPatient: boolean | null
+  releasedAt: Date | null
+  releasedById: string | null
+  deleteReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -98,6 +118,16 @@ export type DocumentCountAggregateOutputType = {
   ingestError: number
   ingestedAt: number
   uploadedById: number
+  patientId: number
+  encounterId: number
+  admissionId: number
+  category: number
+  documentDate: number
+  notes: number
+  releasedToPatient: number
+  releasedAt: number
+  releasedById: number
+  deleteReason: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -128,6 +158,16 @@ export type DocumentMinAggregateInputType = {
   ingestError?: true
   ingestedAt?: true
   uploadedById?: true
+  patientId?: true
+  encounterId?: true
+  admissionId?: true
+  category?: true
+  documentDate?: true
+  notes?: true
+  releasedToPatient?: true
+  releasedAt?: true
+  releasedById?: true
+  deleteReason?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -148,6 +188,16 @@ export type DocumentMaxAggregateInputType = {
   ingestError?: true
   ingestedAt?: true
   uploadedById?: true
+  patientId?: true
+  encounterId?: true
+  admissionId?: true
+  category?: true
+  documentDate?: true
+  notes?: true
+  releasedToPatient?: true
+  releasedAt?: true
+  releasedById?: true
+  deleteReason?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -168,6 +218,16 @@ export type DocumentCountAggregateInputType = {
   ingestError?: true
   ingestedAt?: true
   uploadedById?: true
+  patientId?: true
+  encounterId?: true
+  admissionId?: true
+  category?: true
+  documentDate?: true
+  notes?: true
+  releasedToPatient?: true
+  releasedAt?: true
+  releasedById?: true
+  deleteReason?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -275,6 +335,16 @@ export type DocumentGroupByOutputType = {
   ingestError: string | null
   ingestedAt: Date | null
   uploadedById: string
+  patientId: string | null
+  encounterId: string | null
+  admissionId: string | null
+  category: $Enums.DocumentCategory | null
+  documentDate: Date | null
+  notes: string | null
+  releasedToPatient: boolean
+  releasedAt: Date | null
+  releasedById: string | null
+  deleteReason: string | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -318,11 +388,25 @@ export type DocumentWhereInput = {
   ingestError?: Prisma.StringNullableFilter<"Document"> | string | null
   ingestedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   uploadedById?: Prisma.UuidFilter<"Document"> | string
+  patientId?: Prisma.UuidNullableFilter<"Document"> | string | null
+  encounterId?: Prisma.UuidNullableFilter<"Document"> | string | null
+  admissionId?: Prisma.UuidNullableFilter<"Document"> | string | null
+  category?: Prisma.EnumDocumentCategoryNullableFilter<"Document"> | $Enums.DocumentCategory | null
+  documentDate?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
+  notes?: Prisma.StringNullableFilter<"Document"> | string | null
+  releasedToPatient?: Prisma.BoolFilter<"Document"> | boolean
+  releasedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
+  releasedById?: Prisma.UuidNullableFilter<"Document"> | string | null
+  deleteReason?: Prisma.StringNullableFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  patient?: Prisma.XOR<Prisma.PatientProfileNullableScalarRelationFilter, Prisma.PatientProfileWhereInput> | null
+  encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
+  admission?: Prisma.XOR<Prisma.AdmissionNullableScalarRelationFilter, Prisma.AdmissionWhereInput> | null
+  releasedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   chunks?: Prisma.DocumentChunkListRelationFilter
 }
 
@@ -341,11 +425,25 @@ export type DocumentOrderByWithRelationInput = {
   ingestError?: Prisma.SortOrderInput | Prisma.SortOrder
   ingestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadedById?: Prisma.SortOrder
+  patientId?: Prisma.SortOrderInput | Prisma.SortOrder
+  encounterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  admissionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
+  documentDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  releasedToPatient?: Prisma.SortOrder
+  releasedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  releasedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  deleteReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadedBy?: Prisma.UserOrderByWithRelationInput
   owner?: Prisma.UserOrderByWithRelationInput
+  patient?: Prisma.PatientProfileOrderByWithRelationInput
+  encounter?: Prisma.EncounterOrderByWithRelationInput
+  admission?: Prisma.AdmissionOrderByWithRelationInput
+  releasedBy?: Prisma.UserOrderByWithRelationInput
   chunks?: Prisma.DocumentChunkOrderByRelationAggregateInput
 }
 
@@ -367,11 +465,25 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   ingestError?: Prisma.StringNullableFilter<"Document"> | string | null
   ingestedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   uploadedById?: Prisma.UuidFilter<"Document"> | string
+  patientId?: Prisma.UuidNullableFilter<"Document"> | string | null
+  encounterId?: Prisma.UuidNullableFilter<"Document"> | string | null
+  admissionId?: Prisma.UuidNullableFilter<"Document"> | string | null
+  category?: Prisma.EnumDocumentCategoryNullableFilter<"Document"> | $Enums.DocumentCategory | null
+  documentDate?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
+  notes?: Prisma.StringNullableFilter<"Document"> | string | null
+  releasedToPatient?: Prisma.BoolFilter<"Document"> | boolean
+  releasedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
+  releasedById?: Prisma.UuidNullableFilter<"Document"> | string | null
+  deleteReason?: Prisma.StringNullableFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  patient?: Prisma.XOR<Prisma.PatientProfileNullableScalarRelationFilter, Prisma.PatientProfileWhereInput> | null
+  encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
+  admission?: Prisma.XOR<Prisma.AdmissionNullableScalarRelationFilter, Prisma.AdmissionWhereInput> | null
+  releasedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   chunks?: Prisma.DocumentChunkListRelationFilter
 }, "id" | "storageKey">
 
@@ -390,6 +502,16 @@ export type DocumentOrderByWithAggregationInput = {
   ingestError?: Prisma.SortOrderInput | Prisma.SortOrder
   ingestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   uploadedById?: Prisma.SortOrder
+  patientId?: Prisma.SortOrderInput | Prisma.SortOrder
+  encounterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  admissionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
+  documentDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  releasedToPatient?: Prisma.SortOrder
+  releasedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  releasedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  deleteReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -418,6 +540,16 @@ export type DocumentScalarWhereWithAggregatesInput = {
   ingestError?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
   ingestedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Document"> | Date | string | null
   uploadedById?: Prisma.UuidWithAggregatesFilter<"Document"> | string
+  patientId?: Prisma.UuidNullableWithAggregatesFilter<"Document"> | string | null
+  encounterId?: Prisma.UuidNullableWithAggregatesFilter<"Document"> | string | null
+  admissionId?: Prisma.UuidNullableWithAggregatesFilter<"Document"> | string | null
+  category?: Prisma.EnumDocumentCategoryNullableWithAggregatesFilter<"Document"> | $Enums.DocumentCategory | null
+  documentDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Document"> | Date | string | null
+  notes?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
+  releasedToPatient?: Prisma.BoolWithAggregatesFilter<"Document"> | boolean
+  releasedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Document"> | Date | string | null
+  releasedById?: Prisma.UuidNullableWithAggregatesFilter<"Document"> | string | null
+  deleteReason?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Document"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Document"> | Date | string | null
@@ -436,11 +568,21 @@ export type DocumentCreateInput = {
   ingestStatus?: $Enums.DocumentIngestStatus
   ingestError?: string | null
   ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
   owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
 }
 
@@ -459,6 +601,16 @@ export type DocumentUncheckedCreateInput = {
   ingestError?: string | null
   ingestedAt?: Date | string | null
   uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -478,11 +630,21 @@ export type DocumentUpdateInput = {
   ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
   owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
 }
 
@@ -501,6 +663,16 @@ export type DocumentUncheckedUpdateInput = {
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -522,6 +694,16 @@ export type DocumentCreateManyInput = {
   ingestError?: string | null
   ingestedAt?: Date | string | null
   uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -540,6 +722,12 @@ export type DocumentUpdateManyMutationInput = {
   ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -560,6 +748,16 @@ export type DocumentUncheckedUpdateManyInput = {
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -590,6 +788,16 @@ export type DocumentCountOrderByAggregateInput = {
   ingestError?: Prisma.SortOrder
   ingestedAt?: Prisma.SortOrder
   uploadedById?: Prisma.SortOrder
+  patientId?: Prisma.SortOrder
+  encounterId?: Prisma.SortOrder
+  admissionId?: Prisma.SortOrder
+  category?: Prisma.SortOrder
+  documentDate?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
+  releasedToPatient?: Prisma.SortOrder
+  releasedAt?: Prisma.SortOrder
+  releasedById?: Prisma.SortOrder
+  deleteReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -614,6 +822,16 @@ export type DocumentMaxOrderByAggregateInput = {
   ingestError?: Prisma.SortOrder
   ingestedAt?: Prisma.SortOrder
   uploadedById?: Prisma.SortOrder
+  patientId?: Prisma.SortOrder
+  encounterId?: Prisma.SortOrder
+  admissionId?: Prisma.SortOrder
+  category?: Prisma.SortOrder
+  documentDate?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
+  releasedToPatient?: Prisma.SortOrder
+  releasedAt?: Prisma.SortOrder
+  releasedById?: Prisma.SortOrder
+  deleteReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -634,6 +852,16 @@ export type DocumentMinOrderByAggregateInput = {
   ingestError?: Prisma.SortOrder
   ingestedAt?: Prisma.SortOrder
   uploadedById?: Prisma.SortOrder
+  patientId?: Prisma.SortOrder
+  encounterId?: Prisma.SortOrder
+  admissionId?: Prisma.SortOrder
+  category?: Prisma.SortOrder
+  documentDate?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
+  releasedToPatient?: Prisma.SortOrder
+  releasedAt?: Prisma.SortOrder
+  releasedById?: Prisma.SortOrder
+  deleteReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -662,6 +890,13 @@ export type DocumentCreateNestedManyWithoutOwnerInput = {
   connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
 }
 
+export type DocumentCreateNestedManyWithoutReleasedByInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutReleasedByInput, Prisma.DocumentUncheckedCreateWithoutReleasedByInput> | Prisma.DocumentCreateWithoutReleasedByInput[] | Prisma.DocumentUncheckedCreateWithoutReleasedByInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutReleasedByInput | Prisma.DocumentCreateOrConnectWithoutReleasedByInput[]
+  createMany?: Prisma.DocumentCreateManyReleasedByInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
 export type DocumentUncheckedCreateNestedManyWithoutUploadedByInput = {
   create?: Prisma.XOR<Prisma.DocumentCreateWithoutUploadedByInput, Prisma.DocumentUncheckedCreateWithoutUploadedByInput> | Prisma.DocumentCreateWithoutUploadedByInput[] | Prisma.DocumentUncheckedCreateWithoutUploadedByInput[]
   connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutUploadedByInput | Prisma.DocumentCreateOrConnectWithoutUploadedByInput[]
@@ -673,6 +908,13 @@ export type DocumentUncheckedCreateNestedManyWithoutOwnerInput = {
   create?: Prisma.XOR<Prisma.DocumentCreateWithoutOwnerInput, Prisma.DocumentUncheckedCreateWithoutOwnerInput> | Prisma.DocumentCreateWithoutOwnerInput[] | Prisma.DocumentUncheckedCreateWithoutOwnerInput[]
   connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutOwnerInput | Prisma.DocumentCreateOrConnectWithoutOwnerInput[]
   createMany?: Prisma.DocumentCreateManyOwnerInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
+export type DocumentUncheckedCreateNestedManyWithoutReleasedByInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutReleasedByInput, Prisma.DocumentUncheckedCreateWithoutReleasedByInput> | Prisma.DocumentCreateWithoutReleasedByInput[] | Prisma.DocumentUncheckedCreateWithoutReleasedByInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutReleasedByInput | Prisma.DocumentCreateOrConnectWithoutReleasedByInput[]
+  createMany?: Prisma.DocumentCreateManyReleasedByInputEnvelope
   connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
 }
 
@@ -704,6 +946,20 @@ export type DocumentUpdateManyWithoutOwnerNestedInput = {
   deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
 }
 
+export type DocumentUpdateManyWithoutReleasedByNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutReleasedByInput, Prisma.DocumentUncheckedCreateWithoutReleasedByInput> | Prisma.DocumentCreateWithoutReleasedByInput[] | Prisma.DocumentUncheckedCreateWithoutReleasedByInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutReleasedByInput | Prisma.DocumentCreateOrConnectWithoutReleasedByInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutReleasedByInput | Prisma.DocumentUpsertWithWhereUniqueWithoutReleasedByInput[]
+  createMany?: Prisma.DocumentCreateManyReleasedByInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutReleasedByInput | Prisma.DocumentUpdateWithWhereUniqueWithoutReleasedByInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutReleasedByInput | Prisma.DocumentUpdateManyWithWhereWithoutReleasedByInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
+}
+
 export type DocumentUncheckedUpdateManyWithoutUploadedByNestedInput = {
   create?: Prisma.XOR<Prisma.DocumentCreateWithoutUploadedByInput, Prisma.DocumentUncheckedCreateWithoutUploadedByInput> | Prisma.DocumentCreateWithoutUploadedByInput[] | Prisma.DocumentUncheckedCreateWithoutUploadedByInput[]
   connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutUploadedByInput | Prisma.DocumentCreateOrConnectWithoutUploadedByInput[]
@@ -732,6 +988,104 @@ export type DocumentUncheckedUpdateManyWithoutOwnerNestedInput = {
   deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
 }
 
+export type DocumentUncheckedUpdateManyWithoutReleasedByNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutReleasedByInput, Prisma.DocumentUncheckedCreateWithoutReleasedByInput> | Prisma.DocumentCreateWithoutReleasedByInput[] | Prisma.DocumentUncheckedCreateWithoutReleasedByInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutReleasedByInput | Prisma.DocumentCreateOrConnectWithoutReleasedByInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutReleasedByInput | Prisma.DocumentUpsertWithWhereUniqueWithoutReleasedByInput[]
+  createMany?: Prisma.DocumentCreateManyReleasedByInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutReleasedByInput | Prisma.DocumentUpdateWithWhereUniqueWithoutReleasedByInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutReleasedByInput | Prisma.DocumentUpdateManyWithWhereWithoutReleasedByInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
+}
+
+export type DocumentCreateNestedManyWithoutPatientInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutPatientInput, Prisma.DocumentUncheckedCreateWithoutPatientInput> | Prisma.DocumentCreateWithoutPatientInput[] | Prisma.DocumentUncheckedCreateWithoutPatientInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutPatientInput | Prisma.DocumentCreateOrConnectWithoutPatientInput[]
+  createMany?: Prisma.DocumentCreateManyPatientInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
+export type DocumentUncheckedCreateNestedManyWithoutPatientInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutPatientInput, Prisma.DocumentUncheckedCreateWithoutPatientInput> | Prisma.DocumentCreateWithoutPatientInput[] | Prisma.DocumentUncheckedCreateWithoutPatientInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutPatientInput | Prisma.DocumentCreateOrConnectWithoutPatientInput[]
+  createMany?: Prisma.DocumentCreateManyPatientInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
+export type DocumentUpdateManyWithoutPatientNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutPatientInput, Prisma.DocumentUncheckedCreateWithoutPatientInput> | Prisma.DocumentCreateWithoutPatientInput[] | Prisma.DocumentUncheckedCreateWithoutPatientInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutPatientInput | Prisma.DocumentCreateOrConnectWithoutPatientInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutPatientInput | Prisma.DocumentUpsertWithWhereUniqueWithoutPatientInput[]
+  createMany?: Prisma.DocumentCreateManyPatientInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutPatientInput | Prisma.DocumentUpdateWithWhereUniqueWithoutPatientInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutPatientInput | Prisma.DocumentUpdateManyWithWhereWithoutPatientInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
+}
+
+export type DocumentUncheckedUpdateManyWithoutPatientNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutPatientInput, Prisma.DocumentUncheckedCreateWithoutPatientInput> | Prisma.DocumentCreateWithoutPatientInput[] | Prisma.DocumentUncheckedCreateWithoutPatientInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutPatientInput | Prisma.DocumentCreateOrConnectWithoutPatientInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutPatientInput | Prisma.DocumentUpsertWithWhereUniqueWithoutPatientInput[]
+  createMany?: Prisma.DocumentCreateManyPatientInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutPatientInput | Prisma.DocumentUpdateWithWhereUniqueWithoutPatientInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutPatientInput | Prisma.DocumentUpdateManyWithWhereWithoutPatientInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
+}
+
+export type DocumentCreateNestedManyWithoutEncounterInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutEncounterInput, Prisma.DocumentUncheckedCreateWithoutEncounterInput> | Prisma.DocumentCreateWithoutEncounterInput[] | Prisma.DocumentUncheckedCreateWithoutEncounterInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutEncounterInput | Prisma.DocumentCreateOrConnectWithoutEncounterInput[]
+  createMany?: Prisma.DocumentCreateManyEncounterInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
+export type DocumentUncheckedCreateNestedManyWithoutEncounterInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutEncounterInput, Prisma.DocumentUncheckedCreateWithoutEncounterInput> | Prisma.DocumentCreateWithoutEncounterInput[] | Prisma.DocumentUncheckedCreateWithoutEncounterInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutEncounterInput | Prisma.DocumentCreateOrConnectWithoutEncounterInput[]
+  createMany?: Prisma.DocumentCreateManyEncounterInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
+export type DocumentUpdateManyWithoutEncounterNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutEncounterInput, Prisma.DocumentUncheckedCreateWithoutEncounterInput> | Prisma.DocumentCreateWithoutEncounterInput[] | Prisma.DocumentUncheckedCreateWithoutEncounterInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutEncounterInput | Prisma.DocumentCreateOrConnectWithoutEncounterInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutEncounterInput | Prisma.DocumentUpsertWithWhereUniqueWithoutEncounterInput[]
+  createMany?: Prisma.DocumentCreateManyEncounterInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutEncounterInput | Prisma.DocumentUpdateWithWhereUniqueWithoutEncounterInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutEncounterInput | Prisma.DocumentUpdateManyWithWhereWithoutEncounterInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
+}
+
+export type DocumentUncheckedUpdateManyWithoutEncounterNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutEncounterInput, Prisma.DocumentUncheckedCreateWithoutEncounterInput> | Prisma.DocumentCreateWithoutEncounterInput[] | Prisma.DocumentUncheckedCreateWithoutEncounterInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutEncounterInput | Prisma.DocumentCreateOrConnectWithoutEncounterInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutEncounterInput | Prisma.DocumentUpsertWithWhereUniqueWithoutEncounterInput[]
+  createMany?: Prisma.DocumentCreateManyEncounterInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutEncounterInput | Prisma.DocumentUpdateWithWhereUniqueWithoutEncounterInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutEncounterInput | Prisma.DocumentUpdateManyWithWhereWithoutEncounterInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
+}
+
 export type EnumDocumentOwnerTypeFieldUpdateOperationsInput = {
   set?: $Enums.DocumentOwnerType
 }
@@ -752,6 +1106,10 @@ export type EnumDocumentIngestStatusFieldUpdateOperationsInput = {
   set?: $Enums.DocumentIngestStatus
 }
 
+export type NullableEnumDocumentCategoryFieldUpdateOperationsInput = {
+  set?: $Enums.DocumentCategory | null
+}
+
 export type DocumentCreateNestedOneWithoutChunksInput = {
   create?: Prisma.XOR<Prisma.DocumentCreateWithoutChunksInput, Prisma.DocumentUncheckedCreateWithoutChunksInput>
   connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutChunksInput
@@ -764,6 +1122,48 @@ export type DocumentUpdateOneRequiredWithoutChunksNestedInput = {
   upsert?: Prisma.DocumentUpsertWithoutChunksInput
   connect?: Prisma.DocumentWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutChunksInput, Prisma.DocumentUpdateWithoutChunksInput>, Prisma.DocumentUncheckedUpdateWithoutChunksInput>
+}
+
+export type DocumentCreateNestedManyWithoutAdmissionInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutAdmissionInput, Prisma.DocumentUncheckedCreateWithoutAdmissionInput> | Prisma.DocumentCreateWithoutAdmissionInput[] | Prisma.DocumentUncheckedCreateWithoutAdmissionInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutAdmissionInput | Prisma.DocumentCreateOrConnectWithoutAdmissionInput[]
+  createMany?: Prisma.DocumentCreateManyAdmissionInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
+export type DocumentUncheckedCreateNestedManyWithoutAdmissionInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutAdmissionInput, Prisma.DocumentUncheckedCreateWithoutAdmissionInput> | Prisma.DocumentCreateWithoutAdmissionInput[] | Prisma.DocumentUncheckedCreateWithoutAdmissionInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutAdmissionInput | Prisma.DocumentCreateOrConnectWithoutAdmissionInput[]
+  createMany?: Prisma.DocumentCreateManyAdmissionInputEnvelope
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+}
+
+export type DocumentUpdateManyWithoutAdmissionNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutAdmissionInput, Prisma.DocumentUncheckedCreateWithoutAdmissionInput> | Prisma.DocumentCreateWithoutAdmissionInput[] | Prisma.DocumentUncheckedCreateWithoutAdmissionInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutAdmissionInput | Prisma.DocumentCreateOrConnectWithoutAdmissionInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutAdmissionInput | Prisma.DocumentUpsertWithWhereUniqueWithoutAdmissionInput[]
+  createMany?: Prisma.DocumentCreateManyAdmissionInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutAdmissionInput | Prisma.DocumentUpdateWithWhereUniqueWithoutAdmissionInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutAdmissionInput | Prisma.DocumentUpdateManyWithWhereWithoutAdmissionInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
+}
+
+export type DocumentUncheckedUpdateManyWithoutAdmissionNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutAdmissionInput, Prisma.DocumentUncheckedCreateWithoutAdmissionInput> | Prisma.DocumentCreateWithoutAdmissionInput[] | Prisma.DocumentUncheckedCreateWithoutAdmissionInput[]
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutAdmissionInput | Prisma.DocumentCreateOrConnectWithoutAdmissionInput[]
+  upsert?: Prisma.DocumentUpsertWithWhereUniqueWithoutAdmissionInput | Prisma.DocumentUpsertWithWhereUniqueWithoutAdmissionInput[]
+  createMany?: Prisma.DocumentCreateManyAdmissionInputEnvelope
+  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[]
+  update?: Prisma.DocumentUpdateWithWhereUniqueWithoutAdmissionInput | Prisma.DocumentUpdateWithWhereUniqueWithoutAdmissionInput[]
+  updateMany?: Prisma.DocumentUpdateManyWithWhereWithoutAdmissionInput | Prisma.DocumentUpdateManyWithWhereWithoutAdmissionInput[]
+  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
 }
 
 export type DocumentCreateWithoutUploadedByInput = {
@@ -779,10 +1179,20 @@ export type DocumentCreateWithoutUploadedByInput = {
   ingestStatus?: $Enums.DocumentIngestStatus
   ingestError?: string | null
   ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
 }
 
@@ -800,6 +1210,16 @@ export type DocumentUncheckedCreateWithoutUploadedByInput = {
   ingestStatus?: $Enums.DocumentIngestStatus
   ingestError?: string | null
   ingestedAt?: Date | string | null
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -829,10 +1249,20 @@ export type DocumentCreateWithoutOwnerInput = {
   ingestStatus?: $Enums.DocumentIngestStatus
   ingestError?: string | null
   ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
 }
 
@@ -850,6 +1280,16 @@ export type DocumentUncheckedCreateWithoutOwnerInput = {
   ingestError?: string | null
   ingestedAt?: Date | string | null
   uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -863,6 +1303,76 @@ export type DocumentCreateOrConnectWithoutOwnerInput = {
 
 export type DocumentCreateManyOwnerInputEnvelope = {
   data: Prisma.DocumentCreateManyOwnerInput | Prisma.DocumentCreateManyOwnerInput[]
+  skipDuplicates?: boolean
+}
+
+export type DocumentCreateWithoutReleasedByInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutReleasedByInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutReleasedByInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutReleasedByInput, Prisma.DocumentUncheckedCreateWithoutReleasedByInput>
+}
+
+export type DocumentCreateManyReleasedByInputEnvelope = {
+  data: Prisma.DocumentCreateManyReleasedByInput | Prisma.DocumentCreateManyReleasedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -900,6 +1410,16 @@ export type DocumentScalarWhereInput = {
   ingestError?: Prisma.StringNullableFilter<"Document"> | string | null
   ingestedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   uploadedById?: Prisma.UuidFilter<"Document"> | string
+  patientId?: Prisma.UuidNullableFilter<"Document"> | string | null
+  encounterId?: Prisma.UuidNullableFilter<"Document"> | string | null
+  admissionId?: Prisma.UuidNullableFilter<"Document"> | string | null
+  category?: Prisma.EnumDocumentCategoryNullableFilter<"Document"> | $Enums.DocumentCategory | null
+  documentDate?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
+  notes?: Prisma.StringNullableFilter<"Document"> | string | null
+  releasedToPatient?: Prisma.BoolFilter<"Document"> | boolean
+  releasedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
+  releasedById?: Prisma.UuidNullableFilter<"Document"> | string | null
+  deleteReason?: Prisma.StringNullableFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
@@ -921,6 +1441,194 @@ export type DocumentUpdateManyWithWhereWithoutOwnerInput = {
   data: Prisma.XOR<Prisma.DocumentUpdateManyMutationInput, Prisma.DocumentUncheckedUpdateManyWithoutOwnerInput>
 }
 
+export type DocumentUpsertWithWhereUniqueWithoutReleasedByInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutReleasedByInput, Prisma.DocumentUncheckedUpdateWithoutReleasedByInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutReleasedByInput, Prisma.DocumentUncheckedCreateWithoutReleasedByInput>
+}
+
+export type DocumentUpdateWithWhereUniqueWithoutReleasedByInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutReleasedByInput, Prisma.DocumentUncheckedUpdateWithoutReleasedByInput>
+}
+
+export type DocumentUpdateManyWithWhereWithoutReleasedByInput = {
+  where: Prisma.DocumentScalarWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateManyMutationInput, Prisma.DocumentUncheckedUpdateManyWithoutReleasedByInput>
+}
+
+export type DocumentCreateWithoutPatientInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
+  chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutPatientInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutPatientInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutPatientInput, Prisma.DocumentUncheckedCreateWithoutPatientInput>
+}
+
+export type DocumentCreateManyPatientInputEnvelope = {
+  data: Prisma.DocumentCreateManyPatientInput | Prisma.DocumentCreateManyPatientInput[]
+  skipDuplicates?: boolean
+}
+
+export type DocumentUpsertWithWhereUniqueWithoutPatientInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutPatientInput, Prisma.DocumentUncheckedUpdateWithoutPatientInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutPatientInput, Prisma.DocumentUncheckedCreateWithoutPatientInput>
+}
+
+export type DocumentUpdateWithWhereUniqueWithoutPatientInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutPatientInput, Prisma.DocumentUncheckedUpdateWithoutPatientInput>
+}
+
+export type DocumentUpdateManyWithWhereWithoutPatientInput = {
+  where: Prisma.DocumentScalarWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateManyMutationInput, Prisma.DocumentUncheckedUpdateManyWithoutPatientInput>
+}
+
+export type DocumentCreateWithoutEncounterInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
+  chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutEncounterInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  patientId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutEncounterInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutEncounterInput, Prisma.DocumentUncheckedCreateWithoutEncounterInput>
+}
+
+export type DocumentCreateManyEncounterInputEnvelope = {
+  data: Prisma.DocumentCreateManyEncounterInput | Prisma.DocumentCreateManyEncounterInput[]
+  skipDuplicates?: boolean
+}
+
+export type DocumentUpsertWithWhereUniqueWithoutEncounterInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutEncounterInput, Prisma.DocumentUncheckedUpdateWithoutEncounterInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutEncounterInput, Prisma.DocumentUncheckedCreateWithoutEncounterInput>
+}
+
+export type DocumentUpdateWithWhereUniqueWithoutEncounterInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutEncounterInput, Prisma.DocumentUncheckedUpdateWithoutEncounterInput>
+}
+
+export type DocumentUpdateManyWithWhereWithoutEncounterInput = {
+  where: Prisma.DocumentScalarWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateManyMutationInput, Prisma.DocumentUncheckedUpdateManyWithoutEncounterInput>
+}
+
 export type DocumentCreateWithoutChunksInput = {
   id?: string
   ownerType: $Enums.DocumentOwnerType
@@ -934,11 +1642,21 @@ export type DocumentCreateWithoutChunksInput = {
   ingestStatus?: $Enums.DocumentIngestStatus
   ingestError?: string | null
   ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
   owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
 }
 
 export type DocumentUncheckedCreateWithoutChunksInput = {
@@ -956,6 +1674,16 @@ export type DocumentUncheckedCreateWithoutChunksInput = {
   ingestError?: string | null
   ingestedAt?: Date | string | null
   uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -990,11 +1718,21 @@ export type DocumentUpdateWithoutChunksInput = {
   ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
   owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutChunksInput = {
@@ -1012,9 +1750,105 @@ export type DocumentUncheckedUpdateWithoutChunksInput = {
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type DocumentCreateWithoutAdmissionInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
+  chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutAdmissionInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutAdmissionInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutAdmissionInput, Prisma.DocumentUncheckedCreateWithoutAdmissionInput>
+}
+
+export type DocumentCreateManyAdmissionInputEnvelope = {
+  data: Prisma.DocumentCreateManyAdmissionInput | Prisma.DocumentCreateManyAdmissionInput[]
+  skipDuplicates?: boolean
+}
+
+export type DocumentUpsertWithWhereUniqueWithoutAdmissionInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutAdmissionInput, Prisma.DocumentUncheckedUpdateWithoutAdmissionInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutAdmissionInput, Prisma.DocumentUncheckedCreateWithoutAdmissionInput>
+}
+
+export type DocumentUpdateWithWhereUniqueWithoutAdmissionInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutAdmissionInput, Prisma.DocumentUncheckedUpdateWithoutAdmissionInput>
+}
+
+export type DocumentUpdateManyWithWhereWithoutAdmissionInput = {
+  where: Prisma.DocumentScalarWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateManyMutationInput, Prisma.DocumentUncheckedUpdateManyWithoutAdmissionInput>
 }
 
 export type DocumentCreateManyUploadedByInput = {
@@ -1031,6 +1865,16 @@ export type DocumentCreateManyUploadedByInput = {
   ingestStatus?: $Enums.DocumentIngestStatus
   ingestError?: string | null
   ingestedAt?: Date | string | null
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1050,6 +1894,45 @@ export type DocumentCreateManyOwnerInput = {
   ingestError?: string | null
   ingestedAt?: Date | string | null
   uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type DocumentCreateManyReleasedByInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1068,10 +1951,20 @@ export type DocumentUpdateWithoutUploadedByInput = {
   ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
 }
 
@@ -1089,6 +1982,16 @@ export type DocumentUncheckedUpdateWithoutUploadedByInput = {
   ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1109,6 +2012,16 @@ export type DocumentUncheckedUpdateManyWithoutUploadedByInput = {
   ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1127,10 +2040,20 @@ export type DocumentUpdateWithoutOwnerInput = {
   ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
 }
 
@@ -1148,6 +2071,16 @@ export type DocumentUncheckedUpdateWithoutOwnerInput = {
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1168,6 +2101,459 @@ export type DocumentUncheckedUpdateManyWithoutOwnerInput = {
   ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type DocumentUpdateWithoutReleasedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutReleasedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateManyWithoutReleasedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type DocumentCreateManyPatientInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type DocumentUpdateWithoutPatientInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
+  chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutPatientInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateManyWithoutPatientInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type DocumentCreateManyEncounterInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  patientId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type DocumentUpdateWithoutEncounterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
+  chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutEncounterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateManyWithoutEncounterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type DocumentCreateManyAdmissionInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type DocumentUpdateWithoutAdmissionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
+  chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutAdmissionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateManyWithoutAdmissionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1219,11 +2605,25 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   ingestError?: boolean
   ingestedAt?: boolean
   uploadedById?: boolean
+  patientId?: boolean
+  encounterId?: boolean
+  admissionId?: boolean
+  category?: boolean
+  documentDate?: boolean
+  notes?: boolean
+  releasedToPatient?: boolean
+  releasedAt?: boolean
+  releasedById?: boolean
+  deleteReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.Document$ownerArgs<ExtArgs>
+  patient?: boolean | Prisma.Document$patientArgs<ExtArgs>
+  encounter?: boolean | Prisma.Document$encounterArgs<ExtArgs>
+  admission?: boolean | Prisma.Document$admissionArgs<ExtArgs>
+  releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
   chunks?: boolean | Prisma.Document$chunksArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
@@ -1243,11 +2643,25 @@ export type DocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   ingestError?: boolean
   ingestedAt?: boolean
   uploadedById?: boolean
+  patientId?: boolean
+  encounterId?: boolean
+  admissionId?: boolean
+  category?: boolean
+  documentDate?: boolean
+  notes?: boolean
+  releasedToPatient?: boolean
+  releasedAt?: boolean
+  releasedById?: boolean
+  deleteReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.Document$ownerArgs<ExtArgs>
+  patient?: boolean | Prisma.Document$patientArgs<ExtArgs>
+  encounter?: boolean | Prisma.Document$encounterArgs<ExtArgs>
+  admission?: boolean | Prisma.Document$admissionArgs<ExtArgs>
+  releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
 
 export type DocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1265,11 +2679,25 @@ export type DocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   ingestError?: boolean
   ingestedAt?: boolean
   uploadedById?: boolean
+  patientId?: boolean
+  encounterId?: boolean
+  admissionId?: boolean
+  category?: boolean
+  documentDate?: boolean
+  notes?: boolean
+  releasedToPatient?: boolean
+  releasedAt?: boolean
+  releasedById?: boolean
+  deleteReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.Document$ownerArgs<ExtArgs>
+  patient?: boolean | Prisma.Document$patientArgs<ExtArgs>
+  encounter?: boolean | Prisma.Document$encounterArgs<ExtArgs>
+  admission?: boolean | Prisma.Document$admissionArgs<ExtArgs>
+  releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
 
 export type DocumentSelectScalar = {
@@ -1287,25 +2715,47 @@ export type DocumentSelectScalar = {
   ingestError?: boolean
   ingestedAt?: boolean
   uploadedById?: boolean
+  patientId?: boolean
+  encounterId?: boolean
+  admissionId?: boolean
+  category?: boolean
+  documentDate?: boolean
+  notes?: boolean
+  releasedToPatient?: boolean
+  releasedAt?: boolean
+  releasedById?: boolean
+  deleteReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerType" | "ownerId" | "purpose" | "title" | "storageKey" | "mimeType" | "sizeBytes" | "visibility" | "language" | "ingestStatus" | "ingestError" | "ingestedAt" | "uploadedById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["document"]>
+export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerType" | "ownerId" | "purpose" | "title" | "storageKey" | "mimeType" | "sizeBytes" | "visibility" | "language" | "ingestStatus" | "ingestError" | "ingestedAt" | "uploadedById" | "patientId" | "encounterId" | "admissionId" | "category" | "documentDate" | "notes" | "releasedToPatient" | "releasedAt" | "releasedById" | "deleteReason" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["document"]>
 export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.Document$ownerArgs<ExtArgs>
+  patient?: boolean | Prisma.Document$patientArgs<ExtArgs>
+  encounter?: boolean | Prisma.Document$encounterArgs<ExtArgs>
+  admission?: boolean | Prisma.Document$admissionArgs<ExtArgs>
+  releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
   chunks?: boolean | Prisma.Document$chunksArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DocumentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.Document$ownerArgs<ExtArgs>
+  patient?: boolean | Prisma.Document$patientArgs<ExtArgs>
+  encounter?: boolean | Prisma.Document$encounterArgs<ExtArgs>
+  admission?: boolean | Prisma.Document$admissionArgs<ExtArgs>
+  releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
 }
 export type DocumentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.Document$ownerArgs<ExtArgs>
+  patient?: boolean | Prisma.Document$patientArgs<ExtArgs>
+  encounter?: boolean | Prisma.Document$encounterArgs<ExtArgs>
+  admission?: boolean | Prisma.Document$admissionArgs<ExtArgs>
+  releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
 }
 
 export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1313,6 +2763,10 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     uploadedBy: Prisma.$UserPayload<ExtArgs>
     owner: Prisma.$UserPayload<ExtArgs> | null
+    patient: Prisma.$PatientProfilePayload<ExtArgs> | null
+    encounter: Prisma.$EncounterPayload<ExtArgs> | null
+    admission: Prisma.$AdmissionPayload<ExtArgs> | null
+    releasedBy: Prisma.$UserPayload<ExtArgs> | null
     chunks: Prisma.$DocumentChunkPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1340,6 +2794,32 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     ingestError: string | null
     ingestedAt: Date | null
     uploadedById: string
+    /**
+     * The subject of a clinical file. `Restrict`, deliberately: losing a
+     * patient row must never orphan (or cascade away) their documents.
+     */
+    patientId: string | null
+    encounterId: string | null
+    admissionId: string | null
+    category: $Enums.DocumentCategory | null
+    /**
+     * The clinical date on the file itself — when the lab drew blood — as
+     * distinct from `createdAt`, which is when someone scanned it in.
+     */
+    documentDate: Date | null
+    notes: string | null
+    /**
+     * Whether the patient may see this file from the portal (P16-T15 wires the
+     * flow; the columns land with the model so the release fact has one home).
+     */
+    releasedToPatient: boolean
+    releasedAt: Date | null
+    releasedById: string | null
+    /**
+     * Why a clinical file was soft-deleted. A medical record entry does not
+     * just vanish; the reason is part of the deletion.
+     */
+    deleteReason: string | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -1739,6 +3219,10 @@ export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   uploadedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   owner<T extends Prisma.Document$ownerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$ownerArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  patient<T extends Prisma.Document$patientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$patientArgs<ExtArgs>>): Prisma.Prisma__PatientProfileClient<runtime.Types.Result.GetResult<Prisma.$PatientProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  encounter<T extends Prisma.Document$encounterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$encounterArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  admission<T extends Prisma.Document$admissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$admissionArgs<ExtArgs>>): Prisma.Prisma__AdmissionClient<runtime.Types.Result.GetResult<Prisma.$AdmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  releasedBy<T extends Prisma.Document$releasedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$releasedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   chunks<T extends Prisma.Document$chunksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$chunksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1783,6 +3267,16 @@ export interface DocumentFieldRefs {
   readonly ingestError: Prisma.FieldRef<"Document", 'String'>
   readonly ingestedAt: Prisma.FieldRef<"Document", 'DateTime'>
   readonly uploadedById: Prisma.FieldRef<"Document", 'String'>
+  readonly patientId: Prisma.FieldRef<"Document", 'String'>
+  readonly encounterId: Prisma.FieldRef<"Document", 'String'>
+  readonly admissionId: Prisma.FieldRef<"Document", 'String'>
+  readonly category: Prisma.FieldRef<"Document", 'DocumentCategory'>
+  readonly documentDate: Prisma.FieldRef<"Document", 'DateTime'>
+  readonly notes: Prisma.FieldRef<"Document", 'String'>
+  readonly releasedToPatient: Prisma.FieldRef<"Document", 'Boolean'>
+  readonly releasedAt: Prisma.FieldRef<"Document", 'DateTime'>
+  readonly releasedById: Prisma.FieldRef<"Document", 'String'>
+  readonly deleteReason: Prisma.FieldRef<"Document", 'String'>
   readonly createdAt: Prisma.FieldRef<"Document", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Document", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Document", 'DateTime'>
@@ -2190,6 +3684,82 @@ export type DocumentDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
  * Document.owner
  */
 export type Document$ownerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Document.patient
+ */
+export type Document$patientArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PatientProfile
+   */
+  select?: Prisma.PatientProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PatientProfile
+   */
+  omit?: Prisma.PatientProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PatientProfileInclude<ExtArgs> | null
+  where?: Prisma.PatientProfileWhereInput
+}
+
+/**
+ * Document.encounter
+ */
+export type Document$encounterArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Encounter
+   */
+  select?: Prisma.EncounterSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Encounter
+   */
+  omit?: Prisma.EncounterOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EncounterInclude<ExtArgs> | null
+  where?: Prisma.EncounterWhereInput
+}
+
+/**
+ * Document.admission
+ */
+export type Document$admissionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Admission
+   */
+  select?: Prisma.AdmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Admission
+   */
+  omit?: Prisma.AdmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdmissionInclude<ExtArgs> | null
+  where?: Prisma.AdmissionWhereInput
+}
+
+/**
+ * Document.releasedBy
+ */
+export type Document$releasedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the User
    */

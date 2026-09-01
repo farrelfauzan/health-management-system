@@ -513,6 +513,7 @@ export type DocumentOwnerType = (typeof DocumentOwnerType)[keyof typeof Document
 export const DocumentPurpose = {
   FAQ_KNOWLEDGE_BASE: 'FAQ_KNOWLEDGE_BASE',
   PERSONAL_KNOWLEDGE_BASE: 'PERSONAL_KNOWLEDGE_BASE',
+  PATIENT_CLINICAL: 'PATIENT_CLINICAL',
   GENERAL: 'GENERAL'
 } as const
 
@@ -545,6 +546,22 @@ export const DocumentLanguage = {
 } as const
 
 export type DocumentLanguage = (typeof DocumentLanguage)[keyof typeof DocumentLanguage]
+
+
+export const DocumentCategory = {
+  LAB_RESULT: 'LAB_RESULT',
+  RADIOLOGY: 'RADIOLOGY',
+  EXTERNAL_MEDICAL_RECORD: 'EXTERNAL_MEDICAL_RECORD',
+  REFERRAL_LETTER: 'REFERRAL_LETTER',
+  CONSENT_FORM: 'CONSENT_FORM',
+  DISCHARGE_SUMMARY: 'DISCHARGE_SUMMARY',
+  MEDICAL_CERTIFICATE: 'MEDICAL_CERTIFICATE',
+  INSURANCE: 'INSURANCE',
+  IDENTITY: 'IDENTITY',
+  OTHER: 'OTHER'
+} as const
+
+export type DocumentCategory = (typeof DocumentCategory)[keyof typeof DocumentCategory]
 
 
 export const ChannelKind = {

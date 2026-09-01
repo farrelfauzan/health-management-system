@@ -1,4 +1,5 @@
 import type {
+  DocumentCategoryValue,
   DocumentIngestStatusValue,
   DocumentLanguageValue,
   DocumentOwnerTypeValue,
@@ -29,8 +30,53 @@ export type DocumentRecord = {
   ingestedAt: Date | null;
   chunkCount: number;
   uploadedById: string;
+  /** Clinical-file fields (P16-T07); null on every corpus document. */
+  patientId: string | null;
+  encounterId: string | null;
+  admissionId: string | null;
+  category: DocumentCategoryValue | null;
+  documentDate: Date | null;
+  notes: string | null;
+  releasedToPatient: boolean;
+  releasedAt: Date | null;
+  releasedById: string | null;
+  deleteReason: string | null;
   createdAt: Date;
   updatedAt: Date;
+};
+
+/**
+ * Create payload for one patient clinical file (P16-T07). Purpose, owner
+ * type, and ingest status are not parameters: a clinical document is always
+ * `PATIENT_CLINICAL`, always `PATIENT`-owned, and never ingested — the
+ * repository states those facts itself so no caller can vary them.
+ */
+export type CreatePatientClinicalDocumentData = {
+  patientId: string;
+  encounterId?: string;
+  admissionId?: string;
+  category: DocumentCategoryValue;
+  documentDate?: Date;
+  notes?: string;
+  title: string;
+  storageKey: string;
+  mimeType: string;
+  sizeBytes: number;
+  language: DocumentLanguageValue;
+  uploadedById: string;
+};
+
+/**
+ * `patientId` is required rather than an optional filter, so a caller cannot
+ * widen the query by omission — the same rule the owner-scoped reads follow.
+ */
+export type ListPatientClinicalDocumentsParams = {
+  patientId: string;
+  category?: DocumentCategoryValue;
+  encounterId?: string;
+  admissionId?: string;
+  cursor?: string;
+  limit: number;
 };
 
 /**

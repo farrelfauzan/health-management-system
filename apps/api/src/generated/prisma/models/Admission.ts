@@ -285,6 +285,7 @@ export type AdmissionWhereInput = {
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   bedAssignments?: Prisma.BedAssignmentListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
+  clinicalDocuments?: Prisma.DocumentListRelationFilter
 }
 
 export type AdmissionOrderByWithRelationInput = {
@@ -309,6 +310,7 @@ export type AdmissionOrderByWithRelationInput = {
   createdBy?: Prisma.UserOrderByWithRelationInput
   bedAssignments?: Prisma.BedAssignmentOrderByRelationAggregateInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
+  clinicalDocuments?: Prisma.DocumentOrderByRelationAggregateInput
 }
 
 export type AdmissionWhereUniqueInput = Prisma.AtLeast<{
@@ -336,6 +338,7 @@ export type AdmissionWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   bedAssignments?: Prisma.BedAssignmentListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
+  clinicalDocuments?: Prisma.DocumentListRelationFilter
 }, "id">
 
 export type AdmissionOrderByWithAggregationInput = {
@@ -398,6 +401,7 @@ export type AdmissionCreateInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedAdmissionsInput
   bedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionUncheckedCreateInput = {
@@ -418,6 +422,7 @@ export type AdmissionUncheckedCreateInput = {
   deletedAt?: Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionUpdateInput = {
@@ -438,6 +443,7 @@ export type AdmissionUpdateInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedAdmissionsNestedInput
   bedAssignments?: Prisma.BedAssignmentUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateInput = {
@@ -458,6 +464,7 @@ export type AdmissionUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionCreateManyInput = {
@@ -768,6 +775,22 @@ export type AdmissionUpdateOneWithoutInvoicesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AdmissionUpdateToOneWithWhereWithoutInvoicesInput, Prisma.AdmissionUpdateWithoutInvoicesInput>, Prisma.AdmissionUncheckedUpdateWithoutInvoicesInput>
 }
 
+export type AdmissionCreateNestedOneWithoutClinicalDocumentsInput = {
+  create?: Prisma.XOR<Prisma.AdmissionCreateWithoutClinicalDocumentsInput, Prisma.AdmissionUncheckedCreateWithoutClinicalDocumentsInput>
+  connectOrCreate?: Prisma.AdmissionCreateOrConnectWithoutClinicalDocumentsInput
+  connect?: Prisma.AdmissionWhereUniqueInput
+}
+
+export type AdmissionUpdateOneWithoutClinicalDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.AdmissionCreateWithoutClinicalDocumentsInput, Prisma.AdmissionUncheckedCreateWithoutClinicalDocumentsInput>
+  connectOrCreate?: Prisma.AdmissionCreateOrConnectWithoutClinicalDocumentsInput
+  upsert?: Prisma.AdmissionUpsertWithoutClinicalDocumentsInput
+  disconnect?: Prisma.AdmissionWhereInput | boolean
+  delete?: Prisma.AdmissionWhereInput | boolean
+  connect?: Prisma.AdmissionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdmissionUpdateToOneWithWhereWithoutClinicalDocumentsInput, Prisma.AdmissionUpdateWithoutClinicalDocumentsInput>, Prisma.AdmissionUncheckedUpdateWithoutClinicalDocumentsInput>
+}
+
 export type EnumAdmissionStatusFieldUpdateOperationsInput = {
   set?: $Enums.AdmissionStatus
 }
@@ -803,6 +826,7 @@ export type AdmissionCreateWithoutCreatedByInput = {
   sourceEncounter?: Prisma.EncounterCreateNestedOneWithoutAdmissionsInput
   bedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionUncheckedCreateWithoutCreatedByInput = {
@@ -822,6 +846,7 @@ export type AdmissionUncheckedCreateWithoutCreatedByInput = {
   deletedAt?: Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionCreateOrConnectWithoutCreatedByInput = {
@@ -888,6 +913,7 @@ export type AdmissionCreateWithoutPatientInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedAdmissionsInput
   bedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionUncheckedCreateWithoutPatientInput = {
@@ -907,6 +933,7 @@ export type AdmissionUncheckedCreateWithoutPatientInput = {
   deletedAt?: Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionCreateOrConnectWithoutPatientInput = {
@@ -952,6 +979,7 @@ export type AdmissionCreateWithoutAdmittingDoctorInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedAdmissionsInput
   bedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionUncheckedCreateWithoutAdmittingDoctorInput = {
@@ -971,6 +999,7 @@ export type AdmissionUncheckedCreateWithoutAdmittingDoctorInput = {
   deletedAt?: Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionCreateOrConnectWithoutAdmittingDoctorInput = {
@@ -1016,6 +1045,7 @@ export type AdmissionCreateWithoutSourceEncounterInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedAdmissionsInput
   bedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionUncheckedCreateWithoutSourceEncounterInput = {
@@ -1035,6 +1065,7 @@ export type AdmissionUncheckedCreateWithoutSourceEncounterInput = {
   deletedAt?: Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutAdmissionInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionCreateOrConnectWithoutSourceEncounterInput = {
@@ -1080,6 +1111,7 @@ export type AdmissionCreateWithoutInvoicesInput = {
   sourceEncounter?: Prisma.EncounterCreateNestedOneWithoutAdmissionsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedAdmissionsInput
   bedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionUncheckedCreateWithoutInvoicesInput = {
@@ -1099,6 +1131,7 @@ export type AdmissionUncheckedCreateWithoutInvoicesInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionCreateOrConnectWithoutInvoicesInput = {
@@ -1134,6 +1167,7 @@ export type AdmissionUpdateWithoutInvoicesInput = {
   sourceEncounter?: Prisma.EncounterUpdateOneWithoutAdmissionsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedAdmissionsNestedInput
   bedAssignments?: Prisma.BedAssignmentUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateWithoutInvoicesInput = {
@@ -1153,6 +1187,103 @@ export type AdmissionUncheckedUpdateWithoutInvoicesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutAdmissionNestedInput
+}
+
+export type AdmissionCreateWithoutClinicalDocumentsInput = {
+  id?: string
+  status?: $Enums.AdmissionStatus
+  reason?: string | null
+  admittedAt?: Date | string
+  dischargedAt?: Date | string | null
+  dischargeSummary?: string | null
+  cancelledAt?: Date | string | null
+  cancelReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  patient: Prisma.PatientProfileCreateNestedOneWithoutAdmissionsInput
+  admittingDoctor: Prisma.DoctorProfileCreateNestedOneWithoutAdmissionsInput
+  sourceEncounter?: Prisma.EncounterCreateNestedOneWithoutAdmissionsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedAdmissionsInput
+  bedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutAdmissionInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutAdmissionInput
+}
+
+export type AdmissionUncheckedCreateWithoutClinicalDocumentsInput = {
+  id?: string
+  patientId: string
+  admittingDoctorId: string
+  sourceEncounterId?: string | null
+  status?: $Enums.AdmissionStatus
+  reason?: string | null
+  admittedAt?: Date | string
+  dischargedAt?: Date | string | null
+  dischargeSummary?: string | null
+  cancelledAt?: Date | string | null
+  cancelReason?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  bedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutAdmissionInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutAdmissionInput
+}
+
+export type AdmissionCreateOrConnectWithoutClinicalDocumentsInput = {
+  where: Prisma.AdmissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdmissionCreateWithoutClinicalDocumentsInput, Prisma.AdmissionUncheckedCreateWithoutClinicalDocumentsInput>
+}
+
+export type AdmissionUpsertWithoutClinicalDocumentsInput = {
+  update: Prisma.XOR<Prisma.AdmissionUpdateWithoutClinicalDocumentsInput, Prisma.AdmissionUncheckedUpdateWithoutClinicalDocumentsInput>
+  create: Prisma.XOR<Prisma.AdmissionCreateWithoutClinicalDocumentsInput, Prisma.AdmissionUncheckedCreateWithoutClinicalDocumentsInput>
+  where?: Prisma.AdmissionWhereInput
+}
+
+export type AdmissionUpdateToOneWithWhereWithoutClinicalDocumentsInput = {
+  where?: Prisma.AdmissionWhereInput
+  data: Prisma.XOR<Prisma.AdmissionUpdateWithoutClinicalDocumentsInput, Prisma.AdmissionUncheckedUpdateWithoutClinicalDocumentsInput>
+}
+
+export type AdmissionUpdateWithoutClinicalDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumAdmissionStatusFieldUpdateOperationsInput | $Enums.AdmissionStatus
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutAdmissionsNestedInput
+  admittingDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutAdmissionsNestedInput
+  sourceEncounter?: Prisma.EncounterUpdateOneWithoutAdmissionsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedAdmissionsNestedInput
+  bedAssignments?: Prisma.BedAssignmentUpdateManyWithoutAdmissionNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutAdmissionNestedInput
+}
+
+export type AdmissionUncheckedUpdateWithoutClinicalDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  admittingDoctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumAdmissionStatusFieldUpdateOperationsInput | $Enums.AdmissionStatus
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutAdmissionNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionCreateWithoutBedAssignmentsInput = {
@@ -1172,6 +1303,7 @@ export type AdmissionCreateWithoutBedAssignmentsInput = {
   sourceEncounter?: Prisma.EncounterCreateNestedOneWithoutAdmissionsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedAdmissionsInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionUncheckedCreateWithoutBedAssignmentsInput = {
@@ -1191,6 +1323,7 @@ export type AdmissionUncheckedCreateWithoutBedAssignmentsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutAdmissionInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutAdmissionInput
 }
 
 export type AdmissionCreateOrConnectWithoutBedAssignmentsInput = {
@@ -1226,6 +1359,7 @@ export type AdmissionUpdateWithoutBedAssignmentsInput = {
   sourceEncounter?: Prisma.EncounterUpdateOneWithoutAdmissionsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedAdmissionsNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateWithoutBedAssignmentsInput = {
@@ -1245,6 +1379,7 @@ export type AdmissionUncheckedUpdateWithoutBedAssignmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionCreateManyCreatedByInput = {
@@ -1281,6 +1416,7 @@ export type AdmissionUpdateWithoutCreatedByInput = {
   sourceEncounter?: Prisma.EncounterUpdateOneWithoutAdmissionsNestedInput
   bedAssignments?: Prisma.BedAssignmentUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateWithoutCreatedByInput = {
@@ -1300,6 +1436,7 @@ export type AdmissionUncheckedUpdateWithoutCreatedByInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1353,6 +1490,7 @@ export type AdmissionUpdateWithoutPatientInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedAdmissionsNestedInput
   bedAssignments?: Prisma.BedAssignmentUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateWithoutPatientInput = {
@@ -1372,6 +1510,7 @@ export type AdmissionUncheckedUpdateWithoutPatientInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateManyWithoutPatientInput = {
@@ -1425,6 +1564,7 @@ export type AdmissionUpdateWithoutAdmittingDoctorInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedAdmissionsNestedInput
   bedAssignments?: Prisma.BedAssignmentUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateWithoutAdmittingDoctorInput = {
@@ -1444,6 +1584,7 @@ export type AdmissionUncheckedUpdateWithoutAdmittingDoctorInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateManyWithoutAdmittingDoctorInput = {
@@ -1497,6 +1638,7 @@ export type AdmissionUpdateWithoutSourceEncounterInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedAdmissionsNestedInput
   bedAssignments?: Prisma.BedAssignmentUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateWithoutSourceEncounterInput = {
@@ -1516,6 +1658,7 @@ export type AdmissionUncheckedUpdateWithoutSourceEncounterInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutAdmissionNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutAdmissionNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutAdmissionNestedInput
 }
 
 export type AdmissionUncheckedUpdateManyWithoutSourceEncounterInput = {
@@ -1543,11 +1686,13 @@ export type AdmissionUncheckedUpdateManyWithoutSourceEncounterInput = {
 export type AdmissionCountOutputType = {
   bedAssignments: number
   invoices: number
+  clinicalDocuments: number
 }
 
 export type AdmissionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bedAssignments?: boolean | AdmissionCountOutputTypeCountBedAssignmentsArgs
   invoices?: boolean | AdmissionCountOutputTypeCountInvoicesArgs
+  clinicalDocuments?: boolean | AdmissionCountOutputTypeCountClinicalDocumentsArgs
 }
 
 /**
@@ -1574,6 +1719,13 @@ export type AdmissionCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Ty
   where?: Prisma.InvoiceWhereInput
 }
 
+/**
+ * AdmissionCountOutputType without action
+ */
+export type AdmissionCountOutputTypeCountClinicalDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentWhereInput
+}
+
 
 export type AdmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1597,6 +1749,7 @@ export type AdmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdBy?: boolean | Prisma.Admission$createdByArgs<ExtArgs>
   bedAssignments?: boolean | Prisma.Admission$bedAssignmentsArgs<ExtArgs>
   invoices?: boolean | Prisma.Admission$invoicesArgs<ExtArgs>
+  clinicalDocuments?: boolean | Prisma.Admission$clinicalDocumentsArgs<ExtArgs>
   _count?: boolean | Prisma.AdmissionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["admission"]>
 
@@ -1670,6 +1823,7 @@ export type AdmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   createdBy?: boolean | Prisma.Admission$createdByArgs<ExtArgs>
   bedAssignments?: boolean | Prisma.Admission$bedAssignmentsArgs<ExtArgs>
   invoices?: boolean | Prisma.Admission$invoicesArgs<ExtArgs>
+  clinicalDocuments?: boolean | Prisma.Admission$clinicalDocumentsArgs<ExtArgs>
   _count?: boolean | Prisma.AdmissionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AdmissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1694,6 +1848,7 @@ export type $AdmissionPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     bedAssignments: Prisma.$BedAssignmentPayload<ExtArgs>[]
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
+    clinicalDocuments: Prisma.$DocumentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2115,6 +2270,7 @@ export interface Prisma__AdmissionClient<T, Null = never, ExtArgs extends runtim
   createdBy<T extends Prisma.Admission$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Admission$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   bedAssignments<T extends Prisma.Admission$bedAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Admission$bedAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BedAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoices<T extends Prisma.Admission$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Admission$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  clinicalDocuments<T extends Prisma.Admission$clinicalDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Admission$clinicalDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2643,6 +2799,30 @@ export type Admission$invoicesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
+}
+
+/**
+ * Admission.clinicalDocuments
+ */
+export type Admission$clinicalDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Document
+   */
+  select?: Prisma.DocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Document
+   */
+  omit?: Prisma.DocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentInclude<ExtArgs> | null
+  where?: Prisma.DocumentWhereInput
+  orderBy?: Prisma.DocumentOrderByWithRelationInput | Prisma.DocumentOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentScalarFieldEnum | Prisma.DocumentScalarFieldEnum[]
 }
 
 /**

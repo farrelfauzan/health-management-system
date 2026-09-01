@@ -22,6 +22,7 @@ export type DocumentOwnerTypeValue = z.infer<typeof documentOwnerTypeSchema>;
 export const DOCUMENT_PURPOSES = [
   'FAQ_KNOWLEDGE_BASE',
   'PERSONAL_KNOWLEDGE_BASE',
+  'PATIENT_CLINICAL',
   'GENERAL',
 ] as const;
 
@@ -34,11 +35,54 @@ export type DocumentPurposeValue = z.infer<typeof documentPurposeSchema>;
  * Deriving the resting ingest status from this list rather than from a
  * hand-written branch is what keeps a future purpose from silently defaulting
  * into the retrieval corpus.
+ *
+ * `PATIENT_CLINICAL` (P16-T07) is deliberately absent: a lab result is a
+ * medical record, not chatbot knowledge, and its resting ingest status is
+ * `NOT_APPLICABLE` precisely because this list does not contain it.
  */
 export const INGESTIBLE_DOCUMENT_PURPOSES = [
   'FAQ_KNOWLEDGE_BASE',
   'PERSONAL_KNOWLEDGE_BASE',
 ] as const satisfies readonly DocumentPurposeValue[];
+
+/**
+ * The purposes the corpus upload surfaces may name (P16-T07). Exactly the
+ * pre-`PATIENT_CLINICAL` set: a clinical file is created through the patient
+ * document API (`P16-T08`) with its purpose stated server-side, never through
+ * the clinic-corpus confirm — a `PATIENT_CLINICAL` row without a patient
+ * would only die on the migration's CHECK, and the API refuses it here with
+ * a readable 400 instead.
+ */
+export const CORPUS_DOCUMENT_PURPOSES = [
+  'FAQ_KNOWLEDGE_BASE',
+  'PERSONAL_KNOWLEDGE_BASE',
+  'GENERAL',
+] as const satisfies readonly DocumentPurposeValue[];
+
+export const corpusDocumentPurposeSchema = z.enum(CORPUS_DOCUMENT_PURPOSES);
+
+export type CorpusDocumentPurposeValue = z.infer<typeof corpusDocumentPurposeSchema>;
+
+/**
+ * What kind of clinical file a `PATIENT_CLINICAL` document is (P16-T07).
+ * A closed set because the patient tab filters by it.
+ */
+export const DOCUMENT_CATEGORIES = [
+  'LAB_RESULT',
+  'RADIOLOGY',
+  'EXTERNAL_MEDICAL_RECORD',
+  'REFERRAL_LETTER',
+  'CONSENT_FORM',
+  'DISCHARGE_SUMMARY',
+  'MEDICAL_CERTIFICATE',
+  'INSURANCE',
+  'IDENTITY',
+  'OTHER',
+] as const;
+
+export const documentCategorySchema = z.enum(DOCUMENT_CATEGORIES);
+
+export type DocumentCategoryValue = z.infer<typeof documentCategorySchema>;
 
 /**
  * Where a document is in the ingestion pipeline. `NOT_APPLICABLE` is the
@@ -204,7 +248,7 @@ export type CreateClinicDocumentUploadUrlInput = z.infer<
 export const confirmClinicDocumentUploadSchema = z.object({
   storageKey: z.string().min(1).max(512),
   title: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX_LENGTH),
-  purpose: documentPurposeSchema,
+  purpose: corpusDocumentPurposeSchema,
   visibility: documentVisibilitySchema,
   language: documentLanguageSchema,
 });
@@ -235,7 +279,7 @@ export const updateClinicDocumentSchema = z
 export type UpdateClinicDocumentInput = z.infer<typeof updateClinicDocumentSchema>;
 
 export const listClinicDocumentsQuerySchema = z.object({
-  purpose: documentPurposeSchema.optional(),
+  purpose: corpusDocumentPurposeSchema.optional(),
   ingestStatus: documentIngestStatusSchema.optional(),
   visibility: documentVisibilitySchema.optional(),
   language: documentLanguageSchema.optional(),

@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 
 import {
   CreateDocumentData,
+  CreatePatientClinicalDocumentData,
   DeleteDocumentResult,
   DocumentOwnerTypeValue,
   DocumentPage,
   DocumentRecord,
   ListDocumentsParams,
+  ListPatientClinicalDocumentsParams,
   UpdateDocumentData,
 } from '@hms/shared-types';
 
@@ -59,6 +61,90 @@ export class DocumentRepository {
       include: { _count: { select: { chunks: true } } },
     });
     return row === null ? null : this.toRecord(row, row._count.chunks);
+  }
+
+  /**
+   * Creates one patient clinical file (P16-T07). Purpose, owner type, and
+   * ingest status are stated here rather than accepted: a clinical document
+   * is always `PATIENT_CLINICAL`, always `PATIENT`-owned with no owning user
+   * account, and never enters the ingestion queue — `NOT_APPLICABLE` is what
+   * keeps `claimPendingDocuments` blind to it, with the pipeline's purpose
+   * assertion and the migration CHECKs behind that.
+   */
+  async createPatientClinicalDocument(
+    data: CreatePatientClinicalDocumentData,
+  ): Promise<DocumentRecord> {
+    const row = await this.prismaService.document.create({
+      data: {
+        ownerType: 'PATIENT',
+        ownerId: null,
+        purpose: 'PATIENT_CLINICAL',
+        ingestStatus: 'NOT_APPLICABLE',
+        visibility: 'BOTH',
+        patientId: data.patientId,
+        encounterId: data.encounterId,
+        admissionId: data.admissionId,
+        category: data.category,
+        documentDate: data.documentDate,
+        notes: data.notes,
+        title: data.title,
+        storageKey: data.storageKey,
+        mimeType: data.mimeType,
+        sizeBytes: data.sizeBytes,
+        language: data.language,
+        uploadedById: data.uploadedById,
+      },
+    });
+    return this.toRecord(row, 0);
+  }
+
+  /**
+   * Patient-scoped reads. `patientId` is a required parameter for the same
+   * reason `ownerType`/`ownerId` are above: a caller cannot widen the query
+   * to every patient's files by omitting an argument.
+   */
+  async listPatientClinicalDocuments(
+    params: ListPatientClinicalDocumentsParams,
+  ): Promise<DocumentPage> {
+    const rows = await this.prismaService.document.findMany({
+      where: {
+        purpose: 'PATIENT_CLINICAL',
+        patientId: params.patientId,
+        category: params.category,
+        encounterId: params.encounterId,
+        admissionId: params.admissionId,
+        deletedAt: null,
+      },
+      include: { _count: { select: { chunks: true } } },
+      orderBy: [{ documentDate: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
+      take: params.limit + 1,
+      ...(params.cursor === undefined ? {} : { cursor: { id: params.cursor }, skip: 1 }),
+    });
+    const pageRows = rows.slice(0, params.limit);
+    return {
+      items: pageRows.map((row) => this.toRecord(row, row._count.chunks)),
+      nextCursor: rows.length > params.limit ? (pageRows.at(-1)?.id ?? null) : null,
+    };
+  }
+
+  async findPatientClinicalDocumentById(
+    id: string,
+    patientId: string,
+  ): Promise<DocumentRecord | null> {
+    const row = await this.prismaService.document.findFirst({
+      where: { id, purpose: 'PATIENT_CLINICAL', patientId, deletedAt: null },
+      include: { _count: { select: { chunks: true } } },
+    });
+    return row === null ? null : this.toRecord(row, row._count.chunks);
+  }
+
+  async findClinicalDocumentsByEncounterId(encounterId: string): Promise<DocumentRecord[]> {
+    const rows = await this.prismaService.document.findMany({
+      where: { purpose: 'PATIENT_CLINICAL', encounterId, deletedAt: null },
+      include: { _count: { select: { chunks: true } } },
+      orderBy: [{ documentDate: 'desc' }, { createdAt: 'desc' }],
+    });
+    return rows.map((row) => this.toRecord(row, row._count.chunks));
   }
 
   /**
@@ -244,6 +330,16 @@ export class DocumentRepository {
       ingestedAt: row.ingestedAt,
       chunkCount,
       uploadedById: row.uploadedById,
+      patientId: row.patientId,
+      encounterId: row.encounterId,
+      admissionId: row.admissionId,
+      category: row.category,
+      documentDate: row.documentDate,
+      notes: row.notes,
+      releasedToPatient: row.releasedToPatient,
+      releasedAt: row.releasedAt,
+      releasedById: row.releasedById,
+      deleteReason: row.deleteReason,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     };
