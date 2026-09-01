@@ -82,20 +82,73 @@ export const documentLanguageSchema = z.enum(DOCUMENT_LANGUAGES);
 export type DocumentLanguageValue = z.infer<typeof documentLanguageSchema>;
 
 /**
- * The file types the document store accepts. Narrower than the bucket's own
- * MIME allowlist on purpose: object storage is shared with image-bearing
- * features, and a document that cannot be turned into text is a row the
- * ingestion pipeline can only ever fail on.
+ * The types the ingestion pipeline can turn into text. Every one of these has
+ * an extractor in `extract-document-text.ts`, and that is the property the
+ * list actually encodes — a type added here without one becomes a row the
+ * pipeline can only ever fail on.
  */
-export const DOCUMENT_UPLOAD_MIME_TYPES = [
+export const DOCUMENT_TEXT_MIME_TYPES = [
   'application/pdf',
   'text/markdown',
   'text/plain',
 ] as const;
 
+/**
+ * The image types the document store accepts (`P16-T03`). Scans get
+ * photographed — a referral letter arrives as a phone picture far more often
+ * than as a PDF — so refusing images means refusing the documents clinics
+ * actually have.
+ *
+ * They are stored, never ingested: HMS runs no OCR, so an image carries no
+ * text for retrieval to find. `SVG` is deliberately absent, here as
+ * everywhere: it is a document format with script and external-reference
+ * semantics wearing an `image/` prefix.
+ *
+ * Accepting these is only safe because of what happens at confirm — every
+ * image is decoded and re-encoded before it is kept
+ * (`docs/security/file-uploads.md` §1). Widening this list without that step
+ * is the change that rule exists to forbid.
+ */
+export const DOCUMENT_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
+
+/**
+ * The file types the document store accepts. Still narrower than the bucket's
+ * own MIME allowlist, which is the union across every upload surface.
+ */
+export const DOCUMENT_UPLOAD_MIME_TYPES = [
+  ...DOCUMENT_TEXT_MIME_TYPES,
+  ...DOCUMENT_IMAGE_MIME_TYPES,
+] as const;
+
 export const documentUploadMimeTypeSchema = z.enum(DOCUMENT_UPLOAD_MIME_TYPES);
 
 export type DocumentUploadMimeTypeValue = z.infer<typeof documentUploadMimeTypeSchema>;
+
+export type DocumentImageMimeTypeValue = (typeof DOCUMENT_IMAGE_MIME_TYPES)[number];
+
+/**
+ * Whether a stored document is an image — the one question that decides both
+ * whether the bytes get re-encoded at confirm and whether the ingestion
+ * pipeline should ever look at the row.
+ *
+ * Takes a plain `string` rather than the accepted-type union because the
+ * caller that matters most reads it back off a database column, where it is
+ * whatever was stored. Narrowing here is the point.
+ */
+export function isDocumentImageMimeType(mimeType: string): mimeType is DocumentImageMimeTypeValue {
+  return DOCUMENT_IMAGE_MIME_TYPES.some((imageMimeType) => imageMimeType === mimeType);
+}
+
+/**
+ * 20 MiB, four times the bucket's old default. A scanned multi-page radiology
+ * report does not fit in 5 MiB, and a clinic that has to compress a scan
+ * before uploading it will instead photograph the screen.
+ *
+ * This is the document store's own cap, not the bucket's. Each surface
+ * declares one next to its schemas and the bucket ceiling stays above them
+ * all — a surface can narrow what storage accepts, never widen it.
+ */
+export const DOCUMENT_MAX_UPLOAD_SIZE_BYTES = 20 * 1024 * 1024;
 
 /**
  * The extension appended to a minted object key per accepted MIME type. The
@@ -109,6 +162,9 @@ export const DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE: Readonly<
   'application/pdf': 'pdf',
   'text/markdown': 'md',
   'text/plain': 'txt',
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
 };
 
 export const DOCUMENT_TITLE_MAX_LENGTH = 200;
@@ -129,7 +185,7 @@ export const DOCUMENT_PAGE_MAX_LIMIT = 100;
  */
 export const createClinicDocumentUploadUrlSchema = z.object({
   mimeType: documentUploadMimeTypeSchema,
-  sizeBytes: z.coerce.number().int().positive(),
+  sizeBytes: z.coerce.number().int().positive().max(DOCUMENT_MAX_UPLOAD_SIZE_BYTES),
 });
 
 export type CreateClinicDocumentUploadUrlInput = z.infer<
@@ -205,7 +261,7 @@ export type ListClinicDocumentsQueryInput = z.infer<typeof listClinicDocumentsQu
  */
 export const createPersonalDocumentUploadUrlSchema = z.object({
   mimeType: documentUploadMimeTypeSchema,
-  sizeBytes: z.coerce.number().int().positive(),
+  sizeBytes: z.coerce.number().int().positive().max(DOCUMENT_MAX_UPLOAD_SIZE_BYTES),
 });
 
 export type CreatePersonalDocumentUploadUrlInput = z.infer<

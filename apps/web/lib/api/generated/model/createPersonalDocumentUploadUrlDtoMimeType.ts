@@ -13,4 +13,7 @@ export const CreatePersonalDocumentUploadUrlDtoMimeType = {
   'application/pdf': 'application/pdf',
   'text/markdown': 'text/markdown',
   'text/plain': 'text/plain',
+  'image/jpeg': 'image/jpeg',
+  'image/png': 'image/png',
+  'image/webp': 'image/webp',
 } as const;

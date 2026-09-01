@@ -191,6 +191,7 @@ export class ClinicProfileService {
     }
     const reencoded = await reencodeImage({
       content: stagedObject.body,
+      format: 'png',
       maxEdgePixels: CLINIC_LOGO_MAX_EDGE_PIXELS,
     });
     const storedKey = this.objectStorageService.generateObjectKey({

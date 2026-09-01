@@ -1,7 +1,10 @@
 import {
   DocumentContentValidationResult,
   ValidateDocumentContentParams,
+  isDocumentImageMimeType,
 } from '@hms/shared-types';
+
+import { validateImageContent } from '../../../common/image/validate-image-content';
 
 const PDF_MAGIC_BYTES = Buffer.from('%PDF-', 'ascii');
 /**
@@ -47,7 +50,14 @@ const BINARY_MAGIC_SIGNATURES: ReadonlyArray<{ label: string; bytes: Buffer }> =
  * polyglot that buries `%PDF-` mid-file is refused) and must not be
  * encrypted, because an encrypted PDF cannot be inspected by anything
  * downstream. A text document must not open with a known binary signature,
- * must contain no NUL byte, and must decode as UTF-8.
+ * must contain no NUL byte, and must decode as UTF-8. An image is delegated
+ * to the shared signature check in `common/image` — the same one the clinic
+ * logo uses, so the two surfaces cannot drift on what a PNG looks like.
+ *
+ * For images the signature check is a gate rather than the defence. The
+ * defence is the re-encode that follows it at confirm (P16-T03): bytes that
+ * pass here are still decoded and rewritten from scratch, so a malformed
+ * image no signature check could see does not reach storage either.
  *
  * Pure over bytes on purpose: rejection consequences — deleting the object,
  * auditing, answering the client — belong to the caller, and a pure verdict
@@ -63,6 +73,12 @@ export function validateDocumentContent(
   );
   if (params.declaredMimeType === 'application/pdf') {
     return validatePdfContent(content);
+  }
+  if (isDocumentImageMimeType(params.declaredMimeType)) {
+    return validateImageContent({
+      content: params.content,
+      declaredMimeType: params.declaredMimeType,
+    });
   }
   return validateTextContent(content);
 }

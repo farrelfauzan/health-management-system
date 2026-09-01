@@ -9,6 +9,9 @@ import type { CreatePersonalDocumentUploadUrlDtoMimeType } from './createPersona
 
 export interface CreatePersonalDocumentUploadUrlDto {
   mimeType: CreatePersonalDocumentUploadUrlDtoMimeType;
-  /** @exclusiveMinimum 0 */
+  /**
+     * @maximum 20971520
+     * @exclusiveMinimum 0
+     */
   sizeBytes: number;
 }

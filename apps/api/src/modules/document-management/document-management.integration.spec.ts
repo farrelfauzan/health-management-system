@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { ZodValidationPipe } from 'nestjs-zod';
+import sharp from 'sharp';
 import request from 'supertest';
 
 import { AppModule } from '../../app.module';
@@ -42,6 +43,18 @@ describe('Document management integration', () => {
   let documentRows: Array<Record<string, unknown>> = [];
   let chunkRows: Array<Record<string, unknown>> = [];
 
+  const PDF_FIXTURE = Buffer.from('%PDF-1.4\ntrailer << /Root 1 0 R >>\n%%EOF', 'ascii');
+
+  async function buildJpegScan(): Promise<Buffer<ArrayBuffer>> {
+    return Buffer.from(
+      await sharp({
+        create: { width: 900, height: 1200, channels: 3, background: { r: 250, g: 250, b: 245 } },
+      })
+        .jpeg()
+        .toBuffer(),
+    );
+  }
+
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   const objectStorageServiceMock = {
@@ -51,23 +64,33 @@ describe('Document management integration', () => {
         url: 'https://storage.test/put',
         key: CLINIC_KEY,
         expiresAt: '2026-08-03T09:05:00.000Z',
-        requiredHeaders: { 'Content-Type': 'application/pdf', 'Content-Length': '184320' },
+        requiredHeaders: {
+          'Content-Type': 'application/pdf',
+          'Content-Length': String(PDF_FIXTURE.byteLength),
+        },
       }),
     ),
     getSignedUrl: jest.fn(() =>
       Promise.resolve({ url: 'https://storage.test/get', expiresAt: '2026-08-03T09:05:00.000Z' }),
     ),
     headObject: jest.fn(() =>
-      Promise.resolve({ key: CLINIC_KEY, sizeBytes: 184320, contentType: 'application/pdf' }),
+      Promise.resolve({
+        key: CLINIC_KEY,
+        sizeBytes: PDF_FIXTURE.byteLength,
+        contentType: 'application/pdf',
+      }),
     ),
     // The confirm-time content gate (SJ-21) reads the bytes back; these are
     // PDF-shaped so a confirm against this mock passes the magic-byte check.
+    // The head above reports the same length on purpose: the row's size now
+    // comes from what the guard leaves in the bucket (P16-T03), so a mock
+    // whose metadata disagreed with its own bytes would be testing a state
+    // storage cannot produce.
     getObject: jest.fn(() =>
-      Promise.resolve({
-        key: CLINIC_KEY,
-        body: Buffer.from('%PDF-1.4\ntrailer << /Root 1 0 R >>\n%%EOF', 'ascii'),
-        contentType: 'application/pdf',
-      }),
+      Promise.resolve({ key: CLINIC_KEY, body: PDF_FIXTURE, contentType: 'application/pdf' }),
+    ),
+    uploadObject: jest.fn((uploadRequest: { key: string; body: Buffer; contentType: string }) =>
+      Promise.resolve({ key: uploadRequest.key }),
     ),
     deleteObject: jest.fn(() => Promise.resolve({ key: CLINIC_KEY, deleted: true })),
   };
@@ -265,7 +288,7 @@ describe('Document management integration', () => {
     const uploadUrlResponse = await request(app.getHttpServer())
       .post('/api/v1/admin/documents/upload-url')
       .set('Authorization', `Bearer ${token}`)
-      .send({ mimeType: 'application/pdf', sizeBytes: 184320 })
+      .send({ mimeType: 'application/pdf', sizeBytes: PDF_FIXTURE.byteLength })
       .expect(200);
 
     expect(uploadUrlResponse.body.data.storageKey).toBe(CLINIC_KEY);
@@ -288,12 +311,71 @@ describe('Document management integration', () => {
       ownerType: 'CLINIC',
       ownerId: null,
       mimeType: 'application/pdf',
-      sizeBytes: 184320,
+      sizeBytes: PDF_FIXTURE.byteLength,
       ingestStatus: 'PENDING',
       chunkCount: 0,
       uploadedById: ADMIN_USER_ID,
     });
     expect(createResponse.body.data).not.toHaveProperty('storageKey');
+  });
+
+  it('refuses to sign an upload above the surface cap, before storage is asked (P16-T03)', async () => {
+    mockAdmin();
+    const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+
+    await request(app.getHttpServer())
+      .post('/api/v1/admin/documents/upload-url')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ mimeType: 'application/pdf', sizeBytes: 25 * 1024 * 1024 })
+      .expect(400);
+
+    expect(objectStorageServiceMock.getSignedUploadUrl).not.toHaveBeenCalled();
+  });
+
+  it('stores a scanned image as the re-encode and never queues it for ingestion (P16-T03)', async () => {
+    mockAdmin();
+    const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+    const uploadedScan = await buildJpegScan();
+    objectStorageServiceMock.headObject.mockResolvedValue({
+      key: CLINIC_KEY,
+      sizeBytes: uploadedScan.byteLength,
+      contentType: 'image/jpeg',
+    });
+    objectStorageServiceMock.getObject.mockResolvedValue({
+      key: CLINIC_KEY,
+      body: uploadedScan,
+      contentType: 'image/jpeg',
+    });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/admin/documents/upload-url')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ mimeType: 'image/jpeg', sizeBytes: uploadedScan.byteLength })
+      .expect(200);
+
+    const createResponse = await request(app.getHttpServer())
+      .post('/api/v1/admin/documents')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        storageKey: CLINIC_KEY,
+        title: 'Rujukan RS Hasan Sadikin',
+        // An ingestible purpose: the type is what makes this NOT_APPLICABLE,
+        // not the purpose, because HMS runs no OCR.
+        purpose: 'FAQ_KNOWLEDGE_BASE',
+        visibility: 'BOTH',
+        language: 'ID',
+      })
+      .expect(201);
+
+    const [stored] = objectStorageServiceMock.uploadObject.mock.calls[0] ?? [];
+    expect(stored).toMatchObject({ key: CLINIC_KEY, contentType: 'image/jpeg' });
+    expect(uploadedScan.equals(stored?.body ?? Buffer.alloc(0))).toBe(false);
+    expect(createResponse.body.data).toMatchObject({
+      mimeType: 'image/jpeg',
+      ingestStatus: 'NOT_APPLICABLE',
+      // The row records what is in the bucket now, not what was uploaded.
+      sizeBytes: stored?.body.byteLength,
+    });
   });
 
   it('refuses a confirm that names an object this module never minted', async () => {
@@ -495,8 +577,7 @@ describe('Document management integration', () => {
 
     expect(objectStorageServiceMock.getSignedUrl).toHaveBeenCalledWith({
       key: CLINIC_KEY,
-      responseContentDisposition:
-        `attachment; filename="Price list.pdf"; filename*=UTF-8''Price%20list.pdf`,
+      responseContentDisposition: `attachment; filename="Price list.pdf"; filename*=UTF-8''Price%20list.pdf`,
       responseContentType: 'application/pdf',
     });
     expect(response.body.data).toEqual({

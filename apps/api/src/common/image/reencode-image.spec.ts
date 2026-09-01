@@ -28,7 +28,11 @@ describe('reencodeImage', () => {
   it.each(['png', 'jpeg', 'webp'] as const)('rewrites a %s upload as PNG', async (format) => {
     const inputContent = await buildImage(64, 64, format);
 
-    const actual = await reencodeImage({ content: inputContent, maxEdgePixels: MAX_EDGE_PIXELS });
+    const actual = await reencodeImage({
+      content: inputContent,
+      format: 'png',
+      maxEdgePixels: MAX_EDGE_PIXELS,
+    });
 
     // One stored type means one content type to pin on the signed download,
     // whatever the browser happened to hand us.
@@ -41,7 +45,11 @@ describe('reencodeImage', () => {
   it('scales an oversized image down to the longest edge, preserving aspect ratio', async () => {
     const inputContent = await buildImage(2048, 512, 'png');
 
-    const actual = await reencodeImage({ content: inputContent, maxEdgePixels: MAX_EDGE_PIXELS });
+    const actual = await reencodeImage({
+      content: inputContent,
+      format: 'png',
+      maxEdgePixels: MAX_EDGE_PIXELS,
+    });
 
     expect(actual.widthPixels).toBe(1024);
     expect(actual.heightPixels).toBe(256);
@@ -50,7 +58,11 @@ describe('reencodeImage', () => {
   it('leaves a small image at its own size rather than upscaling it', async () => {
     const inputContent = await buildImage(120, 40, 'png');
 
-    const actual = await reencodeImage({ content: inputContent, maxEdgePixels: MAX_EDGE_PIXELS });
+    const actual = await reencodeImage({
+      content: inputContent,
+      format: 'png',
+      maxEdgePixels: MAX_EDGE_PIXELS,
+    });
 
     expect(actual.widthPixels).toBe(120);
     expect(actual.heightPixels).toBe(40);
@@ -69,7 +81,11 @@ describe('reencodeImage', () => {
     );
     expect((await sharp(Buffer.from(inputContent)).metadata()).exif).toBeDefined();
 
-    const actual = await reencodeImage({ content: inputContent, maxEdgePixels: MAX_EDGE_PIXELS });
+    const actual = await reencodeImage({
+      content: inputContent,
+      format: 'png',
+      maxEdgePixels: MAX_EDGE_PIXELS,
+    });
 
     expect((await sharp(Buffer.from(actual.content)).metadata()).exif).toBeUndefined();
   });
@@ -83,17 +99,53 @@ describe('reencodeImage', () => {
         .toBuffer(),
     );
 
-    const actual = await reencodeImage({ content: inputContent, maxEdgePixels: MAX_EDGE_PIXELS });
+    const actual = await reencodeImage({
+      content: inputContent,
+      format: 'png',
+      maxEdgePixels: MAX_EDGE_PIXELS,
+    });
 
     expect((await sharp(Buffer.from(actual.content)).metadata()).hasAlpha).toBe(true);
   });
 
+  it.each(['jpeg', 'webp'] as const)(
+    'writes %s out when the caller asks for it',
+    async (format) => {
+      // A scanned page keeps its own format: re-encoding a 15 MiB JPEG as PNG
+      // would multiply its size against a surface whose problem is that scans
+      // are large.
+      const inputContent = await buildImage(64, 64, 'png');
+
+      const actual = await reencodeImage({ content: inputContent, format });
+
+      expect(await sharp(Buffer.from(actual.content)).metadata()).toMatchObject({ format });
+    },
+  );
+
+  it('leaves the dimensions alone when no maximum edge is given', async () => {
+    // The point of a 300 dpi scan is that the small print is readable.
+    const inputContent = await buildImage(2400, 3200, 'png');
+
+    const actual = await reencodeImage({ content: inputContent, format: 'png' });
+
+    expect(actual.widthPixels).toBe(2400);
+    expect(actual.heightPixels).toBe(3200);
+  });
+
   it('rejects bytes no decoder can read, without quoting the decoder', async () => {
     await expect(
-      reencodeImage({ content: new Uint8Array([0x4d, 0x5a, 0x90, 0x00]), maxEdgePixels: 64 }),
+      reencodeImage({
+        content: new Uint8Array([0x4d, 0x5a, 0x90, 0x00]),
+        format: 'png',
+        maxEdgePixels: 64,
+      }),
     ).rejects.toBeInstanceOf(BadRequestException);
     await expect(
-      reencodeImage({ content: new Uint8Array([0x4d, 0x5a, 0x90, 0x00]), maxEdgePixels: 64 }),
+      reencodeImage({
+        content: new Uint8Array([0x4d, 0x5a, 0x90, 0x00]),
+        format: 'png',
+        maxEdgePixels: 64,
+      }),
     ).rejects.toThrow('Uploaded image could not be decoded');
   });
 });

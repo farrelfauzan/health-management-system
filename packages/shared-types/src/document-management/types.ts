@@ -138,14 +138,25 @@ export type DocumentContentValidationResult =
   | { isAccepted: false; reason: string };
 
 /**
- * One confirm-time content check (SJ-21): which stored object to read, what
+ * What the confirm-time guard is handed, and what it hands back.
+ *
+ * The guard is one content check (SJ-21): which stored object to read, what
  * type its upload declared, and who is confirming — the actor lands in the
  * audit row when the bytes disagree with the declaration.
+ *
+ * The result carries `sizeBytes` because for an image the guard **replaces
+ * the stored object** with its own re-encode (P16-T03), so the size the row
+ * records has to be the size of what is now in the bucket, not the size of
+ * what the client uploaded.
  */
-export type AssertUploadedDocumentContentParams = {
+export type GuardUploadedDocumentParams = {
   storageKey: string;
   declaredMimeType: DocumentUploadMimeTypeValue;
   actorUserId: string;
+};
+
+export type GuardedDocumentUploadResult = {
+  sizeBytes: number;
 };
 
 /**
