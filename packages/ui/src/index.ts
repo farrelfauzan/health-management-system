@@ -138,6 +138,9 @@ export { Skeleton } from '#components/skeleton';
 export { Toaster } from '#components/sonner';
 export { toast } from 'sonner';
 export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from '#components/tabs';
+export { RichTextEditor } from '#components/rich-text-editor';
+export { buildRichTextEditorExtensions } from '#lib/rich-text/rich-text-editor-extensions';
+export { PageBreakNode } from '#lib/rich-text/page-break-node';
 export { Textarea } from '#components/textarea';
 export { cn } from '#lib/utils';
 export {
