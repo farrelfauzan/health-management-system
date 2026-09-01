@@ -46,6 +46,24 @@ export const INGESTIBLE_DOCUMENT_PURPOSES = [
 ] as const satisfies readonly DocumentPurposeValue[];
 
 /**
+ * The purposes the corpus upload surfaces may name (P16-T07). Exactly the
+ * pre-`PATIENT_CLINICAL` set: a clinical file is created through the patient
+ * document API (`P16-T08`) with its purpose stated server-side, never through
+ * the clinic-corpus confirm — a `PATIENT_CLINICAL` row without a patient
+ * would only die on the migration's CHECK, and the API refuses it here with
+ * a readable 400 instead.
+ */
+export const CORPUS_DOCUMENT_PURPOSES = [
+  'FAQ_KNOWLEDGE_BASE',
+  'PERSONAL_KNOWLEDGE_BASE',
+  'GENERAL',
+] as const satisfies readonly DocumentPurposeValue[];
+
+export const corpusDocumentPurposeSchema = z.enum(CORPUS_DOCUMENT_PURPOSES);
+
+export type CorpusDocumentPurposeValue = z.infer<typeof corpusDocumentPurposeSchema>;
+
+/**
  * What kind of clinical file a `PATIENT_CLINICAL` document is (P16-T07).
  * A closed set because the patient tab filters by it.
  */
@@ -230,7 +248,7 @@ export type CreateClinicDocumentUploadUrlInput = z.infer<
 export const confirmClinicDocumentUploadSchema = z.object({
   storageKey: z.string().min(1).max(512),
   title: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX_LENGTH),
-  purpose: documentPurposeSchema,
+  purpose: corpusDocumentPurposeSchema,
   visibility: documentVisibilitySchema,
   language: documentLanguageSchema,
 });
@@ -261,7 +279,7 @@ export const updateClinicDocumentSchema = z
 export type UpdateClinicDocumentInput = z.infer<typeof updateClinicDocumentSchema>;
 
 export const listClinicDocumentsQuerySchema = z.object({
-  purpose: documentPurposeSchema.optional(),
+  purpose: corpusDocumentPurposeSchema.optional(),
   ingestStatus: documentIngestStatusSchema.optional(),
   visibility: documentVisibilitySchema.optional(),
   language: documentLanguageSchema.optional(),
