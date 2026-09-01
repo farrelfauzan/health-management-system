@@ -155,11 +155,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- sits with ADMIN alone, beside the other back-office grants.
     ('clinic-profile.read:any', 'ClinicProfile', 'read', 'ANY', 'Read the clinic identity printed on invoices and clinical documents'),
     ('clinic-profile.write:any', 'ClinicProfile', 'write', 'ANY', 'Edit the clinic identity and upload its logo'),
-    -- P16-T04. Read alone for now: the only route is the variable palette the
-    -- template editor renders. `document-template.write:any` arrives with the
-    -- template models in P16-T05, so this row is deliberately half a pair —
-    -- a permission nothing enforces would be a grant handed out for free.
+    -- P16-T04/T05. Both halves of the pair sit with ADMIN alone: a template
+    -- decides what every printed invoice says, so editing one is custody of
+    -- the clinic's paperwork, beside the clinic-profile grant above.
     ('document-template.read:any', 'DocumentTemplate', 'read', 'ANY', 'Read invoice and clinical document templates and the variables they may reference'),
+    ('document-template.write:any', 'DocumentTemplate', 'write', 'ANY', 'Create, edit, publish, and archive document templates'),
     ('satusehat.link:any', 'Satusehat', 'link', 'ANY', 'Link patients and practitioners to SATUSEHAT IHS records'),
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
@@ -393,6 +393,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- Template authoring is back-office layout work, not a clinical act, and
     -- it decides what every printed document says about the clinic.
     ('ADMIN', 'document-template.read:any'),
+    ('ADMIN', 'document-template.write:any'),
     -- SATUSEHAT linkage is a national-identifier operation performed at the
     -- front desk / back office, never by doctors or patients themselves.
     ('ADMIN', 'satusehat.link:any'),

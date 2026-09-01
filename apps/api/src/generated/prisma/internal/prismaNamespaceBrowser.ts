@@ -94,6 +94,8 @@ export const ModelName = {
   Invoice: 'Invoice',
   InvoiceItem: 'InvoiceItem',
   Payment: 'Payment',
+  DocumentTemplate: 'DocumentTemplate',
+  DocumentTemplateVersion: 'DocumentTemplateVersion',
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
@@ -842,6 +844,37 @@ export const PaymentScalarFieldEnum = {
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
+export const DocumentTemplateScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  name: 'name',
+  description: 'description',
+  status: 'status',
+  isDefault: 'isDefault',
+  contentHtml: 'contentHtml',
+  settings: 'settings',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DocumentTemplateScalarFieldEnum = (typeof DocumentTemplateScalarFieldEnum)[keyof typeof DocumentTemplateScalarFieldEnum]
+
+
+export const DocumentTemplateVersionScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  versionNumber: 'versionNumber',
+  contentHtml: 'contentHtml',
+  settings: 'settings',
+  publishedById: 'publishedById',
+  publishedAt: 'publishedAt'
+} as const
+
+export type DocumentTemplateVersionScalarFieldEnum = (typeof DocumentTemplateVersionScalarFieldEnum)[keyof typeof DocumentTemplateVersionScalarFieldEnum]
+
+
 export const RoleScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -1393,19 +1426,19 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
