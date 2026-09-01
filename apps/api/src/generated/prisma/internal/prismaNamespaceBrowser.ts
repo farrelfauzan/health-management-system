@@ -96,6 +96,7 @@ export const ModelName = {
   Payment: 'Payment',
   DocumentTemplate: 'DocumentTemplate',
   DocumentTemplateVersion: 'DocumentTemplateVersion',
+  InvoiceDocument: 'InvoiceDocument',
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
@@ -873,6 +874,28 @@ export const DocumentTemplateVersionScalarFieldEnum = {
 } as const
 
 export type DocumentTemplateVersionScalarFieldEnum = (typeof DocumentTemplateVersionScalarFieldEnum)[keyof typeof DocumentTemplateVersionScalarFieldEnum]
+
+
+export const InvoiceDocumentScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  templateVersionId: 'templateVersionId',
+  hasVoidWatermark: 'hasVoidWatermark',
+  wasBoundRetroactively: 'wasBoundRetroactively',
+  renderedData: 'renderedData',
+  status: 'status',
+  storageKey: 'storageKey',
+  checksum: 'checksum',
+  sizeBytes: 'sizeBytes',
+  pageCount: 'pageCount',
+  renderWarnings: 'renderWarnings',
+  renderError: 'renderError',
+  renderedAt: 'renderedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceDocumentScalarFieldEnum = (typeof InvoiceDocumentScalarFieldEnum)[keyof typeof InvoiceDocumentScalarFieldEnum]
 
 
 export const RoleScalarFieldEnum = {

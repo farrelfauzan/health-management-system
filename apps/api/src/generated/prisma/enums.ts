@@ -461,6 +461,15 @@ export const DocumentTemplateStatus = {
 export type DocumentTemplateStatus = (typeof DocumentTemplateStatus)[keyof typeof DocumentTemplateStatus]
 
 
+export const InvoiceDocumentStatus = {
+  PENDING: 'PENDING',
+  READY: 'READY',
+  FAILED: 'FAILED'
+} as const
+
+export type InvoiceDocumentStatus = (typeof InvoiceDocumentStatus)[keyof typeof InvoiceDocumentStatus]
+
+
 export const AiProviderKind = {
   OPENAI: 'OPENAI',
   DEEPSEEK: 'DEEPSEEK',

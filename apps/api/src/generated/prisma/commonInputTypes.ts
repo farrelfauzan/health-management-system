@@ -942,6 +942,23 @@ export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonFilter<$PrismaModel>
 }
 
+export type EnumInvoiceDocumentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvoiceDocumentStatus | Prisma.EnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InvoiceDocumentStatus[] | Prisma.ListEnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvoiceDocumentStatus[] | Prisma.ListEnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvoiceDocumentStatusFilter<$PrismaModel> | $Enums.InvoiceDocumentStatus
+}
+
+export type EnumInvoiceDocumentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvoiceDocumentStatus | Prisma.EnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InvoiceDocumentStatus[] | Prisma.ListEnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvoiceDocumentStatus[] | Prisma.ListEnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvoiceDocumentStatusWithAggregatesFilter<$PrismaModel> | $Enums.InvoiceDocumentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInvoiceDocumentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInvoiceDocumentStatusFilter<$PrismaModel>
+}
+
 export type EnumPermissionScopeFilter<$PrismaModel = never> = {
   equals?: $Enums.PermissionScope | Prisma.EnumPermissionScopeFieldRefInput<$PrismaModel>
   in?: $Enums.PermissionScope[] | Prisma.ListEnumPermissionScopeFieldRefInput<$PrismaModel>
@@ -2424,6 +2441,23 @@ export type NestedJsonFilterBase<$PrismaModel = never> = {
   gt?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   gte?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
+}
+
+export type NestedEnumInvoiceDocumentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvoiceDocumentStatus | Prisma.EnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InvoiceDocumentStatus[] | Prisma.ListEnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvoiceDocumentStatus[] | Prisma.ListEnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvoiceDocumentStatusFilter<$PrismaModel> | $Enums.InvoiceDocumentStatus
+}
+
+export type NestedEnumInvoiceDocumentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvoiceDocumentStatus | Prisma.EnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InvoiceDocumentStatus[] | Prisma.ListEnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvoiceDocumentStatus[] | Prisma.ListEnumInvoiceDocumentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvoiceDocumentStatusWithAggregatesFilter<$PrismaModel> | $Enums.InvoiceDocumentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInvoiceDocumentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInvoiceDocumentStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumPermissionScopeFilter<$PrismaModel = never> = {

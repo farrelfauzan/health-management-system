@@ -194,6 +194,16 @@ export class DocumentTemplateService {
     return this.documentTemplateRepository.findLatestPublishedVersionByKind(kind);
   }
 
+  /**
+   * One immutable version by id, for re-renders pinned to the version a
+   * document snapshotted (`P16-T06`). Reachable versions include those of
+   * archived templates on purpose — the documents rendered from them outlive
+   * the working copy.
+   */
+  async findVersionById(id: string): Promise<DocumentTemplateVersionRecord | null> {
+    return this.documentTemplateRepository.findVersionById(id);
+  }
+
   private async findTemplateOrThrow(id: string): Promise<DocumentTemplateWithLatestVersionRecord> {
     const record = await this.documentTemplateRepository.findById(id);
     if (record === null) {
