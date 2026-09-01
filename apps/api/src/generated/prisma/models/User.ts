@@ -245,6 +245,7 @@ export type UserWhereInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigListRelationFilter
   uploadedDocuments?: Prisma.DocumentListRelationFilter
   ownedDocuments?: Prisma.DocumentListRelationFilter
+  releasedDocuments?: Prisma.DocumentListRelationFilter
   blockedConversations?: Prisma.ConversationListRelationFilter
   conversationMessages?: Prisma.ConversationMessageListRelationFilter
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementListRelationFilter
@@ -295,6 +296,7 @@ export type UserOrderByWithRelationInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigOrderByRelationAggregateInput
   uploadedDocuments?: Prisma.DocumentOrderByRelationAggregateInput
   ownedDocuments?: Prisma.DocumentOrderByRelationAggregateInput
+  releasedDocuments?: Prisma.DocumentOrderByRelationAggregateInput
   blockedConversations?: Prisma.ConversationOrderByRelationAggregateInput
   conversationMessages?: Prisma.ConversationMessageOrderByRelationAggregateInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementOrderByRelationAggregateInput
@@ -348,6 +350,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAiProviderConfigs?: Prisma.AiProviderConfigListRelationFilter
   uploadedDocuments?: Prisma.DocumentListRelationFilter
   ownedDocuments?: Prisma.DocumentListRelationFilter
+  releasedDocuments?: Prisma.DocumentListRelationFilter
   blockedConversations?: Prisma.ConversationListRelationFilter
   conversationMessages?: Prisma.ConversationMessageListRelationFilter
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementListRelationFilter
@@ -427,6 +430,7 @@ export type UserCreateInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -476,6 +480,7 @@ export type UserUncheckedCreateInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -525,6 +530,7 @@ export type UserUpdateInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -574,6 +580,7 @@ export type UserUncheckedUpdateInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1166,6 +1173,12 @@ export type UserCreateNestedOneWithoutOwnedDocumentsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutReleasedDocumentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReleasedDocumentsInput, Prisma.UserUncheckedCreateWithoutReleasedDocumentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReleasedDocumentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutUploadedDocumentsInput, Prisma.UserUncheckedCreateWithoutUploadedDocumentsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutUploadedDocumentsInput
@@ -1182,6 +1195,16 @@ export type UserUpdateOneWithoutOwnedDocumentsNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOwnedDocumentsInput, Prisma.UserUpdateWithoutOwnedDocumentsInput>, Prisma.UserUncheckedUpdateWithoutOwnedDocumentsInput>
+}
+
+export type UserUpdateOneWithoutReleasedDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReleasedDocumentsInput, Prisma.UserUncheckedCreateWithoutReleasedDocumentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReleasedDocumentsInput
+  upsert?: Prisma.UserUpsertWithoutReleasedDocumentsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReleasedDocumentsInput, Prisma.UserUpdateWithoutReleasedDocumentsInput>, Prisma.UserUncheckedUpdateWithoutReleasedDocumentsInput>
 }
 
 export type UserCreateNestedOneWithoutBlockedConversationsInput = {
@@ -1343,6 +1366,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -1391,6 +1415,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1455,6 +1480,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -1503,6 +1529,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1552,6 +1579,7 @@ export type UserCreateWithoutSentInvitationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -1600,6 +1628,7 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1664,6 +1693,7 @@ export type UserUpdateWithoutSentInvitationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -1712,6 +1742,7 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1759,6 +1790,7 @@ export type UserCreateWithoutMfaCredentialInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -1807,6 +1839,7 @@ export type UserUncheckedCreateWithoutMfaCredentialInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -1871,6 +1904,7 @@ export type UserUpdateWithoutMfaCredentialInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -1919,6 +1953,7 @@ export type UserUncheckedUpdateWithoutMfaCredentialInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -1967,6 +2002,7 @@ export type UserCreateWithoutMfaRecoveryCodesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -2015,6 +2051,7 @@ export type UserUncheckedCreateWithoutMfaRecoveryCodesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -2079,6 +2116,7 @@ export type UserUpdateWithoutMfaRecoveryCodesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -2127,6 +2165,7 @@ export type UserUncheckedUpdateWithoutMfaRecoveryCodesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -2176,6 +2215,7 @@ export type UserCreateWithoutUpdatedFeatureEntitlementsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
@@ -2224,6 +2264,7 @@ export type UserUncheckedCreateWithoutUpdatedFeatureEntitlementsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2288,6 +2329,7 @@ export type UserUpdateWithoutUpdatedFeatureEntitlementsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
@@ -2336,6 +2378,7 @@ export type UserUncheckedUpdateWithoutUpdatedFeatureEntitlementsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2383,6 +2426,7 @@ export type UserCreateWithoutPatientProfilesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -2431,6 +2475,7 @@ export type UserUncheckedCreateWithoutPatientProfilesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -2495,6 +2540,7 @@ export type UserUpdateWithoutPatientProfilesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -2543,6 +2589,7 @@ export type UserUncheckedUpdateWithoutPatientProfilesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -2591,6 +2638,7 @@ export type UserCreateWithoutPrivacyNoticeRecordsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -2639,6 +2687,7 @@ export type UserUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -2703,6 +2752,7 @@ export type UserUpdateWithoutPrivacyNoticeRecordsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -2751,6 +2801,7 @@ export type UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -2799,6 +2850,7 @@ export type UserCreateWithoutDoctorProfileInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -2847,6 +2899,7 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -2911,6 +2964,7 @@ export type UserUpdateWithoutDoctorProfileInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -2959,6 +3013,7 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3007,6 +3062,7 @@ export type UserCreateWithoutAssignedDoctorPatientsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -3055,6 +3111,7 @@ export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3108,6 +3165,7 @@ export type UserCreateWithoutUnassignedDoctorPatientsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -3156,6 +3214,7 @@ export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3220,6 +3279,7 @@ export type UserUpdateWithoutAssignedDoctorPatientsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -3268,6 +3328,7 @@ export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3327,6 +3388,7 @@ export type UserUpdateWithoutUnassignedDoctorPatientsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -3375,6 +3437,7 @@ export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3423,6 +3486,7 @@ export type UserCreateWithoutDoctorPatientActivitiesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -3471,6 +3535,7 @@ export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3535,6 +3600,7 @@ export type UserUpdateWithoutDoctorPatientActivitiesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -3583,6 +3649,7 @@ export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3631,6 +3698,7 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -3679,6 +3747,7 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3743,6 +3812,7 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -3791,6 +3861,7 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -3839,6 +3910,7 @@ export type UserCreateWithoutCreatedRegistrationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -3887,6 +3959,7 @@ export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -3951,6 +4024,7 @@ export type UserUpdateWithoutCreatedRegistrationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -3999,6 +4073,7 @@ export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -4047,6 +4122,7 @@ export type UserCreateWithoutCreatedEncountersInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -4095,6 +4171,7 @@ export type UserUncheckedCreateWithoutCreatedEncountersInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -4159,6 +4236,7 @@ export type UserUpdateWithoutCreatedEncountersInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -4207,6 +4285,7 @@ export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -4255,6 +4334,7 @@ export type UserCreateWithoutRecordedVitalSignsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -4303,6 +4383,7 @@ export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -4367,6 +4448,7 @@ export type UserUpdateWithoutRecordedVitalSignsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -4415,6 +4497,7 @@ export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -4463,6 +4546,7 @@ export type UserCreateWithoutRecordedDiagnosesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -4511,6 +4595,7 @@ export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -4575,6 +4660,7 @@ export type UserUpdateWithoutRecordedDiagnosesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -4623,6 +4709,7 @@ export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -4671,6 +4758,7 @@ export type UserCreateWithoutRecordedProceduresInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -4719,6 +4807,7 @@ export type UserUncheckedCreateWithoutRecordedProceduresInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -4783,6 +4872,7 @@ export type UserUpdateWithoutRecordedProceduresInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -4831,6 +4921,7 @@ export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -4879,6 +4970,7 @@ export type UserCreateWithoutDispensedByRecordsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -4927,6 +5019,7 @@ export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -4991,6 +5084,7 @@ export type UserUpdateWithoutDispensedByRecordsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -5039,6 +5133,7 @@ export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -5087,6 +5182,7 @@ export type UserCreateWithoutMedicationStockReceiptsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -5135,6 +5231,7 @@ export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -5199,6 +5296,7 @@ export type UserUpdateWithoutMedicationStockReceiptsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -5247,6 +5345,7 @@ export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -5295,6 +5394,7 @@ export type UserCreateWithoutVoidedInvoicesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -5343,6 +5443,7 @@ export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -5396,6 +5497,7 @@ export type UserCreateWithoutCreatedInvoicesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -5444,6 +5546,7 @@ export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -5508,6 +5611,7 @@ export type UserUpdateWithoutVoidedInvoicesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -5556,6 +5660,7 @@ export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -5615,6 +5720,7 @@ export type UserUpdateWithoutCreatedInvoicesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -5663,6 +5769,7 @@ export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -5711,6 +5818,7 @@ export type UserCreateWithoutReceivedPaymentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -5759,6 +5867,7 @@ export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -5823,6 +5932,7 @@ export type UserUpdateWithoutReceivedPaymentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -5871,6 +5981,7 @@ export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -5919,6 +6030,7 @@ export type UserCreateWithoutRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -5967,6 +6079,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -6020,6 +6133,7 @@ export type UserCreateWithoutAssignedRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -6068,6 +6182,7 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -6121,6 +6236,7 @@ export type UserCreateWithoutUnassignedRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -6169,6 +6285,7 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -6233,6 +6350,7 @@ export type UserUpdateWithoutRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -6281,6 +6399,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -6340,6 +6459,7 @@ export type UserUpdateWithoutAssignedRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -6388,6 +6508,7 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -6447,6 +6568,7 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -6495,6 +6617,7 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -6543,6 +6666,7 @@ export type UserCreateWithoutRecordedBpjsReferralsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -6591,6 +6715,7 @@ export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -6655,6 +6780,7 @@ export type UserUpdateWithoutRecordedBpjsReferralsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -6703,6 +6829,7 @@ export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -6751,6 +6878,7 @@ export type UserCreateWithoutCreatedAiProviderConfigsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -6799,6 +6927,7 @@ export type UserUncheckedCreateWithoutCreatedAiProviderConfigsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -6852,6 +6981,7 @@ export type UserCreateWithoutUpdatedAiProviderConfigsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -6900,6 +7030,7 @@ export type UserUncheckedCreateWithoutUpdatedAiProviderConfigsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -6964,6 +7095,7 @@ export type UserUpdateWithoutCreatedAiProviderConfigsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -7012,6 +7144,7 @@ export type UserUncheckedUpdateWithoutCreatedAiProviderConfigsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -7071,6 +7204,7 @@ export type UserUpdateWithoutUpdatedAiProviderConfigsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -7119,6 +7253,7 @@ export type UserUncheckedUpdateWithoutUpdatedAiProviderConfigsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -7167,6 +7302,7 @@ export type UserCreateWithoutChatSessionsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -7215,6 +7351,7 @@ export type UserUncheckedCreateWithoutChatSessionsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -7279,6 +7416,7 @@ export type UserUpdateWithoutChatSessionsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -7327,6 +7465,7 @@ export type UserUncheckedUpdateWithoutChatSessionsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -7375,6 +7514,7 @@ export type UserCreateWithoutChatMessagesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -7423,6 +7563,7 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -7487,6 +7628,7 @@ export type UserUpdateWithoutChatMessagesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -7535,6 +7677,7 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -7583,6 +7726,7 @@ export type UserCreateWithoutUploadedDocumentsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -7631,6 +7775,7 @@ export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -7684,6 +7829,7 @@ export type UserCreateWithoutOwnedDocumentsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -7732,6 +7878,7 @@ export type UserUncheckedCreateWithoutOwnedDocumentsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -7744,6 +7891,109 @@ export type UserUncheckedCreateWithoutOwnedDocumentsInput = {
 export type UserCreateOrConnectWithoutOwnedDocumentsInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutOwnedDocumentsInput, Prisma.UserUncheckedCreateWithoutOwnedDocumentsInput>
+}
+
+export type UserCreateWithoutReleasedDocumentsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserUncheckedCreateWithoutReleasedDocumentsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  organizationUnitId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserCreateOrConnectWithoutReleasedDocumentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReleasedDocumentsInput, Prisma.UserUncheckedCreateWithoutReleasedDocumentsInput>
 }
 
 export type UserUpsertWithoutUploadedDocumentsInput = {
@@ -7796,6 +8046,7 @@ export type UserUpdateWithoutUploadedDocumentsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -7844,6 +8095,7 @@ export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -7903,6 +8155,7 @@ export type UserUpdateWithoutOwnedDocumentsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -7951,6 +8204,116 @@ export type UserUncheckedUpdateWithoutOwnedDocumentsInput = {
   createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserUpsertWithoutReleasedDocumentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReleasedDocumentsInput, Prisma.UserUncheckedUpdateWithoutReleasedDocumentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReleasedDocumentsInput, Prisma.UserUncheckedCreateWithoutReleasedDocumentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReleasedDocumentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReleasedDocumentsInput, Prisma.UserUncheckedUpdateWithoutReleasedDocumentsInput>
+}
+
+export type UserUpdateWithoutReleasedDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReleasedDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -8000,6 +8363,7 @@ export type UserCreateWithoutBlockedConversationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
   createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
@@ -8048,6 +8412,7 @@ export type UserUncheckedCreateWithoutBlockedConversationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
   createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -8112,6 +8477,7 @@ export type UserUpdateWithoutBlockedConversationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
   createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
@@ -8160,6 +8526,7 @@ export type UserUncheckedUpdateWithoutBlockedConversationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
   createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8208,6 +8575,7 @@ export type UserCreateWithoutConversationMessagesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
   createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
@@ -8256,6 +8624,7 @@ export type UserUncheckedCreateWithoutConversationMessagesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
   createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -8320,6 +8689,7 @@ export type UserUpdateWithoutConversationMessagesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
   createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
@@ -8368,6 +8738,7 @@ export type UserUncheckedUpdateWithoutConversationMessagesInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
   createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8416,6 +8787,7 @@ export type UserCreateWithoutCreatedAdmissionsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -8464,6 +8836,7 @@ export type UserUncheckedCreateWithoutCreatedAdmissionsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -8528,6 +8901,7 @@ export type UserUpdateWithoutCreatedAdmissionsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -8576,6 +8950,7 @@ export type UserUncheckedUpdateWithoutCreatedAdmissionsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -8624,6 +8999,7 @@ export type UserCreateWithoutCreatedBedAssignmentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -8672,6 +9048,7 @@ export type UserUncheckedCreateWithoutCreatedBedAssignmentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -8736,6 +9113,7 @@ export type UserUpdateWithoutCreatedBedAssignmentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -8784,6 +9162,7 @@ export type UserUncheckedUpdateWithoutCreatedBedAssignmentsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -8832,6 +9211,7 @@ export type UserCreateWithoutNotificationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -8880,6 +9260,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -8944,6 +9325,7 @@ export type UserUpdateWithoutNotificationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -8992,6 +9374,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -9039,6 +9422,7 @@ export type UserCreateWithoutOrganizationUnitInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
@@ -9087,6 +9471,7 @@ export type UserUncheckedCreateWithoutOrganizationUnitInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
   blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
   conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
@@ -9187,6 +9572,7 @@ export type UserUpdateWithoutOrganizationUnitInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
@@ -9235,6 +9621,7 @@ export type UserUncheckedUpdateWithoutOrganizationUnitInput = {
   updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
   blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
   conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
   updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
@@ -9289,6 +9676,7 @@ export type UserCountOutputType = {
   updatedAiProviderConfigs: number
   uploadedDocuments: number
   ownedDocuments: number
+  releasedDocuments: number
   blockedConversations: number
   conversationMessages: number
   updatedFeatureEntitlements: number
@@ -9327,6 +9715,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   updatedAiProviderConfigs?: boolean | UserCountOutputTypeCountUpdatedAiProviderConfigsArgs
   uploadedDocuments?: boolean | UserCountOutputTypeCountUploadedDocumentsArgs
   ownedDocuments?: boolean | UserCountOutputTypeCountOwnedDocumentsArgs
+  releasedDocuments?: boolean | UserCountOutputTypeCountReleasedDocumentsArgs
   blockedConversations?: boolean | UserCountOutputTypeCountBlockedConversationsArgs
   conversationMessages?: boolean | UserCountOutputTypeCountConversationMessagesArgs
   updatedFeatureEntitlements?: boolean | UserCountOutputTypeCountUpdatedFeatureEntitlementsArgs
@@ -9545,6 +9934,13 @@ export type UserCountOutputTypeCountOwnedDocumentsArgs<ExtArgs extends runtime.T
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountReleasedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountBlockedConversationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ConversationWhereInput
 }
@@ -9633,6 +10029,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAiProviderConfigs?: boolean | Prisma.User$updatedAiProviderConfigsArgs<ExtArgs>
   uploadedDocuments?: boolean | Prisma.User$uploadedDocumentsArgs<ExtArgs>
   ownedDocuments?: boolean | Prisma.User$ownedDocumentsArgs<ExtArgs>
+  releasedDocuments?: boolean | Prisma.User$releasedDocumentsArgs<ExtArgs>
   blockedConversations?: boolean | Prisma.User$blockedConversationsArgs<ExtArgs>
   conversationMessages?: boolean | Prisma.User$conversationMessagesArgs<ExtArgs>
   updatedFeatureEntitlements?: boolean | Prisma.User$updatedFeatureEntitlementsArgs<ExtArgs>
@@ -9714,6 +10111,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   updatedAiProviderConfigs?: boolean | Prisma.User$updatedAiProviderConfigsArgs<ExtArgs>
   uploadedDocuments?: boolean | Prisma.User$uploadedDocumentsArgs<ExtArgs>
   ownedDocuments?: boolean | Prisma.User$ownedDocumentsArgs<ExtArgs>
+  releasedDocuments?: boolean | Prisma.User$releasedDocumentsArgs<ExtArgs>
   blockedConversations?: boolean | Prisma.User$blockedConversationsArgs<ExtArgs>
   conversationMessages?: boolean | Prisma.User$conversationMessagesArgs<ExtArgs>
   updatedFeatureEntitlements?: boolean | Prisma.User$updatedFeatureEntitlementsArgs<ExtArgs>
@@ -9764,6 +10162,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     updatedAiProviderConfigs: Prisma.$AiProviderConfigPayload<ExtArgs>[]
     uploadedDocuments: Prisma.$DocumentPayload<ExtArgs>[]
     ownedDocuments: Prisma.$DocumentPayload<ExtArgs>[]
+    releasedDocuments: Prisma.$DocumentPayload<ExtArgs>[]
     blockedConversations: Prisma.$ConversationPayload<ExtArgs>[]
     conversationMessages: Prisma.$ConversationMessagePayload<ExtArgs>[]
     updatedFeatureEntitlements: Prisma.$FeatureEntitlementPayload<ExtArgs>[]
@@ -10222,6 +10621,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   updatedAiProviderConfigs<T extends Prisma.User$updatedAiProviderConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$updatedAiProviderConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiProviderConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   uploadedDocuments<T extends Prisma.User$uploadedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$uploadedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ownedDocuments<T extends Prisma.User$ownedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  releasedDocuments<T extends Prisma.User$releasedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$releasedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blockedConversations<T extends Prisma.User$blockedConversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$blockedConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   conversationMessages<T extends Prisma.User$conversationMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$conversationMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   updatedFeatureEntitlements<T extends Prisma.User$updatedFeatureEntitlementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$updatedFeatureEntitlementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeatureEntitlementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -11376,6 +11776,30 @@ export type User$uploadedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.
  * User.ownedDocuments
  */
 export type User$ownedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Document
+   */
+  select?: Prisma.DocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Document
+   */
+  omit?: Prisma.DocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentInclude<ExtArgs> | null
+  where?: Prisma.DocumentWhereInput
+  orderBy?: Prisma.DocumentOrderByWithRelationInput | Prisma.DocumentOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentScalarFieldEnum | Prisma.DocumentScalarFieldEnum[]
+}
+
+/**
+ * User.releasedDocuments
+ */
+export type User$releasedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Document
    */

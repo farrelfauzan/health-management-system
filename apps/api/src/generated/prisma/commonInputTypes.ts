@@ -1194,6 +1194,13 @@ export type EnumDocumentIngestStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel> | $Enums.DocumentIngestStatus
 }
 
+export type EnumDocumentCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentCategory | Prisma.EnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DocumentCategory[] | Prisma.ListEnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DocumentCategory[] | Prisma.ListEnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel> | $Enums.DocumentCategory | null
+}
+
 export type EnumDocumentOwnerTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.DocumentOwnerType | Prisma.EnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
   in?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
@@ -1242,6 +1249,16 @@ export type EnumDocumentIngestStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel>
+}
+
+export type EnumDocumentCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentCategory | Prisma.EnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DocumentCategory[] | Prisma.ListEnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DocumentCategory[] | Prisma.ListEnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDocumentCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.DocumentCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel>
 }
 
 export type EnumChannelKindFilter<$PrismaModel = never> = {
@@ -2627,6 +2644,13 @@ export type NestedEnumDocumentIngestStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel> | $Enums.DocumentIngestStatus
 }
 
+export type NestedEnumDocumentCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentCategory | Prisma.EnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DocumentCategory[] | Prisma.ListEnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DocumentCategory[] | Prisma.ListEnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel> | $Enums.DocumentCategory | null
+}
+
 export type NestedEnumDocumentOwnerTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.DocumentOwnerType | Prisma.EnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
   in?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
@@ -2675,6 +2699,16 @@ export type NestedEnumDocumentIngestStatusWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDocumentIngestStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentCategory | Prisma.EnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DocumentCategory[] | Prisma.ListEnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DocumentCategory[] | Prisma.ListEnumDocumentCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDocumentCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.DocumentCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumChannelKindFilter<$PrismaModel = never> = {
