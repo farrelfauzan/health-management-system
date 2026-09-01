@@ -4,7 +4,11 @@ import { EmbeddingModule } from '../../common/embedding/embedding.module';
 import { StorageModule } from '../../common/storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
 import { DocumentAdminController } from './controller/document-admin.controller';
+import { EncounterDocumentController } from './controller/encounter-document.controller';
+import { PatientDocumentController } from './controller/patient-document.controller';
+import { PatientDocumentDetailController } from './controller/patient-document-detail.controller';
 import { PersonalDocumentController } from './controller/personal-document.controller';
+import { PortalDocumentController } from './controller/portal-document.controller';
 import { DocumentChunkRepository } from './repository/document-chunk.repository';
 import { DocumentRetrievalRepository } from './repository/document-retrieval.repository';
 import { DocumentRepository } from './repository/document.repository';
@@ -13,6 +17,8 @@ import { DocumentIngestionWorker } from './service/document-ingestion.worker';
 import { DocumentRetrievalService } from './service/document-retrieval.service';
 import { DocumentService } from './service/document.service';
 import { FaqSearchService } from './service/faq-search.service';
+import { PatientDocumentAccessService } from './service/patient-document-access.service';
+import { PatientDocumentService } from './service/patient-document.service';
 import { PersonalDocumentService } from './service/personal-document.service';
 import { UploadedDocumentGuardService } from './service/uploaded-document-guard.service';
 
@@ -48,13 +54,22 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
  */
 @Module({
   imports: [AuthModule, StorageModule, EmbeddingModule],
-  controllers: [DocumentAdminController, PersonalDocumentController],
+  controllers: [
+    DocumentAdminController,
+    PersonalDocumentController,
+    PatientDocumentController,
+    PatientDocumentDetailController,
+    EncounterDocumentController,
+    PortalDocumentController,
+  ],
   providers: [
     DocumentRepository,
     DocumentChunkRepository,
     DocumentRetrievalRepository,
     DocumentService,
     PersonalDocumentService,
+    PatientDocumentService,
+    PatientDocumentAccessService,
     UploadedDocumentGuardService,
     DocumentIngestionService,
     DocumentIngestionWorker,

@@ -1,4 +1,5 @@
 import type {
+  DocumentCategoryValue,
   DocumentIngestStatusValue,
   DocumentLanguageValue,
   DocumentOwnerTypeValue,
@@ -126,6 +127,99 @@ export type DeletedPersonalDocumentView = {
   id: string;
   deletedAt: string;
   chunksRemoved: number;
+};
+
+/**
+ * Staff-facing view of one patient clinical file (`P16-T08`).
+ *
+ * `storageKey` is absent as everywhere; every download is a short-lived
+ * signed URL minted per request and audited. The ingestion columns are
+ * absent too — a clinical file never enters the retrieval corpus (FR-E2-12),
+ * so surfacing an ingest status would describe a pipeline that can never
+ * touch the row.
+ */
+export type PatientDocumentView = {
+  id: string;
+  patientId: string;
+  encounterId: string | null;
+  admissionId: string | null;
+  category: DocumentCategoryValue;
+  title: string;
+  mimeType: string;
+  sizeBytes: number;
+  language: DocumentLanguageValue;
+  /** `YYYY-MM-DD`; when the document was produced, not when it was uploaded. */
+  documentDate: string | null;
+  notes: string | null;
+  releasedToPatient: boolean;
+  releasedAt: string | null;
+  releasedById: string | null;
+  uploadedById: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PatientDocumentListView = {
+  items: PatientDocumentView[];
+  nextCursor: string | null;
+};
+
+export type PatientDocumentUploadUrlView = {
+  url: string;
+  storageKey: string;
+  expiresAt: string;
+  requiredHeaders: Readonly<Record<string, string>>;
+};
+
+export type PatientDocumentDownloadView = {
+  url: string;
+  expiresAt: string;
+};
+
+/**
+ * The encounter workspace's Documents panel (FR-E2-05): this visit's
+ * documents first, then the rest of the patient's file. Two named groups
+ * rather than one flagged list, because the split is the panel's whole
+ * shape and a client re-deriving it from `encounterId` would re-implement
+ * the definition of "this visit".
+ */
+export type EncounterDocumentsView = {
+  thisVisit: PatientDocumentView[];
+  history: PatientDocumentView[];
+};
+
+/**
+ * The outcome of retiring a clinical file. `deleteReason` is echoed because
+ * it is the fact the deletion was authorised on, and the caller's evidence
+ * it was recorded.
+ */
+export type DeletedPatientDocumentView = {
+  id: string;
+  deletedAt: string;
+  deleteReason: string;
+};
+
+/**
+ * Patient-portal view of one released clinical file. Narrower than the staff
+ * view on purpose: `notes` are staff working notes, `releasedById` and
+ * `uploadedById` are internal user ids, and none of them belongs in the
+ * portal. A document appears here only after a clinician released it
+ * (FR-E2-13).
+ */
+export type PortalDocumentView = {
+  id: string;
+  category: DocumentCategoryValue;
+  title: string;
+  mimeType: string;
+  sizeBytes: number;
+  documentDate: string | null;
+  releasedAt: string | null;
+  createdAt: string;
+};
+
+export type PortalDocumentListView = {
+  items: PortalDocumentView[];
+  nextCursor: string | null;
 };
 
 /**

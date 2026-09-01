@@ -229,6 +229,88 @@ describe('Patient clinical documents against PostgreSQL', () => {
     expect(candidateDocumentIds).not.toContain(clinicalDocument.id);
   });
 
+  it('releases exactly once: the second attempt matches nothing and keeps the first timestamp', async () => {
+    const record = await repository.createPatientClinicalDocument({
+      patientId,
+      category: 'LAB_RESULT',
+      title: `Release fixture ${suffix}`,
+      storageKey: `documents/patient/${randomUUID()}.pdf`,
+      mimeType: 'application/pdf',
+      sizeBytes: 256,
+      language: 'ID',
+      uploadedById: uploaderUserId,
+    });
+    trackDocument(record.id);
+
+    const released = await repository.releasePatientClinicalDocument(record.id, uploaderUserId);
+    const repeat = await repository.releasePatientClinicalDocument(record.id, uploaderUserId);
+
+    expect(released).not.toBeNull();
+    expect(released?.releasedToPatient).toBe(true);
+    expect(released?.releasedById).toBe(uploaderUserId);
+    expect(released?.releasedAt).not.toBeNull();
+    // The claim predicate (`releasedToPatient: false`) makes the second call
+    // a no-op, so `releasedAt` always names the first release.
+    expect(repeat).toBeNull();
+  });
+
+  it('soft-deletes with the reason kept, leaving the row out of every scoped read', async () => {
+    const record = await repository.createPatientClinicalDocument({
+      patientId,
+      category: 'OTHER',
+      title: `Delete fixture ${suffix}`,
+      storageKey: `documents/patient/${randomUUID()}.pdf`,
+      mimeType: 'application/pdf',
+      sizeBytes: 256,
+      language: 'ID',
+      uploadedById: uploaderUserId,
+    });
+    trackDocument(record.id);
+
+    const result = await repository.softDeletePatientClinicalDocument(
+      record.id,
+      'Filed against wrong patient',
+    );
+    const foundAfterDelete = await repository.findPatientClinicalDocument(record.id);
+    const storedRow = await prisma.document.findUnique({
+      where: { id: record.id },
+      select: { deletedAt: true, deleteReason: true },
+    });
+
+    expect(result.document.id).toBe(record.id);
+    expect(foundAfterDelete).toBeNull();
+    expect(storedRow?.deletedAt).not.toBeNull();
+    expect(storedRow?.deleteReason).toBe('Filed against wrong patient');
+  });
+
+  it('updates clinical metadata and clears an episode link with null', async () => {
+    const record = await repository.createPatientClinicalDocument({
+      patientId,
+      category: 'LAB_RESULT',
+      documentDate: new Date('2026-08-01T00:00:00Z'),
+      notes: 'awal',
+      title: `Patch fixture ${suffix}`,
+      storageKey: `documents/patient/${randomUUID()}.pdf`,
+      mimeType: 'application/pdf',
+      sizeBytes: 256,
+      language: 'ID',
+      uploadedById: uploaderUserId,
+    });
+    trackDocument(record.id);
+
+    const updated = await repository.updatePatientClinicalDocument(record.id, {
+      category: 'RADIOLOGY',
+      notes: null,
+      documentDate: new Date('2026-08-20T00:00:00Z'),
+    });
+
+    expect(updated.category).toBe('RADIOLOGY');
+    expect(updated.notes).toBeNull();
+    expect(updated.documentDate?.toISOString().slice(0, 10)).toBe('2026-08-20');
+    // Untouched fields survive: undefined must mean "leave alone".
+    expect(updated.title).toBe(`Patch fixture ${suffix}`);
+  });
+
   it('patient-scoped reads return only that patient\'s files', async () => {
     const otherPatientDocument = await repository.createPatientClinicalDocument({
       patientId: otherPatientId,

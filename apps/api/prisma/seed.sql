@@ -183,6 +183,20 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('document.write:any', 'Document', 'write', 'ANY', 'Upload, re-ingest, and delete clinic-corpus documents'),
     ('document.read:own', 'Document', 'read', 'OWN', 'Read documents in own personal knowledge base'),
     ('document.write:own', 'Document', 'write', 'OWN', 'Upload and delete documents in own personal knowledge base'),
+    -- P16-T08: patient clinical files. OWN answers differently per verb, and
+    -- the services enforce it: for read, a doctor reaches patients assigned
+    -- to them or whose encounter they attended (the encounter.read:own
+    -- definition), and a patient reaches their own released files; for
+    -- write and release, only an active assignment counts — reading a past
+    -- visit is clinical necessity, writing into a permanent record is not.
+    -- Deletion exists only at ANY: it is an admin correction with a required
+    -- reason, not a clinical act.
+    ('patient-document.read:any', 'PatientDocument', 'read', 'ANY', 'Read every patient clinical document'),
+    ('patient-document.read:own', 'PatientDocument', 'read', 'OWN', 'Read clinical documents of own patients, or own released documents'),
+    ('patient-document.write:any', 'PatientDocument', 'write', 'ANY', 'Upload and edit clinical documents for any patient'),
+    ('patient-document.write:own', 'PatientDocument', 'write', 'OWN', 'Upload and edit clinical documents for assigned patients'),
+    ('patient-document.release:own', 'PatientDocument', 'release', 'OWN', 'Release clinical documents of assigned patients to the patient portal'),
+    ('patient-document.delete:any', 'PatientDocument', 'delete', 'ANY', 'Soft-delete a clinical document, with a required reason'),
     -- PCS-T08. Every conversation grant exists only in its ANY form, and that
     -- is structural rather than an oversight: a WhatsApp/Telegram conversation
     -- has no HMS user on either end, so there is no owner for an OWN scope to
@@ -457,6 +471,13 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- corpora stay distinguishable in the audit trail.
     ('ADMIN', 'document.read:own'),
     ('ADMIN', 'document.write:own'),
+    -- Patient clinical files (P16-T08): the front desk files what the
+    -- patient brought, and mis-filed documents are corrected here. Release
+    -- is deliberately absent — deciding when a result reaches the patient is
+    -- a clinical call, and ADMIN holds no release grant at any scope.
+    ('ADMIN', 'patient-document.read:any'),
+    ('ADMIN', 'patient-document.write:any'),
+    ('ADMIN', 'patient-document.delete:any'),
     -- The human side of the WA/Telegram channel (PCS-T08). ADMIN only: these
     -- routes read what members of the public wrote to the clinic and speak
     -- back to them under the clinic's name, and neither is a clinical role's
@@ -515,6 +536,15 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- clinician.
     ('DOCTOR', 'document.read:own'),
     ('DOCTOR', 'document.write:own'),
+    -- Patient clinical files (P16-T08), OWN only. Read reaches assigned
+    -- patients plus patients whose encounters this doctor attended; write is
+    -- assignment-only, and there is no break-glass path. Release is the
+    -- clinical decision that puts a result in front of the patient
+    -- (FR-E2-13), which is why it exists here and nowhere else. No delete:
+    -- removing a clinical file is an admin correction.
+    ('DOCTOR', 'patient-document.read:own'),
+    ('DOCTOR', 'patient-document.write:own'),
+    ('DOCTOR', 'patient-document.release:own'),
     -- Read only, for the same reason PHARMACIST has it (P16-T02): a
     -- prescription, a referral letter and a medical certificate are all
     -- headed with the clinic's identity, and a doctor who cannot read it
@@ -542,6 +572,11 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PATIENT', 'appointment.update:own'),
     ('PATIENT', 'appointment.cancel:own'),
     ('PATIENT', 'appointment.session.read:any'),
+    -- Own clinical documents (P16-T08), read only, and only what a clinician
+    -- has released (FR-E2-13): the services resolve OWN for a patient as
+    -- their own record filtered to `released_to_patient`, so an unreleased
+    -- result is not in the queried set rather than merely hidden.
+    ('PATIENT', 'patient-document.read:own'),
     ('PATIENT', 'registration.read:own'),
     ('PATIENT', 'registration.create:own'),
     ('PATIENT', 'registration.update:own'),

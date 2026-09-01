@@ -116,6 +116,14 @@ enum AuditAction {
   /// PDF. The object was deleted at confirm time; this row is how a pattern
   /// of forged uploads by one account is countable afterwards.
   DOCUMENT_UPLOAD_REJECTED
+  /// Patient clinical files (P16-T08). Two verbs beyond the generic
+  /// READ/CREATE/UPDATE/DELETE because they answer questions those cannot:
+  /// a download is the moment file bytes left the system for a device, and a
+  /// release is the moment a result became visible to the patient — both
+  /// carry episode context in `metadata` that the route interceptor never
+  /// sees.
+  PATIENT_DOCUMENT_DOWNLOADED
+  PATIENT_DOCUMENT_RELEASED
   /// Staff onboarding by email (IMP-23). Three verbs rather than one because
   /// they have three different actors: an administrator sends the invitation,
   /// the invitee — not yet a session — accepts it, and an administrator

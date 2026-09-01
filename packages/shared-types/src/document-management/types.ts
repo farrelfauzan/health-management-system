@@ -75,9 +75,49 @@ export type ListPatientClinicalDocumentsParams = {
   category?: DocumentCategoryValue;
   encounterId?: string;
   admissionId?: string;
+  documentDateFrom?: Date;
+  documentDateTo?: Date;
+  /**
+   * `true` narrows the list to released files — the patient-portal predicate
+   * (FR-E2-13). Absent means every live file, which is the staff view.
+   */
+  isReleasedToPatient?: true;
   cursor?: string;
   limit: number;
 };
+
+/**
+ * Metadata edit for one clinical file (`P16-T08`). `null` clears a value —
+ * unlinking an episode, dropping a note — while `undefined` leaves it alone;
+ * the distinction is why these are not the same optionality.
+ */
+export type UpdatePatientClinicalDocumentData = {
+  title?: string;
+  category?: DocumentCategoryValue;
+  documentDate?: Date | null;
+  notes?: string | null;
+  encounterId?: string | null;
+  admissionId?: string | null;
+};
+
+/**
+ * The outcome of retiring a clinical file. No chunk count, unlike the corpus
+ * variant — a `PATIENT_CLINICAL` row never has chunks to remove (FR-E2-12).
+ */
+export type DeletePatientClinicalDocumentResult = {
+  document: DocumentRecord;
+  deletedAt: Date;
+};
+
+/** The verbs the patient-document permission catalog names (`P16-T08`). */
+export type PatientDocumentAction = 'read' | 'write' | 'release' | 'delete';
+
+/**
+ * How far a caller may see into one patient's file after the read gate:
+ * `FULL` is the staff view, `RELEASED_ONLY` is the patient reading their own
+ * record, where only what a clinician released exists (FR-E2-13).
+ */
+export type PatientDocumentReadAccess = 'FULL' | 'RELEASED_ONLY';
 
 /**
  * Create payload. `ownerType` and `ownerId` are explicit rather than defaulted

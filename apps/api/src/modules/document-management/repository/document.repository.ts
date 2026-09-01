@@ -4,12 +4,14 @@ import {
   CreateDocumentData,
   CreatePatientClinicalDocumentData,
   DeleteDocumentResult,
+  DeletePatientClinicalDocumentResult,
   DocumentOwnerTypeValue,
   DocumentPage,
   DocumentRecord,
   ListDocumentsParams,
   ListPatientClinicalDocumentsParams,
   UpdateDocumentData,
+  UpdatePatientClinicalDocumentData,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
@@ -106,6 +108,8 @@ export class DocumentRepository {
   async listPatientClinicalDocuments(
     params: ListPatientClinicalDocumentsParams,
   ): Promise<DocumentPage> {
+    const hasDateRange =
+      params.documentDateFrom !== undefined || params.documentDateTo !== undefined;
     const rows = await this.prismaService.document.findMany({
       where: {
         purpose: 'PATIENT_CLINICAL',
@@ -113,6 +117,12 @@ export class DocumentRepository {
         category: params.category,
         encounterId: params.encounterId,
         admissionId: params.admissionId,
+        ...(hasDateRange
+          ? { documentDate: { gte: params.documentDateFrom, lte: params.documentDateTo } }
+          : {}),
+        ...(params.isReleasedToPatient === undefined
+          ? {}
+          : { releasedToPatient: params.isReleasedToPatient }),
         deletedAt: null,
       },
       include: { _count: { select: { chunks: true } } },
@@ -138,6 +148,20 @@ export class DocumentRepository {
     return row === null ? null : this.toRecord(row, row._count.chunks);
   }
 
+  /**
+   * Loads one live clinical file by id alone. The routes that use it carry
+   * no patient in their path, so the record itself is what names the patient
+   * the access decision is about — the purpose predicate still keeps every
+   * corpus document out of the queried set.
+   */
+  async findPatientClinicalDocument(id: string): Promise<DocumentRecord | null> {
+    const row = await this.prismaService.document.findFirst({
+      where: { id, purpose: 'PATIENT_CLINICAL', deletedAt: null },
+      include: { _count: { select: { chunks: true } } },
+    });
+    return row === null ? null : this.toRecord(row, row._count.chunks);
+  }
+
   async findClinicalDocumentsByEncounterId(encounterId: string): Promise<DocumentRecord[]> {
     const rows = await this.prismaService.document.findMany({
       where: { purpose: 'PATIENT_CLINICAL', encounterId, deletedAt: null },
@@ -145,6 +169,151 @@ export class DocumentRepository {
       orderBy: [{ documentDate: 'desc' }, { createdAt: 'desc' }],
     });
     return rows.map((row) => this.toRecord(row, row._count.chunks));
+  }
+
+  /**
+   * Applies a clinical-file metadata edit (`P16-T08`). `null` clears a value,
+   * `undefined` leaves it alone — Prisma shares the convention, so the data
+   * object passes through unchanged. The care-episode CHECKs in the migration
+   * still hold: a patch that would leave both `encounterId` and `admissionId`
+   * set is refused by the database even if a service bug let it through.
+   */
+  async updatePatientClinicalDocument(
+    id: string,
+    data: UpdatePatientClinicalDocumentData,
+  ): Promise<DocumentRecord> {
+    const row = await this.prismaService.document.update({
+      where: { id, deletedAt: null },
+      data: {
+        title: data.title,
+        category: data.category,
+        documentDate: data.documentDate,
+        notes: data.notes,
+        encounterId: data.encounterId,
+        admissionId: data.admissionId,
+      },
+    });
+    return this.toRecord(row, 0);
+  }
+
+  /**
+   * Releases one clinical file to the patient portal (FR-E2-13). The
+   * `releasedToPatient: false` predicate makes the write the claim: a second
+   * release attempt matches nothing, so `releasedAt` and `releasedById`
+   * always name the first release rather than the latest click.
+   */
+  async releasePatientClinicalDocument(
+    id: string,
+    releasedById: string,
+  ): Promise<DocumentRecord | null> {
+    const result = await this.prismaService.document.updateMany({
+      where: { id, releasedToPatient: false, deletedAt: null },
+      data: { releasedToPatient: true, releasedAt: new Date(), releasedById },
+    });
+    if (result.count === 0) {
+      return null;
+    }
+    const row = await this.prismaService.document.findFirst({
+      where: { id, deletedAt: null },
+    });
+    return row === null ? null : this.toRecord(row, 0);
+  }
+
+  /**
+   * Retires one clinical file, keeping the reason on the row (FR-E2-11).
+   * Unlike the corpus variant there are no chunks to discard — a
+   * `PATIENT_CLINICAL` row never entered the pipeline — and the stored object
+   * survives for the same reason it does everywhere: clinical files sit under
+   * the 25-year RME retention floor, so nothing here hard-deletes.
+   */
+  async softDeletePatientClinicalDocument(
+    id: string,
+    deleteReason: string,
+  ): Promise<DeletePatientClinicalDocumentResult> {
+    const deletedAt = new Date();
+    const row = await this.prismaService.document.update({
+      where: { id, deletedAt: null },
+      data: { deletedAt, deleteReason },
+    });
+    return { document: this.toRecord(row, 0), deletedAt };
+  }
+
+  async findPatientProfileById(
+    patientId: string,
+  ): Promise<{ id: string; ownerUserId: string | null } | null> {
+    return this.prismaService.findFirstActive(this.prismaService.patientProfile, {
+      where: { id: patientId },
+      select: { id: true, ownerUserId: true },
+    });
+  }
+
+  async findPatientProfileByOwnerUserId(
+    ownerUserId: string,
+  ): Promise<{ id: string; ownerUserId: string | null } | null> {
+    return this.prismaService.findFirstActive(this.prismaService.patientProfile, {
+      where: { ownerUserId },
+      select: { id: true, ownerUserId: true },
+    });
+  }
+
+  async findActiveDoctorByOwnerUserId(ownerUserId: string): Promise<{ id: string } | null> {
+    return this.prismaService.findFirstActive(this.prismaService.doctorProfile, {
+      where: { ownerUserId, isActive: true },
+      select: { id: true },
+    });
+  }
+
+  async findActiveDoctorPatientAssignment(
+    doctorId: string,
+    patientId: string,
+  ): Promise<{ id: string } | null> {
+    return this.prismaService.doctorPatient.findFirst({
+      where: { doctorId, patientId, unassignedAt: null },
+      select: { id: true },
+    });
+  }
+
+  /**
+   * Whether this doctor has ever attended an encounter for this patient —
+   * the second half of the `OWN` read definition (FR-E2-06), shared with
+   * `encounter.read:own`: reading a past visit's paperwork is part of
+   * having conducted the visit.
+   */
+  async hasDoctorAttendedPatientEncounter(doctorId: string, patientId: string): Promise<boolean> {
+    const encounter = await this.prismaService.encounter.findFirst({
+      where: { doctorId, patientId, deletedAt: null },
+      select: { id: true },
+    });
+    return encounter !== null;
+  }
+
+  async findEncounterForPatient(
+    encounterId: string,
+    patientId: string,
+  ): Promise<{ id: string; patientId: string } | null> {
+    return this.prismaService.encounter.findFirst({
+      where: { id: encounterId, patientId, deletedAt: null },
+      select: { id: true, patientId: true },
+    });
+  }
+
+  async findEncounterById(
+    encounterId: string,
+  ): Promise<{ id: string; patientId: string; doctorId: string } | null> {
+    return this.prismaService.encounter.findFirst({
+      where: { id: encounterId, deletedAt: null },
+      select: { id: true, patientId: true, doctorId: true },
+    });
+  }
+
+  async findAdmissionForPatient(
+    admissionId: string,
+    patientId: string,
+  ): Promise<{ id: string; patientId: string } | null> {
+    return this.prismaService.admission.findFirst({
+      where: { id: admissionId, patientId, deletedAt: null },
+      select: { id: true, patientId: true },
+    });
   }
 
   /**
