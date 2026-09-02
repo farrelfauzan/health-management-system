@@ -57,6 +57,10 @@ export type AppSubject =
   // hands out — read by every role that produces a document, written by
   // administrators alone.
   | 'ClinicProfile'
+  // P16-T11. Invoice (later: clinical, agreement) layouts and the variable
+  // registry they are authored against — read by whoever opens the editor,
+  // written by administrators alone.
+  | 'DocumentTemplate'
   | 'BpjsConfig'
   | 'BpjsReference'
   | 'BpjsMapping'

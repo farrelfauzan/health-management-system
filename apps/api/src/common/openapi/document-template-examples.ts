@@ -4,6 +4,7 @@ const TEMPLATE_SETTINGS_EXAMPLE = {
   paperSize: 'A4',
   orientation: 'PORTRAIT',
   marginMm: { top: 10, right: 10, bottom: 10, left: 10 },
+  itemsColumns: ['item.no', 'item.description', 'item.quantity', 'item.unitPrice', 'item.amount'],
 };
 
 const TEMPLATE_VIEW_EXAMPLE = {

@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateDocumentTemplateDtoSettingsItemsColumnsItem } from './updateDocumentTemplateDtoSettingsItemsColumnsItem';
 import type { UpdateDocumentTemplateDtoSettingsMarginMm } from './updateDocumentTemplateDtoSettingsMarginMm';
 import type { UpdateDocumentTemplateDtoSettingsOrientation } from './updateDocumentTemplateDtoSettingsOrientation';
 import type { UpdateDocumentTemplateDtoSettingsPaperSize } from './updateDocumentTemplateDtoSettingsPaperSize';
@@ -13,4 +14,9 @@ export type UpdateDocumentTemplateDtoSettings = {
   paperSize?: UpdateDocumentTemplateDtoSettingsPaperSize;
   orientation?: UpdateDocumentTemplateDtoSettingsOrientation;
   marginMm?: UpdateDocumentTemplateDtoSettingsMarginMm;
+  /**
+     * @minItems 1
+     * @maxItems 5
+     */
+  itemsColumns?: UpdateDocumentTemplateDtoSettingsItemsColumnsItem[];
 };
