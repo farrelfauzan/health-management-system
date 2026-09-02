@@ -160,3 +160,19 @@ export type CreateDocumentTemplateInput = z.infer<typeof createDocumentTemplateS
 export type UpdateDocumentTemplateInput = z.infer<typeof updateDocumentTemplateSchema>;
 export type ListDocumentTemplatesQueryInput = z.infer<typeof listDocumentTemplatesQuerySchema>;
 export type ListTemplateVariablesQueryInput = z.infer<typeof listTemplateVariablesQuerySchema>;
+
+/**
+ * Publish-time validation (`P16-T12`): a draft referencing a token outside
+ * the registry is refused with this code and the offending tokens listed in
+ * `error.details`, so the author sees the typo in the editor rather than as
+ * an empty field on a patient's receipt.
+ */
+export const DOCUMENT_TEMPLATE_UNKNOWN_TOKENS_ERROR_CODE = 'DOCUMENT_TEMPLATE_UNKNOWN_TOKENS';
+
+export const documentTemplatePublishValidationDetailsSchema = z.object({
+  unknownTokens: z.array(z.string()).min(1),
+});
+
+export type DocumentTemplatePublishValidationDetails = z.infer<
+  typeof documentTemplatePublishValidationDetailsSchema
+>;

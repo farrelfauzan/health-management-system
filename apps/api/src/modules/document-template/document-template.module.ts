@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 
+import { PdfModule } from '../../common/pdf/pdf.module';
+import { StorageModule } from '../../common/storage/storage.module';
 import { DocumentTemplateController } from './controller/document-template.controller';
 import { DocumentTemplateVariableController } from './controller/document-template-variable.controller';
 import { DocumentTemplateRepository } from './repository/document-template.repository';
 import { DocumentTemplateMapper } from './service/document-template.mapper';
+import { DocumentTemplatePreviewService } from './service/document-template-preview.service';
 import { DocumentTemplateService } from './service/document-template.service';
 
 /**
@@ -14,8 +17,16 @@ import { DocumentTemplateService } from './service/document-template.service';
  * document family, not the bill.
  */
 @Module({
+  // PdfModule + StorageModule for the fixture preview (P16-T12): the sidecar
+  // renders it and the bucket holds it for a few minutes.
+  imports: [PdfModule, StorageModule],
   controllers: [DocumentTemplateController, DocumentTemplateVariableController],
-  providers: [DocumentTemplateRepository, DocumentTemplateMapper, DocumentTemplateService],
+  providers: [
+    DocumentTemplateRepository,
+    DocumentTemplateMapper,
+    DocumentTemplateService,
+    DocumentTemplatePreviewService,
+  ],
   // Exported for P16-T06: the invoice render service resolves "the default
   // template's latest published version" through this service — a service
   // rather than the repository, because cross-module access goes through the

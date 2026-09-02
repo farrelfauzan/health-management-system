@@ -36,6 +36,12 @@ type BuildInvoiceDocumentHtmlParams = {
    * the field existed carry no choice — they render the full built-in set.
    */
   readonly itemColumns?: readonly InvoiceItemColumnToken[];
+  /**
+   * FR-E1-13: reserve the *materai* placement when the total exceeds the
+   * configured threshold. A fixed-size box at the end of the document, kept
+   * whole across page breaks — a placement for a physical stamp, nothing more.
+   */
+  readonly showMateraiArea?: boolean;
 };
 
 /**
@@ -63,7 +69,7 @@ type BuildInvoiceDocumentHtmlParams = {
 export function buildInvoiceDocumentHtml(params: BuildInvoiceDocumentHtmlParams): string {
   const itemColumns = resolveItemColumns(params.itemColumns);
   const filledHtml = fillTemplateTokens(params.contentHtml, params.resolved, itemColumns);
-  return wrapDocument(filledHtml, params.watermark);
+  return wrapDocument(filledHtml, params.watermark, params.showMateraiArea ?? false);
 }
 
 function resolveItemColumns(
@@ -161,7 +167,11 @@ function clearChildren(element: Element): void {
   }
 }
 
-function wrapDocument(filledHtml: string, watermark: InvoiceDocumentWatermark): string {
+function wrapDocument(
+  filledHtml: string,
+  watermark: InvoiceDocumentWatermark,
+  showMateraiArea: boolean,
+): string {
   const watermarkMarkup = watermark.isVoid ? buildWatermarkMarkup(watermark) : '';
   return [
     '<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><style>',
@@ -170,11 +180,15 @@ function wrapDocument(filledHtml: string, watermark: InvoiceDocumentWatermark): 
     watermarkMarkup,
     '<main class="hms-document">',
     filledHtml,
+    showMateraiArea ? MATERAI_AREA_MARKUP : '',
     '</main>',
     watermark.isVoid ? buildVoidFooterMarkup(watermark) : '',
     '</body></html>',
   ].join('');
 }
+
+const MATERAI_AREA_MARKUP =
+  '<section class="hms-materai" aria-label="Materai"><div class="hms-materai-box">Materai</div><div class="hms-materai-caption">Tempel materai di sini</div></section>';
 
 function buildWatermarkMarkup(watermark: InvoiceDocumentWatermark): string {
   void watermark;
@@ -212,6 +226,10 @@ const BASE_DOCUMENT_CSS = [
   '.hms-items thead { display: table-header-group; }',
   '.hms-items tr { page-break-inside: avoid; }',
   '.hms-inline-image { max-width: 40mm; max-height: 20mm; }',
+  // FR-E1-13: a stamp-sized placement, never split across pages.
+  '.hms-materai { margin-top: 8mm; display: flex; flex-direction: column; align-items: flex-end; page-break-inside: avoid; }',
+  '.hms-materai-box { width: 30mm; height: 22mm; border: 1px dashed #666; display: flex; align-items: center; justify-content: center; font-size: 9pt; color: #666; }',
+  '.hms-materai-caption { font-size: 8pt; color: #666; margin-top: 1mm; }',
   // `position: fixed` paints on every page in paged media — one declaration
   // covers a document of any length (FR-E1-11).
   '.hms-void-watermark { position: fixed; top: 40%; left: 0; right: 0; text-align: center;',

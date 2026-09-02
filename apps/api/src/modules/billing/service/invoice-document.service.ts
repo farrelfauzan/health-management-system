@@ -28,7 +28,9 @@ import { BUILT_IN_INVOICE_TEMPLATE } from './built-in-invoice-template';
 import { countStayNights } from './count-stay-nights';
 import { InvoiceDocumentMapper } from './invoice-document.mapper';
 import { INVOICE_DOCUMENT_STORAGE_KEY_PREFIX } from './invoice-document-storage-key-prefix';
+import { resolveMateraiThresholdIdr } from './materai-threshold';
 import { resolveInvoiceVariables } from './resolve-invoice-variables';
+import { shouldShowMateraiArea } from './should-show-materai-area';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
@@ -75,6 +77,7 @@ const PAPER_DIMENSIONS_INCHES: Readonly<
 export class InvoiceDocumentService {
   private readonly logger = new Logger(InvoiceDocumentService.name);
   private readonly clinicTimeZone: string;
+  private readonly materaiThresholdIdr: number;
 
   constructor(
     private readonly invoiceDocumentRepository: InvoiceDocumentRepository,
@@ -86,6 +89,7 @@ export class InvoiceDocumentService {
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.materaiThresholdIdr = resolveMateraiThresholdIdr(configService);
   }
 
   /**
@@ -248,6 +252,10 @@ export class InvoiceDocumentService {
         contentHtml: layout.contentHtml,
         resolved: document.renderedData,
         itemColumns: layout.settings.itemsColumns,
+        showMateraiArea: shouldShowMateraiArea(
+          context.invoice.totalAmount,
+          this.materaiThresholdIdr,
+        ),
         watermark: {
           isVoid: document.hasVoidWatermark,
           reason: context.invoice.voidReason,

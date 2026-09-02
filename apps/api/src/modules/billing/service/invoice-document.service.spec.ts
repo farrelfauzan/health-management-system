@@ -41,7 +41,9 @@ describe('InvoiceDocumentService', () => {
     getObject: jest.fn(),
     deleteObject: jest.fn(),
   };
-  const configServiceMock = { get: jest.fn().mockReturnValue('Asia/Jakarta') };
+  const configServiceMock = {
+    get: jest.fn((key: string) => (key === 'CLINIC_TIMEZONE' ? 'Asia/Jakarta' : undefined)),
+  };
 
   const service = new InvoiceDocumentService(
     repositoryMock as unknown as InvoiceDocumentRepository,

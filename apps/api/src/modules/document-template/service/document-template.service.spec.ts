@@ -1,4 +1,8 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 import {
   DocumentTemplateRecord,
@@ -120,6 +124,24 @@ describe('DocumentTemplateService', () => {
     await expect(service.publishTemplate('template-1', actor)).rejects.toBeInstanceOf(
       ConflictException,
     );
+    expect(repositoryMock.publishTemplate).not.toHaveBeenCalled();
+  });
+
+  it('refuses to publish a template referencing a token outside the registry (P16-T12)', async () => {
+    repositoryMock.findById.mockResolvedValue(
+      buildRecord({
+        contentHtml:
+          '<p><span data-hms-var="patient.mrn"></span><span data-hms-var="patient.mrnTypo"></span></p>',
+      }),
+    );
+
+    const failure = await service.publishTemplate('template-1', actor).catch((err: unknown) => err);
+
+    expect(failure).toBeInstanceOf(UnprocessableEntityException);
+    expect((failure as UnprocessableEntityException).getResponse()).toMatchObject({
+      code: 'DOCUMENT_TEMPLATE_UNKNOWN_TOKENS',
+      errors: { unknownTokens: ['patient.mrnTypo'] },
+    });
     expect(repositoryMock.publishTemplate).not.toHaveBeenCalled();
   });
 

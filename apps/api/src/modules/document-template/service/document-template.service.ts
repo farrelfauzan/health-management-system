@@ -1,9 +1,16 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 import {
   ArchivedDocumentTemplateView,
   CreateDocumentTemplateInput,
+  DOCUMENT_TEMPLATE_UNKNOWN_TOKENS_ERROR_CODE,
   DocumentTemplateKindValue,
+  DocumentTemplatePublishValidationDetails,
   DocumentTemplateVersionRecord,
   DocumentTemplateView,
   DocumentTemplateWithLatestVersionRecord,
@@ -15,6 +22,7 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { DocumentTemplateRepository } from '../repository/document-template.repository';
 import { DocumentTemplateMapper } from './document-template.mapper';
+import { findUnknownTemplateTokens } from './find-unknown-template-tokens';
 import { sanitiseTemplateHtml } from './sanitise-template-html';
 
 const TEMPLATE_AUDIT_RESOURCE = 'document-template';
@@ -98,13 +106,16 @@ export class DocumentTemplateService {
    * Cuts an immutable version from the working copy. A blank layout is
    * refused here rather than at create — a template legitimately starts
    * empty in the editor, but a published version is what real invoices
-   * render from.
+   * render from. So is a layout referencing a token the registry does not
+   * know (`P16-T12`): the full list travels in `error.details` so the editor
+   * can point at every offender, and no version row is cut.
    */
   async publishTemplate(id: string, actor: CurrentUser): Promise<DocumentTemplateView> {
     const existing = await this.findTemplateOrThrow(id);
     if (existing.contentHtml.trim() === '') {
       throw new ConflictException('A template with no content cannot be published');
     }
+    this.assertKnownTokens(existing);
     try {
       const published = await this.documentTemplateRepository.publishTemplate({
         templateId: id,
@@ -202,6 +213,22 @@ export class DocumentTemplateService {
    */
   async findVersionById(id: string): Promise<DocumentTemplateVersionRecord | null> {
     return this.documentTemplateRepository.findVersionById(id);
+  }
+
+  private assertKnownTokens(template: DocumentTemplateWithLatestVersionRecord): void {
+    const unknownTokens = findUnknownTemplateTokens({
+      contentHtml: template.contentHtml,
+      kind: template.kind,
+    });
+    if (unknownTokens.length === 0) {
+      return;
+    }
+    const details: DocumentTemplatePublishValidationDetails = { unknownTokens };
+    throw new UnprocessableEntityException({
+      message: `The template references variables that are not in the registry: ${unknownTokens.join(', ')}`,
+      code: DOCUMENT_TEMPLATE_UNKNOWN_TOKENS_ERROR_CODE,
+      errors: details,
+    });
   }
 
   private async findTemplateOrThrow(id: string): Promise<DocumentTemplateWithLatestVersionRecord> {

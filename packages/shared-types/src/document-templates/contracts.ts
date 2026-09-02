@@ -1,3 +1,4 @@
+import type { TemplateVariableWarning } from '#billing/types';
 import type {
   DocumentTemplateKindValue,
   DocumentTemplateStatusValue,
@@ -39,4 +40,17 @@ export type DocumentTemplateView = {
 export type ArchivedDocumentTemplateView = {
   id: string;
   archivedAt: string;
+};
+
+/**
+ * A preview render of the working copy against the built-in hostile fixture
+ * (`P16-T12`, FR-E1-06). The URL is short-lived and points at a throwaway
+ * object — nothing here is an invoice document, and nothing is persisted
+ * against a patient. `warnings` carries every token the fixture could not
+ * fill so the author sees a blank before a cashier does.
+ */
+export type DocumentTemplatePreviewView = {
+  url: string;
+  expiresAt: string;
+  warnings: TemplateVariableWarning[];
 };
