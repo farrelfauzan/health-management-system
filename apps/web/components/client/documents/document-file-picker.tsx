@@ -1,17 +1,29 @@
 'use client';
 
-import { DOCUMENT_MAX_UPLOAD_SIZE_BYTES, DOCUMENT_UPLOAD_MIME_TYPES } from '@hms/shared-types';
+import type { ChangeEvent } from 'react';
+import {
+  DOCUMENT_MAX_UPLOAD_SIZE_BYTES,
+  DOCUMENT_UPLOAD_MIME_TYPES,
+  type DocumentUploadMimeTypeValue,
+} from '@hms/shared-types';
 import { Input, Label } from '@hms/ui';
 import { useTranslations } from 'next-intl';
-
-import { isAcceptedDocumentMimeType } from '#lib/documents/is-accepted-document-mime-type';
 
 type DocumentFilePickerProps = {
   id: string;
   label: string;
   hint: string;
   disabled?: boolean;
-  onFileSelected: (file: File | null) => void;
+  /**
+   * A surface may narrow the store's allowlist, never widen it: the default
+   * is every type the store accepts, and the patient-documents tab passes the
+   * four a clinical scan can be.
+   */
+  accept?: readonly DocumentUploadMimeTypeValue[];
+  /** Pick several at once; rejections are then reported per file, by name. */
+  multiple?: boolean;
+  onFileSelected?: (file: File | null) => void;
+  onFilesSelected?: (files: File[]) => void;
   onRejected: (message: string) => void;
 };
 
@@ -38,29 +50,70 @@ export function DocumentFilePicker({
   label,
   hint,
   disabled = false,
+  accept = DOCUMENT_UPLOAD_MIME_TYPES,
+  multiple = false,
   onFileSelected,
+  onFilesSelected,
   onRejected,
 }: DocumentFilePickerProps) {
   const t = useTranslations('shared.documentUpload');
+  const limitMb = DOCUMENT_MAX_UPLOAD_SIZE_BYTES / BYTES_PER_MEBIBYTE;
+
+  function resolveRejection(file: File): string | null {
+    const isAcceptedType = accept.some((mimeType) => mimeType === file.type);
+    if (!isAcceptedType) {
+      return multiple
+        ? t('errors.unsupportedTypeNamed', { name: file.name })
+        : t('errors.unsupportedType');
+    }
+    if (file.size > DOCUMENT_MAX_UPLOAD_SIZE_BYTES) {
+      return multiple
+        ? t('errors.tooLargeNamed', { name: file.name, limitMb })
+        : t('errors.tooLarge', { limitMb });
+    }
+    return null;
+  }
 
   function handleFile(file: File | null): void {
     if (file === null) {
-      onFileSelected(null);
+      onFileSelected?.(null);
       return;
     }
-    if (!isAcceptedDocumentMimeType(file.type)) {
-      onFileSelected(null);
-      onRejected(t('errors.unsupportedType'));
+    const rejection = resolveRejection(file);
+    if (rejection !== null) {
+      onFileSelected?.(null);
+      onRejected(rejection);
       return;
     }
-    if (file.size > DOCUMENT_MAX_UPLOAD_SIZE_BYTES) {
-      onFileSelected(null);
-      onRejected(
-        t('errors.tooLarge', { limitMb: DOCUMENT_MAX_UPLOAD_SIZE_BYTES / BYTES_PER_MEBIBYTE }),
-      );
+    onFileSelected?.(file);
+  }
+
+  function handleFiles(files: File[]): void {
+    // Each file is judged on its own: one oversize scan among four must not
+    // throw the other three away, and each rejection names the file so the
+    // person knows which one to leave out.
+    const accepted: File[] = [];
+    for (const file of files) {
+      const rejection = resolveRejection(file);
+      if (rejection === null) {
+        accepted.push(file);
+      } else {
+        onRejected(rejection);
+      }
+    }
+    onFilesSelected?.(accepted);
+  }
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
+    const files = Array.from(event.target.files ?? []);
+    if (multiple) {
+      handleFiles(files);
+      // Cleared so picking the same file again after removing it from the
+      // batch fires a change event; a native input ignores a repeat pick.
+      event.target.value = '';
       return;
     }
-    onFileSelected(file);
+    handleFile(files[0] ?? null);
   }
 
   return (
@@ -70,8 +123,9 @@ export function DocumentFilePicker({
         id={id}
         type="file"
         disabled={disabled}
-        accept={DOCUMENT_UPLOAD_MIME_TYPES.join(',')}
-        onChange={(event) => handleFile(event.target.files?.[0] ?? null)}
+        multiple={multiple}
+        accept={accept.join(',')}
+        onChange={handleChange}
       />
       <p className="text-xs text-slate-500">{hint}</p>
     </div>

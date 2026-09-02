@@ -299,4 +299,41 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
     expect(ability.can('manage', 'OrganizationUnit')).toBe(false);
     expect(ability.can('manage', 'OrganizationUnitMember')).toBe(false);
   });
+
+  it('maps patient-document grants to their own subject, apart from the knowledge base', () => {
+    // P16-T08. A doctor's own-patient grant: read, write, and release, but not
+    // delete. The hyphenated key must resolve to `PatientDocument`, never to
+    // `Document` — the knowledge-base grant is held by different roles and a
+    // collapse here would show the Documents tab to a corpus admin.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: [
+          'patient-document.read:own',
+          'patient-document.write:own',
+          'patient-document.release:own',
+        ],
+      }),
+    );
+
+    expect(ability.can('read', 'PatientDocument')).toBe(true);
+    expect(ability.can('write', 'PatientDocument')).toBe(true);
+    expect(ability.can('release', 'PatientDocument')).toBe(true);
+    expect(ability.can('delete', 'PatientDocument')).toBe(false);
+    expect(ability.can('read', 'Document')).toBe(false);
+  });
+
+  it('gives an administrator the patient-document delete grant without release', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: [
+          'patient-document.read:any',
+          'patient-document.write:any',
+          'patient-document.delete:any',
+        ],
+      }),
+    );
+
+    expect(ability.can('delete', 'PatientDocument')).toBe(true);
+    expect(ability.can('release', 'PatientDocument')).toBe(false);
+  });
 });
