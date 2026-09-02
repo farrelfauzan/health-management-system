@@ -136,6 +136,7 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         ability: [
           { action: 'read', subject: 'Invoice' },
           { action: 'read', subject: 'ServiceTariff' },
+          { action: 'read', subject: 'DocumentTemplate' },
         ],
       },
     ],

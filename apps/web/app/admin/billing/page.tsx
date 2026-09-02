@@ -15,7 +15,10 @@ export default async function AdminBillingPage() {
     sessionHint: cookieStore.get(SESSION_HINT_COOKIE_NAME)?.value,
   });
   const ability = buildAppAbility(resolveAppAbilityRules(claims));
-  const canAccess = ability.can('read', 'Invoice') || ability.can('read', 'ServiceTariff');
+  const canAccess =
+    ability.can('read', 'Invoice') ||
+    ability.can('read', 'ServiceTariff') ||
+    ability.can('read', 'DocumentTemplate');
 
   if (!canAccess) {
     redirect('/admin/dashboard');

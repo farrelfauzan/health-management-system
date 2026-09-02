@@ -279,7 +279,98 @@
         "immutableCode": "Kode tidak dapat diubah.",
         "procedureLink": "Tautkan tarif ke prosedur"
       },
-      "accommodationNeedsClass": "Tarif akomodasi harus menyebutkan kelas perawatan yang ditagihkan."
+      "accommodationNeedsClass": "Tarif akomodasi harus menyebutkan kelas perawatan yang ditagihkan.",
+      "templates": {
+        "tab": "Templat",
+        "description": "Tata letak faktur yang dipakai PDF kasir. Ubah draf, lalu terbitkan untuk mulai menggunakannya.",
+        "new": "Templat baru",
+        "back": "Kembali ke daftar templat",
+        "save": "Simpan draf",
+        "saved": "Draf tersimpan.",
+        "unsaved": "Perubahan belum disimpan",
+        "saveError": "Templat tidak dapat disimpan. Silakan coba lagi.",
+        "loadError": "Templat tidak dapat dimuat",
+        "loadErrorDescription": "Terjadi kesalahan saat mengambil templat. Sistem akan mencoba lagi secara otomatis.",
+        "empty": "Belum ada templat",
+        "emptyDescription": "Faktur dicetak dengan tata letak bawaan sampai ada templat yang dibuat dan diterbitkan.",
+        "columns": {
+          "name": "Nama",
+          "status": "Status",
+          "default": "Bawaan",
+          "version": "Versi",
+          "updated": "Diperbarui",
+          "actions": "Tindakan"
+        },
+        "isDefault": "Bawaan",
+        "notDefault": "—",
+        "notPublished": "Belum diterbitkan",
+        "versionNumber": "v{number}",
+        "actions": {
+          "edit": "Ubah",
+          "setDefault": "Jadikan bawaan",
+          "archive": "Arsipkan",
+          "setDefaultSuccess": "Templat bawaan diperbarui.",
+          "setDefaultError": "Templat bawaan tidak dapat diatur.",
+          "archiveSuccess": "Templat diarsipkan.",
+          "archiveError": "Templat tidak dapat diarsipkan.",
+          "archiveConfirm": "Arsipkan templat ini? Versi yang sudah terbit tetap melekat pada faktur yang memakainya."
+        },
+        "create": {
+          "title": "Templat faktur baru",
+          "description": "Templat dimulai sebagai draf kosong. Susun tata letaknya di editor, lalu terbitkan.",
+          "name": "Nama",
+          "namePlaceholder": "mis. Kuitansi A5",
+          "descriptionLabel": "Deskripsi (opsional)",
+          "descriptionPlaceholder": "Di mana tata letak ini dipakai",
+          "submit": "Buat",
+          "cancel": "Batal",
+          "error": "Templat tidak dapat dibuat. Silakan coba lagi."
+        },
+        "editor": {
+          "nameLabel": "Nama templat",
+          "descriptionLabel": "Deskripsi",
+          "contentLabel": "Tata letak",
+          "variablesLoading": "Memuat daftar variabel…",
+          "variablesError": "Daftar variabel tidak dapat dimuat. Editor hanya-baca sampai daftar termuat.",
+          "imageError": "Gambar tidak dapat disisipkan."
+        },
+        "palette": {
+          "title": "Variabel",
+          "hint": "Cari, lalu klik variabel untuk menyisipkannya di posisi kursor. Chip mencetak nilai sebenarnya; tidak bisa diubah, hanya dihapus.",
+          "searchPlaceholder": "Cari variabel, mis. mrn",
+          "searchLabel": "Cari variabel",
+          "empty": "Tidak ada variabel yang cocok.",
+          "groups": {
+            "clinic": "Klinik",
+            "invoice": "Faktur",
+            "patient": "Pasien",
+            "encounter": "Kunjungan",
+            "admission": "Rawat inap",
+            "payment": "Pembayaran",
+            "items": "Rincian tagihan"
+          }
+        },
+        "itemsColumns": {
+          "title": "Kolom rincian tagihan",
+          "hint": "Pilih kolom yang dicetak pada tabel rincian tagihan beserta urutannya. Tersimpan bersama pengaturan templat.",
+          "include": "Cetak {label}",
+          "moveUp": "Naikkan {label}",
+          "moveDown": "Turunkan {label}",
+          "lastColumn": "Minimal satu kolom harus tetap ada."
+        },
+        "settings": {
+          "title": "Pengaturan halaman",
+          "paperSize": "Ukuran kertas",
+          "orientation": "Orientasi",
+          "margins": "Margin (mm)",
+          "top": "Atas",
+          "right": "Kanan",
+          "bottom": "Bawah",
+          "left": "Kiri",
+          "portrait": "Tegak",
+          "landscape": "Mendatar"
+        }
+      }
     },
     "integrations": {
       "title": "Integrasi",
