@@ -90,6 +90,10 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // `clinic-profile.read:any` resolves to resource `clinic-profile` and
   // action `read` — one segment, the way `service-tariff` does.
   'clinic-profile': 'ClinicProfile',
+  // P16-T11. Same hyphenated single-segment shape as `clinic-profile`:
+  // `document-template.write:any` → resource `document-template`, action
+  // `write`.
+  'document-template': 'DocumentTemplate',
   // Both scopes collapse to one subject here. `permissionToRule` drops the
   // `:own` / `:any` suffix, so this cannot distinguish an admin's clinic-corpus
   // grant from a clinician's personal one — and must not try to. It decides

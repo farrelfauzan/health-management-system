@@ -15106,10 +15106,15 @@ paths:
                                 - right
                                 - bottom
                                 - left
+                            itemsColumns:
+                              type: array
+                              items:
+                                type: string
                           required:
                             - paperSize
                             - orientation
                             - marginMm
+                            - itemsColumns
                         latestPublishedVersion:
                           type: object
                           properties:
@@ -15160,6 +15165,12 @@ paths:
                           right: 10
                           bottom: 10
                           left: 10
+                        itemsColumns:
+                          - item.no
+                          - item.description
+                          - item.quantity
+                          - item.unitPrice
+                          - item.amount
                       latestPublishedVersion:
                         id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
                         versionNumber: 3
@@ -15215,6 +15226,12 @@ paths:
                       right: 10
                       bottom: 10
                       left: 10
+                    itemsColumns:
+                      - item.no
+                      - item.description
+                      - item.quantity
+                      - item.unitPrice
+                      - item.amount
       responses:
         "201":
           description: The template was created as a DRAFT working copy. Its HTML was
@@ -15264,10 +15281,15 @@ paths:
                               - right
                               - bottom
                               - left
+                          itemsColumns:
+                            type: array
+                            items:
+                              type: string
                         required:
                           - paperSize
                           - orientation
                           - marginMm
+                          - itemsColumns
                       createdAt:
                         type: string
                       updatedAt:
@@ -15304,6 +15326,12 @@ paths:
                         right: 10
                         bottom: 10
                         left: 10
+                      itemsColumns:
+                        - item.no
+                        - item.description
+                        - item.quantity
+                        - item.unitPrice
+                        - item.amount
                     createdAt: 2026-09-01T04:00:00.000Z
                     updatedAt: 2026-09-01T04:00:00.000Z
                   message: Document template created
@@ -15409,10 +15437,15 @@ paths:
                               - right
                               - bottom
                               - left
+                          itemsColumns:
+                            type: array
+                            items:
+                              type: string
                         required:
                           - paperSize
                           - orientation
                           - marginMm
+                          - itemsColumns
                       latestPublishedVersion:
                         type: object
                         properties:
@@ -15466,6 +15499,12 @@ paths:
                         right: 10
                         bottom: 10
                         left: 10
+                      itemsColumns:
+                        - item.no
+                        - item.description
+                        - item.quantity
+                        - item.unitPrice
+                        - item.amount
                     latestPublishedVersion:
                       id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
                       versionNumber: 3
@@ -15642,10 +15681,15 @@ paths:
                               - right
                               - bottom
                               - left
+                          itemsColumns:
+                            type: array
+                            items:
+                              type: string
                         required:
                           - paperSize
                           - orientation
                           - marginMm
+                          - itemsColumns
                       latestPublishedVersion:
                         type: object
                         properties:
@@ -15699,6 +15743,12 @@ paths:
                         right: 10
                         bottom: 10
                         left: 10
+                      itemsColumns:
+                        - item.no
+                        - item.description
+                        - item.quantity
+                        - item.unitPrice
+                        - item.amount
                     latestPublishedVersion:
                       id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
                       versionNumber: 3
@@ -15796,10 +15846,15 @@ paths:
                               - right
                               - bottom
                               - left
+                          itemsColumns:
+                            type: array
+                            items:
+                              type: string
                         required:
                           - paperSize
                           - orientation
                           - marginMm
+                          - itemsColumns
                       latestPublishedVersion:
                         type: object
                         properties:
@@ -15853,6 +15908,12 @@ paths:
                         right: 10
                         bottom: 10
                         left: 10
+                      itemsColumns:
+                        - item.no
+                        - item.description
+                        - item.quantity
+                        - item.unitPrice
+                        - item.amount
                     latestPublishedVersion:
                       id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
                       versionNumber: 3
@@ -31691,6 +31752,24 @@ components:
                   exclusiveMaximum: false
                   default: 10
               default: {}
+            itemsColumns:
+              type: array
+              minItems: 1
+              maxItems: 5
+              items:
+                type: string
+                enum:
+                  - item.no
+                  - item.description
+                  - item.quantity
+                  - item.unitPrice
+                  - item.amount
+              default:
+                - item.no
+                - item.description
+                - item.quantity
+                - item.unitPrice
+                - item.amount
           default: {}
           x-nestjs_zod-self-required: false
       required:
@@ -31759,6 +31838,24 @@ components:
                   exclusiveMaximum: false
                   default: 10
               default: {}
+            itemsColumns:
+              type: array
+              minItems: 1
+              maxItems: 5
+              items:
+                type: string
+                enum:
+                  - item.no
+                  - item.description
+                  - item.quantity
+                  - item.unitPrice
+                  - item.amount
+              default:
+                - item.no
+                - item.description
+                - item.quantity
+                - item.unitPrice
+                - item.amount
           x-nestjs_zod-self-required: false
     OpenEncounterDto:
       type: object

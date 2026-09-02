@@ -279,7 +279,98 @@
         "immutableCode": "Code cannot be changed.",
         "procedureLink": "Links the tariff to a procedure"
       },
-      "accommodationNeedsClass": "An accommodation tariff must name the ward class it prices."
+      "accommodationNeedsClass": "An accommodation tariff must name the ward class it prices.",
+      "templates": {
+        "tab": "Templates",
+        "description": "Invoice layouts the cashier's PDF renders from. Edit a draft, then publish it to put it into use.",
+        "new": "New template",
+        "back": "Back to templates",
+        "save": "Save draft",
+        "saved": "Draft saved.",
+        "unsaved": "Unsaved changes",
+        "saveError": "Unable to save the template. Please try again.",
+        "loadError": "Unable to load templates",
+        "loadErrorDescription": "Something went wrong while fetching templates. It retries automatically.",
+        "empty": "No templates yet",
+        "emptyDescription": "Invoices print from the built-in layout until a template is created and published.",
+        "columns": {
+          "name": "Name",
+          "status": "Status",
+          "default": "Default",
+          "version": "Version",
+          "updated": "Updated",
+          "actions": "Actions"
+        },
+        "isDefault": "Default",
+        "notDefault": "—",
+        "notPublished": "Not published",
+        "versionNumber": "v{number}",
+        "actions": {
+          "edit": "Edit",
+          "setDefault": "Set as default",
+          "archive": "Archive",
+          "setDefaultSuccess": "Default template updated.",
+          "setDefaultError": "Unable to set the default template.",
+          "archiveSuccess": "Template archived.",
+          "archiveError": "Unable to archive the template.",
+          "archiveConfirm": "Archive this template? Published versions stay attached to the invoices that used them."
+        },
+        "create": {
+          "title": "New invoice template",
+          "description": "The template starts as an empty draft. Add the layout in the editor, then publish it.",
+          "name": "Name",
+          "namePlaceholder": "e.g. A5 receipt",
+          "descriptionLabel": "Description (optional)",
+          "descriptionPlaceholder": "Where this layout is used",
+          "submit": "Create",
+          "cancel": "Cancel",
+          "error": "Unable to create the template. Please try again."
+        },
+        "editor": {
+          "nameLabel": "Template name",
+          "descriptionLabel": "Description",
+          "contentLabel": "Layout",
+          "variablesLoading": "Loading the variable registry…",
+          "variablesError": "Unable to load the variable registry. The editor stays read-only until it loads.",
+          "imageError": "Unable to insert the image."
+        },
+        "palette": {
+          "title": "Variables",
+          "hint": "Search, then click a variable to insert it at the cursor. Chips print the real value; they cannot be edited, only removed.",
+          "searchPlaceholder": "Search variables, e.g. mrn",
+          "searchLabel": "Search variables",
+          "empty": "No variable matches.",
+          "groups": {
+            "clinic": "Clinic",
+            "invoice": "Invoice",
+            "patient": "Patient",
+            "encounter": "Visit",
+            "admission": "Stay",
+            "payment": "Payment",
+            "items": "Line items"
+          }
+        },
+        "itemsColumns": {
+          "title": "Line item columns",
+          "hint": "Choose which columns the line-item table prints, and their order. Saved with the template settings.",
+          "include": "Print {label}",
+          "moveUp": "Move {label} up",
+          "moveDown": "Move {label} down",
+          "lastColumn": "At least one column must remain."
+        },
+        "settings": {
+          "title": "Page setup",
+          "paperSize": "Paper size",
+          "orientation": "Orientation",
+          "margins": "Margins (mm)",
+          "top": "Top",
+          "right": "Right",
+          "bottom": "Bottom",
+          "left": "Left",
+          "portrait": "Portrait",
+          "landscape": "Landscape"
+        }
+      }
     },
     "integrations": {
       "title": "Integrations",

@@ -3,7 +3,12 @@ import { Element, Text } from 'domhandler';
 import * as domutils from 'domutils';
 import * as htmlparser2 from 'htmlparser2';
 
-import { InvoiceDocumentWatermark, ResolvedInvoiceVariables } from '@hms/shared-types';
+import {
+  INVOICE_ITEM_COLUMN_TOKENS,
+  InvoiceDocumentWatermark,
+  InvoiceItemColumnToken,
+  ResolvedInvoiceVariables,
+} from '@hms/shared-types';
 
 const TOKEN_ATTRIBUTE = 'data-hms-var';
 
@@ -13,18 +18,24 @@ const IMAGE_TOKENS: ReadonlySet<string> = new Set(['clinic.logo', 'invoice.qrVer
 
 const DATA_IMAGE_SOURCE_PREFIX = 'data:image/';
 
-const ITEM_COLUMNS: ReadonlyArray<{ readonly token: string; readonly heading: string }> = [
-  { token: 'item.no', heading: 'No' },
-  { token: 'item.description', heading: 'Uraian' },
-  { token: 'item.quantity', heading: 'Jml' },
-  { token: 'item.unitPrice', heading: 'Harga Satuan' },
-  { token: 'item.amount', heading: 'Jumlah' },
-];
+const ITEM_COLUMN_HEADINGS: Readonly<Record<InvoiceItemColumnToken, string>> = {
+  'item.no': 'No',
+  'item.description': 'Uraian',
+  'item.quantity': 'Jml',
+  'item.unitPrice': 'Harga Satuan',
+  'item.amount': 'Jumlah',
+};
 
 type BuildInvoiceDocumentHtmlParams = {
   readonly contentHtml: string;
   readonly resolved: ResolvedInvoiceVariables;
   readonly watermark: InvoiceDocumentWatermark;
+  /**
+   * The author's column choice for the `items` block (`P16-T11`,
+   * `settings.itemsColumns`). Optional because version rows published before
+   * the field existed carry no choice — they render the full built-in set.
+   */
+  readonly itemColumns?: readonly InvoiceItemColumnToken[];
 };
 
 /**
@@ -50,11 +61,25 @@ type BuildInvoiceDocumentHtmlParams = {
  * the footer (FR-E1-11).
  */
 export function buildInvoiceDocumentHtml(params: BuildInvoiceDocumentHtmlParams): string {
-  const filledHtml = fillTemplateTokens(params.contentHtml, params.resolved);
+  const itemColumns = resolveItemColumns(params.itemColumns);
+  const filledHtml = fillTemplateTokens(params.contentHtml, params.resolved, itemColumns);
   return wrapDocument(filledHtml, params.watermark);
 }
 
-function fillTemplateTokens(contentHtml: string, resolved: ResolvedInvoiceVariables): string {
+function resolveItemColumns(
+  itemColumns: readonly InvoiceItemColumnToken[] | undefined,
+): readonly InvoiceItemColumnToken[] {
+  if (itemColumns === undefined || itemColumns.length === 0) {
+    return INVOICE_ITEM_COLUMN_TOKENS;
+  }
+  return itemColumns;
+}
+
+function fillTemplateTokens(
+  contentHtml: string,
+  resolved: ResolvedInvoiceVariables,
+  itemColumns: readonly InvoiceItemColumnToken[],
+): string {
   const dom = htmlparser2.parseDocument(contentHtml);
   const tokenElements = domutils.findAll(
     (node): node is Element => node instanceof Element && node.attribs[TOKEN_ATTRIBUTE] !== undefined,
@@ -63,7 +88,7 @@ function fillTemplateTokens(contentHtml: string, resolved: ResolvedInvoiceVariab
   for (const element of tokenElements) {
     const token = element.attribs[TOKEN_ATTRIBUTE] ?? '';
     if (token === ITEMS_BLOCK_TOKEN) {
-      fillItemsBlock(element, resolved);
+      fillItemsBlock(element, resolved, itemColumns);
       continue;
     }
     if (IMAGE_TOKENS.has(token)) {
@@ -75,7 +100,11 @@ function fillTemplateTokens(contentHtml: string, resolved: ResolvedInvoiceVariab
   return serializeDom(dom.children);
 }
 
-function fillItemsBlock(element: Element, resolved: ResolvedInvoiceVariables): void {
+function fillItemsBlock(
+  element: Element,
+  resolved: ResolvedInvoiceVariables,
+  itemColumns: readonly InvoiceItemColumnToken[],
+): void {
   clearChildren(element);
   if (resolved.items.length === 0) {
     return;
@@ -83,9 +112,9 @@ function fillItemsBlock(element: Element, resolved: ResolvedInvoiceVariables): v
   const table = new Element('table', { class: 'hms-items' });
   const head = new Element('thead', {});
   const headRow = new Element('tr', {});
-  for (const column of ITEM_COLUMNS) {
+  for (const column of itemColumns) {
     const cell = new Element('th', {});
-    setElementText(cell, column.heading);
+    setElementText(cell, ITEM_COLUMN_HEADINGS[column]);
     domutils.appendChild(headRow, cell);
   }
   domutils.appendChild(head, headRow);
@@ -93,9 +122,9 @@ function fillItemsBlock(element: Element, resolved: ResolvedInvoiceVariables): v
   const body = new Element('tbody', {});
   for (const item of resolved.items) {
     const row = new Element('tr', {});
-    for (const column of ITEM_COLUMNS) {
-      const cell = new Element('td', { class: buildItemCellClass(column.token) });
-      setElementText(cell, item[column.token] ?? '');
+    for (const column of itemColumns) {
+      const cell = new Element('td', { class: buildItemCellClass(column) });
+      setElementText(cell, item[column] ?? '');
       domutils.appendChild(row, cell);
     }
     domutils.appendChild(body, row);

@@ -11,4 +11,5 @@ export type DocumentTemplateControllerListTemplatesV1200DataItemSettings = {
   paperSize: string;
   orientation: string;
   marginMm: DocumentTemplateControllerListTemplatesV1200DataItemSettingsMarginMm;
+  itemsColumns: string[];
 };

@@ -4,6 +4,18 @@ import { describe, expect, it } from 'vitest';
 import { resolveAppAbilityRules } from './app-ability.server';
 
 describe('resolveAppAbilityRules integration permissions', () => {
+  it('maps document-template permissions to the DocumentTemplate subject', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: ['document-template.read:any', 'document-template.write:any'],
+      }),
+    );
+
+    expect(ability.can('read', 'DocumentTemplate')).toBe(true);
+    expect(ability.can('write', 'DocumentTemplate')).toBe(true);
+    expect(ability.can('delete', 'DocumentTemplate')).toBe(false);
+  });
+
   it('maps pharmacy inventory permissions independently from medication catalog permissions', () => {
     const ability = buildAppAbility(
       resolveAppAbilityRules({

@@ -141,6 +141,11 @@ export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from '#com
 export { RichTextEditor } from '#components/rich-text-editor';
 export { buildRichTextEditorExtensions } from '#lib/rich-text/rich-text-editor-extensions';
 export { PageBreakNode } from '#lib/rich-text/page-break-node';
+export { VariableChipNode } from '#lib/rich-text/variable-chip-node';
+export { VariableBlockNode } from '#lib/rich-text/variable-block-node';
+export { isTemplateVariableToken } from '#lib/rich-text/is-template-variable-token';
+export type { RichTextVariableDefinition } from '#lib/rich-text/rich-text-variable-definition';
+export type { Editor as RichTextEditorInstance } from '@tiptap/react';
 export { Textarea } from '#components/textarea';
 export { cn } from '#lib/utils';
 export {

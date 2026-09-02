@@ -96,6 +96,8 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'PatientDocument' },
   { action: 'write', subject: 'PatientDocument' },
   { action: 'delete', subject: 'PatientDocument' },
+  { action: 'read', subject: 'DocumentTemplate' },
+  { action: 'write', subject: 'DocumentTemplate' },
   { action: 'manage', subject: 'BpjsConfig' },
   { action: 'sync', subject: 'BpjsReference' },
   { action: 'read', subject: 'BpjsReference' },

@@ -247,6 +247,7 @@ export class InvoiceDocumentService {
       const html = buildInvoiceDocumentHtml({
         contentHtml: layout.contentHtml,
         resolved: document.renderedData,
+        itemColumns: layout.settings.itemsColumns,
         watermark: {
           isVoid: document.hasVoidWatermark,
           reason: context.invoice.voidReason,

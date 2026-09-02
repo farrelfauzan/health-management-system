@@ -87,6 +87,35 @@ describe('buildInvoiceDocumentHtml', () => {
     expect(actual).toContain('Tindakan 7');
   });
 
+  it('renders only the configured item columns, in the configured order', () => {
+    // FR-E1-04 / P16-T11: the author's `settings.itemsColumns` decides the
+    // table shape — here amount first, then description, and nothing else.
+    const actual = buildInvoiceDocumentHtml({
+      contentHtml: '<div data-hms-var="items"></div>',
+      resolved: buildResolved(),
+      watermark: NO_WATERMARK,
+      itemColumns: ['item.amount', 'item.description'],
+    });
+
+    expect(actual).toContain('<thead><tr><th>Jumlah</th><th>Uraian</th></tr></thead>');
+    expect(actual).not.toContain('<th>No</th>');
+    expect(actual).not.toContain('Harga Satuan');
+    expect(actual.match(/<tbody><tr>(.*?)<\/tr>/s)?.[1]?.match(/<td/g)).toHaveLength(2);
+  });
+
+  it('falls back to every built-in column when no column config is given', () => {
+    const actual = buildInvoiceDocumentHtml({
+      contentHtml: '<div data-hms-var="items"></div>',
+      resolved: buildResolved(),
+      watermark: NO_WATERMARK,
+      itemColumns: [],
+    });
+
+    expect(actual).toContain(
+      '<thead><tr><th>No</th><th>Uraian</th><th>Jml</th><th>Harga Satuan</th><th>Jumlah</th></tr></thead>',
+    );
+  });
+
   it('renders an inline image token as an img and refuses a non-inline value', () => {
     const withInline = buildInvoiceDocumentHtml({
       contentHtml: '<span data-hms-var="clinic.logo"></span>',
