@@ -89,6 +89,8 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // rather than losing it to a silently narrower preset.
   { action: 'read', subject: 'ClinicProfile' },
   { action: 'write', subject: 'ClinicProfile' },
+  { action: 'read', subject: 'DocumentTemplate' },
+  { action: 'write', subject: 'DocumentTemplate' },
   { action: 'manage', subject: 'BpjsConfig' },
   { action: 'sync', subject: 'BpjsReference' },
   { action: 'read', subject: 'BpjsReference' },

@@ -1,10 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { EditorContent, useEditor } from '@tiptap/react';
+import { EditorContent, useEditor, type Editor } from '@tiptap/react';
 
 import { RichTextEditorToolbar } from '#components/rich-text-editor-toolbar';
 import { buildRichTextEditorExtensions } from '#lib/rich-text/rich-text-editor-extensions';
+import type { RichTextVariableDefinition } from '#lib/rich-text/rich-text-variable-definition';
 import { cn } from '#lib/utils';
 
 const EDITOR_CONTENT_CLASS_NAME = [
@@ -24,6 +25,8 @@ const EDITOR_CONTENT_CLASS_NAME = [
   '[&_.ProseMirror-selectednode]:ring-2 [&_.ProseMirror-selectednode]:ring-ring',
 ].join(' ');
 
+const NO_VARIABLES: readonly RichTextVariableDefinition[] = [];
+
 type RichTextEditorProps = {
   value: string;
   onValueChange: (value: string) => void;
@@ -32,6 +35,18 @@ type RichTextEditorProps = {
   className?: string;
   'aria-label'?: string;
   onImageError?: (message: string) => void;
+  /**
+   * The variable registry chips resolve their labels from. Changing the list
+   * rebuilds the editor (extensions are fixed at construction), so callers
+   * should pass a stable, fully loaded list rather than a growing one.
+   */
+  variables?: readonly RichTextVariableDefinition[];
+  /**
+   * Hands the live editor instance to the caller — the way a palette beside
+   * the editor inserts at the caret, or a settings panel reacts to which
+   * node is selected. Called with `null` when the editor is torn down.
+   */
+  onEditorReady?: (editor: Editor | null) => void;
 };
 
 export function RichTextEditor({
@@ -42,21 +57,30 @@ export function RichTextEditor({
   className,
   'aria-label': ariaLabel,
   onImageError,
+  variables = NO_VARIABLES,
+  onEditorReady,
 }: RichTextEditorProps): React.JSX.Element {
-  const editor = useEditor({
-    extensions: buildRichTextEditorExtensions(),
-    content: value,
-    editable: !disabled,
-    immediatelyRender: false,
-    editorProps: {
-      attributes: {
-        ...(id !== undefined ? { id } : {}),
-        class: EDITOR_CONTENT_CLASS_NAME,
-        'aria-label': ariaLabel ?? 'Rich text editor',
+  const editor = useEditor(
+    {
+      extensions: buildRichTextEditorExtensions({ variables }),
+      content: value,
+      editable: !disabled,
+      immediatelyRender: false,
+      editorProps: {
+        attributes: {
+          ...(id !== undefined ? { id } : {}),
+          class: EDITOR_CONTENT_CLASS_NAME,
+          'aria-label': ariaLabel ?? 'Rich text editor',
+        },
       },
+      onUpdate: (context) => onValueChange(context.editor.getHTML()),
     },
-    onUpdate: (context) => onValueChange(context.editor.getHTML()),
-  });
+    [variables],
+  );
+  React.useEffect(() => {
+    onEditorReady?.(editor);
+    return () => onEditorReady?.(null);
+  }, [editor, onEditorReady]);
   React.useEffect(() => {
     if (!editor || editor.getHTML() === value) {
       return;
