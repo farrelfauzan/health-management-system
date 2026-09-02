@@ -14,7 +14,9 @@ import request from 'supertest';
 
 import { AppModule } from '../../app.module';
 import { AuditService } from '../../common/audit/audit.service';
+import { PdfRendererService } from '../../common/pdf/pdf-renderer.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { ObjectStorageService } from '../../common/storage/object-storage.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { DocumentTemplateRepository } from './repository/document-template.repository';
 
@@ -162,6 +164,14 @@ describe('Document templates integration', () => {
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   const prismaServiceMock = { $connect: jest.fn(), $disconnect: jest.fn() };
+  const pdfRendererMock = { render: jest.fn() };
+  const objectStorageMock = {
+    generateObjectKey: jest.fn(),
+    uploadObject: jest.fn(),
+    getSignedUrl: jest.fn(),
+    getObject: jest.fn(),
+    deleteObject: jest.fn(),
+  };
 
   function buildToken(sub: string, email: string): Promise<string> {
     return jwtService.signAsync({ sub, email }, { secret: 'dev-access-secret' });
@@ -198,6 +208,10 @@ describe('Document templates integration', () => {
       .useValue(prismaServiceMock)
       .overrideProvider(DocumentTemplateRepository)
       .useValue(fakeRepository)
+      .overrideProvider(PdfRendererService)
+      .useValue(pdfRendererMock)
+      .overrideProvider(ObjectStorageService)
+      .useValue(objectStorageMock)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -288,6 +302,69 @@ describe('Document templates integration', () => {
     // The working copy moved on; the published version's bytes did not.
     expect(edited.body.data.contentHtml).toBe('<p>v2 draft</p>');
     expect(fakeRepository.readVersions(templateId)[0]?.contentHtml).toBe('<p>v1</p>');
+  });
+
+  it('refuses publish when the draft references a token outside the registry (P16-T12)', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockWriteCapableAdmin();
+
+    const created = await request(app.getHttpServer())
+      .post(TEMPLATES_PATH)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        kind: 'INVOICE',
+        name: 'Salah ketik',
+        contentHtml:
+          '<p><span data-hms-var="patient.mrn"></span> <span data-hms-var="patient.mrnTypo"></span></p>',
+      });
+    const templateId = created.body.data.id;
+
+    const published = await request(app.getHttpServer())
+      .post(`${TEMPLATES_PATH}/${templateId}/publish`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(published.status).toBe(422);
+    expect(published.body.error.code).toBe('DOCUMENT_TEMPLATE_UNKNOWN_TOKENS');
+    expect(published.body.error.details).toEqual({ unknownTokens: ['patient.mrnTypo'] });
+    expect(fakeRepository.readVersions(templateId)).toHaveLength(0);
+  });
+
+  it('renders a fixture preview through the sidecar without creating any document row', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockWriteCapableAdmin();
+    pdfRendererMock.render.mockResolvedValue(new Uint8Array([0x25, 0x50, 0x44, 0x46]));
+    objectStorageMock.generateObjectKey.mockImplementation(
+      (input: { keyPrefix: string }) => `${input.keyPrefix}/preview.pdf`,
+    );
+    objectStorageMock.uploadObject.mockResolvedValue({ key: 'document-templates/previews/preview.pdf' });
+    objectStorageMock.getSignedUrl.mockResolvedValue({
+      url: 'https://objects.example/document-templates/previews/preview.pdf?sig=1',
+      expiresAt: '2026-09-01T05:05:00.000Z',
+    });
+    const created = await request(app.getHttpServer())
+      .post(TEMPLATES_PATH)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        kind: 'INVOICE',
+        name: 'Kuitansi',
+        contentHtml: '<h1><span data-hms-var="patient.fullName"></span></h1><div data-hms-var="items"></div>',
+      });
+    const templateId = created.body.data.id;
+
+    const preview = await request(app.getHttpServer())
+      .post(`${TEMPLATES_PATH}/${templateId}/preview`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(preview.status).toBe(200);
+    expect(preview.body.data.url).toContain('document-templates/previews/');
+    expect(preview.body.data.expiresAt).toBe('2026-09-01T05:05:00.000Z');
+    expect(Array.isArray(preview.body.data.warnings)).toBe(true);
+    // US-E1-04: no patient or invoice query, nothing persisted — the only
+    // persistence port in this test is the Prisma mock, and it saw nothing.
+    expect(Object.keys(prismaServiceMock)).toEqual(['$connect', '$disconnect']);
+    expect(fakeRepository.readVersions(templateId)).toHaveLength(0);
+    const [uploaded] = objectStorageMock.uploadObject.mock.calls[0] as [{ key: string }];
+    expect(uploaded.key.startsWith('document-templates/previews/')).toBe(true);
   });
 
   it('refuses publish on a blank template and set-default before any publish', async () => {

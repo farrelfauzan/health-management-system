@@ -369,6 +369,26 @@
           "left": "Left",
           "portrait": "Portrait",
           "landscape": "Landscape"
+        },
+        "preview": {
+          "action": "Preview",
+          "saveAndPreview": "Save & preview",
+          "title": "Preview with sample data",
+          "description": "Rendered against a built-in fixture invoice: a 120-character patient name, 12 line items across a page break, a zero-price item and a total above the materai threshold. No real patient data is used and nothing is stored with an invoice.",
+          "openInNewTab": "Open in new tab",
+          "expiresAt": "This preview link expires at {time}.",
+          "warningsTitle": "{count, plural, one {# variable had no fixture value and printed empty} other {# variables had no fixture value and printed empty}}",
+          "error": "The preview could not be rendered. Check the PDF renderer and try again.",
+          "retry": "Retry"
+        },
+        "publish": {
+          "action": "Publish",
+          "saveAndPublish": "Save & publish",
+          "success": "Version {version} published.",
+          "error": "The template could not be published. Please try again.",
+          "unknownTokensTitle": "{count, plural, one {Publish refused: # variable is not in the registry} other {Publish refused: # variables are not in the registry}}",
+          "unknownTokensHint": "Remove or replace each chip below, save, then publish again.",
+          "dismiss": "Dismiss"
         }
       }
     },

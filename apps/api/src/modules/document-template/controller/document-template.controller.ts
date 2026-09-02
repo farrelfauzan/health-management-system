@@ -21,6 +21,7 @@ import { DOCUMENT_TEMPLATE_EXAMPLES } from '../../../common/openapi/document-tem
 import { CreateDocumentTemplateDto } from '../dto/create-document-template.dto';
 import { ListDocumentTemplatesQueryDto } from '../dto/list-document-templates-query.dto';
 import { UpdateDocumentTemplateDto } from '../dto/update-document-template.dto';
+import { DocumentTemplatePreviewService } from '../service/document-template-preview.service';
 import { DocumentTemplateService } from '../service/document-template.service';
 
 @ApiTags('Document Templates')
@@ -29,7 +30,10 @@ import { DocumentTemplateService } from '../service/document-template.service';
   path: 'document-templates',
 })
 export class DocumentTemplateController {
-  constructor(private readonly documentTemplateService: DocumentTemplateService) {}
+  constructor(
+    private readonly documentTemplateService: DocumentTemplateService,
+    private readonly documentTemplatePreviewService: DocumentTemplatePreviewService,
+  ) {}
 
   @Get()
   @Auth([{ action: 'read', subject: 'DocumentTemplate' }])
@@ -103,13 +107,35 @@ export class DocumentTemplateController {
     };
   }
 
+  @Post(':id/preview')
+  @HttpCode(200)
+  @Auth([{ action: 'write', subject: 'DocumentTemplate' }])
+  @ApiEndpoint({
+    summary: 'Render the working copy against the built-in fixture invoice',
+    responseDescription:
+      'The draft was rendered against a hostile fixture (120-character name, 12 line items, a zero-price item, a total above the materai threshold). The URL is short-lived; no invoice document is created and no patient data is read.',
+    responseExample: { data: DOCUMENT_TEMPLATE_EXAMPLES.previewView },
+    notFoundDescription: 'Document template not found.',
+  })
+  async previewTemplate(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const preview = await this.documentTemplatePreviewService.previewTemplate(id, actor);
+
+    return {
+      data: preview,
+    };
+  }
+
   @Post(':id/publish')
   @HttpCode(200)
   @Auth([{ action: 'write', subject: 'DocumentTemplate' }])
   @ApiEndpoint({
     summary: 'Publish an immutable version of a template',
     responseDescription:
-      'A new immutable version was cut from the working copy. Rendered documents point at versions, so later edits never rewrite what this publish produced.',
+      'A new immutable version was cut from the working copy. Rendered documents point at versions, so later edits never rewrite what this publish produced. A draft referencing a token outside the registry is refused with 422 and `error.details.unknownTokens`.',
     responseExample: {
       data: DOCUMENT_TEMPLATE_EXAMPLES.view,
       message: 'Document template published',

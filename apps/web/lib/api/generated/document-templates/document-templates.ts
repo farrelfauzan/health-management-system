@@ -26,6 +26,7 @@ import type {
   DocumentTemplateControllerCreateTemplateV1201,
   DocumentTemplateControllerListTemplatesV1200,
   DocumentTemplateControllerListTemplatesV1Params,
+  DocumentTemplateControllerPreviewTemplateV1200,
   DocumentTemplateControllerPublishTemplateV1200,
   DocumentTemplateControllerSetDefaultTemplateV1200,
   DocumentTemplateControllerUpdateTemplateV1200,
@@ -423,6 +424,98 @@ export function useDocumentTemplateControllerArchiveTemplateV1<TData = Awaited<R
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentTemplateControllerArchiveTemplateV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Render the working copy against the built-in fixture invoice
+ */
+export const documentTemplateControllerPreviewTemplateV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerPreviewTemplateV1200>(
+      {url: `/api/v1/document-templates/${id}/preview`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerPreviewTemplateV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/document-templates/${id}/preview`
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerPreviewTemplateV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerPreviewTemplateV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>> = ({ signal }) => documentTemplateControllerPreviewTemplateV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerPreviewTemplateV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>>
+export type DocumentTemplateControllerPreviewTemplateV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerPreviewTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerPreviewTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerPreviewTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Render the working copy against the built-in fixture invoice
+ */
+
+export function useDocumentTemplateControllerPreviewTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerPreviewTemplateV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

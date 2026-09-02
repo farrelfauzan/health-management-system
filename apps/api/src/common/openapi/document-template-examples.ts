@@ -62,4 +62,14 @@ export const DOCUMENT_TEMPLATE_EXAMPLES = {
     id: '5b7c1a02-88d4-4f0f-bb0e-9f2ad4e6a913',
     archivedAt: '2026-09-01T05:00:00.000Z',
   },
+  previewView: {
+    url: 'https://objects.example/document-templates/previews/3f1c…/preview.pdf?X-Amz-Signature=…',
+    expiresAt: '2026-09-01T05:05:00.000Z',
+    warnings: [
+      {
+        token: 'clinic.logo',
+        reason: 'The fixture carries no clinic logo',
+      },
+    ],
+  },
 } as const;

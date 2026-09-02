@@ -116,6 +116,24 @@ describe('buildInvoiceDocumentHtml', () => {
     );
   });
 
+  it('reserves the materai area only when asked (FR-E1-13)', () => {
+    const withArea = buildInvoiceDocumentHtml({
+      contentHtml: '<p>a</p>',
+      resolved: buildResolved(),
+      watermark: NO_WATERMARK,
+      showMateraiArea: true,
+    });
+    const withoutArea = buildInvoiceDocumentHtml({
+      contentHtml: '<p>a</p>',
+      resolved: buildResolved(),
+      watermark: NO_WATERMARK,
+    });
+
+    expect(withArea).toContain('class="hms-materai"');
+    expect(withArea).toContain('page-break-inside: avoid');
+    expect(withoutArea).not.toContain('hms-materai"');
+  });
+
   it('renders an inline image token as an img and refuses a non-inline value', () => {
     const withInline = buildInvoiceDocumentHtml({
       contentHtml: '<span data-hms-var="clinic.logo"></span>',

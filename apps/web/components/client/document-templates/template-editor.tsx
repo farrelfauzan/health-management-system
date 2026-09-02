@@ -22,6 +22,7 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 
 import { ItemsColumnsConfig } from '#components/client/document-templates/items-columns-config';
+import { TemplateEditorActions } from '#components/client/document-templates/template-editor-actions';
 import { TemplateSettingsFields } from '#components/client/document-templates/template-settings-fields';
 import { TemplateVariablePalette } from '#components/client/document-templates/template-variable-palette';
 import { documentTemplateControllerUpdateTemplateV1 } from '#lib/api/generated/document-templates/document-templates';
@@ -130,15 +131,32 @@ export function TemplateEditor({ template, canWrite, onBack }: TemplateEditorPro
     setSettings((current) => ({ ...current, itemsColumns }));
   }
 
-  function handleSave(): void {
-    setNotice(null);
+  function buildPayload(): UpdateDocumentTemplateInput {
     const trimmedDescription = description.trim();
-    saveMutation.mutate({
+    return {
       name: name.trim(),
       description: trimmedDescription === '' ? null : trimmedDescription,
       contentHtml,
       settings,
-    });
+    };
+  }
+
+  function handleSave(): void {
+    setNotice(null);
+    saveMutation.mutate(buildPayload());
+  }
+
+  async function saveDraft(): Promise<boolean> {
+    if (!isDirty) {
+      return true;
+    }
+    setNotice(null);
+    try {
+      await saveMutation.mutateAsync(buildPayload());
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   const showItemsColumns = isItemsBlockSelected || hasItemsBlock(contentHtml);
@@ -183,6 +201,14 @@ export function TemplateEditor({ template, canWrite, onBack }: TemplateEditorPro
           {t('editor.variablesError')}
         </p>
       ) : null}
+      <TemplateEditorActions
+        template={template}
+        canWrite={canWrite}
+        isDirty={isDirty}
+        isSaving={saveMutation.isPending}
+        hasContent={contentHtml.trim() !== '' && contentHtml !== '<p></p>'}
+        onSaveDraft={saveDraft}
+      />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="space-y-4">
           <div className="space-y-1">

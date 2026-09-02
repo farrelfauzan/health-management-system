@@ -15622,6 +15622,89 @@ paths:
         - bearer: []
       summary: Archive a document template
       tags: *a23
+  /api/v1/document-templates/{id}/preview:
+    post:
+      operationId: DocumentTemplateController_previewTemplate_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The draft was rendered against a hostile fixture (120-character
+            name, 12 line items, a zero-price item, a total above the materai
+            threshold). The URL is short-lived; no invoice document is created
+            and no patient data is read.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                      warnings:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            token:
+                              type: string
+                            reason:
+                              type: string
+                          required:
+                            - token
+                            - reason
+                    required:
+                      - url
+                      - expiresAt
+                      - warnings
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://objects.example/document-templates/previews/3f1c…/preview.pdf?X-Amz-Signature=…
+                    expiresAt: 2026-09-01T05:05:00.000Z
+                    warnings:
+                      - token: clinic.logo
+                        reason: The fixture carries no clinic logo
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document template not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document template not found.
+      security:
+        - bearer: []
+      summary: Render the working copy against the built-in fixture invoice
+      tags: *a23
   /api/v1/document-templates/{id}/publish:
     post:
       operationId: DocumentTemplateController_publishTemplate_v1
@@ -15635,7 +15718,8 @@ paths:
         "200":
           description: A new immutable version was cut from the working copy. Rendered
             documents point at versions, so later edits never rewrite what this
-            publish produced.
+            publish produced. A draft referencing a token outside the registry
+            is refused with 422 and `error.details.unknownTokens`.
           content:
             application/json:
               schema:
