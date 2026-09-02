@@ -22,9 +22,12 @@ import type {
 
 import type {
   ConfirmClinicDocumentUploadDto,
+  ConfirmPatientDocumentUploadDto,
   ConfirmPersonalDocumentUploadDto,
   CreateClinicDocumentUploadUrlDto,
+  CreatePatientDocumentUploadUrlDto,
   CreatePersonalDocumentUploadUrlDto,
+  DeletePatientDocumentDto,
   DocumentAdminControllerConfirmUploadV1201,
   DocumentAdminControllerCreateUploadUrlV1200,
   DocumentAdminControllerDeleteDocumentV1200,
@@ -34,6 +37,16 @@ import type {
   DocumentAdminControllerListDocumentsV1Params,
   DocumentAdminControllerReingestDocumentV1202,
   DocumentAdminControllerUpdateDocumentV1200,
+  EncounterDocumentControllerListEncounterDocumentsV1200,
+  PatientDocumentControllerConfirmUploadV1200,
+  PatientDocumentControllerCreateUploadUrlV1200,
+  PatientDocumentControllerListDocumentsV1200,
+  PatientDocumentControllerListDocumentsV1Params,
+  PatientDocumentDetailControllerDeleteDocumentV1200,
+  PatientDocumentDetailControllerGetDocumentV1200,
+  PatientDocumentDetailControllerGetDownloadUrlV1200,
+  PatientDocumentDetailControllerReleaseDocumentV1200,
+  PatientDocumentDetailControllerUpdateDocumentV1200,
   PersonalDocumentControllerConfirmUploadV1200,
   PersonalDocumentControllerCreateUploadUrlV1200,
   PersonalDocumentControllerDeleteDocumentV1200,
@@ -43,7 +56,10 @@ import type {
   PersonalDocumentControllerListDocumentsV1Params,
   PersonalDocumentControllerReingestDocumentV1202,
   PersonalDocumentControllerUpdateDocumentV1200,
+  PortalDocumentControllerListPortalDocumentsV1200,
+  PortalDocumentControllerListPortalDocumentsV1Params,
   UpdateClinicDocumentDto,
+  UpdatePatientDocumentDto,
   UpdatePersonalDocumentDto
 } from '../model';
 
@@ -1556,6 +1572,971 @@ export function usePersonalDocumentControllerReingestDocumentV1<TData = Awaited<
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getPersonalDocumentControllerReingestDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Sign a browser-direct upload of a clinical file for this patient
+ */
+export const patientDocumentControllerCreateUploadUrlV1 = (
+    patientId: string,
+    createPatientDocumentUploadUrlDto: CreatePatientDocumentUploadUrlDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientDocumentControllerCreateUploadUrlV1200>(
+      {url: `/api/v1/patients/${patientId}/documents/upload-url`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPatientDocumentUploadUrlDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientDocumentControllerCreateUploadUrlV1QueryKey = (patientId: string,
+    createPatientDocumentUploadUrlDto?: CreatePatientDocumentUploadUrlDto,) => {
+    return [
+    'POST', `/api/v1/patients/${patientId}/documents/upload-url`, createPatientDocumentUploadUrlDto
+    ] as const;
+    }
+
+
+export const getPatientDocumentControllerCreateUploadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError = unknown>(patientId: string,
+    createPatientDocumentUploadUrlDto: CreatePatientDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientDocumentControllerCreateUploadUrlV1QueryKey(patientId,createPatientDocumentUploadUrlDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>> = ({ signal }) => patientDocumentControllerCreateUploadUrlV1(patientId,createPatientDocumentUploadUrlDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: patientId !== null && patientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientDocumentControllerCreateUploadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>>
+export type PatientDocumentControllerCreateUploadUrlV1QueryError = unknown
+
+
+export function usePatientDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ patientId: string,
+    createPatientDocumentUploadUrlDto: CreatePatientDocumentUploadUrlDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ patientId: string,
+    createPatientDocumentUploadUrlDto: CreatePatientDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ patientId: string,
+    createPatientDocumentUploadUrlDto: CreatePatientDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Sign a browser-direct upload of a clinical file for this patient
+ */
+
+export function usePatientDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ patientId: string,
+    createPatientDocumentUploadUrlDto: CreatePatientDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientDocumentControllerCreateUploadUrlV1QueryOptions(patientId,createPatientDocumentUploadUrlDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record a completed upload as a clinical file on this patient’s record
+ */
+export const patientDocumentControllerConfirmUploadV1 = (
+    patientId: string,
+    confirmPatientDocumentUploadDto: ConfirmPatientDocumentUploadDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientDocumentControllerConfirmUploadV1200>(
+      {url: `/api/v1/patients/${patientId}/documents`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: confirmPatientDocumentUploadDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientDocumentControllerConfirmUploadV1QueryKey = (patientId: string,
+    confirmPatientDocumentUploadDto?: ConfirmPatientDocumentUploadDto,) => {
+    return [
+    'POST', `/api/v1/patients/${patientId}/documents`, confirmPatientDocumentUploadDto
+    ] as const;
+    }
+
+
+export const getPatientDocumentControllerConfirmUploadV1QueryOptions = <TData = Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError = unknown>(patientId: string,
+    confirmPatientDocumentUploadDto: ConfirmPatientDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientDocumentControllerConfirmUploadV1QueryKey(patientId,confirmPatientDocumentUploadDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>> = ({ signal }) => patientDocumentControllerConfirmUploadV1(patientId,confirmPatientDocumentUploadDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: patientId !== null && patientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientDocumentControllerConfirmUploadV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>>
+export type PatientDocumentControllerConfirmUploadV1QueryError = unknown
+
+
+export function usePatientDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ patientId: string,
+    confirmPatientDocumentUploadDto: ConfirmPatientDocumentUploadDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ patientId: string,
+    confirmPatientDocumentUploadDto: ConfirmPatientDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ patientId: string,
+    confirmPatientDocumentUploadDto: ConfirmPatientDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record a completed upload as a clinical file on this patient’s record
+ */
+
+export function usePatientDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ patientId: string,
+    confirmPatientDocumentUploadDto: ConfirmPatientDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerConfirmUploadV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientDocumentControllerConfirmUploadV1QueryOptions(patientId,confirmPatientDocumentUploadDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List this patient’s clinical files
+ */
+export const patientDocumentControllerListDocumentsV1 = (
+    patientId: string,
+    params?: PatientDocumentControllerListDocumentsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientDocumentControllerListDocumentsV1200>(
+      {url: `/api/v1/patients/${patientId}/documents`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientDocumentControllerListDocumentsV1QueryKey = (patientId: string,
+    params?: PatientDocumentControllerListDocumentsV1Params,) => {
+    return [
+    `/api/v1/patients/${patientId}/documents`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getPatientDocumentControllerListDocumentsV1QueryOptions = <TData = Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError = unknown>(patientId: string,
+    params?: PatientDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientDocumentControllerListDocumentsV1QueryKey(patientId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>> = ({ signal }) => patientDocumentControllerListDocumentsV1(patientId,params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: patientId !== null && patientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientDocumentControllerListDocumentsV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>>
+export type PatientDocumentControllerListDocumentsV1QueryError = unknown
+
+
+export function usePatientDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError = unknown>(
+ patientId: string,
+    params: undefined |  PatientDocumentControllerListDocumentsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError = unknown>(
+ patientId: string,
+    params?: PatientDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError = unknown>(
+ patientId: string,
+    params?: PatientDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List this patient’s clinical files
+ */
+
+export function usePatientDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError = unknown>(
+ patientId: string,
+    params?: PatientDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentControllerListDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientDocumentControllerListDocumentsV1QueryOptions(patientId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read one clinical file’s metadata
+ */
+export const patientDocumentDetailControllerGetDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientDocumentDetailControllerGetDocumentV1200>(
+      {url: `/api/v1/patient-documents/${id}`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientDocumentDetailControllerGetDocumentV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/patient-documents/${id}`
+    ] as const;
+    }
+
+
+export const getPatientDocumentDetailControllerGetDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientDocumentDetailControllerGetDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>> = ({ signal }) => patientDocumentDetailControllerGetDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientDocumentDetailControllerGetDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>>
+export type PatientDocumentDetailControllerGetDocumentV1QueryError = unknown
+
+
+export function usePatientDocumentDetailControllerGetDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerGetDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerGetDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read one clinical file’s metadata
+ */
+
+export function usePatientDocumentDetailControllerGetDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientDocumentDetailControllerGetDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Edit one clinical file’s metadata
+ */
+export const patientDocumentDetailControllerUpdateDocumentV1 = (
+    id: string,
+    updatePatientDocumentDto: UpdatePatientDocumentDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientDocumentDetailControllerUpdateDocumentV1200>(
+      {url: `/api/v1/patient-documents/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updatePatientDocumentDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientDocumentDetailControllerUpdateDocumentV1QueryKey = (id: string,
+    updatePatientDocumentDto?: UpdatePatientDocumentDto,) => {
+    return [
+    'PATCH', `/api/v1/patient-documents/${id}`, updatePatientDocumentDto
+    ] as const;
+    }
+
+
+export const getPatientDocumentDetailControllerUpdateDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError = unknown>(id: string,
+    updatePatientDocumentDto: UpdatePatientDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientDocumentDetailControllerUpdateDocumentV1QueryKey(id,updatePatientDocumentDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>> = ({ signal }) => patientDocumentDetailControllerUpdateDocumentV1(id,updatePatientDocumentDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientDocumentDetailControllerUpdateDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>>
+export type PatientDocumentDetailControllerUpdateDocumentV1QueryError = unknown
+
+
+export function usePatientDocumentDetailControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updatePatientDocumentDto: UpdatePatientDocumentDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updatePatientDocumentDto: UpdatePatientDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updatePatientDocumentDto: UpdatePatientDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Edit one clinical file’s metadata
+ */
+
+export function usePatientDocumentDetailControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updatePatientDocumentDto: UpdatePatientDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerUpdateDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientDocumentDetailControllerUpdateDocumentV1QueryOptions(id,updatePatientDocumentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Soft-delete one clinical file, with a required reason
+ */
+export const patientDocumentDetailControllerDeleteDocumentV1 = (
+    id: string,
+    deletePatientDocumentDto: DeletePatientDocumentDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientDocumentDetailControllerDeleteDocumentV1200>(
+      {url: `/api/v1/patient-documents/${id}`, method: 'DELETE',
+      headers: {'Content-Type': 'application/json', },
+      data: deletePatientDocumentDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientDocumentDetailControllerDeleteDocumentV1QueryKey = (id: string,
+    deletePatientDocumentDto?: DeletePatientDocumentDto,) => {
+    return [
+    'DELETE', `/api/v1/patient-documents/${id}`, deletePatientDocumentDto
+    ] as const;
+    }
+
+
+export const getPatientDocumentDetailControllerDeleteDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError = unknown>(id: string,
+    deletePatientDocumentDto: DeletePatientDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientDocumentDetailControllerDeleteDocumentV1QueryKey(id,deletePatientDocumentDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>> = ({ signal }) => patientDocumentDetailControllerDeleteDocumentV1(id,deletePatientDocumentDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientDocumentDetailControllerDeleteDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>>
+export type PatientDocumentDetailControllerDeleteDocumentV1QueryError = unknown
+
+
+export function usePatientDocumentDetailControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string,
+    deletePatientDocumentDto: DeletePatientDocumentDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string,
+    deletePatientDocumentDto: DeletePatientDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string,
+    deletePatientDocumentDto: DeletePatientDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Soft-delete one clinical file, with a required reason
+ */
+
+export function usePatientDocumentDetailControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string,
+    deletePatientDocumentDto: DeletePatientDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerDeleteDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientDocumentDetailControllerDeleteDocumentV1QueryOptions(id,deletePatientDocumentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Mint a signed download URL for one clinical file
+ */
+export const patientDocumentDetailControllerGetDownloadUrlV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientDocumentDetailControllerGetDownloadUrlV1200>(
+      {url: `/api/v1/patient-documents/${id}/download`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientDocumentDetailControllerGetDownloadUrlV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/patient-documents/${id}/download`
+    ] as const;
+    }
+
+
+export const getPatientDocumentDetailControllerGetDownloadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientDocumentDetailControllerGetDownloadUrlV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>> = ({ signal }) => patientDocumentDetailControllerGetDownloadUrlV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientDocumentDetailControllerGetDownloadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>>
+export type PatientDocumentDetailControllerGetDownloadUrlV1QueryError = unknown
+
+
+export function usePatientDocumentDetailControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Mint a signed download URL for one clinical file
+ */
+
+export function usePatientDocumentDetailControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerGetDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientDocumentDetailControllerGetDownloadUrlV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Release one clinical file to the patient portal
+ */
+export const patientDocumentDetailControllerReleaseDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientDocumentDetailControllerReleaseDocumentV1200>(
+      {url: `/api/v1/patient-documents/${id}/release`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientDocumentDetailControllerReleaseDocumentV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/patient-documents/${id}/release`
+    ] as const;
+    }
+
+
+export const getPatientDocumentDetailControllerReleaseDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientDocumentDetailControllerReleaseDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>> = ({ signal }) => patientDocumentDetailControllerReleaseDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientDocumentDetailControllerReleaseDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>>
+export type PatientDocumentDetailControllerReleaseDocumentV1QueryError = unknown
+
+
+export function usePatientDocumentDetailControllerReleaseDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerReleaseDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientDocumentDetailControllerReleaseDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Release one clinical file to the patient portal
+ */
+
+export function usePatientDocumentDetailControllerReleaseDocumentV1<TData = Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientDocumentDetailControllerReleaseDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientDocumentDetailControllerReleaseDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List the documents for an encounter’s patient, grouped by visit
+ */
+export const encounterDocumentControllerListEncounterDocumentsV1 = (
+    encounterId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<EncounterDocumentControllerListEncounterDocumentsV1200>(
+      {url: `/api/v1/encounters/${encounterId}/documents`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getEncounterDocumentControllerListEncounterDocumentsV1QueryKey = (encounterId: string,) => {
+    return [
+    `/api/v1/encounters/${encounterId}/documents`
+    ] as const;
+    }
+
+
+export const getEncounterDocumentControllerListEncounterDocumentsV1QueryOptions = <TData = Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError = unknown>(encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getEncounterDocumentControllerListEncounterDocumentsV1QueryKey(encounterId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>> = ({ signal }) => encounterDocumentControllerListEncounterDocumentsV1(encounterId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type EncounterDocumentControllerListEncounterDocumentsV1QueryResult = NonNullable<Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>>
+export type EncounterDocumentControllerListEncounterDocumentsV1QueryError = unknown
+
+
+export function useEncounterDocumentControllerListEncounterDocumentsV1<TData = Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError = unknown>(
+ encounterId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterDocumentControllerListEncounterDocumentsV1<TData = Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterDocumentControllerListEncounterDocumentsV1<TData = Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List the documents for an encounter’s patient, grouped by visit
+ */
+
+export function useEncounterDocumentControllerListEncounterDocumentsV1<TData = Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterDocumentControllerListEncounterDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getEncounterDocumentControllerListEncounterDocumentsV1QueryOptions(encounterId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List your own released clinical documents
+ */
+export const portalDocumentControllerListPortalDocumentsV1 = (
+    params?: PortalDocumentControllerListPortalDocumentsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PortalDocumentControllerListPortalDocumentsV1200>(
+      {url: `/api/v1/portal/me/documents`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getPortalDocumentControllerListPortalDocumentsV1QueryKey = (params?: PortalDocumentControllerListPortalDocumentsV1Params,) => {
+    return [
+    `/api/v1/portal/me/documents`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getPortalDocumentControllerListPortalDocumentsV1QueryOptions = <TData = Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError = unknown>(params?: PortalDocumentControllerListPortalDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPortalDocumentControllerListPortalDocumentsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>> = ({ signal }) => portalDocumentControllerListPortalDocumentsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PortalDocumentControllerListPortalDocumentsV1QueryResult = NonNullable<Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>>
+export type PortalDocumentControllerListPortalDocumentsV1QueryError = unknown
+
+
+export function usePortalDocumentControllerListPortalDocumentsV1<TData = Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError = unknown>(
+ params: undefined |  PortalDocumentControllerListPortalDocumentsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePortalDocumentControllerListPortalDocumentsV1<TData = Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError = unknown>(
+ params?: PortalDocumentControllerListPortalDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePortalDocumentControllerListPortalDocumentsV1<TData = Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError = unknown>(
+ params?: PortalDocumentControllerListPortalDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List your own released clinical documents
+ */
+
+export function usePortalDocumentControllerListPortalDocumentsV1<TData = Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError = unknown>(
+ params?: PortalDocumentControllerListPortalDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof portalDocumentControllerListPortalDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPortalDocumentControllerListPortalDocumentsV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-import { TEMPLATE_VARIABLE_KINDS } from '#document-templates/template-variables';
+import {
+  INVOICE_ITEM_COLUMN_TOKENS,
+  TEMPLATE_VARIABLE_KINDS,
+} from '#document-templates/template-variables';
 
 /**
  * OQ-2 resolved: no thermal-roll sizes. Clinics print on lightweight sheet
@@ -57,10 +60,27 @@ const DEFAULT_PAGE_MARGIN_MM = 10;
 
 const pageMarginMmSchema = z.number().min(0).max(MAX_PAGE_MARGIN_MM);
 
+export const invoiceItemColumnTokenSchema = z.enum(INVOICE_ITEM_COLUMN_TOKENS);
+
 /**
- * Layout settings snapshotted with every published version. `P16-T11` extends
- * this with the repeating-block column config; keeping it strict (not
- * passthrough) means an unknown key is a validation error today rather than a
+ * The repeating-block column config (`P16-T11`, FR-E1-04): which `item.*`
+ * columns the `items` block renders and in which order. Lives in `settings`
+ * rather than on the `<div data-hms-var="items">` element because the
+ * sanitiser strips every attribute but the token from a chip. Defaults to
+ * the full built-in column set so a template saved before this field existed
+ * keeps rendering the table it always rendered.
+ */
+export const itemsColumnsSchema = z
+  .array(invoiceItemColumnTokenSchema)
+  .min(1)
+  .max(INVOICE_ITEM_COLUMN_TOKENS.length)
+  .refine((columns) => new Set(columns).size === columns.length, {
+    message: 'Each item column may appear at most once',
+  });
+
+/**
+ * Layout settings snapshotted with every published version. Strict (not
+ * passthrough) so an unknown key is a validation error today rather than a
  * silently ignored one that a later release starts honouring.
  */
 export const templateSettingsSchema = z
@@ -76,6 +96,7 @@ export const templateSettingsSchema = z
       })
       .strict()
       .default({}),
+    itemsColumns: itemsColumnsSchema.default([...INVOICE_ITEM_COLUMN_TOKENS]),
   })
   .strict();
 

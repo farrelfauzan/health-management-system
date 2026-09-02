@@ -15106,10 +15106,15 @@ paths:
                                 - right
                                 - bottom
                                 - left
+                            itemsColumns:
+                              type: array
+                              items:
+                                type: string
                           required:
                             - paperSize
                             - orientation
                             - marginMm
+                            - itemsColumns
                         latestPublishedVersion:
                           type: object
                           properties:
@@ -15160,6 +15165,12 @@ paths:
                           right: 10
                           bottom: 10
                           left: 10
+                        itemsColumns:
+                          - item.no
+                          - item.description
+                          - item.quantity
+                          - item.unitPrice
+                          - item.amount
                       latestPublishedVersion:
                         id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
                         versionNumber: 3
@@ -15215,6 +15226,12 @@ paths:
                       right: 10
                       bottom: 10
                       left: 10
+                    itemsColumns:
+                      - item.no
+                      - item.description
+                      - item.quantity
+                      - item.unitPrice
+                      - item.amount
       responses:
         "201":
           description: The template was created as a DRAFT working copy. Its HTML was
@@ -15264,10 +15281,15 @@ paths:
                               - right
                               - bottom
                               - left
+                          itemsColumns:
+                            type: array
+                            items:
+                              type: string
                         required:
                           - paperSize
                           - orientation
                           - marginMm
+                          - itemsColumns
                       createdAt:
                         type: string
                       updatedAt:
@@ -15304,6 +15326,12 @@ paths:
                         right: 10
                         bottom: 10
                         left: 10
+                      itemsColumns:
+                        - item.no
+                        - item.description
+                        - item.quantity
+                        - item.unitPrice
+                        - item.amount
                     createdAt: 2026-09-01T04:00:00.000Z
                     updatedAt: 2026-09-01T04:00:00.000Z
                   message: Document template created
@@ -15409,10 +15437,15 @@ paths:
                               - right
                               - bottom
                               - left
+                          itemsColumns:
+                            type: array
+                            items:
+                              type: string
                         required:
                           - paperSize
                           - orientation
                           - marginMm
+                          - itemsColumns
                       latestPublishedVersion:
                         type: object
                         properties:
@@ -15466,6 +15499,12 @@ paths:
                         right: 10
                         bottom: 10
                         left: 10
+                      itemsColumns:
+                        - item.no
+                        - item.description
+                        - item.quantity
+                        - item.unitPrice
+                        - item.amount
                     latestPublishedVersion:
                       id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
                       versionNumber: 3
@@ -15642,10 +15681,15 @@ paths:
                               - right
                               - bottom
                               - left
+                          itemsColumns:
+                            type: array
+                            items:
+                              type: string
                         required:
                           - paperSize
                           - orientation
                           - marginMm
+                          - itemsColumns
                       latestPublishedVersion:
                         type: object
                         properties:
@@ -15699,6 +15743,12 @@ paths:
                         right: 10
                         bottom: 10
                         left: 10
+                      itemsColumns:
+                        - item.no
+                        - item.description
+                        - item.quantity
+                        - item.unitPrice
+                        - item.amount
                     latestPublishedVersion:
                       id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
                       versionNumber: 3
@@ -15796,10 +15846,15 @@ paths:
                               - right
                               - bottom
                               - left
+                          itemsColumns:
+                            type: array
+                            items:
+                              type: string
                         required:
                           - paperSize
                           - orientation
                           - marginMm
+                          - itemsColumns
                       latestPublishedVersion:
                         type: object
                         properties:
@@ -15853,6 +15908,12 @@ paths:
                         right: 10
                         bottom: 10
                         left: 10
+                      itemsColumns:
+                        - item.no
+                        - item.description
+                        - item.quantity
+                        - item.unitPrice
+                        - item.amount
                     latestPublishedVersion:
                       id: 9c2b8a10-3d41-45d0-8e4d-6bb1f3a7c552
                       versionNumber: 3
@@ -25441,6 +25502,1304 @@ paths:
         - bearer: []
       summary: Queue one of your documents for re-ingestion
       tags: *a39
+  /api/v1/patients/{patientId}/documents/upload-url:
+    post:
+      operationId: PatientDocumentController_createUploadUrl_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePatientDocumentUploadUrlDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  mimeType: application/pdf
+                  sizeBytes: 3145728
+      responses:
+        "200":
+          description: A short-lived signed URL the client PUTs the file to directly. The
+            declared content type and size are validated before signing and
+            signed into the URL. Nothing is persisted yet — call POST
+            /patients/:patientId/documents with the returned storageKey to
+            record it. A doctor may sign uploads only for patients assigned to
+            them.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      storageKey:
+                        type: string
+                      expiresAt:
+                        type: string
+                      requiredHeaders:
+                        type: object
+                        properties:
+                          Content-Type:
+                            type: string
+                          Content-Length:
+                            type: string
+                        required:
+                          - Content-Type
+                          - Content-Length
+                    required:
+                      - url
+                      - storageKey
+                      - expiresAt
+                      - requiredHeaders
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/patient/9f7c2a54-1be0-4c11-9c6f-1d2f8a0b3c44.pdf?X-Amz-Signature=...
+                    storageKey: documents/patient/9f7c2a54-1be0-4c11-9c6f-1d2f8a0b3c44.pdf
+                    expiresAt: 2026-09-01T09:05:00.000Z
+                    requiredHeaders:
+                      Content-Type: application/pdf
+                      Content-Length: "3145728"
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found.
+      security:
+        - bearer: []
+      summary: Sign a browser-direct upload of a clinical file for this patient
+      tags: &a40
+        - Document Management
+  /api/v1/patients/{patientId}/documents:
+    post:
+      operationId: PatientDocumentController_confirmUpload_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmPatientDocumentUploadDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  storageKey: documents/patient/9f7c2a54-1be0-4c11-9c6f-1d2f8a0b3c44.pdf
+                  title: Hasil laboratorium darah lengkap
+                  category: LAB_RESULT
+                  documentDate: 2026-08-25
+                  language: ID
+      responses:
+        "200":
+          description: "Records the uploaded object against the patient, tagged with a
+            category and optionally linked to the encounter or admission it
+            arose from — the episode must belong to this patient. The object’s
+            bytes must agree with the declared type (SJ-21): a file that fails
+            the check is deleted from storage, audit-logged, and refused with
+            400; accepted images are re-encoded before storage, which strips
+            EXIF/GPS (FR-E2-09). Clinical files never enter the retrieval
+            corpus."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      encounterId:
+                        nullable: true
+                      admissionId:
+                        nullable: true
+                      category:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      documentDate:
+                        type: string
+                      notes:
+                        type: string
+                      releasedToPatient:
+                        type: boolean
+                      releasedAt:
+                        nullable: true
+                      releasedById:
+                        nullable: true
+                      uploadedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - encounterId
+                      - admissionId
+                      - category
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - documentDate
+                      - notes
+                      - releasedToPatient
+                      - releasedAt
+                      - releasedById
+                      - uploadedById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2d6a4f08-93bc-47e1-8a5d-6c1e0b7f9a32
+                    patientId: 5b8e1c70-2f4a-4d6b-9e3c-8a7f0d1b2c43
+                    encounterId: null
+                    admissionId: null
+                    category: LAB_RESULT
+                    title: Hasil laboratorium darah lengkap
+                    mimeType: application/pdf
+                    sizeBytes: 3145728
+                    language: ID
+                    documentDate: 2026-08-25
+                    notes: Dibawa pasien dari lab eksternal
+                    releasedToPatient: false
+                    releasedAt: null
+                    releasedById: null
+                    uploadedById: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                    createdAt: 2026-09-01T09:05:12.000Z
+                    updatedAt: 2026-09-01T09:05:12.000Z
+                  message: Document added to the patient record
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found.
+      security:
+        - bearer: []
+      summary: Record a completed upload as a clinical file on this patient’s record
+      tags: *a40
+    get:
+      operationId: PatientDocumentController_listDocuments_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: category
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - LAB_RESULT
+              - RADIOLOGY
+              - EXTERNAL_MEDICAL_RECORD
+              - REFERRAL_LETTER
+              - CONSENT_FORM
+              - DISCHARGE_SUMMARY
+              - MEDICAL_CERTIFICATE
+              - INSURANCE
+              - IDENTITY
+              - OTHER
+        - name: encounterId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: admissionId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: documentDateFrom
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+        - name: documentDateTo
+          required: false
+          in: query
+          schema:
+            pattern: ^\d{4}-\d{2}-\d{2}$
+            type: string
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: Newest-first by document date, filterable by category, episode, and
+            date range (FR-E2-04). A doctor sees the list when the patient is
+            assigned to them or they attended one of the patient’s encounters;
+            the patient themselves sees only files a clinician has released,
+            with staff notes withheld.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        patientId:
+                          type: string
+                        encounterId:
+                          nullable: true
+                        admissionId:
+                          nullable: true
+                        category:
+                          type: string
+                        title:
+                          type: string
+                        mimeType:
+                          type: string
+                        sizeBytes:
+                          type: integer
+                        language:
+                          type: string
+                        documentDate:
+                          type: string
+                        notes:
+                          type: string
+                        releasedToPatient:
+                          type: boolean
+                        releasedAt:
+                          nullable: true
+                        releasedById:
+                          nullable: true
+                        uploadedById:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - patientId
+                        - encounterId
+                        - admissionId
+                        - category
+                        - title
+                        - mimeType
+                        - sizeBytes
+                        - language
+                        - documentDate
+                        - notes
+                        - releasedToPatient
+                        - releasedAt
+                        - releasedById
+                        - uploadedById
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 2d6a4f08-93bc-47e1-8a5d-6c1e0b7f9a32
+                      patientId: 5b8e1c70-2f4a-4d6b-9e3c-8a7f0d1b2c43
+                      encounterId: null
+                      admissionId: null
+                      category: LAB_RESULT
+                      title: Hasil laboratorium darah lengkap
+                      mimeType: application/pdf
+                      sizeBytes: 3145728
+                      language: ID
+                      documentDate: 2026-08-25
+                      notes: Dibawa pasien dari lab eksternal
+                      releasedToPatient: false
+                      releasedAt: null
+                      releasedById: null
+                      uploadedById: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                      createdAt: 2026-09-01T09:05:12.000Z
+                      updatedAt: 2026-09-01T09:05:12.000Z
+                  meta:
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found.
+      security:
+        - bearer: []
+      summary: List this patient’s clinical files
+      tags: *a40
+  /api/v1/patient-documents/{id}:
+    get:
+      operationId: PatientDocumentDetailController_getDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The document’s metadata. Readable by staff with ANY scope, by a
+            doctor with an active assignment or an attended encounter for the
+            patient, and by the patient themselves once released — an unreleased
+            document reports to the patient as not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      encounterId:
+                        nullable: true
+                      admissionId:
+                        nullable: true
+                      category:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      documentDate:
+                        type: string
+                      notes:
+                        type: string
+                      releasedToPatient:
+                        type: boolean
+                      releasedAt:
+                        nullable: true
+                      releasedById:
+                        nullable: true
+                      uploadedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - encounterId
+                      - admissionId
+                      - category
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - documentDate
+                      - notes
+                      - releasedToPatient
+                      - releasedAt
+                      - releasedById
+                      - uploadedById
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 2d6a4f08-93bc-47e1-8a5d-6c1e0b7f9a32
+                    patientId: 5b8e1c70-2f4a-4d6b-9e3c-8a7f0d1b2c43
+                    encounterId: null
+                    admissionId: null
+                    category: LAB_RESULT
+                    title: Hasil laboratorium darah lengkap
+                    mimeType: application/pdf
+                    sizeBytes: 3145728
+                    language: ID
+                    documentDate: 2026-08-25
+                    notes: Dibawa pasien dari lab eksternal
+                    releasedToPatient: false
+                    releasedAt: null
+                    releasedById: null
+                    uploadedById: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                    createdAt: 2026-09-01T09:05:12.000Z
+                    updatedAt: 2026-09-01T09:05:12.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Read one clinical file’s metadata
+      tags: &a41
+        - Document Management
+    patch:
+      operationId: PatientDocumentDetailController_updateDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePatientDocumentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  category: RADIOLOGY
+                  notes: Kategori dikoreksi setelah verifikasi
+      responses:
+        "200":
+          description: The updated document. The stored file is immutable — a wrong scan
+            is deleted with a reason and re-uploaded. Passing null unlinks a
+            care episode, which is required before a linked encounter can be
+            retired.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      encounterId:
+                        nullable: true
+                      admissionId:
+                        nullable: true
+                      category:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      documentDate:
+                        type: string
+                      notes:
+                        type: string
+                      releasedToPatient:
+                        type: boolean
+                      releasedAt:
+                        nullable: true
+                      releasedById:
+                        nullable: true
+                      uploadedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - encounterId
+                      - admissionId
+                      - category
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - documentDate
+                      - notes
+                      - releasedToPatient
+                      - releasedAt
+                      - releasedById
+                      - uploadedById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2d6a4f08-93bc-47e1-8a5d-6c1e0b7f9a32
+                    patientId: 5b8e1c70-2f4a-4d6b-9e3c-8a7f0d1b2c43
+                    encounterId: null
+                    admissionId: null
+                    category: LAB_RESULT
+                    title: Hasil laboratorium darah lengkap
+                    mimeType: application/pdf
+                    sizeBytes: 3145728
+                    language: ID
+                    documentDate: 2026-08-25
+                    notes: Dibawa pasien dari lab eksternal
+                    releasedToPatient: false
+                    releasedAt: null
+                    releasedById: null
+                    uploadedById: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                    createdAt: 2026-09-01T09:05:12.000Z
+                    updatedAt: 2026-09-01T09:05:12.000Z
+                  message: Document updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Edit one clinical file’s metadata
+      tags: *a41
+    delete:
+      operationId: PatientDocumentDetailController_deleteDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeletePatientDocumentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  reason: Filed against wrong patient
+      responses:
+        "200":
+          description: Retires the document from every list. The row keeps the reason, the
+            stored object stays in the bucket — clinical files fall under the
+            25-year RME retention floor, so nothing here hard-deletes
+            (FR-E2-11). The deletion is audited with the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      deletedAt:
+                        type: string
+                      deleteReason:
+                        type: string
+                    required:
+                      - id
+                      - deletedAt
+                      - deleteReason
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2d6a4f08-93bc-47e1-8a5d-6c1e0b7f9a32
+                    deletedAt: 2026-09-03T08:00:00.000Z
+                    deleteReason: Filed against wrong patient
+                  message: Document deleted
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Soft-delete one clinical file, with a required reason
+      tags: *a41
+  /api/v1/patient-documents/{id}/download:
+    get:
+      operationId: PatientDocumentDetailController_getDownloadUrl_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A signed URL valid for minutes, served as an attachment under the
+            validated stored content type — nothing renders in the app or API
+            origin (FR-E2-08). The download is audited with actor, patient, and
+            episode context before the URL is returned; if the access cannot be
+            recorded, no URL is issued.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/patient/9f7c2a54-1be0-4c11-9c6f-1d2f8a0b3c44.pdf?X-Amz-Signature=...
+                    expiresAt: 2026-09-01T09:10:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Mint a signed download URL for one clinical file
+      tags: *a41
+  /api/v1/patient-documents/{id}/release:
+    post:
+      operationId: PatientDocumentDetailController_releaseDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Marks the document visible to the patient (FR-E2-13); the release
+            is audited with actor and timestamp. Idempotent — a repeat returns
+            the already-released document without rewriting releasedAt.
+            Restricted to the attending relationship: a doctor releases only for
+            patients assigned to them."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      encounterId:
+                        nullable: true
+                      admissionId:
+                        nullable: true
+                      category:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      documentDate:
+                        type: string
+                      notes:
+                        type: string
+                      releasedToPatient:
+                        type: boolean
+                      releasedAt:
+                        type: string
+                      releasedById:
+                        type: string
+                      uploadedById:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - encounterId
+                      - admissionId
+                      - category
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - documentDate
+                      - notes
+                      - releasedToPatient
+                      - releasedAt
+                      - releasedById
+                      - uploadedById
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2d6a4f08-93bc-47e1-8a5d-6c1e0b7f9a32
+                    patientId: 5b8e1c70-2f4a-4d6b-9e3c-8a7f0d1b2c43
+                    encounterId: null
+                    admissionId: null
+                    category: LAB_RESULT
+                    title: Hasil laboratorium darah lengkap
+                    mimeType: application/pdf
+                    sizeBytes: 3145728
+                    language: ID
+                    documentDate: 2026-08-25
+                    notes: Dibawa pasien dari lab eksternal
+                    releasedToPatient: true
+                    releasedAt: 2026-09-02T10:15:00.000Z
+                    releasedById: 7c9d0e1f-2a3b-4c5d-8e9f-1a2b3c4d5e6f
+                    uploadedById: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                    createdAt: 2026-09-01T09:05:12.000Z
+                    updatedAt: 2026-09-02T10:15:00.000Z
+                  message: Document released to the patient
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Release one clinical file to the patient portal
+      tags: *a41
+  /api/v1/encounters/{encounterId}/documents:
+    get:
+      operationId: EncounterDocumentController_listEncounterDocuments_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Two groups: thisVisit holds documents linked to this encounter,
+            history the rest of the patient’s file, both newest-first. Readable
+            under the same OWN definition as the encounter itself — assigned or
+            attending — and audited as a read of the patient’s record."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      thisVisit:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            patientId:
+                              type: string
+                            encounterId:
+                              nullable: true
+                            admissionId:
+                              nullable: true
+                            category:
+                              type: string
+                            title:
+                              type: string
+                            mimeType:
+                              type: string
+                            sizeBytes:
+                              type: integer
+                            language:
+                              type: string
+                            documentDate:
+                              type: string
+                            notes:
+                              type: string
+                            releasedToPatient:
+                              type: boolean
+                            releasedAt:
+                              nullable: true
+                            releasedById:
+                              nullable: true
+                            uploadedById:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - patientId
+                            - encounterId
+                            - admissionId
+                            - category
+                            - title
+                            - mimeType
+                            - sizeBytes
+                            - language
+                            - documentDate
+                            - notes
+                            - releasedToPatient
+                            - releasedAt
+                            - releasedById
+                            - uploadedById
+                            - createdAt
+                            - updatedAt
+                      history:
+                        type: array
+                        items: {}
+                    required:
+                      - thisVisit
+                      - history
+                required:
+                  - data
+                example:
+                  data:
+                    thisVisit:
+                      - id: 2d6a4f08-93bc-47e1-8a5d-6c1e0b7f9a32
+                        patientId: 5b8e1c70-2f4a-4d6b-9e3c-8a7f0d1b2c43
+                        encounterId: null
+                        admissionId: null
+                        category: LAB_RESULT
+                        title: Hasil laboratorium darah lengkap
+                        mimeType: application/pdf
+                        sizeBytes: 3145728
+                        language: ID
+                        documentDate: 2026-08-25
+                        notes: Dibawa pasien dari lab eksternal
+                        releasedToPatient: false
+                        releasedAt: null
+                        releasedById: null
+                        uploadedById: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                        createdAt: 2026-09-01T09:05:12.000Z
+                        updatedAt: 2026-09-01T09:05:12.000Z
+                    history: []
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: List the documents for an encounter’s patient, grouped by visit
+      tags:
+        - Document Management
+  /api/v1/portal/me/documents:
+    get:
+      operationId: PortalDocumentController_listPortalDocuments_v1
+      parameters:
+        - name: category
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - LAB_RESULT
+              - RADIOLOGY
+              - EXTERNAL_MEDICAL_RECORD
+              - REFERRAL_LETTER
+              - CONSENT_FORM
+              - DISCHARGE_SUMMARY
+              - MEDICAL_CERTIFICATE
+              - INSURANCE
+              - IDENTITY
+              - OTHER
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: "The caller’s released documents, newest-first. Narrower fields
+            than the staff view: staff working notes and internal user ids never
+            reach the portal."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        category:
+                          type: string
+                        title:
+                          type: string
+                        mimeType:
+                          type: string
+                        sizeBytes:
+                          type: integer
+                        documentDate:
+                          type: string
+                        releasedAt:
+                          type: string
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - category
+                        - title
+                        - mimeType
+                        - sizeBytes
+                        - documentDate
+                        - releasedAt
+                        - createdAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 2d6a4f08-93bc-47e1-8a5d-6c1e0b7f9a32
+                      category: LAB_RESULT
+                      title: Hasil laboratorium darah lengkap
+                      mimeType: application/pdf
+                      sizeBytes: 3145728
+                      documentDate: 2026-08-25
+                      releasedAt: 2026-09-02T10:15:00.000Z
+                      createdAt: 2026-09-01T09:05:12.000Z
+                  meta:
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List your own released clinical documents
+      tags:
+        - Document Management
   /api/v1/admin/channel-gateway/whatsapp/session:
     get:
       operationId: ChannelGatewayAdminController_getSessionHealth_v1
@@ -25509,7 +26868,7 @@ paths:
       security:
         - bearer: []
       summary: Read the WhatsApp session’s health
-      tags: &a40
+      tags: &a42
         - Channel Gateway
   /api/v1/admin/channel-gateway/whatsapp/session/pairing:
     post:
@@ -25570,7 +26929,7 @@ paths:
       security:
         - bearer: []
       summary: Start a QR pairing for the WhatsApp session
-      tags: *a40
+      tags: *a42
   /api/v1/admin/channel-gateway/telegram/webhook:
     get:
       operationId: ChannelGatewayAdminController_getTelegramWebhookHealth_v1
@@ -25661,7 +27020,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Telegram webhook’s registration health
-      tags: *a40
+      tags: *a42
     post:
       operationId: ChannelGatewayAdminController_registerTelegramWebhook_v1
       parameters: []
@@ -25753,7 +27112,7 @@ paths:
       security:
         - bearer: []
       summary: Point Telegram at this deployment
-      tags: *a40
+      tags: *a42
   /api/v1/admin/conversations:
     get:
       operationId: CsAdminController_listConversations_v1
@@ -25903,7 +27262,7 @@ paths:
       security:
         - bearer: []
       summary: List channel conversations
-      tags: &a41
+      tags: &a43
         - Customer Service
   /api/v1/admin/conversations/handoff-summary:
     get:
@@ -25964,7 +27323,7 @@ paths:
       security:
         - bearer: []
       summary: Count the conversations waiting for a human
-      tags: *a41
+      tags: *a43
   /api/v1/admin/conversations/metrics:
     get:
       operationId: CsAdminController_getMetrics_v1
@@ -26111,7 +27470,7 @@ paths:
       security:
         - bearer: []
       summary: Read the channel’s operating metrics (§8.4)
-      tags: *a41
+      tags: *a43
   /api/v1/admin/conversations/{id}:
     get:
       operationId: CsAdminController_getTranscript_v1
@@ -26286,7 +27645,7 @@ paths:
       security:
         - bearer: []
       summary: Read one conversation transcript
-      tags: *a41
+      tags: *a43
   /api/v1/admin/conversations/{id}/takeover:
     post:
       operationId: CsAdminController_takeOver_v1
@@ -26396,7 +27755,7 @@ paths:
       security:
         - bearer: []
       summary: Take a conversation over from the bot
-      tags: *a41
+      tags: *a43
   /api/v1/admin/conversations/{id}/release:
     post:
       operationId: CsAdminController_release_v1
@@ -26504,7 +27863,7 @@ paths:
       security:
         - bearer: []
       summary: Hand a conversation back to the bot
-      tags: *a41
+      tags: *a43
   /api/v1/admin/conversations/{id}/reply:
     post:
       operationId: CsAdminController_reply_v1
@@ -26620,7 +27979,7 @@ paths:
       security:
         - bearer: []
       summary: Reply to the customer on their original channel
-      tags: *a41
+      tags: *a43
   /api/v1/admin/conversations/{id}/block:
     post:
       operationId: CsAdminController_block_v1
@@ -26748,7 +28107,7 @@ paths:
       security:
         - bearer: []
       summary: Block a chat (§8.3 abuse control)
-      tags: *a41
+      tags: *a43
     delete:
       operationId: CsAdminController_unblock_v1
       parameters:
@@ -26854,7 +28213,7 @@ paths:
       security:
         - bearer: []
       summary: Unblock a chat
-      tags: *a41
+      tags: *a43
   /api/v1/admin/channel-arrivals:
     get:
       operationId: ChannelArrivalController_listArrivals_v1
@@ -27024,7 +28383,7 @@ paths:
       security:
         - bearer: []
       summary: List channel-sourced bookings for the check-in desk
-      tags: &a42
+      tags: &a44
         - Customer Service
   /api/v1/admin/channel-arrivals/merge-candidates:
     get:
@@ -27111,7 +28470,7 @@ paths:
       security:
         - bearer: []
       summary: Find the records a chat-created draft could be merged into
-      tags: *a42
+      tags: *a44
   /api/v1/admin/channel-arrivals/patients/{draftPatientId}/merge:
     post:
       operationId: ChannelArrivalController_mergeDraftPatient_v1
@@ -27219,7 +28578,7 @@ paths:
       security:
         - bearer: []
       summary: Merge a chat-created draft into an existing patient
-      tags: *a42
+      tags: *a44
   /api/v1/prospective-patients:
     get:
       operationId: ProspectivePatientController_listProspectivePatients_v1
@@ -27324,7 +28683,7 @@ paths:
       security:
         - bearer: []
       summary: List people who booked through a channel and have not been registered
-      tags: &a43
+      tags: &a45
         - Customer Service
   /api/v1/prospective-patients/{prospectivePatientId}/match-candidates:
     get:
@@ -27447,7 +28806,7 @@ paths:
       security:
         - bearer: []
       summary: Search the registry before spending an MRN on this person
-      tags: *a43
+      tags: *a45
   /api/v1/prospective-patients/{prospectivePatientId}/link:
     post:
       operationId: ProspectivePatientController_linkToExistingPatient_v1
@@ -27557,7 +28916,7 @@ paths:
         - bearer: []
       summary: The arriving person is already a patient — point the booking at their
         record
-      tags: *a43
+      tags: *a45
   /api/v1/prospective-patients/{prospectivePatientId}/convert:
     post:
       operationId: ProspectivePatientController_convertToNewPatient_v1
@@ -27703,7 +29062,7 @@ paths:
       security:
         - bearer: []
       summary: The arriving person is new — register them and allocate their MRN
-      tags: *a43
+      tags: *a45
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -27782,7 +29141,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a44
+      tags: &a46
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -27899,7 +29258,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a44
+      tags: *a46
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -28022,7 +29381,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a45
+      tags: &a47
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -28109,7 +29468,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a45
+      tags: *a47
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -28189,7 +29548,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a45
+      tags: *a47
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -28308,7 +29667,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a45
+      tags: *a47
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -28407,7 +29766,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a45
+      tags: *a47
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -28483,7 +29842,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a45
+      tags: *a47
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -28629,7 +29988,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a45
+      tags: *a47
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -28721,7 +30080,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a45
+      tags: *a47
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -28813,7 +30172,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a45
+      tags: *a47
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -30393,6 +31752,24 @@ components:
                   exclusiveMaximum: false
                   default: 10
               default: {}
+            itemsColumns:
+              type: array
+              minItems: 1
+              maxItems: 5
+              items:
+                type: string
+                enum:
+                  - item.no
+                  - item.description
+                  - item.quantity
+                  - item.unitPrice
+                  - item.amount
+              default:
+                - item.no
+                - item.description
+                - item.quantity
+                - item.unitPrice
+                - item.amount
           default: {}
           x-nestjs_zod-self-required: false
       required:
@@ -30461,6 +31838,24 @@ components:
                   exclusiveMaximum: false
                   default: 10
               default: {}
+            itemsColumns:
+              type: array
+              minItems: 1
+              maxItems: 5
+              items:
+                type: string
+                enum:
+                  - item.no
+                  - item.description
+                  - item.quantity
+                  - item.unitPrice
+                  - item.amount
+              default:
+                - item.no
+                - item.description
+                - item.quantity
+                - item.unitPrice
+                - item.amount
           x-nestjs_zod-self-required: false
     OpenEncounterDto:
       type: object
@@ -31235,6 +32630,120 @@ components:
           enum:
             - ID
             - EN
+    CreatePatientDocumentUploadUrlDto:
+      type: object
+      properties:
+        mimeType:
+          type: string
+          enum:
+            - application/pdf
+            - text/markdown
+            - text/plain
+            - image/jpeg
+            - image/png
+            - image/webp
+        sizeBytes:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 20971520
+          exclusiveMaximum: false
+      required:
+        - mimeType
+        - sizeBytes
+    ConfirmPatientDocumentUploadDto:
+      type: object
+      properties:
+        storageKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        category:
+          type: string
+          enum:
+            - LAB_RESULT
+            - RADIOLOGY
+            - EXTERNAL_MEDICAL_RECORD
+            - REFERRAL_LETTER
+            - CONSENT_FORM
+            - DISCHARGE_SUMMARY
+            - MEDICAL_CERTIFICATE
+            - INSURANCE
+            - IDENTITY
+            - OTHER
+        documentDate:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        encounterId:
+          type: string
+          format: uuid
+        admissionId:
+          type: string
+          format: uuid
+        language:
+          type: string
+          enum:
+            - ID
+            - EN
+          default: ID
+      required:
+        - storageKey
+        - title
+        - category
+    UpdatePatientDocumentDto:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        category:
+          type: string
+          enum:
+            - LAB_RESULT
+            - RADIOLOGY
+            - EXTERNAL_MEDICAL_RECORD
+            - REFERRAL_LETTER
+            - CONSENT_FORM
+            - DISCHARGE_SUMMARY
+            - MEDICAL_CERTIFICATE
+            - INSURANCE
+            - IDENTITY
+            - OTHER
+        documentDate:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          nullable: true
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          nullable: true
+        encounterId:
+          type: string
+          format: uuid
+          nullable: true
+        admissionId:
+          type: string
+          format: uuid
+          nullable: true
+    DeletePatientDocumentDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+        - reason
     ReplyToConversationDto:
       type: object
       properties:

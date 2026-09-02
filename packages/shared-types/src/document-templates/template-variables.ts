@@ -47,6 +47,23 @@ export const TEMPLATE_VARIABLE_KINDS = ['INVOICE'] as const;
 export type TemplateVariableKind = (typeof TEMPLATE_VARIABLE_KINDS)[number];
 
 /**
+ * The column tokens the `items` repeating block can render, in the order the
+ * built-in layout shows them (`P16-T11`). A template's `settings.itemsColumns`
+ * is an ordered subset of this list — the author picks which columns appear
+ * and in what order, and the renderer walks that choice rather than a
+ * hard-coded table.
+ */
+export const INVOICE_ITEM_COLUMN_TOKENS = [
+  'item.no',
+  'item.description',
+  'item.quantity',
+  'item.unitPrice',
+  'item.amount',
+] as const;
+
+export type InvoiceItemColumnToken = (typeof INVOICE_ITEM_COLUMN_TOKENS)[number];
+
+/**
  * The columns available inside the `items` repeating block. They are ordinary
  * registry entries rather than a nested structure so the palette, the
  * publish-time validator, and this type stay flat — `P16-T11` decides which
