@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import type { PatientDocumentDownloadView, PatientDocumentView } from '@hms/shared-types';
-import { Button, useAbility } from '@hms/ui';
+import { Button, Icon, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { DeleteDocumentDialog } from '#components/client/patient-documents/delete-document-dialog';
@@ -58,20 +58,36 @@ export function DocumentRowActions({
       <Button
         type="button"
         variant="ghost"
-        size="sm"
+        size="icon-sm"
+        aria-label={t('download')}
+        title={t('download')}
         disabled={downloadMutation.isPending}
         onClick={() => downloadMutation.mutate()}
       >
-        {t('download')}
+        <Icon name="download" size={18} className="text-slate-600" />
       </Button>
       {canWrite ? (
-        <Button type="button" variant="ghost" size="sm" onClick={() => setIsEditOpen(true)}>
-          {t('edit')}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={t('edit')}
+          title={t('edit')}
+          onClick={() => setIsEditOpen(true)}
+        >
+          <Icon name="edit" size={18} className="text-slate-600" />
         </Button>
       ) : null}
       {canDelete ? (
-        <Button type="button" variant="ghost" size="sm" onClick={() => setIsDeleteOpen(true)}>
-          {t('delete')}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={t('delete')}
+          title={t('delete')}
+          onClick={() => setIsDeleteOpen(true)}
+        >
+          <Icon name="delete" size={18} className="text-danger" />
         </Button>
       ) : null}
       {isEditOpen ? (
