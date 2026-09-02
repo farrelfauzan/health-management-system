@@ -37,6 +37,7 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'discharge',
   'block',
   'merge',
+  'release',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',
@@ -99,6 +100,11 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // whether the knowledge-base nav entry is visible; the API decides whose
   // documents come back.
   document: 'Document',
+  // P16-T08. Hyphen, not dot, for the same reason as `clinic-profile`. The
+  // `:own` / `:any` suffix collapses here as it does for `document`: this
+  // decides whether the Documents tab renders, and the API decides whether a
+  // doctor's `write:own` reaches this particular patient.
+  'patient-document': 'PatientDocument',
   'bpjs.config': 'BpjsConfig',
   'bpjs.reference': 'BpjsReference',
   'bpjs.mapping': 'BpjsMapping',

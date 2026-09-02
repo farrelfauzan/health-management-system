@@ -186,7 +186,139 @@
       "noAssignedDoctors": "Belum ada dokter yang ditetapkan.",
       "unassignDoctor": "Batalkan penetapan {name}",
       "unassignDoctorError": "Penetapan dokter gagal dibatalkan. Silakan coba lagi.",
-      "compactRecord": "Buka detail untuk identitas dan demografi lengkap."
+      "compactRecord": "Buka detail untuk identitas dan demografi lengkap.",
+      "tabs": {
+        "overview": "Ringkasan",
+        "documents": "Dokumen"
+      },
+      "documents": {
+        "title": "Dokumen",
+        "subtitle": "Hasil lab, surat rujukan, formulir persetujuan, dan berkas lain dalam rekam medis pasien ini.",
+        "upload": "Unggah dokumen",
+        "loading": "Memuat dokumen...",
+        "loadError": "Tidak dapat memuat dokumen pasien ini.",
+        "emptyTitle": "Belum ada dokumen",
+        "emptyDescription": "Berkas yang diunggah ke rekam medis ini tampil di sini, terbaru di atas. Buka berkas dengan Unduh — tidak ada pratinjau di halaman.",
+        "emptyFiltered": "Tidak ada dokumen yang cocok dengan filter ini.",
+        "loadMore": "Muat lebih banyak",
+        "loadingMore": "Memuat...",
+        "general": "Umum",
+        "noDate": "Tanpa tanggal",
+        "released": "Dibagikan ke pasien",
+        "notReleased": "Belum dibagikan",
+        "categories": {
+          "LAB_RESULT": "Hasil lab",
+          "RADIOLOGY": "Radiologi",
+          "EXTERNAL_MEDICAL_RECORD": "Rekam medis eksternal",
+          "REFERRAL_LETTER": "Surat rujukan",
+          "CONSENT_FORM": "Formulir persetujuan",
+          "DISCHARGE_SUMMARY": "Resume pulang",
+          "MEDICAL_CERTIFICATE": "Surat keterangan dokter",
+          "INSURANCE": "Asuransi",
+          "IDENTITY": "Identitas",
+          "OTHER": "Lainnya"
+        },
+        "filters": {
+          "category": "Kategori",
+          "allCategories": "Semua kategori",
+          "dateFrom": "Tanggal dokumen dari",
+          "dateTo": "Tanggal dokumen sampai",
+          "clear": "Hapus filter"
+        },
+        "columns": {
+          "title": "Judul",
+          "category": "Kategori",
+          "documentDate": "Tanggal dokumen",
+          "size": "Ukuran",
+          "visit": "Kunjungan terkait",
+          "released": "Akses pasien",
+          "uploader": "Pengunggah",
+          "actions": "Aksi"
+        },
+        "visit": {
+          "none": "Umum (tanpa kunjungan)",
+          "encounterLinked": "Kunjungan",
+          "admissionLinked": "Rawat inap",
+          "encounterOption": "Kunjungan · {date} · {doctor}",
+          "admissionOption": "Rawat inap · {date} · {doctor}",
+          "loading": "Memuat kunjungan...",
+          "label": "Kunjungan terkait",
+          "hint": "Arsipkan dokumen di bawah kunjungan atau rawat inap asalnya, atau biarkan sebagai dokumen umum."
+        },
+        "actions": {
+          "download": "Unduh",
+          "edit": "Ubah",
+          "delete": "Hapus",
+          "downloadError": "Tidak dapat membuka dokumen ini."
+        },
+        "uploadDialog": {
+          "title": "Unggah dokumen",
+          "description": "Pilih satu atau beberapa berkas, lalu deskripsikan sekaligus. Setiap berkas menjadi dokumen tersendiri.",
+          "files": "Berkas",
+          "filesHint": "PDF, JPEG, PNG, atau WebP, maksimal 20 MB per berkas.",
+          "selected": "{count, plural, one {# berkas dipilih} other {# berkas dipilih}}",
+          "fileTitle": "Judul untuk {name}",
+          "remove": "Hapus {name}",
+          "category": "Kategori",
+          "categoryPlaceholder": "Pilih kategori",
+          "documentDate": "Tanggal dokumen",
+          "documentDateHint": "Kapan dokumen dibuat, bukan kapan diunggah.",
+          "notes": "Catatan",
+          "progress": {
+            "preparing": "Menyiapkan...",
+            "uploading": "Mengunggah {percent}%",
+            "scanning": "Memeriksa berkas...",
+            "complete": "Tercatat"
+          },
+          "outcome": {
+            "recorded": "Tercatat",
+            "alreadyRecorded": "Sudah tercatat",
+            "failed": "Gagal"
+          },
+          "errors": {
+            "noFiles": "Pilih setidaknya satu berkas.",
+            "titleRequired": "Setiap berkas memerlukan judul.",
+            "categoryRequired": "Pilih kategori.",
+            "sign": "Unggahan tidak dapat dimulai. Coba lagi.",
+            "put": "Penyimpanan tidak menerima berkas. Coba lagi.",
+            "confirm": "Berkas terunggah tetapi tidak dapat dicatat. Hapus dan pilih berkas itu lagi.",
+            "failed": "Unggahan gagal."
+          },
+          "summary": "{recorded, plural, =0 {Tidak ada berkas tercatat} other {# berkas tercatat}}, {failed, plural, =0 {tidak ada yang gagal} other {# gagal}}.",
+          "actions": {
+            "cancel": "Batal",
+            "upload": "Unggah {count} berkas",
+            "uploading": "Mengunggah...",
+            "done": "Selesai"
+          }
+        },
+        "editDialog": {
+          "title": "Ubah dokumen",
+          "description": "Ubah deskripsi berkas ini atau kunjungan tempatnya diarsipkan. Berkas itu sendiri tidak dapat diganti — hapus lalu unggah ulang.",
+          "fields": {
+            "title": "Judul",
+            "category": "Kategori",
+            "documentDate": "Tanggal dokumen",
+            "notes": "Catatan"
+          },
+          "noChanges": "Ubah setidaknya satu kolom sebelum menyimpan.",
+          "titleRequired": "Judul tidak boleh kosong.",
+          "success": "Dokumen diperbarui.",
+          "error": "Tidak dapat memperbarui dokumen ini.",
+          "cancel": "Batal",
+          "save": "Simpan perubahan"
+        },
+        "deleteDialog": {
+          "title": "Hapus dokumen",
+          "description": "Menghapus {title} dari rekam medis pasien ini. Alasan dicatat bersama penghapusan.",
+          "reason": "Alasan",
+          "reasonRequired": "Alasan wajib diisi.",
+          "success": "Dokumen dihapus.",
+          "error": "Tidak dapat menghapus dokumen ini.",
+          "cancel": "Batal",
+          "confirm": "Hapus dokumen"
+        }
+      }
     },
     "privacyNotice": {
       "title": "Pemberitahuan Privasi Pasien",

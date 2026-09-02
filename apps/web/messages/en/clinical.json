@@ -181,7 +181,139 @@
       "noAssignedDoctors": "No doctors assigned yet.",
       "unassignDoctor": "Unassign {name}",
       "unassignDoctorError": "Unable to unassign the doctor. Please try again.",
-      "compactRecord": "Open the detail view for identifiers and full demographics."
+      "compactRecord": "Open the detail view for identifiers and full demographics.",
+      "tabs": {
+        "overview": "Overview",
+        "documents": "Documents"
+      },
+      "documents": {
+        "title": "Documents",
+        "subtitle": "Lab results, referral letters, consent forms and other files in this patient's record.",
+        "upload": "Upload documents",
+        "loading": "Loading documents...",
+        "loadError": "Unable to load this patient's documents.",
+        "emptyTitle": "No documents yet",
+        "emptyDescription": "Files uploaded to this record appear here, newest first. Open a file with Download — there is no in-page preview.",
+        "emptyFiltered": "No documents match these filters.",
+        "loadMore": "Load more",
+        "loadingMore": "Loading...",
+        "general": "General",
+        "noDate": "No date",
+        "released": "Released to patient",
+        "notReleased": "Not released",
+        "categories": {
+          "LAB_RESULT": "Lab result",
+          "RADIOLOGY": "Radiology",
+          "EXTERNAL_MEDICAL_RECORD": "External medical record",
+          "REFERRAL_LETTER": "Referral letter",
+          "CONSENT_FORM": "Consent form",
+          "DISCHARGE_SUMMARY": "Discharge summary",
+          "MEDICAL_CERTIFICATE": "Medical certificate",
+          "INSURANCE": "Insurance",
+          "IDENTITY": "Identity",
+          "OTHER": "Other"
+        },
+        "filters": {
+          "category": "Category",
+          "allCategories": "All categories",
+          "dateFrom": "Document date from",
+          "dateTo": "Document date to",
+          "clear": "Clear filters"
+        },
+        "columns": {
+          "title": "Title",
+          "category": "Category",
+          "documentDate": "Document date",
+          "size": "Size",
+          "visit": "Linked visit",
+          "released": "Patient access",
+          "uploader": "Uploader",
+          "actions": "Actions"
+        },
+        "visit": {
+          "none": "General (no visit)",
+          "encounterLinked": "Visit",
+          "admissionLinked": "Admission",
+          "encounterOption": "Visit · {date} · {doctor}",
+          "admissionOption": "Admission · {date} · {doctor}",
+          "loading": "Loading visits...",
+          "label": "Linked visit",
+          "hint": "File the document under the visit or admission it came from, or leave it general."
+        },
+        "actions": {
+          "download": "Download",
+          "edit": "Edit",
+          "delete": "Delete",
+          "downloadError": "Unable to open this document."
+        },
+        "uploadDialog": {
+          "title": "Upload documents",
+          "description": "Pick one or more files, then describe them once. Each file becomes its own document.",
+          "files": "Files",
+          "filesHint": "PDF, JPEG, PNG, or WebP, up to 20 MB each.",
+          "selected": "{count, plural, one {# file selected} other {# files selected}}",
+          "fileTitle": "Title for {name}",
+          "remove": "Remove {name}",
+          "category": "Category",
+          "categoryPlaceholder": "Choose a category",
+          "documentDate": "Document date",
+          "documentDateHint": "When the document was produced, not when it was uploaded.",
+          "notes": "Notes",
+          "progress": {
+            "preparing": "Preparing...",
+            "uploading": "Uploading {percent}%",
+            "scanning": "Checking the file...",
+            "complete": "Recorded"
+          },
+          "outcome": {
+            "recorded": "Recorded",
+            "alreadyRecorded": "Already recorded",
+            "failed": "Failed"
+          },
+          "errors": {
+            "noFiles": "Pick at least one file.",
+            "titleRequired": "Every file needs a title.",
+            "categoryRequired": "Choose a category.",
+            "sign": "The upload could not start. Try again.",
+            "put": "Storage did not accept the file. Try again.",
+            "confirm": "The file uploaded but could not be recorded. Remove it and pick it again.",
+            "failed": "The upload failed."
+          },
+          "summary": "{recorded, plural, =0 {No files recorded} one {# file recorded} other {# files recorded}}, {failed, plural, =0 {none failed} one {# failed} other {# failed}}.",
+          "actions": {
+            "cancel": "Cancel",
+            "upload": "Upload {count, plural, one {# file} other {# files}}",
+            "uploading": "Uploading...",
+            "done": "Done"
+          }
+        },
+        "editDialog": {
+          "title": "Edit document",
+          "description": "Change how this file is described or which visit it is filed under. The file itself cannot be replaced — delete it and upload again.",
+          "fields": {
+            "title": "Title",
+            "category": "Category",
+            "documentDate": "Document date",
+            "notes": "Notes"
+          },
+          "noChanges": "Change at least one field before saving.",
+          "titleRequired": "Title cannot be empty.",
+          "success": "Document updated.",
+          "error": "Unable to update this document.",
+          "cancel": "Cancel",
+          "save": "Save changes"
+        },
+        "deleteDialog": {
+          "title": "Delete document",
+          "description": "Removes {title} from this patient's record. The reason is recorded with the deletion.",
+          "reason": "Reason",
+          "reasonRequired": "A reason is required.",
+          "success": "Document deleted.",
+          "error": "Unable to delete this document.",
+          "cancel": "Cancel",
+          "confirm": "Delete document"
+        }
+      }
     },
     "privacyNotice": {
       "title": "Patient Privacy Notice",

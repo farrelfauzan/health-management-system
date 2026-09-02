@@ -89,6 +89,13 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // rather than losing it to a silently narrower preset.
   { action: 'read', subject: 'ClinicProfile' },
   { action: 'write', subject: 'ClinicProfile' },
+  // P16-T08. The three patient-document grants `seed.sql` gives ADMIN, so an
+  // admin whose session hint predates them still sees the Documents tab on a
+  // patient record. `release` is deliberately absent: it is a clinician's
+  // grant on their own patients, never an administrator's.
+  { action: 'read', subject: 'PatientDocument' },
+  { action: 'write', subject: 'PatientDocument' },
+  { action: 'delete', subject: 'PatientDocument' },
   { action: 'read', subject: 'DocumentTemplate' },
   { action: 'write', subject: 'DocumentTemplate' },
   { action: 'manage', subject: 'BpjsConfig' },

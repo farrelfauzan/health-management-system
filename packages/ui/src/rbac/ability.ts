@@ -21,7 +21,11 @@ export type AppAction =
   | 'transfer'
   | 'discharge'
   | 'block'
-  | 'merge';
+  | 'merge'
+  // P16-T08. Handing a clinical file to the patient portal. Distinct from
+  // `write`: the API grants it to doctors on their own patients only, and
+  // editing a title must not read as permission to publish the file.
+  | 'release';
 export type AppSubject =
   | 'User'
   | 'Role'
@@ -53,6 +57,11 @@ export type AppSubject =
   | 'Conversation'
   | 'AiProviderConfig'
   | 'Document'
+  // P16-T08. A patient's clinical file — lab results, referral letters,
+  // consent forms. Its own subject rather than a mode of `Document`, because
+  // the knowledge-base grant and the medical-record grant are held by
+  // different roles and must never be confused for one another.
+  | 'PatientDocument'
   // P16-T02. The clinic's own identity, printed on everything the clinic
   // hands out — read by every role that produces a document, written by
   // administrators alone.

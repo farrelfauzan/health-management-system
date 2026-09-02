@@ -55,7 +55,9 @@
     "documentUpload": {
       "errors": {
         "unsupportedType": "Tipe berkas tersebut tidak diterima. Unggah berkas PDF, Markdown, teks biasa, JPEG, PNG, atau WebP.",
-        "tooLarge": "Ukuran berkas melebihi batas {limitMb} MB."
+        "tooLarge": "Ukuran berkas melebihi batas {limitMb} MB.",
+      "unsupportedTypeNamed": "{name} bukan tipe berkas yang diterima.",
+      "tooLargeNamed": "{name} melebihi batas {limitMb} MB."
       }
     }
   }

@@ -1,9 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Can, Icon, Skeleton } from '@hms/ui';
+import {
+  Button,
+  Can,
+  Icon,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  useAbility,
+} from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { PatientDocumentsPanel } from '#components/client/patient-documents/patient-documents-panel';
 import { AssignDoctorDialog } from '#components/client/patients/assign-doctor-dialog';
 import { PatientActivityCard } from '#components/client/patients/patient-activity-card';
 import { PatientAllergiesCard } from '#components/client/patients/patient-allergies-card';
@@ -22,6 +33,10 @@ type PatientDetailPanelProps = {
 
 export function PatientDetailPanel({ patientId }: PatientDetailPanelProps) {
   const t = useTranslations('clinical');
+  const ability = useAbility();
+  // Visibility only. The tab hides for a role without the grant; the API's
+  // guard is what refuses the list to anyone who reaches the route anyway.
+  const canReadDocuments = ability.can('read', 'PatientDocument');
   const detailQuery = usePatientDetail(patientId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState<boolean>(false);
@@ -67,21 +82,36 @@ export function PatientDetailPanel({ patientId }: PatientDetailPanelProps) {
         }
       />
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="space-y-6">
-          <PatientDemographicsCard patient={patient} />
-          <PatientIdentifiersCard patient={patient} />
-        </div>
-        <div className="space-y-6">
-          <PatientAllergiesCard allergies={patient.allergies} />
-          <PatientPrivacyHistoryCard patientId={patient.id} />
-          <PatientDoctorsCard
-            patient={patient}
-            onAssignDoctor={() => setIsAssignDialogOpen(true)}
-          />
-          <PatientActivityCard patientId={patient.id} />
-        </div>
-      </div>
+      <Tabs defaultValue="overview" className="space-y-5">
+        <TabsList>
+          <TabsTrigger value="overview">{t('patients.tabs.overview')}</TabsTrigger>
+          {canReadDocuments ? (
+            <TabsTrigger value="documents">{t('patients.tabs.documents')}</TabsTrigger>
+          ) : null}
+        </TabsList>
+        <TabsContent value="overview">
+          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+            <div className="space-y-6">
+              <PatientDemographicsCard patient={patient} />
+              <PatientIdentifiersCard patient={patient} />
+            </div>
+            <div className="space-y-6">
+              <PatientAllergiesCard allergies={patient.allergies} />
+              <PatientPrivacyHistoryCard patientId={patient.id} />
+              <PatientDoctorsCard
+                patient={patient}
+                onAssignDoctor={() => setIsAssignDialogOpen(true)}
+              />
+              <PatientActivityCard patientId={patient.id} />
+            </div>
+          </div>
+        </TabsContent>
+        {canReadDocuments ? (
+          <TabsContent value="documents">
+            <PatientDocumentsPanel patientId={patient.id} />
+          </TabsContent>
+        ) : null}
+      </Tabs>
 
       {isEditDialogOpen ? (
         <PatientFormDialog

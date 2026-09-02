@@ -55,7 +55,9 @@
     "documentUpload": {
       "errors": {
         "unsupportedType": "That file type is not accepted. Upload a PDF, Markdown, plain text, JPEG, PNG, or WebP file.",
-        "tooLarge": "That file is larger than the {limitMb} MB limit."
+        "tooLarge": "That file is larger than the {limitMb} MB limit.",
+      "unsupportedTypeNamed": "{name} is not an accepted file type.",
+      "tooLargeNamed": "{name} is larger than the {limitMb} MB limit."
       }
     }
   }
