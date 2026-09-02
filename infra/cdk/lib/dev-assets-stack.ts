@@ -8,6 +8,14 @@ const BUCKET_NAME = 'saling-jaga-dev-assets';
 const ACCESS_ROLE_NAME = 'saling-jaga-dev-assets-access';
 const APP_USER_NAME = 'saling-jaga-dev-assets-app';
 const CREDENTIALS_SECRET_NAME = 'saling-jaga/dev/s3-assets-credentials';
+/**
+ * Origins allowed to send browser-direct presigned uploads. The API signs the
+ * PUT but the browser sends it, so without this rule every upload fails with
+ * a CORS error while the API logs nothing (see the deployment runbook). Add
+ * the deployed web origin here when a dev host exists.
+ */
+const BROWSER_UPLOAD_ORIGINS = ['http://localhost:3000', 'http://localhost:3001'];
+const CORS_PREFLIGHT_MAX_AGE_SECONDS = 3000;
 const NONCURRENT_VERSIONS_TO_RETAIN = 5;
 const NONCURRENT_VERSION_EXPIRATION_DAYS = 30;
 const ABORT_INCOMPLETE_UPLOAD_DAYS = 7;
@@ -44,6 +52,17 @@ export class DevAssetsStack extends Stack {
       // Dev data is still recoverable data. Flip to DESTROY (and add
       // autoDeleteObjects) only if this bucket is genuinely disposable.
       removalPolicy: RemovalPolicy.RETAIN,
+      cors: [
+        {
+          allowedOrigins: BROWSER_UPLOAD_ORIGINS,
+          allowedMethods: [s3.HttpMethods.PUT, s3.HttpMethods.GET, s3.HttpMethods.HEAD],
+          // Both are signed into the presigned PUT; the browser sets
+          // Content-Length itself but the preflight still has to allow it.
+          allowedHeaders: ['Content-Type', 'Content-Length'],
+          exposedHeaders: ['ETag'],
+          maxAge: CORS_PREFLIGHT_MAX_AGE_SECONDS,
+        },
+      ],
       lifecycleRules: [
         {
           id: 'expire-old-noncurrent-versions',
