@@ -369,6 +369,26 @@
           "left": "Kiri",
           "portrait": "Tegak",
           "landscape": "Mendatar"
+        },
+        "preview": {
+          "action": "Pratinjau",
+          "saveAndPreview": "Simpan & pratinjau",
+          "title": "Pratinjau dengan data contoh",
+          "description": "Dirender dengan faktur contoh bawaan: nama pasien 120 karakter, 12 baris rincian melewati batas halaman, satu item berharga nol, dan total di atas ambang materai. Tidak ada data pasien sungguhan yang dipakai dan tidak ada yang disimpan bersama faktur.",
+          "openInNewTab": "Buka di tab baru",
+          "expiresAt": "Tautan pratinjau ini kedaluwarsa pukul {time}.",
+          "warningsTitle": "{count, plural, one {# variabel tidak punya nilai contoh dan dicetak kosong} other {# variabel tidak punya nilai contoh dan dicetak kosong}}",
+          "error": "Pratinjau tidak dapat dirender. Periksa layanan render PDF lalu coba lagi.",
+          "retry": "Coba lagi"
+        },
+        "publish": {
+          "action": "Terbitkan",
+          "saveAndPublish": "Simpan & terbitkan",
+          "success": "Versi {version} diterbitkan.",
+          "error": "Templat tidak dapat diterbitkan. Silakan coba lagi.",
+          "unknownTokensTitle": "{count, plural, one {Penerbitan ditolak: # variabel tidak ada di daftar} other {Penerbitan ditolak: # variabel tidak ada di daftar}}",
+          "unknownTokensHint": "Hapus atau ganti setiap chip di bawah ini, simpan, lalu terbitkan lagi.",
+          "dismiss": "Tutup"
         }
       }
     },
