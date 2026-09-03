@@ -18,5 +18,6 @@ export type AppointmentSessionControllerListSessionsCalendarV1200DataItem = {
   maxPatients: number;
   bookedCount: number;
   remaining: number;
+  expiredLicenses: unknown[];
   doctor: AppointmentSessionControllerListSessionsCalendarV1200DataItemDoctor;
 };

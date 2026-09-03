@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { DoctorLicenseExpiryService } from '../../doctor-management/service/doctor-license-expiry.service';
 import { DoctorPatientService } from '../../doctor-patient/service/doctor-patient.service';
 import { NotificationService } from '../../notification/service/notification.service';
 import { AppointmentManagementRepository } from '../repository/appointment-management.repository';
@@ -78,10 +79,21 @@ describe('AppointmentManagementService', () => {
     createForUser: jest.fn().mockResolvedValue({}),
   } as unknown as NotificationService;
 
+  /**
+   * P16-T20. Returns nothing by default: every case in this file runs as an
+   * actor without `doctor.license-expiry.read:any`, so the lookup is never
+   * reached — which is itself the assertion in
+   * `attach-expired-licences.spec.ts`.
+   */
+  const doctorLicenseExpiryServiceMock = {
+    findExpiredLicensesByDoctor: jest.fn().mockResolvedValue(new Map()),
+  } as unknown as DoctorLicenseExpiryService;
+
   const service = new AppointmentManagementService(
     appointmentManagementRepositoryMock,
     authRepositoryMock,
     doctorPatientServiceMock,
+    doctorLicenseExpiryServiceMock,
     notificationServiceMock,
     configServiceMock,
   );

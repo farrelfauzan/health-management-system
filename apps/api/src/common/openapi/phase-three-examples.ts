@@ -247,6 +247,12 @@ const appointmentSession = {
   maxPatients: 10,
   bookedCount: 3,
   remaining: 7,
+  // P16-T20. Present only for a caller who may already read the clinic's
+  // licence expiry roster, and **absent** — not empty — for everyone else,
+  // including the patient portal. An empty array says "this doctor's permits
+  // are current"; an absent field says "you are not being told about
+  // licences", and those are different facts.
+  expiredLicenses: [],
 };
 const registration = {
   id: registrationId,

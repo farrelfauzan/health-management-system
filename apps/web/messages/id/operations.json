@@ -60,6 +60,11 @@
       "invoiceNumber": "No. Tagihan"
     },
     "appointments": {
+      "expiredLicence": {
+        "title": "Izin praktik praktisi ini telah berakhir",
+        "item": "{type} {licenseNumber} berakhir pada {expiresAt}.",
+        "bookingProceeds": "Pemesanan tetap bisa dilanjutkan — ini pengingat agar perpanjangan diurus, bukan penghalang."
+      },
       "title": "Penjadwalan Janji Temu",
       "subtitle": "Koordinasikan kunjungan berdasarkan dokter dan slot waktu.",
       "schedule": "Jadwalkan Janji Temu",

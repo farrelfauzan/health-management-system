@@ -7196,8 +7196,18 @@ paths:
             type: string
       responses:
         "200":
-          description: Sessions projected from the weekly schedule over the date range,
-            with booked counts and remaining capacity.
+          description: "Sessions projected from the weekly schedule over the date range,
+            with booked counts and remaining capacity. `expiredLicenses` names
+            the doctor’s lapsed STR/SIP so a scheduler learns a practice permit
+            has expired before booking patients into the session (FR-E3-36) — a
+            warning only; booking still proceeds. It carries structured licence
+            fields and nothing else: no document is involved, and whether the
+            doctor has uploaded a scan of a licence stays private to their
+            vault. The field is **absent** rather than empty for a caller who
+            may not read the clinic’s licence expiry roster, which includes
+            patients — they hold `appointment.session.read:any` in order to
+            book, and an empty array would tell them the doctor’s permits are
+            current."
           content:
             application/json:
               schema:
@@ -7228,6 +7238,9 @@ paths:
                           type: integer
                         remaining:
                           type: integer
+                        expiredLicenses:
+                          type: array
+                          items: {}
                       required:
                         - id
                         - scheduleId
@@ -7239,6 +7252,7 @@ paths:
                         - maxPatients
                         - bookedCount
                         - remaining
+                        - expiredLicenses
                 required:
                   - data
                 example:
@@ -7253,6 +7267,7 @@ paths:
                       maxPatients: 10
                       bookedCount: 3
                       remaining: 7
+                      expiredLicenses: []
         "401":
           description: Authentication is required.
           content:
@@ -7294,8 +7309,11 @@ paths:
             type: string
       responses:
         "200":
-          description: Sessions for every active doctor over the date range, with doctor
-            info and booked counts, for calendar display.
+          description: "Sessions for every active doctor over the date range, with doctor
+            info and booked counts, for calendar display. `expiredLicenses`
+            follows the same rule as the per-doctor route: named lapsed STR/SIP
+            for a caller who may read the licence expiry roster, absent for
+            everyone else."
           content:
             application/json:
               schema:
@@ -7326,6 +7344,9 @@ paths:
                           type: integer
                         remaining:
                           type: integer
+                        expiredLicenses:
+                          type: array
+                          items: {}
                         doctor:
                           type: object
                           properties:
@@ -7350,6 +7371,7 @@ paths:
                         - maxPatients
                         - bookedCount
                         - remaining
+                        - expiredLicenses
                         - doctor
                 required:
                   - data
@@ -7365,6 +7387,7 @@ paths:
                       maxPatients: 10
                       bookedCount: 3
                       remaining: 7
+                      expiredLicenses: []
                       doctor:
                         id: 22222222-2222-4222-8222-222222222222
                         fullName: Dr. Budi Santoso
@@ -7434,6 +7457,9 @@ paths:
                             type: integer
                           remaining:
                             type: integer
+                          expiredLicenses:
+                            type: array
+                            items: {}
                         required:
                           - id
                           - scheduleId
@@ -7445,6 +7471,7 @@ paths:
                           - maxPatients
                           - bookedCount
                           - remaining
+                          - expiredLicenses
                       queue:
                         type: array
                         items:
@@ -7497,6 +7524,7 @@ paths:
                       maxPatients: 10
                       bookedCount: 3
                       remaining: 7
+                      expiredLicenses: []
                     queue:
                       - appointmentId: 44444444-4444-4444-8444-444444444444
                         queueNumber: 3
@@ -7590,6 +7618,9 @@ paths:
                         type: integer
                       remaining:
                         type: integer
+                      expiredLicenses:
+                        type: array
+                        items: {}
                     required:
                       - id
                       - scheduleId
@@ -7601,6 +7632,7 @@ paths:
                       - maxPatients
                       - bookedCount
                       - remaining
+                      - expiredLicenses
                   message:
                     type: string
                 required:
@@ -7618,6 +7650,7 @@ paths:
                     maxPatients: 10
                     bookedCount: 3
                     remaining: 7
+                    expiredLicenses: []
                   message: Session updated
         "400":
           description: Request validation failed.

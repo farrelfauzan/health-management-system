@@ -17,4 +17,5 @@ export type AppointmentSessionControllerListDoctorSessionsV1200DataItem = {
   maxPatients: number;
   bookedCount: number;
   remaining: number;
+  expiredLicenses: unknown[];
 };

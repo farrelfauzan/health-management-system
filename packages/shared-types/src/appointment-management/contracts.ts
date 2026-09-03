@@ -1,3 +1,4 @@
+import type { DoctorLicenseTypeValue } from '#doctor-management/schemas';
 import type {
   AppointmentSessionStatusValue,
   AppointmentStatusValue,
@@ -70,6 +71,22 @@ export type AppointmentsListMeta = {
   total: number;
 };
 
+/**
+ * One lapsed practitioner licence, surfaced to a scheduler about to book
+ * patients into a session (`P16-T20`, FR-E3-36).
+ *
+ * Structured `DoctorLicense` fields only — a type, a number and a date the
+ * clinic already administers. No document is involved, consistent with the
+ * §7.3.2 split: the scheduler learns that a permit has lapsed without anyone
+ * having looked at, or established the existence of, a scan in that doctor's
+ * vault.
+ */
+export type ExpiredDoctorLicence = {
+  type: DoctorLicenseTypeValue;
+  licenseNumber: string;
+  expiresAt: string;
+};
+
 export type DoctorSessionListItem = {
   id: string | null;
   scheduleId: string;
@@ -81,6 +98,20 @@ export type DoctorSessionListItem = {
   maxPatients: number | null;
   bookedCount: number;
   remaining: number | null;
+  /**
+   * Lapsed STR/SIP for this doctor (`P16-T20`), empty when none — and
+   * **absent entirely** on patient-facing responses, which is why it is
+   * optional rather than an always-present empty array. A patient browsing
+   * for an appointment has no business learning that a doctor's permit has
+   * expired; that is a compliance signal for whoever schedules, and it is
+   * populated only for a caller who can already read the clinic's licence
+   * expiry roster.
+   *
+   * v1 is a **warning only** — booking still proceeds (FR-E3-36). The hard
+   * block (FR-E3-37) is a clinic-level setting defaulting to off, and is out
+   * of scope.
+   */
+  expiredLicenses?: ExpiredDoctorLicence[];
 };
 
 export type DoctorSessionCalendarItem = DoctorSessionListItem & {
