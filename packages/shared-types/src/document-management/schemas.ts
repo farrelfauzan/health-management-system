@@ -23,6 +23,7 @@ export const DOCUMENT_PURPOSES = [
   'FAQ_KNOWLEDGE_BASE',
   'PERSONAL_KNOWLEDGE_BASE',
   'PATIENT_CLINICAL',
+  'DOCTOR_VAULT',
   'GENERAL',
 ] as const;
 
@@ -39,6 +40,13 @@ export type DocumentPurposeValue = z.infer<typeof documentPurposeSchema>;
  * `PATIENT_CLINICAL` (P16-T07) is deliberately absent: a lab result is a
  * medical record, not chatbot knowledge, and its resting ingest status is
  * `NOT_APPLICABLE` precisely because this list does not contain it.
+ *
+ * `DOCTOR_VAULT` (P16-T16) is absent for a sharper reason. A vault holds a
+ * doctor's KTP, their NPWP, their contracts; ingesting one would send those
+ * pages to an embedding provider and put them in a retrieval corpus. That the
+ * vault sits one enum value away from `PERSONAL_KNOWLEDGE_BASE`, whose entire
+ * job *is* to reach the provider, is why this list is an allowlist — a new
+ * purpose stays out of the pipeline unless someone names it here.
  */
 export const INGESTIBLE_DOCUMENT_PURPOSES = [
   'FAQ_KNOWLEDGE_BASE',
@@ -52,6 +60,12 @@ export const INGESTIBLE_DOCUMENT_PURPOSES = [
  * the clinic-corpus confirm — a `PATIENT_CLINICAL` row without a patient
  * would only die on the migration's CHECK, and the API refuses it here with
  * a readable 400 instead.
+ *
+ * `DOCTOR_VAULT` (P16-T16) is absent on the same grounds: a vault document is
+ * created through the vault API (`P16-T17`) with its purpose stated
+ * server-side. If the corpus confirm accepted it, a doctor could file a
+ * personal document into their knowledge base by naming a purpose — and the
+ * one thing this feature must never do is blur those two.
  */
 export const CORPUS_DOCUMENT_PURPOSES = [
   'FAQ_KNOWLEDGE_BASE',
@@ -83,6 +97,33 @@ export const DOCUMENT_CATEGORIES = [
 export const documentCategorySchema = z.enum(DOCUMENT_CATEGORIES);
 
 export type DocumentCategoryValue = z.infer<typeof documentCategorySchema>;
+
+/**
+ * How a doctor files their own paperwork (P16-T16, §7.3.3): STR/SIP, ijazah
+ * and specialist certificates, Serkom and the IDI recommendation, CME/P2KB,
+ * indemnity insurance, contracts and SK, KTP/NPWP, a CV.
+ *
+ * Distinct from {@link DOCUMENT_CATEGORIES}, which classifies a *patient's*
+ * clinical file. Nothing reviews these values and no completeness check runs
+ * against them — the vault has no audience but its owner, so this list is a
+ * filing aid and not a checklist anyone is measured on.
+ */
+export const VAULT_DOCUMENT_CATEGORIES = [
+  'REGISTRATION_LICENCE',
+  'EDUCATION',
+  'COMPETENCE',
+  'CONTINUING_EDUCATION',
+  'INSURANCE',
+  'EMPLOYMENT',
+  'IDENTITY_TAX',
+  'CURRICULUM_VITAE',
+  'PERSONAL_REFERENCE',
+  'OTHER',
+] as const;
+
+export const vaultDocumentCategorySchema = z.enum(VAULT_DOCUMENT_CATEGORIES);
+
+export type VaultDocumentCategoryValue = z.infer<typeof vaultDocumentCategorySchema>;
 
 /**
  * Where a document is in the ingestion pipeline. `NOT_APPLICABLE` is the

@@ -446,6 +446,7 @@ export const ModelName = {
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
   Document: 'Document',
+  VaultDocumentExpiryNotice: 'VaultDocumentExpiryNotice',
   DocumentChunk: 'DocumentChunk',
   ChannelInboundReceipt: 'ChannelInboundReceipt',
   Conversation: 'Conversation',
@@ -476,7 +477,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -5068,6 +5069,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    VaultDocumentExpiryNotice: {
+      payload: Prisma.$VaultDocumentExpiryNoticePayload<ExtArgs>
+      fields: Prisma.VaultDocumentExpiryNoticeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VaultDocumentExpiryNoticeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VaultDocumentExpiryNoticeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload>
+        }
+        findFirst: {
+          args: Prisma.VaultDocumentExpiryNoticeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VaultDocumentExpiryNoticeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload>
+        }
+        findMany: {
+          args: Prisma.VaultDocumentExpiryNoticeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload>[]
+        }
+        create: {
+          args: Prisma.VaultDocumentExpiryNoticeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload>
+        }
+        createMany: {
+          args: Prisma.VaultDocumentExpiryNoticeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VaultDocumentExpiryNoticeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload>[]
+        }
+        delete: {
+          args: Prisma.VaultDocumentExpiryNoticeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload>
+        }
+        update: {
+          args: Prisma.VaultDocumentExpiryNoticeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload>
+        }
+        deleteMany: {
+          args: Prisma.VaultDocumentExpiryNoticeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VaultDocumentExpiryNoticeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VaultDocumentExpiryNoticeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload>[]
+        }
+        upsert: {
+          args: Prisma.VaultDocumentExpiryNoticeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentExpiryNoticePayload>
+        }
+        aggregate: {
+          args: Prisma.VaultDocumentExpiryNoticeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVaultDocumentExpiryNotice>
+        }
+        groupBy: {
+          args: Prisma.VaultDocumentExpiryNoticeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VaultDocumentExpiryNoticeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VaultDocumentExpiryNoticeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VaultDocumentExpiryNoticeCountAggregateOutputType> | number
+        }
+      }
+    }
     DocumentChunk: {
       payload: Prisma.$DocumentChunkPayload<ExtArgs>
       fields: Prisma.DocumentChunkFieldRefs
@@ -7266,12 +7341,26 @@ export const DocumentScalarFieldEnum = {
   releasedAt: 'releasedAt',
   releasedById: 'releasedById',
   deleteReason: 'deleteReason',
+  vaultCategory: 'vaultCategory',
+  referenceNumber: 'referenceNumber',
+  issuedAt: 'issuedAt',
+  expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
 } as const
 
 export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
+
+
+export const VaultDocumentExpiryNoticeScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  thresholdDays: 'thresholdDays',
+  notifiedAt: 'notifiedAt'
+} as const
+
+export type VaultDocumentExpiryNoticeScalarFieldEnum = (typeof VaultDocumentExpiryNoticeScalarFieldEnum)[keyof typeof VaultDocumentExpiryNoticeScalarFieldEnum]
 
 
 export const DocumentChunkScalarFieldEnum = {
@@ -8372,6 +8461,20 @@ export type ListEnumDocumentCategoryFieldRefInput<$PrismaModel> = FieldRefInputT
 
 
 /**
+ * Reference to a field of type 'VaultDocumentCategory'
+ */
+export type EnumVaultDocumentCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VaultDocumentCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'VaultDocumentCategory[]'
+ */
+export type ListEnumVaultDocumentCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VaultDocumentCategory[]'>
+    
+
+
+/**
  * Reference to a field of type 'ConversationState'
  */
 export type EnumConversationStateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConversationState'>
@@ -8682,6 +8785,7 @@ export type GlobalOmitConfig = {
   chatSession?: Prisma.ChatSessionOmit
   chatMessage?: Prisma.ChatMessageOmit
   document?: Prisma.DocumentOmit
+  vaultDocumentExpiryNotice?: Prisma.VaultDocumentExpiryNoticeOmit
   documentChunk?: Prisma.DocumentChunkOmit
   channelInboundReceipt?: Prisma.ChannelInboundReceiptOmit
   conversation?: Prisma.ConversationOmit

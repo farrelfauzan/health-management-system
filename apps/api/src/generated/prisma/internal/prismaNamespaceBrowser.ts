@@ -113,6 +113,7 @@ export const ModelName = {
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
   Document: 'Document',
+  VaultDocumentExpiryNotice: 'VaultDocumentExpiryNotice',
   DocumentChunk: 'DocumentChunk',
   ChannelInboundReceipt: 'ChannelInboundReceipt',
   Conversation: 'Conversation',
@@ -1195,12 +1196,26 @@ export const DocumentScalarFieldEnum = {
   releasedAt: 'releasedAt',
   releasedById: 'releasedById',
   deleteReason: 'deleteReason',
+  vaultCategory: 'vaultCategory',
+  referenceNumber: 'referenceNumber',
+  issuedAt: 'issuedAt',
+  expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
 } as const
 
 export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
+
+
+export const VaultDocumentExpiryNoticeScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  thresholdDays: 'thresholdDays',
+  notifiedAt: 'notifiedAt'
+} as const
+
+export type VaultDocumentExpiryNoticeScalarFieldEnum = (typeof VaultDocumentExpiryNoticeScalarFieldEnum)[keyof typeof VaultDocumentExpiryNoticeScalarFieldEnum]
 
 
 export const DocumentChunkScalarFieldEnum = {

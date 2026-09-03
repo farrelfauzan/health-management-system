@@ -2630,11 +2630,43 @@ enum DocumentOwnerType {
 /// `NOT_APPLICABLE` and it is absent from `INGESTIBLE_DOCUMENT_PURPOSES`:
 /// clinical files must never enter the chatbot's embedding space, and the
 /// ingestion pipeline's purpose assertion is the backstop for that rule.
+///
+/// `DOCTOR_VAULT` (P16-T16) is a practitioner's own paperwork — their STR,
+/// their ijazah, their KTP. It shares this table for the storage pipeline and
+/// nothing else, and the distance between it and `PERSONAL_KNOWLEDGE_BASE` is
+/// the point: a knowledge-base document is chunked and its passages are sent
+/// to the AI provider, while a vault document is stored and served and
+/// reaches no vendor at all. The two are named apart deliberately — "vault"
+/// for the private file drawer, "knowledge base" for the retrieval corpus —
+/// because a reader who confuses them ships a doctor's identity documents to
+/// an embedding API.
 enum DocumentPurpose {
   FAQ_KNOWLEDGE_BASE
   PERSONAL_KNOWLEDGE_BASE
   PATIENT_CLINICAL
+  DOCTOR_VAULT
   GENERAL
+}
+
+/// How a doctor files their own paperwork (P16-T16, §7.3.3). The values map
+/// to what an Indonesian practitioner's drawer actually holds: STR/SIP,
+/// ijazah and specialist certificates, Serkom and the IDI recommendation,
+/// CME/P2KB records, indemnity insurance, contracts and SK, KTP/NPWP, a CV.
+///
+/// This is a filing aid for the owner and nothing more. No one reviews these
+/// categories, no workflow verifies them, and no completeness check is run
+/// against them — the vault has no audience but its owner.
+enum VaultDocumentCategory {
+  REGISTRATION_LICENCE
+  EDUCATION
+  COMPETENCE
+  CONTINUING_EDUCATION
+  INSURANCE
+  EMPLOYMENT
+  IDENTITY_TAX
+  CURRICULUM_VITAE
+  PERSONAL_REFERENCE
+  OTHER
 }
 
 /// Where a document is in the extract → chunk → embed pipeline.
@@ -2741,6 +2773,20 @@ model Document {
   /// just vanish; the reason is part of the deletion.
   deleteReason      String?           @map("delete_reason")
 
+  // Doctor-vault filing columns (P16-T16). Meaningful only when `purpose` is
+  // `DOCTOR_VAULT`; a CHECK in the migration ties them to that purpose so
+  // "which purposes use which columns" stays a database fact. Every one of
+  // them is the owner's own note to themselves — nothing here is validated
+  // against an external register, because nothing in this product is entitled
+  // to audit a doctor's paperwork.
+  vaultCategory   VaultDocumentCategory? @map("vault_category")
+  referenceNumber String?                @map("reference_number")
+  issuedAt        DateTime?              @map("issued_at") @db.Date
+  /// Drives the owner-only reminder job (P16-T18). An expired document is
+  /// never hidden, blocked or escalated to an administrator — the owner is
+  /// told, and what to do about it is theirs to decide.
+  expiresAt       DateTime?              @map("expires_at") @db.Date
+
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
@@ -2752,6 +2798,8 @@ model Document {
   admission  Admission?      @relation(fields: [admissionId], references: [id], onDelete: Restrict)
   releasedBy User?           @relation("DocumentReleasedBy", fields: [releasedById], references: [id], onDelete: Restrict)
   chunks     DocumentChunk[]
+
+  vaultExpiryNotices VaultDocumentExpiryNotice[]
 
   /// One row per stored object. Confirming an upload is the only way a row
   /// is created, and a client that retries the confirm — or replays it —
@@ -2768,7 +2816,40 @@ model Document {
   @@index([admissionId])
   @@index([purpose, category])
   @@index([releasedById])
+  /// The two vault reads: "my drawer, filtered by category" and "what of mine
+  /// expires soon". Both lead with `ownerId` because both are always asked
+  /// about exactly one person — there is no query in this feature that spans
+  /// owners, and an index that did not lead with the owner would invite one.
+  @@index([ownerId, vaultCategory])
+  @@index([ownerId, expiresAt])
   @@map("documents")
+}
+
+/// One reminder already sent about one vault document at one threshold
+/// (P16-T16, consumed by P16-T18's job).
+///
+/// The unique key is the whole design: a reminder job that runs twice — a
+/// retry, an overlapping schedule, a redeploy mid-run — must not tell a
+/// doctor twice that their STR expires. Recording the fact rather than
+/// trusting the schedule is what makes the job safe to re-run.
+///
+/// `Cascade`: the notice is bookkeeping about a document, and vault documents
+/// are hard-deleted (FR-E3-09). When the document goes, so does the record of
+/// having mentioned it.
+model VaultDocumentExpiryNotice {
+  id            String   @id @default(uuid()) @db.Uuid
+  documentId    String   @map("document_id") @db.Uuid
+  /// How far ahead of `expiresAt` this notice fired — 30, 7, 0. Part of the
+  /// key so each threshold notifies once, rather than the first one
+  /// suppressing the rest.
+  thresholdDays Int      @map("threshold_days")
+  notifiedAt    DateTime @default(now()) @map("notified_at")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, thresholdDays])
+  @@index([documentId])
+  @@map("vault_document_expiry_notices")
 }
 
 /// One embedded passage of a document — the unit retrieval actually returns.
@@ -3415,6 +3496,14 @@ enum NotificationType {
   APPOINTMENT_APPROVED
   APPOINTMENT_REJECTED
   CONVERSATION_HANDOFF
+  /// Owner-only, both of them (P16-T16, fired by P16-T18). A doctor's licence
+  /// approaching expiry is addressed to the doctor and to nobody else: no
+  /// administrator is copied, no dashboard aggregates it, and no scheduling
+  /// rule reads it. `DoctorLicense` (P16-T19/T20) is the separate,
+  /// clinic-visible record for the case where the clinic legitimately needs
+  /// to know — that one touches no document.
+  VAULT_DOCUMENT_EXPIRING
+  VAULT_DOCUMENT_EXPIRED
 
   @@map("notification_type")
 }

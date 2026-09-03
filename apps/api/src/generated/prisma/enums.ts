@@ -525,10 +525,27 @@ export const DocumentPurpose = {
   FAQ_KNOWLEDGE_BASE: 'FAQ_KNOWLEDGE_BASE',
   PERSONAL_KNOWLEDGE_BASE: 'PERSONAL_KNOWLEDGE_BASE',
   PATIENT_CLINICAL: 'PATIENT_CLINICAL',
+  DOCTOR_VAULT: 'DOCTOR_VAULT',
   GENERAL: 'GENERAL'
 } as const
 
 export type DocumentPurpose = (typeof DocumentPurpose)[keyof typeof DocumentPurpose]
+
+
+export const VaultDocumentCategory = {
+  REGISTRATION_LICENCE: 'REGISTRATION_LICENCE',
+  EDUCATION: 'EDUCATION',
+  COMPETENCE: 'COMPETENCE',
+  CONTINUING_EDUCATION: 'CONTINUING_EDUCATION',
+  INSURANCE: 'INSURANCE',
+  EMPLOYMENT: 'EMPLOYMENT',
+  IDENTITY_TAX: 'IDENTITY_TAX',
+  CURRICULUM_VITAE: 'CURRICULUM_VITAE',
+  PERSONAL_REFERENCE: 'PERSONAL_REFERENCE',
+  OTHER: 'OTHER'
+} as const
+
+export type VaultDocumentCategory = (typeof VaultDocumentCategory)[keyof typeof VaultDocumentCategory]
 
 
 export const DocumentIngestStatus = {
@@ -652,7 +669,9 @@ export type AdmissionStatus = (typeof AdmissionStatus)[keyof typeof AdmissionSta
 export const NotificationType = {
   APPOINTMENT_APPROVED: 'APPOINTMENT_APPROVED',
   APPOINTMENT_REJECTED: 'APPOINTMENT_REJECTED',
-  CONVERSATION_HANDOFF: 'CONVERSATION_HANDOFF'
+  CONVERSATION_HANDOFF: 'CONVERSATION_HANDOFF',
+  VAULT_DOCUMENT_EXPIRING: 'VAULT_DOCUMENT_EXPIRING',
+  VAULT_DOCUMENT_EXPIRED: 'VAULT_DOCUMENT_EXPIRED'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
