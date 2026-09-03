@@ -1,10 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 
 import {
@@ -20,7 +18,6 @@ import {
   UpdateVaultDocumentInput,
   VaultDocumentDownloadView,
   VaultDocumentListView,
-  VaultDocumentOwnerTypeValue,
   VaultDocumentUploadUrlView,
   VaultDocumentView,
 } from '@hms/shared-types';
@@ -30,8 +27,8 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { AuditAction } from '../../../generated/prisma/client';
-import { AuthRepository } from '../../auth/repository/auth.repository';
 import { VaultDocumentRepository } from '../repository/vault-document.repository';
+import { VaultDocumentAccessService } from './vault-document-access.service';
 import { buildDocumentDownloadDisposition } from './build-document-download-disposition';
 import { isVaultDocumentStorageKey } from './is-vault-document-storage-key';
 import { toVaultDocumentView } from './to-vault-document-view';
@@ -68,7 +65,7 @@ export class VaultDocumentService {
   constructor(
     private readonly vaultDocumentRepository: VaultDocumentRepository,
     private readonly objectStorageService: ObjectStorageService,
-    private readonly authRepository: AuthRepository,
+    private readonly vaultDocumentAccessService: VaultDocumentAccessService,
     private readonly uploadedDocumentGuardService: UploadedDocumentGuardService,
     private readonly auditService: AuditService,
   ) {}
@@ -81,7 +78,7 @@ export class VaultDocumentService {
     input: CreateVaultDocumentUploadUrlInput,
     actor: CurrentUser,
   ): Promise<VaultDocumentUploadUrlView> {
-    const ownerType = await this.resolveVaultOwnerType(actor, 'write');
+    const ownerType = await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'write');
     const storageKey = this.objectStorageService.generateObjectKey({
       keyPrefix: buildVaultDocumentStorageKeyPrefix(ownerType),
       fileExtension: DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE[input.mimeType],
@@ -112,7 +109,7 @@ export class VaultDocumentService {
     input: ConfirmVaultDocumentUploadInput,
     actor: CurrentUser,
   ): Promise<VaultDocumentView> {
-    const ownerType = await this.resolveVaultOwnerType(actor, 'write');
+    const ownerType = await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'write');
     if (!isVaultDocumentStorageKey(input.storageKey, ownerType)) {
       throw new BadRequestException('Storage key was not issued for an upload to your vault');
     }
@@ -158,7 +155,7 @@ export class VaultDocumentService {
     query: ListVaultDocumentsQueryInput,
     actor: CurrentUser,
   ): Promise<VaultDocumentListView> {
-    await this.resolveVaultOwnerType(actor, 'read');
+    await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'read');
     const page = await this.vaultDocumentRepository.listVaultDocuments({
       ownerId: actor.sub,
       vaultCategory: query.vaultCategory,
@@ -172,7 +169,7 @@ export class VaultDocumentService {
   }
 
   async getDocument(id: string, actor: CurrentUser): Promise<VaultDocumentView> {
-    await this.resolveVaultOwnerType(actor, 'read');
+    await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'read');
     return toVaultDocumentView(await this.requireOwnedDocument(id, actor.sub));
   }
 
@@ -183,7 +180,7 @@ export class VaultDocumentService {
    * the owner cannot later discover.
    */
   async getDownloadUrl(id: string, actor: CurrentUser): Promise<VaultDocumentDownloadView> {
-    await this.resolveVaultOwnerType(actor, 'read');
+    await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'read');
     const record = await this.requireOwnedDocument(id, actor.sub);
     // Signed as response-header overrides (SJ-21): the storage origin serves
     // the file as an attachment under its validated stored type, so a
@@ -212,7 +209,7 @@ export class VaultDocumentService {
     input: UpdateVaultDocumentInput,
     actor: CurrentUser,
   ): Promise<VaultDocumentView> {
-    await this.resolveVaultOwnerType(actor, 'write');
+    await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'write');
     const record = await this.requireOwnedDocument(id, actor.sub);
     this.assertIssueBeforeExpiry(
       input.issuedAt === undefined ? this.toIsoDate(record.issuedAt) : input.issuedAt,
@@ -240,7 +237,7 @@ export class VaultDocumentService {
    * refusing to forget a person's own identity documents when they ask.
    */
   async deleteDocument(id: string, actor: CurrentUser): Promise<DeletedVaultDocumentView> {
-    await this.resolveVaultOwnerType(actor, 'write');
+    await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'write');
     const result = await this.vaultDocumentRepository.deleteVaultDocument(id, actor.sub);
     if (result === null) {
       throw new NotFoundException('Document not found');
@@ -254,7 +251,7 @@ export class VaultDocumentService {
 
   /** Every document in the caller's own vault, for the export archive. */
   async listAllForExport(actor: CurrentUser): Promise<DocumentRecord[]> {
-    await this.resolveVaultOwnerType(actor, 'read');
+    await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'read');
     const records: DocumentRecord[] = [];
     let cursor: string | undefined;
     do {
@@ -301,54 +298,6 @@ export class VaultDocumentService {
       throw new NotFoundException('Document not found');
     }
     return record;
-  }
-
-  /**
-   * Resolves which vault the actor owns, and proves they may act on it at
-   * `OWN` scope.
-   *
-   * The global guard proves the actor may act on *some* `VaultDocument`; it
-   * cannot distinguish scope, because a CASL rule carrying an ownership
-   * condition still answers "can write VaultDocument" for the subject type.
-   * Checking the seeded `OWN` grant here is what stops a role holding neither
-   * from opening a vault through these routes — and since no `ANY` key exists
-   * for this surface at all, `OWN` is the only grant there is to hold.
-   *
-   * An administrator gets a vault of their own on the same terms as a doctor:
-   * an admin is also a person with a contract and a KTP. It grants them
-   * nothing over anyone else's.
-   */
-  private async resolveVaultOwnerType(
-    actor: CurrentUser,
-    action: 'read' | 'write',
-  ): Promise<VaultDocumentOwnerTypeValue> {
-    const actorRecord = await this.authRepository.findUserById(actor.sub);
-    if (!actorRecord) {
-      throw new UnauthorizedException('User not found');
-    }
-    const hasOwnScope = actorRecord.roles
-      .flatMap((userRole) => userRole.role.permissions)
-      .some(
-        (rolePermission) =>
-          rolePermission.permission.resource === 'VaultDocument' &&
-          rolePermission.permission.action === action &&
-          rolePermission.permission.scope === 'OWN',
-      );
-    if (!hasOwnScope) {
-      throw new ForbiddenException('You are not allowed to manage a personal document vault');
-    }
-    // `code`, not `name`: the code is the unique, stable identifier roles are
-    // seeded and matched by, while `name` is a display string an admin may
-    // edit. Keying ownership off a mutable label would let a rename silently
-    // move which vault a user opens.
-    const roleCodes = actorRecord.roles.map((userRole) => userRole.role.code);
-    if (roleCodes.includes('DOCTOR')) {
-      return 'DOCTOR';
-    }
-    if (roleCodes.includes('ADMIN') || roleCodes.includes('SUPER_ADMIN')) {
-      return 'ADMIN';
-    }
-    throw new ForbiddenException('You are not allowed to manage a personal document vault');
   }
 
   private async readUploadedObject(storageKey: string): Promise<HeadObjectResult> {

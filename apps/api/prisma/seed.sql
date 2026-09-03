@@ -207,6 +207,14 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- this catalog entirely — not merely unbound.
     ('vault-document.read:own', 'VaultDocument', 'read', 'OWN', 'Read documents in own personal vault'),
     ('vault-document.write:own', 'VaultDocument', 'write', 'OWN', 'Upload, edit and delete documents in own personal vault'),
+    -- P16-T34. Separate from `write:own` for the same reason
+    -- `invoice.deliver:any` is separate from `invoice.write:any`: handing a
+    -- document to someone is a different act from editing it, and a
+    -- deployment that wants the vault without the sharing engine can withhold
+    -- this one key. Still OWN only — a share is created by the document's
+    -- owner or by nobody, and there is no `:any` form for an administrator to
+    -- be granted that would let them share a document they do not own.
+    ('vault-document.share:own', 'VaultDocument', 'share', 'OWN', 'Share own vault documents with named users, and revoke those shares'),
     -- PCS-T08. Every conversation grant exists only in its ANY form, and that
     -- is structural rather than an oversight: a WhatsApp/Telegram conversation
     -- has no HMS user on either end, so there is no owner for an OWN scope to
@@ -494,6 +502,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- above that could.
     ('ADMIN', 'vault-document.read:own'),
     ('ADMIN', 'vault-document.write:own'),
+    ('ADMIN', 'vault-document.share:own'),
     -- The human side of the WA/Telegram channel (PCS-T08). ADMIN only: these
     -- routes read what members of the public wrote to the clinic and speak
     -- back to them under the clinic's name, and neither is a clinical role's
@@ -567,6 +576,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- anyone but the owner reads.
     ('DOCTOR', 'vault-document.read:own'),
     ('DOCTOR', 'vault-document.write:own'),
+    ('DOCTOR', 'vault-document.share:own'),
     -- Read only, for the same reason PHARMACIST has it (P16-T02): a
     -- prescription, a referral letter and a medical certificate are all
     -- headed with the clinic's identity, and a doctor who cannot read it

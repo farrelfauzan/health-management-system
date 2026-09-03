@@ -759,6 +759,31 @@ export type Document = Prisma.DocumentModel
  */
 export type VaultDocumentExpiryNotice = Prisma.VaultDocumentExpiryNoticeModel
 /**
+ * Model VaultDocumentShare
+ * One person's access to one vault document, created only by that document's
+ * owner (P16-T34, §7.3.5).
+ * 
+ * This row **is** the relationship that makes `OWN` resolve for a non-owner.
+ * `OWN` has never meant strict ownership in this system — it means a
+ * relationship the server can prove, the way a `DoctorPatient` assignment is
+ * what makes `encounter.read:own` resolve for a clinician who did not create
+ * the encounter. An explicit, owner-created, revocable share is exactly such
+ * a relationship, so sharing needs no new read permission and no new scope.
+ * `vault-document.read:any` still does not exist: nobody can browse a vault,
+ * they can only open what they were handed.
+ * 
+ * No share-all row and no role target. A share names one document and one
+ * person, so "share my whole vault" is not a thing the schema can express —
+ * the multi-select in the UI is batching over this, one row per document.
+ * 
+ * `lastAccessedAt` / `accessCount` are denormalised rather than derived from
+ * `AuditLog`, which stays the forensic record. The owner panel reads them on
+ * every render, and the owner cannot query the audit log — being able to
+ * watch the door is what makes people willing to open it, so those two
+ * columns are product surface, not bookkeeping.
+ */
+export type VaultDocumentShare = Prisma.VaultDocumentShareModel
+/**
  * Model DocumentChunk
  * One embedded passage of a document — the unit retrieval actually returns.
  * 

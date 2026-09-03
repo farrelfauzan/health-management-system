@@ -522,9 +522,11 @@ export type $VaultDocumentExpiryNoticePayload<ExtArgs extends runtime.Types.Exte
     id: string
     documentId: string
     /**
-     * How far ahead of `expiresAt` this notice fired — 30, 7, 0. Part of the
-     * key so each threshold notifies once, rather than the first one
-     * suppressing the rest.
+     * How far ahead of `expiresAt` this notice fired — 60, 30, 0 (`P16-T18`).
+     * Part of the key so each threshold notifies once, rather than the first
+     * one suppressing the rest, and so a threshold crossed while the job was
+     * down still fires when it comes back: the claim is keyed to the
+     * threshold, not to a calendar date the job had to be running to observe.
      */
     thresholdDays: number
     notifiedAt: Date

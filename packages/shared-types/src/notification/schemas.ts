@@ -19,6 +19,16 @@ export const NOTIFICATION_TYPES = [
    */
   'VAULT_DOCUMENT_EXPIRING',
   'VAULT_DOCUMENT_EXPIRED',
+  /**
+   * Sharing (P16-T34, FR-E3-16/19). `SHARED` tells the recipient a document
+   * was handed to them. `OPENED` tells the **owner** that a recipient opened
+   * it for the first time, and is the unusual one of the pair: a share is
+   * only safe to give if the giver can see it being used, so the product
+   * tells them rather than making them ask. Both are addressed to one person
+   * — neither is broadcast, and no administrator is copied on either.
+   */
+  'VAULT_DOCUMENT_SHARED',
+  'VAULT_DOCUMENT_OPENED',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;

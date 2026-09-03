@@ -657,3 +657,76 @@ export const downloadPatientDocumentQuerySchema = z.object({
 export type DownloadPatientDocumentQueryInput = z.infer<
   typeof downloadPatientDocumentQuerySchema
 >;
+
+/**
+ * Creates one share of one vault document with one named person
+ * (`P16-T34`, FR-E3-13).
+ *
+ * The document is addressed by the route's path, never by this body, so
+ * FR-E3-02's rule survives sharing intact: a share route names a document and
+ * a person, and there is still no request anywhere in this surface that names
+ * a *vault*. There is deliberately no `granteeRole`, no `granteeIds` array
+ * and no "share everything" flag — the multi-select in the UI batches this
+ * call once per document, so "share my whole vault" is not something the API
+ * can be asked to do.
+ */
+export const createVaultDocumentShareSchema = z.object({
+  granteeId: z.string().uuid(),
+  /**
+   * Optional. An open-ended share is a deliberate choice a person can make,
+   * so it is not forced — but P16-T35 surfaces old ones back to their owner
+   * rather than letting them sit unnoticed (FR-E3-20).
+   */
+  expiresAt: z.string().datetime().optional(),
+});
+
+export type CreateVaultDocumentShareInput = z.infer<typeof createVaultDocumentShareSchema>;
+
+/**
+ * The minimum characters before the recipient lookup answers anything
+ * (`P16-T34`). Sharing requires naming a person, and a doctor holds no
+ * `user.read:any` grant, so some lookup has to exist; requiring a search term
+ * keeps it a lookup rather than a browsable staff directory.
+ */
+export const VAULT_DOCUMENT_SHARE_RECIPIENT_SEARCH_MIN_LENGTH = 3;
+export const VAULT_DOCUMENT_SHARE_RECIPIENT_LIMIT = 10;
+
+/**
+ * Finds people the caller could hand a vault document to (`P16-T34`).
+ *
+ * Not a general user search. It answers only over accounts that could
+ * actually open a shared vault document — live human accounts holding
+ * `vault-document.read:own` — and it refuses to answer at all below
+ * {@link VAULT_DOCUMENT_SHARE_RECIPIENT_SEARCH_MIN_LENGTH} characters, so it
+ * cannot be walked to enumerate staff. The caller learns nothing they could
+ * not learn by typing an address they already knew.
+ */
+export const listVaultDocumentShareRecipientsQuerySchema = z.object({
+  search: z.string().trim().min(VAULT_DOCUMENT_SHARE_RECIPIENT_SEARCH_MIN_LENGTH).max(200),
+});
+
+export type ListVaultDocumentShareRecipientsQueryInput = z.infer<
+  typeof listVaultDocumentShareRecipientsQuerySchema
+>;
+
+/**
+ * Lists what has been shared **with** the caller (`P16-T34`, FR-E3-17).
+ *
+ * No owner filter, and that is the point: this is not a view onto anyone's
+ * vault, it is the set of individual documents that were handed to this
+ * person. Filtering by owner would frame it as "show me what dr. X shared",
+ * which is a question about a vault rather than about a key.
+ */
+export const listSharedWithMeDocumentsQuerySchema = z.object({
+  cursor: z.string().uuid().optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(DOCUMENT_PAGE_MAX_LIMIT)
+    .default(DOCUMENT_PAGE_DEFAULT_LIMIT),
+});
+
+export type ListSharedWithMeDocumentsQueryInput = z.infer<
+  typeof listSharedWithMeDocumentsQuerySchema
+>;
