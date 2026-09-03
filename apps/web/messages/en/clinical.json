@@ -240,6 +240,18 @@
           "label": "Linked visit",
           "hint": "File the document under the visit or admission it came from, or leave it general."
         },
+        "release": {
+          "action": "Release to patient",
+          "confirmTitle": "Release this document to the patient?",
+          "confirmBody": "The patient will see \u201c{title}\u201d in their portal and can download it.",
+          "noUndo": "This cannot be undone from here \u2014 there is no un-release.",
+          "confirm": "Release",
+          "releasing": "Releasing\u2026",
+          "cancel": "Cancel",
+          "released": "Document released to the patient.",
+          "error": "Unable to release this document.",
+          "releasedOn": "Released {date}"
+        },
         "actions": {
           "download": "Download",
           "edit": "Edit",
@@ -495,6 +507,35 @@
       "licenseRequired": "No license recorded. A practicing doctor needs an STR and a SIP for each practice location.",
       "addEducation": "Add Education",
       "identifiersError": "Unable to reveal practitioner identifiers."
+    },
+    "portal": {
+      "documents": {
+        "title": "Documents",
+        "subtitle": "Results and letters your clinic has shared with you.",
+        "loading": "Loading your documents\u2026",
+        "loadError": "Unable to load your documents.",
+        "emptyTitle": "Nothing shared yet",
+        "emptyDescription": "Documents appear here once your clinic releases them to you. If you are expecting a result, ask at your next visit.",
+        "sharedOn": "Shared on {date}",
+        "noDate": "No date",
+        "download": "Download",
+        "downloadError": "Unable to open this document.",
+        "downloadNotice": "Documents open as downloads \u2014 they are not previewed in the browser.",
+        "loadMore": "Show more",
+        "loadingMore": "Loading\u2026",
+        "categories": {
+          "LAB_RESULT": "Lab result",
+          "RADIOLOGY": "Radiology",
+          "EXTERNAL_MEDICAL_RECORD": "External medical record",
+          "REFERRAL_LETTER": "Referral letter",
+          "CONSENT_FORM": "Consent form",
+          "DISCHARGE_SUMMARY": "Discharge summary",
+          "MEDICAL_CERTIFICATE": "Medical certificate",
+          "INSURANCE": "Insurance",
+          "IDENTITY": "Identity",
+          "OTHER": "Other"
+        }
+      }
     },
     "encounters": {
       "documents": {

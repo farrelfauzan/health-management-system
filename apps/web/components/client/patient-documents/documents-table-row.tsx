@@ -41,6 +41,11 @@ export function DocumentsTableRow({
     return Number.isNaN(date.getTime()) ? value : format.dateTime(date, { dateStyle: 'medium' });
   }
 
+  function formatReleasedAt(value: string): string {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : format.dateTime(date, { dateStyle: 'medium' });
+  }
+
   function renderVisit(): string {
     if (document.encounterId) {
       return t('visit.encounterLinked');
@@ -76,15 +81,28 @@ export function DocumentsTableRow({
       </TableCell>
       <TableCell>
         {document.releasedToPatient ? (
-          <Badge>{t('released')}</Badge>
+          <>
+            <Badge>{t('released')}</Badge>
+            {/* When, not just whether: "the patient has had this since Tuesday"
+                is the fact a clinician acts on when a result is queried. */}
+            {document.releasedAt ? (
+              <p className="mt-1 text-xs text-slate-500">
+                {t('release.releasedOn', { date: formatReleasedAt(document.releasedAt) })}
+              </p>
+            ) : null}
+          </>
         ) : (
           <Badge variant="outline">{t('notReleased')}</Badge>
         )}
       </TableCell>
       <TableCell>
-        <span className="font-mono text-xs text-slate-500" title={document.uploadedById}>
-          {document.uploadedById.slice(0, SHORT_ID_LENGTH)}…
-        </span>
+        {document.uploadedByEmail ? (
+          <span className="text-xs text-slate-500">{document.uploadedByEmail}</span>
+        ) : (
+          <span className="font-mono text-xs text-slate-500" title={document.uploadedById}>
+            {document.uploadedById.slice(0, SHORT_ID_LENGTH)}…
+          </span>
+        )}
       </TableCell>
       <TableCell className="text-right">
         <DocumentRowActions

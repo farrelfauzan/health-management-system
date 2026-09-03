@@ -171,7 +171,12 @@
         "lockWorkstation": "Kunci komputer"
       },
       "portal": {
-        "name": "Portal Pasien"
+        "name": "Portal Pasien",
+        "nav": {
+          "label": "Bagian portal",
+          "registrations": "Kunjungan",
+          "documents": "Dokumen"
+        }
       },
       "placeholder": {
         "title": "{title} segera hadir",

@@ -38,6 +38,7 @@ export function EncounterDocumentsPanel({ encounterId }: EncounterDocumentsPanel
   const t = useTranslations('clinical.encounters.documents');
   const [isOpen, setIsOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [resultMessage, setResultMessage] = useState<string | null>(null);
   const query = useEncounterDocuments(encounterId);
 
   const thisVisit = query.data?.data.thisVisit ?? [];
@@ -77,6 +78,7 @@ export function EncounterDocumentsPanel({ encounterId }: EncounterDocumentsPanel
                 emptyLabel={t('thisVisitEmpty')}
                 documents={thisVisit}
                 encounterId={encounterId}
+                onResult={setResultMessage}
                 onError={setErrorMessage}
               />
               <EncounterDocumentsGroup
@@ -84,10 +86,14 @@ export function EncounterDocumentsPanel({ encounterId }: EncounterDocumentsPanel
                 emptyLabel={t('historyEmpty')}
                 documents={history}
                 encounterId={encounterId}
+                onResult={setResultMessage}
                 onError={setErrorMessage}
               />
             </>
           ) : null}
+          {resultMessage === null ? null : (
+            <p className="text-sm text-emerald-700">{resultMessage}</p>
+          )}
           {errorMessage === null ? null : <p className="text-sm text-red-600">{errorMessage}</p>}
         </CardContent>
       ) : null}

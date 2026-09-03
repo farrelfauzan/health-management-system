@@ -245,6 +245,18 @@
           "label": "Kunjungan terkait",
           "hint": "Arsipkan dokumen di bawah kunjungan atau rawat inap asalnya, atau biarkan sebagai dokumen umum."
         },
+        "release": {
+          "action": "Bagikan ke pasien",
+          "confirmTitle": "Bagikan dokumen ini ke pasien?",
+          "confirmBody": "Pasien akan melihat \u201c{title}\u201d di portal mereka dan dapat mengunduhnya.",
+          "noUndo": "Tindakan ini tidak dapat dibatalkan dari sini \u2014 tidak ada pembatalan berbagi.",
+          "confirm": "Bagikan",
+          "releasing": "Membagikan\u2026",
+          "cancel": "Batal",
+          "released": "Dokumen dibagikan ke pasien.",
+          "error": "Tidak dapat membagikan dokumen ini.",
+          "releasedOn": "Dibagikan {date}"
+        },
         "actions": {
           "download": "Unduh",
           "edit": "Ubah",
@@ -500,6 +512,35 @@
       "licenseRequired": "Belum ada izin yang dicatat. Dokter yang berpraktik memerlukan STR dan SIP untuk setiap lokasi praktik.",
       "addEducation": "Tambah Pendidikan",
       "identifiersError": "Identitas tenaga medis gagal ditampilkan."
+    },
+    "portal": {
+      "documents": {
+        "title": "Dokumen",
+        "subtitle": "Hasil dan surat yang dibagikan klinik kepada Anda.",
+        "loading": "Memuat dokumen Anda\u2026",
+        "loadError": "Tidak dapat memuat dokumen Anda.",
+        "emptyTitle": "Belum ada yang dibagikan",
+        "emptyDescription": "Dokumen akan muncul di sini setelah klinik membagikannya kepada Anda. Jika Anda menunggu hasil, tanyakan pada kunjungan berikutnya.",
+        "sharedOn": "Dibagikan pada {date}",
+        "noDate": "Tanpa tanggal",
+        "download": "Unduh",
+        "downloadError": "Tidak dapat membuka dokumen ini.",
+        "downloadNotice": "Dokumen dibuka sebagai unduhan \u2014 tidak ditampilkan di peramban.",
+        "loadMore": "Tampilkan lainnya",
+        "loadingMore": "Memuat\u2026",
+        "categories": {
+          "LAB_RESULT": "Hasil laboratorium",
+          "RADIOLOGY": "Radiologi",
+          "EXTERNAL_MEDICAL_RECORD": "Rekam medis eksternal",
+          "REFERRAL_LETTER": "Surat rujukan",
+          "CONSENT_FORM": "Formulir persetujuan",
+          "DISCHARGE_SUMMARY": "Ringkasan pulang",
+          "MEDICAL_CERTIFICATE": "Surat keterangan sehat",
+          "INSURANCE": "Asuransi",
+          "IDENTITY": "Identitas",
+          "OTHER": "Lainnya"
+        }
+      }
     },
     "encounters": {
       "documents": {
