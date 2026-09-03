@@ -13,6 +13,8 @@ import { DocumentChunkRepository } from './repository/document-chunk.repository'
 import { DocumentRetrievalRepository } from './repository/document-retrieval.repository';
 import { DocumentRepository } from './repository/document.repository';
 import { VaultDocumentRepository } from './repository/vault-document.repository';
+import { VaultDocumentController } from './controller/vault-document.controller';
+import { VaultDocumentService } from './service/vault-document.service';
 import { DocumentIngestionService } from './service/document-ingestion.service';
 import { DocumentIngestionWorker } from './service/document-ingestion.worker';
 import { DocumentRetrievalService } from './service/document-retrieval.service';
@@ -62,10 +64,12 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     PatientDocumentDetailController,
     EncounterDocumentController,
     PortalDocumentController,
+    VaultDocumentController,
   ],
   providers: [
     DocumentRepository,
     VaultDocumentRepository,
+    VaultDocumentService,
     DocumentChunkRepository,
     DocumentRetrievalRepository,
     DocumentService,

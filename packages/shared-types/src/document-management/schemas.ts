@@ -539,3 +539,101 @@ export const listPortalDocumentsQuerySchema = z.object({
 });
 
 export type ListPortalDocumentsQueryInput = z.infer<typeof listPortalDocumentsQuerySchema>;
+
+export const VAULT_DOCUMENT_REFERENCE_NUMBER_MAX_LENGTH = 120;
+
+const vaultDocumentDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD format');
+
+/**
+ * Signs one browser-direct upload into the caller's **own** vault
+ * (`P16-T17`).
+ *
+ * Kept separate from the knowledge-base equivalent for the reason that runs
+ * through this whole feature: the two mint keys under different prefixes, and
+ * a knowledge-base document's passages are sent to the AI provider while a
+ * vault document's never leave the bucket. One schema serving both would make
+ * that difference a runtime argument rather than a route.
+ */
+export const createVaultDocumentUploadUrlSchema = z.object({
+  mimeType: documentUploadMimeTypeSchema,
+  sizeBytes: z.coerce.number().int().positive().max(DOCUMENT_MAX_UPLOAD_SIZE_BYTES),
+});
+
+export type CreateVaultDocumentUploadUrlInput = z.infer<typeof createVaultDocumentUploadUrlSchema>;
+
+/**
+ * Records a completed upload as a document in the caller's own vault.
+ *
+ * Neither `purpose`, `ownerType` nor `ownerId` is accepted — all three are
+ * derived from the authenticated actor (FR-E3-02). That is the structural half
+ * of this feature's privacy: there is no request shape that names another
+ * person's vault, so there is nothing for a permission to have to refuse.
+ *
+ * The filing fields are the owner's own notes to themselves. Nothing validates
+ * a reference number against an external register, and nothing checks that a
+ * category matches what the file actually contains.
+ */
+export const confirmVaultDocumentUploadSchema = z.object({
+  storageKey: z.string().min(1).max(512),
+  title: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX_LENGTH),
+  language: documentLanguageSchema,
+  vaultCategory: vaultDocumentCategorySchema.optional(),
+  referenceNumber: z
+    .string()
+    .trim()
+    .min(1)
+    .max(VAULT_DOCUMENT_REFERENCE_NUMBER_MAX_LENGTH)
+    .optional(),
+  issuedAt: vaultDocumentDateSchema.optional(),
+  expiresAt: vaultDocumentDateSchema.optional(),
+});
+
+export type ConfirmVaultDocumentUploadInput = z.infer<typeof confirmVaultDocumentUploadSchema>;
+
+/**
+ * Edits a vault document's filing metadata (FR-E3-01). The stored file is
+ * immutable; only the owner's notes about it change.
+ *
+ * Every field is nullable as well as optional, because clearing a date the
+ * owner entered by mistake has to be expressible — an optional-only schema
+ * makes "unset this" indistinguishable from "leave it alone".
+ */
+export const updateVaultDocumentSchema = z
+  .object({
+    title: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX_LENGTH).optional(),
+    vaultCategory: vaultDocumentCategorySchema.nullable().optional(),
+    referenceNumber: z
+      .string()
+      .trim()
+      .min(1)
+      .max(VAULT_DOCUMENT_REFERENCE_NUMBER_MAX_LENGTH)
+      .nullable()
+      .optional(),
+    issuedAt: vaultDocumentDateSchema.nullable().optional(),
+    expiresAt: vaultDocumentDateSchema.nullable().optional(),
+  })
+  .refine((value) => Object.values(value).some((field) => field !== undefined), {
+    message: 'At least one field must be provided',
+  });
+
+export type UpdateVaultDocumentInput = z.infer<typeof updateVaultDocumentSchema>;
+
+/**
+ * Lists the caller's own vault. There is no owner filter and no `purpose`
+ * filter: this route addresses exactly one vault, and offering either field
+ * would imply it could address another.
+ */
+export const listVaultDocumentsQuerySchema = z.object({
+  vaultCategory: vaultDocumentCategorySchema.optional(),
+  cursor: z.string().uuid().optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(DOCUMENT_PAGE_MAX_LIMIT)
+    .default(DOCUMENT_PAGE_DEFAULT_LIMIT),
+});
+
+export type ListVaultDocumentsQueryInput = z.infer<typeof listVaultDocumentsQuerySchema>;
