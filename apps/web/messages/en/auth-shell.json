@@ -160,6 +160,14 @@
           "title": "Your document has expired",
           "body": "“{documentTitle}” in your own documents expired on {expiresAt}."
         },
+        "vaultDocumentShared": {
+          "title": "A document was shared with you",
+          "body": "{sharedByEmail} shared “{documentTitle}” with you."
+        },
+        "vaultDocumentOpened": {
+          "title": "Your shared document was opened",
+          "body": "{granteeEmail} opened “{documentTitle}” for the first time."
+        },
         "conversationHandoff": {
           "title": "Customer waiting for staff",
           "body": "A {channel} conversation was handed off and is waiting for a reply."

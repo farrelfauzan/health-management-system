@@ -160,6 +160,14 @@
           "title": "Dokumen Anda telah berakhir",
           "body": "“{documentTitle}” di Dokumen Saya berakhir pada {expiresAt}."
         },
+        "vaultDocumentShared": {
+          "title": "Sebuah dokumen dibagikan kepada Anda",
+          "body": "{sharedByEmail} membagikan “{documentTitle}” kepada Anda."
+        },
+        "vaultDocumentOpened": {
+          "title": "Dokumen yang Anda bagikan dibuka",
+          "body": "{granteeEmail} membuka “{documentTitle}” untuk pertama kalinya."
+        },
         "conversationHandoff": {
           "title": "Pelanggan menunggu petugas",
           "body": "Percakapan {channel} dialihkan dan menunggu balasan."

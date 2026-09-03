@@ -11,6 +11,8 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   CONVERSATION_HANDOFF: 'support_agent',
   VAULT_DOCUMENT_EXPIRING: 'schedule',
   VAULT_DOCUMENT_EXPIRED: 'event_busy',
+  VAULT_DOCUMENT_SHARED: 'folder_shared',
+  VAULT_DOCUMENT_OPENED: 'visibility',
 };
 
 type NotificationsMenuItemProps = {

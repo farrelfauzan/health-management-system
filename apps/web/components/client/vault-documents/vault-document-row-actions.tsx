@@ -6,6 +6,7 @@ import type { VaultDocumentView } from '@hms/shared-types';
 import { useTranslations } from 'next-intl';
 
 import { VaultDocumentEditDialog } from '#components/client/vault-documents/vault-document-edit-dialog';
+import { DocumentSharingPanel } from '#components/client/vault-shares/document-sharing-panel';
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { vaultDocumentControllerDeleteDocumentV1 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -27,6 +28,7 @@ export function VaultDocumentRowActions({
   const t = useTranslations('vault.actions');
   const queryClient = useQueryClient();
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isSharingOpen, setIsSharingOpen] = useState(false);
 
   const downloadMutation = useMutation({
     mutationFn: async () => {
@@ -68,6 +70,10 @@ export function VaultDocumentRowActions({
       onSelect: () => downloadMutation.mutate(),
     },
     { label: t('edit'), icon: 'edit', onSelect: () => setIsEditOpen(true) },
+    // P16-T35. Opens the panel rather than the share dialog directly: the
+    // first question an owner has about a document is usually "who already
+    // has this", not "give it to someone else".
+    { label: t('sharing'), icon: 'group', onSelect: () => setIsSharingOpen(true) },
     { label: t('delete'), icon: 'delete', onSelect: confirmDelete },
   ];
 
@@ -79,6 +85,13 @@ export function VaultDocumentRowActions({
         onOpenChange={setIsEditOpen}
         document={document}
         onSaved={onResult}
+      />
+      <DocumentSharingPanel
+        open={isSharingOpen}
+        onOpenChange={setIsSharingOpen}
+        document={document}
+        onResult={onResult}
+        onError={onError}
       />
     </>
   );

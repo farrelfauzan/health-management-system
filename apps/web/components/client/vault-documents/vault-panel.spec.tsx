@@ -6,9 +6,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import idMessages from '../../../messages/id/vault.json';
 
 const listDocumentsMock = vi.hoisted(() => vi.fn());
+const listSharedWithMeMock = vi.hoisted(() => vi.fn());
 
+// The panel renders the *Shared with me* section below the owner's own
+// documents (P16-T35), so this mock covers both halves of the page.
 vi.mock('#lib/api/generated/document-management/document-management', () => ({
   vaultDocumentControllerListDocumentsV1: listDocumentsMock,
+  sharedWithMeDocumentControllerListSharedWithMeV1: listSharedWithMeMock,
+  sharedWithMeDocumentControllerGetSharedDownloadUrlV1: vi.fn(),
+  getSharedWithMeDocumentControllerListSharedWithMeV1QueryKey: () => ['shared-with-me'],
+  vaultDocumentShareControllerListSharesV1: vi.fn(),
+  vaultDocumentShareControllerCreateShareV1: vi.fn(),
+  vaultDocumentShareControllerRevokeShareV1: vi.fn(),
+  vaultDocumentShareControllerListShareRecipientsV1: vi.fn(),
+  getVaultDocumentShareControllerListSharesV1QueryKey: (id: string) => ['shares', id],
   vaultDocumentControllerCreateUploadUrlV1: vi.fn(),
   vaultDocumentControllerConfirmUploadV1: vi.fn(),
   vaultDocumentControllerUpdateDocumentV1: vi.fn(),
@@ -53,6 +64,7 @@ describe('VaultPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     listDocumentsMock.mockResolvedValue({ status: 200, data: { data: [buildDocument()] } });
+    listSharedWithMeMock.mockResolvedValue({ status: 200, data: { data: [] } });
   });
 
   it('states that the documents are private and that the assistant never reads them', async () => {
@@ -94,5 +106,10 @@ describe('VaultPanel', () => {
     // Disabled rather than hidden: an owner who has just deleted everything
     // should still see that the option exists.
     expect(screen.getByRole('button', { name: idMessages.vault.export.label })).toBeDisabled();
+    // The two empty states are distinct copy, so an owner can tell "I have
+    // uploaded nothing" from "nobody has shared anything with me".
+    expect(
+      screen.getByText(idMessages.vault.sharedWithMe.states.emptyTitle),
+    ).toBeInTheDocument();
   });
 });

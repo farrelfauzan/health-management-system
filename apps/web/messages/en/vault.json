@@ -120,12 +120,90 @@
       "errors": {
         "download": "Could not open this document.",
         "delete": "Could not delete this document."
-      }
+      },
+      "sharing": "Sharing"
     },
     "export": {
       "label": "Export all",
       "pending": "Preparing…",
       "error": "Could not export your documents."
+    },
+    "sharing": {
+      "revocationLimit": "Revoking a share stops the person opening it again. It cannot recall a copy they have already downloaded — the access log below is the record of what was opened and when.",
+      "recipient": {
+        "label": "Share with",
+        "placeholder": "Search by email address",
+        "minLength": "Type at least {count} characters to search.",
+        "searching": "Searching…",
+        "empty": "Nobody matching that can receive a shared document.",
+        "selected": "Sharing with {email}.",
+        "error": "Could not search for people."
+      },
+      "dialog": {
+        "title": "Share {count, plural, one {this document} other {# documents}}",
+        "descriptionOne": "Give one person view-and-download access to “{title}”. Nothing else in your documents becomes visible to them.",
+        "descriptionMany": "Give one person view-and-download access to {count} documents. Each gets its own share, and nothing else in your documents becomes visible to them.",
+        "fields": {
+          "expiresAt": "Access ends on (optional)",
+          "expiresAtHint": "Leave empty to share with no end date. You can revoke at any time."
+        },
+        "cancel": "Cancel",
+        "share": "Share",
+        "sharing": "Sharing…",
+        "success": "Shared {count, plural, one {1 document} other {# documents}}.",
+        "errors": {
+          "noRecipient": "Choose who to share with first.",
+          "failed": "Could not share this document."
+        }
+      },
+      "panel": {
+        "title": "Sharing",
+        "description": "Who can open “{title}”, and what they have done with it.",
+        "loading": "Loading…",
+        "error": "Could not load who this is shared with.",
+        "empty": "You have not shared this with anyone.",
+        "close": "Close",
+        "shareWithSomeone": "Share with someone"
+      },
+      "row": {
+        "neverOpened": "Not opened yet",
+        "opened": "Opened {count, plural, one {once} other {# times}} · last on {lastAccessedAt}",
+        "revoked": "Revoked",
+        "expired": "Expired",
+        "openEnded": "No end date",
+        "standing": "Open-ended for over 90 days",
+        "until": "Until {expiresAt}",
+        "revoke": "Revoke",
+        "success": {
+          "revoke": "Access revoked for {email}."
+        },
+        "errors": {
+          "revoke": "Could not revoke this share."
+        }
+      }
+    },
+    "sharedWithMe": {
+      "title": "Shared with me",
+      "subtitle": "Documents other people have given you access to. Each can be withdrawn by its owner at any time.",
+      "noExpiry": "No end date",
+      "download": "Download",
+      "states": {
+        "loading": "Loading…",
+        "error": "Could not load documents shared with you.",
+        "emptyTitle": "Nothing shared with you",
+        "emptyDescription": "When somebody shares one of their documents with you, it appears here."
+      },
+      "columns": {
+        "document": "Document",
+        "sharedBy": "Shared by",
+        "sharedAt": "Shared on",
+        "expiresAt": "Access ends",
+        "size": "Size",
+        "actions": "Actions"
+      },
+      "errors": {
+        "download": "Could not open this document. The share may have been withdrawn."
+      }
     }
   }
 }
