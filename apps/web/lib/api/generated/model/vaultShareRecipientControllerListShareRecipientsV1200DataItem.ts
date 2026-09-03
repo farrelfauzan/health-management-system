@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type VaultDocumentShareControllerListShareRecipientsV1200DataItem = {
+export type VaultShareRecipientControllerListShareRecipientsV1200DataItem = {
   id: string;
   email: string;
   roleCodes: string[];

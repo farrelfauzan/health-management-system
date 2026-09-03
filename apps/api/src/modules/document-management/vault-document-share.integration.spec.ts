@@ -454,12 +454,29 @@ describe('Vault document sharing integration', () => {
     expect(response.body.data).toEqual([]);
   });
 
+  it('resolves the recipient lookup rather than parsing it as a document id', async () => {
+    // Regression: `VaultDocumentShareController` and `VaultDocumentController`
+    // share the base path `me/vault-documents`, and Express matches
+    // first-registered-wins. Declaring `share-recipients` ahead of
+    // `:id/shares` inside this controller is not enough — the *sibling*
+    // controller's `@Get(':id')` is registered earlier and its `ParseUUIDPipe`
+    // swallowed the literal segment as a malformed id, so the lookup answered
+    // 400 for every search and the picker rendered it as "nobody matching".
+    mockActor(OWNER_USER_ID, 'DOCTOR');
+    const token = await buildToken(OWNER_USER_ID, 'doctor@hms.test');
+
+    await request(app.getHttpServer())
+      .get('/api/v1/me/vault-share-recipients?search=admin')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+  });
+
   it('refuses the recipient lookup below the minimum search length', async () => {
     mockActor(OWNER_USER_ID, 'DOCTOR');
     const token = await buildToken(OWNER_USER_ID, 'doctor@hms.test');
 
     await request(app.getHttpServer())
-      .get('/api/v1/me/vault-documents/share-recipients?search=ab')
+      .get('/api/v1/me/vault-share-recipients?search=ab')
       .set('Authorization', `Bearer ${token}`)
       .expect(400);
   });

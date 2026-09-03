@@ -18,6 +18,7 @@ import { VaultDocumentShareRepository } from './repository/vault-document-share.
 import { SharedWithMeDocumentController } from './controller/shared-with-me-document.controller';
 import { VaultDocumentController } from './controller/vault-document.controller';
 import { VaultDocumentShareController } from './controller/vault-document-share.controller';
+import { VaultShareRecipientController } from './controller/vault-share-recipient.controller';
 import { VaultDocumentAccessService } from './service/vault-document-access.service';
 import { VaultDocumentService } from './service/vault-document.service';
 import { VaultDocumentExpiryWorker } from './service/vault-document-expiry.worker';
@@ -89,6 +90,7 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     PortalDocumentController,
     VaultDocumentController,
     VaultDocumentShareController,
+    VaultShareRecipientController,
     SharedWithMeDocumentController,
   ],
   providers: [

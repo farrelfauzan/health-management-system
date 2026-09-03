@@ -31,6 +31,7 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   PortalDocumentController: 'document-management',
   VaultDocumentController: 'document-management',
   VaultDocumentShareController: 'document-management',
+  VaultShareRecipientController: 'document-management',
   SharedWithMeDocumentController: 'document-management',
   BpjsEligibilityController: 'bpjs-pcare',
   BpjsMappingController: 'bpjs-pcare',

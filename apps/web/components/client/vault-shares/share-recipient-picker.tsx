@@ -9,7 +9,7 @@ import {
 import { Input, Label, cn } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
-import { vaultDocumentShareControllerListShareRecipientsV1 } from '#lib/api/generated/document-management/document-management';
+import { vaultShareRecipientControllerListShareRecipientsV1 } from '#lib/api/generated/document-management/document-management';
 import { parseApiSuccess } from '#lib/api/response';
 
 type ShareRecipientPickerProps = {
@@ -38,7 +38,7 @@ export function ShareRecipientPicker({ selected, onSelect }: ShareRecipientPicke
     retry: false,
     queryFn: async () =>
       parseApiSuccess<VaultDocumentShareRecipientView[]>(
-        await vaultDocumentShareControllerListShareRecipientsV1({ search: search.trim() }),
+        await vaultShareRecipientControllerListShareRecipientsV1({ search: search.trim() }),
         t('error'),
       ).data,
   });
@@ -63,6 +63,12 @@ export function ShareRecipientPicker({ selected, onSelect }: ShareRecipientPicke
         </p>
       ) : recipientsQuery.isPending ? (
         <p className="text-xs text-slate-500">{t('searching')}</p>
+      ) : recipientsQuery.isError ? (
+        /* A failed lookup is not an empty one. Conflating them cost real
+           debugging time once already: a route collision made every search
+           answer 400, and this branch reported it as "nobody matching" — a
+           wrong answer that looked like a right one. */
+        <p className="text-xs text-red-700">{t('error')}</p>
       ) : (recipientsQuery.data ?? []).length === 0 ? (
         <p className="text-xs text-slate-500">{t('empty')}</p>
       ) : (
