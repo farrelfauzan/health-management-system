@@ -124,6 +124,12 @@ enum AuditAction {
   /// sees.
   PATIENT_DOCUMENT_DOWNLOADED
   PATIENT_DOCUMENT_RELEASED
+  /// Doctor vault (P16-T17). A download is one document's bytes leaving for a
+  /// device; an export is a whole vault leaving in one file. Both rows exist
+  /// for the owner rather than for anyone watching them — nobody else can
+  /// read a vault, so the only person this log can inform is its subject.
+  VAULT_DOCUMENT_DOWNLOADED
+  VAULT_DOCUMENT_EXPORTED
   /// Staff onboarding by email (IMP-23). Three verbs rather than one because
   /// they have three different actors: an administrator sends the invitation,
   /// the invitee — not yet a session — accepts it, and an administrator

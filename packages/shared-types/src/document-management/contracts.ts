@@ -5,6 +5,7 @@ import type {
   DocumentOwnerTypeValue,
   DocumentPurposeValue,
   DocumentVisibilityValue,
+  VaultDocumentCategoryValue,
 } from '#document-management/schemas';
 
 /**
@@ -245,4 +246,59 @@ export type PortalDocumentListView = {
 export type FaqSearchPassage = {
   documentTitle: string;
   content: string;
+};
+
+/**
+ * One document in the caller's own vault (`P16-T17`).
+ *
+ * `ownerId` is absent, unlike {@link PersonalDocumentView}, and that is the
+ * contract making a point: this route addresses exactly one vault, the
+ * caller's, so echoing whose it is would be answering a question the API
+ * never lets anyone ask. The ingestion columns are absent too — a vault
+ * document never enters the retrieval corpus (FR-E3-05), so an ingest status
+ * would describe a pipeline that cannot touch the row.
+ *
+ * `storageKey` is absent as everywhere; every download is a short-lived
+ * signed URL minted per request and audited.
+ */
+export type VaultDocumentView = {
+  id: string;
+  title: string;
+  mimeType: string;
+  sizeBytes: number;
+  language: DocumentLanguageValue;
+  vaultCategory: VaultDocumentCategoryValue | null;
+  referenceNumber: string | null;
+  /** `YYYY-MM-DD`; the date on the document, not when it was uploaded. */
+  issuedAt: string | null;
+  expiresAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type VaultDocumentListView = {
+  items: VaultDocumentView[];
+  nextCursor: string | null;
+};
+
+export type VaultDocumentUploadUrlView = {
+  url: string;
+  storageKey: string;
+  expiresAt: string;
+  requiredHeaders: Readonly<Record<string, string>>;
+};
+
+export type VaultDocumentDownloadView = {
+  url: string;
+  expiresAt: string;
+};
+
+/**
+ * The result of a vault deletion (FR-E3-09). There is no `deletedAt`, because
+ * there is no row left to carry one — unlike a clinical file, a doctor's own
+ * paperwork falls under no retention floor, so "deleted" here means gone.
+ */
+export type DeletedVaultDocumentView = {
+  id: string;
+  deleted: true;
 };

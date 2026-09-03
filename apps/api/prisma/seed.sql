@@ -197,6 +197,16 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('patient-document.write:own', 'PatientDocument', 'write', 'OWN', 'Upload and edit clinical documents for assigned patients'),
     ('patient-document.release:own', 'PatientDocument', 'release', 'OWN', 'Release clinical documents of assigned patients to the patient portal'),
     ('patient-document.delete:any', 'PatientDocument', 'delete', 'ANY', 'Soft-delete a clinical document, with a required reason'),
+    -- P16-T17: a practitioner's own document vault. Only OWN exists, and that
+    -- is the feature rather than an omission: FR-E3-03 requires that no
+    -- read:any or write:any key exist for this surface for any role, ADMIN
+    -- included, so there is no permission an administrator could be granted
+    -- that would let them browse someone else's vault. The strongest
+    -- guarantee available here is the one that is not configurable, and
+    -- `vault-document-rbac-seed.spec.ts` asserts the ANY keys are absent from
+    -- this catalog entirely — not merely unbound.
+    ('vault-document.read:own', 'VaultDocument', 'read', 'OWN', 'Read documents in own personal vault'),
+    ('vault-document.write:own', 'VaultDocument', 'write', 'OWN', 'Upload, edit and delete documents in own personal vault'),
     -- PCS-T08. Every conversation grant exists only in its ANY form, and that
     -- is structural rather than an oversight: a WhatsApp/Telegram conversation
     -- has no HMS user on either end, so there is no owner for an OWN scope to
@@ -478,6 +488,12 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'patient-document.read:any'),
     ('ADMIN', 'patient-document.write:any'),
     ('ADMIN', 'patient-document.delete:any'),
+    -- Their own vault, on exactly the same terms as a doctor's (P16-T17): an
+    -- administrator is also a person with a contract and a KTP. It grants
+    -- them nothing over anyone else's documents, and there is no ANY key
+    -- above that could.
+    ('ADMIN', 'vault-document.read:own'),
+    ('ADMIN', 'vault-document.write:own'),
     -- The human side of the WA/Telegram channel (PCS-T08). ADMIN only: these
     -- routes read what members of the public wrote to the clinic and speak
     -- back to them under the clinic's name, and neither is a clinical role's
@@ -545,6 +561,12 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'patient-document.read:own'),
     ('DOCTOR', 'patient-document.write:own'),
     ('DOCTOR', 'patient-document.release:own'),
+    -- Their own paperwork (P16-T17): STR, ijazah, Serkom, contracts, KTP.
+    -- The only person who ever sees these files is the person who uploaded
+    -- them — no admin review, no verification workflow, no expiry queue that
+    -- anyone but the owner reads.
+    ('DOCTOR', 'vault-document.read:own'),
+    ('DOCTOR', 'vault-document.write:own'),
     -- Read only, for the same reason PHARMACIST has it (P16-T02): a
     -- prescription, a referral letter and a medical certificate are all
     -- headed with the clinic's identity, and a doctor who cannot read it
