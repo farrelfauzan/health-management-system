@@ -68,6 +68,10 @@ export type DocumentMinAggregateOutputType = {
   releasedAt: Date | null
   releasedById: string | null
   deleteReason: string | null
+  vaultCategory: $Enums.VaultDocumentCategory | null
+  referenceNumber: string | null
+  issuedAt: Date | null
+  expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -98,6 +102,10 @@ export type DocumentMaxAggregateOutputType = {
   releasedAt: Date | null
   releasedById: string | null
   deleteReason: string | null
+  vaultCategory: $Enums.VaultDocumentCategory | null
+  referenceNumber: string | null
+  issuedAt: Date | null
+  expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -128,6 +136,10 @@ export type DocumentCountAggregateOutputType = {
   releasedAt: number
   releasedById: number
   deleteReason: number
+  vaultCategory: number
+  referenceNumber: number
+  issuedAt: number
+  expiresAt: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -168,6 +180,10 @@ export type DocumentMinAggregateInputType = {
   releasedAt?: true
   releasedById?: true
   deleteReason?: true
+  vaultCategory?: true
+  referenceNumber?: true
+  issuedAt?: true
+  expiresAt?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -198,6 +214,10 @@ export type DocumentMaxAggregateInputType = {
   releasedAt?: true
   releasedById?: true
   deleteReason?: true
+  vaultCategory?: true
+  referenceNumber?: true
+  issuedAt?: true
+  expiresAt?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -228,6 +248,10 @@ export type DocumentCountAggregateInputType = {
   releasedAt?: true
   releasedById?: true
   deleteReason?: true
+  vaultCategory?: true
+  referenceNumber?: true
+  issuedAt?: true
+  expiresAt?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -345,6 +369,10 @@ export type DocumentGroupByOutputType = {
   releasedAt: Date | null
   releasedById: string | null
   deleteReason: string | null
+  vaultCategory: $Enums.VaultDocumentCategory | null
+  referenceNumber: string | null
+  issuedAt: Date | null
+  expiresAt: Date | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -398,6 +426,10 @@ export type DocumentWhereInput = {
   releasedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   releasedById?: Prisma.UuidNullableFilter<"Document"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Document"> | string | null
+  vaultCategory?: Prisma.EnumVaultDocumentCategoryNullableFilter<"Document"> | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.StringNullableFilter<"Document"> | string | null
+  issuedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
@@ -408,6 +440,7 @@ export type DocumentWhereInput = {
   admission?: Prisma.XOR<Prisma.AdmissionNullableScalarRelationFilter, Prisma.AdmissionWhereInput> | null
   releasedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   chunks?: Prisma.DocumentChunkListRelationFilter
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeListRelationFilter
 }
 
 export type DocumentOrderByWithRelationInput = {
@@ -435,6 +468,10 @@ export type DocumentOrderByWithRelationInput = {
   releasedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   releasedById?: Prisma.SortOrderInput | Prisma.SortOrder
   deleteReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  vaultCategory?: Prisma.SortOrderInput | Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  issuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -445,6 +482,7 @@ export type DocumentOrderByWithRelationInput = {
   admission?: Prisma.AdmissionOrderByWithRelationInput
   releasedBy?: Prisma.UserOrderByWithRelationInput
   chunks?: Prisma.DocumentChunkOrderByRelationAggregateInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeOrderByRelationAggregateInput
 }
 
 export type DocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -475,6 +513,10 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   releasedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   releasedById?: Prisma.UuidNullableFilter<"Document"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Document"> | string | null
+  vaultCategory?: Prisma.EnumVaultDocumentCategoryNullableFilter<"Document"> | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.StringNullableFilter<"Document"> | string | null
+  issuedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
@@ -485,6 +527,7 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   admission?: Prisma.XOR<Prisma.AdmissionNullableScalarRelationFilter, Prisma.AdmissionWhereInput> | null
   releasedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   chunks?: Prisma.DocumentChunkListRelationFilter
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeListRelationFilter
 }, "id" | "storageKey">
 
 export type DocumentOrderByWithAggregationInput = {
@@ -512,6 +555,10 @@ export type DocumentOrderByWithAggregationInput = {
   releasedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   releasedById?: Prisma.SortOrderInput | Prisma.SortOrder
   deleteReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  vaultCategory?: Prisma.SortOrderInput | Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  issuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -550,6 +597,10 @@ export type DocumentScalarWhereWithAggregatesInput = {
   releasedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Document"> | Date | string | null
   releasedById?: Prisma.UuidNullableWithAggregatesFilter<"Document"> | string | null
   deleteReason?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
+  vaultCategory?: Prisma.EnumVaultDocumentCategoryNullableWithAggregatesFilter<"Document"> | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
+  issuedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Document"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Document"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Document"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Document"> | Date | string | null
@@ -574,6 +625,10 @@ export type DocumentCreateInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -584,6 +639,7 @@ export type DocumentCreateInput = {
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateInput = {
@@ -611,10 +667,15 @@ export type DocumentUncheckedCreateInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUpdateInput = {
@@ -636,6 +697,10 @@ export type DocumentUpdateInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -646,6 +711,7 @@ export type DocumentUpdateInput = {
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateInput = {
@@ -673,10 +739,15 @@ export type DocumentUncheckedUpdateInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateManyInput = {
@@ -704,6 +775,10 @@ export type DocumentCreateManyInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -728,6 +803,10 @@ export type DocumentUpdateManyMutationInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -758,6 +837,10 @@ export type DocumentUncheckedUpdateManyInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -798,6 +881,10 @@ export type DocumentCountOrderByAggregateInput = {
   releasedAt?: Prisma.SortOrder
   releasedById?: Prisma.SortOrder
   deleteReason?: Prisma.SortOrder
+  vaultCategory?: Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrder
+  issuedAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -832,6 +919,10 @@ export type DocumentMaxOrderByAggregateInput = {
   releasedAt?: Prisma.SortOrder
   releasedById?: Prisma.SortOrder
   deleteReason?: Prisma.SortOrder
+  vaultCategory?: Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrder
+  issuedAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -862,6 +953,10 @@ export type DocumentMinOrderByAggregateInput = {
   releasedAt?: Prisma.SortOrder
   releasedById?: Prisma.SortOrder
   deleteReason?: Prisma.SortOrder
+  vaultCategory?: Prisma.SortOrder
+  referenceNumber?: Prisma.SortOrder
+  issuedAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -1110,6 +1205,24 @@ export type NullableEnumDocumentCategoryFieldUpdateOperationsInput = {
   set?: $Enums.DocumentCategory | null
 }
 
+export type NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput = {
+  set?: $Enums.VaultDocumentCategory | null
+}
+
+export type DocumentCreateNestedOneWithoutVaultExpiryNoticesInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutVaultExpiryNoticesInput, Prisma.DocumentUncheckedCreateWithoutVaultExpiryNoticesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutVaultExpiryNoticesInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneRequiredWithoutVaultExpiryNoticesNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutVaultExpiryNoticesInput, Prisma.DocumentUncheckedCreateWithoutVaultExpiryNoticesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutVaultExpiryNoticesInput
+  upsert?: Prisma.DocumentUpsertWithoutVaultExpiryNoticesInput
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutVaultExpiryNoticesInput, Prisma.DocumentUpdateWithoutVaultExpiryNoticesInput>, Prisma.DocumentUncheckedUpdateWithoutVaultExpiryNoticesInput>
+}
+
 export type DocumentCreateNestedOneWithoutChunksInput = {
   create?: Prisma.XOR<Prisma.DocumentCreateWithoutChunksInput, Prisma.DocumentUncheckedCreateWithoutChunksInput>
   connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutChunksInput
@@ -1185,6 +1298,10 @@ export type DocumentCreateWithoutUploadedByInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1194,6 +1311,7 @@ export type DocumentCreateWithoutUploadedByInput = {
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutUploadedByInput = {
@@ -1220,10 +1338,15 @@ export type DocumentUncheckedCreateWithoutUploadedByInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutUploadedByInput = {
@@ -1255,6 +1378,10 @@ export type DocumentCreateWithoutOwnerInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1264,6 +1391,7 @@ export type DocumentCreateWithoutOwnerInput = {
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutOwnerInput = {
@@ -1290,10 +1418,15 @@ export type DocumentUncheckedCreateWithoutOwnerInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutOwnerInput = {
@@ -1325,6 +1458,10 @@ export type DocumentCreateWithoutReleasedByInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1334,6 +1471,7 @@ export type DocumentCreateWithoutReleasedByInput = {
   encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutReleasedByInput = {
@@ -1360,10 +1498,15 @@ export type DocumentUncheckedCreateWithoutReleasedByInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutReleasedByInput = {
@@ -1420,6 +1563,10 @@ export type DocumentScalarWhereInput = {
   releasedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   releasedById?: Prisma.UuidNullableFilter<"Document"> | string | null
   deleteReason?: Prisma.StringNullableFilter<"Document"> | string | null
+  vaultCategory?: Prisma.EnumVaultDocumentCategoryNullableFilter<"Document"> | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.StringNullableFilter<"Document"> | string | null
+  issuedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Document"> | Date | string | null
@@ -1476,6 +1623,10 @@ export type DocumentCreateWithoutPatientInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1485,6 +1636,7 @@ export type DocumentCreateWithoutPatientInput = {
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutPatientInput = {
@@ -1511,10 +1663,15 @@ export type DocumentUncheckedCreateWithoutPatientInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutPatientInput = {
@@ -1562,6 +1719,10 @@ export type DocumentCreateWithoutEncounterInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1571,6 +1732,7 @@ export type DocumentCreateWithoutEncounterInput = {
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutEncounterInput = {
@@ -1597,10 +1759,15 @@ export type DocumentUncheckedCreateWithoutEncounterInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutEncounterInput = {
@@ -1629,6 +1796,162 @@ export type DocumentUpdateManyWithWhereWithoutEncounterInput = {
   data: Prisma.XOR<Prisma.DocumentUpdateManyMutationInput, Prisma.DocumentUncheckedUpdateManyWithoutEncounterInput>
 }
 
+export type DocumentCreateWithoutVaultExpiryNoticesInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
+  chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutVaultExpiryNoticesInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutVaultExpiryNoticesInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutVaultExpiryNoticesInput, Prisma.DocumentUncheckedCreateWithoutVaultExpiryNoticesInput>
+}
+
+export type DocumentUpsertWithoutVaultExpiryNoticesInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutVaultExpiryNoticesInput, Prisma.DocumentUncheckedUpdateWithoutVaultExpiryNoticesInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutVaultExpiryNoticesInput, Prisma.DocumentUncheckedCreateWithoutVaultExpiryNoticesInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutVaultExpiryNoticesInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutVaultExpiryNoticesInput, Prisma.DocumentUncheckedUpdateWithoutVaultExpiryNoticesInput>
+}
+
+export type DocumentUpdateWithoutVaultExpiryNoticesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
+  chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutVaultExpiryNoticesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
 export type DocumentCreateWithoutChunksInput = {
   id?: string
   ownerType: $Enums.DocumentOwnerType
@@ -1648,6 +1971,10 @@ export type DocumentCreateWithoutChunksInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1657,6 +1984,7 @@ export type DocumentCreateWithoutChunksInput = {
   encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutChunksInput = {
@@ -1684,9 +2012,14 @@ export type DocumentUncheckedCreateWithoutChunksInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutChunksInput = {
@@ -1724,6 +2057,10 @@ export type DocumentUpdateWithoutChunksInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1733,6 +2070,7 @@ export type DocumentUpdateWithoutChunksInput = {
   encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutChunksInput = {
@@ -1760,9 +2098,14 @@ export type DocumentUncheckedUpdateWithoutChunksInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutAdmissionInput = {
@@ -1784,6 +2127,10 @@ export type DocumentCreateWithoutAdmissionInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1793,6 +2140,7 @@ export type DocumentCreateWithoutAdmissionInput = {
   encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutAdmissionInput = {
@@ -1819,10 +2167,15 @@ export type DocumentUncheckedCreateWithoutAdmissionInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutAdmissionInput = {
@@ -1875,6 +2228,10 @@ export type DocumentCreateManyUploadedByInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1904,6 +2261,10 @@ export type DocumentCreateManyOwnerInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1933,6 +2294,10 @@ export type DocumentCreateManyReleasedByInput = {
   releasedToPatient?: boolean
   releasedAt?: Date | string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1957,6 +2322,10 @@ export type DocumentUpdateWithoutUploadedByInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1966,6 +2335,7 @@ export type DocumentUpdateWithoutUploadedByInput = {
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutUploadedByInput = {
@@ -1992,10 +2362,15 @@ export type DocumentUncheckedUpdateWithoutUploadedByInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutUploadedByInput = {
@@ -2022,6 +2397,10 @@ export type DocumentUncheckedUpdateManyWithoutUploadedByInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2046,6 +2425,10 @@ export type DocumentUpdateWithoutOwnerInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2055,6 +2438,7 @@ export type DocumentUpdateWithoutOwnerInput = {
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutOwnerInput = {
@@ -2081,10 +2465,15 @@ export type DocumentUncheckedUpdateWithoutOwnerInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutOwnerInput = {
@@ -2111,6 +2500,10 @@ export type DocumentUncheckedUpdateManyWithoutOwnerInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2135,6 +2528,10 @@ export type DocumentUpdateWithoutReleasedByInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2144,6 +2541,7 @@ export type DocumentUpdateWithoutReleasedByInput = {
   encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutReleasedByInput = {
@@ -2170,10 +2568,15 @@ export type DocumentUncheckedUpdateWithoutReleasedByInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutReleasedByInput = {
@@ -2200,6 +2603,10 @@ export type DocumentUncheckedUpdateManyWithoutReleasedByInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2229,6 +2636,10 @@ export type DocumentCreateManyPatientInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2253,6 +2664,10 @@ export type DocumentUpdateWithoutPatientInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2262,6 +2677,7 @@ export type DocumentUpdateWithoutPatientInput = {
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutPatientInput = {
@@ -2288,10 +2704,15 @@ export type DocumentUncheckedUpdateWithoutPatientInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutPatientInput = {
@@ -2318,6 +2739,10 @@ export type DocumentUncheckedUpdateManyWithoutPatientInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2347,6 +2772,10 @@ export type DocumentCreateManyEncounterInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2371,6 +2800,10 @@ export type DocumentUpdateWithoutEncounterInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2380,6 +2813,7 @@ export type DocumentUpdateWithoutEncounterInput = {
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutEncounterInput = {
@@ -2406,10 +2840,15 @@ export type DocumentUncheckedUpdateWithoutEncounterInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutEncounterInput = {
@@ -2436,6 +2875,10 @@ export type DocumentUncheckedUpdateManyWithoutEncounterInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2465,6 +2908,10 @@ export type DocumentCreateManyAdmissionInput = {
   releasedAt?: Date | string | null
   releasedById?: string | null
   deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2489,6 +2936,10 @@ export type DocumentUpdateWithoutAdmissionInput = {
   releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2498,6 +2949,7 @@ export type DocumentUpdateWithoutAdmissionInput = {
   encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutAdmissionInput = {
@@ -2524,10 +2976,15 @@ export type DocumentUncheckedUpdateWithoutAdmissionInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutAdmissionInput = {
@@ -2554,6 +3011,10 @@ export type DocumentUncheckedUpdateManyWithoutAdmissionInput = {
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2566,10 +3027,12 @@ export type DocumentUncheckedUpdateManyWithoutAdmissionInput = {
 
 export type DocumentCountOutputType = {
   chunks: number
+  vaultExpiryNotices: number
 }
 
 export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   chunks?: boolean | DocumentCountOutputTypeCountChunksArgs
+  vaultExpiryNotices?: boolean | DocumentCountOutputTypeCountVaultExpiryNoticesArgs
 }
 
 /**
@@ -2587,6 +3050,13 @@ export type DocumentCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
  */
 export type DocumentCountOutputTypeCountChunksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DocumentChunkWhereInput
+}
+
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountVaultExpiryNoticesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.VaultDocumentExpiryNoticeWhereInput
 }
 
 
@@ -2615,6 +3085,10 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   releasedAt?: boolean
   releasedById?: boolean
   deleteReason?: boolean
+  vaultCategory?: boolean
+  referenceNumber?: boolean
+  issuedAt?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -2625,6 +3099,7 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   admission?: boolean | Prisma.Document$admissionArgs<ExtArgs>
   releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
   chunks?: boolean | Prisma.Document$chunksArgs<ExtArgs>
+  vaultExpiryNotices?: boolean | Prisma.Document$vaultExpiryNoticesArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
 
@@ -2653,6 +3128,10 @@ export type DocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   releasedAt?: boolean
   releasedById?: boolean
   deleteReason?: boolean
+  vaultCategory?: boolean
+  referenceNumber?: boolean
+  issuedAt?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -2689,6 +3168,10 @@ export type DocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   releasedAt?: boolean
   releasedById?: boolean
   deleteReason?: boolean
+  vaultCategory?: boolean
+  referenceNumber?: boolean
+  issuedAt?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -2725,12 +3208,16 @@ export type DocumentSelectScalar = {
   releasedAt?: boolean
   releasedById?: boolean
   deleteReason?: boolean
+  vaultCategory?: boolean
+  referenceNumber?: boolean
+  issuedAt?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerType" | "ownerId" | "purpose" | "title" | "storageKey" | "mimeType" | "sizeBytes" | "visibility" | "language" | "ingestStatus" | "ingestError" | "ingestedAt" | "uploadedById" | "patientId" | "encounterId" | "admissionId" | "category" | "documentDate" | "notes" | "releasedToPatient" | "releasedAt" | "releasedById" | "deleteReason" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["document"]>
+export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ownerType" | "ownerId" | "purpose" | "title" | "storageKey" | "mimeType" | "sizeBytes" | "visibility" | "language" | "ingestStatus" | "ingestError" | "ingestedAt" | "uploadedById" | "patientId" | "encounterId" | "admissionId" | "category" | "documentDate" | "notes" | "releasedToPatient" | "releasedAt" | "releasedById" | "deleteReason" | "vaultCategory" | "referenceNumber" | "issuedAt" | "expiresAt" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["document"]>
 export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.Document$ownerArgs<ExtArgs>
@@ -2739,6 +3226,7 @@ export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   admission?: boolean | Prisma.Document$admissionArgs<ExtArgs>
   releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
   chunks?: boolean | Prisma.Document$chunksArgs<ExtArgs>
+  vaultExpiryNotices?: boolean | Prisma.Document$vaultExpiryNoticesArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DocumentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2768,6 +3256,7 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     admission: Prisma.$AdmissionPayload<ExtArgs> | null
     releasedBy: Prisma.$UserPayload<ExtArgs> | null
     chunks: Prisma.$DocumentChunkPayload<ExtArgs>[]
+    vaultExpiryNotices: Prisma.$VaultDocumentExpiryNoticePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2820,6 +3309,15 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
      * just vanish; the reason is part of the deletion.
      */
     deleteReason: string | null
+    vaultCategory: $Enums.VaultDocumentCategory | null
+    referenceNumber: string | null
+    issuedAt: Date | null
+    /**
+     * Drives the owner-only reminder job (P16-T18). An expired document is
+     * never hidden, blocked or escalated to an administrator — the owner is
+     * told, and what to do about it is theirs to decide.
+     */
+    expiresAt: Date | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -3224,6 +3722,7 @@ export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends runtime
   admission<T extends Prisma.Document$admissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$admissionArgs<ExtArgs>>): Prisma.Prisma__AdmissionClient<runtime.Types.Result.GetResult<Prisma.$AdmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   releasedBy<T extends Prisma.Document$releasedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$releasedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   chunks<T extends Prisma.Document$chunksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$chunksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  vaultExpiryNotices<T extends Prisma.Document$vaultExpiryNoticesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$vaultExpiryNoticesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VaultDocumentExpiryNoticePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3277,6 +3776,10 @@ export interface DocumentFieldRefs {
   readonly releasedAt: Prisma.FieldRef<"Document", 'DateTime'>
   readonly releasedById: Prisma.FieldRef<"Document", 'String'>
   readonly deleteReason: Prisma.FieldRef<"Document", 'String'>
+  readonly vaultCategory: Prisma.FieldRef<"Document", 'VaultDocumentCategory'>
+  readonly referenceNumber: Prisma.FieldRef<"Document", 'String'>
+  readonly issuedAt: Prisma.FieldRef<"Document", 'DateTime'>
+  readonly expiresAt: Prisma.FieldRef<"Document", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Document", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Document", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Document", 'DateTime'>
@@ -3797,6 +4300,30 @@ export type Document$chunksArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.DocumentChunkScalarFieldEnum | Prisma.DocumentChunkScalarFieldEnum[]
+}
+
+/**
+ * Document.vaultExpiryNotices
+ */
+export type Document$vaultExpiryNoticesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VaultDocumentExpiryNotice
+   */
+  select?: Prisma.VaultDocumentExpiryNoticeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VaultDocumentExpiryNotice
+   */
+  omit?: Prisma.VaultDocumentExpiryNoticeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VaultDocumentExpiryNoticeInclude<ExtArgs> | null
+  where?: Prisma.VaultDocumentExpiryNoticeWhereInput
+  orderBy?: Prisma.VaultDocumentExpiryNoticeOrderByWithRelationInput | Prisma.VaultDocumentExpiryNoticeOrderByWithRelationInput[]
+  cursor?: Prisma.VaultDocumentExpiryNoticeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.VaultDocumentExpiryNoticeScalarFieldEnum | Prisma.VaultDocumentExpiryNoticeScalarFieldEnum[]
 }
 
 /**

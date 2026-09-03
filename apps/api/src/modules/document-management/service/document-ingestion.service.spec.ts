@@ -37,6 +37,10 @@ function buildDocumentRecord(overrides: Partial<DocumentRecord> = {}): DocumentR
     releasedAt: null,
     releasedById: null,
     deleteReason: null,
+    vaultCategory: null,
+    referenceNumber: null,
+    issuedAt: null,
+    expiresAt: null,
     createdAt: new Date('2026-08-03T09:00:00.000Z'),
     updatedAt: new Date('2026-08-03T09:00:00.000Z'),
     ...overrides,
@@ -192,6 +196,21 @@ describe('DocumentIngestionService', () => {
     expect(actualResult.ingestStatus).toBe('FAILED');
     expect(actualResult.ingestError).toBe('Documents with purpose GENERAL are not ingested');
     expect(mockObjectStorageService.getObject).not.toHaveBeenCalled();
+  });
+
+  // A vault document is a doctor's KTP, their contract, their NPWP (P16-T16).
+  // Embedding one would send those pages to the AI provider and put them in a
+  // retrieval corpus, so the pipeline must refuse the row before it reads a
+  // single byte — not chunk it and rely on a later filter to hide it.
+  it('refuses to ingest a doctor-vault document, without reading the stored file', async () => {
+    const actualResult = await buildService().ingestDocument(
+      buildDocumentRecord({ purpose: 'DOCTOR_VAULT' }),
+    );
+
+    expect(actualResult.ingestStatus).toBe('FAILED');
+    expect(actualResult.ingestError).toBe('Documents with purpose DOCTOR_VAULT are not ingested');
+    expect(mockObjectStorageService.getObject).not.toHaveBeenCalled();
+    expect(mockEmbeddingService.embedTexts).not.toHaveBeenCalled();
   });
 
   it('fails rather than mispairing when the provider returns the wrong number of vectors', async () => {

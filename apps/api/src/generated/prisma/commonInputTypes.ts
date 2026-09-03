@@ -1303,6 +1303,13 @@ export type EnumDocumentCategoryNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel> | $Enums.DocumentCategory | null
 }
 
+export type EnumVaultDocumentCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.VaultDocumentCategory | Prisma.EnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.VaultDocumentCategory[] | Prisma.ListEnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.VaultDocumentCategory[] | Prisma.ListEnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumVaultDocumentCategoryNullableFilter<$PrismaModel> | $Enums.VaultDocumentCategory | null
+}
+
 export type EnumDocumentOwnerTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.DocumentOwnerType | Prisma.EnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
   in?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
@@ -1361,6 +1368,16 @@ export type EnumDocumentCategoryNullableWithAggregatesFilter<$PrismaModel = neve
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel>
+}
+
+export type EnumVaultDocumentCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VaultDocumentCategory | Prisma.EnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.VaultDocumentCategory[] | Prisma.ListEnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.VaultDocumentCategory[] | Prisma.ListEnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumVaultDocumentCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.VaultDocumentCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumVaultDocumentCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumVaultDocumentCategoryNullableFilter<$PrismaModel>
 }
 
 export type EnumChannelKindFilter<$PrismaModel = never> = {
@@ -2777,6 +2794,13 @@ export type NestedEnumDocumentCategoryNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel> | $Enums.DocumentCategory | null
 }
 
+export type NestedEnumVaultDocumentCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.VaultDocumentCategory | Prisma.EnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.VaultDocumentCategory[] | Prisma.ListEnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.VaultDocumentCategory[] | Prisma.ListEnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumVaultDocumentCategoryNullableFilter<$PrismaModel> | $Enums.VaultDocumentCategory | null
+}
+
 export type NestedEnumDocumentOwnerTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.DocumentOwnerType | Prisma.EnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
   in?: $Enums.DocumentOwnerType[] | Prisma.ListEnumDocumentOwnerTypeFieldRefInput<$PrismaModel>
@@ -2835,6 +2859,16 @@ export type NestedEnumDocumentCategoryNullableWithAggregatesFilter<$PrismaModel 
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDocumentCategoryNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumVaultDocumentCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VaultDocumentCategory | Prisma.EnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.VaultDocumentCategory[] | Prisma.ListEnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.VaultDocumentCategory[] | Prisma.ListEnumVaultDocumentCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumVaultDocumentCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.VaultDocumentCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumVaultDocumentCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumVaultDocumentCategoryNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumChannelKindFilter<$PrismaModel = never> = {

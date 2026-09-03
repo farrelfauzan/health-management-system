@@ -6,6 +6,7 @@ import type {
   DocumentPurposeValue,
   DocumentUploadMimeTypeValue,
   DocumentVisibilityValue,
+  VaultDocumentCategoryValue,
 } from '#document-management/schemas';
 
 /**
@@ -41,6 +42,11 @@ export type DocumentRecord = {
   releasedAt: Date | null;
   releasedById: string | null;
   deleteReason: string | null;
+  /** Doctor-vault filing fields (P16-T16); null on every other purpose. */
+  vaultCategory: VaultDocumentCategoryValue | null;
+  referenceNumber: string | null;
+  issuedAt: Date | null;
+  expiresAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -118,6 +124,69 @@ export type PatientDocumentAction = 'read' | 'write' | 'release' | 'delete';
  * record, where only what a clinician released exists (FR-E2-13).
  */
 export type PatientDocumentReadAccess = 'FULL' | 'RELEASED_ONLY';
+
+/**
+ * Who owns a vault (P16-T16). A doctor and an admin each keep their own — an
+ * administrator is also a person with a contract and a KTP — and neither can
+ * reach the other's. `CLINIC` and `PATIENT` are excluded at the type level
+ * because a vault without a person to own it is not a vault.
+ */
+export type VaultDocumentOwnerTypeValue = Extract<DocumentOwnerTypeValue, 'DOCTOR' | 'ADMIN'>;
+
+/**
+ * Create payload for one vault document (P16-T16). Purpose and ingest status
+ * are absent for the same reason they are absent from
+ * {@link CreatePatientClinicalDocumentData}: a vault document is always
+ * `DOCTOR_VAULT` and never ingested, and the repository states those facts
+ * itself so no caller can vary them.
+ */
+export type CreateVaultDocumentData = {
+  ownerType: VaultDocumentOwnerTypeValue;
+  ownerId: string;
+  title: string;
+  storageKey: string;
+  mimeType: string;
+  sizeBytes: number;
+  language: DocumentLanguageValue;
+  vaultCategory?: VaultDocumentCategoryValue;
+  referenceNumber?: string;
+  issuedAt?: Date;
+  expiresAt?: Date;
+  uploadedById: string;
+};
+
+/**
+ * Owner-scoped read params. `ownerId` is required, not optional: ownership is
+ * a predicate of the query rather than a filter applied to its result, so
+ * there is no argument a caller can omit to widen a vault listing past the
+ * one person it belongs to.
+ */
+export type ListVaultDocumentsParams = {
+  ownerId: string;
+  vaultCategory?: VaultDocumentCategoryValue;
+  cursor?: string;
+  limit: number;
+};
+
+/** Metadata the owner may revise about their own document (FR-E3-01). */
+export type UpdateVaultDocumentData = {
+  title?: string;
+  vaultCategory?: VaultDocumentCategoryValue | null;
+  referenceNumber?: string | null;
+  issuedAt?: Date | null;
+  expiresAt?: Date | null;
+};
+
+/**
+ * The result of hard-deleting a vault document (FR-E3-09). Carries the
+ * storage key because the row is gone by the time the caller needs to delete
+ * the object behind it — a personal record, unlike a clinical one, leaves
+ * nothing behind.
+ */
+export type DeleteVaultDocumentResult = {
+  id: string;
+  storageKey: string;
+};
 
 /**
  * Create payload. `ownerType` and `ownerId` are explicit rather than defaulted
