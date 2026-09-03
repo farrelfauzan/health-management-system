@@ -354,6 +354,46 @@
       "currentRecorded": "The current notice has been recorded.",
       "historyCount": "{count, plural, =0 {No historical records} one {# historical record} other {# historical records}}"
     },
+    "licenceExpiry": {
+      "title": "Licence expiry",
+      "breadcrumb": "Licence expiry",
+      "subtitle": "Practitioner STR and SIP records approaching or past their expiry date.",
+      "scopeNotice": "This page is built from the licence numbers and dates on each practitioner's record. It shows no documents, and never indicates whether a scan of a licence has been uploaded — a practitioner's own document vault is private to them, including from an administrator they have shared a file with.",
+      "errorDescription": "Could not load the licence expiry list. Try again in a moment.",
+      "daysLeft": "{days} days left",
+      "daysAgo": "{days} days ago",
+      "directoryFlag": "Licence expired {expiresAt}",
+      "directoryFlagHint": "This practitioner holds a licence that expired on {expiresAt}. Open their record to update it.",
+      "columns": {
+        "doctor": "Practitioner",
+        "type": "Type",
+        "number": "Number",
+        "expiresAt": "Expires",
+        "countdown": "Countdown"
+      },
+      "buckets": {
+        "expired": {
+          "title": "Expired",
+          "description": "Already past the expiry date on record.",
+          "empty": "No practitioner is currently out of licence."
+        },
+        "within30Days": {
+          "title": "Expiring within 30 days",
+          "description": "Renewal should already be under way.",
+          "empty": "Nothing expires in the next 30 days."
+        },
+        "within60Days": {
+          "title": "Expiring within 60 days",
+          "description": "Time to start the renewal.",
+          "empty": "Nothing expires between 30 and 60 days from now."
+        },
+        "within90Days": {
+          "title": "Expiring within 90 days",
+          "description": "On the horizon.",
+          "empty": "Nothing expires between 60 and 90 days from now."
+        }
+      }
+    },
     "doctors": {
       "title": "Doctors",
       "subtitle": "Manage practitioner profiles, credentials, schedules, and patient assignments.",

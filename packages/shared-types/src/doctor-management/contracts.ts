@@ -94,3 +94,45 @@ export type DoctorsListMeta = {
   limit: number;
   total: number;
 };
+
+/**
+ * One practitioner licence on the expiry dashboard (P16-T19, FR-E3-33).
+ *
+ * Every field here is a number, a date, or a name the clinic already
+ * administers on `DoctorLicense`. There is deliberately **no document field
+ * of any kind** — no id, no filename, no `hasScan` boolean, not even a null
+ * one. The absence is the contract: a reader cannot learn from this payload
+ * whether the doctor has uploaded a scan of this licence, including a scan
+ * they shared with the reader (FR-E3-35). Adding one would take a change to
+ * this type and the OpenAPI contract it generates, which is exactly the
+ * friction it is shaped to create.
+ */
+export type DoctorLicenseExpiryRow = {
+  licenseId: string;
+  doctorId: string;
+  doctorName: string;
+  type: DoctorLicenseTypeValue;
+  licenseNumber: string;
+  issuedAt: string | null;
+  expiresAt: string;
+  /**
+   * Whole days from today to `expiresAt`, negative once it has passed. Sent
+   * rather than left to the client so every reader counts from the same day
+   * — the clinic's timezone, not the browser's.
+   */
+  daysUntilExpiry: number;
+};
+
+/**
+ * The expiry dashboard, bucketed by urgency (FR-E3-33). Buckets rather than a
+ * flat sorted list because the question an administrator asks is "what is
+ * already a problem, and what becomes one this quarter" — two ends of a
+ * spectrum that a single ordering blurs. Each bucket is urgency-sorted
+ * within itself.
+ */
+export type DoctorLicenseExpiryBucketsView = {
+  expired: DoctorLicenseExpiryRow[];
+  within30Days: DoctorLicenseExpiryRow[];
+  within60Days: DoctorLicenseExpiryRow[];
+  within90Days: DoctorLicenseExpiryRow[];
+};

@@ -217,6 +217,7 @@ export type DoctorLicenseWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"DoctorLicense"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"DoctorLicense"> | Date | string | null
   doctor?: Prisma.XOR<Prisma.DoctorProfileScalarRelationFilter, Prisma.DoctorProfileWhereInput>
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeListRelationFilter
 }
 
 export type DoctorLicenseOrderByWithRelationInput = {
@@ -230,6 +231,7 @@ export type DoctorLicenseOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   doctor?: Prisma.DoctorProfileOrderByWithRelationInput
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeOrderByRelationAggregateInput
 }
 
 export type DoctorLicenseWhereUniqueInput = Prisma.AtLeast<{
@@ -246,6 +248,7 @@ export type DoctorLicenseWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"DoctorLicense"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"DoctorLicense"> | Date | string | null
   doctor?: Prisma.XOR<Prisma.DoctorProfileScalarRelationFilter, Prisma.DoctorProfileWhereInput>
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeListRelationFilter
 }, "id">
 
 export type DoctorLicenseOrderByWithAggregationInput = {
@@ -288,6 +291,7 @@ export type DoctorLicenseCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   doctor: Prisma.DoctorProfileCreateNestedOneWithoutLicensesInput
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeCreateNestedManyWithoutLicenseInput
 }
 
 export type DoctorLicenseUncheckedCreateInput = {
@@ -300,6 +304,7 @@ export type DoctorLicenseUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeUncheckedCreateNestedManyWithoutLicenseInput
 }
 
 export type DoctorLicenseUpdateInput = {
@@ -312,6 +317,7 @@ export type DoctorLicenseUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutLicensesNestedInput
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeUpdateManyWithoutLicenseNestedInput
 }
 
 export type DoctorLicenseUncheckedUpdateInput = {
@@ -324,6 +330,7 @@ export type DoctorLicenseUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeUncheckedUpdateManyWithoutLicenseNestedInput
 }
 
 export type DoctorLicenseCreateManyInput = {
@@ -407,6 +414,11 @@ export type DoctorLicenseMinOrderByAggregateInput = {
   deletedAt?: Prisma.SortOrder
 }
 
+export type DoctorLicenseScalarRelationFilter = {
+  is?: Prisma.DoctorLicenseWhereInput
+  isNot?: Prisma.DoctorLicenseWhereInput
+}
+
 export type DoctorLicenseCreateNestedManyWithoutDoctorInput = {
   create?: Prisma.XOR<Prisma.DoctorLicenseCreateWithoutDoctorInput, Prisma.DoctorLicenseUncheckedCreateWithoutDoctorInput> | Prisma.DoctorLicenseCreateWithoutDoctorInput[] | Prisma.DoctorLicenseUncheckedCreateWithoutDoctorInput[]
   connectOrCreate?: Prisma.DoctorLicenseCreateOrConnectWithoutDoctorInput | Prisma.DoctorLicenseCreateOrConnectWithoutDoctorInput[]
@@ -453,6 +465,20 @@ export type EnumDoctorLicenseTypeFieldUpdateOperationsInput = {
   set?: $Enums.DoctorLicenseType
 }
 
+export type DoctorLicenseCreateNestedOneWithoutExpiryNoticesInput = {
+  create?: Prisma.XOR<Prisma.DoctorLicenseCreateWithoutExpiryNoticesInput, Prisma.DoctorLicenseUncheckedCreateWithoutExpiryNoticesInput>
+  connectOrCreate?: Prisma.DoctorLicenseCreateOrConnectWithoutExpiryNoticesInput
+  connect?: Prisma.DoctorLicenseWhereUniqueInput
+}
+
+export type DoctorLicenseUpdateOneRequiredWithoutExpiryNoticesNestedInput = {
+  create?: Prisma.XOR<Prisma.DoctorLicenseCreateWithoutExpiryNoticesInput, Prisma.DoctorLicenseUncheckedCreateWithoutExpiryNoticesInput>
+  connectOrCreate?: Prisma.DoctorLicenseCreateOrConnectWithoutExpiryNoticesInput
+  upsert?: Prisma.DoctorLicenseUpsertWithoutExpiryNoticesInput
+  connect?: Prisma.DoctorLicenseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorLicenseUpdateToOneWithWhereWithoutExpiryNoticesInput, Prisma.DoctorLicenseUpdateWithoutExpiryNoticesInput>, Prisma.DoctorLicenseUncheckedUpdateWithoutExpiryNoticesInput>
+}
+
 export type DoctorLicenseCreateWithoutDoctorInput = {
   id?: string
   type: $Enums.DoctorLicenseType
@@ -462,6 +488,7 @@ export type DoctorLicenseCreateWithoutDoctorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeCreateNestedManyWithoutLicenseInput
 }
 
 export type DoctorLicenseUncheckedCreateWithoutDoctorInput = {
@@ -473,6 +500,7 @@ export type DoctorLicenseUncheckedCreateWithoutDoctorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeUncheckedCreateNestedManyWithoutLicenseInput
 }
 
 export type DoctorLicenseCreateOrConnectWithoutDoctorInput = {
@@ -516,6 +544,70 @@ export type DoctorLicenseScalarWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"DoctorLicense"> | Date | string | null
 }
 
+export type DoctorLicenseCreateWithoutExpiryNoticesInput = {
+  id?: string
+  type: $Enums.DoctorLicenseType
+  licenseNumber: string
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  doctor: Prisma.DoctorProfileCreateNestedOneWithoutLicensesInput
+}
+
+export type DoctorLicenseUncheckedCreateWithoutExpiryNoticesInput = {
+  id?: string
+  doctorId: string
+  type: $Enums.DoctorLicenseType
+  licenseNumber: string
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type DoctorLicenseCreateOrConnectWithoutExpiryNoticesInput = {
+  where: Prisma.DoctorLicenseWhereUniqueInput
+  create: Prisma.XOR<Prisma.DoctorLicenseCreateWithoutExpiryNoticesInput, Prisma.DoctorLicenseUncheckedCreateWithoutExpiryNoticesInput>
+}
+
+export type DoctorLicenseUpsertWithoutExpiryNoticesInput = {
+  update: Prisma.XOR<Prisma.DoctorLicenseUpdateWithoutExpiryNoticesInput, Prisma.DoctorLicenseUncheckedUpdateWithoutExpiryNoticesInput>
+  create: Prisma.XOR<Prisma.DoctorLicenseCreateWithoutExpiryNoticesInput, Prisma.DoctorLicenseUncheckedCreateWithoutExpiryNoticesInput>
+  where?: Prisma.DoctorLicenseWhereInput
+}
+
+export type DoctorLicenseUpdateToOneWithWhereWithoutExpiryNoticesInput = {
+  where?: Prisma.DoctorLicenseWhereInput
+  data: Prisma.XOR<Prisma.DoctorLicenseUpdateWithoutExpiryNoticesInput, Prisma.DoctorLicenseUncheckedUpdateWithoutExpiryNoticesInput>
+}
+
+export type DoctorLicenseUpdateWithoutExpiryNoticesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumDoctorLicenseTypeFieldUpdateOperationsInput | $Enums.DoctorLicenseType
+  licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutLicensesNestedInput
+}
+
+export type DoctorLicenseUncheckedUpdateWithoutExpiryNoticesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumDoctorLicenseTypeFieldUpdateOperationsInput | $Enums.DoctorLicenseType
+  licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
 export type DoctorLicenseCreateManyDoctorInput = {
   id?: string
   type: $Enums.DoctorLicenseType
@@ -536,6 +628,7 @@ export type DoctorLicenseUpdateWithoutDoctorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeUpdateManyWithoutLicenseNestedInput
 }
 
 export type DoctorLicenseUncheckedUpdateWithoutDoctorInput = {
@@ -547,6 +640,7 @@ export type DoctorLicenseUncheckedUpdateWithoutDoctorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiryNotices?: Prisma.DoctorLicenseExpiryNoticeUncheckedUpdateManyWithoutLicenseNestedInput
 }
 
 export type DoctorLicenseUncheckedUpdateManyWithoutDoctorInput = {
@@ -561,6 +655,35 @@ export type DoctorLicenseUncheckedUpdateManyWithoutDoctorInput = {
 }
 
 
+/**
+ * Count Type DoctorLicenseCountOutputType
+ */
+
+export type DoctorLicenseCountOutputType = {
+  expiryNotices: number
+}
+
+export type DoctorLicenseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  expiryNotices?: boolean | DoctorLicenseCountOutputTypeCountExpiryNoticesArgs
+}
+
+/**
+ * DoctorLicenseCountOutputType without action
+ */
+export type DoctorLicenseCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DoctorLicenseCountOutputType
+   */
+  select?: Prisma.DoctorLicenseCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * DoctorLicenseCountOutputType without action
+ */
+export type DoctorLicenseCountOutputTypeCountExpiryNoticesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DoctorLicenseExpiryNoticeWhereInput
+}
+
 
 export type DoctorLicenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -573,6 +696,8 @@ export type DoctorLicenseSelect<ExtArgs extends runtime.Types.Extensions.Interna
   updatedAt?: boolean
   deletedAt?: boolean
   doctor?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
+  expiryNotices?: boolean | Prisma.DoctorLicense$expiryNoticesArgs<ExtArgs>
+  _count?: boolean | Prisma.DoctorLicenseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["doctorLicense"]>
 
 export type DoctorLicenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -616,6 +741,8 @@ export type DoctorLicenseSelectScalar = {
 export type DoctorLicenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "doctorId" | "type" | "licenseNumber" | "issuedAt" | "expiresAt" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["doctorLicense"]>
 export type DoctorLicenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   doctor?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
+  expiryNotices?: boolean | Prisma.DoctorLicense$expiryNoticesArgs<ExtArgs>
+  _count?: boolean | Prisma.DoctorLicenseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DoctorLicenseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   doctor?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
@@ -628,6 +755,7 @@ export type $DoctorLicensePayload<ExtArgs extends runtime.Types.Extensions.Inter
   name: "DoctorLicense"
   objects: {
     doctor: Prisma.$DoctorProfilePayload<ExtArgs>
+    expiryNotices: Prisma.$DoctorLicenseExpiryNoticePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1034,6 +1162,7 @@ readonly fields: DoctorLicenseFieldRefs;
 export interface Prisma__DoctorLicenseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   doctor<T extends Prisma.DoctorProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__DoctorProfileClient<runtime.Types.Result.GetResult<Prisma.$DoctorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  expiryNotices<T extends Prisma.DoctorLicense$expiryNoticesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorLicense$expiryNoticesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoctorLicenseExpiryNoticePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1470,6 +1599,30 @@ export type DoctorLicenseDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many DoctorLicenses to delete.
    */
   limit?: number
+}
+
+/**
+ * DoctorLicense.expiryNotices
+ */
+export type DoctorLicense$expiryNoticesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DoctorLicenseExpiryNotice
+   */
+  select?: Prisma.DoctorLicenseExpiryNoticeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DoctorLicenseExpiryNotice
+   */
+  omit?: Prisma.DoctorLicenseExpiryNoticeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DoctorLicenseExpiryNoticeInclude<ExtArgs> | null
+  where?: Prisma.DoctorLicenseExpiryNoticeWhereInput
+  orderBy?: Prisma.DoctorLicenseExpiryNoticeOrderByWithRelationInput | Prisma.DoctorLicenseExpiryNoticeOrderByWithRelationInput[]
+  cursor?: Prisma.DoctorLicenseExpiryNoticeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DoctorLicenseExpiryNoticeScalarFieldEnum | Prisma.DoctorLicenseExpiryNoticeScalarFieldEnum[]
 }
 
 /**

@@ -103,6 +103,16 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('doctor.update:own', 'Doctor', 'update', 'OWN', 'Update own doctor profile'),
     ('doctor.read-identifier:any', 'Doctor', 'read-identifier', 'ANY', 'Reveal any practitioner NIK'),
     ('doctor.read-identifier:own', 'Doctor', 'read-identifier', 'OWN', 'Reveal own practitioner NIK'),
+    -- P16-T19. Its own key rather than reusing `doctor.read:any`, which is
+    -- held by DOCTOR and PATIENT as well as ADMIN — a patient browsing the
+    -- clinic's directory must not also be able to pull a roster of which
+    -- practitioners are out of licence. The dashboard is a compliance surface
+    -- for whoever administers credentials, so it gets a grant that names that
+    -- and is seeded to ADMIN alone. `DoctorLicenseExpiry` is a subject rather
+    -- than a `DoctorLicense` action because reading the expiry roster and
+    -- reading a doctor's profile are different questions with different
+    -- audiences.
+    ('doctor.license-expiry.read:any', 'DoctorLicenseExpiry', 'read', 'ANY', 'Read the practitioner licence expiry dashboard'),
     ('doctor-patient.assign:any', 'DoctorPatient', 'assign', 'ANY', 'Assign doctors to patients'),
     ('doctor-patient.unassign:any', 'DoctorPatient', 'unassign', 'ANY', 'Unassign doctor-patient assignments'),
     ('doctor-patient.activity.read:any', 'DoctorPatientActivity', 'read', 'ANY', 'Read doctor-patient assignment activity log'),
@@ -369,6 +379,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'patient.read-identifier:any'),
     ('ADMIN', 'patient.import-identifier:any'),
     ('ADMIN', 'doctor.read-identifier:any'),
+    -- ADMIN only. DOCTOR and PATIENT hold `doctor.read:any` and neither gets
+    -- this one: the expiry roster is the clinic's compliance record, not part
+    -- of the public directory.
+    ('ADMIN', 'doctor.license-expiry.read:any'),
     ('ADMIN', 'doctor.read:any'),
     ('ADMIN', 'doctor.create:any'),
     ('ADMIN', 'doctor.update:any'),

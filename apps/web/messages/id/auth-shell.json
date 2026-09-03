@@ -154,6 +154,14 @@
         "conversationHandoff": {
           "title": "Pelanggan menunggu petugas",
           "body": "Percakapan {channel} dialihkan dan menunggu balasan."
+        },
+        "licenceExpiring": {
+          "title": "STR/SIP akan berakhir",
+          "body": "{licenceType} {licenceNumber} milik {doctorName} berakhir pada {expiresAt}."
+        },
+        "licenceExpired": {
+          "title": "STR/SIP telah berakhir",
+          "body": "{licenceType} {licenceNumber} milik {doctorName} berakhir pada {expiresAt}."
         }
       },
       "profile": {

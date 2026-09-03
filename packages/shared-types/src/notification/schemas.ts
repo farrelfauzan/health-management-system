@@ -19,6 +19,19 @@ export const NOTIFICATION_TYPES = [
    */
   'VAULT_DOCUMENT_EXPIRING',
   'VAULT_DOCUMENT_EXPIRED',
+  /**
+   * A practitioner licence the clinic administers is approaching, or past,
+   * its expiry date (P16-T19). The clinic-side counterpart of the two above,
+   * and deliberately a separate pair rather than a shared one: these are
+   * raised from `DoctorLicense` — a number and a date on the doctor's
+   * personnel record — and broadcast to whoever administers credentials,
+   * while those go to one owner and nobody else. Merging them would mean one
+   * feed row could not say which fact it came from, and a clinic-wide
+   * notification sourced from a vault document is exactly what §7.3.2 splits
+   * apart.
+   */
+  'LICENCE_EXPIRING',
+  'LICENCE_EXPIRED',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;

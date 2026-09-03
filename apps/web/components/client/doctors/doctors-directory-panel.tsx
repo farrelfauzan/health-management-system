@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { DoctorListItem } from '@hms/shared-types';
-import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
+import { Button, Can, Card, CardContent, Icon, useAbility } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
@@ -16,7 +16,9 @@ import {
 import { DoctorsTable } from '#components/client/doctors/doctors-table';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
+import { buildExpiredLicenseIndex } from '#lib/doctors/expired-license-doctor-ids';
 import { buildDoctorsSearchParams, type DoctorsSearchParams } from '#lib/doctors/search-params';
+import { useDoctorLicenseExpiry } from '#lib/doctors/use-doctor-license-expiry';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
 
 type DoctorsDirectoryPanelProps = {
@@ -27,7 +29,17 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('clinical');
+  const ability = useAbility();
   const doctorsQuery = useDoctorsList(initialQuery);
+  // Gated rather than merely hidden: the roster is an administrator-only
+  // read, so a doctor or patient browsing this directory never issues the
+  // request at all and the flag is simply absent for them.
+  const canReadLicenceExpiry = ability.can('read', 'DoctorLicenseExpiry');
+  const licenceExpiryQuery = useDoctorLicenseExpiry(canReadLicenceExpiry);
+  const expiredLicensesByDoctorId = useMemo(
+    () => buildExpiredLicenseIndex(licenceExpiryQuery.buckets),
+    [licenceExpiryQuery.buckets],
+  );
   const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
   const [editingDoctor, setEditingDoctor] = useState<DoctorListItem | null>(null);
   const [schedulingDoctor, setSchedulingDoctor] = useState<DoctorListItem | null>(null);
@@ -70,16 +82,28 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
         subtitle={t('doctors.subtitle')}
         breadcrumbs={[t('doctors.dashboard'), t('doctors.title')]}
         actions={
-          <Can action="create" subject="Doctor">
-            <Button
-              type="button"
-              className="bg-primary-container hover:bg-primary"
-              onClick={handleOpenCreateDialog}
-            >
-              <Icon name="person_add" size={18} />
-              {t('doctors.add')}
-            </Button>
-          </Can>
+          <>
+            <Can action="read" subject="DoctorLicenseExpiry">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.push('/admin/doctors/licence-expiry')}
+              >
+                <Icon name="gpp_maybe" size={18} />
+                {t('licenceExpiry.title')}
+              </Button>
+            </Can>
+            <Can action="create" subject="Doctor">
+              <Button
+                type="button"
+                className="bg-primary-container hover:bg-primary"
+                onClick={handleOpenCreateDialog}
+              >
+                <Icon name="person_add" size={18} />
+                {t('doctors.add')}
+              </Button>
+            </Can>
+          </>
         }
       />
 
@@ -100,6 +124,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
         <CardContent className="p-0">
           <DoctorsTable
             doctors={doctorsQuery.doctors}
+            expiredLicensesByDoctorId={expiredLicensesByDoctorId}
             isPending={doctorsQuery.isPending}
             isError={doctorsQuery.isError}
             onView={handleViewDoctor}

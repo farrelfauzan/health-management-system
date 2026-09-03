@@ -359,6 +359,46 @@
       "currentRecorded": "Pemberitahuan versi saat ini telah dicatat.",
       "historyCount": "{count, plural, =0 {Belum ada catatan} one {# catatan historis} other {# catatan historis}}"
     },
+    "licenceExpiry": {
+      "title": "Masa berlaku STR/SIP",
+      "breadcrumb": "Masa berlaku STR/SIP",
+      "subtitle": "STR dan SIP praktisi yang mendekati atau telah melewati tanggal berakhirnya.",
+      "scopeNotice": "Halaman ini disusun dari nomor dan tanggal STR/SIP pada data praktisi. Halaman ini tidak menampilkan dokumen apa pun, dan tidak pernah menunjukkan apakah pindaian STR/SIP sudah diunggah — brankas dokumen pribadi praktisi bersifat privat, termasuk dari admin yang pernah dibagikan berkas oleh praktisi tersebut.",
+      "errorDescription": "Gagal memuat daftar masa berlaku. Coba lagi sebentar.",
+      "daysLeft": "{days} hari lagi",
+      "daysAgo": "{days} hari lalu",
+      "directoryFlag": "Izin berakhir {expiresAt}",
+      "directoryFlagHint": "Praktisi ini memiliki izin yang berakhir pada {expiresAt}. Buka datanya untuk memperbarui.",
+      "columns": {
+        "doctor": "Praktisi",
+        "type": "Jenis",
+        "number": "Nomor",
+        "expiresAt": "Berakhir",
+        "countdown": "Hitung mundur"
+      },
+      "buckets": {
+        "expired": {
+          "title": "Sudah berakhir",
+          "description": "Telah melewati tanggal berakhir yang tercatat.",
+          "empty": "Tidak ada praktisi yang izinnya berakhir saat ini."
+        },
+        "within30Days": {
+          "title": "Berakhir dalam 30 hari",
+          "description": "Perpanjangan seharusnya sudah diproses.",
+          "empty": "Tidak ada yang berakhir dalam 30 hari ke depan."
+        },
+        "within60Days": {
+          "title": "Berakhir dalam 60 hari",
+          "description": "Saatnya memulai perpanjangan.",
+          "empty": "Tidak ada yang berakhir antara 30 sampai 60 hari ke depan."
+        },
+        "within90Days": {
+          "title": "Berakhir dalam 90 hari",
+          "description": "Perlu diantisipasi.",
+          "empty": "Tidak ada yang berakhir antara 60 sampai 90 hari ke depan."
+        }
+      }
+    },
     "doctors": {
       "title": "Dokter",
       "subtitle": "Kelola profil tenaga medis, kredensial, jadwal, dan penetapan pasien.",
