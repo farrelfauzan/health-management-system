@@ -8,6 +8,7 @@ import { NotUsedByAssistantNotice } from '#components/client/vault-documents/not
 import { VaultDocumentUploadDialog } from '#components/client/vault-documents/vault-document-upload-dialog';
 import { VaultDocumentsTable } from '#components/client/vault-documents/vault-documents-table';
 import { VaultExportButton } from '#components/client/vault-documents/vault-export-button';
+import { SharedWithMePanel } from '#components/client/vault-shares/shared-with-me-panel';
 import { EmptyState } from '#components/shared/empty-state';
 import { PageHeader } from '#components/shared/page-header';
 import { useVaultDocuments } from '#lib/vault-documents/use-vault-documents';
@@ -88,6 +89,11 @@ export function VaultPanel() {
           )}
         </CardContent>
       </Card>
+      {/* Below the owner's own documents, and visually a separate section.
+          What was handed to you is not part of your vault: it is a set of
+          keys other people made, each of which can stop working without you
+          doing anything (FR-E3-17). */}
+      <SharedWithMePanel />
       <VaultDocumentUploadDialog
         open={isUploadOpen}
         onOpenChange={setIsUploadOpen}

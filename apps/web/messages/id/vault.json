@@ -120,12 +120,90 @@
       "errors": {
         "download": "Gagal membuka dokumen ini.",
         "delete": "Gagal menghapus dokumen ini."
-      }
+      },
+      "sharing": "Pembagian"
     },
     "export": {
       "label": "Ekspor semua",
       "pending": "Menyiapkan…",
       "error": "Gagal mengekspor dokumen Anda."
+    },
+    "sharing": {
+      "revocationLimit": "Mencabut akses menghentikan orang tersebut membukanya lagi. Salinan yang sudah diunduh tidak bisa ditarik kembali — catatan akses di bawah adalah rekaman apa yang dibuka dan kapan.",
+      "recipient": {
+        "label": "Bagikan kepada",
+        "placeholder": "Cari berdasarkan alamat email",
+        "minLength": "Ketik minimal {count} karakter untuk mencari.",
+        "searching": "Mencari…",
+        "empty": "Tidak ada yang cocok dan bisa menerima dokumen yang dibagikan.",
+        "selected": "Dibagikan kepada {email}.",
+        "error": "Gagal mencari orang."
+      },
+      "dialog": {
+        "title": "Bagikan {count, plural, other {# dokumen}}",
+        "descriptionOne": "Beri satu orang akses lihat-dan-unduh ke “{title}”. Tidak ada dokumen Anda yang lain yang menjadi terlihat oleh mereka.",
+        "descriptionMany": "Beri satu orang akses lihat-dan-unduh ke {count} dokumen. Masing-masing mendapat pembagian sendiri, dan tidak ada dokumen Anda yang lain yang menjadi terlihat.",
+        "fields": {
+          "expiresAt": "Akses berakhir pada (opsional)",
+          "expiresAtHint": "Kosongkan untuk membagikan tanpa batas waktu. Anda bisa mencabutnya kapan saja."
+        },
+        "cancel": "Batal",
+        "share": "Bagikan",
+        "sharing": "Membagikan…",
+        "success": "{count, plural, other {# dokumen}} dibagikan.",
+        "errors": {
+          "noRecipient": "Pilih dulu kepada siapa dokumen dibagikan.",
+          "failed": "Gagal membagikan dokumen ini."
+        }
+      },
+      "panel": {
+        "title": "Pembagian",
+        "description": "Siapa yang bisa membuka “{title}”, dan apa yang sudah mereka lakukan.",
+        "loading": "Memuat…",
+        "error": "Gagal memuat daftar pembagian.",
+        "empty": "Anda belum membagikan ini kepada siapa pun.",
+        "close": "Tutup",
+        "shareWithSomeone": "Bagikan kepada seseorang"
+      },
+      "row": {
+        "neverOpened": "Belum pernah dibuka",
+        "opened": "Dibuka {count, plural, other {# kali}} · terakhir {lastAccessedAt}",
+        "revoked": "Dicabut",
+        "expired": "Berakhir",
+        "openEnded": "Tanpa batas waktu",
+        "standing": "Tanpa batas waktu lebih dari 90 hari",
+        "until": "Sampai {expiresAt}",
+        "revoke": "Cabut",
+        "success": {
+          "revoke": "Akses {email} dicabut."
+        },
+        "errors": {
+          "revoke": "Gagal mencabut pembagian ini."
+        }
+      }
+    },
+    "sharedWithMe": {
+      "title": "Dibagikan kepada saya",
+      "subtitle": "Dokumen yang aksesnya diberikan orang lain kepada Anda. Pemiliknya bisa mencabutnya kapan saja.",
+      "noExpiry": "Tanpa batas waktu",
+      "download": "Unduh",
+      "states": {
+        "loading": "Memuat…",
+        "error": "Gagal memuat dokumen yang dibagikan kepada Anda.",
+        "emptyTitle": "Belum ada yang dibagikan",
+        "emptyDescription": "Ketika seseorang membagikan dokumennya kepada Anda, dokumen itu muncul di sini."
+      },
+      "columns": {
+        "document": "Dokumen",
+        "sharedBy": "Dibagikan oleh",
+        "sharedAt": "Tanggal dibagikan",
+        "expiresAt": "Akses berakhir",
+        "size": "Ukuran",
+        "actions": "Aksi"
+      },
+      "errors": {
+        "download": "Gagal membuka dokumen ini. Pembagiannya mungkin sudah dicabut."
+      }
     }
   }
 }
