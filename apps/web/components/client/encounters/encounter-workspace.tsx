@@ -9,6 +9,7 @@ import { EncounterDiagnosesCard } from '#components/client/encounters/encounter-
 import { EncounterPrescriptionsCard } from '#components/client/encounters/encounter-prescriptions-card';
 import { EncounterProceduresCard } from '#components/client/encounters/encounter-procedures-card';
 import { EncounterReferralCard } from '#components/client/encounters/encounter-referral-card';
+import { EncounterDocumentsPanel } from '#components/client/patient-documents/encounter-documents-panel';
 import { EncounterSoapCard } from '#components/client/encounters/encounter-soap-card';
 import { EncounterSummaryCard } from '#components/client/encounters/encounter-summary-card';
 import { EncounterTransitionDialog } from '#components/client/encounters/encounter-transition-dialog';
@@ -131,6 +132,9 @@ export function EncounterWorkspace({
             vitalSigns={encounter.vitalSigns}
             isEditable={isEditable}
           />
+          {/* Beside vitals rather than in the right column: the doctor reads
+              the file while taking the history, not while prescribing. */}
+          <EncounterDocumentsPanel encounterId={encounter.id} />
         </div>
         <div className="space-y-6">
           <EncounterDiagnosesCard

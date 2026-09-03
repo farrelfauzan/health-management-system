@@ -15,8 +15,16 @@ import { Document } from '../../../generated/prisma/client';
  * `chunkCount` is a parameter rather than a read: the callers that care join
  * it, and the callers that never ingest — clinical files, vault documents —
  * pass 0 rather than paying for a count that is always zero.
+ *
+ * `uploadedBy` is optional for the same reason (`P16-T14`): only the clinical
+ * reads that display an uploader pay for the join, and the rest leave the
+ * field null. It is a display hint, never a fact about the row — "not loaded"
+ * and "no uploader" both read as null here.
  */
-export function toDocumentRecord(row: Document, chunkCount: number): DocumentRecord {
+export function toDocumentRecord(
+  row: Document & { uploadedBy?: { email: string } | null },
+  chunkCount: number,
+): DocumentRecord {
   return {
     id: row.id,
     ownerType: row.ownerType,
@@ -33,6 +41,7 @@ export function toDocumentRecord(row: Document, chunkCount: number): DocumentRec
     ingestedAt: row.ingestedAt,
     chunkCount,
     uploadedById: row.uploadedById,
+    uploadedByEmail: row.uploadedBy?.email ?? null,
     patientId: row.patientId,
     encounterId: row.encounterId,
     admissionId: row.admissionId,

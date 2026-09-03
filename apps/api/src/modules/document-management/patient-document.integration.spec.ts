@@ -259,6 +259,7 @@ describe('Patient document integration', () => {
       ingestError: null,
       ingestedAt: null,
       uploadedById: ADMIN_USER_ID,
+    uploadedByEmail: null,
       patientId: PATIENT_ID,
       encounterId: null,
       admissionId: null,
@@ -603,6 +604,79 @@ describe('Patient document integration', () => {
         metadata: expect.objectContaining({ encounterId: ENCOUNTER_ID }),
       }),
     );
+  });
+
+  it('records no reading context when the download names no encounter', async () => {
+    // P16-T14: `readFromEncounterId` answers "where was this opened", and a
+    // download from the patient tab was opened nowhere in particular. Null
+    // rather than a copy of the document's own link, which would invent a
+    // clinical context that did not happen.
+    mockAdmin();
+    const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+    documentRows.push(buildPatientDocumentRow({ encounterId: ENCOUNTER_ID }));
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/patient-documents/${DOCUMENT_ID}/download`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(auditServiceMock.recordOrThrow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metadata: expect.objectContaining({ readFromEncounterId: null }),
+      }),
+    );
+  });
+
+  it('audits where a history document was read from, separately from where it lives', async () => {
+    // The case P16-T14's acceptance criterion is about: a file belonging to no
+    // encounter, opened from inside one. The two fields disagree, which is
+    // exactly why they are two fields.
+    mockAdmin();
+    const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+    documentRows.push(buildPatientDocumentRow({ encounterId: null }));
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/patient-documents/${DOCUMENT_ID}/download?encounterId=${ENCOUNTER_ID}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(auditServiceMock.recordOrThrow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          encounterId: null,
+          readFromEncounterId: ENCOUNTER_ID,
+        }),
+      }),
+    );
+  });
+
+  it('refuses a reading context naming an encounter that is not this patient’s', async () => {
+    // An unvalidated context id would let the log place a read inside a visit
+    // it never happened in — a worse record than no context at all.
+    mockAdmin();
+    const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+    documentRows.push(buildPatientDocumentRow({ patientId: OTHER_PATIENT_ID }));
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/patient-documents/${DOCUMENT_ID}/download?encounterId=${ENCOUNTER_ID}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(404);
+
+    expect(auditServiceMock.recordOrThrow).not.toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'PATIENT_DOCUMENT_DOWNLOADED' }),
+    );
+    expect(objectStorageServiceMock.getSignedUrl).not.toHaveBeenCalled();
+  });
+
+  it('refuses a reading context that is not a uuid', async () => {
+    mockAdmin();
+    const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+    documentRows.push(buildPatientDocumentRow());
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/patient-documents/${DOCUMENT_ID}/download?encounterId=not-a-uuid`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
   });
 
   it('requires a reason to delete, soft-deletes, and audits it', async () => {

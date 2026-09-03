@@ -31,6 +31,13 @@ export type DocumentRecord = {
   ingestedAt: Date | null;
   chunkCount: number;
   uploadedById: string;
+  /**
+   * The uploader's email, joined only by the clinical reads that display it
+   * (`P16-T14`). `null` means "not loaded" as well as "no uploader" — the
+   * corpus queries do not pay for the join — so treat it as a display hint,
+   * never as a fact about the row.
+   */
+  uploadedByEmail: string | null;
   /** Clinical-file fields (P16-T07); null on every corpus document. */
   patientId: string | null;
   encounterId: string | null;

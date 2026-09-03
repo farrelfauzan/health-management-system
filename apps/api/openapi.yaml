@@ -26431,13 +26431,23 @@ paths:
           in: path
           schema:
             type: string
+        - name: encounterId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
       responses:
         "200":
-          description: A signed URL valid for minutes, served as an attachment under the
+          description: "A signed URL valid for minutes, served as an attachment under the
             validated stored content type — nothing renders in the app or API
             origin (FR-E2-08). The download is audited with actor, patient, and
             episode context before the URL is returned; if the access cannot be
-            recorded, no URL is issued.
+            recorded, no URL is issued. Pass encounterId when the file is being
+            opened from an encounter workspace: it records *where the read
+            happened*, as distinct from the encounter the document belongs to,
+            and is validated against the document’s patient and your access to
+            that encounter rather than trusted."
           content:
             application/json:
               schema:

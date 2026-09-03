@@ -19,6 +19,7 @@ function buildRecord(overrides: Partial<DocumentRecord> = {}): DocumentRecord {
     ingestedAt: null,
     chunkCount: 3,
     uploadedById: 'a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d',
+    uploadedByEmail: null,
     patientId: null,
     encounterId: null,
     admissionId: null,

@@ -637,3 +637,23 @@ export const listVaultDocumentsQuerySchema = z.object({
 });
 
 export type ListVaultDocumentsQueryInput = z.infer<typeof listVaultDocumentsQuerySchema>;
+
+/**
+ * Optional reading context on a clinical-file download (`P16-T14`).
+ *
+ * `encounterId` here is **where the file was read from**, not where it lives.
+ * A doctor opening a past lab result from inside today's consultation is
+ * reading history during this visit, and FR-E2-07's question — who looked, and
+ * in what clinical context — is not answered by the document's own episode
+ * link, which for that file names a different visit or none at all.
+ *
+ * The server validates it rather than trusting it: an audit row carrying a
+ * client-supplied id nobody checked is a weaker record than no id at all.
+ */
+export const downloadPatientDocumentQuerySchema = z.object({
+  encounterId: z.string().uuid().optional(),
+});
+
+export type DownloadPatientDocumentQueryInput = z.infer<
+  typeof downloadPatientDocumentQuerySchema
+>;

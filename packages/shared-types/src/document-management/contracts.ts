@@ -156,6 +156,14 @@ export type PatientDocumentView = {
   releasedAt: string | null;
   releasedById: string | null;
   uploadedById: string;
+  /**
+   * Who scanned the file in, as an email (`P16-T14`, FR-E2-05). `User` carries
+   * no display name, so this follows `invitedByEmail`: the only
+   * human-readable identifier an account has. Staff-facing only — the portal's
+   * narrowed view carries neither this nor `uploadedById`, because who filed a
+   * document is clinic-internal.
+   */
+  uploadedByEmail: string | null;
   createdAt: string;
   updatedAt: string;
 };
