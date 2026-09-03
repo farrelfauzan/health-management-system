@@ -400,6 +400,7 @@ export const ModelName = {
   DoctorProfile: 'DoctorProfile',
   DoctorEducation: 'DoctorEducation',
   DoctorLicense: 'DoctorLicense',
+  DoctorLicenseExpiryNotice: 'DoctorLicenseExpiryNotice',
   DoctorSchedule: 'DoctorSchedule',
   AppointmentSession: 'AppointmentSession',
   DoctorPatient: 'DoctorPatient',
@@ -478,7 +479,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1663,6 +1664,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DoctorLicenseCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DoctorLicenseCountAggregateOutputType> | number
+        }
+      }
+    }
+    DoctorLicenseExpiryNotice: {
+      payload: Prisma.$DoctorLicenseExpiryNoticePayload<ExtArgs>
+      fields: Prisma.DoctorLicenseExpiryNoticeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DoctorLicenseExpiryNoticeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DoctorLicenseExpiryNoticeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload>
+        }
+        findFirst: {
+          args: Prisma.DoctorLicenseExpiryNoticeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DoctorLicenseExpiryNoticeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload>
+        }
+        findMany: {
+          args: Prisma.DoctorLicenseExpiryNoticeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload>[]
+        }
+        create: {
+          args: Prisma.DoctorLicenseExpiryNoticeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload>
+        }
+        createMany: {
+          args: Prisma.DoctorLicenseExpiryNoticeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DoctorLicenseExpiryNoticeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload>[]
+        }
+        delete: {
+          args: Prisma.DoctorLicenseExpiryNoticeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload>
+        }
+        update: {
+          args: Prisma.DoctorLicenseExpiryNoticeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload>
+        }
+        deleteMany: {
+          args: Prisma.DoctorLicenseExpiryNoticeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DoctorLicenseExpiryNoticeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DoctorLicenseExpiryNoticeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload>[]
+        }
+        upsert: {
+          args: Prisma.DoctorLicenseExpiryNoticeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorLicenseExpiryNoticePayload>
+        }
+        aggregate: {
+          args: Prisma.DoctorLicenseExpiryNoticeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDoctorLicenseExpiryNotice>
+        }
+        groupBy: {
+          args: Prisma.DoctorLicenseExpiryNoticeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorLicenseExpiryNoticeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DoctorLicenseExpiryNoticeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorLicenseExpiryNoticeCountAggregateOutputType> | number
         }
       }
     }
@@ -6631,6 +6706,16 @@ export const DoctorLicenseScalarFieldEnum = {
 export type DoctorLicenseScalarFieldEnum = (typeof DoctorLicenseScalarFieldEnum)[keyof typeof DoctorLicenseScalarFieldEnum]
 
 
+export const DoctorLicenseExpiryNoticeScalarFieldEnum = {
+  id: 'id',
+  licenseId: 'licenseId',
+  thresholdDays: 'thresholdDays',
+  notifiedAt: 'notifiedAt'
+} as const
+
+export type DoctorLicenseExpiryNoticeScalarFieldEnum = (typeof DoctorLicenseExpiryNoticeScalarFieldEnum)[keyof typeof DoctorLicenseExpiryNoticeScalarFieldEnum]
+
+
 export const DoctorScheduleScalarFieldEnum = {
   id: 'id',
   doctorId: 'doctorId',
@@ -8829,6 +8914,7 @@ export type GlobalOmitConfig = {
   doctorProfile?: Prisma.DoctorProfileOmit
   doctorEducation?: Prisma.DoctorEducationOmit
   doctorLicense?: Prisma.DoctorLicenseOmit
+  doctorLicenseExpiryNotice?: Prisma.DoctorLicenseExpiryNoticeOmit
   doctorSchedule?: Prisma.DoctorScheduleOmit
   appointmentSession?: Prisma.AppointmentSessionOmit
   doctorPatient?: Prisma.DoctorPatientOmit

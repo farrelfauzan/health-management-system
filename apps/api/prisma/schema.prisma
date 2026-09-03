@@ -1163,10 +1163,41 @@ model DoctorLicense {
 
   doctor DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
+  expiryNotices DoctorLicenseExpiryNotice[]
+
   @@index([doctorId])
   @@index([deletedAt])
   @@index([expiresAt])
   @@map("doctor_licenses")
+}
+
+/// One reminder already sent to the clinic about one licence at one threshold
+/// (P16-T19).
+///
+/// The mirror image of `VaultDocumentExpiryNotice`, and deliberately a
+/// separate table rather than a shared one: that table is keyed to a document
+/// and notifies its owner, this one is keyed to a structured credential and
+/// notifies administrators. Joining them would put a foreign key from the
+/// clinic's compliance bookkeeping into a doctor's private drawer, which is
+/// the exact coupling the §7.3.2 split exists to prevent — the clinic's
+/// obligation must never depend on, or reveal, whether a scan was uploaded.
+///
+/// `Cascade`: a licence removed from a doctor's record takes the memory of
+/// having announced it along.
+model DoctorLicenseExpiryNotice {
+  id            String   @id @default(uuid()) @db.Uuid
+  licenseId     String   @map("license_id") @db.Uuid
+  /// How far ahead of `expiresAt` this notice fired — 60, 30, 0. Part of the
+  /// key so each threshold announces once rather than the first suppressing
+  /// the rest, and so a job that runs twice in a day is safe to re-run.
+  thresholdDays Int      @map("threshold_days")
+  notifiedAt    DateTime @default(now()) @map("notified_at")
+
+  license DoctorLicense @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  @@unique([licenseId, thresholdDays])
+  @@index([licenseId])
+  @@map("doctor_license_expiry_notices")
 }
 
 model DoctorSchedule {
@@ -3582,6 +3613,16 @@ enum NotificationType {
   /// used, so the product tells them rather than making them ask.
   VAULT_DOCUMENT_SHARED
   VAULT_DOCUMENT_OPENED
+  /// The clinic-side counterparts (P16-T19), addressed to administrators and
+  /// never to the doctor's vault. They are raised from `DoctorLicense` — a
+  /// number and a date the clinic already administers — so the clinic learns
+  /// that a SIP is lapsing without anyone having looked at, or established
+  /// the existence of, a scan. That two pairs of notification types exist for
+  /// what sounds like one event is the §7.3.2 split showing through: the
+  /// owner's reminder and the clinic's obligation are different facts with
+  /// different audiences, and merging them would make one leak the other.
+  LICENCE_EXPIRING
+  LICENCE_EXPIRED
 
   @@map("notification_type")
 }

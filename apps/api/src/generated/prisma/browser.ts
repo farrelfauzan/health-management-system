@@ -206,6 +206,23 @@ export type DoctorEducation = Prisma.DoctorEducationModel
  */
 export type DoctorLicense = Prisma.DoctorLicenseModel
 /**
+ * Model DoctorLicenseExpiryNotice
+ * One reminder already sent to the clinic about one licence at one threshold
+ * (P16-T19).
+ * 
+ * The mirror image of `VaultDocumentExpiryNotice`, and deliberately a
+ * separate table rather than a shared one: that table is keyed to a document
+ * and notifies its owner, this one is keyed to a structured credential and
+ * notifies administrators. Joining them would put a foreign key from the
+ * clinic's compliance bookkeeping into a doctor's private drawer, which is
+ * the exact coupling the §7.3.2 split exists to prevent — the clinic's
+ * obligation must never depend on, or reveal, whether a scan was uploaded.
+ * 
+ * `Cascade`: a licence removed from a doctor's record takes the memory of
+ * having announced it along.
+ */
+export type DoctorLicenseExpiryNotice = Prisma.DoctorLicenseExpiryNoticeModel
+/**
  * Model DoctorSchedule
  * 
  */

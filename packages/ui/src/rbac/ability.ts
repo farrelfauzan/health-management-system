@@ -31,6 +31,11 @@ export type AppSubject =
   | 'Role'
   | 'Patient'
   | 'Doctor'
+  // P16-T19. The clinic's licence expiry roster. Its own subject rather than
+  // an action on `Doctor`, because `Doctor` read is held by doctors and
+  // patients — the directory is something a patient browses when choosing who
+  // to book with, and a list of who is out of licence is not.
+  | 'DoctorLicenseExpiry'
   | 'DoctorSchedule'
   | 'DoctorPatient'
   | 'DoctorPatientActivity'

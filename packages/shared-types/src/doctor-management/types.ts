@@ -126,3 +126,33 @@ export type ReplaceDoctorSchedulesPayload = {
     maxPatients?: number | null;
   }>;
 };
+
+/**
+ * One licence row as the expiry query returns it (P16-T19), joined to its
+ * doctor for display. Carries no document reference, and the repository query
+ * behind it does not touch the `documents` table at all — see
+ * {@link DoctorLicenseExpiryRow} for why that absence is load-bearing.
+ */
+export type DoctorLicenseExpiryRecord = {
+  licenseId: string;
+  doctorId: string;
+  doctorName: string;
+  type: DoctorLicenseTypeValue;
+  licenseNumber: string;
+  issuedAt: Date | null;
+  /** Never null: rows without an expiry are excluded by the query. */
+  expiresAt: Date;
+};
+
+/**
+ * How far ahead of expiry the clinic is told, in days (P16-T19, FR-E3-34).
+ * `0` is the day it lapses. Ordered widest first so the job can walk them and
+ * take the first that has been crossed.
+ */
+export const DOCTOR_LICENSE_EXPIRY_THRESHOLD_DAYS = [60, 30, 0] as const;
+
+/**
+ * The dashboard's bucket boundaries, in days ahead of today. Expiry itself is
+ * the implicit fourth bucket below zero.
+ */
+export const DOCTOR_LICENSE_EXPIRY_BUCKET_DAYS = [30, 60, 90] as const;
