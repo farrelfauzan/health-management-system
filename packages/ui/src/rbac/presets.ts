@@ -22,6 +22,9 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'Doctor' },
   { action: 'create', subject: 'Doctor' },
   { action: 'update', subject: 'Doctor' },
+  // P16-T19. Administrators only; the doctor and patient presets below
+  // deliberately do not carry it.
+  { action: 'read', subject: 'DoctorLicenseExpiry' },
   { action: 'write', subject: 'DoctorSchedule' },
   { action: 'read', subject: 'Appointment' },
   { action: 'create', subject: 'Appointment' },

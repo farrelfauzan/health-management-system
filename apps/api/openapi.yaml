@@ -5360,6 +5360,499 @@ paths:
         - bearer: []
       summary: Replace a doctor schedule
       tags: *a8
+  /api/v1/doctor-licenses/expiry:
+    get:
+      operationId: DoctorLicenseExpiryController_listExpiryBuckets_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Licences already lapsed plus those lapsing inside 90 days,
+            bucketed by urgency and sorted soonest-first within each bucket.
+            Each row carries the doctor’s name, the licence type, its number and
+            its dates. Nothing here refers to a document: whether a doctor has
+            uploaded a scan of a licence is private to their vault, and this
+            surface is built so that reading it cannot reveal even the existence
+            of one. Licences with no expiry date, and those on retired or
+            soft-deleted records, are absent — the list is of obligations the
+            clinic still has."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      expired:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            licenseId:
+                              type: string
+                            doctorId:
+                              type: string
+                            doctorName:
+                              type: string
+                            type:
+                              type: string
+                            licenseNumber:
+                              type: string
+                            issuedAt:
+                              type: string
+                            expiresAt:
+                              type: string
+                            daysUntilExpiry:
+                              type: integer
+                          required:
+                            - licenseId
+                            - doctorId
+                            - doctorName
+                            - type
+                            - licenseNumber
+                            - issuedAt
+                            - expiresAt
+                            - daysUntilExpiry
+                      within30Days:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            licenseId:
+                              type: string
+                            doctorId:
+                              type: string
+                            doctorName:
+                              type: string
+                            type:
+                              type: string
+                            licenseNumber:
+                              type: string
+                            issuedAt:
+                              type: string
+                            expiresAt:
+                              type: string
+                            daysUntilExpiry:
+                              type: integer
+                          required:
+                            - licenseId
+                            - doctorId
+                            - doctorName
+                            - type
+                            - licenseNumber
+                            - issuedAt
+                            - expiresAt
+                            - daysUntilExpiry
+                      within60Days:
+                        type: array
+                        items: {}
+                      within90Days:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            licenseId:
+                              type: string
+                            doctorName:
+                              type: string
+                            doctorId:
+                              type: string
+                            type:
+                              type: string
+                            licenseNumber:
+                              type: string
+                            issuedAt:
+                              type: string
+                            expiresAt:
+                              type: string
+                            daysUntilExpiry:
+                              type: integer
+                          required:
+                            - licenseId
+                            - doctorName
+                            - doctorId
+                            - type
+                            - licenseNumber
+                            - issuedAt
+                            - expiresAt
+                            - daysUntilExpiry
+                    required:
+                      - expired
+                      - within30Days
+                      - within60Days
+                      - within90Days
+                required:
+                  - data
+                example:
+                  data:
+                    expired:
+                      - licenseId: c4c9c0a2-6f8e-4a2c-9d67-2b8f0a4e1d55
+                        doctorId: 1f0a3d94-5c2b-4b31-9c8d-77bf1c3a0e21
+                        doctorName: dr. Rina Wijaya, Sp.PD
+                        type: SIP
+                        licenseNumber: SIP-EXAMPLE-0001
+                        issuedAt: 2021-03-12
+                        expiresAt: 2026-08-20
+                        daysUntilExpiry: -14
+                    within30Days:
+                      - licenseId: f1d7b8e3-4a90-4c1f-8b52-93ea6d0c7f18
+                        doctorId: 9c31a7f5-2d68-4e0b-b41a-5f2c8d90e6b3
+                        doctorName: dr. Andi Pratama
+                        type: SIP
+                        licenseNumber: SIP-EXAMPLE-0002
+                        issuedAt: 2021-10-01
+                        expiresAt: 2026-09-30
+                        daysUntilExpiry: 27
+                    within60Days: []
+                    within90Days:
+                      - licenseId: a8e2c611-73bd-4f05-9a3e-64c1b7d28f40
+                        doctorName: dr. Siti Handayani, Sp.A
+                        doctorId: 4b6e9c02-8f13-4d7a-a5c9-0e83b2f61a74
+                        type: STR
+                        licenseNumber: STR-EXAMPLE-0003
+                        issuedAt: 2021-11-18
+                        expiresAt: 2026-11-18
+                        daysUntilExpiry: 76
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List practitioner licences by expiry urgency
+      tags:
+        - Doctor Management
+  /api/v1/notifications:
+    get:
+      operationId: NotificationController_listNotifications_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+      responses:
+        "200":
+          description: "Newest first, paged. Rendered copy stays client-side: rows carry
+            i18n keys and params."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                        titleKey:
+                          type: string
+                        bodyKey:
+                          type: string
+                        params:
+                          type: object
+                          properties:
+                            doctorName:
+                              type: string
+                          required:
+                            - doctorName
+                        href:
+                          nullable: true
+                        readAt:
+                          nullable: true
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - type
+                        - titleKey
+                        - bodyKey
+                        - params
+                        - href
+                        - readAt
+                        - createdAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: f2a61c58-9d04-4e3b-8b72-5c1e0a9d7f26
+                      type: APPOINTMENT_APPROVED
+                      titleKey: appointmentApproved.title
+                      bodyKey: appointmentApproved.body
+                      params:
+                        doctorName: dr. Ratna Dewi, Sp.PD
+                      href: null
+                      readAt: null
+                      createdAt: 2026-08-26T03:12:00.000Z
+                    - id: b7e94d20-1f6a-4c85-9a03-6d2b8e4c1a57
+                      type: CONVERSATION_HANDOFF
+                      titleKey: conversationHandoff.title
+                      bodyKey: conversationHandoff.body
+                      params:
+                        channel: TELEGRAM
+                      href: /admin/conversations
+                      readAt: 2026-08-26T04:02:00.000Z
+                      createdAt: 2026-08-26T03:41:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 2
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List the caller's notifications
+      tags: &a9
+        - Notifications
+  /api/v1/notifications/unread-count:
+    get:
+      operationId: NotificationController_getUnreadCount_v1
+      parameters: []
+      responses:
+        "200":
+          description: "A count only, for the bell badge. Deliberately not a list: this
+            endpoint is polled by every open shell, and returning rows would
+            fetch the whole feed on every interval to render one dot."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      unreadCount:
+                        type: integer
+                    required:
+                      - unreadCount
+                required:
+                  - data
+                example:
+                  data:
+                    unreadCount: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Count the caller's unread notifications
+      tags: *a9
+  /api/v1/notifications/{id}/read:
+    patch:
+      operationId: NotificationController_markAsRead_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The updated notification. Marking an already-read row again is a
+            no-op, not an error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: string
+                      titleKey:
+                        type: string
+                      bodyKey:
+                        type: string
+                      params:
+                        type: object
+                        properties:
+                          channel:
+                            type: string
+                        required:
+                          - channel
+                      href:
+                        type: string
+                      readAt:
+                        type: string
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - type
+                      - titleKey
+                      - bodyKey
+                      - params
+                      - href
+                      - readAt
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: b7e94d20-1f6a-4c85-9a03-6d2b8e4c1a57
+                    type: CONVERSATION_HANDOFF
+                    titleKey: conversationHandoff.title
+                    bodyKey: conversationHandoff.body
+                    params:
+                      channel: TELEGRAM
+                    href: /admin/conversations
+                    readAt: 2026-08-26T04:02:00.000Z
+                    createdAt: 2026-08-26T03:41:00.000Z
+                  message: Notification marked as read
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Mark one notification as read
+      tags: *a9
+  /api/v1/notifications/read-all:
+    post:
+      operationId: NotificationController_markAllAsRead_v1
+      parameters: []
+      responses:
+        "200":
+          description: How many rows flipped from unread to read.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      updatedCount:
+                        type: integer
+                    required:
+                      - updatedCount
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    updatedCount: 3
+                  message: All notifications marked as read
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Mark all of the caller's notifications as read
+      tags: *a9
   /api/v1/doctor-patient-assignments:
     post:
       operationId: DoctorPatientController_assignDoctorToPatient_v1
@@ -5454,7 +5947,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a doctor to a patient
-      tags: &a9
+      tags: &a10
         - Doctor Patient
   /api/v1/doctor-patient-assignments/activity:
     get:
@@ -5601,7 +6094,7 @@ paths:
       security:
         - bearer: []
       summary: List doctor-patient assignment activity
-      tags: *a9
+      tags: *a10
   /api/v1/doctor-patient-assignments/{id}:
     delete:
       operationId: DoctorPatientController_unassignDoctorFromPatient_v1
@@ -5697,7 +6190,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a doctor from a patient
-      tags: *a9
+      tags: *a10
   /api/v1/appointments:
     get:
       operationId: AppointmentManagementController_listAppointments_v1
@@ -5907,7 +6400,7 @@ paths:
       security:
         - bearer: []
       summary: List appointments
-      tags: &a10
+      tags: &a11
         - Appointment Management
     post:
       operationId: AppointmentManagementController_createAppointment_v1
@@ -6033,7 +6526,7 @@ paths:
       security:
         - bearer: []
       summary: Create an appointment
-      tags: *a10
+      tags: *a11
   /api/v1/appointments/{id}:
     get:
       operationId: AppointmentManagementController_getAppointmentById_v1
@@ -6143,7 +6636,7 @@ paths:
       security:
         - bearer: []
       summary: Get an appointment
-      tags: *a10
+      tags: *a11
     patch:
       operationId: AppointmentManagementController_updateAppointment_v1
       parameters:
@@ -6277,7 +6770,7 @@ paths:
       security:
         - bearer: []
       summary: Update an appointment
-      tags: *a10
+      tags: *a11
   /api/v1/appointments/{id}/approve:
     post:
       operationId: AppointmentManagementController_approveAppointment_v1
@@ -6411,7 +6904,7 @@ paths:
       security:
         - bearer: []
       summary: Approve a special appointment request
-      tags: *a10
+      tags: *a11
   /api/v1/appointments/{id}/reject:
     post:
       operationId: AppointmentManagementController_rejectAppointment_v1
@@ -6545,7 +7038,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a special appointment request
-      tags: *a10
+      tags: *a11
   /api/v1/appointments/{id}/cancel:
     post:
       operationId: AppointmentManagementController_cancelAppointment_v1
@@ -6679,7 +7172,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel an appointment
-      tags: *a10
+      tags: *a11
   /api/v1/doctors/{doctorId}/sessions:
     get:
       operationId: AppointmentSessionController_listDoctorSessions_v1
@@ -6781,7 +7274,7 @@ paths:
       security:
         - bearer: []
       summary: List bookable sessions for a doctor
-      tags: &a11
+      tags: &a12
         - Appointment Management
   /api/v1/appointment-sessions:
     get:
@@ -6897,7 +7390,7 @@ paths:
       security:
         - bearer: []
       summary: List sessions across all doctors
-      tags: *a11
+      tags: *a12
   /api/v1/appointment-sessions/{id}/queue:
     get:
       operationId: AppointmentSessionController_getSessionQueue_v1
@@ -7043,7 +7536,7 @@ paths:
       security:
         - bearer: []
       summary: Get the patient queue for a session
-      tags: *a11
+      tags: *a12
   /api/v1/appointment-sessions/{id}:
     patch:
       operationId: AppointmentSessionController_updateSession_v1
@@ -7156,323 +7649,6 @@ paths:
       security:
         - bearer: []
       summary: Update a session
-      tags: *a11
-  /api/v1/notifications:
-    get:
-      operationId: NotificationController_listNotifications_v1
-      parameters:
-        - name: page
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            exclusiveMinimum: false
-            default: 1
-            type: integer
-        - name: limit
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            maximum: 100
-            exclusiveMaximum: false
-            exclusiveMinimum: false
-            default: 10
-            type: integer
-      responses:
-        "200":
-          description: "Newest first, paged. Rendered copy stays client-side: rows carry
-            i18n keys and params."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        type:
-                          type: string
-                        titleKey:
-                          type: string
-                        bodyKey:
-                          type: string
-                        params:
-                          type: object
-                          properties:
-                            doctorName:
-                              type: string
-                          required:
-                            - doctorName
-                        href:
-                          nullable: true
-                        readAt:
-                          nullable: true
-                        createdAt:
-                          type: string
-                      required:
-                        - id
-                        - type
-                        - titleKey
-                        - bodyKey
-                        - params
-                        - href
-                        - readAt
-                        - createdAt
-                  meta:
-                    type: object
-                    properties:
-                      page:
-                        type: integer
-                      limit:
-                        type: integer
-                      total:
-                        type: integer
-                    required:
-                      - page
-                      - limit
-                      - total
-                required:
-                  - data
-                  - meta
-                example:
-                  data:
-                    - id: f2a61c58-9d04-4e3b-8b72-5c1e0a9d7f26
-                      type: APPOINTMENT_APPROVED
-                      titleKey: appointmentApproved.title
-                      bodyKey: appointmentApproved.body
-                      params:
-                        doctorName: dr. Ratna Dewi, Sp.PD
-                      href: null
-                      readAt: null
-                      createdAt: 2026-08-26T03:12:00.000Z
-                    - id: b7e94d20-1f6a-4c85-9a03-6d2b8e4c1a57
-                      type: CONVERSATION_HANDOFF
-                      titleKey: conversationHandoff.title
-                      bodyKey: conversationHandoff.body
-                      params:
-                        channel: TELEGRAM
-                      href: /admin/conversations
-                      readAt: 2026-08-26T04:02:00.000Z
-                      createdAt: 2026-08-26T03:41:00.000Z
-                  meta:
-                    page: 1
-                    limit: 10
-                    total: 2
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: List the caller's notifications
-      tags: &a12
-        - Notifications
-  /api/v1/notifications/unread-count:
-    get:
-      operationId: NotificationController_getUnreadCount_v1
-      parameters: []
-      responses:
-        "200":
-          description: "A count only, for the bell badge. Deliberately not a list: this
-            endpoint is polled by every open shell, and returning rows would
-            fetch the whole feed on every interval to render one dot."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      unreadCount:
-                        type: integer
-                    required:
-                      - unreadCount
-                required:
-                  - data
-                example:
-                  data:
-                    unreadCount: 1
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: Count the caller's unread notifications
-      tags: *a12
-  /api/v1/notifications/{id}/read:
-    patch:
-      operationId: NotificationController_markAsRead_v1
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The updated notification. Marking an already-read row again is a
-            no-op, not an error.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      type:
-                        type: string
-                      titleKey:
-                        type: string
-                      bodyKey:
-                        type: string
-                      params:
-                        type: object
-                        properties:
-                          channel:
-                            type: string
-                        required:
-                          - channel
-                      href:
-                        type: string
-                      readAt:
-                        type: string
-                      createdAt:
-                        type: string
-                    required:
-                      - id
-                      - type
-                      - titleKey
-                      - bodyKey
-                      - params
-                      - href
-                      - readAt
-                      - createdAt
-                  message:
-                    type: string
-                required:
-                  - data
-                  - message
-                example:
-                  data:
-                    id: b7e94d20-1f6a-4c85-9a03-6d2b8e4c1a57
-                    type: CONVERSATION_HANDOFF
-                    titleKey: conversationHandoff.title
-                    bodyKey: conversationHandoff.body
-                    params:
-                      channel: TELEGRAM
-                    href: /admin/conversations
-                    readAt: 2026-08-26T04:02:00.000Z
-                    createdAt: 2026-08-26T03:41:00.000Z
-                  message: Notification marked as read
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: Mark one notification as read
-      tags: *a12
-  /api/v1/notifications/read-all:
-    post:
-      operationId: NotificationController_markAllAsRead_v1
-      parameters: []
-      responses:
-        "200":
-          description: How many rows flipped from unread to read.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      updatedCount:
-                        type: integer
-                    required:
-                      - updatedCount
-                  message:
-                    type: string
-                required:
-                  - data
-                  - message
-                example:
-                  data:
-                    updatedCount: 3
-                  message: All notifications marked as read
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: Mark all of the caller's notifications as read
       tags: *a12
   /api/v1/registrations:
     get:
