@@ -29,6 +29,7 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   PatientDocumentDetailController: 'document-management',
   EncounterDocumentController: 'document-management',
   PortalDocumentController: 'document-management',
+  VaultDocumentController: 'document-management',
   BpjsEligibilityController: 'bpjs-pcare',
   BpjsMappingController: 'bpjs-pcare',
   BpjsPcareConfigController: 'bpjs-pcare',

@@ -26894,6 +26894,743 @@ paths:
       summary: List your own released clinical documents
       tags:
         - Document Management
+  /api/v1/me/vault-documents/upload-url:
+    post:
+      operationId: VaultDocumentController_createUploadUrl_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVaultDocumentUploadUrlDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  mimeType: application/pdf
+                  sizeBytes: 148480
+      responses:
+        "200":
+          description: "A short-lived signed URL the client PUTs the file to directly. The
+            declared content type and size are validated before signing and then
+            signed into the URL, so changing either header is rejected by the
+            storage provider. Nothing is persisted yet — call POST
+            /me/vault-documents with the returned storageKey to record it. Vault
+            documents are stored and served only: they are never chunked, never
+            embedded, and never sent to any AI provider."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      storageKey:
+                        type: string
+                      expiresAt:
+                        type: string
+                      requiredHeaders:
+                        type: object
+                        properties:
+                          Content-Type:
+                            type: string
+                          Content-Length:
+                            type: string
+                        required:
+                          - Content-Type
+                          - Content-Length
+                    required:
+                      - url
+                      - storageKey
+                      - expiresAt
+                      - requiredHeaders
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/vault/doctor/7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730.pdf?X-Amz-Signature=...
+                    storageKey: documents/vault/doctor/7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730.pdf
+                    expiresAt: 2026-09-03T09:05:00.000Z
+                    requiredHeaders:
+                      Content-Type: application/pdf
+                      Content-Length: "148480"
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Sign a browser-direct upload into your own vault
+      tags: &a42
+        - Document Management
+  /api/v1/me/vault-documents:
+    post:
+      operationId: VaultDocumentController_confirmUpload_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmVaultDocumentUploadDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  storageKey: documents/vault/doctor/7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730.pdf
+                  title: STR Dokter Umum
+                  language: ID
+                  vaultCategory: REGISTRATION_LICENCE
+                  referenceNumber: STR-EXAMPLE-0000
+                  issuedAt: 2024-03-14
+                  expiresAt: 2029-03-14
+      responses:
+        "200":
+          description: Records the uploaded object as a document you own. Owner is derived
+            from your identity, never from the body — the storage key must be
+            one issued to you by the vault upload-url route, so a key minted for
+            your knowledge base or for the clinic corpus is refused here. The
+            object’s bytes must agree with the declared type (SJ-21), and images
+            are re-encoded, which is what strips EXIF GPS from a photographed
+            licence.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      vaultCategory:
+                        type: string
+                      referenceNumber:
+                        type: string
+                      issuedAt:
+                        type: string
+                      expiresAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - vaultCategory
+                      - referenceNumber
+                      - issuedAt
+                      - expiresAt
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730
+                    title: STR Dokter Umum
+                    mimeType: application/pdf
+                    sizeBytes: 148480
+                    language: ID
+                    vaultCategory: REGISTRATION_LICENCE
+                    referenceNumber: STR-EXAMPLE-0000
+                    issuedAt: 2024-03-14
+                    expiresAt: 2029-03-14
+                    createdAt: 2026-09-03T09:00:00.000Z
+                    updatedAt: 2026-09-03T09:00:00.000Z
+                  message: Document added to your vault
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Record a completed upload in your own vault
+      tags: *a42
+    get:
+      operationId: VaultDocumentController_listDocuments_v1
+      parameters:
+        - name: vaultCategory
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - REGISTRATION_LICENCE
+              - EDUCATION
+              - COMPETENCE
+              - CONTINUING_EDUCATION
+              - INSURANCE
+              - EMPLOYMENT
+              - IDENTITY_TAX
+              - CURRICULUM_VITAE
+              - PERSONAL_REFERENCE
+              - OTHER
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: Your documents only. Ownership is a predicate of the query rather
+            than a filter on the result, so another user’s document is never in
+            the returned set — and there is no query parameter that could widen
+            it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        mimeType:
+                          type: string
+                        sizeBytes:
+                          type: integer
+                        language:
+                          type: string
+                        vaultCategory:
+                          type: string
+                        referenceNumber:
+                          type: string
+                        issuedAt:
+                          type: string
+                        expiresAt:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - title
+                        - mimeType
+                        - sizeBytes
+                        - language
+                        - vaultCategory
+                        - referenceNumber
+                        - issuedAt
+                        - expiresAt
+                        - createdAt
+                        - updatedAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730
+                      title: STR Dokter Umum
+                      mimeType: application/pdf
+                      sizeBytes: 148480
+                      language: ID
+                      vaultCategory: REGISTRATION_LICENCE
+                      referenceNumber: STR-EXAMPLE-0000
+                      issuedAt: 2024-03-14
+                      expiresAt: 2029-03-14
+                      createdAt: 2026-09-03T09:00:00.000Z
+                      updatedAt: 2026-09-03T09:00:00.000Z
+                  meta:
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List the documents in your own vault
+      tags: *a42
+  /api/v1/me/vault-documents/export:
+    get:
+      description: A zip of every document you own plus a metadata.json describing
+        them (FR-E3-12). Leaving the clinic should not mean leaving your own
+        paperwork behind, and files without their reference numbers and expiry
+        dates would be a worse copy than the one being replaced. The export is
+        audited with the document count.
+      operationId: VaultDocumentController_exportVault_v1
+      parameters: []
+      responses:
+        "200":
+          description: A zip archive of your vault.
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+      summary: Download your whole vault as a zip
+      tags: *a42
+  /api/v1/me/vault-documents/{id}:
+    get:
+      operationId: VaultDocumentController_getDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The document’s metadata. A document you do not own reports as not
+            found rather than forbidden — distinguishing the two would confirm
+            that the id exists, which is itself a disclosure about someone
+            else’s vault.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      vaultCategory:
+                        type: string
+                      referenceNumber:
+                        type: string
+                      issuedAt:
+                        type: string
+                      expiresAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - vaultCategory
+                      - referenceNumber
+                      - issuedAt
+                      - expiresAt
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730
+                    title: STR Dokter Umum
+                    mimeType: application/pdf
+                    sizeBytes: 148480
+                    language: ID
+                    vaultCategory: REGISTRATION_LICENCE
+                    referenceNumber: STR-EXAMPLE-0000
+                    issuedAt: 2024-03-14
+                    expiresAt: 2029-03-14
+                    createdAt: 2026-09-03T09:00:00.000Z
+                    updatedAt: 2026-09-03T09:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your vault.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your vault.
+      security:
+        - bearer: []
+      summary: Read one document from your own vault
+      tags: *a42
+    patch:
+      operationId: VaultDocumentController_updateDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVaultDocumentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  title: STR Dokter Umum (perpanjangan)
+                  expiresAt: 2034-03-14
+      responses:
+        "200":
+          description: Renames or re-files the document. The stored file is immutable;
+            only your own notes about it change — category, reference number,
+            issue and expiry dates. Passing null clears a field, which is how a
+            date entered by mistake is removed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      mimeType:
+                        type: string
+                      sizeBytes:
+                        type: integer
+                      language:
+                        type: string
+                      vaultCategory:
+                        type: string
+                      referenceNumber:
+                        type: string
+                      issuedAt:
+                        type: string
+                      expiresAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - title
+                      - mimeType
+                      - sizeBytes
+                      - language
+                      - vaultCategory
+                      - referenceNumber
+                      - issuedAt
+                      - expiresAt
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730
+                    title: STR Dokter Umum
+                    mimeType: application/pdf
+                    sizeBytes: 148480
+                    language: ID
+                    vaultCategory: REGISTRATION_LICENCE
+                    referenceNumber: STR-EXAMPLE-0000
+                    issuedAt: 2024-03-14
+                    expiresAt: 2029-03-14
+                    createdAt: 2026-09-03T09:00:00.000Z
+                    updatedAt: 2026-09-03T09:00:00.000Z
+                  message: Document updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your vault.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your vault.
+      security:
+        - bearer: []
+      summary: Edit one of your vault documents
+      tags: *a42
+    delete:
+      operationId: VaultDocumentController_deleteDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Hard-deletes the row, the stored object and every expiry notice
+            about it (FR-E3-09). There is no soft delete and no retention floor
+            here: the 25-year RME rule covers a patient’s medical record, and
+            applying it to your own identity documents would mean refusing to
+            forget them when you ask."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      deleted:
+                        type: boolean
+                    required:
+                      - id
+                      - deleted
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730
+                    deleted: true
+                  message: Document deleted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your vault.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your vault.
+      security:
+        - bearer: []
+      summary: Delete one of your vault documents
+      tags: *a42
+  /api/v1/me/vault-documents/{id}/download:
+    get:
+      operationId: VaultDocumentController_getDownloadUrl_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A signed URL valid for minutes, served as an attachment under the
+            validated stored content type — nothing renders in the app or API
+            origin. The download is audited with your identity before the URL is
+            returned; if the access cannot be recorded, no URL is issued.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/vault/doctor/7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730.pdf?X-Amz-Signature=...
+                    expiresAt: 2026-09-03T09:05:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your vault.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your vault.
+      security:
+        - bearer: []
+      summary: Get a signed download URL for one of your vault documents
+      tags: *a42
   /api/v1/admin/channel-gateway/whatsapp/session:
     get:
       operationId: ChannelGatewayAdminController_getSessionHealth_v1
@@ -26962,7 +27699,7 @@ paths:
       security:
         - bearer: []
       summary: Read the WhatsApp session’s health
-      tags: &a42
+      tags: &a43
         - Channel Gateway
   /api/v1/admin/channel-gateway/whatsapp/session/pairing:
     post:
@@ -27023,7 +27760,7 @@ paths:
       security:
         - bearer: []
       summary: Start a QR pairing for the WhatsApp session
-      tags: *a42
+      tags: *a43
   /api/v1/admin/channel-gateway/telegram/webhook:
     get:
       operationId: ChannelGatewayAdminController_getTelegramWebhookHealth_v1
@@ -27114,7 +27851,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Telegram webhook’s registration health
-      tags: *a42
+      tags: *a43
     post:
       operationId: ChannelGatewayAdminController_registerTelegramWebhook_v1
       parameters: []
@@ -27206,7 +27943,7 @@ paths:
       security:
         - bearer: []
       summary: Point Telegram at this deployment
-      tags: *a42
+      tags: *a43
   /api/v1/admin/conversations:
     get:
       operationId: CsAdminController_listConversations_v1
@@ -27356,7 +28093,7 @@ paths:
       security:
         - bearer: []
       summary: List channel conversations
-      tags: &a43
+      tags: &a44
         - Customer Service
   /api/v1/admin/conversations/handoff-summary:
     get:
@@ -27417,7 +28154,7 @@ paths:
       security:
         - bearer: []
       summary: Count the conversations waiting for a human
-      tags: *a43
+      tags: *a44
   /api/v1/admin/conversations/metrics:
     get:
       operationId: CsAdminController_getMetrics_v1
@@ -27564,7 +28301,7 @@ paths:
       security:
         - bearer: []
       summary: Read the channel’s operating metrics (§8.4)
-      tags: *a43
+      tags: *a44
   /api/v1/admin/conversations/{id}:
     get:
       operationId: CsAdminController_getTranscript_v1
@@ -27739,7 +28476,7 @@ paths:
       security:
         - bearer: []
       summary: Read one conversation transcript
-      tags: *a43
+      tags: *a44
   /api/v1/admin/conversations/{id}/takeover:
     post:
       operationId: CsAdminController_takeOver_v1
@@ -27849,7 +28586,7 @@ paths:
       security:
         - bearer: []
       summary: Take a conversation over from the bot
-      tags: *a43
+      tags: *a44
   /api/v1/admin/conversations/{id}/release:
     post:
       operationId: CsAdminController_release_v1
@@ -27957,7 +28694,7 @@ paths:
       security:
         - bearer: []
       summary: Hand a conversation back to the bot
-      tags: *a43
+      tags: *a44
   /api/v1/admin/conversations/{id}/reply:
     post:
       operationId: CsAdminController_reply_v1
@@ -28073,7 +28810,7 @@ paths:
       security:
         - bearer: []
       summary: Reply to the customer on their original channel
-      tags: *a43
+      tags: *a44
   /api/v1/admin/conversations/{id}/block:
     post:
       operationId: CsAdminController_block_v1
@@ -28201,7 +28938,7 @@ paths:
       security:
         - bearer: []
       summary: Block a chat (§8.3 abuse control)
-      tags: *a43
+      tags: *a44
     delete:
       operationId: CsAdminController_unblock_v1
       parameters:
@@ -28307,7 +29044,7 @@ paths:
       security:
         - bearer: []
       summary: Unblock a chat
-      tags: *a43
+      tags: *a44
   /api/v1/admin/channel-arrivals:
     get:
       operationId: ChannelArrivalController_listArrivals_v1
@@ -28477,7 +29214,7 @@ paths:
       security:
         - bearer: []
       summary: List channel-sourced bookings for the check-in desk
-      tags: &a44
+      tags: &a45
         - Customer Service
   /api/v1/admin/channel-arrivals/merge-candidates:
     get:
@@ -28564,7 +29301,7 @@ paths:
       security:
         - bearer: []
       summary: Find the records a chat-created draft could be merged into
-      tags: *a44
+      tags: *a45
   /api/v1/admin/channel-arrivals/patients/{draftPatientId}/merge:
     post:
       operationId: ChannelArrivalController_mergeDraftPatient_v1
@@ -28672,7 +29409,7 @@ paths:
       security:
         - bearer: []
       summary: Merge a chat-created draft into an existing patient
-      tags: *a44
+      tags: *a45
   /api/v1/prospective-patients:
     get:
       operationId: ProspectivePatientController_listProspectivePatients_v1
@@ -28777,7 +29514,7 @@ paths:
       security:
         - bearer: []
       summary: List people who booked through a channel and have not been registered
-      tags: &a45
+      tags: &a46
         - Customer Service
   /api/v1/prospective-patients/{prospectivePatientId}/match-candidates:
     get:
@@ -28900,7 +29637,7 @@ paths:
       security:
         - bearer: []
       summary: Search the registry before spending an MRN on this person
-      tags: *a45
+      tags: *a46
   /api/v1/prospective-patients/{prospectivePatientId}/link:
     post:
       operationId: ProspectivePatientController_linkToExistingPatient_v1
@@ -29010,7 +29747,7 @@ paths:
         - bearer: []
       summary: The arriving person is already a patient — point the booking at their
         record
-      tags: *a45
+      tags: *a46
   /api/v1/prospective-patients/{prospectivePatientId}/convert:
     post:
       operationId: ProspectivePatientController_convertToNewPatient_v1
@@ -29156,7 +29893,7 @@ paths:
       security:
         - bearer: []
       summary: The arriving person is new — register them and allocate their MRN
-      tags: *a45
+      tags: *a46
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -29235,7 +29972,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a46
+      tags: &a47
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -29352,7 +30089,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a46
+      tags: *a47
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -29475,7 +30212,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a47
+      tags: &a48
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -29562,7 +30299,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a47
+      tags: *a48
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -29642,7 +30379,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a47
+      tags: *a48
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -29761,7 +30498,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a47
+      tags: *a48
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -29860,7 +30597,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a47
+      tags: *a48
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -29936,7 +30673,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a47
+      tags: *a48
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -30082,7 +30819,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a47
+      tags: *a48
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -30174,7 +30911,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a47
+      tags: *a48
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -30266,7 +31003,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a47
+      tags: *a48
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -32838,6 +33575,104 @@ components:
           maxLength: 500
       required:
         - reason
+    CreateVaultDocumentUploadUrlDto:
+      type: object
+      properties:
+        mimeType:
+          type: string
+          enum:
+            - application/pdf
+            - text/markdown
+            - text/plain
+            - image/jpeg
+            - image/png
+            - image/webp
+        sizeBytes:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 20971520
+          exclusiveMaximum: false
+      required:
+        - mimeType
+        - sizeBytes
+    ConfirmVaultDocumentUploadDto:
+      type: object
+      properties:
+        storageKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        language:
+          type: string
+          enum:
+            - ID
+            - EN
+        vaultCategory:
+          type: string
+          enum:
+            - REGISTRATION_LICENCE
+            - EDUCATION
+            - COMPETENCE
+            - CONTINUING_EDUCATION
+            - INSURANCE
+            - EMPLOYMENT
+            - IDENTITY_TAX
+            - CURRICULUM_VITAE
+            - PERSONAL_REFERENCE
+            - OTHER
+        referenceNumber:
+          type: string
+          minLength: 1
+          maxLength: 120
+        issuedAt:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        expiresAt:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+      required:
+        - storageKey
+        - title
+        - language
+    UpdateVaultDocumentDto:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        vaultCategory:
+          type: string
+          enum:
+            - REGISTRATION_LICENCE
+            - EDUCATION
+            - COMPETENCE
+            - CONTINUING_EDUCATION
+            - INSURANCE
+            - EMPLOYMENT
+            - IDENTITY_TAX
+            - CURRICULUM_VITAE
+            - PERSONAL_REFERENCE
+            - OTHER
+          nullable: true
+        referenceNumber:
+          type: string
+          minLength: 1
+          maxLength: 120
+          nullable: true
+        issuedAt:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          nullable: true
+        expiresAt:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          nullable: true
     ReplyToConversationDto:
       type: object
       properties:

@@ -24,9 +24,11 @@ import type {
   ConfirmClinicDocumentUploadDto,
   ConfirmPatientDocumentUploadDto,
   ConfirmPersonalDocumentUploadDto,
+  ConfirmVaultDocumentUploadDto,
   CreateClinicDocumentUploadUrlDto,
   CreatePatientDocumentUploadUrlDto,
   CreatePersonalDocumentUploadUrlDto,
+  CreateVaultDocumentUploadUrlDto,
   DeletePatientDocumentDto,
   DocumentAdminControllerConfirmUploadV1201,
   DocumentAdminControllerCreateUploadUrlV1200,
@@ -61,7 +63,16 @@ import type {
   PortalDocumentControllerListPortalDocumentsV1Params,
   UpdateClinicDocumentDto,
   UpdatePatientDocumentDto,
-  UpdatePersonalDocumentDto
+  UpdatePersonalDocumentDto,
+  UpdateVaultDocumentDto,
+  VaultDocumentControllerConfirmUploadV1200,
+  VaultDocumentControllerCreateUploadUrlV1200,
+  VaultDocumentControllerDeleteDocumentV1200,
+  VaultDocumentControllerGetDocumentV1200,
+  VaultDocumentControllerGetDownloadUrlV1200,
+  VaultDocumentControllerListDocumentsV1200,
+  VaultDocumentControllerListDocumentsV1Params,
+  VaultDocumentControllerUpdateDocumentV1200
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -2546,6 +2557,758 @@ export function usePortalDocumentControllerListPortalDocumentsV1<TData = Awaited
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getPortalDocumentControllerListPortalDocumentsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Sign a browser-direct upload into your own vault
+ */
+export const vaultDocumentControllerCreateUploadUrlV1 = (
+    createVaultDocumentUploadUrlDto: CreateVaultDocumentUploadUrlDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<VaultDocumentControllerCreateUploadUrlV1200>(
+      {url: `/api/v1/me/vault-documents/upload-url`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createVaultDocumentUploadUrlDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getVaultDocumentControllerCreateUploadUrlV1QueryKey = (createVaultDocumentUploadUrlDto?: CreateVaultDocumentUploadUrlDto,) => {
+    return [
+    'POST', `/api/v1/me/vault-documents/upload-url`, createVaultDocumentUploadUrlDto
+    ] as const;
+    }
+
+
+export const getVaultDocumentControllerCreateUploadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError = unknown>(createVaultDocumentUploadUrlDto: CreateVaultDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVaultDocumentControllerCreateUploadUrlV1QueryKey(createVaultDocumentUploadUrlDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>> = ({ signal }) => vaultDocumentControllerCreateUploadUrlV1(createVaultDocumentUploadUrlDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VaultDocumentControllerCreateUploadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>>
+export type VaultDocumentControllerCreateUploadUrlV1QueryError = unknown
+
+
+export function useVaultDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createVaultDocumentUploadUrlDto: CreateVaultDocumentUploadUrlDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createVaultDocumentUploadUrlDto: CreateVaultDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createVaultDocumentUploadUrlDto: CreateVaultDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Sign a browser-direct upload into your own vault
+ */
+
+export function useVaultDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createVaultDocumentUploadUrlDto: CreateVaultDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVaultDocumentControllerCreateUploadUrlV1QueryOptions(createVaultDocumentUploadUrlDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record a completed upload in your own vault
+ */
+export const vaultDocumentControllerConfirmUploadV1 = (
+    confirmVaultDocumentUploadDto: ConfirmVaultDocumentUploadDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<VaultDocumentControllerConfirmUploadV1200>(
+      {url: `/api/v1/me/vault-documents`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: confirmVaultDocumentUploadDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getVaultDocumentControllerConfirmUploadV1QueryKey = (confirmVaultDocumentUploadDto?: ConfirmVaultDocumentUploadDto,) => {
+    return [
+    'POST', `/api/v1/me/vault-documents`, confirmVaultDocumentUploadDto
+    ] as const;
+    }
+
+
+export const getVaultDocumentControllerConfirmUploadV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError = unknown>(confirmVaultDocumentUploadDto: ConfirmVaultDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVaultDocumentControllerConfirmUploadV1QueryKey(confirmVaultDocumentUploadDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>> = ({ signal }) => vaultDocumentControllerConfirmUploadV1(confirmVaultDocumentUploadDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VaultDocumentControllerConfirmUploadV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>>
+export type VaultDocumentControllerConfirmUploadV1QueryError = unknown
+
+
+export function useVaultDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ confirmVaultDocumentUploadDto: ConfirmVaultDocumentUploadDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ confirmVaultDocumentUploadDto: ConfirmVaultDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ confirmVaultDocumentUploadDto: ConfirmVaultDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record a completed upload in your own vault
+ */
+
+export function useVaultDocumentControllerConfirmUploadV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError = unknown>(
+ confirmVaultDocumentUploadDto: ConfirmVaultDocumentUploadDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerConfirmUploadV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVaultDocumentControllerConfirmUploadV1QueryOptions(confirmVaultDocumentUploadDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List the documents in your own vault
+ */
+export const vaultDocumentControllerListDocumentsV1 = (
+    params?: VaultDocumentControllerListDocumentsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<VaultDocumentControllerListDocumentsV1200>(
+      {url: `/api/v1/me/vault-documents`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getVaultDocumentControllerListDocumentsV1QueryKey = (params?: VaultDocumentControllerListDocumentsV1Params,) => {
+    return [
+    `/api/v1/me/vault-documents`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getVaultDocumentControllerListDocumentsV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError = unknown>(params?: VaultDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVaultDocumentControllerListDocumentsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>> = ({ signal }) => vaultDocumentControllerListDocumentsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VaultDocumentControllerListDocumentsV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>>
+export type VaultDocumentControllerListDocumentsV1QueryError = unknown
+
+
+export function useVaultDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError = unknown>(
+ params: undefined |  VaultDocumentControllerListDocumentsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError = unknown>(
+ params?: VaultDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError = unknown>(
+ params?: VaultDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List the documents in your own vault
+ */
+
+export function useVaultDocumentControllerListDocumentsV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError = unknown>(
+ params?: VaultDocumentControllerListDocumentsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerListDocumentsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVaultDocumentControllerListDocumentsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * A zip of every document you own plus a metadata.json describing them (FR-E3-12). Leaving the clinic should not mean leaving your own paperwork behind, and files without their reference numbers and expiry dates would be a worse copy than the one being replaced. The export is audited with the document count.
+ * @summary Download your whole vault as a zip
+ */
+export const vaultDocumentControllerExportVaultV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<Blob>(
+      {url: `/api/v1/me/vault-documents/export`, method: 'GET',
+        responseType: 'blob', signal
+    },
+      );
+    }
+
+
+
+
+export const getVaultDocumentControllerExportVaultV1QueryKey = () => {
+    return [
+    `/api/v1/me/vault-documents/export`
+    ] as const;
+    }
+
+
+export const getVaultDocumentControllerExportVaultV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVaultDocumentControllerExportVaultV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>> = ({ signal }) => vaultDocumentControllerExportVaultV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VaultDocumentControllerExportVaultV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>>
+export type VaultDocumentControllerExportVaultV1QueryError = unknown
+
+
+export function useVaultDocumentControllerExportVaultV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerExportVaultV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerExportVaultV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Download your whole vault as a zip
+ */
+
+export function useVaultDocumentControllerExportVaultV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerExportVaultV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVaultDocumentControllerExportVaultV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read one document from your own vault
+ */
+export const vaultDocumentControllerGetDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<VaultDocumentControllerGetDocumentV1200>(
+      {url: `/api/v1/me/vault-documents/${id}`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getVaultDocumentControllerGetDocumentV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/me/vault-documents/${id}`
+    ] as const;
+    }
+
+
+export const getVaultDocumentControllerGetDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVaultDocumentControllerGetDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>> = ({ signal }) => vaultDocumentControllerGetDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VaultDocumentControllerGetDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>>
+export type VaultDocumentControllerGetDocumentV1QueryError = unknown
+
+
+export function useVaultDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read one document from your own vault
+ */
+
+export function useVaultDocumentControllerGetDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVaultDocumentControllerGetDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Edit one of your vault documents
+ */
+export const vaultDocumentControllerUpdateDocumentV1 = (
+    id: string,
+    updateVaultDocumentDto: UpdateVaultDocumentDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<VaultDocumentControllerUpdateDocumentV1200>(
+      {url: `/api/v1/me/vault-documents/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateVaultDocumentDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getVaultDocumentControllerUpdateDocumentV1QueryKey = (id: string,
+    updateVaultDocumentDto?: UpdateVaultDocumentDto,) => {
+    return [
+    'PATCH', `/api/v1/me/vault-documents/${id}`, updateVaultDocumentDto
+    ] as const;
+    }
+
+
+export const getVaultDocumentControllerUpdateDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError = unknown>(id: string,
+    updateVaultDocumentDto: UpdateVaultDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVaultDocumentControllerUpdateDocumentV1QueryKey(id,updateVaultDocumentDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>> = ({ signal }) => vaultDocumentControllerUpdateDocumentV1(id,updateVaultDocumentDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VaultDocumentControllerUpdateDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>>
+export type VaultDocumentControllerUpdateDocumentV1QueryError = unknown
+
+
+export function useVaultDocumentControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updateVaultDocumentDto: UpdateVaultDocumentDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updateVaultDocumentDto: UpdateVaultDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updateVaultDocumentDto: UpdateVaultDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Edit one of your vault documents
+ */
+
+export function useVaultDocumentControllerUpdateDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError = unknown>(
+ id: string,
+    updateVaultDocumentDto: UpdateVaultDocumentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerUpdateDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVaultDocumentControllerUpdateDocumentV1QueryOptions(id,updateVaultDocumentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Delete one of your vault documents
+ */
+export const vaultDocumentControllerDeleteDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<VaultDocumentControllerDeleteDocumentV1200>(
+      {url: `/api/v1/me/vault-documents/${id}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getVaultDocumentControllerDeleteDocumentV1QueryKey = (id: string,) => {
+    return [
+    'DELETE', `/api/v1/me/vault-documents/${id}`
+    ] as const;
+    }
+
+
+export const getVaultDocumentControllerDeleteDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVaultDocumentControllerDeleteDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>> = ({ signal }) => vaultDocumentControllerDeleteDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VaultDocumentControllerDeleteDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>>
+export type VaultDocumentControllerDeleteDocumentV1QueryError = unknown
+
+
+export function useVaultDocumentControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Delete one of your vault documents
+ */
+
+export function useVaultDocumentControllerDeleteDocumentV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerDeleteDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVaultDocumentControllerDeleteDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Get a signed download URL for one of your vault documents
+ */
+export const vaultDocumentControllerGetDownloadUrlV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<VaultDocumentControllerGetDownloadUrlV1200>(
+      {url: `/api/v1/me/vault-documents/${id}/download`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getVaultDocumentControllerGetDownloadUrlV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/me/vault-documents/${id}/download`
+    ] as const;
+    }
+
+
+export const getVaultDocumentControllerGetDownloadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVaultDocumentControllerGetDownloadUrlV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>> = ({ signal }) => vaultDocumentControllerGetDownloadUrlV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VaultDocumentControllerGetDownloadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>>
+export type VaultDocumentControllerGetDownloadUrlV1QueryError = unknown
+
+
+export function useVaultDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a signed download URL for one of your vault documents
+ */
+
+export function useVaultDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentControllerGetDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVaultDocumentControllerGetDownloadUrlV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
