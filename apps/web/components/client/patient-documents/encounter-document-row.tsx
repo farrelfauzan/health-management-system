@@ -2,15 +2,17 @@
 
 import { useMutation } from '@tanstack/react-query';
 import type { PatientDocumentView } from '@hms/shared-types';
-import { Button, Icon } from '@hms/ui';
+import { Badge, Button, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ReleaseDocumentButton } from '#components/client/patient-documents/release-document-button';
 import { openPatientDocument } from '#lib/patient-documents/open-patient-document';
 
 type EncounterDocumentRowProps = {
   document: PatientDocumentView;
   /** The encounter this row is being read from — recorded in the audit row. */
   encounterId: string;
+  onResult: (message: string) => void;
   onError: (message: string) => void;
 };
 
@@ -28,6 +30,7 @@ type EncounterDocumentRowProps = {
 export function EncounterDocumentRow({
   document,
   encounterId,
+  onResult,
   onError,
 }: EncounterDocumentRowProps) {
   const t = useTranslations('clinical.patients.documents');
@@ -52,7 +55,19 @@ export function EncounterDocumentRow({
           {document.documentDate ?? t('noDate')}
           {document.uploadedByEmail ? ` · ${document.uploadedByEmail}` : ''}
         </p>
+        {/* Released state where the doctor is deciding, not only on the
+            patient tab: the release control sits beside it (P16-T15). */}
+        {document.releasedToPatient ? (
+          <Badge className="mt-1">{t('released')}</Badge>
+        ) : null}
       </div>
+      <div className="flex shrink-0 items-center gap-1">
+      <ReleaseDocumentButton
+        patientId={document.patientId}
+        document={document}
+        onResult={onResult}
+        onError={onError}
+      />
       <Button
         type="button"
         variant="ghost"
@@ -64,6 +79,7 @@ export function EncounterDocumentRow({
       >
         <Icon name="download" size={18} />
       </Button>
+      </div>
     </li>
   );
 }
