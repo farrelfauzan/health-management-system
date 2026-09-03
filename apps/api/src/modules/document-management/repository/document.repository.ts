@@ -125,7 +125,10 @@ export class DocumentRepository {
           : { releasedToPatient: params.isReleasedToPatient }),
         deletedAt: null,
       },
-      include: { _count: { select: { chunks: true } } },
+      include: {
+        _count: { select: { chunks: true } },
+        uploadedBy: { select: { email: true } },
+      },
       orderBy: [{ documentDate: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
       take: params.limit + 1,
       ...(params.cursor === undefined ? {} : { cursor: { id: params.cursor }, skip: 1 }),
@@ -482,7 +485,10 @@ export class DocumentRepository {
     return this.prismaService.documentChunk.count({ where: { documentId } });
   }
 
-  private toRecord(row: Document, chunkCount: number): DocumentRecord {
+  private toRecord(
+    row: Document & { uploadedBy?: { email: string } | null },
+    chunkCount: number,
+  ): DocumentRecord {
     return {
       id: row.id,
       ownerType: row.ownerType,
@@ -499,6 +505,7 @@ export class DocumentRepository {
       ingestedAt: row.ingestedAt,
       chunkCount,
       uploadedById: row.uploadedById,
+      uploadedByEmail: row.uploadedBy?.email ?? null,
       patientId: row.patientId,
       encounterId: row.encounterId,
       admissionId: row.admissionId,

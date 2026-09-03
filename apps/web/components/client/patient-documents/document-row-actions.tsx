@@ -2,15 +2,14 @@
 
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import type { PatientDocumentDownloadView, PatientDocumentView } from '@hms/shared-types';
+import type { PatientDocumentView } from '@hms/shared-types';
 import { Button, Icon, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { DeleteDocumentDialog } from '#components/client/patient-documents/delete-document-dialog';
 import { EditDocumentDialog } from '#components/client/patient-documents/edit-document-dialog';
-import { patientDocumentDetailControllerGetDownloadUrlV1 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
-import { parseApiSuccess } from '#lib/api/response';
+import { openPatientDocument } from '#lib/patient-documents/open-patient-document';
 
 type DocumentRowActionsProps = {
   patientId: string;
@@ -43,13 +42,11 @@ export function DocumentRowActions({
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const downloadMutation = useMutation({
-    mutationFn: async () => {
-      const response = parseApiSuccess<PatientDocumentDownloadView>(
-        await patientDocumentDetailControllerGetDownloadUrlV1(document.id),
-        t('downloadError'),
-      );
-      window.open(response.data.url, '_blank', 'noopener,noreferrer');
-    },
+    // No reading context: the patient tab is not an encounter, so the audit
+    // row records the read with no `readFromEncounterId` rather than one
+    // invented to fill the field (P16-T14).
+    mutationFn: () =>
+      openPatientDocument({ documentId: document.id, errorMessage: t('downloadError') }),
     onError: (err: unknown) => onError(resolveApiErrorMessage(err, t('downloadError'))),
   });
 

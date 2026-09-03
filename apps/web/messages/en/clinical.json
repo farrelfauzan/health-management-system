@@ -497,6 +497,16 @@
       "identifiersError": "Unable to reveal practitioner identifiers."
     },
     "encounters": {
+      "documents": {
+        "title": "Documents",
+        "loading": "Loading documents\u2026",
+        "loadError": "Unable to load the documents for this encounter.",
+        "accessLost": "You no longer have access to this patient's documents.",
+        "thisVisit": "This visit",
+        "thisVisitEmpty": "Nothing filed during this visit yet.",
+        "history": "History",
+        "historyEmpty": "No earlier documents on file."
+      },
       "title": "Encounters",
       "subtitle": "Review and manage active and completed clinical encounters.",
       "doctor": "Doctor",

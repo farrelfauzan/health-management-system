@@ -502,6 +502,16 @@
       "identifiersError": "Identitas tenaga medis gagal ditampilkan."
     },
     "encounters": {
+      "documents": {
+        "title": "Dokumen",
+        "loading": "Memuat dokumen\u2026",
+        "loadError": "Tidak dapat memuat dokumen untuk kunjungan ini.",
+        "accessLost": "Anda tidak lagi memiliki akses ke dokumen pasien ini.",
+        "thisVisit": "Kunjungan ini",
+        "thisVisitEmpty": "Belum ada dokumen pada kunjungan ini.",
+        "history": "Riwayat",
+        "historyEmpty": "Tidak ada dokumen sebelumnya."
+      },
       "title": "Kunjungan Klinis",
       "subtitle": "Tinjau dan kelola kunjungan klinis yang aktif maupun selesai.",
       "doctor": "Dokter",

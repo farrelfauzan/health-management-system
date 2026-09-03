@@ -34,6 +34,7 @@ function buildDocumentRecord(overrides: Partial<DocumentRecord> = {}): DocumentR
     ingestedAt: null,
     chunkCount: 0,
     uploadedById: ACTOR.sub,
+    uploadedByEmail: null,
     patientId: null,
     encounterId: null,
     admissionId: null,
