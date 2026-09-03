@@ -171,7 +171,12 @@
         "lockWorkstation": "Lock workstation"
       },
       "portal": {
-        "name": "Patient Portal"
+        "name": "Patient Portal",
+        "nav": {
+          "label": "Portal sections",
+          "registrations": "Visits",
+          "documents": "Documents"
+        }
       },
       "placeholder": {
         "title": "{title} is on its way",

@@ -9,6 +9,7 @@ type EncounterDocumentsGroupProps = {
   emptyLabel: string;
   documents: PatientDocumentView[];
   encounterId: string;
+  onResult: (message: string) => void;
   onError: (message: string) => void;
 };
 
@@ -26,6 +27,7 @@ export function EncounterDocumentsGroup({
   emptyLabel,
   documents,
   encounterId,
+  onResult,
   onError,
 }: EncounterDocumentsGroupProps) {
   return (
@@ -40,6 +42,7 @@ export function EncounterDocumentsGroup({
               key={document.id}
               document={document}
               encounterId={encounterId}
+              onResult={onResult}
               onError={onError}
             />
           ))}

@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { DeleteDocumentDialog } from '#components/client/patient-documents/delete-document-dialog';
 import { EditDocumentDialog } from '#components/client/patient-documents/edit-document-dialog';
+import { ReleaseDocumentButton } from '#components/client/patient-documents/release-document-button';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { openPatientDocument } from '#lib/patient-documents/open-patient-document';
 
@@ -52,6 +53,12 @@ export function DocumentRowActions({
 
   return (
     <div className="flex justify-end gap-1">
+      <ReleaseDocumentButton
+        patientId={patientId}
+        document={document}
+        onResult={onResult}
+        onError={onError}
+      />
       <Button
         type="button"
         variant="ghost"
