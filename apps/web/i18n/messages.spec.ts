@@ -7,6 +7,12 @@ import enMessages from '../messages/en.json';
 import enOperationsMessages from '../messages/en/operations.json';
 import enPharmacyInventoryMessages from '../messages/en/pharmacy-inventory.json';
 import enSharedMessages from '../messages/en/shared.json';
+// P16-T18. Its own catalog rather than a block in `dashboard-ai.json`,
+// where the personal knowledge base lives. The two features hold the same
+// file types and differ only in whether a document's passages reach an AI
+// provider — filing the vault's copy beside the assistant's would be the
+// exact confusion the epic exists to prevent.
+import enVaultMessages from '../messages/en/vault.json';
 import idAuthShellMessages from '../messages/id/auth-shell.json';
 import idClinicalMessages from '../messages/id/clinical.json';
 import idDashboardAiMessages from '../messages/id/dashboard-ai.json';
@@ -14,6 +20,7 @@ import idMessages from '../messages/id.json';
 import idOperationsMessages from '../messages/id/operations.json';
 import idPharmacyInventoryMessages from '../messages/id/pharmacy-inventory.json';
 import idSharedMessages from '../messages/id/shared.json';
+import idVaultMessages from '../messages/id/vault.json';
 
 /**
  * Every catalog, not just the two that used to be checked. Indonesian is the
@@ -30,6 +37,7 @@ const CATALOG_PAIRS: ReadonlyArray<readonly [string, unknown, unknown]> = [
   ['operations', enOperationsMessages, idOperationsMessages],
   ['pharmacy-inventory', enPharmacyInventoryMessages, idPharmacyInventoryMessages],
   ['shared', enSharedMessages, idSharedMessages],
+  ['vault', enVaultMessages, idVaultMessages],
 ];
 
 function collectLeafKeys(value: unknown, prefix = ''): string[] {

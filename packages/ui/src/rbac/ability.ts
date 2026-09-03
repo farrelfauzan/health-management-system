@@ -57,6 +57,14 @@ export type AppSubject =
   | 'Conversation'
   | 'AiProviderConfig'
   | 'Document'
+  // P16-T16/T17. A practitioner's own paperwork — their STR, their ijazah,
+  // their KTP. Its own subject rather than a mode of `Document`, and the
+  // distance is the point: a `Document` in the knowledge-base sense is
+  // chunked and its passages are sent to an AI provider, while a vault
+  // document is stored, served to its owner, and reaches no vendor at all.
+  // No `:any` key exists for it at any role, so this rule is only ever the
+  // owner's own.
+  | 'VaultDocument'
   // P16-T08. A patient's clinical file — lab results, referral letters,
   // consent forms. Its own subject rather than a mode of `Document`, because
   // the knowledge-base grant and the medical-record grant are held by

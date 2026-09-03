@@ -52,6 +52,19 @@ export const DOCTOR_NAV_SECTIONS: AdminNavSection[] = [
         badgeKey: 'aiAssistantUnread',
       },
       {
+        // Deliberately **not** beside the knowledge base above, and one entry
+        // further from the assistant. That corpus is chunked and its passages
+        // are sent to an AI provider; this drawer is stored, served to its
+        // owner, and reaches no vendor at all. Two adjacent entries with
+        // similar names would make the most consequential distinction in this
+        // feature look like a filing preference (FR-E3-06).
+        href: '/doctor/vault',
+        label: 'My Documents',
+        labelKey: 'myDocuments',
+        icon: 'folder_shared',
+        ability: { action: 'read', subject: 'VaultDocument' },
+      },
+      {
         // Sits beside the assistant because that is what it feeds: documents
         // here are retrieved only in this doctor's own sessions.
         href: '/doctor/knowledge-base',

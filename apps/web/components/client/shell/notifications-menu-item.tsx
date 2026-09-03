@@ -9,6 +9,8 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   APPOINTMENT_APPROVED: 'event_available',
   APPOINTMENT_REJECTED: 'event_busy',
   CONVERSATION_HANDOFF: 'support_agent',
+  VAULT_DOCUMENT_EXPIRING: 'schedule',
+  VAULT_DOCUMENT_EXPIRED: 'event_busy',
 };
 
 type NotificationsMenuItemProps = {

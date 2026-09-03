@@ -116,6 +116,7 @@
         "today": "Today",
         "aiProviders": "AI Providers",
         "knowledgeBase": "Knowledge Base",
+        "myDocuments": "My Documents",
         "clinicCorpus": "Clinic Corpus",
         "conversations": "Conversations",
         "rooms": "Rooms",
@@ -150,6 +151,14 @@
         "appointmentRejected": {
           "title": "Appointment declined",
           "body": "Your appointment request with {doctorName} was declined."
+        },
+        "vaultDocumentExpiring": {
+          "title": "Your document is expiring",
+          "body": "“{documentTitle}” in your own documents expires on {expiresAt}."
+        },
+        "vaultDocumentExpired": {
+          "title": "Your document has expired",
+          "body": "“{documentTitle}” in your own documents expired on {expiresAt}."
         },
         "conversationHandoff": {
           "title": "Customer waiting for staff",

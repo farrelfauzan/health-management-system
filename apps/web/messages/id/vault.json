@@ -1,0 +1,131 @@
+{
+  "vault": {
+    "header": {
+      "title": "Dokumen Saya",
+      "subtitle": "Berkas pribadi Anda — STR, SIP, ijazah, sertifikat, kontrak, dan dokumen identitas. Hanya Anda yang bisa membukanya.",
+      "upload": "Tambah dokumen",
+      "breadcrumbs": {
+        "you": "Anda",
+        "documents": "Dokumen Saya"
+      }
+    },
+    "notices": {
+      "privateTitle": "Dokumen ini bersifat pribadi",
+      "privateBody": "Tidak ada orang lain di klinik ini yang bisa membuka, melihat daftar, atau mengetahui keberadaannya — termasuk admin. Tidak ada izin yang bisa diberikan untuk mengubah hal itu.",
+      "notUsedByAssistant": "Asisten AI tidak pernah membaca berkas ini. Berkas hanya disimpan dan ditampilkan kepada Anda, dan tidak dikirim ke penyedia AI mana pun — berbeda dengan basis pengetahuan Anda.",
+      "noPatientData": "Jangan menaruh rekam medis pasien di sini. Berkas pasien harus berada di rekam medisnya, tempat tim perawatan dan aturan retensi dapat menjangkaunya — jika disimpan di sini, berkas itu tidak terlihat oleh siapa pun, termasuk pasien."
+    },
+    "states": {
+      "loading": "Memuat dokumen Anda…",
+      "error": "Gagal memuat dokumen Anda. Coba lagi sebentar.",
+      "emptyTitle": "Belum ada dokumen",
+      "emptyDescription": "Tambahkan STR, SIP, ijazah, atau berkas lain yang ingin Anda simpan dengan aman."
+    },
+    "table": {
+      "notRecorded": "—",
+      "columns": {
+        "document": "Dokumen",
+        "category": "Kategori",
+        "issuedAt": "Terbit",
+        "expiresAt": "Berakhir",
+        "size": "Ukuran",
+        "actions": "Aksi"
+      }
+    },
+    "expiry": {
+      "none": "Tanpa masa berlaku",
+      "status": {
+        "EXPIRED": "Berakhir {expiresAt}",
+        "EXPIRING_SOON": "Berakhir {expiresAt}",
+        "VALID": "Berlaku sampai {expiresAt}"
+      }
+    },
+    "categories": {
+      "NONE": "Belum dikategorikan",
+      "REGISTRATION_LICENCE": "Registrasi & izin praktik",
+      "EDUCATION": "Pendidikan",
+      "COMPETENCE": "Kompetensi",
+      "CONTINUING_EDUCATION": "Pendidikan berkelanjutan",
+      "INSURANCE": "Asuransi",
+      "EMPLOYMENT": "Kepegawaian",
+      "IDENTITY_TAX": "Identitas & pajak",
+      "CURRICULUM_VITAE": "Daftar riwayat hidup",
+      "PERSONAL_REFERENCE": "Referensi pribadi",
+      "OTHER": "Lainnya"
+    },
+    "upload": {
+      "title": "Tambah dokumen",
+      "description": "Berkas disimpan untuk Anda dan hanya ditampilkan kembali kepada Anda. Semua isian di bawah berkas bersifat opsional — bisa dilengkapi nanti.",
+      "success": "Dokumen ditambahkan ke brankas Anda.",
+      "fields": {
+        "file": "Berkas",
+        "fileHint": "PDF, JPEG, PNG, atau WebP, maksimal 20 MB.",
+        "title": "Judul",
+        "referenceNumber": "Nomor referensi",
+        "issuedAt": "Tanggal terbit",
+        "expiresAt": "Tanggal berakhir",
+        "language": "Bahasa"
+      },
+      "languages": {
+        "ID": "Indonesia",
+        "EN": "Inggris"
+      },
+      "actions": {
+        "cancel": "Batal",
+        "upload": "Tambah dokumen",
+        "uploading": "Menambahkan…"
+      },
+      "progress": {
+        "preparing": "Menyiapkan unggahan…",
+        "uploading": "Mengunggah… {percent}%",
+        "scanning": "Memeriksa berkas…",
+        "complete": "Selesai"
+      },
+      "errors": {
+        "noFile": "Pilih berkas terlebih dahulu.",
+        "unsupportedType": "Jenis berkas itu tidak diterima. Gunakan PDF, JPEG, PNG, atau WebP.",
+        "backwardsDates": "Tanggal berakhir tidak boleh mendahului tanggal terbit.",
+        "failed": "Unggahan gagal. Coba lagi sebentar."
+      }
+    },
+    "edit": {
+      "title": "Ubah dokumen",
+      "description": "Catatan Anda sendiri tentang dokumen ini. Berkasnya tidak berubah — tidak ada yang diverifikasi terhadap register mana pun.",
+      "success": "Dokumen diperbarui.",
+      "error": "Gagal menyimpan perubahan.",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "fields": {
+        "title": "Judul",
+        "category": "Kategori",
+        "referenceNumber": "Nomor referensi",
+        "issuedAt": "Tanggal terbit",
+        "expiresAt": "Tanggal berakhir"
+      },
+      "errors": {
+        "backwardsDates": "Tanggal berakhir tidak boleh mendahului tanggal terbit."
+      }
+    },
+    "actions": {
+      "download": "Unduh",
+      "edit": "Ubah",
+      "delete": "Hapus",
+      "menuFor": "Aksi untuk {title}",
+      "confirm": {
+        "delete": "Hapus “{title}” secara permanen? Berkas dan seluruh datanya dihapus untuk selamanya — tidak ada salinan yang bisa dipulihkan siapa pun."
+      },
+      "success": {
+        "delete": "Dokumen dihapus."
+      },
+      "errors": {
+        "download": "Gagal membuka dokumen ini.",
+        "delete": "Gagal menghapus dokumen ini."
+      }
+    },
+    "export": {
+      "label": "Ekspor semua",
+      "pending": "Menyiapkan…",
+      "error": "Gagal mengekspor dokumen Anda."
+    }
+  }
+}

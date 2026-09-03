@@ -1,0 +1,131 @@
+{
+  "vault": {
+    "header": {
+      "title": "My Documents",
+      "subtitle": "Your own paperwork — registration, licences, certificates, contracts and identity documents. Private to you.",
+      "upload": "Add document",
+      "breadcrumbs": {
+        "you": "You",
+        "documents": "My Documents"
+      }
+    },
+    "notices": {
+      "privateTitle": "These documents are private to you",
+      "privateBody": "Nobody else at this clinic can open them, list them, or see that they exist — administrators included. There is no permission that can be granted to change that.",
+      "notUsedByAssistant": "The AI assistant never reads these files. They are stored and served to you and are not sent to any AI provider — unlike your knowledge base, which is.",
+      "noPatientData": "Do not put a patient's records here. A patient's file belongs in their record, where their care team and the retention rules can reach it — filed here it would be invisible to everyone, including them."
+    },
+    "states": {
+      "loading": "Loading your documents…",
+      "error": "Could not load your documents. Try again in a moment.",
+      "emptyTitle": "Nothing here yet",
+      "emptyDescription": "Add your STR, SIP, ijazah or any other paperwork you want to keep somewhere safe."
+    },
+    "table": {
+      "notRecorded": "—",
+      "columns": {
+        "document": "Document",
+        "category": "Category",
+        "issuedAt": "Issued",
+        "expiresAt": "Expiry",
+        "size": "Size",
+        "actions": "Actions"
+      }
+    },
+    "expiry": {
+      "none": "No expiry",
+      "status": {
+        "EXPIRED": "Expired {expiresAt}",
+        "EXPIRING_SOON": "Expires {expiresAt}",
+        "VALID": "Valid to {expiresAt}"
+      }
+    },
+    "categories": {
+      "NONE": "Not filed",
+      "REGISTRATION_LICENCE": "Registration & licence",
+      "EDUCATION": "Education",
+      "COMPETENCE": "Competence",
+      "CONTINUING_EDUCATION": "Continuing education",
+      "INSURANCE": "Insurance",
+      "EMPLOYMENT": "Employment",
+      "IDENTITY_TAX": "Identity & tax",
+      "CURRICULUM_VITAE": "Curriculum vitae",
+      "PERSONAL_REFERENCE": "Personal reference",
+      "OTHER": "Other"
+    },
+    "upload": {
+      "title": "Add a document",
+      "description": "The file is stored for you and served back only to you. Everything below the file is optional — you can fill it in later.",
+      "success": "Document added to your vault.",
+      "fields": {
+        "file": "File",
+        "fileHint": "PDF, JPEG, PNG or WebP, up to 20 MB.",
+        "title": "Title",
+        "referenceNumber": "Reference number",
+        "issuedAt": "Issued on",
+        "expiresAt": "Expires on",
+        "language": "Language"
+      },
+      "languages": {
+        "ID": "Indonesian",
+        "EN": "English"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "upload": "Add document",
+        "uploading": "Adding…"
+      },
+      "progress": {
+        "preparing": "Preparing the upload…",
+        "uploading": "Uploading… {percent}%",
+        "scanning": "Checking the file…",
+        "complete": "Done"
+      },
+      "errors": {
+        "noFile": "Choose a file first.",
+        "unsupportedType": "That file type is not accepted. Use a PDF, JPEG, PNG or WebP.",
+        "backwardsDates": "The expiry date cannot come before the issue date.",
+        "failed": "The upload failed. Try again in a moment."
+      }
+    },
+    "edit": {
+      "title": "Edit document",
+      "description": "Your own notes about this document. The file itself does not change — nothing here is checked against any register.",
+      "success": "Document updated.",
+      "error": "Could not save your changes.",
+      "cancel": "Cancel",
+      "save": "Save",
+      "fields": {
+        "title": "Title",
+        "category": "Category",
+        "referenceNumber": "Reference number",
+        "issuedAt": "Issued on",
+        "expiresAt": "Expires on"
+      },
+      "errors": {
+        "backwardsDates": "The expiry date cannot come before the issue date."
+      }
+    },
+    "actions": {
+      "download": "Download",
+      "edit": "Edit",
+      "delete": "Delete",
+      "menuFor": "Actions for {title}",
+      "confirm": {
+        "delete": "Delete “{title}” permanently? The file and everything about it are removed for good — there is no copy anyone can restore."
+      },
+      "success": {
+        "delete": "Document deleted."
+      },
+      "errors": {
+        "download": "Could not open this document.",
+        "delete": "Could not delete this document."
+      }
+    },
+    "export": {
+      "label": "Export all",
+      "pending": "Preparing…",
+      "error": "Could not export your documents."
+    }
+  }
+}

@@ -20,6 +20,7 @@ export type ShellNavigationKey =
   | 'aiAssistant'
   | 'aiProviders'
   | 'knowledgeBase'
+  | 'myDocuments'
   | 'clinicCorpus'
   | 'conversations'
   | 'integrations'
@@ -152,6 +153,17 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         icon: 'psychology',
         ability: { action: 'create', subject: 'ChatSession' },
         badgeKey: 'aiAssistantUnread',
+      },
+      {
+        // Deliberately one entry away from the knowledge base below. That
+        // corpus is chunked and its passages are sent to an AI provider; this
+        // drawer is stored, served to its owner, and reaches no vendor at all
+        // (FR-E3-06).
+        href: '/admin/vault',
+        label: 'My Documents',
+        labelKey: 'myDocuments',
+        icon: 'folder_shared',
+        ability: { action: 'read', subject: 'VaultDocument' },
       },
       {
         href: '/admin/knowledge-base',

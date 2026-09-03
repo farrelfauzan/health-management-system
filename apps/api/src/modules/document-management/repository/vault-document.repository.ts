@@ -132,6 +132,11 @@ export class VaultDocumentRepository {
    * window — retries, overlapping schedules, a redeploy mid-run — and a
    * doctor being told twice that their STR expires is the failure this table
    * exists to prevent.
+   *
+   * Kept alongside {@link claimExpiryNotice} for readers and tests. The job
+   * itself does not call it: a read followed by a write is two statements a
+   * second worker can interleave, and the unique index is the thing that
+   * actually decides.
    */
   async hasExpiryNotice(documentId: string, thresholdDays: number): Promise<boolean> {
     const notice = await this.prismaService.vaultDocumentExpiryNotice.findUnique({
@@ -142,16 +147,20 @@ export class VaultDocumentRepository {
   }
 
   /**
-   * Records the announcement. `createMany` with `skipDuplicates` rather than
-   * a create: two workers reaching the same row together must produce one
-   * notice and no error, and the unique index — not the check above — is what
-   * actually decides that.
+   * Records the announcement and reports whether **this call** was the one
+   * that made it, so the caller notifies exactly once.
+   *
+   * `createMany` with `skipDuplicates` rather than a create: two workers
+   * reaching the same row together must produce one notice and no error, and
+   * the unique index is what decides — not a preceding read, which a
+   * concurrent worker can slip between.
    */
-  async recordExpiryNotice(documentId: string, thresholdDays: number): Promise<void> {
-    await this.prismaService.vaultDocumentExpiryNotice.createMany({
+  async claimExpiryNotice(documentId: string, thresholdDays: number): Promise<boolean> {
+    const result = await this.prismaService.vaultDocumentExpiryNotice.createMany({
       data: [{ documentId, thresholdDays }],
       skipDuplicates: true,
     });
+    return result.count > 0;
   }
 
   /**

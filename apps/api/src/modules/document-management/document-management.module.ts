@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { EmbeddingModule } from '../../common/embedding/embedding.module';
 import { StorageModule } from '../../common/storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
+import { NotificationModule } from '../notification/notification.module';
 import { DocumentAdminController } from './controller/document-admin.controller';
 import { EncounterDocumentController } from './controller/encounter-document.controller';
 import { PatientDocumentController } from './controller/patient-document.controller';
@@ -15,6 +16,7 @@ import { DocumentRepository } from './repository/document.repository';
 import { VaultDocumentRepository } from './repository/vault-document.repository';
 import { VaultDocumentController } from './controller/vault-document.controller';
 import { VaultDocumentService } from './service/vault-document.service';
+import { VaultDocumentExpiryWorker } from './service/vault-document-expiry.worker';
 import { DocumentIngestionService } from './service/document-ingestion.service';
 import { DocumentIngestionWorker } from './service/document-ingestion.worker';
 import { DocumentRetrievalService } from './service/document-retrieval.service';
@@ -54,9 +56,15 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
  * `AuthModule` is imported for `AuthRepository`: the global guard proves the
  * actor may act on *some* document, and only a scope check in the service can
  * tell an admin's `ANY` grant from a doctor's `OWN` one.
+ *
+ * `NotificationModule` arrives with `P16-T18`'s reminder sweep, which tells a
+ * vault's owner — and only its owner — that one of their documents is nearing
+ * its expiry date. The clinic's own need to know that a practitioner is out
+ * of licence is answered elsewhere entirely, by `DoctorLicense` (`P16-T19`),
+ * which touches no document.
  */
 @Module({
-  imports: [AuthModule, StorageModule, EmbeddingModule],
+  imports: [AuthModule, StorageModule, EmbeddingModule, NotificationModule],
   controllers: [
     DocumentAdminController,
     PersonalDocumentController,
@@ -70,6 +78,7 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     DocumentRepository,
     VaultDocumentRepository,
     VaultDocumentService,
+    VaultDocumentExpiryWorker,
     DocumentChunkRepository,
     DocumentRetrievalRepository,
     DocumentService,

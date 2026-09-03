@@ -96,6 +96,12 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'PatientDocument' },
   { action: 'write', subject: 'PatientDocument' },
   { action: 'delete', subject: 'PatientDocument' },
+  // P16-T17. An administrator has a vault of their own on the same terms as a
+  // doctor — an admin is also a person with a contract and a KTP. It grants
+  // them nothing over anyone else's: there is no `:any` key in the catalog
+  // for this subject at all.
+  { action: 'read', subject: 'VaultDocument' },
+  { action: 'write', subject: 'VaultDocument' },
   { action: 'read', subject: 'DocumentTemplate' },
   { action: 'write', subject: 'DocumentTemplate' },
   { action: 'manage', subject: 'BpjsConfig' },
