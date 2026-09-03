@@ -17,4 +17,5 @@ export type AppointmentSessionControllerGetSessionQueueV1200DataSession = {
   maxPatients: number;
   bookedCount: number;
   remaining: number;
+  expiredLicenses: unknown[];
 };

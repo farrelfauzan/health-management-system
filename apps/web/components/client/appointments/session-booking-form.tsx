@@ -6,6 +6,7 @@ import type { AppointmentResponse, DoctorSessionListItem } from '@hms/shared-typ
 import { Button, DatePicker, DialogFooter, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ExpiredLicenceWarning } from '#components/client/appointments/expired-licence-warning';
 import { SessionOptionCard } from '#components/client/appointments/session-option-card';
 import { appointmentManagementControllerCreateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -118,6 +119,11 @@ export function SessionBookingForm({
           </p>
         ) : (
           <div className="space-y-2">
+            {/* Above the sessions, not below them: FR-E3-36 asks the
+                scheduler to learn the permit has lapsed *before* booking
+                patients into it, and a notice under the submit button is one
+                read after the decision. */}
+            <ExpiredLicenceWarning expiredLicenses={sessionsQuery.sessions[0]?.expiredLicenses} />
             {sessionsQuery.sessions.map((session) => (
               <SessionOptionCard
                 key={`${session.sessionDate}|${session.startTime}`}

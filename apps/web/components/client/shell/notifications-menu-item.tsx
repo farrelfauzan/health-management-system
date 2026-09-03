@@ -13,6 +13,8 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   VAULT_DOCUMENT_EXPIRED: 'event_busy',
   VAULT_DOCUMENT_SHARED: 'folder_shared',
   VAULT_DOCUMENT_OPENED: 'visibility',
+  LICENCE_EXPIRING: 'gpp_maybe',
+  LICENCE_EXPIRED: 'gpp_bad',
 };
 
 type NotificationsMenuItemProps = {

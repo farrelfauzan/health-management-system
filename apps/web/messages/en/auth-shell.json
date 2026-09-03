@@ -171,6 +171,14 @@
         "conversationHandoff": {
           "title": "Customer waiting for staff",
           "body": "A {channel} conversation was handed off and is waiting for a reply."
+        },
+        "licenceExpiring": {
+          "title": "Practitioner licence expiring",
+          "body": "{doctorName}'s {licenceType} {licenceNumber} expires on {expiresAt}."
+        },
+        "licenceExpired": {
+          "title": "Practitioner licence expired",
+          "body": "{doctorName}'s {licenceType} {licenceNumber} expired on {expiresAt}."
         }
       },
       "profile": {

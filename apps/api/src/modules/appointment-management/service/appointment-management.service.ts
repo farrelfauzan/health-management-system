@@ -11,6 +11,7 @@ import {
   CreateSpecialRequestAppointmentInput,
   DoctorSessionCalendarItem,
   DoctorSessionListItem,
+  ExpiredDoctorLicence,
   NotificationTypeValue,
   SESSION_BOOKING_CUTOFF_MINUTES,
   SPECIAL_REQUEST_MIN_LEAD_DAYS,
@@ -33,6 +34,7 @@ import { ConfigService } from '@nestjs/config';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { DoctorLicenseExpiryService } from '../../doctor-management/service/doctor-license-expiry.service';
 import { DoctorPatientService } from '../../doctor-patient/service/doctor-patient.service';
 import { NotificationService } from '../../notification/service/notification.service';
 import { resolveAppointmentSubject } from './resolve-appointment-subject';
@@ -65,6 +67,7 @@ export class AppointmentManagementService {
     private readonly appointmentManagementRepository: AppointmentManagementRepository,
     private readonly authRepository: AuthRepository,
     private readonly doctorPatientService: DoctorPatientService,
+    private readonly doctorLicenseExpiryService: DoctorLicenseExpiryService,
     private readonly notificationService: NotificationService,
     configService: ConfigService,
   ) {
@@ -338,13 +341,15 @@ export class AppointmentManagementService {
       },
     );
 
-    return this.buildDoctorSessionItems({
+    const sessions = this.buildDoctorSessionItems({
       doctorId,
       schedules: doctor.schedules,
       materializedSessions,
       from: query.from,
       to: query.to,
     });
+
+    return this.attachExpiredLicences(sessions, [doctorId], actor);
   }
 
   async listSessionsCalendar(
@@ -376,7 +381,7 @@ export class AppointmentManagementService {
       sessionsByDoctor.set(session.doctorId, doctorSessions);
     }
 
-    return doctors
+    const items = doctors
       .flatMap((doctor) =>
         this.buildDoctorSessionItems({
           doctorId: doctor.id,
@@ -396,6 +401,60 @@ export class AppointmentManagementService {
       .sort((a, b) =>
         `${a.sessionDate}|${a.startTime}`.localeCompare(`${b.sessionDate}|${b.startTime}`),
       );
+
+    return this.attachExpiredLicences(
+      items,
+      doctors.map((doctor) => doctor.id),
+      actor,
+    );
+  }
+
+  /**
+   * Adds each doctor's lapsed STR/SIP to scheduler-facing session payloads
+   * (`P16-T20`, FR-E3-36), and to nobody else's.
+   *
+   * **The gate is `doctor.license-expiry.read:any`, not the session read
+   * scope.** The obvious discriminator would have been `hasAny` on
+   * `AppointmentSession` — but `seed.sql` grants
+   * `appointment.session.read:any` to PATIENT as well as ADMIN, because a
+   * patient browsing for an appointment has to see a doctor's sessions to
+   * book one. Gating on scope would therefore have published "this
+   * practitioner is out of licence" to every patient in the portal. The key
+   * used instead is the one that already decides who may read the clinic's
+   * licence expiry roster (`P16-T19`), so the flag appears exactly where that
+   * information is already visible to the caller.
+   *
+   * The field is left **absent** rather than set to `[]` for a caller without
+   * the grant. An always-present empty array would say "this doctor has no
+   * lapsed licence", which is a different claim from "you are not being told
+   * about licences" — and only the second one is true.
+   *
+   * Reads `DoctorLicense` through the doctor-management **service**, never its
+   * repository, so the scheduler and the expiry dashboard resolve "expired" by
+   * one rule, clinic timezone included.
+   */
+  private async attachExpiredLicences<TItem extends { doctorId: string }>(
+    items: TItem[],
+    doctorIds: string[],
+    actor: Actor,
+  ): Promise<TItem[]> {
+    const canReadLicenceExpiry = this.resolveScope(actor, 'DoctorLicenseExpiry', 'read').hasAny;
+    if (!canReadLicenceExpiry || items.length === 0) {
+      return items;
+    }
+    const expiredByDoctor = await this.doctorLicenseExpiryService.findExpiredLicensesByDoctor(
+      Array.from(new Set(doctorIds)),
+    );
+    return items.map((item) => ({
+      ...item,
+      expiredLicenses: (expiredByDoctor.get(item.doctorId) ?? []).map(
+        (licence): ExpiredDoctorLicence => ({
+          type: licence.type,
+          licenseNumber: licence.licenseNumber,
+          expiresAt: licence.expiresAt,
+        }),
+      ),
+    }));
   }
 
   private buildDoctorSessionItems(params: {

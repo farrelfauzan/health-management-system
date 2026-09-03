@@ -14,6 +14,12 @@ const TABLE_COLUMN_COUNT = 6;
 
 type DoctorsTableProps = {
   doctors: DoctorListItem[];
+  /**
+   * Doctor id to the date of their soonest-expiring lapsed licence
+   * (US-E3-08). Empty for a viewer who cannot read the expiry roster, so the
+   * flag is absent rather than wrong.
+   */
+  expiredLicensesByDoctorId: Map<string, string>;
   isPending: boolean;
   isError: boolean;
   onView: (doctorId: string) => void;
@@ -24,6 +30,7 @@ type DoctorsTableProps = {
 
 export function DoctorsTable({
   doctors,
+  expiredLicensesByDoctorId,
   isPending,
   isError,
   onView,
@@ -64,6 +71,7 @@ export function DoctorsTable({
             <DoctorsTableRow
               key={doctor.id}
               doctor={doctor}
+              expiredLicenseAt={expiredLicensesByDoctorId.get(doctor.id)}
               onView={onView}
               onEdit={onEdit}
               onManageSchedule={onManageSchedule}

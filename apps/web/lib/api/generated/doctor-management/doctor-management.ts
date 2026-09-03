@@ -22,6 +22,7 @@ import type {
 
 import type {
   CreateDoctorDto,
+  DoctorLicenseExpiryControllerListExpiryBucketsV1200,
   DoctorManagementControllerCreateDoctorV1201,
   DoctorManagementControllerGetDoctorByIdV1200,
   DoctorManagementControllerGetDoctorIdentifiersV1200,
@@ -615,6 +616,98 @@ export function useDoctorManagementControllerUpdateDoctorScheduleV1<TData = Awai
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDoctorManagementControllerUpdateDoctorScheduleV1QueryOptions(id,updateDoctorScheduleDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List practitioner licences by expiry urgency
+ */
+export const doctorLicenseExpiryControllerListExpiryBucketsV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DoctorLicenseExpiryControllerListExpiryBucketsV1200>(
+      {url: `/api/v1/doctor-licenses/expiry`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getDoctorLicenseExpiryControllerListExpiryBucketsV1QueryKey = () => {
+    return [
+    `/api/v1/doctor-licenses/expiry`
+    ] as const;
+    }
+
+
+export const getDoctorLicenseExpiryControllerListExpiryBucketsV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDoctorLicenseExpiryControllerListExpiryBucketsV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>> = ({ signal }) => doctorLicenseExpiryControllerListExpiryBucketsV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DoctorLicenseExpiryControllerListExpiryBucketsV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>>
+export type DoctorLicenseExpiryControllerListExpiryBucketsV1QueryError = unknown
+
+
+export function useDoctorLicenseExpiryControllerListExpiryBucketsV1<TData = Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorLicenseExpiryControllerListExpiryBucketsV1<TData = Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorLicenseExpiryControllerListExpiryBucketsV1<TData = Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List practitioner licences by expiry urgency
+ */
+
+export function useDoctorLicenseExpiryControllerListExpiryBucketsV1<TData = Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorLicenseExpiryControllerListExpiryBucketsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDoctorLicenseExpiryControllerListExpiryBucketsV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

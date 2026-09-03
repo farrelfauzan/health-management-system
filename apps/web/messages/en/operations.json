@@ -60,6 +60,11 @@
       "invoiceNumber": "Invoice No."
     },
     "appointments": {
+      "expiredLicence": {
+        "title": "This practitioner's permit has lapsed",
+        "item": "{type} {licenseNumber} expired on {expiresAt}.",
+        "bookingProceeds": "You can still book — this is a reminder to have the renewal chased, not a block."
+      },
       "title": "Appointment Scheduling",
       "subtitle": "Coordinate visits across doctors and time slots.",
       "schedule": "Schedule Appointment",

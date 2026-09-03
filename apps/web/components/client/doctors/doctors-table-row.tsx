@@ -4,6 +4,7 @@ import type { DoctorListItem } from '@hms/shared-types';
 import { TableCell, TableRow, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { DoctorExpiredLicenseWarning } from '#components/client/doctors/doctor-expired-license-warning';
 import { DoctorSatusehatWarning } from '#components/client/doctors/doctor-satusehat-warning';
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { AvatarInitials } from '#components/shared/avatar-initials';
@@ -13,6 +14,12 @@ import { formatScheduleSummary } from '#lib/doctors/schedule-summary';
 
 type DoctorsTableRowProps = {
   doctor: DoctorListItem;
+  /**
+   * The doctor's soonest-expiring lapsed licence (US-E3-08), or undefined
+   * when nothing has lapsed — or when the viewer cannot read the expiry
+   * roster, which is every role but ADMIN.
+   */
+  expiredLicenseAt?: string;
   onView: (doctorId: string) => void;
   onEdit: (doctor: DoctorListItem) => void;
   onManageSchedule: (doctor: DoctorListItem) => void;
@@ -21,6 +28,7 @@ type DoctorsTableRowProps = {
 
 export function DoctorsTableRow({
   doctor,
+  expiredLicenseAt,
   onView,
   onEdit,
   onManageSchedule,
@@ -71,6 +79,7 @@ export function DoctorsTableRow({
             <p className="text-sm font-medium text-slate-900">{doctor.fullName}</p>
             <p className="text-xs text-slate-500">{doctor.specialty}</p>
             <DoctorSatusehatWarning nikMasked={doctor.nikMasked} />
+            <DoctorExpiredLicenseWarning expiredAt={expiredLicenseAt} />
           </div>
         </div>
       </TableCell>
