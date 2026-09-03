@@ -25,6 +25,11 @@ describe('Vault document RBAC seed', () => {
   const VAULT_DOCUMENT_PERMISSION_KEYS = [
     'vault-document.read:own',
     'vault-document.write:own',
+    // P16-T34. Separate from `write:own` for the same reason
+    // `invoice.deliver:any` is separate from `invoice.write:any`: handing a
+    // document to someone is a different act from editing it, and a
+    // deployment can withhold this one key and keep the vault.
+    'vault-document.share:own',
   ] as const;
 
   const FORBIDDEN_ANY_KEYS = [
@@ -35,8 +40,14 @@ describe('Vault document RBAC seed', () => {
   ] as const;
 
   const EXPECTED_BINDINGS: ReadonlyArray<readonly [string, readonly string[]]> = [
-    ['ADMIN', ['vault-document.read:own', 'vault-document.write:own']],
-    ['DOCTOR', ['vault-document.read:own', 'vault-document.write:own']],
+    [
+      'ADMIN',
+      ['vault-document.read:own', 'vault-document.write:own', 'vault-document.share:own'],
+    ],
+    [
+      'DOCTOR',
+      ['vault-document.read:own', 'vault-document.write:own', 'vault-document.share:own'],
+    ],
     ['PATIENT', []],
     ['PHARMACIST', []],
     ['RECEPTIONIST', []],
@@ -110,5 +121,15 @@ describe('Vault document RBAC seed', () => {
     // this phase, and no route that would open one.
     expect(hasBinding('PATIENT', 'vault-document.read:own')).toBe(false);
     expect(hasBinding('PATIENT', 'vault-document.write:own')).toBe(false);
+    expect(hasBinding('PATIENT', 'vault-document.share:own')).toBe(false);
+  });
+
+  it('adds no ANY key for sharing, so nobody can share a document they do not own', () => {
+    // P16-T34's sharpest constraint. Sharing is the one feature that lets a
+    // non-owner read a vault document, so the obvious mistake would be an
+    // administrative `share:any` for "help a doctor distribute their STR".
+    // A share created by anyone but the owner is the single bug that would
+    // undo this epic, and the key that would allow it does not exist.
+    expect(seedSql).not.toContain('vault-document.share:any');
   });
 });

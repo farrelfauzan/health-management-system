@@ -310,3 +310,88 @@ export type DeletedVaultDocumentView = {
   id: string;
   deleted: true;
 };
+
+/**
+ * One live or revoked key to one vault document, as its **owner** sees it
+ * (`P16-T34`/`P16-T35`, FR-E3-16).
+ *
+ * `lastAccessedAt` and `openCount` are the reason this view exists. Being
+ * able to watch the door is what makes people willing to open it: an owner
+ * who can see who opened their STR, and when, and how often, is an owner who
+ * can share it in the first place. They come from denormalised columns rather
+ * than the audit log, which the owner cannot query.
+ */
+export type VaultDocumentShareView = {
+  id: string;
+  documentId: string;
+  granteeId: string;
+  /** The recipient's sign-in address — `User` carries no display name. */
+  granteeEmail: string;
+  /** ISO instant, or null for an open-ended share. */
+  expiresAt: string | null;
+  revokedAt: string | null;
+  lastAccessedAt: string | null;
+  openCount: number;
+  createdAt: string;
+  /**
+   * Whether this key opens the document right now: not revoked, not past its
+   * expiry, and held by a live account. Computed per request rather than
+   * stored, so a revocation takes effect on the next call with no window
+   * (FR-E3-15).
+   */
+  isLive: boolean;
+};
+
+export type VaultDocumentShareListView = {
+  items: VaultDocumentShareView[];
+};
+
+/**
+ * One document that was shared **with** the caller (`P16-T34`, FR-E3-17).
+ *
+ * A narrower shape than {@link VaultDocumentView} on purpose. The recipient
+ * gets what they need to recognise and open the file, and nothing about how
+ * the owner files their own paperwork — no `vaultCategory`, no
+ * `referenceNumber`, no issue date. Those are the owner's private notes to
+ * themselves, and a key to one document is not a window into how someone
+ * organises their drawer.
+ */
+export type SharedWithMeDocumentView = {
+  id: string;
+  title: string;
+  mimeType: string;
+  sizeBytes: number;
+  /** Who handed it over — the one fact about the owner a recipient needs. */
+  sharedByEmail: string;
+  sharedAt: string;
+  /** When this key stops working, or null if it was given open-ended. */
+  expiresAt: string | null;
+};
+
+export type SharedWithMeDocumentListView = {
+  items: SharedWithMeDocumentView[];
+  nextCursor: string | null;
+};
+
+/**
+ * One person the caller could share a document with (`P16-T34`).
+ *
+ * Email and role codes only. `User` has no name field, and the role codes are
+ * here so an owner can tell an administrator from another clinician before
+ * handing over their KTP — not so the lookup can be used to profile staff.
+ */
+export type VaultDocumentShareRecipientView = {
+  id: string;
+  email: string;
+  roleCodes: string[];
+};
+
+export type VaultDocumentShareRecipientListView = {
+  items: VaultDocumentShareRecipientView[];
+};
+
+/** The result of revoking one share (FR-E3-15). */
+export type RevokedVaultDocumentShareView = {
+  id: string;
+  revokedAt: string;
+};

@@ -474,3 +474,66 @@ export type DocumentRetrievalConfig = {
    */
   readonly minPassageCharacters: number;
 };
+
+/**
+ * One share row as the repository returns it (`P16-T34`), joined to the two
+ * people it names.
+ */
+export type VaultDocumentShareRecord = {
+  id: string;
+  documentId: string;
+  granteeId: string;
+  granteeEmail: string;
+  /** False once the account is retired — a dead account opens nothing. */
+  isGranteeActive: boolean;
+  grantedById: string;
+  grantedByEmail: string;
+  expiresAt: Date | null;
+  revokedAt: Date | null;
+  lastAccessedAt: Date | null;
+  accessCount: number;
+  createdAt: Date;
+};
+
+/**
+ * One document reachable through a live share, for the recipient's list.
+ * Carries the share that authorises it, because "why can I see this" is part
+ * of the answer and because the recipient's view is built from the key rather
+ * than from the vault.
+ */
+export type SharedWithMeDocumentRecord = {
+  shareId: string;
+  documentId: string;
+  title: string;
+  mimeType: string;
+  sizeBytes: number;
+  storageKey: string;
+  sharedByEmail: string;
+  sharedAt: Date;
+  expiresAt: Date | null;
+};
+
+export type SharedWithMeDocumentPage = {
+  items: SharedWithMeDocumentRecord[];
+  nextCursor: string | null;
+};
+
+/**
+ * Create-or-revive payload for one share. There is no update: re-sharing
+ * after a revoke writes the same `(documentId, granteeId)` row with a cleared
+ * `revokedAt`, so the owner's panel never accumulates a history of keys that
+ * no longer open anything.
+ */
+export type UpsertVaultDocumentShareData = {
+  documentId: string;
+  granteeId: string;
+  grantedById: string;
+  expiresAt: Date | null;
+};
+
+/** One account that could receive a shared vault document (`P16-T34`). */
+export type VaultDocumentShareRecipientRecord = {
+  id: string;
+  email: string;
+  roleCodes: string[];
+};

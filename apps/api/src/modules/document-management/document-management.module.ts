@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { EmbeddingModule } from '../../common/embedding/embedding.module';
 import { StorageModule } from '../../common/storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
+import { NotificationModule } from '../notification/notification.module';
 import { DocumentAdminController } from './controller/document-admin.controller';
 import { EncounterDocumentController } from './controller/encounter-document.controller';
 import { PatientDocumentController } from './controller/patient-document.controller';
@@ -13,8 +14,13 @@ import { DocumentChunkRepository } from './repository/document-chunk.repository'
 import { DocumentRetrievalRepository } from './repository/document-retrieval.repository';
 import { DocumentRepository } from './repository/document.repository';
 import { VaultDocumentRepository } from './repository/vault-document.repository';
+import { VaultDocumentShareRepository } from './repository/vault-document-share.repository';
+import { SharedWithMeDocumentController } from './controller/shared-with-me-document.controller';
 import { VaultDocumentController } from './controller/vault-document.controller';
+import { VaultDocumentShareController } from './controller/vault-document-share.controller';
+import { VaultDocumentAccessService } from './service/vault-document-access.service';
 import { VaultDocumentService } from './service/vault-document.service';
+import { VaultDocumentShareService } from './service/vault-document-share.service';
 import { DocumentIngestionService } from './service/document-ingestion.service';
 import { DocumentIngestionWorker } from './service/document-ingestion.worker';
 import { DocumentRetrievalService } from './service/document-retrieval.service';
@@ -54,9 +60,19 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
  * `AuthModule` is imported for `AuthRepository`: the global guard proves the
  * actor may act on *some* document, and only a scope check in the service can
  * tell an admin's `ANY` grant from a doctor's `OWN` one.
+ *
+ * `P16-T34` adds the sharing engine over the vault. Its two controllers are
+ * split by *who is asking*: `VaultDocumentShareController` is the owner
+ * handing out and taking back keys, `SharedWithMeDocumentController` is the
+ * recipient using one. That split is what bounds a recipient's capability to
+ * view-and-download — there is no rename or delete route on the recipient
+ * side to refuse, because the owner-scoped controller queries by owner and a
+ * shared document is not in the set it sees. `NotificationModule` is imported
+ * because both halves produce bells: the recipient is told a document was
+ * shared, and the owner is told the first time it is opened.
  */
 @Module({
-  imports: [AuthModule, StorageModule, EmbeddingModule],
+  imports: [AuthModule, StorageModule, EmbeddingModule, NotificationModule],
   controllers: [
     DocumentAdminController,
     PersonalDocumentController,
@@ -65,11 +81,16 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     EncounterDocumentController,
     PortalDocumentController,
     VaultDocumentController,
+    VaultDocumentShareController,
+    SharedWithMeDocumentController,
   ],
   providers: [
     DocumentRepository,
     VaultDocumentRepository,
+    VaultDocumentShareRepository,
+    VaultDocumentAccessService,
     VaultDocumentService,
+    VaultDocumentShareService,
     DocumentChunkRepository,
     DocumentRetrievalRepository,
     DocumentService,

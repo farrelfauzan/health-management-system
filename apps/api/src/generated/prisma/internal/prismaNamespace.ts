@@ -448,6 +448,7 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   Document: 'Document',
   VaultDocumentExpiryNotice: 'VaultDocumentExpiryNotice',
+  VaultDocumentShare: 'VaultDocumentShare',
   DocumentChunk: 'DocumentChunk',
   ChannelInboundReceipt: 'ChannelInboundReceipt',
   Conversation: 'Conversation',
@@ -478,7 +479,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -5218,6 +5219,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    VaultDocumentShare: {
+      payload: Prisma.$VaultDocumentSharePayload<ExtArgs>
+      fields: Prisma.VaultDocumentShareFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VaultDocumentShareFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VaultDocumentShareFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload>
+        }
+        findFirst: {
+          args: Prisma.VaultDocumentShareFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VaultDocumentShareFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload>
+        }
+        findMany: {
+          args: Prisma.VaultDocumentShareFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload>[]
+        }
+        create: {
+          args: Prisma.VaultDocumentShareCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload>
+        }
+        createMany: {
+          args: Prisma.VaultDocumentShareCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VaultDocumentShareCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload>[]
+        }
+        delete: {
+          args: Prisma.VaultDocumentShareDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload>
+        }
+        update: {
+          args: Prisma.VaultDocumentShareUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload>
+        }
+        deleteMany: {
+          args: Prisma.VaultDocumentShareDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VaultDocumentShareUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VaultDocumentShareUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload>[]
+        }
+        upsert: {
+          args: Prisma.VaultDocumentShareUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VaultDocumentSharePayload>
+        }
+        aggregate: {
+          args: Prisma.VaultDocumentShareAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVaultDocumentShare>
+        }
+        groupBy: {
+          args: Prisma.VaultDocumentShareGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VaultDocumentShareGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VaultDocumentShareCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VaultDocumentShareCountAggregateOutputType> | number
+        }
+      }
+    }
     DocumentChunk: {
       payload: Prisma.$DocumentChunkPayload<ExtArgs>
       fields: Prisma.DocumentChunkFieldRefs
@@ -7448,6 +7523,21 @@ export const VaultDocumentExpiryNoticeScalarFieldEnum = {
 export type VaultDocumentExpiryNoticeScalarFieldEnum = (typeof VaultDocumentExpiryNoticeScalarFieldEnum)[keyof typeof VaultDocumentExpiryNoticeScalarFieldEnum]
 
 
+export const VaultDocumentShareScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  granteeId: 'granteeId',
+  grantedById: 'grantedById',
+  expiresAt: 'expiresAt',
+  revokedAt: 'revokedAt',
+  lastAccessedAt: 'lastAccessedAt',
+  accessCount: 'accessCount',
+  createdAt: 'createdAt'
+} as const
+
+export type VaultDocumentShareScalarFieldEnum = (typeof VaultDocumentShareScalarFieldEnum)[keyof typeof VaultDocumentShareScalarFieldEnum]
+
+
 export const DocumentChunkScalarFieldEnum = {
   id: 'id',
   documentId: 'documentId',
@@ -8872,6 +8962,7 @@ export type GlobalOmitConfig = {
   chatMessage?: Prisma.ChatMessageOmit
   document?: Prisma.DocumentOmit
   vaultDocumentExpiryNotice?: Prisma.VaultDocumentExpiryNoticeOmit
+  vaultDocumentShare?: Prisma.VaultDocumentShareOmit
   documentChunk?: Prisma.DocumentChunkOmit
   channelInboundReceipt?: Prisma.ChannelInboundReceiptOmit
   conversation?: Prisma.ConversationOmit
