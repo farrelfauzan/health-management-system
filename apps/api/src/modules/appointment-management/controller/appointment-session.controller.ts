@@ -31,7 +31,7 @@ export class AppointmentSessionController {
   @ApiEndpoint({
     summary: 'List bookable sessions for a doctor',
     responseDescription:
-      'Sessions projected from the weekly schedule over the date range, with booked counts and remaining capacity.',
+      'Sessions projected from the weekly schedule over the date range, with booked counts and remaining capacity. `expiredLicenses` names the doctor’s lapsed STR/SIP so a scheduler learns a practice permit has expired before booking patients into the session (FR-E3-36) — a warning only; booking still proceeds. It carries structured licence fields and nothing else: no document is involved, and whether the doctor has uploaded a scan of a licence stays private to their vault. The field is **absent** rather than empty for a caller who may not read the clinic’s licence expiry roster, which includes patients — they hold `appointment.session.read:any` in order to book, and an empty array would tell them the doctor’s permits are current.',
     responseExample: { data: [PHASE_THREE_EXAMPLES.appointment.session] },
   })
   async listDoctorSessions(
@@ -59,7 +59,7 @@ export class AppointmentSessionController {
   @ApiEndpoint({
     summary: 'List sessions across all doctors',
     responseDescription:
-      'Sessions for every active doctor over the date range, with doctor info and booked counts, for calendar display.',
+      'Sessions for every active doctor over the date range, with doctor info and booked counts, for calendar display. `expiredLicenses` follows the same rule as the per-doctor route: named lapsed STR/SIP for a caller who may read the licence expiry roster, absent for everyone else.',
     responseExample: {
       data: [
         {

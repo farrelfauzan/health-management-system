@@ -4,6 +4,7 @@ import type { DoctorSessionCalendarItem } from '@hms/shared-types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ExpiredLicenceWarning } from '#components/client/appointments/expired-licence-warning';
 import { SessionQueueTable } from '#components/client/appointments/session-queue-table';
 import { useSessionQueue } from '#lib/appointments/use-session-queue';
 
@@ -43,6 +44,7 @@ export function SessionDetailsDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <ExpiredLicenceWarning expiredLicenses={session.expiredLicenses} />
           <div className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2">
             <span className="text-sm text-slate-900">{formatCapacitySummary(session)}</span>
             <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium capitalize text-slate-600">
