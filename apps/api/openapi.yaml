@@ -27631,6 +27631,562 @@ paths:
         - bearer: []
       summary: Get a signed download URL for one of your vault documents
       tags: *a42
+  /api/v1/me/vault-documents/share-recipients:
+    get:
+      operationId: VaultDocumentShareController_listShareRecipients_v1
+      parameters:
+        - name: search
+          required: true
+          in: query
+          schema:
+            minLength: 3
+            maxLength: 200
+            type: string
+      responses:
+        "200":
+          description: "Live human accounts that could actually open a shared vault
+            document — those holding `vault-document.read:own` — matched on
+            their sign-in address. Deliberately not a user directory: a doctor
+            holds no `user.read:any` grant, so some lookup has to exist for
+            sharing to be possible at all, and this one refuses to answer below
+            three characters and returns at most ten rows, so it cannot be
+            walked to enumerate staff. Your own account is excluded."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        email:
+                          type: string
+                        roleCodes:
+                          type: array
+                          items:
+                            type: string
+                      required:
+                        - id
+                        - email
+                        - roleCodes
+                required:
+                  - data
+                example:
+                  data:
+                    - id: d51c3a7e-90b4-4f26-8a1d-6c73e0b9f482
+                      email: admin@example.test
+                      roleCodes:
+                        - ADMIN
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Find people you could share a vault document with
+      tags: &a43
+        - Document Management
+  /api/v1/me/vault-documents/{id}/shares:
+    get:
+      operationId: VaultDocumentShareController_listShares_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Every key to this document, live and revoked, each with the
+            recipient, when they last opened it and how many times. Being able
+            to watch the door is what makes people willing to open it, so the
+            counts are product surface rather than an audit query the owner
+            could not run. `isLive` is computed per request from the same three
+            clauses the read path uses — not revoked, not expired, recipient
+            still active — so it can never disagree with whether the document
+            actually opens.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        documentId:
+                          type: string
+                        granteeId:
+                          type: string
+                        granteeEmail:
+                          type: string
+                        expiresAt:
+                          type: string
+                        revokedAt:
+                          nullable: true
+                        lastAccessedAt:
+                          type: string
+                        openCount:
+                          type: integer
+                        createdAt:
+                          type: string
+                        isLive:
+                          type: boolean
+                      required:
+                        - id
+                        - documentId
+                        - granteeId
+                        - granteeEmail
+                        - expiresAt
+                        - revokedAt
+                        - lastAccessedAt
+                        - openCount
+                        - createdAt
+                        - isLive
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 2a6f81c4-3e57-4d90-b8ac-51f2d7e40691
+                      documentId: 7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730
+                      granteeId: d51c3a7e-90b4-4f26-8a1d-6c73e0b9f482
+                      granteeEmail: admin@example.test
+                      expiresAt: 2026-10-03T09:00:00.000Z
+                      revokedAt: null
+                      lastAccessedAt: 2026-09-03T11:42:00.000Z
+                      openCount: 2
+                      createdAt: 2026-09-03T09:10:00.000Z
+                      isLive: true
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your vault.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your vault.
+      security:
+        - bearer: []
+      summary: List who one of your vault documents is shared with
+      tags: *a43
+    post:
+      operationId: VaultDocumentShareController_createShare_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVaultDocumentShareDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  granteeId: d51c3a7e-90b4-4f26-8a1d-6c73e0b9f482
+                  expiresAt: 2026-10-03T09:00:00.000Z
+      responses:
+        "200":
+          description: "Grants view-and-download access to one person, optionally until a
+            date. Owner-initiated and nothing else: there is no request-access
+            flow anyone else could start. The recipient is notified; nothing
+            else in your vault becomes visible to them, and they get no rename,
+            delete or re-share capability. Re-sharing after a revoke revives the
+            same row rather than adding history. Revoking later stops every
+            future fetch — it cannot recall a copy already downloaded, which the
+            UI states before the share is created."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      documentId:
+                        type: string
+                      granteeId:
+                        type: string
+                      granteeEmail:
+                        type: string
+                      expiresAt:
+                        type: string
+                      revokedAt:
+                        nullable: true
+                      lastAccessedAt:
+                        type: string
+                      openCount:
+                        type: integer
+                      createdAt:
+                        type: string
+                      isLive:
+                        type: boolean
+                    required:
+                      - id
+                      - documentId
+                      - granteeId
+                      - granteeEmail
+                      - expiresAt
+                      - revokedAt
+                      - lastAccessedAt
+                      - openCount
+                      - createdAt
+                      - isLive
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2a6f81c4-3e57-4d90-b8ac-51f2d7e40691
+                    documentId: 7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730
+                    granteeId: d51c3a7e-90b4-4f26-8a1d-6c73e0b9f482
+                    granteeEmail: admin@example.test
+                    expiresAt: 2026-10-03T09:00:00.000Z
+                    revokedAt: null
+                    lastAccessedAt: 2026-09-03T11:42:00.000Z
+                    openCount: 2
+                    createdAt: 2026-09-03T09:10:00.000Z
+                    isLive: true
+                  message: Document shared
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your vault, or no such recipient.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your vault, or no such recipient.
+      security:
+        - bearer: []
+      summary: Share one of your vault documents with one named person
+      tags: *a43
+  /api/v1/me/vault-documents/{id}/shares/{shareId}:
+    delete:
+      operationId: VaultDocumentShareController_revokeShare_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: shareId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Takes the key back. Effective on that recipient’s next request with
+            no window — the live-share test runs per request and nothing is
+            cached — and the revocation is audited with the owner, the recipient
+            and the share. It stops future fetches; it does not recall a copy
+            already downloaded. Revoking twice is not an error and does not move
+            the recorded time.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      revokedAt:
+                        type: string
+                    required:
+                      - id
+                      - revokedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 2a6f81c4-3e57-4d90-b8ac-51f2d7e40691
+                    revokedAt: 2026-09-04T08:00:00.000Z
+                  message: Share revoked
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document or share not found in your vault.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document or share not found in your vault.
+      security:
+        - bearer: []
+      summary: Revoke one share of one of your vault documents
+      tags: *a43
+  /api/v1/shared-with-me/documents:
+    get:
+      operationId: SharedWithMeDocumentController_listSharedWithMe_v1
+      parameters:
+        - name: cursor
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: The individual documents other people have handed you, newest key
+            first. A share that has been revoked, has passed its expiry, or
+            whose recipient account is no longer active drops out with no action
+            from its owner — the test runs per request and nothing is cached. An
+            empty list is a normal state, not an error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        mimeType:
+                          type: string
+                        sizeBytes:
+                          type: integer
+                        sharedByEmail:
+                          type: string
+                        sharedAt:
+                          type: string
+                        expiresAt:
+                          type: string
+                      required:
+                        - id
+                        - title
+                        - mimeType
+                        - sizeBytes
+                        - sharedByEmail
+                        - sharedAt
+                        - expiresAt
+                  meta:
+                    type: object
+                    properties:
+                      nextCursor:
+                        nullable: true
+                    required:
+                      - nextCursor
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730
+                      title: STR Dokter Umum
+                      mimeType: application/pdf
+                      sizeBytes: 148480
+                      sharedByEmail: dokter@example.test
+                      sharedAt: 2026-09-03T09:10:00.000Z
+                      expiresAt: 2026-10-03T09:00:00.000Z
+                  meta:
+                    nextCursor: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List documents shared with you
+      tags: &a44
+        - Document Management
+  /api/v1/shared-with-me/documents/{id}/download:
+    get:
+      operationId: SharedWithMeDocumentController_getSharedDownloadUrl_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "A signed URL valid for minutes, served as an attachment. The
+            access is recorded before the URL is returned — if it cannot be
+            recorded, no URL is issued — and the owner is notified the first
+            time you open it. A document whose share has been revoked or has
+            expired reports as not found, the same as one that was never shared
+            with you: distinguishing the two would confirm that a document
+            exists in someone else’s vault."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/vault/doctor/7b2d4e10-9c31-4a55-b0e8-2f61ac9d7730.pdf?X-Amz-Signature=...
+                    expiresAt: 2026-09-03T09:05:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: No live share of this document exists for you.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: No live share of this document exists for you.
+      security:
+        - bearer: []
+      summary: Get a signed download URL for a document shared with you
+      tags: *a44
   /api/v1/admin/channel-gateway/whatsapp/session:
     get:
       operationId: ChannelGatewayAdminController_getSessionHealth_v1
@@ -27699,7 +28255,7 @@ paths:
       security:
         - bearer: []
       summary: Read the WhatsApp session’s health
-      tags: &a43
+      tags: &a45
         - Channel Gateway
   /api/v1/admin/channel-gateway/whatsapp/session/pairing:
     post:
@@ -27760,7 +28316,7 @@ paths:
       security:
         - bearer: []
       summary: Start a QR pairing for the WhatsApp session
-      tags: *a43
+      tags: *a45
   /api/v1/admin/channel-gateway/telegram/webhook:
     get:
       operationId: ChannelGatewayAdminController_getTelegramWebhookHealth_v1
@@ -27851,7 +28407,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Telegram webhook’s registration health
-      tags: *a43
+      tags: *a45
     post:
       operationId: ChannelGatewayAdminController_registerTelegramWebhook_v1
       parameters: []
@@ -27943,7 +28499,7 @@ paths:
       security:
         - bearer: []
       summary: Point Telegram at this deployment
-      tags: *a43
+      tags: *a45
   /api/v1/admin/conversations:
     get:
       operationId: CsAdminController_listConversations_v1
@@ -28093,7 +28649,7 @@ paths:
       security:
         - bearer: []
       summary: List channel conversations
-      tags: &a44
+      tags: &a46
         - Customer Service
   /api/v1/admin/conversations/handoff-summary:
     get:
@@ -28154,7 +28710,7 @@ paths:
       security:
         - bearer: []
       summary: Count the conversations waiting for a human
-      tags: *a44
+      tags: *a46
   /api/v1/admin/conversations/metrics:
     get:
       operationId: CsAdminController_getMetrics_v1
@@ -28301,7 +28857,7 @@ paths:
       security:
         - bearer: []
       summary: Read the channel’s operating metrics (§8.4)
-      tags: *a44
+      tags: *a46
   /api/v1/admin/conversations/{id}:
     get:
       operationId: CsAdminController_getTranscript_v1
@@ -28476,7 +29032,7 @@ paths:
       security:
         - bearer: []
       summary: Read one conversation transcript
-      tags: *a44
+      tags: *a46
   /api/v1/admin/conversations/{id}/takeover:
     post:
       operationId: CsAdminController_takeOver_v1
@@ -28586,7 +29142,7 @@ paths:
       security:
         - bearer: []
       summary: Take a conversation over from the bot
-      tags: *a44
+      tags: *a46
   /api/v1/admin/conversations/{id}/release:
     post:
       operationId: CsAdminController_release_v1
@@ -28694,7 +29250,7 @@ paths:
       security:
         - bearer: []
       summary: Hand a conversation back to the bot
-      tags: *a44
+      tags: *a46
   /api/v1/admin/conversations/{id}/reply:
     post:
       operationId: CsAdminController_reply_v1
@@ -28810,7 +29366,7 @@ paths:
       security:
         - bearer: []
       summary: Reply to the customer on their original channel
-      tags: *a44
+      tags: *a46
   /api/v1/admin/conversations/{id}/block:
     post:
       operationId: CsAdminController_block_v1
@@ -28938,7 +29494,7 @@ paths:
       security:
         - bearer: []
       summary: Block a chat (§8.3 abuse control)
-      tags: *a44
+      tags: *a46
     delete:
       operationId: CsAdminController_unblock_v1
       parameters:
@@ -29044,7 +29600,7 @@ paths:
       security:
         - bearer: []
       summary: Unblock a chat
-      tags: *a44
+      tags: *a46
   /api/v1/admin/channel-arrivals:
     get:
       operationId: ChannelArrivalController_listArrivals_v1
@@ -29214,7 +29770,7 @@ paths:
       security:
         - bearer: []
       summary: List channel-sourced bookings for the check-in desk
-      tags: &a45
+      tags: &a47
         - Customer Service
   /api/v1/admin/channel-arrivals/merge-candidates:
     get:
@@ -29301,7 +29857,7 @@ paths:
       security:
         - bearer: []
       summary: Find the records a chat-created draft could be merged into
-      tags: *a45
+      tags: *a47
   /api/v1/admin/channel-arrivals/patients/{draftPatientId}/merge:
     post:
       operationId: ChannelArrivalController_mergeDraftPatient_v1
@@ -29409,7 +29965,7 @@ paths:
       security:
         - bearer: []
       summary: Merge a chat-created draft into an existing patient
-      tags: *a45
+      tags: *a47
   /api/v1/prospective-patients:
     get:
       operationId: ProspectivePatientController_listProspectivePatients_v1
@@ -29514,7 +30070,7 @@ paths:
       security:
         - bearer: []
       summary: List people who booked through a channel and have not been registered
-      tags: &a46
+      tags: &a48
         - Customer Service
   /api/v1/prospective-patients/{prospectivePatientId}/match-candidates:
     get:
@@ -29637,7 +30193,7 @@ paths:
       security:
         - bearer: []
       summary: Search the registry before spending an MRN on this person
-      tags: *a46
+      tags: *a48
   /api/v1/prospective-patients/{prospectivePatientId}/link:
     post:
       operationId: ProspectivePatientController_linkToExistingPatient_v1
@@ -29747,7 +30303,7 @@ paths:
         - bearer: []
       summary: The arriving person is already a patient — point the booking at their
         record
-      tags: *a46
+      tags: *a48
   /api/v1/prospective-patients/{prospectivePatientId}/convert:
     post:
       operationId: ProspectivePatientController_convertToNewPatient_v1
@@ -29893,7 +30449,7 @@ paths:
       security:
         - bearer: []
       summary: The arriving person is new — register them and allocate their MRN
-      tags: *a46
+      tags: *a48
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -29972,7 +30528,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a47
+      tags: &a49
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -30089,7 +30645,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a47
+      tags: *a49
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -30212,7 +30768,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a48
+      tags: &a50
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -30299,7 +30855,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a48
+      tags: *a50
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -30379,7 +30935,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a48
+      tags: *a50
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -30498,7 +31054,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a48
+      tags: *a50
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -30597,7 +31153,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a48
+      tags: *a50
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -30673,7 +31229,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a48
+      tags: *a50
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -30819,7 +31375,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a48
+      tags: *a50
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -30911,7 +31467,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a48
+      tags: *a50
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -31003,7 +31559,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a48
+      tags: *a50
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -33673,6 +34229,17 @@ components:
           type: string
           pattern: ^\d{4}-\d{2}-\d{2}$
           nullable: true
+    CreateVaultDocumentShareDto:
+      type: object
+      properties:
+        granteeId:
+          type: string
+          format: uuid
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+        - granteeId
     ReplyToConversationDto:
       type: object
       properties:

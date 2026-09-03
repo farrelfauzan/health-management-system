@@ -130,6 +130,15 @@ enum AuditAction {
   /// read a vault, so the only person this log can inform is its subject.
   VAULT_DOCUMENT_DOWNLOADED
   VAULT_DOCUMENT_EXPORTED
+  /// Sharing (P16-T34, FR-E3-18). Three verbs, because the questions asked of
+  /// this table afterwards are "who was given a key", "when was it taken
+  /// back", and "who used one" — and the third must be countable apart from
+  /// `VAULT_DOCUMENT_DOWNLOADED`, which is the owner reading their own file.
+  /// Conflating them would make "did anyone but me open this" unanswerable,
+  /// which is the one question a share makes worth asking.
+  VAULT_DOCUMENT_SHARE_GRANTED
+  VAULT_DOCUMENT_SHARE_REVOKED
+  VAULT_DOCUMENT_SHARED_ACCESS
   /// Staff onboarding by email (IMP-23). Three verbs rather than one because
   /// they have three different actors: an administrator sends the invitation,
   /// the invitee — not yet a session — accepts it, and an administrator
@@ -600,6 +609,8 @@ model User {
   sentInvitations            UserInvitation[]             @relation("UserInvitationInvitedBy")
   createdDocumentTemplates   DocumentTemplate[]           @relation("DocumentTemplateCreatedBy")
   publishedTemplateVersions  DocumentTemplateVersion[]    @relation("DocumentTemplateVersionPublishedBy")
+  receivedVaultShares        VaultDocumentShare[]         @relation("VaultDocumentGrantee")
+  grantedVaultShares         VaultDocumentShare[]         @relation("VaultDocumentGrantor")
 
   @@index([organizationUnitId])
   @@map("users")
@@ -2806,6 +2817,7 @@ model Document {
   chunks     DocumentChunk[]
 
   vaultExpiryNotices VaultDocumentExpiryNotice[]
+  vaultShares        VaultDocumentShare[]
 
   /// One row per stored object. Confirming an upload is the only way a row
   /// is created, and a client that retries the confirm — or replays it —
@@ -2856,6 +2868,59 @@ model VaultDocumentExpiryNotice {
   @@unique([documentId, thresholdDays])
   @@index([documentId])
   @@map("vault_document_expiry_notices")
+}
+
+/// One person's access to one vault document, created only by that document's
+/// owner (P16-T34, §7.3.5).
+///
+/// This row **is** the relationship that makes `OWN` resolve for a non-owner.
+/// `OWN` has never meant strict ownership in this system — it means a
+/// relationship the server can prove, the way a `DoctorPatient` assignment is
+/// what makes `encounter.read:own` resolve for a clinician who did not create
+/// the encounter. An explicit, owner-created, revocable share is exactly such
+/// a relationship, so sharing needs no new read permission and no new scope.
+/// `vault-document.read:any` still does not exist: nobody can browse a vault,
+/// they can only open what they were handed.
+///
+/// No share-all row and no role target. A share names one document and one
+/// person, so "share my whole vault" is not a thing the schema can express —
+/// the multi-select in the UI is batching over this, one row per document.
+///
+/// `lastAccessedAt` / `accessCount` are denormalised rather than derived from
+/// `AuditLog`, which stays the forensic record. The owner panel reads them on
+/// every render, and the owner cannot query the audit log — being able to
+/// watch the door is what makes people willing to open it, so those two
+/// columns are product surface, not bookkeeping.
+model VaultDocumentShare {
+  id             String    @id @default(uuid()) @db.Uuid
+  documentId     String    @map("document_id") @db.Uuid
+  granteeId      String    @map("grantee_id") @db.Uuid
+  /// Always the document's owner, re-checked in the service on every share
+  /// write. A share created by anyone else is the one bug that would undo
+  /// this epic, so the column records who claimed to make it and the service
+  /// refuses to write a row where that is not the owner.
+  grantedById    String    @map("granted_by_id") @db.Uuid
+  expiresAt      DateTime? @map("expires_at")
+  revokedAt      DateTime? @map("revoked_at")
+  lastAccessedAt DateTime? @map("last_accessed_at")
+  accessCount    Int       @default(0) @map("access_count")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  document  Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  grantee   User     @relation("VaultDocumentGrantee", fields: [granteeId], references: [id], onDelete: Cascade)
+  grantedBy User     @relation("VaultDocumentGrantor", fields: [grantedById], references: [id], onDelete: Cascade)
+
+  /// One share per (document, person). Re-sharing after a revoke updates this
+  /// row rather than accumulating history — the question the owner asks is
+  /// "who can open this now", and a list that answered it by folding over
+  /// revoked rows would be one bug away from answering it wrongly.
+  @@unique([documentId, granteeId])
+  /// The recipient's "shared with me" list: their own live shares, which is
+  /// the only query in this feature that starts from a grantee.
+  @@index([granteeId, revokedAt])
+  @@index([documentId])
+  @@index([grantedById])
+  @@map("vault_document_shares")
 }
 
 /// One embedded passage of a document — the unit retrieval actually returns.
@@ -3510,6 +3575,13 @@ enum NotificationType {
   /// to know — that one touches no document.
   VAULT_DOCUMENT_EXPIRING
   VAULT_DOCUMENT_EXPIRED
+  /// Sharing (P16-T34, FR-E3-16/19). `SHARED` tells the recipient a document
+  /// was handed to them; `OPENED` tells the **owner** that a recipient opened
+  /// it for the first time. The second is the unusual one and the point of
+  /// the pair: a share is only safe to give if the giver can see it being
+  /// used, so the product tells them rather than making them ask.
+  VAULT_DOCUMENT_SHARED
+  VAULT_DOCUMENT_OPENED
 
   @@map("notification_type")
 }
