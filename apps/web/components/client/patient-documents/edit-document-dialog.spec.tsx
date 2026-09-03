@@ -54,6 +54,7 @@ const DOCUMENT: PatientDocumentView = {
   releasedAt: null,
   releasedById: null,
   uploadedById: 'user-1',
+  uploadedByEmail: null,
   createdAt: '2026-08-30T09:00:00.000Z',
   updatedAt: '2026-08-30T09:00:00.000Z',
 };

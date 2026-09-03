@@ -125,7 +125,10 @@ export class DocumentRepository {
           : { releasedToPatient: params.isReleasedToPatient }),
         deletedAt: null,
       },
-      include: { _count: { select: { chunks: true } } },
+      include: {
+        _count: { select: { chunks: true } },
+        uploadedBy: { select: { email: true } },
+      },
       orderBy: [{ documentDate: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
       take: params.limit + 1,
       ...(params.cursor === undefined ? {} : { cursor: { id: params.cursor }, skip: 1 }),

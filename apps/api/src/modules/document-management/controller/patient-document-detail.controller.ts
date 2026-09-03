@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -21,6 +22,7 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PATIENT_DOCUMENT_EXAMPLES } from '../../../common/openapi/patient-document-examples';
 import { AuditAction } from '../../../generated/prisma/client';
 import { DeletePatientDocumentDto } from '../dto/delete-patient-document.dto';
+import { DownloadPatientDocumentQueryDto } from '../dto/download-patient-document-query.dto';
 import { UpdatePatientDocumentDto } from '../dto/update-patient-document.dto';
 import { PatientDocumentService } from '../service/patient-document.service';
 
@@ -66,16 +68,17 @@ export class PatientDocumentDetailController {
   @ApiEndpoint({
     summary: 'Mint a signed download URL for one clinical file',
     responseDescription:
-      'A signed URL valid for minutes, served as an attachment under the validated stored content type — nothing renders in the app or API origin (FR-E2-08). The download is audited with actor, patient, and episode context before the URL is returned; if the access cannot be recorded, no URL is issued.',
+      'A signed URL valid for minutes, served as an attachment under the validated stored content type — nothing renders in the app or API origin (FR-E2-08). The download is audited with actor, patient, and episode context before the URL is returned; if the access cannot be recorded, no URL is issued. Pass encounterId when the file is being opened from an encounter workspace: it records *where the read happened*, as distinct from the encounter the document belongs to, and is validated against the document’s patient and your access to that encounter rather than trusted.',
     responseExample: { data: PATIENT_DOCUMENT_EXAMPLES.download },
     notFoundDescription: 'Document not found.',
   })
   async getDownloadUrl(
     @Param('id', new ParseUUIDPipe()) id: string,
+    @Query() query: DownloadPatientDocumentQueryDto,
     @AuthUser() currentUser?: CurrentUser,
   ) {
     const actor = this.assertAuthenticated(currentUser);
-    const view = await this.patientDocumentService.getDownloadUrl(id, actor);
+    const view = await this.patientDocumentService.getDownloadUrl(id, actor, query);
 
     return { data: view };
   }

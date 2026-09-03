@@ -744,6 +744,7 @@ export * from './patientDocumentDetailControllerDeleteDocumentV1200';
 export * from './patientDocumentDetailControllerDeleteDocumentV1200Data';
 export * from './patientDocumentDetailControllerGetDocumentV1200';
 export * from './patientDocumentDetailControllerGetDocumentV1200Data';
+export * from './patientDocumentDetailControllerGetDownloadUrlV1Params';
 export * from './patientDocumentDetailControllerGetDownloadUrlV1200';
 export * from './patientDocumentDetailControllerGetDownloadUrlV1200Data';
 export * from './patientDocumentDetailControllerReleaseDocumentV1200';

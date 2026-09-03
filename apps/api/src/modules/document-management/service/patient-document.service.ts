@@ -16,6 +16,7 @@ import {
   DeletePatientDocumentInput,
   DeletedPatientDocumentView,
   DocumentRecord,
+  DownloadPatientDocumentQueryInput,
   DocumentUploadMimeTypeValue,
   EncounterDocumentsView,
   ListPatientDocumentsQueryInput,
@@ -181,8 +182,13 @@ export class PatientDocumentService {
    * download whose access could not be recorded fails rather than handing
    * out the file unrecorded — "who looked" is the regulatory question.
    */
-  async getDownloadUrl(id: string, actor: CurrentUser): Promise<PatientDocumentDownloadView> {
+  async getDownloadUrl(
+    id: string,
+    actor: CurrentUser,
+    query: DownloadPatientDocumentQueryInput = {},
+  ): Promise<PatientDocumentDownloadView> {
     const { record } = await this.requireReadableDocument(id, actor);
+    const readFromEncounterId = await this.resolveReadContextEncounterId(record, actor, query);
     const signedUrl = await this.objectStorageService.getSignedUrl({
       key: record.storageKey,
       responseContentDisposition: buildDocumentDownloadDisposition(record),
@@ -198,10 +204,42 @@ export class PatientDocumentService {
         category: record.category,
         encounterId: record.encounterId,
         admissionId: record.admissionId,
+        // Where the file *lives* is `encounterId` above; this is where it was
+        // *read from* (P16-T14). A history document opened inside today's
+        // consultation has a different value in each, and collapsing them
+        // would make the log ambiguous exactly when it is being read back.
+        readFromEncounterId,
         mimeType: record.mimeType,
       },
     });
     return { url: signedUrl.url, expiresAt: signedUrl.expiresAt };
+  }
+
+  /**
+   * Validates the caller's claimed reading context before it reaches the audit
+   * row (FR-E2-07).
+   *
+   * Two checks, and both matter. The encounter must belong to the same patient
+   * as the document — otherwise a download could be stamped with an unrelated
+   * visit, and the log would place a read somewhere it never happened. And the
+   * caller must be able to read that encounter under the same OWN rule the
+   * encounter route uses, so naming an encounter id is not a way to probe
+   * whether one exists.
+   */
+  private async resolveReadContextEncounterId(
+    record: DocumentRecord,
+    actor: CurrentUser,
+    query: DownloadPatientDocumentQueryInput,
+  ): Promise<string | null> {
+    if (query.encounterId === undefined) {
+      return null;
+    }
+    const encounter = await this.documentRepository.findEncounterById(query.encounterId);
+    if (encounter === null || encounter.patientId !== record.patientId) {
+      throw new NotFoundException('Encounter not found');
+    }
+    await this.resolveReadAccessForPatient(encounter.patientId, actor);
+    return encounter.id;
   }
 
   async updateDocument(
@@ -520,6 +558,7 @@ export class PatientDocumentService {
       releasedAt: record.releasedAt?.toISOString() ?? null,
       releasedById: record.releasedById,
       uploadedById: record.uploadedById,
+      uploadedByEmail: record.uploadedByEmail,
       createdAt: record.createdAt.toISOString(),
       updatedAt: record.updatedAt.toISOString(),
     };
