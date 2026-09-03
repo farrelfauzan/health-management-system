@@ -15,7 +15,7 @@ import {
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
-import { Document } from '../../../generated/prisma/client';
+import { toDocumentRecord } from './to-document-record';
 
 /**
  * Persistence for the shared document store. Every read is owner-scoped by
@@ -50,7 +50,7 @@ export class DocumentRepository {
         uploadedById: data.uploadedById,
       },
     });
-    return this.toRecord(row, 0);
+    return toDocumentRecord(row, 0);
   }
 
   async findDocumentById(
@@ -62,7 +62,7 @@ export class DocumentRepository {
       where: { id, ownerType, ownerId, deletedAt: null },
       include: { _count: { select: { chunks: true } } },
     });
-    return row === null ? null : this.toRecord(row, row._count.chunks);
+    return row === null ? null : toDocumentRecord(row, row._count.chunks);
   }
 
   /**
@@ -97,7 +97,7 @@ export class DocumentRepository {
         uploadedById: data.uploadedById,
       },
     });
-    return this.toRecord(row, 0);
+    return toDocumentRecord(row, 0);
   }
 
   /**
@@ -135,7 +135,7 @@ export class DocumentRepository {
     });
     const pageRows = rows.slice(0, params.limit);
     return {
-      items: pageRows.map((row) => this.toRecord(row, row._count.chunks)),
+      items: pageRows.map((row) => toDocumentRecord(row, row._count.chunks)),
       nextCursor: rows.length > params.limit ? (pageRows.at(-1)?.id ?? null) : null,
     };
   }
@@ -148,7 +148,7 @@ export class DocumentRepository {
       where: { id, purpose: 'PATIENT_CLINICAL', patientId, deletedAt: null },
       include: { _count: { select: { chunks: true } } },
     });
-    return row === null ? null : this.toRecord(row, row._count.chunks);
+    return row === null ? null : toDocumentRecord(row, row._count.chunks);
   }
 
   /**
@@ -162,7 +162,7 @@ export class DocumentRepository {
       where: { id, purpose: 'PATIENT_CLINICAL', deletedAt: null },
       include: { _count: { select: { chunks: true } } },
     });
-    return row === null ? null : this.toRecord(row, row._count.chunks);
+    return row === null ? null : toDocumentRecord(row, row._count.chunks);
   }
 
   async findClinicalDocumentsByEncounterId(encounterId: string): Promise<DocumentRecord[]> {
@@ -171,7 +171,7 @@ export class DocumentRepository {
       include: { _count: { select: { chunks: true } } },
       orderBy: [{ documentDate: 'desc' }, { createdAt: 'desc' }],
     });
-    return rows.map((row) => this.toRecord(row, row._count.chunks));
+    return rows.map((row) => toDocumentRecord(row, row._count.chunks));
   }
 
   /**
@@ -196,7 +196,7 @@ export class DocumentRepository {
         admissionId: data.admissionId,
       },
     });
-    return this.toRecord(row, 0);
+    return toDocumentRecord(row, 0);
   }
 
   /**
@@ -219,7 +219,7 @@ export class DocumentRepository {
     const row = await this.prismaService.document.findFirst({
       where: { id, deletedAt: null },
     });
-    return row === null ? null : this.toRecord(row, 0);
+    return row === null ? null : toDocumentRecord(row, 0);
   }
 
   /**
@@ -238,7 +238,7 @@ export class DocumentRepository {
       where: { id, deletedAt: null },
       data: { deletedAt, deleteReason },
     });
-    return { document: this.toRecord(row, 0), deletedAt };
+    return { document: toDocumentRecord(row, 0), deletedAt };
   }
 
   async findPatientProfileById(
@@ -331,7 +331,7 @@ export class DocumentRepository {
       where: { id, deletedAt: null },
       include: { _count: { select: { chunks: true } } },
     });
-    return row === null ? null : this.toRecord(row, row._count.chunks);
+    return row === null ? null : toDocumentRecord(row, row._count.chunks);
   }
 
   /**
@@ -378,7 +378,7 @@ export class DocumentRepository {
       where: { id, deletedAt: null },
       data: { ingestStatus: 'PENDING', ingestError: null },
     });
-    return this.toRecord(row, await this.countChunks(id));
+    return toDocumentRecord(row, await this.countChunks(id));
   }
 
   /**
@@ -393,7 +393,7 @@ export class DocumentRepository {
       where: { id, deletedAt: null },
       data: { ingestStatus: 'FAILED', ingestError },
     });
-    return this.toRecord(row, await this.countChunks(id));
+    return toDocumentRecord(row, await this.countChunks(id));
   }
 
   async listDocuments(params: ListDocumentsParams): Promise<DocumentPage> {
@@ -414,7 +414,7 @@ export class DocumentRepository {
     });
     const pageRows = rows.slice(0, params.limit);
     return {
-      items: pageRows.map((row) => this.toRecord(row, row._count.chunks)),
+      items: pageRows.map((row) => toDocumentRecord(row, row._count.chunks)),
       nextCursor: rows.length > params.limit ? (pageRows.at(-1)?.id ?? null) : null,
     };
   }
@@ -455,7 +455,7 @@ export class DocumentRepository {
         : await transaction.documentChunk.count({ where: { documentId: id } });
       return { row: updated, chunkCount: remaining };
     });
-    return this.toRecord(row, chunkCount);
+    return toDocumentRecord(row, chunkCount);
   }
 
   /**
@@ -477,47 +477,11 @@ export class DocumentRepository {
         where: { id, deletedAt: null },
         data: { deletedAt },
       });
-      return { document: this.toRecord(row, 0), deletedAt, chunksRemoved: removed.count };
+      return { document: toDocumentRecord(row, 0), deletedAt, chunksRemoved: removed.count };
     });
   }
 
   private async countChunks(documentId: string): Promise<number> {
     return this.prismaService.documentChunk.count({ where: { documentId } });
-  }
-
-  private toRecord(
-    row: Document & { uploadedBy?: { email: string } | null },
-    chunkCount: number,
-  ): DocumentRecord {
-    return {
-      id: row.id,
-      ownerType: row.ownerType,
-      ownerId: row.ownerId,
-      purpose: row.purpose,
-      title: row.title,
-      storageKey: row.storageKey,
-      mimeType: row.mimeType,
-      sizeBytes: row.sizeBytes,
-      visibility: row.visibility,
-      language: row.language,
-      ingestStatus: row.ingestStatus,
-      ingestError: row.ingestError,
-      ingestedAt: row.ingestedAt,
-      chunkCount,
-      uploadedById: row.uploadedById,
-      uploadedByEmail: row.uploadedBy?.email ?? null,
-      patientId: row.patientId,
-      encounterId: row.encounterId,
-      admissionId: row.admissionId,
-      category: row.category,
-      documentDate: row.documentDate,
-      notes: row.notes,
-      releasedToPatient: row.releasedToPatient,
-      releasedAt: row.releasedAt,
-      releasedById: row.releasedById,
-      deleteReason: row.deleteReason,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-    };
   }
 }

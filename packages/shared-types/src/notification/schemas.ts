@@ -9,6 +9,16 @@ export const NOTIFICATION_TYPES = [
   'APPOINTMENT_APPROVED',
   'APPOINTMENT_REJECTED',
   'CONVERSATION_HANDOFF',
+  /**
+   * A document in the actor's own vault is approaching, or past, its expiry
+   * date (P16-T16; fired by P16-T18). Both are owner-only: the feed row goes
+   * to the person whose document it is and to nobody else, no administrator
+   * is copied, and nothing aggregates them into a clinic-wide view. The
+   * clinic-visible equivalent is `DoctorLicense` (P16-T19), which touches no
+   * document at all.
+   */
+  'VAULT_DOCUMENT_EXPIRING',
+  'VAULT_DOCUMENT_EXPIRED',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;

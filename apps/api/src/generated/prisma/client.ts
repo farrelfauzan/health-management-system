@@ -766,6 +766,21 @@ export type ChatMessage = Prisma.ChatMessageModel
  */
 export type Document = Prisma.DocumentModel
 /**
+ * Model VaultDocumentExpiryNotice
+ * One reminder already sent about one vault document at one threshold
+ * (P16-T16, consumed by P16-T18's job).
+ * 
+ * The unique key is the whole design: a reminder job that runs twice — a
+ * retry, an overlapping schedule, a redeploy mid-run — must not tell a
+ * doctor twice that their STR expires. Recording the fact rather than
+ * trusting the schedule is what makes the job safe to re-run.
+ * 
+ * `Cascade`: the notice is bookkeeping about a document, and vault documents
+ * are hard-deleted (FR-E3-09). When the document goes, so does the record of
+ * having mentioned it.
+ */
+export type VaultDocumentExpiryNotice = Prisma.VaultDocumentExpiryNoticeModel
+/**
  * Model DocumentChunk
  * One embedded passage of a document — the unit retrieval actually returns.
  * 

@@ -12,6 +12,7 @@ import { PortalDocumentController } from './controller/portal-document.controlle
 import { DocumentChunkRepository } from './repository/document-chunk.repository';
 import { DocumentRetrievalRepository } from './repository/document-retrieval.repository';
 import { DocumentRepository } from './repository/document.repository';
+import { VaultDocumentRepository } from './repository/vault-document.repository';
 import { DocumentIngestionService } from './service/document-ingestion.service';
 import { DocumentIngestionWorker } from './service/document-ingestion.worker';
 import { DocumentRetrievalService } from './service/document-retrieval.service';
@@ -64,6 +65,7 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
   ],
   providers: [
     DocumentRepository,
+    VaultDocumentRepository,
     DocumentChunkRepository,
     DocumentRetrievalRepository,
     DocumentService,
