@@ -537,3 +537,19 @@ export type VaultDocumentShareRecipientRecord = {
   email: string;
   roleCodes: string[];
 };
+
+/**
+ * How far ahead of a vault document's expiry its **owner** is reminded, in
+ * days (`P16-T18`, FR-E3-08). `0` is the day it lapses. Ordered widest first
+ * so a sweep walks them in the order a person would.
+ *
+ * The mirror of `DOCTOR_LICENSE_EXPIRY_THRESHOLD_DAYS`, and deliberately a
+ * separate constant: these reminders go to one person and nobody else, while
+ * those go to whoever administers credentials. Sharing one constant would
+ * make the two look like one policy, and the thing that keeps a vault private
+ * is precisely that they are not.
+ */
+export const VAULT_DOCUMENT_EXPIRY_THRESHOLD_DAYS = [60, 30, 0] as const;
+
+/** How a vault document's expiry reads to its owner (`P16-T18`). */
+export type VaultDocumentExpiryStatus = 'EXPIRED' | 'EXPIRING_SOON' | 'VALID' | 'NO_EXPIRY';

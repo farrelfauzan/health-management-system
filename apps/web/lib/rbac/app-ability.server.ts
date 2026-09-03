@@ -105,6 +105,12 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // decides whether the Documents tab renders, and the API decides whether a
   // doctor's `write:own` reaches this particular patient.
   'patient-document': 'PatientDocument',
+  // P16-T16/T17. Hyphen, not dot, for the same reason as `clinic-profile`.
+  // Unlike `document` above, there is no scope to collapse: every
+  // `vault-document.*` key in the catalog is `:own`, and no `:any` form
+  // exists for any role — so this rule can only ever mean the owner's own
+  // vault, whatever a session hint claims.
+  'vault-document': 'VaultDocument',
   'bpjs.config': 'BpjsConfig',
   'bpjs.reference': 'BpjsReference',
   'bpjs.mapping': 'BpjsMapping',

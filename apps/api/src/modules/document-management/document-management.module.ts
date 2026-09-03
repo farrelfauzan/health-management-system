@@ -20,6 +20,7 @@ import { VaultDocumentController } from './controller/vault-document.controller'
 import { VaultDocumentShareController } from './controller/vault-document-share.controller';
 import { VaultDocumentAccessService } from './service/vault-document-access.service';
 import { VaultDocumentService } from './service/vault-document.service';
+import { VaultDocumentExpiryWorker } from './service/vault-document-expiry.worker';
 import { VaultDocumentShareService } from './service/vault-document-share.service';
 import { DocumentIngestionService } from './service/document-ingestion.service';
 import { DocumentIngestionWorker } from './service/document-ingestion.worker';
@@ -61,15 +62,21 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
  * actor may act on *some* document, and only a scope check in the service can
  * tell an admin's `ANY` grant from a doctor's `OWN` one.
  *
- * `P16-T34` adds the sharing engine over the vault. Its two controllers are
- * split by *who is asking*: `VaultDocumentShareController` is the owner
- * handing out and taking back keys, `SharedWithMeDocumentController` is the
- * recipient using one. That split is what bounds a recipient's capability to
- * view-and-download — there is no rename or delete route on the recipient
- * side to refuse, because the owner-scoped controller queries by owner and a
- * shared document is not in the set it sees. `NotificationModule` is imported
- * because both halves produce bells: the recipient is told a document was
- * shared, and the owner is told the first time it is opened.
+ * `NotificationModule` arrives with `P16-T18`'s reminder sweep, which tells a
+ * vault's owner — and only its owner — that one of their documents is nearing
+ * its expiry date. The clinic's own need to know that a practitioner is out
+ * of licence is answered elsewhere entirely, by `DoctorLicense` (`P16-T19`),
+ * which touches no document. `P16-T34`'s sharing engine produces the module's
+ * other two bells: the recipient is told a document was shared with them, and
+ * the owner is told the first time it is opened.
+ *
+ * `P16-T34`'s two controllers are split by *who is asking*:
+ * `VaultDocumentShareController` is the owner handing out and taking back
+ * keys, `SharedWithMeDocumentController` is the recipient using one. That
+ * split is what bounds a recipient's capability to view-and-download — there
+ * is no rename or delete route on the recipient side to refuse, because the
+ * owner-scoped controller queries by owner and a shared document is not in
+ * the set it sees.
  */
 @Module({
   imports: [AuthModule, StorageModule, EmbeddingModule, NotificationModule],
@@ -90,6 +97,7 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     VaultDocumentShareRepository,
     VaultDocumentAccessService,
     VaultDocumentService,
+    VaultDocumentExpiryWorker,
     VaultDocumentShareService,
     DocumentChunkRepository,
     DocumentRetrievalRepository,

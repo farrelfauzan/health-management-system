@@ -116,6 +116,7 @@
         "today": "Hari ini",
         "aiProviders": "Penyedia AI",
         "knowledgeBase": "Basis Pengetahuan",
+        "myDocuments": "Dokumen Saya",
         "clinicCorpus": "Korpus Klinik",
         "conversations": "Percakapan",
         "rooms": "Kamar",
@@ -150,6 +151,14 @@
         "appointmentRejected": {
           "title": "Janji temu ditolak",
           "body": "Permintaan janji temu Anda dengan {doctorName} ditolak."
+        },
+        "vaultDocumentExpiring": {
+          "title": "Dokumen Anda akan berakhir",
+          "body": "“{documentTitle}” di Dokumen Saya berakhir pada {expiresAt}."
+        },
+        "vaultDocumentExpired": {
+          "title": "Dokumen Anda telah berakhir",
+          "body": "“{documentTitle}” di Dokumen Saya berakhir pada {expiresAt}."
         },
         "conversationHandoff": {
           "title": "Pelanggan menunggu petugas",
