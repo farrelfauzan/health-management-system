@@ -22,3 +22,27 @@ export type SendChannelTextRequest = {
    */
   requestContact?: boolean;
 };
+
+/**
+ * One file, sent as a WhatsApp document message (`P16-T22`, PRD §7.4.1).
+ *
+ * The bytes travel in the request rather than a URL for the bridge to fetch:
+ * an invoice PDF or a released clinical file lives behind a signed, short-lived
+ * object-store URL that the bridge container has no business resolving, and a
+ * URL a bridge fetches is a URL that ends up in its logs.
+ */
+export type SendChannelDocumentRequest = {
+  /** Telegram chat id or WhatsApp JID, as a string on both channels. */
+  externalChatId: string;
+  fileName: string;
+  mimeType: string;
+  content: Uint8Array;
+  /**
+   * Text shown with the document.
+   *
+   * Never carries clinical content (FR-E4-15/27): a caption is rendered in the
+   * chat list and in notifications, where anyone holding the phone reads it.
+   * The callers enforce that rule; the type documents it.
+   */
+  caption?: string;
+};

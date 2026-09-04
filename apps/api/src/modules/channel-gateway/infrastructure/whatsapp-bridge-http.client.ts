@@ -68,13 +68,25 @@ export class WhatsappBridgeHttpClient {
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(body),
     });
-    if (!response.ok) {
-      // The status is safe to surface; the body is not — a bridge error can
-      // quote the message it was asked to send, and on this channel that is a
-      // member of the public's text.
-      this.logger.warn(buildSafeErrorLog('whatsapp_send_failed', { status: response.status }));
-      throw new ServiceUnavailableException('The WhatsApp bridge rejected the message');
-    }
+    this.assertSendAccepted(response);
+  }
+
+  /**
+   * Posts a multipart form — a file send on a bridge that takes bytes as a
+   * form field (`P16-T22`).
+   *
+   * No `Content-Type` is set here, deliberately: `fetch` derives the multipart
+   * boundary from the body it serialises, and a hand-written header would name
+   * a boundary the body does not use. The caller's headers carry only
+   * authentication and scoping.
+   */
+  async postMultipart(
+    path: string,
+    headers: Record<string, string>,
+    form: FormData,
+  ): Promise<void> {
+    const response = await this.call(path, { method: 'POST', headers, body: form });
+    this.assertSendAccepted(response);
   }
 
   async getJson(path: string, headers: Record<string, string>): Promise<unknown> {
@@ -91,6 +103,22 @@ export class WhatsappBridgeHttpClient {
   /** Absolute URL for a bridge path, for links handed to an operator. */
   buildUrl(path: string): string {
     return `${this.gatewayConfig.baseUrl}${path}`;
+  }
+
+  /**
+   * A non-2xx on a send is a rejection the caller must see: the delivery
+   * worker keeps its row retryable on exactly this signal, and a send that
+   * resolved on a 500 would be a false "delivered".
+   */
+  private assertSendAccepted(response: Response): void {
+    if (response.ok) {
+      return;
+    }
+    // The status is safe to surface; the body is not — a bridge error can
+    // quote the message it was asked to send, and on this channel that is a
+    // member of the public's text.
+    this.logger.warn(buildSafeErrorLog('whatsapp_send_failed', { status: response.status }));
+    throw new ServiceUnavailableException('The WhatsApp bridge rejected the message');
   }
 
   private async call(path: string, init: RequestInit): Promise<Response> {

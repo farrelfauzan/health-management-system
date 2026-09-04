@@ -1,5 +1,7 @@
 import { InboundChannelMessage, WhatsappWebhookEventInput } from '@hms/shared-types';
 
+import { SendChannelDocumentRequest } from './channel-gateway.types';
+
 /**
  * The fixture conversations every WhatsApp bridge must agree on (`PCS-T10`).
  *
@@ -193,3 +195,49 @@ export const OUTBOUND_WIRE_CHAT_IDS = {
   GOWA: `${CUSTOMER_NUMBER}@s.whatsapp.net`,
   WAHA: `${CUSTOMER_NUMBER}@c.us`,
 } as const;
+
+/**
+ * What the conversation layer receives back when it asks the spec's fetch
+ * mock what a bridge put on the wire for a document send — decoded out of
+ * GOWA's multipart form or WAHA's base64 JSON into one bridge-neutral shape,
+ * so the document contract can be asserted with a single `toEqual`.
+ */
+export type SentDocumentOnWire = {
+  readonly wireChatId: string;
+  readonly fileName: string;
+  readonly mimeType: string;
+  readonly bytes: Uint8Array;
+  /** `null` when the bridge was sent no caption at all, not an empty one. */
+  readonly caption: string | null;
+};
+
+/**
+ * The one document every WhatsApp bridge must deliver identically
+ * (`P16-T22`): a rendered invoice with an Indonesian caption.
+ *
+ * The bytes are a fixed, recognisable PDF header rather than a real render so
+ * the assertion is byte-for-byte: a bridge that re-encoded, truncated, or
+ * base64-padded the file wrongly would fail here rather than in a patient's
+ * chat.
+ */
+export const OUTBOUND_DOCUMENT_CONTRACT_CASE: SendChannelDocumentRequest = {
+  externalChatId: CANONICAL_CHAT_ID,
+  fileName: 'INV-2026-000123.pdf',
+  mimeType: 'application/pdf',
+  content: Uint8Array.from(
+    Buffer.from('%PDF-1.7\n%\u00e2\u00e3\u00cf\u00d3 invoice 123\n', 'latin1'),
+  ),
+  caption: 'Tagihan INV-2026-000123 dari Klinik Sehat Selalu. Terima kasih.',
+};
+
+/**
+ * The same document with no caption at all — not an empty one. An empty
+ * string renders as a blank line under the file on some clients; absence is
+ * what "no caption" means on both bridges.
+ */
+export const OUTBOUND_DOCUMENT_CONTRACT_CASE_WITHOUT_CAPTION: SendChannelDocumentRequest = {
+  externalChatId: OUTBOUND_DOCUMENT_CONTRACT_CASE.externalChatId,
+  fileName: OUTBOUND_DOCUMENT_CONTRACT_CASE.fileName,
+  mimeType: OUTBOUND_DOCUMENT_CONTRACT_CASE.mimeType,
+  content: OUTBOUND_DOCUMENT_CONTRACT_CASE.content,
+};

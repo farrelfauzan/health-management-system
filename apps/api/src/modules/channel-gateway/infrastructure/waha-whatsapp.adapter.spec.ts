@@ -2,6 +2,10 @@ import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { WahaWhatsappAdapter } from './waha-whatsapp.adapter';
+import {
+  OUTBOUND_DOCUMENT_CONTRACT_CASE,
+  OUTBOUND_DOCUMENT_CONTRACT_CASE_WITHOUT_CAPTION,
+} from './whatsapp-gateway-contract.fixtures';
 
 /**
  * What is true of **WAHA specifically**.
@@ -55,6 +59,35 @@ describe('WahaWhatsappAdapter', () => {
       text: 'Halo',
     });
     expect((init as RequestInit).headers).toMatchObject({ 'X-Api-Key': 'waha-key' });
+  });
+
+  it('posts a document to /api/sendFile as inline base64 with the session and wire chat id', async () => {
+    await buildAdapter().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE);
+
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
+    expect(url).toBe('http://waha:3000/api/sendFile');
+    // WAHA's `MessageFileRequest`: `session`, `chatId`, `file` as its
+    // `BinaryFile` shape (`mimetype`, `filename`, base64 `data`), `caption`.
+    // Inline rather than `RemoteFile`'s `url`: the bytes never sit behind a
+    // link the bridge holds.
+    expect(JSON.parse((init as RequestInit).body as string)).toEqual({
+      session: 'default',
+      chatId: '628123456789@c.us',
+      file: {
+        mimetype: 'application/pdf',
+        filename: 'INV-2026-000123.pdf',
+        data: Buffer.from(OUTBOUND_DOCUMENT_CONTRACT_CASE.content).toString('base64'),
+      },
+      caption: OUTBOUND_DOCUMENT_CONTRACT_CASE.caption,
+    });
+    expect((init as RequestInit).headers).toMatchObject({ 'X-Api-Key': 'waha-key' });
+  });
+
+  it('omits the caption key entirely when none is given', async () => {
+    await buildAdapter().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE_WITHOUT_CAPTION);
+
+    const body = JSON.parse((fetchMock.mock.calls[0]?.[1] as RequestInit).body as string);
+    expect(body).not.toHaveProperty('caption');
   });
 
   it('honours a configured session name', async () => {
@@ -116,8 +149,6 @@ describe('WahaWhatsappAdapter', () => {
 
     // WAHA serves a QR only while waiting for one; relaying its error would
     // read to an operator as "pairing is broken".
-    await expect(buildAdapter().startPairing()).rejects.toBeInstanceOf(
-      ServiceUnavailableException,
-    );
+    await expect(buildAdapter().startPairing()).rejects.toBeInstanceOf(ServiceUnavailableException);
   });
 });

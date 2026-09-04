@@ -1,4 +1,4 @@
-import { SendChannelTextRequest } from './channel-gateway.types';
+import { SendChannelDocumentRequest, SendChannelTextRequest } from './channel-gateway.types';
 
 /**
  * Provider-neutral contract for talking *to* WhatsApp.
@@ -11,11 +11,16 @@ import { SendChannelTextRequest } from './channel-gateway.types';
  * first, and the whole hedge against a WhatsApp ban is that swapping the
  * gateway is an adapter change rather than a redesign.
  *
- * **Still one method after two implementations**, which is the evidence the
- * shape was right. `sendText` is what v1's reply-only behaviour needs;
- * typing indicators and read receipts are listed in §4.1 and are not added
- * until something calls them, because a port is only as portable as its
- * narrowest member.
+ * **Two members, and the admission test for a third.** `sendText` is what
+ * v1's reply-only behaviour needs. `sendDocument` arrived at `P16-T22` when
+ * E4 delivery became the first thing to call it — invoices and released
+ * clinical files go out as WhatsApp document messages. A member is added here
+ * only when something calls it *and* the official Cloud API can satisfy it:
+ * the Cloud API sends document messages natively, so this one passes. Typing
+ * indicators and read receipts are listed in §4.1 and are not added until
+ * something calls them, because a port is only as portable as its narrowest
+ * member — and a member the endgame implementation cannot honour would break
+ * the hedge this port exists to keep.
  *
  * Session health and QR pairing deliberately live on a *separate* port
  * ({@link WhatsappSessionService}) rather than here. They are properties of a
@@ -25,4 +30,12 @@ import { SendChannelTextRequest } from './channel-gateway.types';
  */
 export abstract class WhatsappGatewayService {
   abstract sendText(request: SendChannelTextRequest): Promise<void>;
+  /**
+   * Sends one file as a document message.
+   *
+   * Resolves only once the bridge has accepted the send; a rejection is the
+   * signal the delivery worker (`P16-T26`) relies on to keep its row
+   * `QUEUED` and retry, so a false success is never reported.
+   */
+  abstract sendDocument(request: SendChannelDocumentRequest): Promise<void>;
 }
