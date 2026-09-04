@@ -60,12 +60,14 @@ describe('Vault document sharing integration', () => {
     ),
   };
 
-  const USER_DIRECTORY: Record<string, { email: string; isActive: boolean; canReadVault: boolean }> =
-    {
-      [OWNER_USER_ID]: { email: 'doctor@hms.test', isActive: true, canReadVault: true },
-      [NAMED_ADMIN_USER_ID]: { email: 'admin@hms.test', isActive: true, canReadVault: true },
-      [OTHER_ADMIN_USER_ID]: { email: 'other-admin@hms.test', isActive: true, canReadVault: true },
-    };
+  const USER_DIRECTORY: Record<
+    string,
+    { email: string; isActive: boolean; canReadVault: boolean }
+  > = {
+    [OWNER_USER_ID]: { email: 'doctor@hms.test', isActive: true, canReadVault: true },
+    [NAMED_ADMIN_USER_ID]: { email: 'admin@hms.test', isActive: true, canReadVault: true },
+    [OTHER_ADMIN_USER_ID]: { email: 'other-admin@hms.test', isActive: true, canReadVault: true },
+  };
 
   /**
    * Honours `documentId`, `granteeId`, `revokedAt` and the expiry clause
@@ -156,7 +158,13 @@ describe('Vault document sharing integration', () => {
     },
     vaultDocumentShare: {
       upsert: jest.fn(
-        ({ create, update }: { create: Record<string, unknown>; update: Record<string, unknown> }) => {
+        ({
+          create,
+          update,
+        }: {
+          create: Record<string, unknown>;
+          update: Record<string, unknown>;
+        }) => {
           const existing = shareRows.find(
             (row) => row.documentId === create.documentId && row.granteeId === create.granteeId,
           );
@@ -196,16 +204,19 @@ describe('Vault document sharing integration', () => {
           return Promise.resolve({ count: rows.length });
         },
       ),
-      update: jest.fn(({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
-        const row = shareRows.find((candidate) => candidate.id === where.id);
-        if (row === undefined) {
-          return Promise.reject(new Error('not found'));
-        }
-        const increment = (data.accessCount as { increment?: number } | undefined)?.increment ?? 0;
-        row.accessCount = (row.accessCount as number) + increment;
-        row.lastAccessedAt = data.lastAccessedAt ?? row.lastAccessedAt;
-        return Promise.resolve({ accessCount: row.accessCount });
-      }),
+      update: jest.fn(
+        ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
+          const row = shareRows.find((candidate) => candidate.id === where.id);
+          if (row === undefined) {
+            return Promise.reject(new Error('not found'));
+          }
+          const increment =
+            (data.accessCount as { increment?: number } | undefined)?.increment ?? 0;
+          row.accessCount = (row.accessCount as number) + increment;
+          row.lastAccessedAt = data.lastAccessedAt ?? row.lastAccessedAt;
+          return Promise.resolve({ accessCount: row.accessCount });
+        },
+      ),
       count: jest.fn(() => Promise.resolve(shareRows.length)),
     },
     notification: {
@@ -270,7 +281,8 @@ describe('Vault document sharing integration', () => {
   }
 
   function mockActor(userId: string, roleCode: string): void {
-    const vaultGrants = ['read', 'write', 'share'].map((action) => ({
+    // The four OWN keys the seed binds; `delete` is separate since P16-T41.
+    const vaultGrants = ['read', 'write', 'delete', 'share'].map((action) => ({
       permission: { action, resource: 'VaultDocument', scope: 'OWN' },
     }));
     // Every `:any` key an administrator plausibly holds over documents. The
