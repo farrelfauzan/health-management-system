@@ -104,3 +104,7 @@ export * from '#organization-structure/contracts';
 export * from '#organization-structure/types';
 export * from '#user-offboarding/types';
 export * from '#user-offboarding/contracts';
+export * from '#document-delivery/schemas';
+export * from '#document-delivery/contracts';
+export * from '#document-delivery/types';
+export * from '#document-delivery/opt-out-keyword';

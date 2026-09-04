@@ -6,10 +6,14 @@ import { TelegramWebhookUpdateInput } from '@hms/shared-types';
 import { ChannelInboundReceiptRepository } from '../repository/channel-inbound-receipt.repository';
 import { InboundMessageNormalizerService } from './inbound-message-normalizer.service';
 import { InboundMessageSink } from './inbound-message-sink.service';
+import { InboundOptOutHandler } from './inbound-opt-out-handler.service';
 
 describe('InboundMessageNormalizerService', () => {
-  let mockReceiptRepository: jest.Mocked<Pick<ChannelInboundReceiptRepository, 'claimInboundMessage'>>;
+  let mockReceiptRepository: jest.Mocked<
+    Pick<ChannelInboundReceiptRepository, 'claimInboundMessage'>
+  >;
   let mockSink: jest.Mocked<InboundMessageSink>;
+  let mockOptOutHandler: jest.Mocked<InboundOptOutHandler>;
 
   function buildUpdate(text = 'Klinik buka jam berapa?'): TelegramWebhookUpdateInput {
     return {
@@ -29,12 +33,14 @@ describe('InboundMessageNormalizerService', () => {
       new ConfigService(environment),
       mockReceiptRepository as unknown as ChannelInboundReceiptRepository,
       mockSink,
+      mockOptOutHandler,
     );
   }
 
   beforeEach(() => {
     mockReceiptRepository = { claimInboundMessage: jest.fn().mockResolvedValue(true) };
     mockSink = { handleInboundMessage: jest.fn().mockResolvedValue(undefined) };
+    mockOptOutHandler = { handleOptOut: jest.fn().mockResolvedValue(false) };
     jest.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined);
     jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
   });
@@ -48,7 +54,11 @@ describe('InboundMessageNormalizerService', () => {
 
     expect(actualOutcome).toBe('ACCEPTED');
     expect(mockSink.handleInboundMessage).toHaveBeenCalledWith(
-      expect.objectContaining({ channel: 'TELEGRAM', externalChatId: '12345', text: 'Klinik buka jam berapa?' }),
+      expect.objectContaining({
+        channel: 'TELEGRAM',
+        externalChatId: '12345',
+        text: 'Klinik buka jam berapa?',
+      }),
     );
   });
 
@@ -116,13 +126,72 @@ describe('InboundMessageNormalizerService', () => {
 
   it('never puts the message body into the failure log', async () => {
     const errorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
-    mockSink.handleInboundMessage.mockRejectedValue(new Error('failed on "nomor BPJS saya 000123"'));
+    mockSink.handleInboundMessage.mockRejectedValue(
+      new Error('failed on "nomor BPJS saya 000123"'),
+    );
 
     await buildService().receiveTelegramUpdate(buildUpdate('nomor BPJS saya 000123'));
 
     const loggedLine = String(errorSpy.mock.calls[0]?.[0] ?? '');
     expect(loggedLine).toContain('inbound_message_handler_failed');
     expect(loggedLine).not.toContain('000123');
+  });
+
+  describe('the opt-out hook (P16-T24)', () => {
+    it('lets a claimed opt-out end the message before the sink', async () => {
+      mockOptOutHandler.handleOptOut.mockResolvedValue(true);
+
+      const actualOutcome = await buildService().receiveTelegramUpdate(buildUpdate('BERHENTI'));
+
+      expect(actualOutcome).toBe('ACCEPTED');
+      expect(mockOptOutHandler.handleOptOut).toHaveBeenCalledWith(
+        expect.objectContaining({ text: 'BERHENTI' }),
+      );
+      expect(mockSink.handleInboundMessage).not.toHaveBeenCalled();
+    });
+
+    it('hands an unclaimed message to the sink as before', async () => {
+      await buildService().receiveTelegramUpdate(buildUpdate());
+
+      expect(mockOptOutHandler.handleOptOut).toHaveBeenCalledTimes(1);
+      expect(mockSink.handleInboundMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('runs after dedup, so a retried opt-out is not confirmed twice', async () => {
+      mockReceiptRepository.claimInboundMessage.mockResolvedValue(false);
+
+      await buildService().receiveTelegramUpdate(buildUpdate('STOP'));
+
+      expect(mockOptOutHandler.handleOptOut).not.toHaveBeenCalled();
+    });
+
+    it('falls through to the sink when the handler fails, without the body in the log', async () => {
+      const errorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+      mockOptOutHandler.handleOptOut.mockRejectedValue(new Error('failed on "BERHENTI 0812"'));
+
+      const actualOutcome = await buildService().receiveTelegramUpdate(
+        buildUpdate('BERHENTI 0812'),
+      );
+
+      expect(actualOutcome).toBe('ACCEPTED');
+      expect(mockSink.handleInboundMessage).toHaveBeenCalledTimes(1);
+      const loggedLine = String(errorSpy.mock.calls[0]?.[0] ?? '');
+      expect(loggedLine).toContain('inbound_opt_out_handler_failed');
+      expect(loggedLine).not.toContain('0812');
+    });
+
+    it('works with no handler registered at all', async () => {
+      const service = new InboundMessageNormalizerService(
+        new ConfigService({ CS_CHANNEL_ENABLED: 'true' }),
+        mockReceiptRepository as unknown as ChannelInboundReceiptRepository,
+        mockSink,
+      );
+
+      const actualOutcome = await service.receiveTelegramUpdate(buildUpdate());
+
+      expect(actualOutcome).toBe('ACCEPTED');
+      expect(mockSink.handleInboundMessage).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('propagates a dedup store failure rather than reporting a duplicate', async () => {

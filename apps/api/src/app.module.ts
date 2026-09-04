@@ -30,6 +30,7 @@ import { DoctorManagementModule } from './modules/doctor-management/doctor-manag
 import { DoctorPatientModule } from './modules/doctor-patient/doctor-patient.module';
 import { ChannelGatewayModule } from './modules/channel-gateway/channel-gateway.module';
 import { CustomerServiceModule } from './modules/customer-service/customer-service.module';
+import { DocumentDeliveryModule } from './modules/document-delivery/document-delivery.module';
 import { DocumentManagementModule } from './modules/document-management/document-management.module';
 import { DocumentTemplateModule } from './modules/document-template/document-template.module';
 import { FeatureEntitlementModule } from './modules/feature-entitlement/feature-entitlement.module';
@@ -95,6 +96,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     AiChatbotModule,
     ChannelGatewayModule,
     CustomerServiceModule,
+    DocumentDeliveryModule,
     DocumentManagementModule,
     DocumentTemplateModule,
     FeatureEntitlementModule,

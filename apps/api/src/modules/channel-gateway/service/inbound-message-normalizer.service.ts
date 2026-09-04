@@ -13,6 +13,7 @@ import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { resolveChannelGatewayConfig } from '../channel-gateway.config';
 import { ChannelInboundReceiptRepository } from '../repository/channel-inbound-receipt.repository';
 import { InboundMessageSink } from './inbound-message-sink.service';
+import { InboundOptOutHandler } from './inbound-opt-out-handler.service';
 import { normalizeGowaWebhook } from './normalize-gowa-webhook';
 import { normalizeTelegramUpdate } from './normalize-telegram-update';
 import { normalizeWahaWebhook } from './normalize-waha-webhook';
@@ -51,6 +52,13 @@ export class InboundMessageNormalizerService {
     @Optional()
     @Inject(forwardRef(() => InboundMessageSink))
     private readonly inboundMessageSink: InboundMessageSink | null = null,
+    // Optional for the same reason as the sink: the opt-out handler lives in
+    // `document-delivery`, and a gateway that could not boot without a
+    // delivery module would couple the edge to a feature it does not need to
+    // route messages. Without it, every message goes straight to the sink.
+    @Optional()
+    @Inject(forwardRef(() => InboundOptOutHandler))
+    private readonly optOutHandler: InboundOptOutHandler | null = null,
   ) {
     this.gatewayConfig = resolveChannelGatewayConfig(configService);
   }
@@ -73,7 +81,9 @@ export class InboundMessageNormalizerService {
   ): Promise<InboundMessageOutcomeValue> {
     // Stickers, edits, joins, group chats, bots normalize to null and are
     // acknowledged and dropped.
-    return this.acceptMessage(this.gatewayConfig.isEnabled ? normalizeTelegramUpdate(update) : null);
+    return this.acceptMessage(
+      this.gatewayConfig.isEnabled ? normalizeTelegramUpdate(update) : null,
+    );
   }
 
   /**
@@ -129,6 +139,14 @@ export class InboundMessageNormalizerService {
     if (!isFirstDelivery) {
       return 'DUPLICATE';
     }
+    // After dedup — a retried `BERHENTI` must not confirm twice — and before
+    // the sink, so the opt-out is honoured whatever state the conversation is
+    // in. A handler failure falls through to the sink rather than dropping
+    // the message: the consent revoke is logged as failed, and the customer's
+    // words still reach whoever is handling the chat.
+    if (await this.isClaimedByOptOutHandler(message)) {
+      return 'ACCEPTED';
+    }
     if (this.inboundMessageSink === null) {
       // No conversational half registered. Recorded and dropped, with no
       // message text in the log (§8.4) — the character count separates a real
@@ -152,5 +170,22 @@ export class InboundMessageNormalizerService {
       );
     }
     return 'ACCEPTED';
+  }
+
+  private async isClaimedByOptOutHandler(message: InboundChannelMessage): Promise<boolean> {
+    if (this.optOutHandler === null) {
+      return false;
+    }
+    try {
+      return await this.optOutHandler.handleOptOut(message);
+    } catch (caughtError) {
+      this.logger.error(
+        buildSafeErrorLog('inbound_opt_out_handler_failed', {
+          channel: message.channel,
+          reason: caughtError instanceof Error ? caughtError.name : 'unknown',
+        }),
+      );
+      return false;
+    }
   }
 }

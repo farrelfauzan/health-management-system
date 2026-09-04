@@ -354,6 +354,37 @@
       "currentRecorded": "The current notice has been recorded.",
       "historyCount": "{count, plural, =0 {No historical records} one {# historical record} other {# historical records}}"
     },
+    "deliveryConsent": {
+      "title": "Document delivery consent",
+      "description": "Permission to send receipts and released results to the patient on each channel. Captured against the privacy notice in force; withdrawn at the counter or by the patient replying BERHENTI on WhatsApp.",
+      "loadError": "Delivery consent could not be loaded.",
+      "updateError": "Delivery consent could not be updated.",
+      "channels": {
+        "WHATSAPP": "WhatsApp",
+        "EMAIL": "Email"
+      },
+      "state": {
+        "granted": "Consented",
+        "withdrawn": "Withdrawn",
+        "optedOut": "Opted out by patient",
+        "notAsked": "Not asked"
+      },
+      "grantedBy": "Captured by {email} on {date}",
+      "noticeVersion": "Privacy notice v{version}",
+      "revokedAt": "Withdrawn on {date}",
+      "ready": "Ready to send",
+      "refusals": {
+        "CONSENT_MISSING": "No consent recorded for this channel.",
+        "CONSENT_REVOKED": "The patient opted out of delivery on this channel.",
+        "NUMBER_NOT_LINKED": "This patient's number is not verified. Offer the WhatsApp OTP verification flow.",
+        "NUMBER_UNVERIFIED": "This patient's number is not verified. The verification flow was started but not completed.",
+        "NUMBER_VERIFIED_FOR_ANOTHER_PATIENT": "This number is verified for a different patient. Sending is refused and audited.",
+        "EMAIL_MISSING": "No email address on the patient record."
+      },
+      "capture": "Capture consent",
+      "withdraw": "Withdraw",
+      "recapture": "Re-capture consent"
+    },
     "licenceExpiry": {
       "title": "Licence expiry",
       "breadcrumb": "Licence expiry",

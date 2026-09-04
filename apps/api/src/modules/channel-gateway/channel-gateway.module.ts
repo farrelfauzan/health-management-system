@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuthModule } from '../auth/auth.module';
 import { CustomerServiceModule } from '../customer-service/customer-service.module';
+import { DocumentDeliveryModule } from '../document-delivery/document-delivery.module';
 import { ChannelGatewayAdminController } from './controller/channel-gateway-admin.controller';
 import { TelegramWebhookController } from './controller/telegram-webhook.controller';
 import { WhatsappWebhookController } from './controller/whatsapp-webhook.controller';
@@ -42,7 +43,10 @@ import { OutboundMessageDispatcherService } from './service/outbound-message-dis
  * cycle is real rather than accidental: inbound messages travel from here to
  * there, replies travel back. The sink stays `@Optional()` in the normalizer
  * so this module still boots — logging and dropping — if the conversational
- * half is ever removed or fails to load.
+ * half is ever removed or fails to load. `DocumentDeliveryModule` arrives the
+ * same way at `P16-T24`, binding `InboundOptOutHandler` so a patient's
+ * `BERHENTI` is honoured before the sink — and, like the sink, it is optional
+ * to the normalizer.
  *
  * The module is registered unconditionally while `CS_CHANNEL_ENABLED` gates
  * the *work*: the webhook still authenticates with the flag off and answers
@@ -51,7 +55,11 @@ import { OutboundMessageDispatcherService } from './service/outbound-message-dis
  * much harder to diagnose, thing than "configured but paused".
  */
 @Module({
-  imports: [AuthModule, forwardRef(() => CustomerServiceModule)],
+  imports: [
+    AuthModule,
+    forwardRef(() => CustomerServiceModule),
+    forwardRef(() => DocumentDeliveryModule),
+  ],
   controllers: [
     TelegramWebhookController,
     WhatsappWebhookController,

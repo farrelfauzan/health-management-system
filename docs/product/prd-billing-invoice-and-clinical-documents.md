@@ -1347,7 +1347,7 @@ the work is narrower than it looks, but the two gaps in them are precise.
 | **Sending a file over WhatsApp** | **Ships** (`P16-T22`). `WhatsappGatewayService.sendDocument`, implemented by GOWA (`POST /send/file`, multipart — field names pinned from its OpenAPI) and WAHA (`POST /api/sendFile`, inline base64), paced on the same chain as text and driven through both by the conformance suite. The port stayed narrow until this epic called a wider member; it was admitted because the official Cloud API sends document messages natively. |
 | **Sending an attachment by email** | **Missing.** `SendMailRequest` is `{ to, subject, text, html }`. No attachment field exists. |
 | **Any delivery record** | **Missing.** Nothing persists that an invoice was sent, to which address, or whether it arrived. |
-| **Any delivery consent** | **Missing.** `PatientProfile.email` is an optional free-text field typed at the counter, with no verification column anywhere. |
+| **Any delivery consent** | **Ships** (`P16-T24`). `PatientDeliveryConsent` — one row per `(patient, channel)`, captured against the privacy-notice version in force, withdrawn at the counter (`STAFF`) or by the patient typing `BERHENTI`/`STOP` on WhatsApp (`PATIENT_KEYWORD`), every act audited. `GET`/`PUT /patients/:id/delivery-consents` reports per-channel readiness with the verified-number gate's distinct refusals. `PatientProfile.email` is still unverified free text; email readiness only checks that one is on file. |
 
 > **The port question.** `WhatsappGatewayService` was deliberately kept to one
 > method because "a port is only as portable as its narrowest member", and
