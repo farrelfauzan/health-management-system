@@ -94,8 +94,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # `--ignore-registry-errors` is pnpm's own escape hatch for CI: an
+      # advisory at or above `high` still fails the build whenever the
+      # registry answers, but an outage of npm's audit endpoint (a socket
+      # timeout, a 5xx) is logged and no longer blocks every branch.
       - name: Dependency audit
-        run: pnpm audit --audit-level high
+        run: pnpm audit --audit-level high --ignore-registry-errors
 
       - name: Lint
         run: pnpm lint
