@@ -1344,7 +1344,7 @@ the work is narrower than it looks, but the two gaps in them are precise.
 | SMTP | **Ships.** `MailService` over nodemailer with a `log` transport for local dev; provider-neutral through six `MAIL_*` variables (`apps/api/src/common/mail`). |
 | Verified patient phone number | **Ships.** `ChannelPatientLink.verificationStatus = VERIFIED`, proven by an OTP or Telegram contact-share challenge (`ChannelOtpChallenge`). |
 | Send pacing and outbound dispatch | **Ships.** `WhatsappBridgeHttpClient` serialises sends at `WA_GATEWAY_SEND_PACING_MS`; `OutboundMessageDispatcherService` picks the adapter per channel. |
-| **Sending a file over WhatsApp** | **Missing.** `WhatsappGatewayService` has exactly one method, `sendText`. Its docstring is explicit that the port stays narrow until "something calls" a wider member — this epic is that call. |
+| **Sending a file over WhatsApp** | **Ships** (`P16-T22`). `WhatsappGatewayService.sendDocument`, implemented by GOWA (`POST /send/file`, multipart — field names pinned from its OpenAPI) and WAHA (`POST /api/sendFile`, inline base64), paced on the same chain as text and driven through both by the conformance suite. The port stayed narrow until this epic called a wider member; it was admitted because the official Cloud API sends document messages natively. |
 | **Sending an attachment by email** | **Missing.** `SendMailRequest` is `{ to, subject, text, html }`. No attachment field exists. |
 | **Any delivery record** | **Missing.** Nothing persists that an invoice was sent, to which address, or whether it arrived. |
 | **Any delivery consent** | **Missing.** `PatientProfile.email` is an optional free-text field typed at the counter, with no verification column anywhere. |

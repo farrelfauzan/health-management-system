@@ -10,12 +10,13 @@ import {
 } from '@hms/shared-types';
 
 import { resolveChannelGatewayConfig } from '../channel-gateway.config';
-import { SendChannelTextRequest } from './channel-gateway.types';
+import { SendChannelDocumentRequest, SendChannelTextRequest } from './channel-gateway.types';
 import { WhatsappBridgeHttpClient } from './whatsapp-bridge-http.client';
 import { WhatsappGatewayService } from './whatsapp-gateway.service';
 import { WhatsappSessionService } from './whatsapp-session.service';
 
 const SEND_TEXT_PATH = '/api/sendText';
+const SEND_FILE_PATH = '/api/sendFile';
 
 /** WAHA's own name for a session. One clinic, one session. */
 const DEFAULT_SESSION_NAME = 'default';
@@ -87,6 +88,25 @@ export class WahaWhatsappAdapter extends WhatsappGatewayService implements Whats
         session: this.sessionName,
         chatId: this.toWireChatId(request.externalChatId),
         text: request.text,
+      }),
+    );
+  }
+
+  async sendDocument(request: SendChannelDocumentRequest): Promise<void> {
+    this.http.assertConfigured();
+    // WAHA's `sendFile` takes the file inline as base64 (its `BinaryFile`
+    // shape) or as a URL for the bridge to fetch. Inline, for the same reason
+    // GOWA gets multipart: the bytes never sit behind a URL the bridge holds.
+    return this.http.enqueueSend(() =>
+      this.http.postJson(SEND_FILE_PATH, this.buildAuthHeaders(), {
+        session: this.sessionName,
+        chatId: this.toWireChatId(request.externalChatId),
+        file: {
+          mimetype: request.mimeType,
+          filename: request.fileName,
+          data: Buffer.from(request.content).toString('base64'),
+        },
+        ...(request.caption === undefined ? {} : { caption: request.caption }),
       }),
     );
   }

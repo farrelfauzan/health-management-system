@@ -8,12 +8,28 @@ import {
 } from '@hms/shared-types';
 
 import { resolveChannelGatewayConfig } from '../channel-gateway.config';
-import { SendChannelTextRequest } from './channel-gateway.types';
+import { buildDocumentBlob } from './build-document-blob';
+import { SendChannelDocumentRequest, SendChannelTextRequest } from './channel-gateway.types';
 import { WhatsappBridgeHttpClient } from './whatsapp-bridge-http.client';
 import { WhatsappGatewayService } from './whatsapp-gateway.service';
 import { WhatsappSessionService } from './whatsapp-session.service';
 
 const SEND_MESSAGE_PATH = '/send/message';
+const SEND_FILE_PATH = '/send/file';
+
+/**
+ * The multipart fields GOWA's `POST /send/file` reads, pinned from its own
+ * `docs/openapi.yaml` (`P16-T22`) rather than inferred from `/send/image`.
+ *
+ * Named once here so the adapter spec can assert the exact set: a field the
+ * bridge does not read is a file that silently never arrives, and a caption
+ * under the wrong key is a document with no explanation attached.
+ */
+const GOWA_SEND_FILE_FIELDS = {
+  phone: 'phone',
+  file: 'file',
+  caption: 'caption',
+} as const;
 const DEVICE_STATUS_PATH = '/app/status';
 const DEVICE_LOGIN_PATH = '/app/login';
 
@@ -63,10 +79,33 @@ export class GowaWhatsappAdapter extends WhatsappGatewayService implements Whats
     );
   }
 
+  async sendDocument(request: SendChannelDocumentRequest): Promise<void> {
+    this.http.assertConfigured();
+    // Multipart rather than `file_url`: GOWA also accepts a URL to download,
+    // but the files this carries live behind signed, short-lived object-store
+    // URLs that the bridge container has no business resolving — and a URL a
+    // bridge fetches is a URL that ends up in its logs.
+    const form = new FormData();
+    form.append(GOWA_SEND_FILE_FIELDS.phone, request.externalChatId);
+    form.append(GOWA_SEND_FILE_FIELDS.file, buildDocumentBlob(request), request.fileName);
+    if (request.caption !== undefined) {
+      form.append(GOWA_SEND_FILE_FIELDS.caption, request.caption);
+    }
+    return this.http.enqueueSend(() =>
+      this.http.postMultipart(SEND_FILE_PATH, this.buildAuthHeaders(), form),
+    );
+  }
+
   async readSessionHealth(): Promise<WhatsappSessionHealth> {
     const checkedAt = new Date().toISOString();
     if (!this.http.isConfigured) {
-      return { kind: 'GOWA', isConfigured: false, isConnected: false, isLoggedIn: false, checkedAt };
+      return {
+        kind: 'GOWA',
+        isConfigured: false,
+        isConnected: false,
+        isLoggedIn: false,
+        checkedAt,
+      };
     }
     try {
       const payload = await this.http.getJson(DEVICE_STATUS_PATH, this.buildAuthHeaders());

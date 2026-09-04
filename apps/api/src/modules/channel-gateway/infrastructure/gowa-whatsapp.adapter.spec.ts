@@ -2,6 +2,10 @@ import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { GowaWhatsappAdapter } from './gowa-whatsapp.adapter';
+import {
+  OUTBOUND_DOCUMENT_CONTRACT_CASE,
+  OUTBOUND_DOCUMENT_CONTRACT_CASE_WITHOUT_CAPTION,
+} from './whatsapp-gateway-contract.fixtures';
 
 /**
  * What is true of **GOWA specifically**.
@@ -56,6 +60,47 @@ describe('GowaWhatsappAdapter', () => {
     const headers = (init as RequestInit).headers as Record<string, string>;
     expect(headers.Authorization).toBe(`Basic ${Buffer.from('hms:secret').toString('base64')}`);
     expect(headers['X-Device-Id']).toBe('628111000111@s.whatsapp.net');
+  });
+
+  it('posts a document as multipart to /send/file under the field names GOWA’s OpenAPI declares', async () => {
+    await buildAdapter().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE);
+
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
+    expect(url).toBe('http://gowa:3000/send/file');
+    const form = (init as RequestInit).body as FormData;
+    expect(form).toBeInstanceOf(FormData);
+    // Pinned from GOWA's own `docs/openapi.yaml` (`/send/file`, multipart/form-data:
+    // `phone`, `caption`, `reply_message_id`, `file`, `file_url`, `is_forwarded`,
+    // `duration`), not inferred from `/send/image`. Exactly these three and no
+    // others: a field GOWA does not read is a file that silently never arrives.
+    expect([...form.keys()].sort()).toEqual(['caption', 'file', 'phone']);
+    expect(form.get('phone')).toBe('628123456789@s.whatsapp.net');
+    expect(form.get('caption')).toBe(OUTBOUND_DOCUMENT_CONTRACT_CASE.caption);
+    const file = form.get('file') as File;
+    expect(file.name).toBe('INV-2026-000123.pdf');
+    expect(file.type).toBe('application/pdf');
+    expect(new Uint8Array(await file.arrayBuffer())).toEqual(
+      OUTBOUND_DOCUMENT_CONTRACT_CASE.content,
+    );
+  });
+
+  it('keeps basic auth and the device header on a document send, and sets no content type', async () => {
+    await buildAdapter().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE);
+
+    const headers = (fetchMock.mock.calls[0]?.[1] as RequestInit).headers as Record<string, string>;
+    expect(headers.Authorization).toBe(`Basic ${Buffer.from('hms:secret').toString('base64')}`);
+    expect(headers['X-Device-Id']).toBe('628111000111@s.whatsapp.net');
+    // `fetch` derives the multipart boundary from the body; a hand-written
+    // Content-Type would name a boundary the body does not use and GOWA would
+    // read an empty form.
+    expect(Object.keys(headers).map((key) => key.toLowerCase())).not.toContain('content-type');
+  });
+
+  it('omits the caption field entirely when none is given', async () => {
+    await buildAdapter().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE_WITHOUT_CAPTION);
+
+    const form = (fetchMock.mock.calls[0]?.[1] as RequestInit).body as FormData;
+    expect([...form.keys()].sort()).toEqual(['file', 'phone']);
   });
 
   it('omits the device header when no device is configured', async () => {

@@ -12,8 +12,11 @@ import {
   CONTRACT_IGNORED_FIELDS,
   CONTRACT_OUTBOUND_CHAT_ID,
   INBOUND_CONTRACT_CASES,
+  OUTBOUND_DOCUMENT_CONTRACT_CASE,
+  OUTBOUND_DOCUMENT_CONTRACT_CASE_WITHOUT_CAPTION,
   OUTBOUND_WIRE_CHAT_IDS,
   type InboundContractCase,
+  type SentDocumentOnWire,
 } from './whatsapp-gateway-contract.fixtures';
 import { WhatsappGatewayService } from './whatsapp-gateway.service';
 import { WhatsappSessionService } from './whatsapp-session.service';
@@ -35,10 +38,47 @@ describe('WhatsApp gateway contract', () => {
   type BridgeUnderTest = {
     readonly kind: WaGatewayKindValue;
     readonly normalize: (event: never) => InboundChannelMessage | null;
-    readonly build: (overrides?: Record<string, string>) => WhatsappGatewayService &
-      WhatsappSessionService;
+    readonly build: (
+      overrides?: Record<string, string>,
+    ) => WhatsappGatewayService & WhatsappSessionService;
     readonly pickBody: (contractCase: InboundContractCase) => unknown;
+    /** Decodes what this bridge put on the wire for a document send. */
+    readonly readSentDocument: (init: RequestInit) => Promise<SentDocumentOnWire>;
   };
+
+  /**
+   * GOWA takes the file as a multipart field, so the wire body is a
+   * `FormData` and the file arrives as a `File` carrying its own name and
+   * MIME type.
+   */
+  async function readGowaSentDocument(init: RequestInit): Promise<SentDocumentOnWire> {
+    const form = init.body as FormData;
+    const file = form.get('file') as File;
+    const caption = form.get('caption');
+    return {
+      wireChatId: String(form.get('phone')),
+      fileName: file.name,
+      mimeType: file.type,
+      bytes: new Uint8Array(await file.arrayBuffer()),
+      caption: typeof caption === 'string' ? caption : null,
+    };
+  }
+
+  /** WAHA takes the file inline as base64 JSON. */
+  async function readWahaSentDocument(init: RequestInit): Promise<SentDocumentOnWire> {
+    const body = JSON.parse(init.body as string) as {
+      chatId: string;
+      caption?: string;
+      file: { mimetype: string; filename: string; data: string };
+    };
+    return {
+      wireChatId: body.chatId,
+      fileName: body.file.filename,
+      mimeType: body.file.mimetype,
+      bytes: new Uint8Array(Buffer.from(body.file.data, 'base64')),
+      caption: body.caption ?? null,
+    };
+  }
 
   function buildConfig(kind: WaGatewayKindValue, overrides: Record<string, string> = {}) {
     return new ConfigService({
@@ -59,12 +99,14 @@ describe('WhatsApp gateway contract', () => {
       normalize: normalizeGowaWebhook as unknown as BridgeUnderTest['normalize'],
       build: (overrides) => new GowaWhatsappAdapter(buildConfig('GOWA', overrides)),
       pickBody: (contractCase) => contractCase.gowaBody,
+      readSentDocument: readGowaSentDocument,
     },
     {
       kind: 'WAHA',
       normalize: normalizeWahaWebhook as unknown as BridgeUnderTest['normalize'],
       build: (overrides) => new WahaWhatsappAdapter(buildConfig('WAHA', overrides)),
       pickBody: (contractCase) => contractCase.wahaBody,
+      readSentDocument: readWahaSentDocument,
     },
   ];
 
@@ -114,9 +156,7 @@ describe('WhatsApp gateway contract', () => {
         // rather than a defect. Asserting parity on it would mean either
         // inventing a name for WAHA or discarding one GOWA supplied.
         const { receivedAt, ...normalized } = actual as InboundChannelMessage;
-        expect(stripIgnoredFields(normalized)).toEqual(
-          stripIgnoredFields(contractCase.expected),
-        );
+        expect(stripIgnoredFields(normalized)).toEqual(stripIgnoredFields(contractCase.expected));
         // The two bridges carry the clock differently — RFC 3339 against Unix
         // seconds — so the contract is that both produce a *valid instant*,
         // and each normalizer's own spec pins its parsing.
@@ -136,9 +176,7 @@ describe('WhatsApp gateway contract', () => {
 
     describe('outbound', () => {
       it('sends the customer’s text to this bridge’s wire address', async () => {
-        await bridge
-          .build()
-          .sendText({ externalChatId: CONTRACT_OUTBOUND_CHAT_ID, text: 'Halo' });
+        await bridge.build().sendText({ externalChatId: CONTRACT_OUTBOUND_CHAT_ID, text: 'Halo' });
 
         const [, init] = fetchMock.mock.calls[0] ?? [];
         const body = JSON.parse((init as RequestInit).body as string) as Record<string, string>;
@@ -150,9 +188,7 @@ describe('WhatsApp gateway contract', () => {
       });
 
       it('authenticates every call', async () => {
-        await bridge
-          .build()
-          .sendText({ externalChatId: CONTRACT_OUTBOUND_CHAT_ID, text: 'Halo' });
+        await bridge.build().sendText({ externalChatId: CONTRACT_OUTBOUND_CHAT_ID, text: 'Halo' });
 
         const [, init] = fetchMock.mock.calls[0] ?? [];
         const headers = (init as RequestInit).headers as Record<string, string>;
@@ -213,6 +249,117 @@ describe('WhatsApp gateway contract', () => {
         // §2.1's ban mitigation, and it has to hold on both bridges: replies
         // composed concurrently must leave one at a time.
         expect(order).toEqual(['first', 'second', 'third']);
+      });
+    });
+
+    describe('outbound document', () => {
+      // `P16-T22`: the same invoice, driven through both bridges from one
+      // fixture. What the recipient's chat receives must be the same document
+      // with the same name, type, bytes and caption — the wire encoding
+      // (multipart against base64 JSON) is each adapter's own business.
+      it('delivers the same document to this bridge’s wire address', async () => {
+        await bridge.build().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE);
+
+        const [, init] = fetchMock.mock.calls[0] ?? [];
+        const actual = await bridge.readSentDocument(init as RequestInit);
+
+        expect(actual).toEqual({
+          wireChatId: OUTBOUND_WIRE_CHAT_IDS[bridge.kind],
+          fileName: OUTBOUND_DOCUMENT_CONTRACT_CASE.fileName,
+          mimeType: OUTBOUND_DOCUMENT_CONTRACT_CASE.mimeType,
+          bytes: OUTBOUND_DOCUMENT_CONTRACT_CASE.content,
+          caption: OUTBOUND_DOCUMENT_CONTRACT_CASE.caption,
+        });
+      });
+
+      it('sends no caption at all when none is given', async () => {
+        await bridge.build().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE_WITHOUT_CAPTION);
+
+        const [, init] = fetchMock.mock.calls[0] ?? [];
+        const actual = await bridge.readSentDocument(init as RequestInit);
+        // An empty string would render as a blank line under the document on
+        // some clients; absence is what "no caption" means on both bridges.
+        expect(actual.caption).toBeNull();
+      });
+
+      it('authenticates the document send', async () => {
+        await bridge.build().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE);
+
+        const [, init] = fetchMock.mock.calls[0] ?? [];
+        const headers = (init as RequestInit).headers as Record<string, string>;
+        expect(headers.Authorization ?? headers['X-Api-Key']).toBeDefined();
+      });
+
+      it('refuses to send a document when no gateway is configured', async () => {
+        await expect(
+          bridge.build({ WA_GATEWAY_BASE_URL: '' }).sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE),
+        ).rejects.toBeInstanceOf(ServiceUnavailableException);
+        expect(fetchMock).not.toHaveBeenCalled();
+      });
+
+      it('rejects a refused document send rather than reporting success', async () => {
+        fetchMock.mockResolvedValue(buildResponse({ error: 'session not connected' }, false, 500));
+
+        // US-E4-01: the delivery worker keeps its row QUEUED and retries on
+        // exactly this rejection. A promise that resolved here would be a
+        // false "delivered" on a bridge that is disconnected.
+        await expect(
+          bridge.build().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE),
+        ).rejects.toBeInstanceOf(ServiceUnavailableException);
+      });
+
+      it('rejects when the bridge is unreachable', async () => {
+        fetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
+
+        await expect(
+          bridge.build().sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE),
+        ).rejects.toBeInstanceOf(ServiceUnavailableException);
+      });
+
+      it('queues document sends on the same pacing chain as text', async () => {
+        const order: string[] = [];
+        fetchMock.mockImplementation(async (url: string) => {
+          order.push(url);
+          return buildResponse({});
+        });
+        const adapter = bridge.build();
+
+        await Promise.all([
+          adapter.sendText({ externalChatId: CONTRACT_OUTBOUND_CHAT_ID, text: 'first' }),
+          adapter.sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE),
+          adapter.sendText({ externalChatId: CONTRACT_OUTBOUND_CHAT_ID, text: 'third' }),
+        ]);
+
+        // One chain, not one per message kind: a document composed alongside
+        // two replies must leave between them, not burst past them.
+        expect(
+          order.map((url) => url.endsWith('/send/file') || url.endsWith('/api/sendFile')),
+        ).toEqual([false, true, false]);
+      });
+
+      it('holds the configured gap between two document sends', async () => {
+        jest.useFakeTimers();
+        try {
+          const adapter = bridge.build({ WA_GATEWAY_SEND_PACING_MS: '1000' });
+
+          const sends = Promise.all([
+            adapter.sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE),
+            adapter.sendDocument(OUTBOUND_DOCUMENT_CONTRACT_CASE),
+          ]);
+          await jest.advanceTimersByTimeAsync(0);
+
+          // §2.1's ban mitigation applies to files exactly as to text: the
+          // second document waits out WA_GATEWAY_SEND_PACING_MS behind the first.
+          expect(fetchMock).toHaveBeenCalledTimes(1);
+          await jest.advanceTimersByTimeAsync(999);
+          expect(fetchMock).toHaveBeenCalledTimes(1);
+          await jest.advanceTimersByTimeAsync(1);
+          expect(fetchMock).toHaveBeenCalledTimes(2);
+          await jest.advanceTimersByTimeAsync(1000);
+          await sends;
+        } finally {
+          jest.useRealTimers();
+        }
       });
     });
 

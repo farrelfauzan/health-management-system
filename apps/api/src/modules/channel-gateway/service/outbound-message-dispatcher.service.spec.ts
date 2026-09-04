@@ -10,7 +10,10 @@ describe('OutboundMessageDispatcherService', () => {
 
   beforeEach(() => {
     mockTelegramGateway = { sendText: jest.fn().mockResolvedValue(undefined) };
-    mockWhatsappGateway = { sendText: jest.fn().mockResolvedValue(undefined) };
+    mockWhatsappGateway = {
+      sendText: jest.fn().mockResolvedValue(undefined),
+      sendDocument: jest.fn().mockResolvedValue(undefined),
+    };
   });
 
   it('sends a Telegram reply through the Telegram adapter', async () => {
@@ -34,7 +37,11 @@ describe('OutboundMessageDispatcherService', () => {
     // Failing loudly beats the two alternatives: silently dropping the reply,
     // or falling through to Telegram and delivering it to the wrong customer.
     await expect(
-      dispatcher.sendMessage({ channel: 'WHATSAPP', externalChatId: '628123@s.whatsapp.net', text: 'halo' }),
+      dispatcher.sendMessage({
+        channel: 'WHATSAPP',
+        externalChatId: '628123@s.whatsapp.net',
+        text: 'halo',
+      }),
     ).rejects.toThrow(ServiceUnavailableException);
     expect(mockTelegramGateway.sendText).not.toHaveBeenCalled();
   });
