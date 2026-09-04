@@ -644,6 +644,31 @@
         "errors": {
           "saveFailed": "Profil klinik gagal disimpan. Silakan coba lagi."
         }
+      },
+      "offboarding": {
+        "offboard": "Offboarding",
+        "reonboard": "Aktifkan kembali",
+        "badge": "Offboarding",
+        "offboardTitle": "Offboarding {email}?",
+        "offboardDescription": "Bukan penonaktifan. Orang ini masih dapat masuk selama 30 hari dengan tepat satu hal yang bisa dilakukan: melihat, mengunduh, mengekspor, dan menghapus dokumennya sendiri.",
+        "reonboardTitle": "Aktifkan kembali pengguna ini?",
+        "reonboardDescription": "Membatalkan offboarding. Tidak ada yang dihapus, dan akses normalnya pulih pada permintaan berikutnya.",
+        "previewLoading": "Menghitung dokumennya…",
+        "previewError": "Tidak dapat memuat apa yang akan terjadi. Coba lagi sebentar.",
+        "preview": {
+          "deletionDate": "Tanggal penghapusan",
+          "unshared": "Akan dihapus",
+          "unsharedValue": "{count, plural, =0 {tidak ada dokumen} =1 {1 dokumen yang tidak dibagikan} other {# dokumen yang tidak dibagikan}}",
+          "shared": "Akan tetap ada",
+          "sharedValue": "{count, plural, =0 {tidak ada dokumen} =1 {1 dokumen yang dibagikan, tetap dapat dibuka oleh penerimanya} other {# dokumen yang dibagikan, tetap dapat dibuka oleh penerimanya}}"
+        },
+        "offboardConsequences": "Saat ini juga: semua sesinya berakhir, dan mulai permintaan berikutnya ia hanya dapat membuka dokumennya sendiri. Ia akan menerima email hari ini dan sekali lagi saat tersisa tujuh hari, yang menyebutkan tanggalnya dan cara mengekspor.",
+        "reonboardConsequences": "Apa pun yang sudah dihapus setelah masa berakhir tidak bisa kembali; selebihnya persis seperti yang ia tinggalkan.",
+        "offboardConfirm": "Offboarding",
+        "reonboardConfirm": "Aktifkan kembali",
+        "cancel": "Batal",
+        "pending": "Memproses…",
+        "error": "Offboarding pengguna ini tidak dapat diperbarui. Silakan coba lagi."
       }
     },
     "rooms": {

@@ -348,4 +348,27 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
     expect(ability.can('delete', 'PatientDocument')).toBe(true);
     expect(ability.can('release', 'PatientDocument')).toBe(false);
   });
+
+  it('maps the vault share and delete keys, and the offboard key, to their own actions', () => {
+    // P16-T41. Both drive visibility only: a row action for the owner, and
+    // the super-admin offboard action. The reduced session an offboarded
+    // person holds carries read and delete but never share or write.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: ['vault-document.read:own', 'vault-document.delete:own', 'user.offboard:any'],
+      }),
+    );
+
+    expect(ability.can('read', 'VaultDocument')).toBe(true);
+    expect(ability.can('delete', 'VaultDocument')).toBe(true);
+    expect(ability.can('share', 'VaultDocument')).toBe(false);
+    expect(ability.can('write', 'VaultDocument')).toBe(false);
+    expect(ability.can('offboard', 'User')).toBe(true);
+    expect(
+      buildAppAbility(resolveAppAbilityRules({ permissions: ['vault-document.share'] })).can(
+        'share',
+        'VaultDocument',
+      ),
+    ).toBe(true);
+  });
 });

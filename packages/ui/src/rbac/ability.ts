@@ -25,7 +25,14 @@ export type AppAction =
   // P16-T08. Handing a clinical file to the patient portal. Distinct from
   // `write`: the API grants it to doctors on their own patients only, and
   // editing a title must not read as permission to publish the file.
-  | 'release';
+  | 'release'
+  // P16-T34. Handing a vault document to a named person. Distinct from
+  // `write` for the same reason `release` is: editing a title must not read
+  // as permission to give the file away.
+  | 'share'
+  // P16-T41. Opening a person's 30-day export-only window. A super-admin
+  // action and not deactivation, so it is not `update`.
+  | 'offboard';
 export type AppSubject =
   | 'User'
   | 'Role'

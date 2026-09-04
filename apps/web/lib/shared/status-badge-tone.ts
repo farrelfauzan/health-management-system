@@ -15,6 +15,7 @@ const TONE_BY_STATUS: Record<string, StatusTone> = {
   occupied: 'info',
   checked_in: 'info',
   pending: 'warning',
+  offboarding: 'warning',
   'no-show': 'warning',
   'low-stock': 'warning',
   maintenance: 'warning',

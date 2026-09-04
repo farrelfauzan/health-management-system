@@ -38,6 +38,8 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'block',
   'merge',
   'release',
+  'share',
+  'offboard',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',

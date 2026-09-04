@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 
 import { AdminUserFormDialog } from '#components/client/administration/admin-user-form-dialog';
 import { AdminUserInviteDialog } from '#components/client/administration/admin-user-invite-dialog';
+import { AdminUserOffboardingDialog } from '#components/client/administration/admin-user-offboarding-dialog';
 import {
   AdminUsersFilterCard,
   type AdminUsersFilterValues,
@@ -38,6 +39,7 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
   const usersQuery = useAdminUsersList(initialQuery);
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState<boolean>(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [offboardingUser, setOffboardingUser] = useState<AdminUser | null>(null);
   const toggleActiveMutation = useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
       adminManagementControllerUpdateAdminUserV1(id, { isActive }),
@@ -117,6 +119,7 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
             isError={usersQuery.isError}
             onEdit={handleOpenEditDialog}
             onToggleActive={(user) => void handleToggleActive(user)}
+            onOffboard={setOffboardingUser}
           />
           <NumberedPagination
             className="border-t border-slate-100 px-4 py-3"
@@ -140,6 +143,19 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
             }
           }}
           user={editingUser}
+        />
+      ) : null}
+
+      {offboardingUser ? (
+        <AdminUserOffboardingDialog
+          key={offboardingUser.id}
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              setOffboardingUser(null);
+            }
+          }}
+          user={offboardingUser}
         />
       ) : null}
 

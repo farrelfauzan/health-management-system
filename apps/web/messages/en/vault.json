@@ -214,6 +214,11 @@
       "errors": {
         "download": "Could not open this document. The share may have been withdrawn."
       }
+    },
+    "offboarding": {
+      "title": "Your documents will be deleted on {date}.",
+      "body": "Until then you can sign in to view, download, export and delete them, and do nothing else. Documents you have shared stay readable by the people you shared them with.",
+      "cta": "Export everything"
     }
   }
 }

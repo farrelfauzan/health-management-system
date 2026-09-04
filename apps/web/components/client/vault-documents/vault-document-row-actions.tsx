@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { VaultDocumentView } from '@hms/shared-types';
+import { useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { VaultDocumentEditDialog } from '#components/client/vault-documents/vault-document-edit-dialog';
@@ -26,6 +27,7 @@ export function VaultDocumentRowActions({
   onError,
 }: VaultDocumentRowActionsProps) {
   const t = useTranslations('vault.actions');
+  const ability = useAbility();
   const queryClient = useQueryClient();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSharingOpen, setIsSharingOpen] = useState(false);
@@ -63,18 +65,28 @@ export function VaultDocumentRowActions({
     }
   }
 
+  // Visibility only. An offboarded person's session (P16-T41) carries read
+  // and delete and nothing else, so their row offers download and delete —
+  // "take a copy, then delete" — and no way to file, rename or hand out
+  // anything. `write` still admits delete for a session hint minted before
+  // the delete key existed; the API decides either way.
+  const canEdit = ability.can('write', 'VaultDocument');
+  const canShare = ability.can('share', 'VaultDocument');
+  const canDelete = canEdit || ability.can('delete', 'VaultDocument');
   const actions: RowAction[] = [
     {
       label: t('download'),
       icon: 'download',
       onSelect: () => downloadMutation.mutate(),
     },
-    { label: t('edit'), icon: 'edit', onSelect: () => setIsEditOpen(true) },
+    ...(canEdit ? [{ label: t('edit'), icon: 'edit', onSelect: () => setIsEditOpen(true) }] : []),
     // P16-T35. Opens the panel rather than the share dialog directly: the
     // first question an owner has about a document is usually "who already
     // has this", not "give it to someone else".
-    { label: t('sharing'), icon: 'group', onSelect: () => setIsSharingOpen(true) },
-    { label: t('delete'), icon: 'delete', onSelect: confirmDelete },
+    ...(canShare
+      ? [{ label: t('sharing'), icon: 'group', onSelect: () => setIsSharingOpen(true) }]
+      : []),
+    ...(canDelete ? [{ label: t('delete'), icon: 'delete', onSelect: confirmDelete }] : []),
   ];
 
   return (

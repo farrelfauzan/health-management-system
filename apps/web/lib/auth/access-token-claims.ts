@@ -14,6 +14,14 @@ export type AccessTokenClaims = {
    * before this field existed must not blank the sidebar.
    */
   disabledFeatures?: string[];
+  /**
+   * The clinic calendar day (`YYYY-MM-DD`) this person's offboarding window
+   * closes (P16-T41). Carried by the session-hint cookie only. Present means
+   * the shell pins navigation to the vault and shows the deletion banner;
+   * absent means not offboarded. Rendering input only — the API's guard
+   * branches on the database row on every request.
+   */
+  offboardedUntil?: string;
 };
 
 export function decodeAccessTokenClaims(token: string): AccessTokenClaims | null {

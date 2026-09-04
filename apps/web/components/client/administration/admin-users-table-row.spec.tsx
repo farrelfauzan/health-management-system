@@ -27,13 +27,23 @@ const FULL_ACCESS_RULES: AppRule[] = [
 
 const READ_ONLY_RULES: AppRule[] = [{ action: 'read', subject: 'User' }];
 
-function renderRow(rules: AppRule[]): void {
+const SUPER_ADMIN_RULES: AppRule[] = [
+  ...FULL_ACCESS_RULES,
+  { action: 'offboard', subject: 'User' },
+];
+
+function renderRow(rules: AppRule[], user: AdminUser = USER, onOffboard = vi.fn()): void {
   render(
     <NextIntlClientProvider locale="en" messages={messages} timeZone="Asia/Jakarta">
       <AbilityProvider ability={buildAppAbility(rules)}>
         <Table>
           <TableBody>
-            <AdminUsersTableRow user={USER} onEdit={vi.fn()} onToggleActive={vi.fn()} />
+            <AdminUsersTableRow
+              user={user}
+              onEdit={vi.fn()}
+              onToggleActive={vi.fn()}
+              onOffboard={onOffboard}
+            />
           </TableBody>
         </Table>
       </AbilityProvider>
@@ -68,5 +78,55 @@ describe('AdminUsersTableRow', () => {
     expect(
       screen.queryByRole('button', { name: 'Actions for admin@hms.local' }),
     ).not.toBeInTheDocument();
+  });
+
+  describe('offboarding (P16-T41)', () => {
+    it('offers Offboard only to a holder of the offboard key', async () => {
+      const user = userEvent.setup();
+      renderRow(FULL_ACCESS_RULES);
+
+      await user.click(screen.getByRole('button', { name: 'Actions for admin@hms.local' }));
+
+      // `user.update:any` is deactivate; offboarding is a separate key that
+      // only a super admin holds, and a separate month of access.
+      expect(await screen.findByText('Deactivate')).toBeInTheDocument();
+      expect(screen.queryByText('Offboard')).not.toBeInTheDocument();
+    });
+
+    it('offers Offboard to a super admin and hands over the row', async () => {
+      const user = userEvent.setup();
+      const onOffboard = vi.fn();
+      renderRow(SUPER_ADMIN_RULES, USER, onOffboard);
+
+      await user.click(screen.getByRole('button', { name: 'Actions for admin@hms.local' }));
+      await user.click(await screen.findByText('Offboard'));
+
+      expect(onOffboard).toHaveBeenCalledWith(USER);
+    });
+
+    it('shows an offboarded person as offboarding, with Re-onboard in place of Offboard', async () => {
+      const user = userEvent.setup();
+      renderRow(SUPER_ADMIN_RULES, { ...USER, offboardedAt: '2026-09-04T10:00:00.000Z' });
+
+      expect(screen.getByText('Offboarding')).toBeInTheDocument();
+      expect(screen.queryByText('Active')).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Actions for admin@hms.local' }));
+
+      expect(await screen.findByText('Re-onboard')).toBeInTheDocument();
+      expect(screen.queryByText('Offboard')).not.toBeInTheDocument();
+    });
+
+    it('never offers Offboard for a deactivated account', async () => {
+      // §7.3.10.2: deactivation already locks them out, and the API refuses
+      // to turn that back into a month of access. No menu item that always
+      // fails.
+      const user = userEvent.setup();
+      renderRow(SUPER_ADMIN_RULES, { ...USER, isActive: false });
+
+      await user.click(screen.getByRole('button', { name: 'Actions for admin@hms.local' }));
+
+      expect(await screen.findByText('Activate')).toBeInTheDocument();
+      expect(screen.queryByText('Offboard')).not.toBeInTheDocument();
+    });
   });
 });

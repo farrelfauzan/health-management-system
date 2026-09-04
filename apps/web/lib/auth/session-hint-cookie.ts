@@ -9,6 +9,7 @@ type SessionHint = {
   permissions?: string[];
   packedPermissions?: string;
   disabledFeatures?: string[];
+  offboardedUntil?: string;
   exp?: number;
 };
 
@@ -58,7 +59,20 @@ export function decodeSessionHint(hint: string | undefined): AccessTokenClaims |
     const disabledFeatures = Array.isArray(parsed.disabledFeatures)
       ? parsed.disabledFeatures.filter((entry): entry is string => typeof entry === 'string')
       : [];
-    return { roles: parsed.roles, permissions, disabledFeatures, exp: parsed.exp };
+    // P16-T41. A calendar date, and only when the API wrote one: an older
+    // hint has no such field, and the right reading of that is "not
+    // offboarded" — the same fail-open default as the feature keys above.
+    const offboardedUntil =
+      typeof parsed.offboardedUntil === 'string' && parsed.offboardedUntil !== ''
+        ? parsed.offboardedUntil
+        : undefined;
+    return {
+      roles: parsed.roles,
+      permissions,
+      disabledFeatures,
+      ...(offboardedUntil === undefined ? {} : { offboardedUntil }),
+      exp: parsed.exp,
+    };
   } catch {
     return null;
   }

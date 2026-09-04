@@ -12,13 +12,20 @@ type AdminUsersTableRowProps = {
   user: AdminUser;
   onEdit: (user: AdminUser) => void;
   onToggleActive: (user: AdminUser) => void;
+  onOffboard: (user: AdminUser) => void;
 };
 
-export function AdminUsersTableRow({ user, onEdit, onToggleActive }: AdminUsersTableRowProps) {
+export function AdminUsersTableRow({
+  user,
+  onEdit,
+  onToggleActive,
+  onOffboard,
+}: AdminUsersTableRowProps) {
   const t = useTranslations('operations');
   const format = useFormatter();
   const ability = useAbility();
-  const actions: RowAction[] = ability.can('update', 'User')
+  const isOffboarded = user.offboardedAt !== undefined;
+  const updateActions: RowAction[] = ability.can('update', 'User')
     ? [
         { label: t('administration.edit'), icon: 'edit', onSelect: () => onEdit(user) },
         user.isActive
@@ -35,6 +42,32 @@ export function AdminUsersTableRow({ user, onEdit, onToggleActive }: AdminUsersT
             },
       ]
     : [];
+  // P16-T41. A separate action from deactivate, gated by a separate key that
+  // only a super admin holds: offboarding opens a month of vault-only access
+  // where deactivation ends access now. Offered only for an active account —
+  // the API refuses the other case, and a menu item that always fails is a
+  // trap. Re-onboard is the same key in reverse.
+  const offboardActions: RowAction[] = ability.can('offboard', 'User')
+    ? isOffboarded
+      ? [
+          {
+            label: t('administration.offboarding.reonboard'),
+            icon: 'undo',
+            onSelect: () => onOffboard(user),
+          },
+        ]
+      : user.isActive
+        ? [
+            {
+              label: t('administration.offboarding.offboard'),
+              icon: 'logout',
+              isDestructive: true,
+              onSelect: () => onOffboard(user),
+            },
+          ]
+        : []
+    : [];
+  const actions: RowAction[] = [...updateActions, ...offboardActions];
 
   return (
     <TableRow className="transition-colors hover:bg-slate-50">
@@ -69,10 +102,14 @@ export function AdminUsersTableRow({ user, onEdit, onToggleActive }: AdminUsersT
         </div>
       </TableCell>
       <TableCell className="px-4">
-        <StatusBadge
-          status={user.isActive ? 'active' : 'inactive'}
-          label={user.isActive ? t('common.active') : t('common.inactive')}
-        />
+        {isOffboarded ? (
+          <StatusBadge status="offboarding" label={t('administration.offboarding.badge')} />
+        ) : (
+          <StatusBadge
+            status={user.isActive ? 'active' : 'inactive'}
+            label={user.isActive ? t('common.active') : t('common.inactive')}
+          />
+        )}
       </TableCell>
       <TableCell className="px-4 text-sm text-slate-600">
         {format.dateTime(new Date(user.updatedAt), { dateStyle: 'medium' })}
