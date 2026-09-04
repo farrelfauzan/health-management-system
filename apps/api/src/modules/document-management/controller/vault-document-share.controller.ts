@@ -6,7 +6,6 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  Query,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,7 +17,6 @@ import { RequireFeature } from '../../../common/authorization/require-feature.de
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { VAULT_DOCUMENT_EXAMPLES } from '../../../common/openapi/vault-document-examples';
 import { CreateVaultDocumentShareDto } from '../dto/create-vault-document-share.dto';
-import { ListVaultDocumentShareRecipientsQueryDto } from '../dto/list-vault-document-share-recipients-query.dto';
 import { VaultDocumentShareService } from '../service/vault-document-share.service';
 
 /**
@@ -46,29 +44,6 @@ import { VaultDocumentShareService } from '../service/vault-document-share.servi
 })
 export class VaultDocumentShareController {
   constructor(private readonly vaultDocumentShareService: VaultDocumentShareService) {}
-
-  /**
-   * Declared before `:id/shares` so `share-recipients` is not parsed as a
-   * document id. The `ParseUUIDPipe` would refuse it anyway, but relying on a
-   * 400 to disambiguate a route is not a design.
-   */
-  @Get('share-recipients')
-  @Auth([{ action: 'share', subject: 'VaultDocument' }])
-  @ApiEndpoint({
-    summary: 'Find people you could share a vault document with',
-    responseDescription:
-      'Live human accounts that could actually open a shared vault document — those holding `vault-document.read:own` — matched on their sign-in address. Deliberately not a user directory: a doctor holds no `user.read:any` grant, so some lookup has to exist for sharing to be possible at all, and this one refuses to answer below three characters and returns at most ten rows, so it cannot be walked to enumerate staff. Your own account is excluded.',
-    responseExample: { data: [VAULT_DOCUMENT_EXAMPLES.shareRecipient] },
-  })
-  async listShareRecipients(
-    @Query() query: ListVaultDocumentShareRecipientsQueryDto,
-    @AuthUser() currentUser?: CurrentUser,
-  ) {
-    const actor = this.assertAuthenticated(currentUser);
-    const result = await this.vaultDocumentShareService.listShareRecipients(query, actor);
-
-    return { data: result.items };
-  }
 
   @Get(':id/shares')
   @Auth([{ action: 'share', subject: 'VaultDocument' }])

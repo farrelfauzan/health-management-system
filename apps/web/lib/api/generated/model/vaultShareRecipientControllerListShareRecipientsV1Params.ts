@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type VaultDocumentShareControllerListShareRecipientsV1Params = {
+export type VaultShareRecipientControllerListShareRecipientsV1Params = {
 /**
  * @minLength 3
  * @maxLength 200

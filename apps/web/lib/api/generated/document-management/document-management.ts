@@ -78,10 +78,10 @@ import type {
   VaultDocumentControllerListDocumentsV1Params,
   VaultDocumentControllerUpdateDocumentV1200,
   VaultDocumentShareControllerCreateShareV1200,
-  VaultDocumentShareControllerListShareRecipientsV1200,
-  VaultDocumentShareControllerListShareRecipientsV1Params,
   VaultDocumentShareControllerListSharesV1200,
-  VaultDocumentShareControllerRevokeShareV1200
+  VaultDocumentShareControllerRevokeShareV1200,
+  VaultShareRecipientControllerListShareRecipientsV1200,
+  VaultShareRecipientControllerListShareRecipientsV1Params
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -3330,99 +3330,6 @@ export function useVaultDocumentControllerGetDownloadUrlV1<TData = Awaited<Retur
 
 
 /**
- * @summary Find people you could share a vault document with
- */
-export const vaultDocumentShareControllerListShareRecipientsV1 = (
-    params: VaultDocumentShareControllerListShareRecipientsV1Params,
- signal?: AbortSignal
-) => {
-
-
-      return orvalAxiosMutator<VaultDocumentShareControllerListShareRecipientsV1200>(
-      {url: `/api/v1/me/vault-documents/share-recipients`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-
-
-
-
-export const getVaultDocumentShareControllerListShareRecipientsV1QueryKey = (params?: VaultDocumentShareControllerListShareRecipientsV1Params,) => {
-    return [
-    `/api/v1/me/vault-documents/share-recipients`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getVaultDocumentShareControllerListShareRecipientsV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError = unknown>(params: VaultDocumentShareControllerListShareRecipientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getVaultDocumentShareControllerListShareRecipientsV1QueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>> = ({ signal }) => vaultDocumentShareControllerListShareRecipientsV1(params, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type VaultDocumentShareControllerListShareRecipientsV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>>
-export type VaultDocumentShareControllerListShareRecipientsV1QueryError = unknown
-
-
-export function useVaultDocumentShareControllerListShareRecipientsV1<TData = Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError = unknown>(
- params: VaultDocumentShareControllerListShareRecipientsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>,
-          TError,
-          Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVaultDocumentShareControllerListShareRecipientsV1<TData = Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError = unknown>(
- params: VaultDocumentShareControllerListShareRecipientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>,
-          TError,
-          Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useVaultDocumentShareControllerListShareRecipientsV1<TData = Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError = unknown>(
- params: VaultDocumentShareControllerListShareRecipientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Find people you could share a vault document with
- */
-
-export function useVaultDocumentShareControllerListShareRecipientsV1<TData = Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError = unknown>(
- params: VaultDocumentShareControllerListShareRecipientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultDocumentShareControllerListShareRecipientsV1>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getVaultDocumentShareControllerListShareRecipientsV1QueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-/**
  * @summary List who one of your vault documents is shared with
  */
 export const vaultDocumentShareControllerListSharesV1 = (
@@ -3703,6 +3610,99 @@ export function useVaultDocumentShareControllerRevokeShareV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getVaultDocumentShareControllerRevokeShareV1QueryOptions(id,shareId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Find people you could share a vault document with
+ */
+export const vaultShareRecipientControllerListShareRecipientsV1 = (
+    params: VaultShareRecipientControllerListShareRecipientsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<VaultShareRecipientControllerListShareRecipientsV1200>(
+      {url: `/api/v1/me/vault-share-recipients`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getVaultShareRecipientControllerListShareRecipientsV1QueryKey = (params?: VaultShareRecipientControllerListShareRecipientsV1Params,) => {
+    return [
+    `/api/v1/me/vault-share-recipients`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getVaultShareRecipientControllerListShareRecipientsV1QueryOptions = <TData = Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError = unknown>(params: VaultShareRecipientControllerListShareRecipientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVaultShareRecipientControllerListShareRecipientsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>> = ({ signal }) => vaultShareRecipientControllerListShareRecipientsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type VaultShareRecipientControllerListShareRecipientsV1QueryResult = NonNullable<Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>>
+export type VaultShareRecipientControllerListShareRecipientsV1QueryError = unknown
+
+
+export function useVaultShareRecipientControllerListShareRecipientsV1<TData = Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError = unknown>(
+ params: VaultShareRecipientControllerListShareRecipientsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultShareRecipientControllerListShareRecipientsV1<TData = Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError = unknown>(
+ params: VaultShareRecipientControllerListShareRecipientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>,
+          TError,
+          Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useVaultShareRecipientControllerListShareRecipientsV1<TData = Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError = unknown>(
+ params: VaultShareRecipientControllerListShareRecipientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Find people you could share a vault document with
+ */
+
+export function useVaultShareRecipientControllerListShareRecipientsV1<TData = Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError = unknown>(
+ params: VaultShareRecipientControllerListShareRecipientsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof vaultShareRecipientControllerListShareRecipientsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getVaultShareRecipientControllerListShareRecipientsV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

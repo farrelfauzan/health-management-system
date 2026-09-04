@@ -27840,79 +27840,6 @@ paths:
         - bearer: []
       summary: Get a signed download URL for one of your vault documents
       tags: *a42
-  /api/v1/me/vault-documents/share-recipients:
-    get:
-      operationId: VaultDocumentShareController_listShareRecipients_v1
-      parameters:
-        - name: search
-          required: true
-          in: query
-          schema:
-            minLength: 3
-            maxLength: 200
-            type: string
-      responses:
-        "200":
-          description: "Live human accounts that could actually open a shared vault
-            document — those holding `vault-document.read:own` — matched on
-            their sign-in address. Deliberately not a user directory: a doctor
-            holds no `user.read:any` grant, so some lookup has to exist for
-            sharing to be possible at all, and this one refuses to answer below
-            three characters and returns at most ten rows, so it cannot be
-            walked to enumerate staff. Your own account is excluded."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        email:
-                          type: string
-                        roleCodes:
-                          type: array
-                          items:
-                            type: string
-                      required:
-                        - id
-                        - email
-                        - roleCodes
-                required:
-                  - data
-                example:
-                  data:
-                    - id: d51c3a7e-90b4-4f26-8a1d-6c73e0b9f482
-                      email: admin@example.test
-                      roleCodes:
-                        - ADMIN
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: Find people you could share a vault document with
-      tags: &a43
-        - Document Management
   /api/v1/me/vault-documents/{id}/shares:
     get:
       operationId: VaultDocumentShareController_listShares_v1
@@ -28017,7 +27944,8 @@ paths:
       security:
         - bearer: []
       summary: List who one of your vault documents is shared with
-      tags: *a43
+      tags: &a43
+        - Document Management
     post:
       operationId: VaultDocumentShareController_createShare_v1
       parameters:
@@ -28223,6 +28151,79 @@ paths:
         - bearer: []
       summary: Revoke one share of one of your vault documents
       tags: *a43
+  /api/v1/me/vault-share-recipients:
+    get:
+      operationId: VaultShareRecipientController_listShareRecipients_v1
+      parameters:
+        - name: search
+          required: true
+          in: query
+          schema:
+            minLength: 3
+            maxLength: 200
+            type: string
+      responses:
+        "200":
+          description: "Live human accounts that could actually open a shared vault
+            document — those holding `vault-document.read:own` — matched on
+            their sign-in address. Deliberately not a user directory: a doctor
+            holds no `user.read:any` grant, so some lookup has to exist for
+            sharing to be possible at all, and this one refuses to answer below
+            three characters and returns at most ten rows, so it cannot be
+            walked to enumerate staff. Your own account is excluded."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        email:
+                          type: string
+                        roleCodes:
+                          type: array
+                          items:
+                            type: string
+                      required:
+                        - id
+                        - email
+                        - roleCodes
+                required:
+                  - data
+                example:
+                  data:
+                    - id: d51c3a7e-90b4-4f26-8a1d-6c73e0b9f482
+                      email: admin@example.test
+                      roleCodes:
+                        - ADMIN
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Find people you could share a vault document with
+      tags:
+        - Document Management
   /api/v1/shared-with-me/documents:
     get:
       operationId: SharedWithMeDocumentController_listSharedWithMe_v1
