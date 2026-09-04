@@ -5,7 +5,30 @@ import { createTransport, type Transporter } from 'nodemailer';
 import { buildSafeErrorLog } from '../observability/safe-logging';
 import { resolveMailConfig } from './mail.config';
 import { MailService } from './mail.service';
-import { MailConfig, SendMailRequest, SendMailResult } from './mail.types';
+import { MailAttachment, MailConfig, SendMailRequest, SendMailResult } from './mail.types';
+
+type TransportAttachment = {
+  readonly filename: string;
+  readonly contentType: string;
+  readonly content: Buffer;
+};
+
+/**
+ * Maps the transport-neutral attachment onto nodemailer's shape. A `Buffer`
+ * view over the same bytes rather than a copy: nodemailer accepts a Buffer,
+ * and a copy of every invoice PDF per send is memory spent on nothing.
+ */
+function toTransportAttachment(attachment: MailAttachment): TransportAttachment {
+  return {
+    filename: attachment.fileName,
+    contentType: attachment.mimeType,
+    content: Buffer.from(
+      attachment.content.buffer,
+      attachment.content.byteOffset,
+      attachment.content.byteLength,
+    ),
+  };
+}
 
 /**
  * SMTP transport over nodemailer. Provider-neutral on purpose: the same six
@@ -47,12 +70,18 @@ export class SmtpMailService extends MailService {
    */
   async sendMail(request: SendMailRequest): Promise<SendMailResult> {
     try {
+      // The key is added only when there is something to attach, so a
+      // request without attachments reaches nodemailer as exactly the payload
+      // it did before `P16-T23` — an always-present empty array is a field
+      // every provider quirk would have to be re-checked against.
+      const attachments = request.attachments ?? [];
       const result = await this.transporter.sendMail({
         from: this.config.from,
         to: request.to,
         subject: request.subject,
         text: request.text,
         html: request.html,
+        ...(attachments.length > 0 ? { attachments: attachments.map(toTransportAttachment) } : {}),
       });
       return {
         accepted: (result.accepted?.length ?? 0) > 0,
