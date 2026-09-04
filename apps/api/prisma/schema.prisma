@@ -149,6 +149,15 @@ enum AuditAction {
   USER_INVITED
   USER_INVITE_ACCEPTED
   USER_INVITE_REVOKED
+  /// Offboarding (P16-T41). Its own verbs rather than USER_UPDATED because
+  /// the question asked afterwards is "who let this person go, and when did
+  /// their documents leave" — a row that looked like any other profile edit
+  /// would not answer it. The purge is recorded once per person with a count
+  /// (FR-E3-28), never per document: the documents are gone, and a list of
+  /// their titles in the audit log would outlive the privacy they had.
+  USER_OFFBOARDED
+  USER_REONBOARDED
+  USER_OFFBOARDING_VAULT_PURGED
   /// Organization structure (SJ-1). Five verbs rather than the generic
   /// CREATE/UPDATE/DELETE above because the question asked of this table
   /// afterwards is "who reorganised the clinic", and a move is the one change
@@ -558,6 +567,16 @@ model User {
   /// non-identity is that the login path refuses it outright, so no password,
   /// reset, or token grant can ever turn it into a session.
   isSystem     Boolean   @default(false) @map("is_system")
+  /// Offboarding state (P16-T41, §7.3.10). Deliberately a column and not a
+  /// role: the reduced capability set — view, download, export and delete
+  /// one's own vault, nothing else — is a hard-coded ability-factory branch,
+  /// and a role could be edited in the portal to widen it. Null for everyone
+  /// not offboarded. Distinct from `isActive`: deactivation is an immediate
+  /// lockout, offboarding a graceful exit with a 30-day export-only window,
+  /// and collapsing the two would hand every dismissed person a month of
+  /// access. The login path refuses sign-in once the window has closed, the
+  /// way it refuses `isSystem`, so the refusal never depends on a job.
+  offboardedAt DateTime? @map("offboarded_at")
   /// Which box on the org chart this person sits in (SJ-1). Nullable because
   /// the chart is optional structure a clinic may never fill in, and because a
   /// staff account must keep working while a reorganisation is half done.
@@ -611,8 +630,11 @@ model User {
   publishedTemplateVersions  DocumentTemplateVersion[]    @relation("DocumentTemplateVersionPublishedBy")
   receivedVaultShares        VaultDocumentShare[]         @relation("VaultDocumentGrantee")
   grantedVaultShares         VaultDocumentShare[]         @relation("VaultDocumentGrantor")
+  offboardingNotices         UserOffboardingNotice[]
 
   @@index([organizationUnitId])
+  /// The offboarding sweep's one read: everyone currently in a window.
+  @@index([offboardedAt])
   @@map("users")
 }
 
@@ -2954,6 +2976,25 @@ model VaultDocumentShare {
   @@index([documentId])
   @@index([grantedById])
   @@map("vault_document_shares")
+}
+
+/// Which offboarding emails and sweeps have already happened for a person
+/// (P16-T41). Keyed by threshold like the vault and licence expiry notices —
+/// 7 for the seven-days-left reminder, 0 for the window closing and the
+/// deletion that goes with it — so a sweep that runs twice in a day is a
+/// no-op and the deletion is audited exactly once. Rows are removed on
+/// re-onboarding, so a second offboarding later starts its notices afresh.
+model UserOffboardingNotice {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  thresholdDays Int      @map("threshold_days")
+  notifiedAt    DateTime @default(now()) @map("notified_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, thresholdDays])
+  @@index([userId])
+  @@map("user_offboarding_notices")
 }
 
 /// One embedded passage of a document — the unit retrieval actually returns.

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Card, CardContent, Icon } from '@hms/ui';
+import { Button, Card, CardContent, Icon, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { NotUsedByAssistantNotice } from '#components/client/vault-documents/not-used-by-assistant-notice';
@@ -33,6 +33,12 @@ import { useVaultDocumentsPage } from '#lib/vault-documents/use-vault-documents-
  */
 export function VaultPanel() {
   const t = useTranslations('vault');
+  const ability = useAbility();
+  // Visibility only, and scope-blind: this decides whether the button
+  // renders, the API decides whether an upload is accepted. An offboarded
+  // person's session carries read and delete and no write (P16-T41), so
+  // their vault shows export and delete and nothing that files anything new.
+  const canUpload = ability.can('write', 'VaultDocument');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -67,11 +73,16 @@ export function VaultPanel() {
           <>
             {/* Disabled only when the vault itself is empty — a filter that
                 matches nothing says nothing about what there is to export. */}
-            <VaultExportButton isDisabled={rows.length === 0 && !hasFilters} onError={handleError} />
-            <Button type="button" onClick={() => setIsUploadOpen(true)}>
-              <Icon name="upload_file" size={18} />
-              {t('header.upload')}
-            </Button>
+            <VaultExportButton
+              isDisabled={rows.length === 0 && !hasFilters}
+              onError={handleError}
+            />
+            {canUpload ? (
+              <Button type="button" onClick={() => setIsUploadOpen(true)}>
+                <Icon name="upload_file" size={18} />
+                {t('header.upload')}
+              </Button>
+            ) : null}
           </>
         }
       />

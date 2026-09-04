@@ -55,6 +55,15 @@ export function setSessionHintCookie(
      * expressed once more rather than inverted here.
      */
     disabledFeatures: readonly string[];
+    /**
+     * When the person's offboarding window closes (P16-T41), or null. Written
+     * as a calendar date under `offboardedUntil` so the web tier can show
+     * "your documents are deleted on the 4th" and pin navigation to the vault
+     * without a lookup. Absent from the cookie entirely for everyone else —
+     * a hint written by an older API has no such field, and the right reading
+     * of that is "not offboarded".
+     */
+    offboardingDeadline: Date | null;
     expiresAt: Date;
   },
 ): void {
@@ -72,6 +81,9 @@ export function setSessionHintCookie(
       // rendered from a fallback preset. See `packPermissionHint`.
       packedPermissions: packPermissionHint(hint.permissions),
       disabledFeatures: hint.disabledFeatures,
+      ...(hint.offboardingDeadline === null
+        ? {}
+        : { offboardedUntil: hint.offboardingDeadline.toISOString().slice(0, 10) }),
       exp: Math.floor(hint.expiresAt.getTime() / 1000),
     }),
   ).toString('base64url');

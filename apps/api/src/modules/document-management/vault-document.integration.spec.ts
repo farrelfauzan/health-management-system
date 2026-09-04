@@ -139,9 +139,7 @@ describe('Vault document integration', () => {
           // does not store `undefined`. Spreading `data` raw would put
           // `undefined` over the nulls above and make this stub disagree with
           // Postgres about what an unset optional reads back as.
-          ...Object.fromEntries(
-            Object.entries(data).filter(([, value]) => value !== undefined),
-          ),
+          ...Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined)),
         };
         documentRows.push(row);
         return Promise.resolve({ ...row });
@@ -237,11 +235,16 @@ describe('Vault document integration', () => {
     });
   }
 
-  /** The two grants `seed.sql` gives DOCTOR over a vault — their own, nothing more. */
+  /**
+   * The grants `seed.sql` gives DOCTOR over a vault — their own, nothing
+   * more. `delete` is its own key since P16-T41, split out of `write` so an
+   * offboarded person can be granted "take a copy, then delete" alone.
+   */
   function mockDoctor(userId: string = DOCTOR_USER_ID): void {
     mockActor(userId, 'DOCTOR', [
       { action: 'read', resource: 'VaultDocument', scope: 'OWN' },
       { action: 'write', resource: 'VaultDocument', scope: 'OWN' },
+      { action: 'delete', resource: 'VaultDocument', scope: 'OWN' },
     ]);
   }
 
@@ -254,6 +257,7 @@ describe('Vault document integration', () => {
     mockActor(ADMIN_USER_ID, 'ADMIN', [
       { action: 'read', resource: 'VaultDocument', scope: 'OWN' },
       { action: 'write', resource: 'VaultDocument', scope: 'OWN' },
+      { action: 'delete', resource: 'VaultDocument', scope: 'OWN' },
       { action: 'read', resource: 'Document', scope: 'ANY' },
       { action: 'write', resource: 'Document', scope: 'ANY' },
       { action: 'read', resource: 'PatientDocument', scope: 'ANY' },

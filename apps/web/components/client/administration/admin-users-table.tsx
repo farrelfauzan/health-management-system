@@ -18,6 +18,7 @@ type AdminUsersTableProps = {
   isError: boolean;
   onEdit: (user: AdminUser) => void;
   onToggleActive: (user: AdminUser) => void;
+  onOffboard: (user: AdminUser) => void;
 };
 
 export function AdminUsersTable({
@@ -26,6 +27,7 @@ export function AdminUsersTable({
   isError,
   onEdit,
   onToggleActive,
+  onOffboard,
 }: AdminUsersTableProps) {
   const t = useTranslations('operations');
   const showEmptyState = !isPending && users.length === 0;
@@ -63,6 +65,7 @@ export function AdminUsersTable({
               user={user}
               onEdit={onEdit}
               onToggleActive={onToggleActive}
+              onOffboard={onOffboard}
             />
           ))
         )}

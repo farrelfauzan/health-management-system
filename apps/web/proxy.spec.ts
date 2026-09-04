@@ -17,7 +17,12 @@ function buildToken(claims: object): string {
 }
 
 /** The API's session hint: base64url JSON, no signature — see SJ-6. */
-function buildSessionHint(claims: { exp: number; roles: string[]; permissions?: string[] }): string {
+function buildSessionHint(claims: {
+  exp: number;
+  roles: string[];
+  permissions?: string[];
+  offboardedUntil?: string;
+}): string {
   return encodeBase64Url(claims);
 }
 
@@ -316,5 +321,63 @@ describe('proxy', () => {
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/dashboard`);
+  });
+
+  describe('offboarding (P16-T41)', () => {
+    const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
+    const offboardedDoctorHint = buildSessionHint({
+      exp: futureUnix(),
+      roles: ['DOCTOR'],
+      permissions: ['portal.doctor-access:any'],
+      offboardedUntil: '2026-10-04',
+    });
+
+    it('pins an offboarded doctor to their vault from every other route', () => {
+      for (const path of ['/doctor/dashboard', '/doctor/encounters', '/admin/administration']) {
+        const response = proxy(buildRequest(path, doctorToken, offboardedDoctorHint));
+
+        expect(response.status).toBe(307);
+        expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/vault`);
+      }
+    });
+
+    it('lets them through to the vault itself', () => {
+      const response = proxy(buildRequest('/doctor/vault', doctorToken, offboardedDoctorHint));
+
+      expect(response.headers.get('x-middleware-next')).toBe('1');
+    });
+
+    it('lands a signed-in offboarded person on their documents, not the dashboard', () => {
+      const response = proxy(buildRequest('/login', doctorToken, offboardedDoctorHint));
+
+      expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/vault`);
+    });
+
+    it('sends an offboarded administrator to the admin vault', () => {
+      const adminToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'] });
+      const adminHint = buildSessionHint({
+        exp: futureUnix(),
+        roles: ['ADMIN'],
+        permissions: ['portal.admin-access:any'],
+        offboardedUntil: '2026-10-04',
+      });
+
+      expect(
+        proxy(buildRequest('/admin/dashboard', adminToken, adminHint)).headers.get('location'),
+      ).toBe(`${BASE_URL}/admin/vault`);
+      expect(
+        proxy(buildRequest('/admin/vault', adminToken, adminHint)).headers.get('x-middleware-next'),
+      ).toBe('1');
+    });
+
+    it('changes nothing for a hint without the field', () => {
+      const plainHint = buildSessionHint({ exp: futureUnix(), roles: ['DOCTOR'] });
+
+      expect(
+        proxy(buildRequest('/doctor/dashboard', doctorToken, plainHint)).headers.get(
+          'x-middleware-next',
+        ),
+      ).toBe('1');
+    });
   });
 });

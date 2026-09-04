@@ -227,7 +227,10 @@ export class VaultDocumentController {
   }
 
   @Delete(':id')
-  @Auth([{ action: 'write', subject: 'VaultDocument' }])
+  // `delete`, not `write`, since P16-T41: an offboarded person's reduced
+  // ability grants read and delete on their own vault and nothing that files
+  // or edits, so the two verbs have to be distinguishable at the guard.
+  @Auth([{ action: 'delete', subject: 'VaultDocument' }])
   @Audited({ resource: VAULT_DOCUMENT_AUDIT_RESOURCE, action: AuditAction.DELETE })
   @ApiEndpoint({
     summary: 'Delete one of your vault documents',

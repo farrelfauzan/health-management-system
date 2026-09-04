@@ -141,4 +141,24 @@ describe('resolveSessionClaims', () => {
       }),
     ).toBeNull();
   });
+
+  it('merges the offboarding deadline from the hint onto a live access token', () => {
+    // P16-T41. The token never carries it; without the merge a fresh token
+    // would render a full shell for a person the API has already reduced.
+    const claims = resolveSessionClaims({
+      accessToken: buildToken({ roles: ['DOCTOR'], exp: futureExp }),
+      sessionHint: buildHint({ roles: ['DOCTOR'], offboardedUntil: '2026-10-04', exp: futureExp }),
+    });
+
+    expect(claims?.offboardedUntil).toBe('2026-10-04');
+  });
+
+  it('reads a hint without the field as not offboarded', () => {
+    const claims = resolveSessionClaims({
+      accessToken: buildToken({ roles: ['DOCTOR'], exp: futureExp }),
+      sessionHint: buildHint({ roles: ['DOCTOR'], exp: futureExp }),
+    });
+
+    expect(claims).not.toHaveProperty('offboardedUntil');
+  });
 });

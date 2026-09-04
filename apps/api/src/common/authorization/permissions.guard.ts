@@ -81,7 +81,14 @@ export class PermissionsGuard implements CanActivate {
       permissions.unshift({ action: 'manage', resource: 'all', scope: 'ANY' as const });
     }
 
-    const ability = this.abilityFactory.createForPermissions(permissions);
+    // Offboarding (P16-T41, §7.3.10.3). A person in their export-only window
+    // gets the hard-coded reduced set and nothing from their roles — decided
+    // here, from the row this guard just loaded, so it takes effect on the
+    // next request rather than the next token refresh. It sits *after* the
+    // SUPER_ADMIN unshift on purpose: an offboarded super admin is offboarded.
+    const ability = user.offboardedAt
+      ? this.abilityFactory.createForOffboardedUser()
+      : this.abilityFactory.createForPermissions(permissions);
 
     try {
       for (const rule of requiredRules) {

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { hasAnyRole, hasPermission } from '#lib/auth/access-token-claims';
+import { OFFBOARDED_VAULT_PATHS } from '#lib/auth/offboarding-session';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 
@@ -62,8 +63,27 @@ export function proxy(request: NextRequest) {
     !hasAdminSession &&
     (hasPermission(claims, PATIENT_PORTAL_PERMISSION) || hasAnyRole(claims, PATIENT_ROLES));
   const pathname = request.nextUrl.pathname;
+  // P16-T41. Someone in their offboarding window has exactly one page: their
+  // own vault, in whichever shell they belong to. Every other route under the
+  // matcher bounces there — including the shell's home — so signing in lands
+  // on their documents and nowhere else. Navigation only, as ever: the API
+  // has already reduced what they can call.
+  const offboardedVaultPath = resolveOffboardedVaultPath();
+
+  function resolveOffboardedVaultPath(): string | null {
+    if (!hasValidSession || !claims.offboardedUntil) {
+      return null;
+    }
+    if (hasAdminSession) {
+      return OFFBOARDED_VAULT_PATHS.admin;
+    }
+    return hasDoctorSession ? OFFBOARDED_VAULT_PATHS.doctor : null;
+  }
 
   function redirectToHome(): NextResponse {
+    if (offboardedVaultPath !== null) {
+      return NextResponse.redirect(new URL(offboardedVaultPath, request.url));
+    }
     if (hasAdminSession) {
       return NextResponse.redirect(new URL(ADMIN_HOME_PATH, request.url));
     }
@@ -91,6 +111,10 @@ export function proxy(request: NextRequest) {
       return buildLoginRedirectWithClearedCookie(request);
     }
     return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
+  }
+
+  if (offboardedVaultPath !== null && pathname !== offboardedVaultPath) {
+    return NextResponse.redirect(new URL(offboardedVaultPath, request.url));
   }
 
   if (pathname.startsWith(PORTAL_PATH_PREFIX)) {

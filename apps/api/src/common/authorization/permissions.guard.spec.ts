@@ -1,5 +1,9 @@
 import { createMongoAbility, ForbiddenError } from '@casl/ability';
-import { ForbiddenException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { AuthRepository } from '../../modules/auth/repository/auth.repository';
@@ -19,6 +23,7 @@ describe('PermissionsGuard', () => {
 
   const abilityFactory = {
     createForPermissions: jest.fn(),
+    createForOffboardedUser: jest.fn(),
   } as unknown as AbilityFactory;
 
   const guard = new PermissionsGuard(reflector, authRepository, abilityFactory);
@@ -52,9 +57,9 @@ describe('PermissionsGuard', () => {
       return undefined;
     });
 
-    await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).rejects.toBeInstanceOf(
-      ForbiddenException,
-    );
+    await expect(
+      guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' })),
+    ).rejects.toBeInstanceOf(ForbiddenException);
     expect(authRepository.findUserById).not.toHaveBeenCalled();
   });
 
@@ -65,9 +70,9 @@ describe('PermissionsGuard', () => {
       return undefined;
     });
 
-    await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).rejects.toBeInstanceOf(
-      ForbiddenException,
-    );
+    await expect(
+      guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' })),
+    ).rejects.toBeInstanceOf(ForbiddenException);
     expect(authRepository.findUserById).not.toHaveBeenCalled();
   });
 
@@ -111,9 +116,9 @@ describe('PermissionsGuard', () => {
       createMongoAbility([{ action: 'read', subject: 'User' }]),
     );
 
-    await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).rejects.toBeInstanceOf(
-      ForbiddenException,
-    );
+    await expect(
+      guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' })),
+    ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
   it('throws internal error on unexpected ability exceptions', async () => {
@@ -148,19 +153,20 @@ describe('PermissionsGuard', () => {
       }),
     });
 
-    const throwUnlessCanSpy = jest
-      .spyOn(ForbiddenError, 'from')
-      .mockImplementation(() => ({
-        setMessage: () => ({
-          throwUnlessCan: () => {
-            throw new Error('boom');
-          },
-        }),
-      }) as any);
-
-    await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).rejects.toBeInstanceOf(
-      InternalServerErrorException,
+    const throwUnlessCanSpy = jest.spyOn(ForbiddenError, 'from').mockImplementation(
+      () =>
+        ({
+          setMessage: () => ({
+            throwUnlessCan: () => {
+              throw new Error('boom');
+            },
+          }),
+        }) as any,
     );
+
+    await expect(
+      guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' })),
+    ).rejects.toBeInstanceOf(InternalServerErrorException);
 
     throwUnlessCanSpy.mockRestore();
   });
@@ -195,6 +201,57 @@ describe('PermissionsGuard', () => {
       createMongoAbility([{ action: 'read', subject: 'Role' }]),
     );
 
-    await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).resolves.toBe(true);
+    await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).resolves.toBe(
+      true,
+    );
+  });
+
+  it('gives an offboarded user the reduced ability and ignores every role they hold', async () => {
+    // P16-T41, §7.3.10.3. The branch is keyed on the row this guard just
+    // loaded, so it takes effect on the next request — and it sits before
+    // any role is looked at, so an offboarded SUPER_ADMIN is offboarded too.
+    (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
+      if (key === PUBLIC_ROUTE_KEY) return false;
+      if (key === PERMISSION_CHECKER_KEY) return [{ action: 'read', subject: 'Patient' }];
+      return undefined;
+    });
+    (authRepository.findUserById as jest.Mock).mockResolvedValue({
+      offboardedAt: new Date('2026-09-04T10:00:00.000Z'),
+      roles: [
+        {
+          role: {
+            code: 'SUPER_ADMIN',
+            permissions: [{ permission: { action: 'read', resource: 'Patient', scope: 'ANY' } }],
+          },
+        },
+      ],
+    });
+    (abilityFactory.createForOffboardedUser as jest.Mock).mockReturnValue(
+      createMongoAbility([{ action: 'read', subject: 'VaultDocument' }]),
+    );
+
+    await expect(
+      guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' })),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(abilityFactory.createForPermissions).not.toHaveBeenCalled();
+  });
+
+  it('still lets an offboarded user reach their own vault', async () => {
+    (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
+      if (key === PUBLIC_ROUTE_KEY) return false;
+      if (key === PERMISSION_CHECKER_KEY) return [{ action: 'read', subject: 'VaultDocument' }];
+      return undefined;
+    });
+    (authRepository.findUserById as jest.Mock).mockResolvedValue({
+      offboardedAt: new Date('2026-09-04T10:00:00.000Z'),
+      roles: [],
+    });
+    (abilityFactory.createForOffboardedUser as jest.Mock).mockReturnValue(
+      createMongoAbility([{ action: 'read', subject: 'VaultDocument' }]),
+    );
+
+    await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).resolves.toBe(
+      true,
+    );
   });
 });

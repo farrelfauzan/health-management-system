@@ -238,7 +238,7 @@ export class VaultDocumentService {
    * refusing to forget a person's own identity documents when they ask.
    */
   async deleteDocument(id: string, actor: CurrentUser): Promise<DeletedVaultDocumentView> {
-    await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'write');
+    await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'delete');
     const result = await this.vaultDocumentRepository.deleteVaultDocument(id, actor.sub);
     if (result === null) {
       throw new NotFoundException('Document not found');
@@ -329,11 +329,7 @@ export class VaultDocumentService {
    * owner reads, the constraint is what keeps the rule true for any writer.
    */
   private assertIssueBeforeExpiry(issuedAt?: string | null, expiresAt?: string | null): void {
-    if (
-      typeof issuedAt === 'string' &&
-      typeof expiresAt === 'string' &&
-      expiresAt < issuedAt
-    ) {
+    if (typeof issuedAt === 'string' && typeof expiresAt === 'string' && expiresAt < issuedAt) {
       throw new BadRequestException('Expiry date cannot precede the issue date');
     }
   }

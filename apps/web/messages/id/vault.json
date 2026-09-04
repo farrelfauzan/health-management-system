@@ -214,6 +214,11 @@
       "errors": {
         "download": "Gagal membuka dokumen ini. Pembagiannya mungkin sudah dicabut."
       }
+    },
+    "offboarding": {
+      "title": "Dokumen Anda akan dihapus pada {date}.",
+      "body": "Sampai saat itu Anda masih dapat masuk untuk melihat, mengunduh, mengekspor, dan menghapusnya, dan tidak ada yang lain. Dokumen yang telah Anda bagikan tetap dapat dibuka oleh penerimanya.",
+      "cta": "Ekspor semuanya"
     }
   }
 }

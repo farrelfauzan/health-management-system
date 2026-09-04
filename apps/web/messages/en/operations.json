@@ -644,6 +644,31 @@
         "errors": {
           "saveFailed": "Unable to save the clinic profile. Please try again."
         }
+      },
+      "offboarding": {
+        "offboard": "Offboard",
+        "reonboard": "Re-onboard",
+        "badge": "Offboarding",
+        "offboardTitle": "Offboard {email}?",
+        "offboardDescription": "Not deactivation. This person keeps signing in for 30 days with exactly one thing they can do: view, download, export and delete their own documents.",
+        "reonboardTitle": "Re-onboard this user?",
+        "reonboardDescription": "Cancels the offboarding. Nothing will be deleted, and their normal access is restored on their next request.",
+        "previewLoading": "Counting their documents…",
+        "previewError": "Could not load what would happen. Try again in a moment.",
+        "preview": {
+          "deletionDate": "Deletion date",
+          "unshared": "Will be deleted",
+          "unsharedValue": "{count, plural, =0 {no documents} =1 {1 document they have not shared} other {# documents they have not shared}}",
+          "shared": "Will survive",
+          "sharedValue": "{count, plural, =0 {no documents} =1 {1 shared document, readable by the person it was shared with} other {# shared documents, readable by the people they were shared with}}"
+        },
+        "offboardConsequences": "Right now: every session they hold ends, and from their next request they can reach only their own documents. They will receive an email today and again with seven days left, naming the date and how to export.",
+        "reonboardConsequences": "Anything the deletion already removed after the window closed is gone; everything else is exactly as they left it.",
+        "offboardConfirm": "Offboard",
+        "reonboardConfirm": "Re-onboard",
+        "cancel": "Cancel",
+        "pending": "Working…",
+        "error": "Could not update this user's offboarding. Please try again."
       }
     },
     "rooms": {

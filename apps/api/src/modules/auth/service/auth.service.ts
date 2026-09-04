@@ -8,9 +8,12 @@ import {
   IssueRefreshTokenInput,
   JwtPayload,
   IssuedSession,
+  isOffboardingWindowClosed,
   LoginOutcome,
   LogoutResult,
   MfaRequirement,
+  OFFBOARDED_PERMISSION_KEYS,
+  resolveOffboardingDeadline,
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -31,6 +34,21 @@ import { MfaTicketService } from './mfa-ticket.service';
 
 /** 256 bits, per SJ-6. */
 const REFRESH_TOKEN_BYTES = 32;
+
+/** Offboarding deadlines are clinic calendar days (P16-T41). */
+const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
+
+/**
+ * The shape of a user row as the login and refresh paths see it, narrowed to
+ * what the offboarding decisions need.
+ */
+type SessionUserRecord = {
+  offboardedAt: Date | null;
+  roles: Array<{
+    unassignedAt: Date | null;
+    role: { code: string; permissions: Array<{ permission: { permissionKey: string } }> };
+  }>;
+};
 
 /**
  * How long a just-consumed token stays acceptable. Two tabs waking from the
@@ -120,6 +138,15 @@ export class AuthService {
       await this.passwordHasher.verifyAgainstDummy(payload.password);
       throw await this.buildLoginFailure({ identifierHash, origin, userId: user.id });
     }
+    // Offboarding (P16-T41, FR-E3-26): once the export-only window has
+    // closed, sign-in is refused *here*, on the login path, the way a service
+    // account is — not by relying on the deletion sweep having run. Inside
+    // the window the person signs in, with the reduced claim set below, and
+    // lands on their documents.
+    if (this.hasOffboardingWindowClosed(user)) {
+      await this.passwordHasher.verifyAgainstDummy(payload.password);
+      throw await this.buildLoginFailure({ identifierHash, origin, userId: user.id });
+    }
     const isValidPassword = await this.passwordHasher.verifyPassword(
       user.passwordHash,
       payload.password,
@@ -137,7 +164,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       roles: this.resolveActiveRoleCodes(user.roles),
-      permissions: this.resolveActivePermissionCodes(user.roles),
+      permissions: this.resolveSessionPermissionCodes(user),
     };
     const requirement = this.mfaEnforcement.evaluate(claims.permissions);
     const secondFactorTicket = await this.resolveSecondFactorTicket(user.id, requirement);
@@ -146,7 +173,12 @@ export class AuthService {
     }
     return {
       kind: 'SESSION',
-      session: await this.issueSession(claims, origin, AuditAction.USER_LOGIN),
+      session: await this.issueSession(
+        claims,
+        origin,
+        AuditAction.USER_LOGIN,
+        this.resolveOffboardingDeadline(user),
+      ),
       enrolmentRequired: requirement.isPrivileged && this.mfaEnforcement.isEnforceable,
       enrolmentDeadline: requirement.graceUntil,
     };
@@ -178,7 +210,11 @@ export class AuthService {
     // grace period is over, and never on a deployment that has no encryption
     // key — without one, enrolment is impossible and refusing here would lock
     // every administrator out with no way back in.
-    if (!requirement.isPrivileged || requirement.isWithinGrace || !this.mfaEnforcement.isEnforceable) {
+    if (
+      !requirement.isPrivileged ||
+      requirement.isWithinGrace ||
+      !this.mfaEnforcement.isEnforceable
+    ) {
       return null;
     }
     return {
@@ -194,9 +230,12 @@ export class AuthService {
    * place a refresh-token family is born, called from login, from a completed
    * MFA challenge, and from a completed forced enrolment.
    */
-  async issueSessionForVerifiedUser(userId: string, origin: RequestContext): Promise<IssuedSession> {
+  async issueSessionForVerifiedUser(
+    userId: string,
+    origin: RequestContext,
+  ): Promise<IssuedSession> {
     const user = await this.authRepository.findUserById(userId);
-    if (!user) {
+    if (!user || this.hasOffboardingWindowClosed(user)) {
       throw new UnauthorizedException('Invalid credentials');
     }
     return this.issueSession(
@@ -204,10 +243,11 @@ export class AuthService {
         sub: user.id,
         email: user.email,
         roles: this.resolveActiveRoleCodes(user.roles),
-        permissions: this.resolveActivePermissionCodes(user.roles),
+        permissions: this.resolveSessionPermissionCodes(user),
       },
       origin,
       AuditAction.USER_LOGIN,
+      this.resolveOffboardingDeadline(user),
     );
   }
 
@@ -215,6 +255,7 @@ export class AuthService {
     claims: JwtPayload,
     origin: RequestContext,
     auditAction: AuditAction,
+    offboardingDeadline: Date | null,
   ): Promise<IssuedSession> {
     const accessToken = await this.issueAccessToken(claims);
     const issuedRefreshToken = this.issueRefreshToken({
@@ -242,6 +283,7 @@ export class AuthService {
       refreshTokenMaxAgeMs: issuedRefreshToken.record.expiresAt.getTime() - Date.now(),
       roles: claims.roles,
       permissions: claims.permissions,
+      offboardingDeadline,
       sessionExpiresAt: issuedRefreshToken.record.expiresAt,
     };
   }
@@ -304,7 +346,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
     const user = await this.authRepository.findUserById(result.userId ?? '');
-    if (!user) {
+    // A closed offboarding window ends a live session at its next refresh,
+    // exactly as a vanished user does: the family is revoked so the token
+    // just consumed cannot be replayed into a longer stay (P16-T41).
+    if (!user || this.hasOffboardingWindowClosed(user)) {
       await this.authRepository.revokeRefreshTokenFamily(family.familyId);
       throw new UnauthorizedException('Invalid refresh token');
     }
@@ -312,7 +357,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       roles: this.resolveActiveRoleCodes(user.roles),
-      permissions: this.resolveActivePermissionCodes(user.roles),
+      permissions: this.resolveSessionPermissionCodes(user),
     };
     await this.assertSecondFactorSatisfied(user.id, claims.permissions);
     const accessToken = await this.issueAccessToken(claims);
@@ -334,6 +379,7 @@ export class AuthService {
       refreshTokenMaxAgeMs: nextToken.record.expiresAt.getTime() - Date.now(),
       roles: claims.roles,
       permissions: claims.permissions,
+      offboardingDeadline: this.resolveOffboardingDeadline(user),
       sessionExpiresAt: nextToken.record.expiresAt,
     };
   }
@@ -549,6 +595,45 @@ export class AuthService {
       );
 
     return [...new Set(permissionKeys)].sort();
+  }
+
+  /**
+   * The permission claims a session carries (P16-T41).
+   *
+   * For everyone not offboarded, every key their roles grant. For a person in
+   * their offboarding window, the `portal.*` keys of their roles — so they
+   * still resolve to their own shell — plus exactly the reduced vault set,
+   * and nothing else their roles would have granted. The web renders its
+   * navigation and CASL ability from these, so the sidebar shows what the
+   * guard will allow rather than a full menu of routes that all 403.
+   */
+  private resolveSessionPermissionCodes(user: SessionUserRecord): string[] {
+    const grantedKeys = this.resolveActivePermissionCodes(user.roles);
+    if (!user.offboardedAt) {
+      return grantedKeys;
+    }
+    const portalKeys = grantedKeys.filter((permissionKey) =>
+      permissionKey.startsWith(PORTAL_PERMISSION_PREFIX),
+    );
+    return [...new Set([...portalKeys, ...OFFBOARDED_PERMISSION_KEYS])].sort();
+  }
+
+  private resolveOffboardingDeadline(user: Pick<SessionUserRecord, 'offboardedAt'>): Date | null {
+    if (!user.offboardedAt) {
+      return null;
+    }
+    return resolveOffboardingDeadline(user.offboardedAt, this.resolveClinicTimeZone());
+  }
+
+  private hasOffboardingWindowClosed(user: Pick<SessionUserRecord, 'offboardedAt'>): boolean {
+    if (!user.offboardedAt) {
+      return false;
+    }
+    return isOffboardingWindowClosed(user.offboardedAt, new Date(), this.resolveClinicTimeZone());
+  }
+
+  private resolveClinicTimeZone(): string {
+    return this.configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
   }
 
   /**

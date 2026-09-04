@@ -35,7 +35,10 @@ import type {
   UserInvitationAdminControllerResendInvitationV1201,
   UserInvitationAdminControllerRevokeInvitationV1200,
   UserInvitationPublicControllerAcceptInvitationV1201,
-  UserInvitationPublicControllerPreviewInvitationV1200
+  UserInvitationPublicControllerPreviewInvitationV1200,
+  UserOffboardingControllerOffboardUserV1200,
+  UserOffboardingControllerPreviewOffboardingV1200,
+  UserOffboardingControllerReonboardUserV1200
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -335,6 +338,282 @@ export function useAdminManagementControllerUpdateAdminUserV1<TData = Awaited<Re
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAdminManagementControllerUpdateAdminUserV1QueryOptions(id,updateAdminUserDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Preview what offboarding a user would delete and keep
+ */
+export const userOffboardingControllerPreviewOffboardingV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<UserOffboardingControllerPreviewOffboardingV1200>(
+      {url: `/api/v1/users/${id}/offboarding`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getUserOffboardingControllerPreviewOffboardingV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/users/${id}/offboarding`
+    ] as const;
+    }
+
+
+export const getUserOffboardingControllerPreviewOffboardingV1QueryOptions = <TData = Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserOffboardingControllerPreviewOffboardingV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>> = ({ signal }) => userOffboardingControllerPreviewOffboardingV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserOffboardingControllerPreviewOffboardingV1QueryResult = NonNullable<Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>>
+export type UserOffboardingControllerPreviewOffboardingV1QueryError = unknown
+
+
+export function useUserOffboardingControllerPreviewOffboardingV1<TData = Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>,
+          TError,
+          Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserOffboardingControllerPreviewOffboardingV1<TData = Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>,
+          TError,
+          Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserOffboardingControllerPreviewOffboardingV1<TData = Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Preview what offboarding a user would delete and keep
+ */
+
+export function useUserOffboardingControllerPreviewOffboardingV1<TData = Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerPreviewOffboardingV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserOffboardingControllerPreviewOffboardingV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Offboard a user into the 30-day export-only window
+ */
+export const userOffboardingControllerOffboardUserV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<UserOffboardingControllerOffboardUserV1200>(
+      {url: `/api/v1/users/${id}/offboarding`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getUserOffboardingControllerOffboardUserV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/users/${id}/offboarding`
+    ] as const;
+    }
+
+
+export const getUserOffboardingControllerOffboardUserV1QueryOptions = <TData = Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserOffboardingControllerOffboardUserV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>> = ({ signal }) => userOffboardingControllerOffboardUserV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserOffboardingControllerOffboardUserV1QueryResult = NonNullable<Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>>
+export type UserOffboardingControllerOffboardUserV1QueryError = unknown
+
+
+export function useUserOffboardingControllerOffboardUserV1<TData = Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>,
+          TError,
+          Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserOffboardingControllerOffboardUserV1<TData = Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>,
+          TError,
+          Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserOffboardingControllerOffboardUserV1<TData = Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Offboard a user into the 30-day export-only window
+ */
+
+export function useUserOffboardingControllerOffboardUserV1<TData = Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerOffboardUserV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserOffboardingControllerOffboardUserV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Re-onboard a user, cancelling their offboarding window
+ */
+export const userOffboardingControllerReonboardUserV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<UserOffboardingControllerReonboardUserV1200>(
+      {url: `/api/v1/users/${id}/offboarding`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getUserOffboardingControllerReonboardUserV1QueryKey = (id: string,) => {
+    return [
+    'DELETE', `/api/v1/users/${id}/offboarding`
+    ] as const;
+    }
+
+
+export const getUserOffboardingControllerReonboardUserV1QueryOptions = <TData = Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUserOffboardingControllerReonboardUserV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>> = ({ signal }) => userOffboardingControllerReonboardUserV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UserOffboardingControllerReonboardUserV1QueryResult = NonNullable<Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>>
+export type UserOffboardingControllerReonboardUserV1QueryError = unknown
+
+
+export function useUserOffboardingControllerReonboardUserV1<TData = Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>,
+          TError,
+          Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserOffboardingControllerReonboardUserV1<TData = Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>,
+          TError,
+          Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUserOffboardingControllerReonboardUserV1<TData = Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Re-onboard a user, cancelling their offboarding window
+ */
+
+export function useUserOffboardingControllerReonboardUserV1<TData = Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof userOffboardingControllerReonboardUserV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUserOffboardingControllerReonboardUserV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

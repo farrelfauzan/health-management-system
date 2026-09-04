@@ -51,6 +51,12 @@ export function resolveSessionClaims({
         ...new Set([...(accessClaims?.permissions ?? []), ...(hintClaims?.permissions ?? [])]),
       ],
       disabledFeatures: hintClaims?.disabledFeatures ?? [],
+      // Likewise the offboarding deadline (P16-T41): the token never carries
+      // it, so a fresh token would otherwise render a full shell for a
+      // person the API has already reduced to their vault.
+      ...(hintClaims?.offboardedUntil === undefined
+        ? {}
+        : { offboardedUntil: hintClaims.offboardedUntil }),
     };
   }
   return isAccessTokenExpired(hintClaims) ? null : hintClaims;

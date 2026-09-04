@@ -1,4 +1,4 @@
-import { ListUsersParams } from '@hms/shared-types';
+import { ListUsersParams, OffboardedUserRecord } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
@@ -245,5 +245,88 @@ export class AdminManagementRepository {
     });
 
     return this.findActiveUserById(userId);
+  }
+
+  /**
+   * The row the offboarding action decides on (P16-T41): the state it needs
+   * and nothing a super admin should not see on the way — no password hash.
+   */
+  async findUserForOffboarding(id: string) {
+    return this.prisma.findUniqueActive(this.prisma.user, {
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        isActive: true,
+        isSystem: true,
+        offboardedAt: true,
+        roles: {
+          where: { deletedAt: null },
+          select: { role: { select: { code: true } } },
+        },
+      },
+    });
+  }
+
+  async markOffboarded(userId: string, offboardedAt: Date): Promise<void> {
+    await this.prisma.user.update({ where: { id: userId }, data: { offboardedAt } });
+  }
+
+  /**
+   * Re-onboarding clears the state and every notice with it, so a person
+   * offboarded again a year later is warned again rather than silently
+   * skipped because the seven-day row already exists.
+   */
+  async clearOffboarded(userId: string): Promise<void> {
+    await this.prisma.executeTransaction(async (tx) => {
+      await tx.user.update({ where: { id: userId }, data: { offboardedAt: null } });
+      await tx.userOffboardingNotice.deleteMany({ where: { userId } });
+    });
+  }
+
+  /**
+   * Everyone currently in a window, for the sweep. Deliberately not filtered
+   * on `isActive`: a person deactivated mid-window is locked out, but the
+   * date they were promised still arrives and their documents still leave.
+   */
+  async listOffboardedUsers(): Promise<OffboardedUserRecord[]> {
+    const rows = await this.prisma.findManyActive(this.prisma.user, {
+      where: { offboardedAt: { not: null } },
+      select: {
+        id: true,
+        email: true,
+        isActive: true,
+        offboardedAt: true,
+        roles: { where: { deletedAt: null }, select: { role: { select: { code: true } } } },
+      },
+      orderBy: { offboardedAt: 'asc' },
+    });
+    return rows.flatMap((row) =>
+      row.offboardedAt === null
+        ? []
+        : [
+            {
+              id: row.id,
+              email: row.email,
+              isActive: row.isActive,
+              offboardedAt: row.offboardedAt,
+              roleCodes: row.roles.map((userRole) => userRole.role.code),
+            },
+          ],
+    );
+  }
+
+  /**
+   * Claims one notice threshold for one person, and reports whether this
+   * call was the one that claimed it. `skipDuplicates` makes the unique index
+   * the arbiter, so two sweeps racing cannot both send the reminder or both
+   * run the purge — the same shape as the vault and licence expiry notices.
+   */
+  async claimOffboardingNotice(userId: string, thresholdDays: number): Promise<boolean> {
+    const result = await this.prisma.userOffboardingNotice.createMany({
+      data: [{ userId, thresholdDays }],
+      skipDuplicates: true,
+    });
+    return result.count > 0;
   }
 }

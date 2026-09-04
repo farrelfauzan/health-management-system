@@ -162,9 +162,12 @@ describe('AuthService', () => {
    */
   it('carries only the portal permissions on the access token', async () => {
     const actualSession = await loginForSession();
-    const accessPayload = await jwtService.verifyAsync<JwtPayload>(actualSession.tokens.accessToken, {
-      secret: 'test-access-secret',
-    });
+    const accessPayload = await jwtService.verifyAsync<JwtPayload>(
+      actualSession.tokens.accessToken,
+      {
+        secret: 'test-access-secret',
+      },
+    );
 
     expect(accessPayload.permissions).toEqual(['portal.admin-access:any']);
     expect(accessPayload.roles).toEqual(['ADMIN', 'DOCTOR']);
@@ -225,8 +228,9 @@ describe('AuthService', () => {
     const actualSession = await loginForSession();
 
     expect(actualSession.refreshToken).not.toContain('.');
-    expect(() => JSON.parse(Buffer.from(actualSession.refreshToken, 'base64url').toString('utf8')))
-      .toThrow();
+    expect(() =>
+      JSON.parse(Buffer.from(actualSession.refreshToken, 'base64url').toString('utf8')),
+    ).toThrow();
     expect(Buffer.from(actualSession.refreshToken, 'base64url')).toHaveLength(32);
   });
 
@@ -242,7 +246,10 @@ describe('AuthService', () => {
       roles: [
         {
           unassignedAt: null,
-          role: { code: 'ADMIN', permissions: [{ permission: { permissionKey: 'user.read:any' } }] },
+          role: {
+            code: 'ADMIN',
+            permissions: [{ permission: { permissionKey: 'user.read:any' } }],
+          },
         },
       ],
     });
@@ -352,5 +359,83 @@ describe('AuthService', () => {
       success: true,
     });
     expect(authRepositoryMock.revokeRefreshTokenFamily).not.toHaveBeenCalled();
+  });
+
+  describe('offboarding (P16-T41)', () => {
+    const DAY_MS = 24 * 60 * 60 * 1000;
+
+    it('signs an offboarded user in with the reduced claim set and the deadline, inside the window', async () => {
+      const offboardedAt = new Date(Date.now() - DAY_MS);
+      (authRepositoryMock.findUserByEmail as jest.Mock).mockResolvedValue({
+        ...user,
+        offboardedAt,
+      });
+
+      const actualSession = await loginForSession();
+
+      // The portal key survives so they resolve to their own shell; every
+      // other role grant is replaced by exactly the vault set. The web
+      // renders its navigation from this, so the sidebar shows what the guard
+      // will allow rather than a menu of routes that all 403.
+      expect(actualSession.permissions).toEqual([
+        'portal.admin-access:any',
+        'vault-document.delete:own',
+        'vault-document.read:own',
+      ]);
+      expect(actualSession.offboardingDeadline).not.toBeNull();
+      expect(actualSession.offboardingDeadline!.getTime() - offboardedAt.getTime()).toBeGreaterThan(
+        28 * DAY_MS,
+      );
+    });
+
+    it('carries no deadline for everyone else', async () => {
+      const actualSession = await loginForSession();
+
+      expect(actualSession.offboardingDeadline).toBeNull();
+    });
+
+    it('refuses to sign in once the window has closed, on the login path itself', async () => {
+      // FR-E3-26: correct on the right day whether or not the deletion sweep
+      // has run, and indistinguishable from any other failed login.
+      (authRepositoryMock.findUserByEmail as jest.Mock).mockResolvedValue({
+        ...user,
+        offboardedAt: new Date(Date.now() - 31 * DAY_MS),
+      });
+
+      await expect(
+        service.login({ email: user.email, password: 'password123' }, TEST_ORIGIN),
+      ).rejects.toBeInstanceOf(UnauthorizedException);
+      expect(authRepositoryMock.createRefreshToken).not.toHaveBeenCalled();
+    });
+
+    it('ends a live session at its next refresh once the window has closed', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValueOnce({
+        ...user,
+        offboardedAt: new Date(Date.now() - 31 * DAY_MS),
+      });
+
+      await expect(service.refresh('any-opaque-token', TEST_ORIGIN)).rejects.toBeInstanceOf(
+        UnauthorizedException,
+      );
+      // The family is revoked so the token just consumed cannot be replayed
+      // into a longer stay.
+      expect(authRepositoryMock.revokeRefreshTokenFamily).toHaveBeenCalledWith('family-1');
+    });
+
+    it('narrows the claims on refresh too, so a stale full-set token is not re-minted', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValueOnce({
+        ...user,
+        offboardedAt: new Date(Date.now() - DAY_MS),
+      });
+
+      const actualSession = await service.refresh('any-opaque-token', TEST_ORIGIN);
+
+      expect(actualSession.permissions).toEqual([
+        'portal.admin-access:any',
+        'vault-document.delete:own',
+        'vault-document.read:own',
+      ]);
+      expect(actualSession.offboardingDeadline).not.toBeNull();
+    });
   });
 });
