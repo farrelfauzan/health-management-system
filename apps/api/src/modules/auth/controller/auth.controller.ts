@@ -104,6 +104,7 @@ export class AuthController {
     setSessionHintCookie(response, {
       roles: session.roles,
       permissions: session.permissions,
+      offboardingDeadline: session.offboardingDeadline,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
@@ -149,6 +150,7 @@ export class AuthController {
     setSessionHintCookie(response, {
       roles: session.roles,
       permissions: session.permissions,
+      offboardingDeadline: session.offboardingDeadline,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
@@ -236,9 +238,7 @@ export class AuthController {
   })
   async recordSessionActivity(@Req() request: RefreshTokenCookieCarrier) {
     const refreshToken = readRefreshTokenCookie(request);
-    const alive = refreshToken
-      ? await this.authService.recordSessionActivity(refreshToken)
-      : false;
+    const alive = refreshToken ? await this.authService.recordSessionActivity(refreshToken) : false;
 
     return {
       data: {
@@ -339,6 +339,7 @@ export class AuthController {
     setSessionHintCookie(response, {
       roles: session.roles,
       permissions: session.permissions,
+      offboardingDeadline: session.offboardingDeadline,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
@@ -377,6 +378,7 @@ export class AuthController {
     setSessionHintCookie(response, {
       roles: session.roles,
       permissions: session.permissions,
+      offboardingDeadline: session.offboardingDeadline,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });

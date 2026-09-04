@@ -25,6 +25,10 @@ describe('Vault document RBAC seed', () => {
   const VAULT_DOCUMENT_PERMISSION_KEYS = [
     'vault-document.read:own',
     'vault-document.write:own',
+    // P16-T41. Split out of `write:own` so an offboarded person can be
+    // granted exactly "take a copy, then delete" without also being able to
+    // file anything new.
+    'vault-document.delete:own',
     // P16-T34. Separate from `write:own` for the same reason
     // `invoice.deliver:any` is separate from `invoice.write:any`: handing a
     // document to someone is a different act from editing it, and a
@@ -42,11 +46,21 @@ describe('Vault document RBAC seed', () => {
   const EXPECTED_BINDINGS: ReadonlyArray<readonly [string, readonly string[]]> = [
     [
       'ADMIN',
-      ['vault-document.read:own', 'vault-document.write:own', 'vault-document.share:own'],
+      [
+        'vault-document.read:own',
+        'vault-document.write:own',
+        'vault-document.delete:own',
+        'vault-document.share:own',
+      ],
     ],
     [
       'DOCTOR',
-      ['vault-document.read:own', 'vault-document.write:own', 'vault-document.share:own'],
+      [
+        'vault-document.read:own',
+        'vault-document.write:own',
+        'vault-document.delete:own',
+        'vault-document.share:own',
+      ],
     ],
     ['PATIENT', []],
     ['PHARMACIST', []],

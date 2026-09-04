@@ -108,6 +108,14 @@ export type IssuedSession = {
    * expires (IMP-3). Never an authorisation input.
    */
   permissions: string[];
+  /**
+   * The clinic calendar day this person's offboarding window closes, or null
+   * for everyone not offboarded (`P16-T41`). Feeds the session-hint cookie so
+   * the web tier can render the banner and the reduced navigation; like
+   * `roles` and `permissions` it is a rendering input, never authorisation —
+   * the API's guard branches on the database row on every request.
+   */
+  offboardingDeadline: Date | null;
   sessionExpiresAt: Date;
 };
 

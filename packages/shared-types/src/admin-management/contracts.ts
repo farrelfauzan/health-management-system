@@ -21,6 +21,13 @@ export type AdminUser = {
   fullName?: string;
   email: string;
   isActive: boolean;
+  /**
+   * Set while the person is in their offboarding window (`P16-T41`). Distinct
+   * from `isActive === false`: deactivation is an immediate lockout,
+   * offboarding a graceful exit with vault-only access until the deadline.
+   * Absent for everyone not offboarded.
+   */
+  offboardedAt?: string;
   createdAt: string;
   updatedAt: string;
   roles: AdminUserRole[];

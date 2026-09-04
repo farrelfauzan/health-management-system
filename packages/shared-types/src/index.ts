@@ -102,3 +102,5 @@ export * from '#user-invitation/types';
 export * from '#organization-structure/schemas';
 export * from '#organization-structure/contracts';
 export * from '#organization-structure/types';
+export * from '#user-offboarding/types';
+export * from '#user-offboarding/contracts';

@@ -23,6 +23,7 @@ import { VaultDocumentAccessService } from './service/vault-document-access.serv
 import { VaultDocumentService } from './service/vault-document.service';
 import { VaultDocumentExpiryWorker } from './service/vault-document-expiry.worker';
 import { VaultDocumentShareService } from './service/vault-document-share.service';
+import { VaultOffboardingService } from './service/vault-offboarding.service';
 import { DocumentIngestionService } from './service/document-ingestion.service';
 import { DocumentIngestionWorker } from './service/document-ingestion.worker';
 import { DocumentRetrievalService } from './service/document-retrieval.service';
@@ -101,6 +102,7 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     VaultDocumentService,
     VaultDocumentExpiryWorker,
     VaultDocumentShareService,
+    VaultOffboardingService,
     DocumentChunkRepository,
     DocumentRetrievalRepository,
     DocumentService,
@@ -124,6 +126,10 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     // name a visibility and an owner, which is the whole thing `PCS-T04`
     // removed.
     FaqSearchService,
+    // Exported for `AdminManagementModule`'s offboarding action and sweep
+    // (`P16-T41`): the count a super admin confirms and the end-of-window
+    // purge, behind a service, so no other module reaches a vault repository.
+    VaultOffboardingService,
   ],
 })
 export class DocumentManagementModule {}

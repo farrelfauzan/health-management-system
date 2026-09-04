@@ -4,8 +4,13 @@ import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/c
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 
-/** The three things a person can be granted over their own vault. */
-export type VaultDocumentAction = 'read' | 'write' | 'share';
+/**
+ * The four things a person can be granted over their own vault. `delete` is
+ * separate from `write` since `P16-T41`, so an offboarded person can be
+ * granted exactly "take a copy, then delete" without also being able to file
+ * anything new.
+ */
+export type VaultDocumentAction = 'read' | 'write' | 'delete' | 'share';
 
 /**
  * Which vault the actor owns, and whether they may act on it at `OWN` scope

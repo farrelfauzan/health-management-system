@@ -93,7 +93,9 @@
     "#document-templates/template-variables": "./src/document-templates/template-variables.ts",
     "#document-templates/schemas": "./src/document-templates/schemas.ts",
     "#document-templates/contracts": "./src/document-templates/contracts.ts",
-    "#document-templates/types": "./src/document-templates/types.ts"
+    "#document-templates/types": "./src/document-templates/types.ts",
+    "#user-offboarding/types": "./src/user-offboarding/types.ts",
+    "#user-offboarding/contracts": "./src/user-offboarding/contracts.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

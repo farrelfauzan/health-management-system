@@ -52,6 +52,7 @@ export class AdminManagementService {
         email: user.email,
         ...(user.doctorProfile?.fullName ? { fullName: user.doctorProfile.fullName } : {}),
         isActive: user.isActive,
+        ...(user.offboardedAt ? { offboardedAt: user.offboardedAt.toISOString() } : {}),
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         roles: user.roles.map((userRole) => ({
@@ -109,6 +110,7 @@ export class AdminManagementService {
       id: createdUser.id,
       email: createdUser.email,
       isActive: createdUser.isActive,
+      ...(createdUser.offboardedAt ? { offboardedAt: createdUser.offboardedAt.toISOString() } : {}),
       createdAt: createdUser.createdAt,
       updatedAt: createdUser.updatedAt,
       roles: createdUser.roles.map((userRole) => ({
@@ -126,7 +128,9 @@ export class AdminManagementService {
     }
 
     if (payload.email && payload.email !== user.email) {
-      const existingUser = await this.adminManagementRepository.findActiveUserByEmail(payload.email);
+      const existingUser = await this.adminManagementRepository.findActiveUserByEmail(
+        payload.email,
+      );
 
       if (existingUser && existingUser.id !== id) {
         throw new ConflictException('User email already exists');
@@ -179,6 +183,7 @@ export class AdminManagementService {
       id: updatedUser.id,
       email: updatedUser.email,
       isActive: updatedUser.isActive,
+      ...(updatedUser.offboardedAt ? { offboardedAt: updatedUser.offboardedAt.toISOString() } : {}),
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
       roles: updatedUser.roles.map((userRole) => ({
@@ -192,7 +197,10 @@ export class AdminManagementService {
    * Only SUPER_ADMIN actors may grant privileged roles; a plain ADMIN with
    * user.create:any / user.update:any must not be able to mint a SUPER_ADMIN.
    */
-  private async assertCanAssignRoleCodes(roleCodes: string[], currentUserId: string): Promise<void> {
+  private async assertCanAssignRoleCodes(
+    roleCodes: string[],
+    currentUserId: string,
+  ): Promise<void> {
     const hasPrivilegedRoleCode = roleCodes.some((roleCode) => PRIVILEGED_ROLE_CODES.has(roleCode));
     if (!hasPrivilegedRoleCode) {
       return;

@@ -6,11 +6,13 @@ import {
   DocumentPage,
   DocumentRecord,
   ListVaultDocumentsParams,
+  OffboardingVaultSummary,
+  UnsharedVaultDocumentRecord,
   UpdateVaultDocumentData,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
-import { Document } from '../../../generated/prisma/client';
+import { Document, Prisma } from '../../../generated/prisma/client';
 import { buildVaultDocumentSearchWhere } from './build-vault-document-search-where';
 import { toDocumentRecord } from './to-document-record';
 
@@ -114,7 +116,10 @@ export class VaultDocumentRepository {
    * request. Expiry notices cascade; the caller deletes the stored object
    * using the returned key.
    */
-  async deleteVaultDocument(id: string, ownerId: string): Promise<DeleteVaultDocumentResult | null> {
+  async deleteVaultDocument(
+    id: string,
+    ownerId: string,
+  ): Promise<DeleteVaultDocumentResult | null> {
     return this.prismaService.$transaction(async (transaction) => {
       const row = await transaction.document.findFirst({
         where: { id, ownerId, purpose: 'DOCTOR_VAULT', deletedAt: null },
@@ -126,6 +131,69 @@ export class VaultDocumentRepository {
       await transaction.document.delete({ where: { id: row.id } });
       return { id: row.id, storageKey: row.storageKey };
     });
+  }
+
+  /**
+   * What survives an offboarding and what does not (P16-T41, FR-E3-31).
+   *
+   * "Shared" means *held by someone who can open it right now*: a share that
+   * was revoked, has expired, or points at an account that is gone, inactive
+   * or itself offboarded keeps nothing alive. The two counts are computed
+   * from the same predicate the purge deletes by, so the number the super
+   * admin confirms is the number that leaves.
+   */
+  async countVaultDocumentsByShareState(
+    ownerId: string,
+    now: Date,
+  ): Promise<OffboardingVaultSummary> {
+    const [sharedDocumentCount, unsharedDocumentCount] = await Promise.all([
+      this.prismaService.document.count({
+        where: {
+          ...this.buildOwnedVaultWhere(ownerId),
+          vaultShares: { some: this.buildLiveShareWhere(now) },
+        },
+      }),
+      this.prismaService.document.count({
+        where: {
+          ...this.buildOwnedVaultWhere(ownerId),
+          vaultShares: { none: this.buildLiveShareWhere(now) },
+        },
+      }),
+    ]);
+    return { sharedDocumentCount, unsharedDocumentCount };
+  }
+
+  /** The rows the end-of-window purge removes, with the objects behind them. */
+  async listUnsharedVaultDocuments(
+    ownerId: string,
+    now: Date,
+  ): Promise<UnsharedVaultDocumentRecord[]> {
+    return this.prismaService.document.findMany({
+      where: {
+        ...this.buildOwnedVaultWhere(ownerId),
+        vaultShares: { none: this.buildLiveShareWhere(now) },
+      },
+      select: { id: true, storageKey: true },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  /**
+   * **Hard**-deletes the named rows, and only if they are still this owner's
+   * vault documents. Expiry notices and shares cascade; the caller deletes
+   * the stored objects using the keys it listed beforehand.
+   */
+  async deleteVaultDocumentsByIds(
+    ownerId: string,
+    documentIds: readonly string[],
+  ): Promise<number> {
+    if (documentIds.length === 0) {
+      return 0;
+    }
+    const result = await this.prismaService.document.deleteMany({
+      where: { ...this.buildOwnedVaultWhere(ownerId), id: { in: [...documentIds] } },
+    });
+    return result.count;
   }
 
   /**
@@ -180,5 +248,22 @@ export class VaultDocumentRepository {
       },
       orderBy: [{ expiresAt: 'asc' }, { id: 'asc' }],
     });
+  }
+
+  private buildOwnedVaultWhere(ownerId: string): Prisma.DocumentWhereInput {
+    return { ownerId, purpose: 'DOCTOR_VAULT', deletedAt: null };
+  }
+
+  /**
+   * The same live-share predicate `VaultDocumentShareRepository` resolves a
+   * recipient's read by: not revoked, not past expiry, and held by an account
+   * that exists, is active, and is not itself offboarded.
+   */
+  private buildLiveShareWhere(now: Date): Prisma.VaultDocumentShareWhereInput {
+    return {
+      revokedAt: null,
+      OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+      grantee: { isActive: true, deletedAt: null, offboardedAt: null },
+    };
   }
 }

@@ -89,6 +89,12 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('user.read:any', 'User', 'read', 'ANY', 'Read all users'),
     ('user.create:any', 'User', 'create', 'ANY', 'Create users'),
     ('user.update:any', 'User', 'update', 'ANY', 'Update users'),
+    -- P16-T41. A super-admin action and not deactivation (§7.3.10.2): it
+    -- opens a 30-day vault-only window rather than locking the person out.
+    -- Bound to no seeded role below; SUPER_ADMIN holds it through the
+    -- catalog-wide grant, and `user-offboarding-rbac-seed.spec.ts` fails if
+    -- any other role acquires it.
+    ('user.offboard:any', 'User', 'offboard', 'ANY', 'Offboard a user into the 30-day export-only window, and re-onboard them'),
     ('patient.read:any', 'Patient', 'read', 'ANY', 'Read all patients'),
     ('patient.read:own', 'Patient', 'read', 'OWN', 'Read own patient profile'),
     ('patient.create:any', 'Patient', 'create', 'ANY', 'Create patients'),
@@ -216,7 +222,12 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- `vault-document-rbac-seed.spec.ts` asserts the ANY keys are absent from
     -- this catalog entirely — not merely unbound.
     ('vault-document.read:own', 'VaultDocument', 'read', 'OWN', 'Read documents in own personal vault'),
-    ('vault-document.write:own', 'VaultDocument', 'write', 'OWN', 'Upload, edit and delete documents in own personal vault'),
+    ('vault-document.write:own', 'VaultDocument', 'write', 'OWN', 'Upload and edit documents in own personal vault'),
+    -- P16-T41. Deletion split out of `write:own` so an offboarded person can
+    -- be granted exactly "take a copy, then delete" without also being able
+    -- to file anything new: the reduced ability branch names this key and
+    -- `read:own`, and nothing else.
+    ('vault-document.delete:own', 'VaultDocument', 'delete', 'OWN', 'Delete documents from own personal vault'),
     -- P16-T34. Separate from `write:own` for the same reason
     -- `invoice.deliver:any` is separate from `invoice.write:any`: handing a
     -- document to someone is a different act from editing it, and a
@@ -516,6 +527,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- above that could.
     ('ADMIN', 'vault-document.read:own'),
     ('ADMIN', 'vault-document.write:own'),
+    ('ADMIN', 'vault-document.delete:own'),
     ('ADMIN', 'vault-document.share:own'),
     -- The human side of the WA/Telegram channel (PCS-T08). ADMIN only: these
     -- routes read what members of the public wrote to the clinic and speak
@@ -590,6 +602,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- anyone but the owner reads.
     ('DOCTOR', 'vault-document.read:own'),
     ('DOCTOR', 'vault-document.write:own'),
+    ('DOCTOR', 'vault-document.delete:own'),
     ('DOCTOR', 'vault-document.share:own'),
     -- Read only, for the same reason PHARMACIST has it (P16-T02): a
     -- prescription, a referral letter and a medical certificate are all

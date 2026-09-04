@@ -42,8 +42,10 @@ type ShareRow = Prisma.VaultDocumentShareGetPayload<{ select: typeof SHARE_SELEC
  *
  * The live-share predicate is written out at each call site rather than
  * hidden behind a helper flag, because it is the security boundary: not
- * revoked, not past expiry, and held by an account that still exists and is
- * active.
+ * revoked, not past expiry, and held by an account that still exists, is
+ * active, and is not offboarded (`P16-T41` — an offboarded person keeps their
+ * own vault and nothing else, so keys *to* them stop turning while keys
+ * *from* them keep working for their recipients, FR-E3-29).
  */
 @Injectable()
 export class VaultDocumentShareRepository {
@@ -159,7 +161,7 @@ export class VaultDocumentShareRepository {
         granteeId: params.granteeId,
         revokedAt: null,
         OR: [{ expiresAt: null }, { expiresAt: { gt: params.now } }],
-        grantee: { isActive: true, deletedAt: null },
+        grantee: { isActive: true, deletedAt: null, offboardedAt: null },
         document: { purpose: 'DOCTOR_VAULT', deletedAt: null },
       },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
@@ -214,7 +216,7 @@ export class VaultDocumentShareRepository {
         granteeId: params.granteeId,
         revokedAt: null,
         OR: [{ expiresAt: null }, { expiresAt: { gt: params.now } }],
-        grantee: { isActive: true, deletedAt: null },
+        grantee: { isActive: true, deletedAt: null, offboardedAt: null },
         document: { purpose: 'DOCTOR_VAULT', deletedAt: null },
       },
       select: {
@@ -318,6 +320,9 @@ export class VaultDocumentShareRepository {
         isActive: true,
         isSystem: false,
         deletedAt: null,
+        // An offboarded person's one remaining capability is their own vault
+        // (P16-T41); a key to somebody else's document is not part of it.
+        offboardedAt: null,
         roles: {
           some: {
             deletedAt: null,

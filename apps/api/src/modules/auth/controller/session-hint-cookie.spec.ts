@@ -30,6 +30,7 @@ describe('setSessionHintCookie', () => {
       roles: ['ADMIN'],
       permissions: ['portal.admin-access:any'],
       disabledFeatures: ['ai-chatbot', 'billing'],
+      offboardingDeadline: null,
       expiresAt,
     });
 
@@ -43,6 +44,7 @@ describe('setSessionHintCookie', () => {
       roles: ['ADMIN'],
       permissions: [],
       disabledFeatures: [],
+      offboardingDeadline: null,
       expiresAt,
     });
 
@@ -58,6 +60,7 @@ describe('setSessionHintCookie', () => {
       roles: ['ADMIN'],
       permissions: ['portal.admin-access:any', 'patient.read:any'],
       disabledFeatures: ['billing'],
+      offboardingDeadline: null,
       expiresAt,
     });
 
@@ -76,6 +79,7 @@ describe('setSessionHintCookie', () => {
       roles: ['SUPER_ADMIN'],
       permissions: ['portal.admin-access:any', 'patient.read:any', 'role.create:any'],
       disabledFeatures: [],
+      offboardingDeadline: null,
       expiresAt,
     });
 
@@ -105,10 +109,36 @@ describe('setSessionHintCookie', () => {
       roles: ['SUPER_ADMIN'],
       permissions: manyPermissions,
       disabledFeatures: [],
+      offboardingDeadline: null,
       expiresAt,
     });
 
     const cookieBytes = 'hms_session_hint='.length + captured[0]!.value.length;
     expect(cookieBytes).toBeLessThan(4096);
+  });
+
+  it('carries the offboarding deadline as a calendar date, and omits it for everyone else', () => {
+    // P16-T41. The web tier reads `offboardedUntil` to pin navigation to the
+    // vault and show the deletion date; a hint written before the field
+    // existed has none, and the right reading of that is "not offboarded".
+    const { response, captured } = buildResponse();
+
+    setSessionHintCookie(response, {
+      roles: ['DOCTOR'],
+      permissions: ['portal.doctor-access:any', 'vault-document.read:own'],
+      disabledFeatures: [],
+      offboardingDeadline: new Date('2026-10-04T00:00:00.000Z'),
+      expiresAt,
+    });
+    setSessionHintCookie(response, {
+      roles: ['DOCTOR'],
+      permissions: ['portal.doctor-access:any'],
+      disabledFeatures: [],
+      offboardingDeadline: null,
+      expiresAt,
+    });
+
+    expect(decodePayload(captured[0]!.value).offboardedUntil).toBe('2026-10-04');
+    expect(decodePayload(captured[1]!.value)).not.toHaveProperty('offboardedUntil');
   });
 });
