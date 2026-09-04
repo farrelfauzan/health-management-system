@@ -47,3 +47,13 @@ export type PdfRenderOptions = {
    */
   readonly traceId?: string;
 };
+
+/**
+ * One document to lock with a user password (`P16-T37`). The password is a
+ * value the caller resolved for this send and must not keep; it is neither
+ * logged nor stored by anything in this module.
+ */
+export type EncryptPdfRequest = {
+  readonly pdf: Uint8Array;
+  readonly userPassword: string;
+};

@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 
+import { PdfModule } from '../../common/pdf/pdf.module';
 import { PrivacyNoticeModule } from '../../common/privacy-notice/privacy-notice.module';
 import { AuthModule } from '../auth/auth.module';
 import { ChannelGatewayModule } from '../channel-gateway/channel-gateway.module';
@@ -10,7 +11,9 @@ import { DeliveryGateRepository } from './repository/delivery-gate.repository';
 import { PatientDeliveryConsentRepository } from './repository/patient-delivery-consent.repository';
 import { DeliveryChannelGateService } from './service/delivery-channel-gate.service';
 import { DeliveryOptOutService } from './service/delivery-opt-out.service';
+import { DeliveryPasswordService } from './service/delivery-password.service';
 import { PatientDeliveryConsentService } from './service/patient-delivery-consent.service';
+import { ProtectDeliveryDocumentService } from './service/protect-delivery-document.service';
 
 /**
  * Document delivery (PRD §7.4, epic E4): the rules under which a rendered
@@ -19,10 +22,12 @@ import { PatientDeliveryConsentService } from './service/patient-delivery-consen
  * `P16-T24` lands the Tier 0 half — consent, the verified-number gate, and
  * the patient's own `BERHENTI` — which the send pipeline (`P16-T25`/`T26`),
  * the send dialog (`P16-T27`) and clinical-document release (`P16-T40`) all
- * consume through {@link PatientDeliveryConsentService}. It is its own
- * module rather than a corner of billing because the same gate guards an
- * invoice and a lab result, and neither owning module should have to import
- * the other to ask it.
+ * consume through {@link PatientDeliveryConsentService}. `P16-T37` adds the
+ * step between render and transport — {@link ProtectDeliveryDocumentService}
+ * locks every attachment with the patient's password before it leaves. It is
+ * its own module rather than a corner of billing because the same gate and
+ * the same lock guard an invoice and a lab result, and neither owning module
+ * should have to import the other to ask.
  *
  * The `forwardRef` to `ChannelGatewayModule` is a real cycle: the gateway
  * calls in through `InboundOptOutHandler` when a patient types `STOP`, and
@@ -34,6 +39,7 @@ import { PatientDeliveryConsentService } from './service/patient-delivery-consen
 @Module({
   imports: [
     AuthModule,
+    PdfModule,
     PrivacyNoticeModule,
     PatientManagementModule,
     forwardRef(() => ChannelGatewayModule),
@@ -45,6 +51,8 @@ import { PatientDeliveryConsentService } from './service/patient-delivery-consen
     DeliveryChannelGateService,
     PatientDeliveryConsentService,
     DeliveryOptOutService,
+    DeliveryPasswordService,
+    ProtectDeliveryDocumentService,
     {
       provide: InboundOptOutHandler,
       useExisting: DeliveryOptOutService,
@@ -53,6 +61,7 @@ import { PatientDeliveryConsentService } from './service/patient-delivery-consen
   exports: [
     PatientDeliveryConsentService,
     DeliveryChannelGateService,
+    ProtectDeliveryDocumentService,
     InboundOptOutHandler,
   ],
 })
