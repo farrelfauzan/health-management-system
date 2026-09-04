@@ -27324,6 +27324,13 @@ paths:
     get:
       operationId: VaultDocumentController_listDocuments_v1
       parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 200
+            type: string
         - name: vaultCategory
           required: false
           in: query

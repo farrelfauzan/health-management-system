@@ -11,6 +11,7 @@ export {
 export { Calendar, CalendarDayButton } from '#components/calendar';
 export { Checkbox } from '#components/checkbox';
 export { Combobox, type ComboboxOption } from '#components/combobox';
+export { MultiCombobox, type MultiComboboxOption } from '#components/multi-combobox';
 export {
   Command,
   CommandDialog,

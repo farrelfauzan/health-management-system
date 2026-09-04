@@ -19,7 +19,15 @@
       "loading": "Loading your documents…",
       "error": "Could not load your documents. Try again in a moment.",
       "emptyTitle": "Nothing here yet",
-      "emptyDescription": "Add your STR, SIP, ijazah or any other paperwork you want to keep somewhere safe."
+      "emptyDescription": "Add your STR, SIP, ijazah or any other paperwork you want to keep somewhere safe.",
+      "noMatchesTitle": "No documents match",
+      "noMatchesDescription": "Try a different search term or category. Clearing the filters shows everything again."
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Title or reference number",
+      "category": "Category",
+      "allCategories": "All categories"
     },
     "table": {
       "notRecorded": "—",
@@ -132,27 +140,29 @@
       "revocationLimit": "Revoking a share stops the person opening it again. It cannot recall a copy they have already downloaded — the access log below is the record of what was opened and when.",
       "recipient": {
         "label": "Share with",
-        "placeholder": "Search by email address",
+        "placeholder": "Pick who to share with",
         "minLength": "Type at least {count} characters to search.",
         "searching": "Searching…",
         "empty": "Nobody matching that can receive a shared document.",
-        "selected": "Sharing with {email}.",
-        "error": "Could not search for people."
+        "error": "Could not search for people.",
+        "searchPlaceholder": "Search by email address",
+        "hint": "Pick as many people as you need. Each gets their own share, which you can revoke separately.",
+        "remove": "Remove {email}"
       },
       "dialog": {
         "title": "Share {count, plural, one {this document} other {# documents}}",
-        "descriptionOne": "Give one person view-and-download access to “{title}”. Nothing else in your documents becomes visible to them.",
-        "descriptionMany": "Give one person view-and-download access to {count} documents. Each gets its own share, and nothing else in your documents becomes visible to them.",
+        "descriptionOne": "Give the people you pick view-and-download access to “{title}”. Nothing else in your documents becomes visible to them.",
+        "descriptionMany": "Give the people you pick view-and-download access to {count} documents. Each document and each person gets its own share, and nothing else in your documents becomes visible to them.",
         "fields": {
           "expiresAt": "Access ends on (optional)",
           "expiresAtHint": "Leave empty to share with no end date. You can revoke at any time."
         },
         "cancel": "Cancel",
-        "share": "Share",
+        "share": "Share {recipientCount, plural, =0 {} one {with 1 person} other {with # people}}",
         "sharing": "Sharing…",
-        "success": "Shared {count, plural, one {1 document} other {# documents}}.",
+        "success": "Shared {count, plural, one {1 document} other {# documents}} with {recipientCount, plural, one {1 person} other {# people}}.",
         "errors": {
-          "noRecipient": "Choose who to share with first.",
+          "noRecipient": "Choose at least one person to share with.",
           "failed": "Could not share this document."
         }
       },

@@ -170,6 +170,7 @@ export type CreateVaultDocumentData = {
  */
 export type ListVaultDocumentsParams = {
   ownerId: string;
+  search?: string;
   vaultCategory?: VaultDocumentCategoryValue;
   cursor?: string;
   limit: number;
