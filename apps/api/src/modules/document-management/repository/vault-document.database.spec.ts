@@ -128,6 +128,34 @@ describe('Doctor vault documents against PostgreSQL', () => {
     expect(listedIds).not.toContain(theirs.id);
   });
 
+  it('searches title and reference number case-insensitively, within one owner only', async () => {
+    const byTitle = await createVaultDocument(ownerUserId, `Sertifikat Kompetensi ${suffix}`);
+    const unrelated = await createVaultDocument(ownerUserId, `Kontrak Kerja ${suffix}`);
+    const theirs = await createVaultDocument(otherOwnerUserId, `Sertifikat Lain ${suffix}`);
+
+    const titlePage = await repository.listVaultDocuments({
+      ownerId: ownerUserId,
+      search: 'sertifikat kompetensi',
+      limit: 100,
+    });
+    const referencePage = await repository.listVaultDocuments({
+      ownerId: ownerUserId,
+      search: `str/${suffix}`.toUpperCase(),
+      limit: 100,
+    });
+
+    const titleIds = titlePage.items.map((item) => item.id);
+    expect(titleIds).toContain(byTitle.id);
+    expect(titleIds).not.toContain(unrelated.id);
+    expect(titleIds).not.toContain(theirs.id);
+    // Every fixture of this owner carries the same reference number, so the
+    // reference search finds the unrelated title too — and still not theirs.
+    const referenceIds = referencePage.items.map((item) => item.id);
+    expect(referenceIds).toContain(byTitle.id);
+    expect(referenceIds).toContain(unrelated.id);
+    expect(referenceIds).not.toContain(theirs.id);
+  });
+
   it('reads another owner’s document as nothing, so a foreign id is indistinguishable from a missing one', async () => {
     const theirs = await createVaultDocument(otherOwnerUserId, `Theirs read ${suffix}`);
 

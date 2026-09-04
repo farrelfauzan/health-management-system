@@ -158,6 +158,7 @@ export class VaultDocumentService {
     await this.vaultDocumentAccessService.resolveVaultOwnerType(actor, 'read');
     const page = await this.vaultDocumentRepository.listVaultDocuments({
       ownerId: actor.sub,
+      search: query.search,
       vaultCategory: query.vaultCategory,
       cursor: query.cursor,
       limit: query.limit,

@@ -11,6 +11,7 @@ import {
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { Document } from '../../../generated/prisma/client';
+import { buildVaultDocumentSearchWhere } from './build-vault-document-search-where';
 import { toDocumentRecord } from './to-document-record';
 
 /**
@@ -67,6 +68,7 @@ export class VaultDocumentRepository {
         ownerId: params.ownerId,
         vaultCategory: params.vaultCategory,
         deletedAt: null,
+        ...buildVaultDocumentSearchWhere(params.search),
       },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: params.limit + 1,

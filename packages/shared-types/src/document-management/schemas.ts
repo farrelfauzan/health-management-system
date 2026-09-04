@@ -625,7 +625,15 @@ export type UpdateVaultDocumentInput = z.infer<typeof updateVaultDocumentSchema>
  * filter: this route addresses exactly one vault, and offering either field
  * would imply it could address another.
  */
+export const VAULT_DOCUMENT_SEARCH_MAX_LENGTH = 200;
+
 export const listVaultDocumentsQuerySchema = z.object({
+  /**
+   * Case-insensitive match on the title or the reference number. Free text
+   * over the owner's own rows only — the owner predicate is applied first, so
+   * a search term can never widen the set past one vault.
+   */
+  search: z.string().trim().min(1).max(VAULT_DOCUMENT_SEARCH_MAX_LENGTH).optional(),
   vaultCategory: vaultDocumentCategorySchema.optional(),
   cursor: z.string().uuid().optional(),
   limit: z.coerce
@@ -667,8 +675,8 @@ export type DownloadPatientDocumentQueryInput = z.infer<
  * a person, and there is still no request anywhere in this surface that names
  * a *vault*. There is deliberately no `granteeRole`, no `granteeIds` array
  * and no "share everything" flag — the multi-select in the UI batches this
- * call once per document, so "share my whole vault" is not something the API
- * can be asked to do.
+ * call once per document per person, so "share my whole vault" is not
+ * something the API can be asked to do.
  */
 export const createVaultDocumentShareSchema = z.object({
   granteeId: z.string().uuid(),

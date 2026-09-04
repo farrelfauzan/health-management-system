@@ -8,6 +8,11 @@
 import type { VaultDocumentControllerListDocumentsV1VaultCategory } from './vaultDocumentControllerListDocumentsV1VaultCategory';
 
 export type VaultDocumentControllerListDocumentsV1Params = {
+/**
+ * @minLength 1
+ * @maxLength 200
+ */
+search?: string;
 vaultCategory?: VaultDocumentControllerListDocumentsV1VaultCategory;
 cursor?: string;
 /**

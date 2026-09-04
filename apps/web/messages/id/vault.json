@@ -19,7 +19,15 @@
       "loading": "Memuat dokumen Anda…",
       "error": "Gagal memuat dokumen Anda. Coba lagi sebentar.",
       "emptyTitle": "Belum ada dokumen",
-      "emptyDescription": "Tambahkan STR, SIP, ijazah, atau berkas lain yang ingin Anda simpan dengan aman."
+      "emptyDescription": "Tambahkan STR, SIP, ijazah, atau berkas lain yang ingin Anda simpan dengan aman.",
+      "noMatchesTitle": "Tidak ada dokumen yang cocok",
+      "noMatchesDescription": "Coba kata kunci atau kategori lain. Hapus filter untuk menampilkan semuanya lagi."
+    },
+    "filters": {
+      "search": "Cari",
+      "searchPlaceholder": "Judul atau nomor referensi",
+      "category": "Kategori",
+      "allCategories": "Semua kategori"
     },
     "table": {
       "notRecorded": "—",
@@ -132,27 +140,29 @@
       "revocationLimit": "Mencabut akses menghentikan orang tersebut membukanya lagi. Salinan yang sudah diunduh tidak bisa ditarik kembali — catatan akses di bawah adalah rekaman apa yang dibuka dan kapan.",
       "recipient": {
         "label": "Bagikan kepada",
-        "placeholder": "Cari berdasarkan alamat email",
+        "placeholder": "Pilih kepada siapa dokumen dibagikan",
         "minLength": "Ketik minimal {count} karakter untuk mencari.",
         "searching": "Mencari…",
         "empty": "Tidak ada yang cocok dan bisa menerima dokumen yang dibagikan.",
-        "selected": "Dibagikan kepada {email}.",
-        "error": "Gagal mencari orang."
+        "error": "Gagal mencari orang.",
+        "searchPlaceholder": "Cari berdasarkan alamat email",
+        "hint": "Pilih sebanyak yang Anda perlukan. Masing-masing mendapat pembagian sendiri yang bisa dicabut terpisah.",
+        "remove": "Hapus {email}"
       },
       "dialog": {
         "title": "Bagikan {count, plural, other {# dokumen}}",
-        "descriptionOne": "Beri satu orang akses lihat-dan-unduh ke “{title}”. Tidak ada dokumen Anda yang lain yang menjadi terlihat oleh mereka.",
-        "descriptionMany": "Beri satu orang akses lihat-dan-unduh ke {count} dokumen. Masing-masing mendapat pembagian sendiri, dan tidak ada dokumen Anda yang lain yang menjadi terlihat.",
+        "descriptionOne": "Beri orang yang Anda pilih akses lihat-dan-unduh ke “{title}”. Tidak ada dokumen Anda yang lain yang menjadi terlihat oleh mereka.",
+        "descriptionMany": "Beri orang yang Anda pilih akses lihat-dan-unduh ke {count} dokumen. Setiap dokumen dan setiap orang mendapat pembagian sendiri, dan tidak ada dokumen Anda yang lain yang menjadi terlihat.",
         "fields": {
           "expiresAt": "Akses berakhir pada (opsional)",
           "expiresAtHint": "Kosongkan untuk membagikan tanpa batas waktu. Anda bisa mencabutnya kapan saja."
         },
         "cancel": "Batal",
-        "share": "Bagikan",
+        "share": "Bagikan {recipientCount, plural, =0 {} other {kepada # orang}}",
         "sharing": "Membagikan…",
-        "success": "{count, plural, other {# dokumen}} dibagikan.",
+        "success": "{count, plural, other {# dokumen}} dibagikan kepada {recipientCount, plural, other {# orang}}.",
         "errors": {
-          "noRecipient": "Pilih dulu kepada siapa dokumen dibagikan.",
+          "noRecipient": "Pilih minimal satu orang untuk menerima dokumen.",
           "failed": "Gagal membagikan dokumen ini."
         }
       },

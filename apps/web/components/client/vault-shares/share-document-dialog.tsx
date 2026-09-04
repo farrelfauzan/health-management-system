@@ -28,9 +28,9 @@ type ShareDocumentDialogProps = {
   onOpenChange: (open: boolean) => void;
   /**
    * One or more documents to hand over. Multi-select creates **one share per
-   * document** (FR-E3-21) — the API takes a single document per call, and
-   * this dialog batches over it rather than the API growing a
-   * share-my-whole-vault mode.
+   * document per person** (FR-E3-21) — the API takes a single document and a
+   * single grantee per call, and this dialog batches over both rather than
+   * the API growing a share-my-whole-vault mode.
    */
   documents: VaultDocumentView[];
   onShared: (message: string) => void;
@@ -44,45 +44,52 @@ export function ShareDocumentDialog({
 }: ShareDocumentDialogProps) {
   const t = useTranslations('vault.sharing.dialog');
   const queryClient = useQueryClient();
-  const [recipient, setRecipient] = useState<VaultDocumentShareRecipientView | null>(null);
+  const [recipients, setRecipients] = useState<VaultDocumentShareRecipientView[]>([]);
   const [expiresAt, setExpiresAt] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const shareMutation = useMutation({
     mutationFn: async () => {
-      if (recipient === null) {
+      if (recipients.length === 0) {
         throw new Error(t('errors.noRecipient'));
       }
-      // One call per document, in order. Sequential rather than parallel so a
-      // failure halfway leaves a state the person can read off the panel —
-      // the first N shared — rather than an arbitrary subset.
+      // A date input gives a day; the API takes an instant. End of that day
+      // in the viewer's zone is the reading a person means by "until the
+      // 30th".
+      const expiresAtInstant =
+        expiresAt === '' ? undefined : new Date(`${expiresAt}T23:59:59`).toISOString();
+      // One call per document per person, in order. Sequential rather than
+      // parallel so a failure halfway leaves a state the person can read off
+      // the panel — the first N shared — rather than an arbitrary subset.
       for (const document of documents) {
-        parseApiSuccess(
-          await vaultDocumentShareControllerCreateShareV1(document.id, {
-            granteeId: recipient.id,
-            // A date input gives a day; the API takes an instant. End of that
-            // day in the viewer's zone is the reading a person means by "until
-            // the 30th".
-            expiresAt:
-              expiresAt === '' ? undefined : new Date(`${expiresAt}T23:59:59`).toISOString(),
-          }),
-          t('errors.failed'),
-        );
+        for (const recipient of recipients) {
+          parseApiSuccess(
+            await vaultDocumentShareControllerCreateShareV1(document.id, {
+              granteeId: recipient.id,
+              expiresAt: expiresAtInstant,
+            }),
+            t('errors.failed'),
+          );
+        }
       }
     },
-    onSuccess: async () => {
+    onSuccess: () => {
+      onShared(t('success', { count: documents.length, recipientCount: recipients.length }));
+      resetForm();
+      onOpenChange(false);
+    },
+    onError: (err: unknown) => setError(resolveApiErrorMessage(err, t('errors.failed'))),
+    // On failure as well as success: the shares made before the failing call
+    // exist, and the panel behind this dialog should show them.
+    onSettled: async () => {
       for (const document of documents) {
         await invalidateShareQueries(queryClient, document.id);
       }
-      resetForm();
-      onOpenChange(false);
-      onShared(t('success', { count: documents.length }));
     },
-    onError: (err: unknown) => setError(resolveApiErrorMessage(err, t('errors.failed'))),
   });
 
   function resetForm(): void {
-    setRecipient(null);
+    setRecipients([]);
     setExpiresAt('');
     setError(null);
   }
@@ -114,7 +121,7 @@ export function ShareDocumentDialog({
             while they are still deciding. */}
         <ShareRevocationNotice />
         <div className="space-y-4">
-          <ShareRecipientPicker selected={recipient} onSelect={setRecipient} />
+          <ShareRecipientPicker selected={recipients} onChange={setRecipients} />
           <div className="space-y-2">
             <Label htmlFor="vault-share-expiry">{t('fields.expiresAt')}</Label>
             <Input
@@ -138,10 +145,12 @@ export function ShareDocumentDialog({
           </Button>
           <Button
             type="button"
-            disabled={recipient === null || shareMutation.isPending}
+            disabled={recipients.length === 0 || shareMutation.isPending}
             onClick={() => shareMutation.mutate()}
           >
-            {shareMutation.isPending ? t('sharing') : t('share')}
+            {shareMutation.isPending
+              ? t('sharing')
+              : t('share', { recipientCount: recipients.length })}
           </Button>
         </DialogFooter>
       </DialogContent>
