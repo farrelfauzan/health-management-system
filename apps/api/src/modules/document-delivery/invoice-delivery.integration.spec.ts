@@ -4,13 +4,17 @@ import { Test } from '@nestjs/testing';
 import { ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 
+import { PDFDocument, StandardFonts } from '@cantoo/pdf-lib';
+
 import { AppModule } from '../../app.module';
+import { MailService } from '../../common/mail/mail.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { ObjectStorageService } from '../../common/storage/object-storage.service';
 import { PermissionScope } from '../../generated/prisma/client';
 import { WhatsappGatewayService } from '../channel-gateway/infrastructure/whatsapp-gateway.service';
 import { InboundMessageSink } from '../channel-gateway/service/inbound-message-sink.service';
 import { DeliveryLinkService } from './service/delivery-link.service';
+import { DocumentDeliveryWorker } from './service/document-delivery.worker';
 
 /**
  * `P16-T25` acceptance against real Postgres.
@@ -35,6 +39,10 @@ describe('Invoice delivery integration', () => {
   const CHAT_ID = `${PATIENT_PHONE_DIGITS}@s.whatsapp.net`;
   const STORAGE_KEY = `invoices/${TEST_MARKER}/doc.pdf`;
   const UNKNOWN_TOKEN = 'A'.repeat(43);
+  // The worker is driven by hand here; a timer firing mid-assertion would
+  // claim rows the tests expect to find QUEUED.
+  const TEST_ENV: Record<string, string> = { DELIVERY_WORKER_ENABLED: 'false' };
+  const previousEnv: Record<string, string | undefined> = {};
 
   const PERMISSIONS = [
     {
@@ -56,10 +64,14 @@ describe('Invoice delivery integration', () => {
     sendDocument: jest.fn().mockResolvedValue(undefined),
   };
   const sinkMock = { handleInboundMessage: jest.fn().mockResolvedValue(undefined) };
+  const mailMock = {
+    sendMail: jest.fn().mockResolvedValue({ accepted: true, messageId: 'smtp-1' }),
+  };
+  let plainPdf: Uint8Array;
   const storageMock = {
     generateObjectKey: jest.fn(),
     uploadObject: jest.fn(),
-    getObject: jest.fn(),
+    getObject: jest.fn(async () => ({ key: STORAGE_KEY, body: Buffer.from(plainPdf) })),
     getSignedUrl: jest.fn().mockResolvedValue({
       url: 'https://storage.example/signed',
       expiresAt: '2026-09-29T08:05:00.000Z',
@@ -72,6 +84,7 @@ describe('Invoice delivery integration', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let deliveryLinkService: DeliveryLinkService;
+  let worker: DocumentDeliveryWorker;
   let adminToken: string;
   let patientId: string;
   let invoiceId: string;
@@ -139,6 +152,7 @@ describe('Invoice delivery integration', () => {
         admittingDoctorId: params.admittingDoctorId,
         reason: TEST_MARKER,
         status: isFinished ? 'DISCHARGED' : 'ADMITTED',
+        admittedAt: new Date(Date.now() - 3_600_000),
         dischargedAt: isFinished ? new Date() : null,
       },
       select: { id: true },
@@ -259,6 +273,13 @@ describe('Invoice delivery integration', () => {
     await prisma.user.deleteMany({ where: { id: ADMIN_USER_ID } });
   }
 
+  async function buildPdf(): Promise<Uint8Array> {
+    const document = await PDFDocument.create();
+    const font = await document.embedFont(StandardFonts.Helvetica);
+    document.addPage().drawText('Kuitansi uji', { x: 50, y: 700, size: 14, font });
+    return document.save({ useObjectStreams: false });
+  }
+
   async function countAuditRows(action: string): Promise<number> {
     return prisma.auditLog.count({
       where: { action: action as never, patientId, occurredAt: { gte: runStartedAt } },
@@ -266,6 +287,11 @@ describe('Invoice delivery integration', () => {
   }
 
   beforeAll(async () => {
+    for (const [key, value] of Object.entries(TEST_ENV)) {
+      previousEnv[key] = process.env[key];
+      process.env[key] = value;
+    }
+    plainPdf = await buildPdf();
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(WhatsappGatewayService)
       .useValue(whatsappGatewayMock)
@@ -273,6 +299,8 @@ describe('Invoice delivery integration', () => {
       .useValue(sinkMock)
       .overrideProvider(ObjectStorageService)
       .useValue(storageMock)
+      .overrideProvider(MailService)
+      .useValue(mailMock)
       .compile();
     app = moduleRef.createNestApplication();
     app.enableVersioning({ defaultVersion: '1', prefix: 'v', type: VersioningType.URI });
@@ -281,6 +309,7 @@ describe('Invoice delivery integration', () => {
     await app.init();
     prisma = moduleRef.get(PrismaService);
     deliveryLinkService = moduleRef.get(DeliveryLinkService);
+    worker = moduleRef.get(DocumentDeliveryWorker);
     await removeFixtures();
     await seedActor();
     await seedPatientAndInvoices();
@@ -297,6 +326,13 @@ describe('Invoice delivery integration', () => {
     await removeFixtures();
     await app.close();
     await prisma.$disconnect();
+    for (const [key, value] of Object.entries(previousEnv)) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
   });
 
   beforeEach(() => {
@@ -511,6 +547,195 @@ describe('Invoice delivery integration', () => {
 
       expect(statuses.slice(0, 10).every((status) => status === 404)).toBe(true);
       expect(statuses[10]).toBe(429);
+    });
+  });
+
+  describe('scheduled delivery (P16-T38)', () => {
+    let scheduledId: string;
+
+    it('parks a send at a future time and shows it on the timeline', async () => {
+      const sendAt = new Date(Date.now() + 3_600_000).toISOString();
+
+      const response = await asAdmin('post', deliveriesPath()).send({
+        channels: ['WHATSAPP'],
+        sendAt,
+      });
+
+      expect(response.status).toBe(201);
+      const scheduled = response.body.data.deliveries.find(
+        (delivery: { sendAt: string | null }) => delivery.sendAt === sendAt,
+      );
+      expect(scheduled).toBeDefined();
+      expect(scheduled.status).toBe('QUEUED');
+      scheduledId = scheduled.id;
+    });
+
+    it('refuses a time that is not in the future', async () => {
+      const response = await asAdmin('post', deliveriesPath()).send({
+        channels: ['WHATSAPP'],
+        sendAt: '2020-01-01T00:00:00.000Z',
+      });
+
+      expect(response.status).toBe(422);
+      expect(response.body.error.code).toBe('DELIVERY_SEND_AT_IN_PAST');
+    });
+
+    it('is not claimed by the worker before it is due', async () => {
+      await worker.pollOnce();
+
+      const row = await prisma.documentDelivery.findUniqueOrThrow({
+        where: { id: scheduledId },
+        select: { status: true, leasedBy: true },
+      });
+      expect(row).toEqual({ status: 'QUEUED', leasedBy: null });
+    });
+
+    it('can be moved, then called off, and neither act is available afterwards', async () => {
+      const later = new Date(Date.now() + 7_200_000).toISOString();
+
+      const moved = await asAdmin('post', `/api/v1/deliveries/${scheduledId}/reschedule`).send({
+        sendAt: later,
+      });
+      const cancelled = await asAdmin('post', `/api/v1/deliveries/${scheduledId}/cancel`);
+      const again = await asAdmin('post', `/api/v1/deliveries/${scheduledId}/cancel`);
+      const retried = await asAdmin('post', `/api/v1/deliveries/${scheduledId}/retry`);
+
+      expect(moved.status).toBe(200);
+      expect(moved.body.data.sendAt).toBe(later);
+      expect(cancelled.status).toBe(200);
+      expect(cancelled.body.data).toEqual(
+        expect.objectContaining({ status: 'CANCELLED', lastError: 'CANCELLED_BY_STAFF' }),
+      );
+      expect(again.status).toBe(409);
+      expect(retried.status).toBe(409);
+      await expect(countAuditRows('DELIVERY_CANCELLED')).resolves.toBe(1);
+    });
+  });
+
+  describe('worker (P16-T26)', () => {
+    it('sends a queued WhatsApp attachment locked with the patient password, with a caption that names nothing clinical', async () => {
+      const queued = await asAdmin('post', deliveriesPath()).send({ channels: ['WHATSAPP'] });
+      const deliveryId = queued.body.data.deliveries[0].id as string;
+
+      const processed = await worker.pollOnce();
+
+      expect(processed).toBeGreaterThanOrEqual(1);
+      const sent = await asAdmin('get', `/api/v1/deliveries/${deliveryId}`);
+      expect(sent.body.data).toEqual(
+        expect.objectContaining({ status: 'SENT', attemptCount: 1, lastError: null }),
+      );
+      expect(sent.body.data.sentAt).not.toBeNull();
+      const call = whatsappGatewayMock.sendDocument.mock.calls.find(
+        (args: [{ fileName: string }]) => args[0].fileName === `${TEST_MARKER}-001.pdf`,
+      );
+      expect(call).toBeDefined();
+      const request = call![0] as { externalChatId: string; content: Uint8Array; caption: string };
+      expect(request.externalChatId).toBe(CHAT_ID);
+      expect(request.caption).toContain(
+        `kuitansi ${TEST_MARKER}/001 atas nama Rina Spec sebesar Rp 150.000`,
+      );
+      expect(request.caption).toContain('tanggal lahir Anda, format DDMMYYYY');
+      expect(request.caption).not.toContain('07031988');
+      // Locked: not the bytes we stored, and a reader would find /Encrypt.
+      expect(Buffer.from(request.content).equals(Buffer.from(plainPdf))).toBe(false);
+      expect(Buffer.from(request.content).toString('latin1')).toContain('/Encrypt');
+      await expect(countAuditRows('DELIVERY_SENT')).resolves.toBeGreaterThanOrEqual(1);
+    });
+
+    it('cancels at send time a delivery whose consent was withdrawn after it was queued', async () => {
+      const queued = await asAdmin('post', deliveriesPath()).send({ channels: ['WHATSAPP'] });
+      const deliveryId = queued.body.data.deliveries[0].id as string;
+      await prisma.patientDeliveryConsent.update({
+        where: { patientId_channel: { patientId, channel: 'WHATSAPP' } },
+        data: { isGranted: false, revokedAt: new Date(), revokedReason: 'STAFF' },
+      });
+      const sendsBefore = whatsappGatewayMock.sendDocument.mock.calls.length;
+
+      await worker.pollOnce();
+
+      const row = await prisma.documentDelivery.findUniqueOrThrow({
+        where: { id: deliveryId },
+        select: { status: true, lastError: true },
+      });
+      expect(row).toEqual({
+        status: 'CANCELLED',
+        lastError: 'DELIVERY_REFUSED_AT_SEND_TIME:CONSENT_REVOKED',
+      });
+      expect(whatsappGatewayMock.sendDocument.mock.calls.length).toBe(sendsBefore);
+      await prisma.patientDeliveryConsent.update({
+        where: { patientId_channel: { patientId, channel: 'WHATSAPP' } },
+        data: { isGranted: true, revokedAt: null, revokedReason: null },
+      });
+    });
+
+    it('emails a link, minting the token only when the message goes out', async () => {
+      await prisma.patientDeliveryConsent.create({
+        data: { patientId, channel: 'EMAIL', isGranted: true, grantedAt: new Date() },
+      });
+      const queued = await asAdmin('post', deliveriesPath()).send({
+        channels: ['EMAIL'],
+        shape: 'LINK',
+      });
+      const deliveryId = queued.body.data.deliveries[0].id as string;
+      const linkBefore = await prisma.documentDeliveryLink.findUnique({ where: { deliveryId } });
+
+      await worker.pollOnce();
+
+      const sent = await asAdmin('get', `/api/v1/deliveries/${deliveryId}`);
+      expect(linkBefore).toBeNull();
+      expect(sent.body.data).toEqual(
+        expect.objectContaining({
+          status: 'SENT',
+          shape: 'LINK',
+          destinationMasked: 'r***@example.test',
+        }),
+      );
+      expect(sent.body.data.link).toEqual(
+        expect.objectContaining({ openCount: 0, revokedAt: null }),
+      );
+      const mail = mailMock.sendMail.mock.calls.at(-1)?.[0] as {
+        to: string;
+        text: string;
+        attachments?: unknown;
+      };
+      expect(mail.to).toBe('rina25@example.test');
+      expect(mail.text).toContain('/inv/');
+      expect(mail.attachments).toBeUndefined();
+      expect(JSON.stringify(sent.body)).not.toContain(mail.text.split('/inv/')[1]?.slice(0, 43));
+    });
+
+    it('backs off on a bridge failure and settles FAILED with a Retry when attempts run out', async () => {
+      const queued = await asAdmin('post', deliveriesPath()).send({ channels: ['WHATSAPP'] });
+      const deliveryId = queued.body.data.deliveries[0].id as string;
+      whatsappGatewayMock.sendDocument.mockRejectedValueOnce(new Error('bridge down'));
+
+      await worker.pollOnce();
+      const backingOff = await prisma.documentDelivery.findUniqueOrThrow({
+        where: { id: deliveryId },
+        select: { status: true, attemptCount: true, nextAttemptAt: true, leasedUntil: true },
+      });
+      await prisma.documentDelivery.update({
+        where: { id: deliveryId },
+        data: { attemptCount: 4, nextAttemptAt: null },
+      });
+      whatsappGatewayMock.sendDocument.mockRejectedValueOnce(new Error('bridge down'));
+      await worker.pollOnce();
+      const failed = await asAdmin('get', `/api/v1/deliveries/${deliveryId}`);
+      whatsappGatewayMock.sendDocument.mockResolvedValue(undefined);
+      const retried = await asAdmin('post', `/api/v1/deliveries/${deliveryId}/retry`);
+      await worker.pollOnce();
+      const recovered = await asAdmin('get', `/api/v1/deliveries/${deliveryId}`);
+
+      expect(backingOff.status).toBe('QUEUED');
+      expect(backingOff.attemptCount).toBe(1);
+      expect(backingOff.nextAttemptAt?.getTime()).toBeGreaterThan(Date.now());
+      expect(backingOff.leasedUntil).toBeNull();
+      expect(failed.body.data).toEqual(
+        expect.objectContaining({ status: 'FAILED', attemptCount: 5 }),
+      );
+      expect(retried.status).toBe(200);
+      expect(recovered.body.data.status).toBe('SENT');
+      await expect(countAuditRows('DELIVERY_FAILED')).resolves.toBe(1);
     });
   });
 });

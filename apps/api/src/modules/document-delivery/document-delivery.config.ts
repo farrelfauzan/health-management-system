@@ -12,6 +12,11 @@ const HOURS_PER_DAY = 24;
 const DEFAULT_LINK_TTL_DAYS = 7;
 const MAX_LINK_TTL_DAYS = 30;
 const DEFAULT_WEB_APP_BASE_URL = 'http://localhost:3000';
+const DEFAULT_WORKER_POLL_INTERVAL_MS = 5_000;
+const DEFAULT_WORKER_BATCH_SIZE = 3;
+const DEFAULT_LEASE_MS = 120_000;
+const DEFAULT_MAX_ATTEMPTS = 5;
+const DEFAULT_RETRY_BASE_DELAY_MS = 30_000;
 
 /**
  * Resolves delivery configuration from the environment at boot.
@@ -37,7 +42,49 @@ export function resolveDocumentDeliveryConfig(
     passwordSource: readPasswordSource(configService),
     linkTtlHours: readLinkTtlDays(configService) * HOURS_PER_DAY,
     webAppBaseUrl: readWebAppBaseUrl(configService),
+    workerEnabled: readBooleanFlag(configService, 'DELIVERY_WORKER_ENABLED', true),
+    workerPollIntervalMs: readPositiveInteger(
+      configService,
+      'DELIVERY_WORKER_POLL_INTERVAL_MS',
+      DEFAULT_WORKER_POLL_INTERVAL_MS,
+    ),
+    workerBatchSize: readPositiveInteger(
+      configService,
+      'DELIVERY_WORKER_BATCH_SIZE',
+      DEFAULT_WORKER_BATCH_SIZE,
+    ),
+    leaseMs: readPositiveInteger(configService, 'DELIVERY_LEASE_MS', DEFAULT_LEASE_MS),
+    maxAttempts: readPositiveInteger(configService, 'DELIVERY_MAX_ATTEMPTS', DEFAULT_MAX_ATTEMPTS),
+    retryBaseDelayMs: readPositiveInteger(
+      configService,
+      'DELIVERY_RETRY_BASE_DELAY_MS',
+      DEFAULT_RETRY_BASE_DELAY_MS,
+    ),
+    dailySendCap: readOptionalPositiveInteger(configService, 'DELIVERY_DAILY_SEND_CAP'),
   };
+}
+
+function readBooleanFlag(configService: ConfigService, key: string, fallback: boolean): boolean {
+  const rawValue = configService.get<string>(key)?.trim().toLowerCase() ?? '';
+  if (rawValue !== 'true' && rawValue !== 'false') {
+    return fallback;
+  }
+  return rawValue === 'true';
+}
+
+function readPositiveInteger(configService: ConfigService, key: string, fallback: number): number {
+  const parsed = readOptionalPositiveInteger(configService, key);
+  return parsed ?? fallback;
+}
+
+/** Unset, empty or unusable reads as "not configured" — never as zero. */
+function readOptionalPositiveInteger(configService: ConfigService, key: string): number | null {
+  const rawValue = configService.get<string>(key)?.trim() ?? '';
+  if (rawValue === '') {
+    return null;
+  }
+  const parsed = Number(rawValue);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
 function readPasswordSource(configService: ConfigService): DeliveryPasswordSourceValue {

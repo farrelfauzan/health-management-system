@@ -200,7 +200,10 @@ export class InvoiceDocumentRepository {
    * fields the delivery gate and the password resolver read. Nothing else:
    * the itemisation stays inside the PDF (FR-E4-15).
    */
-  async findDeliverySubject(invoiceId: string): Promise<InvoiceDeliverySubjectRecord | null> {
+  async findDeliverySubject(
+    invoiceId: string,
+    invoiceDocumentId: string | null = null,
+  ): Promise<InvoiceDeliverySubjectRecord | null> {
     const row = await this.prismaService.invoice.findFirst({
       where: { id: invoiceId, deletedAt: null },
       select: {
@@ -221,7 +224,10 @@ export class InvoiceDocumentRepository {
           },
         },
         documents: {
-          where: { hasVoidWatermark: false },
+          // The worker asks for the snapshot the request pinned; the request
+          // itself asks for the latest live one.
+          where:
+            invoiceDocumentId === null ? { hasVoidWatermark: false } : { id: invoiceDocumentId },
           orderBy: { createdAt: 'desc' },
           take: 1,
           select: { id: true, status: true, storageKey: true },

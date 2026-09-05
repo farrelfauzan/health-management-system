@@ -185,8 +185,14 @@ export class InvoiceDocumentService {
    * ISSUED or PAID, and READY — lives in the delivery module; this only
    * refuses to answer for an invoice that does not exist.
    */
-  async findDeliverySubject(invoiceId: string): Promise<InvoiceDeliverySubjectRecord> {
-    const subject = await this.invoiceDocumentRepository.findDeliverySubject(invoiceId);
+  async findDeliverySubject(
+    invoiceId: string,
+    invoiceDocumentId: string | null = null,
+  ): Promise<InvoiceDeliverySubjectRecord> {
+    const subject = await this.invoiceDocumentRepository.findDeliverySubject(
+      invoiceId,
+      invoiceDocumentId,
+    );
     if (subject === null) {
       throw new NotFoundException('Invoice not found');
     }

@@ -15,9 +15,12 @@ import {
   DELIVERY_CHANNEL_REFUSED_CODE,
   DELIVERY_NOT_RETRYABLE_CODE,
   DELIVERY_NOT_REVOCABLE_CODE,
+  DELIVERY_NOT_SCHEDULABLE_CODE,
+  DELIVERY_SEND_AT_IN_PAST_CODE,
   INVOICE_DOCUMENT_NOT_READY_CODE,
   INVOICE_NOT_DELIVERABLE_CODE,
   InvoiceDeliveryService,
+  STAFF_CANCELLED_REASON,
 } from './invoice-delivery.service';
 import { PatientDeliveryConsentService } from './patient-delivery-consent.service';
 
@@ -90,7 +93,13 @@ describe('InvoiceDeliveryService', () => {
   let mockRepository: jest.Mocked<
     Pick<
       DocumentDeliveryRepository,
-      'createMany' | 'findById' | 'findByInvoice' | 'markRetried' | 'markRevoked'
+      | 'createMany'
+      | 'findById'
+      | 'findByInvoice'
+      | 'markRetried'
+      | 'markRevoked'
+      | 'markCancelled'
+      | 'updateSchedule'
     >
   >;
   let mockInvoiceDocumentService: jest.Mocked<Pick<InvoiceDocumentService, 'findDeliverySubject'>>;
@@ -115,6 +124,8 @@ describe('InvoiceDeliveryService', () => {
       findByInvoice: jest.fn().mockResolvedValue([buildRecord()]),
       markRetried: jest.fn().mockResolvedValue(true),
       markRevoked: jest.fn().mockResolvedValue(true),
+      markCancelled: jest.fn().mockResolvedValue(true),
+      updateSchedule: jest.fn().mockResolvedValue(true),
     };
     mockInvoiceDocumentService = {
       findDeliverySubject: jest.fn().mockResolvedValue(buildSubject()),
@@ -278,6 +289,85 @@ describe('InvoiceDeliveryService', () => {
         service.requestInvoiceDelivery(INVOICE_ID, { channels: ['WHATSAPP'] }, ACTOR),
       ).rejects.toMatchObject({ response: { code: 'DELIVERY_PASSWORD_SOURCE_MISSING' } });
       expect(mockRepository.createMany).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('scheduled delivery', () => {
+    it('parks the rows at a future sendAt', async () => {
+      const sendAt = new Date(Date.now() + 3_600_000).toISOString();
+
+      await service.requestInvoiceDelivery(INVOICE_ID, { channels: ['WHATSAPP'], sendAt }, ACTOR);
+
+      expect(mockRepository.createMany).toHaveBeenCalledWith([
+        expect.objectContaining({ sendAt: new Date(sendAt) }),
+      ]);
+    });
+
+    it('refuses a sendAt that is not ahead of now', async () => {
+      const sendAt = new Date(Date.now() - 1_000).toISOString();
+
+      await expect(
+        service.requestInvoiceDelivery(INVOICE_ID, { channels: ['WHATSAPP'], sendAt }, ACTOR),
+      ).rejects.toMatchObject({ response: { code: DELIVERY_SEND_AT_IN_PAST_CODE } });
+      expect(mockRepository.createMany).not.toHaveBeenCalled();
+    });
+
+    it('cancels a queued send and audits who called it off', async () => {
+      mockRepository.findById
+        .mockResolvedValueOnce(buildRecord({ sendAt: new Date('2026-10-02T02:00:00.000Z') }))
+        .mockResolvedValueOnce(buildRecord({ status: 'CANCELLED' }));
+
+      const actual = await service.cancelDelivery('delivery-1', ACTOR);
+
+      expect(mockRepository.markCancelled).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'delivery-1', reason: STAFF_CANCELLED_REASON }),
+      );
+      expect(actual.status).toBe('CANCELLED');
+      expect(mockAuditService.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'DELIVERY_CANCELLED',
+          actorUserId: ACTOR.sub,
+          metadata: expect.objectContaining({ cancelledBy: 'STAFF' }),
+        }),
+      );
+    });
+
+    it('will not cancel a delivery that already went out', async () => {
+      mockRepository.findById.mockResolvedValue(buildRecord({ status: 'SENT' }));
+
+      await expect(service.cancelDelivery('delivery-1', ACTOR)).rejects.toMatchObject({
+        response: { code: DELIVERY_NOT_SCHEDULABLE_CODE, errors: { status: 'SENT' } },
+      });
+      expect(mockRepository.markCancelled).not.toHaveBeenCalled();
+    });
+
+    it('moves a queued send to a later time', async () => {
+      const sendAt = new Date(Date.now() + 7_200_000);
+      mockRepository.updateSchedule = jest.fn().mockResolvedValue(true);
+      mockRepository.findById
+        .mockResolvedValueOnce(buildRecord())
+        .mockResolvedValueOnce(buildRecord({ sendAt }));
+
+      const actual = await service.rescheduleDelivery(
+        'delivery-1',
+        { sendAt: sendAt.toISOString() },
+        ACTOR,
+      );
+
+      expect(mockRepository.updateSchedule).toHaveBeenCalledWith({ id: 'delivery-1', sendAt });
+      expect(actual.sendAt).toBe(sendAt.toISOString());
+    });
+
+    it('reports a reschedule that lost to the worker as a conflict', async () => {
+      mockRepository.updateSchedule = jest.fn().mockResolvedValue(false);
+
+      await expect(
+        service.rescheduleDelivery(
+          'delivery-1',
+          { sendAt: new Date(Date.now() + 60_000).toISOString() },
+          ACTOR,
+        ),
+      ).rejects.toMatchObject({ response: { code: DELIVERY_NOT_SCHEDULABLE_CODE } });
     });
   });
 

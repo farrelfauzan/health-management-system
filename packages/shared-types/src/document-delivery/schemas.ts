@@ -133,9 +133,22 @@ export const requestInvoiceDeliverySchema = z.object({
       message: 'Each channel may appear once',
     }),
   shape: deliveryShapeSchema.optional(),
+  /**
+   * Scheduled delivery (`P16-T38`, FR-E4-09): when the send is due. Absent
+   * means now. The worker re-checks consent, the number and the invoice at
+   * that moment, not at this one (FR-E4-10).
+   */
+  sendAt: z.string().datetime({ offset: true }).optional(),
 });
 
 export type RequestInvoiceDeliveryInput = z.infer<typeof requestInvoiceDeliverySchema>;
+
+/** Move a queued send to another time (`P16-T38`). */
+export const rescheduleDeliverySchema = z.object({
+  sendAt: z.string().datetime({ offset: true }),
+});
+
+export type RescheduleDeliveryInput = z.infer<typeof rescheduleDeliverySchema>;
 
 /**
  * A delivery-link token as it appears in the URL: 32 bytes from the CSPRNG,

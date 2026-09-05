@@ -58,6 +58,12 @@ import { ServiceTariffService } from './service/service-tariff.service';
   // the module that owns money, rather than writing invoice rows itself.
   // `InvoiceDocumentService` for P16-T25: the delivery module asks it for the
   // bill's state and its rendered snapshot, and applies the send rule itself.
-  exports: [CashierReportService, AccommodationBillingService, InvoiceDocumentService],
+  // `ClinicProfileService` for P16-T26: the message names the clinic.
+  exports: [
+    CashierReportService,
+    AccommodationBillingService,
+    InvoiceDocumentService,
+    ClinicProfileService,
+  ],
 })
 export class BillingModule {}

@@ -18,6 +18,7 @@ import {
   InvoiceDeliverySubjectRecord,
   InvoiceDeliveryTimelineView,
   RequestInvoiceDeliveryInput,
+  RescheduleDeliveryInput,
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -48,6 +49,9 @@ export const INVOICE_DOCUMENT_NOT_READY_CODE = 'INVOICE_DOCUMENT_NOT_READY';
 export const DELIVERY_CHANNEL_REFUSED_CODE = 'DELIVERY_CHANNEL_REFUSED';
 export const DELIVERY_NOT_RETRYABLE_CODE = 'DELIVERY_NOT_RETRYABLE';
 export const DELIVERY_NOT_REVOCABLE_CODE = 'DELIVERY_NOT_REVOCABLE';
+export const DELIVERY_NOT_SCHEDULABLE_CODE = 'DELIVERY_NOT_SCHEDULABLE';
+export const DELIVERY_SEND_AT_IN_PAST_CODE = 'DELIVERY_SEND_AT_IN_PAST';
+export const STAFF_CANCELLED_REASON = 'CANCELLED_BY_STAFF';
 
 type PlannedDelivery = {
   channel: DeliveryChannelValue;
@@ -88,6 +92,7 @@ export class InvoiceDeliveryService {
     if (shape === 'ATTACHMENT') {
       this.passwordService.assertPasswordAvailable(subject.patient);
     }
+    const sendAt = resolveSendAt(input.sendAt);
     const plans = await this.planChannels(subject.invoice.patientId, input.channels, currentUser);
     const passwordSource = shape === 'ATTACHMENT' ? this.passwordService.passwordSource : null;
     const rows = await this.deliveryRepository.createMany(
@@ -98,12 +103,84 @@ export class InvoiceDeliveryService {
           plan,
           shape,
           passwordSource,
+          sendAt,
           currentUser,
         }),
       ),
     );
     await Promise.all(rows.map((row) => this.auditRequested(row, currentUser)));
     return this.listInvoiceDeliveries(invoiceId);
+  }
+
+  async getDelivery(id: string): Promise<DeliveryView> {
+    return toDeliveryView(await this.findDeliveryOrThrow(id));
+  }
+
+  /**
+   * Calls off a send that has not gone yet (`P16-T38`, FR-E4-09). Only a
+   * QUEUED row can be cancelled — anything later is either already out or
+   * already settled, and revoke is the act for a link that is out.
+   */
+  async cancelDelivery(id: string, currentUser: CurrentUser): Promise<DeliveryView> {
+    const row = await this.findDeliveryOrThrow(id);
+    assertQueued(row, 'Only a delivery that has not been sent yet can be cancelled');
+    const isCancelled = await this.deliveryRepository.markCancelled({
+      id,
+      reason: STAFF_CANCELLED_REASON,
+      cancelledAt: new Date(),
+    });
+    if (!isCancelled) {
+      throw new ConflictException({
+        message: 'The delivery was sent before it could be cancelled',
+        code: DELIVERY_NOT_SCHEDULABLE_CODE,
+      });
+    }
+    await this.auditService.record({
+      action: AuditAction.DELIVERY_CANCELLED,
+      resource: DELIVERY_AUDIT_RESOURCE,
+      resourceId: id,
+      actorUserId: currentUser.sub,
+      patientId: row.patientId,
+      metadata: {
+        channel: row.channel,
+        invoiceId: row.invoiceId,
+        sendAt: row.sendAt,
+        cancelledBy: 'STAFF',
+      },
+    });
+    return toDeliveryView(await this.findDeliveryOrThrow(id));
+  }
+
+  /** Moves a QUEUED send to another future time (`P16-T38`). */
+  async rescheduleDelivery(
+    id: string,
+    input: RescheduleDeliveryInput,
+    currentUser: CurrentUser,
+  ): Promise<DeliveryView> {
+    const row = await this.findDeliveryOrThrow(id);
+    assertQueued(row, 'Only a delivery that has not been sent yet can be rescheduled');
+    const sendAt = resolveSendAt(input.sendAt) as Date;
+    const isRescheduled = await this.deliveryRepository.updateSchedule({ id, sendAt });
+    if (!isRescheduled) {
+      throw new ConflictException({
+        message: 'The delivery was claimed for sending before it could be rescheduled',
+        code: DELIVERY_NOT_SCHEDULABLE_CODE,
+      });
+    }
+    await this.auditService.record({
+      action: AuditAction.DELIVERY_REQUESTED,
+      resource: DELIVERY_AUDIT_RESOURCE,
+      resourceId: id,
+      actorUserId: currentUser.sub,
+      patientId: row.patientId,
+      metadata: {
+        channel: row.channel,
+        invoiceId: row.invoiceId,
+        rescheduledFrom: row.sendAt,
+        sendAt,
+      },
+    });
+    return toDeliveryView(await this.findDeliveryOrThrow(id));
   }
 
   async listInvoiceDeliveries(invoiceId: string): Promise<InvoiceDeliveryTimelineView> {
@@ -256,6 +333,36 @@ function assertDeliverable(
   return document;
 }
 
+function assertQueued(row: DeliveryRecord, message: string): void {
+  if (row.status !== 'QUEUED') {
+    throw new ConflictException({
+      message,
+      code: DELIVERY_NOT_SCHEDULABLE_CODE,
+      errors: { status: row.status },
+    });
+  }
+}
+
+/**
+ * A scheduled time must be ahead of now (FR-E4-09): a `sendAt` in the past
+ * is a typo, not an instruction to send immediately, and the worker would
+ * otherwise silently treat it as one.
+ */
+function resolveSendAt(sendAt: string | undefined): Date | null {
+  if (sendAt === undefined) {
+    return null;
+  }
+  const parsed = new Date(sendAt);
+  if (parsed.getTime() <= Date.now()) {
+    throw new UnprocessableEntityException({
+      message: 'The scheduled time must be in the future',
+      code: DELIVERY_SEND_AT_IN_PAST_CODE,
+      errors: { sendAt },
+    });
+  }
+  return parsed;
+}
+
 function resolveRevocableStatuses(shape: DeliveryShapeValue): readonly DeliveryStatusValue[] {
   return shape === 'LINK'
     ? [...REVOCABLE_BEFORE_SEND, ...REVOCABLE_AFTER_SEND_AS_LINK]
@@ -268,6 +375,7 @@ function buildCreateData(params: {
   plan: PlannedDelivery;
   shape: DeliveryShapeValue;
   passwordSource: DeliveryPasswordSourceValue | null;
+  sendAt: Date | null;
   currentUser: CurrentUser;
 }): CreateDeliveryData {
   return {
@@ -280,6 +388,6 @@ function buildCreateData(params: {
     destinationMasked: maskDeliveryDestination(params.plan.destination),
     passwordSource: params.passwordSource,
     requestedById: params.currentUser.sub,
-    sendAt: null,
+    sendAt: params.sendAt,
   };
 }

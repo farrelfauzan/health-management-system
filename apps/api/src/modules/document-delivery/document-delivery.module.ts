@@ -19,6 +19,8 @@ import { DeliveryChannelGateService } from './service/delivery-channel-gate.serv
 import { DeliveryLinkService } from './service/delivery-link.service';
 import { DeliveryOptOutService } from './service/delivery-opt-out.service';
 import { DeliveryPasswordService } from './service/delivery-password.service';
+import { DeliverySendService } from './service/delivery-send.service';
+import { DocumentDeliveryWorker } from './service/document-delivery.worker';
 import { InvoiceDeliveryService } from './service/invoice-delivery.service';
 import { PatientDeliveryConsentService } from './service/patient-delivery-consent.service';
 import { ProtectDeliveryDocumentService } from './service/protect-delivery-document.service';
@@ -34,8 +36,9 @@ import { PublicLinkRateLimiter } from './service/public-link-rate-limiter';
  * consume through {@link PatientDeliveryConsentService}. `P16-T37` adds the
  * step between render and transport — {@link ProtectDeliveryDocumentService}
  * locks every attachment with the patient's password before it leaves.
- * `P16-T25` adds the send itself — the delivery rows, the timeline, retry and
- * revoke, and the revocable link a LINK delivery resolves through. It is its
+ * `P16-T25` adds the delivery rows, the timeline, retry and revoke, and the
+ * revocable link a LINK delivery resolves through; `P16-T26` the lease-claimed
+ * worker that sends them, `P16-T38` the send-at. It is its
  * own module rather than a corner of billing because the same gate, the same
  * lock and the same rows serve an invoice and a lab result (D-028), and
  * neither owning module should have to import the other to ask. Billing is
@@ -76,6 +79,8 @@ import { PublicLinkRateLimiter } from './service/public-link-rate-limiter';
     InvoiceDeliveryService,
     DeliveryLinkService,
     PublicLinkRateLimiter,
+    DeliverySendService,
+    DocumentDeliveryWorker,
     {
       provide: InboundOptOutHandler,
       useExisting: DeliveryOptOutService,

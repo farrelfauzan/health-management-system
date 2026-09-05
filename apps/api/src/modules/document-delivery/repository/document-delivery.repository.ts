@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import {
+  CancelDeliveryData,
+  ClaimDueDeliveriesPayload,
   CreateDeliveryData,
   CreateDeliveryLinkData,
   DeliveryLinkLookupRecord,
@@ -9,6 +11,10 @@ import {
   DeliveryStatusValue,
   deliveryPasswordSourceSchema,
   RecordDeliveryLinkOpenData,
+  RescheduleDeliveryAttemptData,
+  SettleDeliveryFailedData,
+  SettleDeliverySentData,
+  UpdateDeliveryScheduleData,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
@@ -65,6 +71,10 @@ const OPENABLE_STATUSES: readonly DeliveryStatus[] = [
   DeliveryStatus.OPENED,
 ];
 
+const MILLISECONDS_PER_SECOND = 1_000;
+
+type ClaimedRow = { id: string };
+
 /**
  * Persistence for the delivery pipeline (`P16-T25`): the rows a send creates,
  * the timeline reads, and the two state changes staff can make by hand —
@@ -115,6 +125,125 @@ export class DocumentDeliveryRepository {
       select: DELIVERY_SELECT,
     });
     return rows.map(toDeliveryRecord);
+  }
+
+  /**
+   * Claims up to `limit` due rows for one worker replica and returns them
+   * (`P16-T26`, FR-E4-13). Selecting and updating in one statement under
+   * `FOR UPDATE SKIP LOCKED` is what makes two replicas safe: each row goes
+   * to exactly one claimer, so the same bill is never sent twice.
+   *
+   * Due means QUEUED, past its `send_at` (`P16-T38` parks a scheduled send
+   * here with one predicate, FR-E4-09), past its backoff, and not under a
+   * live lease. The lease is `leased_until`, not a status change: a worker
+   * that dies mid-send releases its rows when the lease lapses, with no
+   * reaper and no half-processed state. Oldest due first, so a scheduled
+   * send that came due at 09:00 is not queued behind a burst requested at
+   * 09:05.
+   */
+  async claimDueDeliveries(payload: ClaimDueDeliveriesPayload): Promise<DeliveryRecord[]> {
+    const leaseSeconds = payload.leaseMs / MILLISECONDS_PER_SECOND;
+    const claimed = await this.prisma.$queryRaw<ClaimedRow[]>`
+      UPDATE "document_deliveries"
+      SET "leased_until" = now() + make_interval(secs => ${leaseSeconds}::double precision),
+          "leased_by" = ${payload.leasedBy},
+          "updated_at" = now()
+      WHERE "id" IN (
+        SELECT "id"
+        FROM "document_deliveries"
+        WHERE "status" = 'QUEUED'::"delivery_status"
+          AND ("send_at" IS NULL OR "send_at" <= now())
+          AND ("next_attempt_at" IS NULL OR "next_attempt_at" <= now())
+          AND ("leased_until" IS NULL OR "leased_until" <= now())
+        ORDER BY COALESCE("next_attempt_at", "send_at", "created_at") ASC
+        LIMIT ${payload.limit}::integer
+        FOR UPDATE SKIP LOCKED
+      )
+      RETURNING "id"
+    `;
+    if (claimed.length === 0) {
+      return [];
+    }
+    const rows = await this.prisma.documentDelivery.findMany({
+      where: { id: { in: claimed.map((row) => row.id) } },
+      orderBy: { createdAt: 'asc' },
+      select: DELIVERY_SELECT,
+    });
+    return rows.map(toDeliveryRecord);
+  }
+
+  async markSent(data: SettleDeliverySentData): Promise<void> {
+    await this.prisma.documentDelivery.update({
+      where: { id: data.id },
+      data: {
+        status: DeliveryStatus.SENT,
+        sentAt: data.sentAt,
+        providerMessageId: data.providerMessageId,
+        attemptCount: { increment: 1 },
+        lastError: null,
+        nextAttemptAt: null,
+        leasedUntil: null,
+        leasedBy: null,
+      },
+    });
+  }
+
+  /** A transient failure: count the attempt, record why, and park the row until the backoff passes. */
+  async rescheduleAttempt(data: RescheduleDeliveryAttemptData): Promise<void> {
+    await this.prisma.documentDelivery.update({
+      where: { id: data.id },
+      data: {
+        attemptCount: { increment: 1 },
+        lastError: data.error,
+        nextAttemptAt: data.nextAttemptAt,
+        leasedUntil: null,
+        leasedBy: null,
+      },
+    });
+  }
+
+  async markFailed(data: SettleDeliveryFailedData): Promise<void> {
+    await this.prisma.documentDelivery.update({
+      where: { id: data.id },
+      data: {
+        status: DeliveryStatus.FAILED,
+        attemptCount: { increment: 1 },
+        lastError: data.error,
+        nextAttemptAt: null,
+        leasedUntil: null,
+        leasedBy: null,
+      },
+    });
+  }
+
+  /** QUEUED → CANCELLED, whoever called it off. The predicate is the guard. */
+  async markCancelled(data: CancelDeliveryData): Promise<boolean> {
+    const result = await this.prisma.documentDelivery.updateMany({
+      where: { id: data.id, status: DeliveryStatus.QUEUED },
+      data: {
+        status: DeliveryStatus.CANCELLED,
+        lastError: data.reason,
+        revokedAt: data.cancelledAt,
+        nextAttemptAt: null,
+        leasedUntil: null,
+        leasedBy: null,
+      },
+    });
+    return result.count === 1;
+  }
+
+  /** Moves a QUEUED send; a row already claimed or sent is left alone. */
+  async updateSchedule(data: UpdateDeliveryScheduleData): Promise<boolean> {
+    const result = await this.prisma.documentDelivery.updateMany({
+      where: { id: data.id, status: DeliveryStatus.QUEUED, leasedUntil: null },
+      data: { sendAt: data.sendAt, nextAttemptAt: null },
+    });
+    return result.count === 1;
+  }
+
+  /** How many messages left the building since `since` — the daily cap's input. */
+  async countSentSince(since: Date): Promise<number> {
+    return this.prisma.documentDelivery.count({ where: { sentAt: { gte: since } } });
   }
 
   /** FAILED → QUEUED, with the backoff and any stale lease cleared. */

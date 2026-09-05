@@ -57,7 +57,7 @@ export class InvoiceDeliveryController {
   @ApiEndpoint({
     summary: 'Send the rendered invoice to the patient',
     responseDescription:
-      'One QUEUED delivery per requested channel; the worker sends them. Refused as a whole with 409 unless the invoice is ISSUED or PAID and its document is READY (FR-E4-02); with 422 `DELIVERY_CHANNEL_REFUSED` naming the channel and reason when consent or the verified-number gate says no (FR-E4-03/04); and with 422 `DELIVERY_PASSWORD_SOURCE_MISSING` when an attachment could not be locked because the patient has no date of birth on file (FR-E4-07). Resending is a normal act: a second request adds a second row.',
+      'One QUEUED delivery per requested channel; the worker sends them. Refused as a whole with 409 unless the invoice is ISSUED or PAID and its document is READY (FR-E4-02); with 422 `DELIVERY_CHANNEL_REFUSED` naming the channel and reason when consent or the verified-number gate says no (FR-E4-03/04); and with 422 `DELIVERY_PASSWORD_SOURCE_MISSING` when an attachment could not be locked because the patient has no date of birth on file (FR-E4-07). Resending is a normal act: a second request adds a second row. A future `sendAt` parks the rows until then (FR-E4-09); 422 `DELIVERY_SEND_AT_IN_PAST` otherwise.',
     responseExample: {
       data: DOCUMENT_DELIVERY_EXAMPLES.timeline,
       message: 'Delivery queued',

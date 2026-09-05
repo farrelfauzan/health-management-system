@@ -110,6 +110,22 @@ export type DocumentDeliveryConfig = {
   readonly linkTtlHours: number;
   /** The web origin a delivery link lands on — `<base>/inv/<token>`. */
   readonly webAppBaseUrl: string;
+  /** The outbox worker (`P16-T26`): off only for a replica that must not send. */
+  readonly workerEnabled: boolean;
+  readonly workerPollIntervalMs: number;
+  /** Rows claimed per sweep, sent one after another behind the pacing chain. */
+  readonly workerBatchSize: number;
+  /** How long one replica owns a claimed row before another may take it. */
+  readonly leaseMs: number;
+  /** Transient failures retry with exponential backoff up to this many attempts. */
+  readonly maxAttempts: number;
+  readonly retryBaseDelayMs: number;
+  /**
+   * Sends allowed per rolling 24 hours, or null for no cap. Ships unset
+   * (§7.4.5.1): a guessed number is a support ticket, so production picks one
+   * once the clinic's own volume is known.
+   */
+  readonly dailySendCap: number | null;
 };
 
 /**
@@ -227,4 +243,69 @@ export type RecordDeliveryLinkOpenData = {
 export type PublicLinkRateLimitRequest = {
   key: string;
   limit: number;
+};
+
+/** The worker's claim (`P16-T26`): up to `limit` due rows, leased to `leasedBy`. */
+export type ClaimDueDeliveriesPayload = {
+  limit: number;
+  leaseMs: number;
+  leasedBy: string;
+};
+
+/** The transport accepted the message. */
+export type SettleDeliverySentData = {
+  id: string;
+  sentAt: Date;
+  providerMessageId: string | null;
+};
+
+/** A transient failure: back off, keep the row QUEUED. */
+export type RescheduleDeliveryAttemptData = {
+  id: string;
+  error: string;
+  nextAttemptAt: Date;
+};
+
+/** Attempts exhausted, or a failure that will not change: settle FAILED. */
+export type SettleDeliveryFailedData = {
+  id: string;
+  error: string;
+};
+
+/**
+ * A QUEUED send called off — by staff before it was due (`P16-T38`), or by
+ * the worker because the send-time re-check said no (FR-E4-10). `reason` is
+ * what the timeline shows.
+ */
+export type CancelDeliveryData = {
+  id: string;
+  reason: string;
+  cancelledAt: Date;
+};
+
+export type UpdateDeliveryScheduleData = {
+  id: string;
+  sendAt: Date;
+};
+
+/**
+ * What the message builders read (FR-E4-15): the clinic, the bill's identity
+ * and total, and either the password sentence or the link — never a line
+ * item, never a diagnosis.
+ */
+export type InvoiceDeliveryMessageContext = {
+  clinicName: string;
+  patientName: string;
+  invoiceNumber: string;
+  totalAmount: number;
+  issuedAt: Date | null;
+  /** The scheme sentence for an attachment (FR-E4-08); null on a link. */
+  passwordSentence: string | null;
+  /** The URL and its expiry on a link; null on an attachment. */
+  link: { url: string; expiresAt: Date } | null;
+};
+
+/** What one send attempt came back with. */
+export type DeliveryTransportResult = {
+  providerMessageId: string | null;
 };

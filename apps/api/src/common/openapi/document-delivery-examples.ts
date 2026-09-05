@@ -1,3 +1,5 @@
+import { optionalExample } from './api-endpoint.decorator';
+
 /**
  * Canonical examples for the delivery-consent endpoints (P16-T24) and the
  * send pipeline (P16-T25), mirrored by `ApiEndpoint` into the OpenAPI
@@ -84,6 +86,7 @@ export const DOCUMENT_DELIVERY_EXAMPLES = {
   sendRequest: {
     channels: ['WHATSAPP', 'EMAIL'],
     shape: 'ATTACHMENT',
+    sendAt: optionalExample('2026-10-02T09:00:00+07:00'),
   },
   timeline: {
     invoiceId: INVOICE_ID,
@@ -96,6 +99,15 @@ export const DOCUMENT_DELIVERY_EXAMPLES = {
     revokedAt: '2026-09-29T09:12:00.000Z',
     link: { ...SENT_LINK_DELIVERY.link, revokedAt: '2026-09-29T09:12:00.000Z' },
   },
+  cancelledDelivery: {
+    ...QUEUED_DELIVERY,
+    status: 'CANCELLED',
+    sendAt: '2026-10-02T02:00:00.000Z',
+    lastError: 'CANCELLED_BY_STAFF',
+    revokedAt: '2026-09-29T09:12:00.000Z',
+  },
+  scheduledDelivery: { ...QUEUED_DELIVERY, sendAt: '2026-10-02T02:00:00.000Z' },
+  rescheduleRequest: { sendAt: '2026-10-02T02:00:00+07:00' },
   linkResolution: {
     url: 'https://storage.example/invoices/…?X-Amz-Signature=…',
     fileName: 'INV-2026-09-000123.pdf',
