@@ -194,6 +194,33 @@ export type PatientPrivacyNoticeRecord = Prisma.PatientPrivacyNoticeRecordModel
  */
 export type PatientDeliveryConsent = Prisma.PatientDeliveryConsentModel
 /**
+ * Model DocumentDelivery
+ * One attempt to put one rendered document in front of one patient
+ * (`P16-T25`, FR-E4-12) — an invoice today, a released clinical document
+ * under `P16-T40`. One table for both on purpose (D-028): the consent gate,
+ * the password lock, the worker and the timeline are the same whichever
+ * document is inside, and two tables would mean two workers that must never
+ * drift. Exactly one subject is set, enforced by a CHECK in the migration —
+ * the same shape `Invoice` uses for encounter-or-admission.
+ * 
+ * `destinationMasked` is what is stored for display — `0812****0024`,
+ * `r***@example.test`. The full destination is not duplicated here: it is
+ * re-resolved from the verified link or the patient row at send time
+ * (FR-E4-10), and a delivery log that accumulates plaintext contact details
+ * becomes its own disclosure risk.
+ */
+export type DocumentDelivery = Prisma.DocumentDeliveryModel
+/**
+ * Model DocumentDeliveryLink
+ * The revocable token behind a LINK delivery (`P16-T25`, FR-E4-11). Only a
+ * hash is stored, for the same reason the OTP challenge stores only a hash:
+ * this row is readable by anything that can read the database, and a live
+ * token is a working credential against a patient's bill. Minted when the
+ * message is sent, not when the delivery is requested — the plaintext has
+ * to reach the message and nowhere else.
+ */
+export type DocumentDeliveryLink = Prisma.DocumentDeliveryLinkModel
+/**
  * Model PatientAllergy
  * Free-text substance plus a severity grade. Deliberately uncoded for now —
  * allergen and reaction move to coded terminology in the EMR phase.

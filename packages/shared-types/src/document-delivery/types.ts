@@ -1,8 +1,11 @@
+import type { InvoiceStatusValue } from '#billing/schemas';
 import type {
   ConsentRevokedReasonValue,
   DeliveryChannelValue,
   DeliveryPasswordSourceValue,
   DeliveryRefusalReasonValue,
+  DeliveryShapeValue,
+  DeliveryStatusValue,
 } from '#document-delivery/schemas';
 
 /** A consent row as the repository projects it. */
@@ -41,9 +44,23 @@ export type DeliveryConsentCheckInput = {
   channel: DeliveryChannelValue;
 };
 
+/**
+ * Where an allowed send goes: the verified WhatsApp link's JID, or the email
+ * on the patient record. Resolved at send time, never stored on the delivery
+ * row (FR-E4-10).
+ */
+export type DeliveryDestination =
+  | { channel: 'WHATSAPP'; externalChatId: string; phoneNumber: string }
+  | { channel: 'EMAIL'; email: string };
+
+/**
+ * `destination` is set only when the send is allowed — a caller holding a
+ * destination for a refused send is a caller one bug away from using it.
+ */
 export type DeliveryConsentCheckResult = {
   isAllowed: boolean;
   refusalReason: DeliveryRefusalReasonValue | null;
+  destination: DeliveryDestination | null;
 };
 
 /**
@@ -89,6 +106,10 @@ export type WhatsappDeliveryGateResult = {
  */
 export type DocumentDeliveryConfig = {
   readonly passwordSource: DeliveryPasswordSourceValue;
+  /** How long a LINK delivery's token resolves (FR-E4-11; default 7 days). */
+  readonly linkTtlHours: number;
+  /** The web origin a delivery link lands on — `<base>/inv/<token>`. */
+  readonly webAppBaseUrl: string;
 };
 
 /**
@@ -111,4 +132,99 @@ export type DeliveryPasswordPatientRecord = {
   id: string;
   mrn: string;
   dateOfBirth: Date | null;
+};
+
+/** The token's row as the repository projects it — never the token. */
+export type DeliveryLinkRecord = {
+  id: string;
+  deliveryId: string;
+  expiresAt: Date;
+  revokedAt: Date | null;
+  openCount: number;
+  lastOpenedAt: Date | null;
+};
+
+/** A delivery row as the repository projects it (`P16-T25`). */
+export type DeliveryRecord = {
+  id: string;
+  patientId: string;
+  invoiceId: string | null;
+  invoiceDocumentId: string | null;
+  documentId: string | null;
+  channel: DeliveryChannelValue;
+  shape: DeliveryShapeValue;
+  destinationMasked: string;
+  status: DeliveryStatusValue;
+  attemptCount: number;
+  sendAt: Date | null;
+  nextAttemptAt: Date | null;
+  leasedUntil: Date | null;
+  leasedBy: string | null;
+  passwordSource: DeliveryPasswordSourceValue | null;
+  providerMessageId: string | null;
+  lastError: string | null;
+  sentAt: Date | null;
+  openedAt: Date | null;
+  revokedAt: Date | null;
+  requestedBy: { id: string; email: string } | null;
+  link: DeliveryLinkRecord | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/** One QUEUED row per channel, written when a cashier asks for a send. */
+export type CreateDeliveryData = {
+  patientId: string;
+  invoiceId: string | null;
+  invoiceDocumentId: string | null;
+  documentId: string | null;
+  channel: DeliveryChannelValue;
+  shape: DeliveryShapeValue;
+  destinationMasked: string;
+  passwordSource: DeliveryPasswordSourceValue | null;
+  requestedById: string | null;
+  sendAt: Date | null;
+};
+
+/** The hash and the expiry — the token itself goes to the message, not here. */
+export type CreateDeliveryLinkData = {
+  deliveryId: string;
+  tokenHash: string;
+  expiresAt: Date;
+};
+
+/** What the send pipeline puts in the message: the URL and its expiry. */
+export type MintedDeliveryLink = {
+  url: string;
+  expiresAt: Date;
+};
+
+/**
+ * Everything the public route needs to decide whether a token still opens
+ * something (FR-E4-11, FR-E4-20): the link, its delivery, and the state of
+ * the bill behind it. `storageKey` is read here and turned into a presigned
+ * URL in the service; it never reaches the response.
+ */
+export type DeliveryLinkLookupRecord = {
+  link: DeliveryLinkRecord;
+  delivery: {
+    id: string;
+    patientId: string;
+    status: DeliveryStatusValue;
+  };
+  invoice: { id: string; invoiceNumber: string; status: InvoiceStatusValue } | null;
+  storageKey: string | null;
+};
+
+/** The one act the link route records: a successful open. */
+export type RecordDeliveryLinkOpenData = {
+  linkId: string;
+  deliveryId: string;
+  openedAt: Date;
+};
+
+/** One counter the public link route checks: a key and its per-minute limit. */
+export type PublicLinkRateLimitRequest = {
+  key: string;
+  limit: number;
 };

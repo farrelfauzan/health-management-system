@@ -6,6 +6,7 @@ import { PDFParse } from 'pdf-parse';
 
 import {
   ClinicProfileRecord,
+  InvoiceDeliverySubjectRecord,
   InvoiceDocumentDownloadView,
   InvoiceDocumentRecord,
   InvoiceDocumentView,
@@ -177,6 +178,24 @@ export class InvoiceDocumentService {
       responseContentType: PDF_CONTENT_TYPE,
     });
     return { url: signed.url, fileName, expiresAt: signed.expiresAt };
+  }
+
+  /**
+   * The facts a send is decided on (`P16-T25`, FR-E4-02). The rule itself —
+   * ISSUED or PAID, and READY — lives in the delivery module; this only
+   * refuses to answer for an invoice that does not exist.
+   */
+  async findDeliverySubject(invoiceId: string): Promise<InvoiceDeliverySubjectRecord> {
+    const subject = await this.invoiceDocumentRepository.findDeliverySubject(invoiceId);
+    if (subject === null) {
+      throw new NotFoundException('Invoice not found');
+    }
+    return subject;
+  }
+
+  /** The file name a delivered or downloaded invoice PDF is saved as. */
+  buildFileName(invoiceNumber: string): string {
+    return this.buildDownloadFileName(invoiceNumber);
   }
 
   private async findRenderContextOrThrow(invoiceId: string): Promise<InvoiceRenderContextRecord> {

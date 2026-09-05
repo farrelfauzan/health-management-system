@@ -81,3 +81,67 @@ export const deliveryPasswordSourceSchema = z.enum(DELIVERY_PASSWORD_SOURCES);
 export type DeliveryPasswordSourceValue = z.infer<typeof deliveryPasswordSourceSchema>;
 
 export const DEFAULT_DELIVERY_PASSWORD_SOURCE: DeliveryPasswordSourceValue = 'DOB_DDMMYYYY';
+
+/**
+ * How a delivered document reaches the patient (`P16-T25`, FR-E4-05).
+ * Mirrors the Prisma `DeliveryShape` enum. `ATTACHMENT` is the default on
+ * both channels and always a password-protected PDF (D-027); `LINK` mints a
+ * revocable, expiring token instead.
+ */
+export const DELIVERY_SHAPES = ['ATTACHMENT', 'LINK'] as const;
+
+export const deliveryShapeSchema = z.enum(DELIVERY_SHAPES);
+
+export type DeliveryShapeValue = z.infer<typeof deliveryShapeSchema>;
+
+export const DEFAULT_DELIVERY_SHAPE: DeliveryShapeValue = 'ATTACHMENT';
+
+/**
+ * Where one delivery is in its life (`P16-T25`, FR-E4-12). Mirrors the Prisma
+ * `DeliveryStatus` enum; see the schema comment for what each state means.
+ */
+export const DELIVERY_STATUSES = [
+  'QUEUED',
+  'SENT',
+  'DELIVERED',
+  'OPENED',
+  'FAILED',
+  'REVOKED',
+  'CANCELLED',
+] as const;
+
+export const deliveryStatusSchema = z.enum(DELIVERY_STATUSES);
+
+export type DeliveryStatusValue = z.infer<typeof deliveryStatusSchema>;
+
+/**
+ * Send a rendered invoice to the patient (`P16-T25`, FR-E4-01): one request,
+ * one or both channels, one delivery row per channel.
+ *
+ * `shape` is a per-request override of the attachment default (FR-E4-05).
+ * There is no destination field on purpose — the number or address is
+ * whatever the verified link or the patient record says at send time, and a
+ * request that could name one would be a request that could name the wrong
+ * one.
+ */
+export const requestInvoiceDeliverySchema = z.object({
+  channels: z
+    .array(deliveryChannelSchema)
+    .min(1, 'Pick at least one channel')
+    .max(DELIVERY_CHANNELS.length)
+    .refine((channels) => new Set(channels).size === channels.length, {
+      message: 'Each channel may appear once',
+    }),
+  shape: deliveryShapeSchema.optional(),
+});
+
+export type RequestInvoiceDeliveryInput = z.infer<typeof requestInvoiceDeliverySchema>;
+
+/**
+ * A delivery-link token as it appears in the URL: 32 bytes from the CSPRNG,
+ * base64url, 43 characters, no padding. Anything else is refused before the
+ * database is asked, so a scan of the route learns nothing from timing.
+ */
+export const DELIVERY_LINK_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
+
+export const deliveryLinkTokenSchema = z.string().regex(DELIVERY_LINK_TOKEN_PATTERN);

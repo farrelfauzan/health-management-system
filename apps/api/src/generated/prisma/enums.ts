@@ -101,6 +101,13 @@ export const AuditAction = {
   DELIVERY_CONSENT_WITHDRAWN: 'DELIVERY_CONSENT_WITHDRAWN',
   DELIVERY_CONSENT_OPTED_OUT: 'DELIVERY_CONSENT_OPTED_OUT',
   DELIVERY_CHANNEL_REFUSED: 'DELIVERY_CHANNEL_REFUSED',
+  DELIVERY_REQUESTED: 'DELIVERY_REQUESTED',
+  DELIVERY_SENT: 'DELIVERY_SENT',
+  DELIVERY_FAILED: 'DELIVERY_FAILED',
+  DELIVERY_OPENED: 'DELIVERY_OPENED',
+  DELIVERY_REVOKED: 'DELIVERY_REVOKED',
+  DELIVERY_RETRIED: 'DELIVERY_RETRIED',
+  DELIVERY_CANCELLED: 'DELIVERY_CANCELLED',
   ORGANIZATION_UNIT_CREATED: 'ORGANIZATION_UNIT_CREATED',
   ORGANIZATION_UNIT_UPDATED: 'ORGANIZATION_UNIT_UPDATED',
   ORGANIZATION_UNIT_MOVED: 'ORGANIZATION_UNIT_MOVED',
@@ -529,6 +536,27 @@ export const DeliveryChannel = {
 } as const
 
 export type DeliveryChannel = (typeof DeliveryChannel)[keyof typeof DeliveryChannel]
+
+
+export const DeliveryShape = {
+  ATTACHMENT: 'ATTACHMENT',
+  LINK: 'LINK'
+} as const
+
+export type DeliveryShape = (typeof DeliveryShape)[keyof typeof DeliveryShape]
+
+
+export const DeliveryStatus = {
+  QUEUED: 'QUEUED',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  OPENED: 'OPENED',
+  FAILED: 'FAILED',
+  REVOKED: 'REVOKED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus]
 
 
 export const DocumentOwnerType = {

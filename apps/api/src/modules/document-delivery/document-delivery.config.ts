@@ -3,25 +3,47 @@ import { ConfigService } from '@nestjs/config';
 import {
   DEFAULT_DELIVERY_PASSWORD_SOURCE,
   DELIVERY_PASSWORD_SOURCES,
+  DeliveryPasswordSourceValue,
   DocumentDeliveryConfig,
   deliveryPasswordSourceSchema,
 } from '@hms/shared-types';
 
+const HOURS_PER_DAY = 24;
+const DEFAULT_LINK_TTL_DAYS = 7;
+const MAX_LINK_TTL_DAYS = 30;
+const DEFAULT_WEB_APP_BASE_URL = 'http://localhost:3000';
+
 /**
- * Resolves delivery configuration from the environment at boot (`P16-T37`).
+ * Resolves delivery configuration from the environment at boot.
  *
- * `DELIVERY_PDF_PASSWORD_SOURCE` picks how an attachment's password is
- * derived (FR-E4-06). Unset means the date-of-birth default; a value outside
- * the known schemes is a boot error rather than a per-send surprise, because
- * a clinic that set it wrong would otherwise ship documents no patient can
- * open — with the message telling them the wrong thing to type.
+ * `DELIVERY_PDF_PASSWORD_SOURCE` (`P16-T37`) picks how an attachment's
+ * password is derived (FR-E4-06). Unset means the date-of-birth default; a
+ * value outside the known schemes is a boot error rather than a per-send
+ * surprise, because a clinic that set it wrong would otherwise ship documents
+ * no patient can open — with the message telling them the wrong thing to
+ * type.
+ *
+ * `DELIVERY_LINK_TTL_DAYS` (`P16-T25`) is how long a LINK delivery's token
+ * resolves (FR-E4-11, default 7). Capped at 30: a link that lives longer than
+ * a month is a link nobody can remember sending. `WEB_APP_BASE_URL` is the
+ * origin the link lands on — the same variable staff invitations use, for the
+ * same reason: the page is a Next.js route that then calls the API, so the
+ * origin cannot be derived from the request that created the delivery.
  */
 export function resolveDocumentDeliveryConfig(
   configService: ConfigService,
 ): DocumentDeliveryConfig {
+  return {
+    passwordSource: readPasswordSource(configService),
+    linkTtlHours: readLinkTtlDays(configService) * HOURS_PER_DAY,
+    webAppBaseUrl: readWebAppBaseUrl(configService),
+  };
+}
+
+function readPasswordSource(configService: ConfigService): DeliveryPasswordSourceValue {
   const rawSource = configService.get<string>('DELIVERY_PDF_PASSWORD_SOURCE');
   if (rawSource === undefined || rawSource.trim() === '') {
-    return { passwordSource: DEFAULT_DELIVERY_PASSWORD_SOURCE };
+    return DEFAULT_DELIVERY_PASSWORD_SOURCE;
   }
   const parsed = deliveryPasswordSourceSchema.safeParse(rawSource.trim());
   if (!parsed.success) {
@@ -29,5 +51,27 @@ export function resolveDocumentDeliveryConfig(
       `Document delivery configuration error: DELIVERY_PDF_PASSWORD_SOURCE must be one of ${DELIVERY_PASSWORD_SOURCES.join(', ')}`,
     );
   }
-  return { passwordSource: parsed.data };
+  return parsed.data;
+}
+
+function readLinkTtlDays(configService: ConfigService): number {
+  const rawValue = configService.get<string>('DELIVERY_LINK_TTL_DAYS')?.trim() ?? '';
+  if (rawValue === '') {
+    return DEFAULT_LINK_TTL_DAYS;
+  }
+  const parsed = Number(rawValue);
+  const isUsable = Number.isInteger(parsed) && parsed > 0 && parsed <= MAX_LINK_TTL_DAYS;
+  if (!isUsable) {
+    throw new Error(
+      `Document delivery configuration error: DELIVERY_LINK_TTL_DAYS must be a whole number of days between 1 and ${MAX_LINK_TTL_DAYS}`,
+    );
+  }
+  return parsed;
+}
+
+function readWebAppBaseUrl(configService: ConfigService): string {
+  const configured = configService.get<string>('WEB_APP_BASE_URL')?.trim() ?? '';
+  const value = configured === '' ? DEFAULT_WEB_APP_BASE_URL : configured;
+  const withScheme = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  return withScheme.replace(/\/+$/, '');
 }

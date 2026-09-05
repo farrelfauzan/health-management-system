@@ -474,3 +474,35 @@ export type InvoiceRenderContextRecord = {
   } | null;
   voidedByName: string | null;
 };
+
+/**
+ * What a send needs to know about an invoice (`P16-T25`, FR-E4-02): the
+ * bill's state, the latest live rendered snapshot, and the patient fields the
+ * gate and the password resolver read. A projection for the delivery
+ * module, exposed through `InvoiceDocumentService` so the rule "ISSUED or
+ * PAID, and READY" is applied by the module that owns sending, on facts
+ * supplied by the module that owns money.
+ */
+export type InvoiceDeliverySubjectRecord = {
+  invoice: {
+    id: string;
+    invoiceNumber: string;
+    status: InvoiceStatusValue;
+    patientId: string;
+    totalAmount: number;
+    issuedAt: Date | null;
+  };
+  document: {
+    id: string;
+    status: InvoiceDocumentStatusValue;
+    storageKey: string | null;
+  } | null;
+  patient: {
+    id: string;
+    mrn: string;
+    fullName: string;
+    dateOfBirth: Date | null;
+    phoneNumber: string;
+    email: string | null;
+  };
+};
