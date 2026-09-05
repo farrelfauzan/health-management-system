@@ -40,6 +40,9 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'release',
   'share',
   'offboard',
+  // P16-T25. Every `invoice.deliver:any` in a session hint was dropped here
+  // until this line existed, which hid the Send button from every admin.
+  'deliver',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',

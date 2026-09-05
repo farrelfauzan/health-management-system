@@ -334,6 +334,21 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
     expect(ability.can('read', 'Document')).toBe(false);
   });
 
+  it('turns the invoice deliver grant into a rule the Send button can read', () => {
+    // P16-T25. The key is separate from `invoice.write:any`; a cashier holding
+    // only write must not see Send, and an admin holding deliver must.
+    const withDeliver = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['invoice.read:any', 'invoice.deliver:any'] }),
+    );
+    const writeOnly = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['invoice.read:any', 'invoice.write:any'] }),
+    );
+
+    expect(withDeliver.can('deliver', 'Invoice')).toBe(true);
+    expect(withDeliver.can('write', 'Invoice')).toBe(false);
+    expect(writeOnly.can('deliver', 'Invoice')).toBe(false);
+  });
+
   it('gives an administrator the patient-document delete grant without release', () => {
     const ability = buildAppAbility(
       resolveAppAbilityRules({
