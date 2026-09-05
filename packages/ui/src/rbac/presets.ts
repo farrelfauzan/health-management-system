@@ -75,6 +75,9 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'write', subject: 'ServiceTariff' },
   { action: 'read', subject: 'Invoice' },
   { action: 'write', subject: 'Invoice' },
+  // P16-T25. `seed.sql` gives ADMIN the deliver key; an admin whose hint
+  // predates it keeps the Send button rather than losing it to the preset.
+  { action: 'deliver', subject: 'Invoice' },
   { action: 'write', subject: 'Payment' },
   { action: 'create', subject: 'ChatSession' },
   { action: 'read', subject: 'ChatSession' },
