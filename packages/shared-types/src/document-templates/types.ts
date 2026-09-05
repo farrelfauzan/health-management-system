@@ -1,3 +1,4 @@
+import type { DocumentTemplateImportWarning } from '#document-templates/contracts';
 import type {
   DocumentTemplateKindValue,
   DocumentTemplateStatusValue,
@@ -64,3 +65,14 @@ export type PublishDocumentTemplateRecordPayload = {
   templateId: string;
   publishedById: string;
 };
+
+/** What the DOCX converter hands back before sanitising (`P16-T42`). */
+export type ConvertedDocxTemplate = {
+  html: string;
+  warnings: DocumentTemplateImportWarning[];
+};
+
+/** The magic-byte verdict on a staged Word file (`P16-T42`). */
+export type DocxContentValidationResult =
+  | { readonly isAccepted: true }
+  | { readonly isAccepted: false; readonly reason: string };

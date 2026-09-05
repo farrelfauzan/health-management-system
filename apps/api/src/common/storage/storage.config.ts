@@ -36,6 +36,10 @@ const DEFAULT_ALLOWED_MIME_TYPES = [
   'image/jpeg',
   'image/png',
   'image/webp',
+  // P16-T42: a Word file staged for template import. Validated on its bytes
+  // (ZIP signature, `word/document.xml` present), converted, and deleted in
+  // the same request — it is never served and never kept.
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 const MAX_SIGNED_URL_EXPIRES_IN_SECONDS = 3_600;
 const MIME_TYPE_PATTERN = /^[a-z0-9!#$&^_.+-]+\/[a-z0-9!#$&^_.+-]+$/i;

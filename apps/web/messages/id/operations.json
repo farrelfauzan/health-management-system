@@ -394,6 +394,23 @@
           "unknownTokensTitle": "{count, plural, one {Penerbitan ditolak: # variabel tidak ada di daftar} other {Penerbitan ditolak: # variabel tidak ada di daftar}}",
           "unknownTokensHint": "Hapus atau ganti setiap chip di bawah ini, simpan, lalu terbitkan lagi.",
           "dismiss": "Tutup"
+        },
+        "import": {
+          "action": "Impor dari Word",
+          "importing": "Mengimpor…",
+          "loaded": "Tata letak dari Word dimuat ke editor. Periksa, lalu Simpan untuk menyimpannya.",
+          "unsupportedType": "Pilih berkas Word (.docx).",
+          "tooLarge": "Berkas lebih besar dari 5 MB.",
+          "uploadError": "Berkas tidak dapat diunggah.",
+          "error": "Berkas Word tidak dapat dikonversi.",
+          "warningsTitle": "{count, plural, one {# hal tidak terbawa dari Word} other {# hal tidak terbawa dari Word}}",
+          "codes": {
+            "UNKNOWN_PLACEHOLDER": "'{{'{detail}'}}' bukan variabel template; dibiarkan sebagai teks. Ganti dari palet variabel.",
+            "IMAGE_DROPPED": "Gambar bertipe {detail} dibuang; hanya PNG, JPEG, dan WebP yang terbawa.",
+            "UNSUPPORTED_CONTENT": "{detail}"
+          },
+          "reviewHint": "Font, warna, dan arsiran sel tidak terbawa: editor hanya menyimpan struktur dan tipografi diatur stylesheet PDF. Header dan footer dari Word tidak ikut.",
+          "dismiss": "Tutup"
         }
       },
       "delivery": {

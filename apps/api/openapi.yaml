@@ -20552,6 +20552,202 @@ paths:
         - bearer: []
       summary: Archive a document template
       tags: *a31
+  /api/v1/document-templates/import-upload-url:
+    post:
+      operationId: DocumentTemplateController_createImportUploadUrl_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDocumentTemplateImportUploadUrlDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  sizeBytes: 184320
+      responses:
+        "200":
+          description: "A short-lived PUT URL for exactly one `.docx` of the declared
+            size. Nothing is persisted: a URL nobody claims leaves a staged
+            object that the import route never sees and a sweep can remove. Send
+            `requiredHeaders` verbatim on the PUT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      storageKey:
+                        type: string
+                      expiresAt:
+                        type: string
+                      requiredHeaders:
+                        type: object
+                        properties:
+                          Content-Type:
+                            type: string
+                        required:
+                          - Content-Type
+                    required:
+                      - url
+                      - storageKey
+                      - expiresAt
+                      - requiredHeaders
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://storage.example/document-templates/imports/staged/5d0e8442-1d1a-4f9c-beb3-6fb6cfd2cf21.docx?X-Amz-Signature=…
+                    storageKey: document-templates/imports/staged/5d0e8442-1d1a-4f9c-beb3-6fb6cfd2cf21.docx
+                    expiresAt: 2026-09-05T13:05:00.000Z
+                    requiredHeaders:
+                      Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Sign a browser-direct upload of a Word file to import as a template
+      tags: *a31
+  /api/v1/document-templates/{id}/import:
+    post:
+      operationId: DocumentTemplateController_importTemplate_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportDocumentTemplateDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  stagedKey: document-templates/imports/staged/5d0e8442-1d1a-4f9c-beb3-6fb6cfd2cf21.docx
+      responses:
+        "200":
+          description: "The Word file’s headings, paragraphs, emphasis, tables and
+            embedded images as sanitised editor HTML, with `{{token}}`
+            placeholders turned into variable chips. **Nothing is saved**: the
+            client loads it into the editor as an unsaved draft and the working
+            copy changes only on Save. `warnings` lists placeholders the
+            registry does not know, images that could not be carried over, and
+            anything else the converter dropped. The staged file is deleted
+            whatever the outcome; a file that is not a Word document is refused
+            on its bytes and audited."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      contentHtml:
+                        type: string
+                      warnings:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            message:
+                              type: string
+                            detail:
+                              type: string
+                          required:
+                            - code
+                            - message
+                    required:
+                      - contentHtml
+                      - warnings
+                required:
+                  - data
+                example:
+                  data:
+                    contentHtml: <h1><span data-hms-var="clinic.name"></span></h1><p>No. <span
+                      data-hms-var="invoice.number"></span></p><div
+                      data-hms-var="items"></div><p>{{tanda.tangan}}</p>
+                    warnings:
+                      - code: UNKNOWN_PLACEHOLDER
+                        message: "{{tanda.tangan}} is not a template variable and was left as text"
+                        detail: tanda.tangan
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document template not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document template not found.
+      security:
+        - bearer: []
+      summary: Convert a staged Word file into a layout the editor can load
+      tags: *a31
   /api/v1/document-templates/{id}/preview:
     post:
       operationId: DocumentTemplateController_previewTemplate_v1
@@ -35613,6 +35809,26 @@ components:
                 - item.unitPrice
                 - item.amount
           x-nestjs_zod-self-required: false
+    CreateDocumentTemplateImportUploadUrlDto:
+      type: object
+      properties:
+        sizeBytes:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 5242880
+          exclusiveMaximum: false
+      required:
+        - sizeBytes
+    ImportDocumentTemplateDto:
+      type: object
+      properties:
+        stagedKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+      required:
+        - stagedKey
     OpenEncounterDto:
       type: object
       properties:

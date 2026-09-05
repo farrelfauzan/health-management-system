@@ -176,3 +176,43 @@ export const documentTemplatePublishValidationDetailsSchema = z.object({
 export type DocumentTemplatePublishValidationDetails = z.infer<
   typeof documentTemplatePublishValidationDetailsSchema
 >;
+
+/**
+ * Template import from Word (`P16-T42`). One type, one cap: a `.docx` is a
+ * ZIP of XML and a few images, and 5 MiB is generous for a receipt layout
+ * with a letterhead in it. Declared here, next to the surface's schemas, as
+ * `docs/security/file-uploads.md` requires of every upload surface.
+ */
+export const DOCUMENT_TEMPLATE_IMPORT_MIME_TYPE =
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+export const DOCUMENT_TEMPLATE_IMPORT_MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024;
+
+export const createDocumentTemplateImportUploadUrlSchema = z.object({
+  sizeBytes: z.number().int().positive().max(DOCUMENT_TEMPLATE_IMPORT_MAX_UPLOAD_SIZE_BYTES),
+});
+
+export type CreateDocumentTemplateImportUploadUrlInput = z.infer<
+  typeof createDocumentTemplateImportUploadUrlSchema
+>;
+
+/** The staged key the signing call returned, and nothing else — the API decides what it is. */
+export const importDocumentTemplateSchema = z.object({
+  stagedKey: z.string().trim().min(1).max(512),
+});
+
+export type ImportDocumentTemplateInput = z.infer<typeof importDocumentTemplateSchema>;
+
+/**
+ * What an import could not carry over. The author sees these beside the
+ * editor before saving; `UNKNOWN_PLACEHOLDER` is the one publish would
+ * otherwise catch later (`P16-T12`), surfaced early.
+ */
+export const DOCUMENT_TEMPLATE_IMPORT_WARNING_CODES = [
+  'UNKNOWN_PLACEHOLDER',
+  'IMAGE_DROPPED',
+  'UNSUPPORTED_CONTENT',
+] as const;
+
+export type DocumentTemplateImportWarningCode =
+  (typeof DOCUMENT_TEMPLATE_IMPORT_WARNING_CODES)[number];

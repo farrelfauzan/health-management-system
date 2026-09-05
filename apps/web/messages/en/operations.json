@@ -394,6 +394,23 @@
           "unknownTokensTitle": "{count, plural, one {Publish refused: # variable is not in the registry} other {Publish refused: # variables are not in the registry}}",
           "unknownTokensHint": "Remove or replace each chip below, save, then publish again.",
           "dismiss": "Dismiss"
+        },
+        "import": {
+          "action": "Import from Word",
+          "importing": "Importing…",
+          "loaded": "Word layout loaded into the editor. Review it, then Save to keep it.",
+          "unsupportedType": "Pick a Word file (.docx).",
+          "tooLarge": "The file is larger than 5 MB.",
+          "uploadError": "The file could not be uploaded.",
+          "error": "The Word file could not be converted.",
+          "warningsTitle": "{count, plural, one {# thing did not carry over from Word} other {# things did not carry over from Word}}",
+          "codes": {
+            "UNKNOWN_PLACEHOLDER": "'{{'{detail}'}}' is not a template variable; it was left as text. Replace it from the palette.",
+            "IMAGE_DROPPED": "An image of type {detail} was dropped; only PNG, JPEG and WebP carry over.",
+            "UNSUPPORTED_CONTENT": "{detail}"
+          },
+          "reviewHint": "Fonts, colours and cell shading do not carry over: the editor keeps structure and the PDF stylesheet owns typography. Headers and footers from Word are not included.",
+          "dismiss": "Dismiss"
         }
       },
       "delivery": {
