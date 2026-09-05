@@ -1345,7 +1345,7 @@ the work is narrower than it looks, but the two gaps in them are precise.
 | Verified patient phone number | **Ships.** `ChannelPatientLink.verificationStatus = VERIFIED`, proven by an OTP or Telegram contact-share challenge (`ChannelOtpChallenge`). |
 | Send pacing and outbound dispatch | **Ships.** `WhatsappBridgeHttpClient` serialises sends at `WA_GATEWAY_SEND_PACING_MS`; `OutboundMessageDispatcherService` picks the adapter per channel. |
 | **Sending a file over WhatsApp** | **Ships** (`P16-T22`). `WhatsappGatewayService.sendDocument`, implemented by GOWA (`POST /send/file`, multipart — field names pinned from its OpenAPI) and WAHA (`POST /api/sendFile`, inline base64), paced on the same chain as text and driven through both by the conformance suite. The port stayed narrow until this epic called a wider member; it was admitted because the official Cloud API sends document messages natively. |
-| **Sending an attachment by email** | **Missing.** `SendMailRequest` is `{ to, subject, text, html }`. No attachment field exists. |
+| **Sending an attachment by email** | **Ships** (`P16-T23`). `SendMailRequest.attachments` carries `MailAttachment { fileName, mimeType, content }`; the SMTP transport maps it onto nodemailer and the `log` transport prints name, type and size only — never bytes. Omitted, the payload is byte-for-byte what shipped before. |
 | **Any delivery record** | **Missing.** Nothing persists that an invoice was sent, to which address, or whether it arrived. |
 | **Any delivery consent** | **Missing.** `PatientProfile.email` is an optional free-text field typed at the counter, with no verification column anywhere. |
 
