@@ -31232,6 +31232,1244 @@ paths:
         - bearer: []
       summary: Capture or withdraw delivery consent for one channel
       tags: *a50
+  /api/v1/invoices/{invoiceId}/deliveries:
+    get:
+      operationId: InvoiceDeliveryController_listDeliveries_v1
+      parameters:
+        - name: invoiceId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Every delivery ever requested for this invoice, newest first:
+            channel, shape, masked destination, status, attempts, the last error
+            if any, who asked, and — on a link delivery — the token’s expiry,
+            revocation and open count. Never the destination and never the
+            token."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      invoiceId:
+                        type: string
+                      deliveries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            patientId:
+                              type: string
+                            invoiceId:
+                              type: string
+                            documentId:
+                              nullable: true
+                            channel:
+                              type: string
+                            shape:
+                              type: string
+                            destinationMasked:
+                              type: string
+                            status:
+                              type: string
+                            attemptCount:
+                              type: integer
+                            sendAt:
+                              nullable: true
+                            passwordSource:
+                              type: string
+                            lastError:
+                              nullable: true
+                            sentAt:
+                              nullable: true
+                            openedAt:
+                              nullable: true
+                            revokedAt:
+                              nullable: true
+                            requestedBy:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                email:
+                                  type: string
+                              required:
+                                - id
+                                - email
+                            link:
+                              nullable: true
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - patientId
+                            - invoiceId
+                            - documentId
+                            - channel
+                            - shape
+                            - destinationMasked
+                            - status
+                            - attemptCount
+                            - sendAt
+                            - passwordSource
+                            - lastError
+                            - sentAt
+                            - openedAt
+                            - revokedAt
+                            - requestedBy
+                            - link
+                            - createdAt
+                            - updatedAt
+                    required:
+                      - invoiceId
+                      - deliveries
+                required:
+                  - data
+                example:
+                  data:
+                    invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    deliveries:
+                      - id: 9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a
+                        patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                        invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                        documentId: null
+                        channel: WHATSAPP
+                        shape: ATTACHMENT
+                        destinationMasked: 6281****0024
+                        status: QUEUED
+                        attemptCount: 0
+                        sendAt: null
+                        passwordSource: DOB_DDMMYYYY
+                        lastError: null
+                        sentAt: null
+                        openedAt: null
+                        revokedAt: null
+                        requestedBy:
+                          id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                          email: kasir@klinik.example
+                        link: null
+                        createdAt: 2026-09-29T08:00:00.000Z
+                        updatedAt: 2026-09-29T08:00:00.000Z
+                      - id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+                        patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                        invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                        documentId: null
+                        channel: EMAIL
+                        shape: LINK
+                        destinationMasked: r***@example.test
+                        status: OPENED
+                        attemptCount: 1
+                        sendAt: null
+                        passwordSource: null
+                        lastError: null
+                        sentAt: 2026-09-29T08:00:12.000Z
+                        openedAt: 2026-09-29T08:14:03.000Z
+                        revokedAt: null
+                        requestedBy:
+                          id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                          email: kasir@klinik.example
+                        link:
+                          expiresAt: 2026-10-06T08:00:12.000Z
+                          revokedAt: null
+                          openCount: 1
+                          lastOpenedAt: 2026-09-29T08:14:03.000Z
+                        createdAt: 2026-09-29T08:00:00.000Z
+                        updatedAt: 2026-09-29T08:14:03.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: The invoice does not exist.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The invoice does not exist.
+      security:
+        - bearer: []
+      summary: Read an invoice's delivery timeline
+      tags: &a51
+        - Invoice Delivery
+    post:
+      operationId: InvoiceDeliveryController_requestDelivery_v1
+      parameters:
+        - name: invoiceId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestInvoiceDeliveryDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  channels:
+                    - WHATSAPP
+                    - EMAIL
+                  shape: ATTACHMENT
+                  sendAt:
+                    value: 2026-10-02T09:00:00+07:00
+      responses:
+        "201":
+          description: "One QUEUED delivery per requested channel; the worker sends them.
+            Refused as a whole with 409 unless the invoice is ISSUED or PAID and
+            its document is READY (FR-E4-02); with 422
+            `DELIVERY_CHANNEL_REFUSED` naming the channel and reason when
+            consent or the verified-number gate says no (FR-E4-03/04); and with
+            422 `DELIVERY_PASSWORD_SOURCE_MISSING` when an attachment could not
+            be locked because the patient has no date of birth on file
+            (FR-E4-07). Resending is a normal act: a second request adds a
+            second row. A future `sendAt` parks the rows until then (FR-E4-09);
+            422 `DELIVERY_SEND_AT_IN_PAST` otherwise."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      invoiceId:
+                        type: string
+                      deliveries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            patientId:
+                              type: string
+                            invoiceId:
+                              type: string
+                            documentId:
+                              nullable: true
+                            channel:
+                              type: string
+                            shape:
+                              type: string
+                            destinationMasked:
+                              type: string
+                            status:
+                              type: string
+                            attemptCount:
+                              type: integer
+                            sendAt:
+                              nullable: true
+                            passwordSource:
+                              type: string
+                            lastError:
+                              nullable: true
+                            sentAt:
+                              nullable: true
+                            openedAt:
+                              nullable: true
+                            revokedAt:
+                              nullable: true
+                            requestedBy:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                email:
+                                  type: string
+                              required:
+                                - id
+                                - email
+                            link:
+                              nullable: true
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - patientId
+                            - invoiceId
+                            - documentId
+                            - channel
+                            - shape
+                            - destinationMasked
+                            - status
+                            - attemptCount
+                            - sendAt
+                            - passwordSource
+                            - lastError
+                            - sentAt
+                            - openedAt
+                            - revokedAt
+                            - requestedBy
+                            - link
+                            - createdAt
+                            - updatedAt
+                    required:
+                      - invoiceId
+                      - deliveries
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    deliveries:
+                      - id: 9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a
+                        patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                        invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                        documentId: null
+                        channel: WHATSAPP
+                        shape: ATTACHMENT
+                        destinationMasked: 6281****0024
+                        status: QUEUED
+                        attemptCount: 0
+                        sendAt: null
+                        passwordSource: DOB_DDMMYYYY
+                        lastError: null
+                        sentAt: null
+                        openedAt: null
+                        revokedAt: null
+                        requestedBy:
+                          id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                          email: kasir@klinik.example
+                        link: null
+                        createdAt: 2026-09-29T08:00:00.000Z
+                        updatedAt: 2026-09-29T08:00:00.000Z
+                      - id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+                        patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                        invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                        documentId: null
+                        channel: EMAIL
+                        shape: LINK
+                        destinationMasked: r***@example.test
+                        status: OPENED
+                        attemptCount: 1
+                        sendAt: null
+                        passwordSource: null
+                        lastError: null
+                        sentAt: 2026-09-29T08:00:12.000Z
+                        openedAt: 2026-09-29T08:14:03.000Z
+                        revokedAt: null
+                        requestedBy:
+                          id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                          email: kasir@klinik.example
+                        link:
+                          expiresAt: 2026-10-06T08:00:12.000Z
+                          revokedAt: null
+                          openCount: 1
+                          lastOpenedAt: 2026-09-29T08:14:03.000Z
+                        createdAt: 2026-09-29T08:00:00.000Z
+                        updatedAt: 2026-09-29T08:14:03.000Z
+                  message: Delivery queued
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: The invoice does not exist.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The invoice does not exist.
+      security:
+        - bearer: []
+      summary: Send the rendered invoice to the patient
+      tags: *a51
+  /api/v1/deliveries/{id}:
+    get:
+      operationId: DeliveryActionController_getDelivery_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Where the delivery stands: status, attempts, the last error, when
+            it was sent or opened, and — on a link — the token’s expiry and open
+            count. Poll this after a send to watch QUEUED become SENT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      invoiceId:
+                        type: string
+                      documentId:
+                        nullable: true
+                      channel:
+                        type: string
+                      shape:
+                        type: string
+                      destinationMasked:
+                        type: string
+                      status:
+                        type: string
+                      attemptCount:
+                        type: integer
+                      sendAt:
+                        nullable: true
+                      passwordSource:
+                        type: string
+                      lastError:
+                        nullable: true
+                      sentAt:
+                        nullable: true
+                      openedAt:
+                        nullable: true
+                      revokedAt:
+                        nullable: true
+                      requestedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      link:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - invoiceId
+                      - documentId
+                      - channel
+                      - shape
+                      - destinationMasked
+                      - status
+                      - attemptCount
+                      - sendAt
+                      - passwordSource
+                      - lastError
+                      - sentAt
+                      - openedAt
+                      - revokedAt
+                      - requestedBy
+                      - link
+                      - createdAt
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    id: 9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a
+                    patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                    invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    documentId: null
+                    channel: WHATSAPP
+                    shape: ATTACHMENT
+                    destinationMasked: 6281****0024
+                    status: QUEUED
+                    attemptCount: 0
+                    sendAt: null
+                    passwordSource: DOB_DDMMYYYY
+                    lastError: null
+                    sentAt: null
+                    openedAt: null
+                    revokedAt: null
+                    requestedBy:
+                      id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                      email: kasir@klinik.example
+                    link: null
+                    createdAt: 2026-09-29T08:00:00.000Z
+                    updatedAt: 2026-09-29T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: The delivery does not exist.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The delivery does not exist.
+      security:
+        - bearer: []
+      summary: Read one delivery
+      tags: &a52
+        - Invoice Delivery
+  /api/v1/deliveries/{id}/cancel:
+    post:
+      operationId: DeliveryActionController_cancel_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The delivery marked CANCELLED. Only a QUEUED delivery — scheduled
+            or not — can be cancelled (FR-E4-09); 409 `DELIVERY_NOT_SCHEDULABLE`
+            once it has gone out or settled. Revoke is the act for a link that
+            is already out.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      invoiceId:
+                        type: string
+                      documentId:
+                        nullable: true
+                      channel:
+                        type: string
+                      shape:
+                        type: string
+                      destinationMasked:
+                        type: string
+                      status:
+                        type: string
+                      attemptCount:
+                        type: integer
+                      sendAt:
+                        type: string
+                      passwordSource:
+                        type: string
+                      lastError:
+                        type: string
+                      sentAt:
+                        nullable: true
+                      openedAt:
+                        nullable: true
+                      revokedAt:
+                        type: string
+                      requestedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      link:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - invoiceId
+                      - documentId
+                      - channel
+                      - shape
+                      - destinationMasked
+                      - status
+                      - attemptCount
+                      - sendAt
+                      - passwordSource
+                      - lastError
+                      - sentAt
+                      - openedAt
+                      - revokedAt
+                      - requestedBy
+                      - link
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a
+                    patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                    invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    documentId: null
+                    channel: WHATSAPP
+                    shape: ATTACHMENT
+                    destinationMasked: 6281****0024
+                    status: CANCELLED
+                    attemptCount: 0
+                    sendAt: 2026-10-02T02:00:00.000Z
+                    passwordSource: DOB_DDMMYYYY
+                    lastError: CANCELLED_BY_STAFF
+                    sentAt: null
+                    openedAt: null
+                    revokedAt: 2026-09-29T09:12:00.000Z
+                    requestedBy:
+                      id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                      email: kasir@klinik.example
+                    link: null
+                    createdAt: 2026-09-29T08:00:00.000Z
+                    updatedAt: 2026-09-29T08:00:00.000Z
+                  message: Delivery cancelled
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: The delivery does not exist.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The delivery does not exist.
+      security:
+        - bearer: []
+      summary: Call off a delivery that has not been sent yet
+      tags: *a52
+  /api/v1/deliveries/{id}/reschedule:
+    post:
+      operationId: DeliveryActionController_reschedule_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RescheduleDeliveryDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  sendAt: 2026-10-02T02:00:00+07:00
+      responses:
+        "200":
+          description: The delivery with its new `sendAt`. Only a QUEUED delivery that no
+            worker has claimed can be moved; 409 `DELIVERY_NOT_SCHEDULABLE`
+            otherwise, 422 `DELIVERY_SEND_AT_IN_PAST` for a time that is not
+            ahead of now. Consent, the number and the invoice are re-checked
+            when it fires, not now (FR-E4-10).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      invoiceId:
+                        type: string
+                      documentId:
+                        nullable: true
+                      channel:
+                        type: string
+                      shape:
+                        type: string
+                      destinationMasked:
+                        type: string
+                      status:
+                        type: string
+                      attemptCount:
+                        type: integer
+                      sendAt:
+                        type: string
+                      passwordSource:
+                        type: string
+                      lastError:
+                        nullable: true
+                      sentAt:
+                        nullable: true
+                      openedAt:
+                        nullable: true
+                      revokedAt:
+                        nullable: true
+                      requestedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      link:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - invoiceId
+                      - documentId
+                      - channel
+                      - shape
+                      - destinationMasked
+                      - status
+                      - attemptCount
+                      - sendAt
+                      - passwordSource
+                      - lastError
+                      - sentAt
+                      - openedAt
+                      - revokedAt
+                      - requestedBy
+                      - link
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a
+                    patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                    invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    documentId: null
+                    channel: WHATSAPP
+                    shape: ATTACHMENT
+                    destinationMasked: 6281****0024
+                    status: QUEUED
+                    attemptCount: 0
+                    sendAt: 2026-10-02T02:00:00.000Z
+                    passwordSource: DOB_DDMMYYYY
+                    lastError: null
+                    sentAt: null
+                    openedAt: null
+                    revokedAt: null
+                    requestedBy:
+                      id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                      email: kasir@klinik.example
+                    link: null
+                    createdAt: 2026-09-29T08:00:00.000Z
+                    updatedAt: 2026-09-29T08:00:00.000Z
+                  message: Delivery rescheduled
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: The delivery does not exist.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The delivery does not exist.
+      security:
+        - bearer: []
+      summary: Move a queued delivery to another time
+      tags: *a52
+  /api/v1/deliveries/{id}/retry:
+    post:
+      operationId: DeliveryActionController_retry_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The delivery back in QUEUED with its backoff cleared; the worker
+            picks it up on its next sweep and re-checks consent and invoice
+            state then. 409 `DELIVERY_NOT_RETRYABLE` unless the delivery is
+            FAILED — a delivered invoice is resent with a new request, not a
+            retry.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      invoiceId:
+                        type: string
+                      documentId:
+                        nullable: true
+                      channel:
+                        type: string
+                      shape:
+                        type: string
+                      destinationMasked:
+                        type: string
+                      status:
+                        type: string
+                      attemptCount:
+                        type: integer
+                      sendAt:
+                        nullable: true
+                      passwordSource:
+                        type: string
+                      lastError:
+                        nullable: true
+                      sentAt:
+                        nullable: true
+                      openedAt:
+                        nullable: true
+                      revokedAt:
+                        nullable: true
+                      requestedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      link:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - invoiceId
+                      - documentId
+                      - channel
+                      - shape
+                      - destinationMasked
+                      - status
+                      - attemptCount
+                      - sendAt
+                      - passwordSource
+                      - lastError
+                      - sentAt
+                      - openedAt
+                      - revokedAt
+                      - requestedBy
+                      - link
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a
+                    patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                    invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    documentId: null
+                    channel: WHATSAPP
+                    shape: ATTACHMENT
+                    destinationMasked: 6281****0024
+                    status: QUEUED
+                    attemptCount: 0
+                    sendAt: null
+                    passwordSource: DOB_DDMMYYYY
+                    lastError: null
+                    sentAt: null
+                    openedAt: null
+                    revokedAt: null
+                    requestedBy:
+                      id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                      email: kasir@klinik.example
+                    link: null
+                    createdAt: 2026-09-29T08:00:00.000Z
+                    updatedAt: 2026-09-29T08:00:00.000Z
+                  message: Delivery queued again
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: The delivery does not exist.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The delivery does not exist.
+      security:
+        - bearer: []
+      summary: Queue a failed delivery again
+      tags: *a52
+  /api/v1/deliveries/{id}/revoke:
+    post:
+      operationId: DeliveryActionController_revoke_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The delivery marked REVOKED. Before it is sent, any delivery can
+            be withdrawn; after, only a link delivery — its token stops
+            resolving within seconds (FR-E4-11). 409 `DELIVERY_NOT_REVOCABLE`
+            for an attachment that has already gone out: it is in the chat, and
+            the timeline will not pretend otherwise."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      invoiceId:
+                        type: string
+                      documentId:
+                        nullable: true
+                      channel:
+                        type: string
+                      shape:
+                        type: string
+                      destinationMasked:
+                        type: string
+                      status:
+                        type: string
+                      attemptCount:
+                        type: integer
+                      sendAt:
+                        nullable: true
+                      passwordSource:
+                        nullable: true
+                      lastError:
+                        nullable: true
+                      sentAt:
+                        type: string
+                      openedAt:
+                        type: string
+                      revokedAt:
+                        type: string
+                      requestedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      link:
+                        type: object
+                        properties:
+                          expiresAt:
+                            type: string
+                          revokedAt:
+                            type: string
+                          openCount:
+                            type: integer
+                          lastOpenedAt:
+                            type: string
+                        required:
+                          - expiresAt
+                          - revokedAt
+                          - openCount
+                          - lastOpenedAt
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - invoiceId
+                      - documentId
+                      - channel
+                      - shape
+                      - destinationMasked
+                      - status
+                      - attemptCount
+                      - sendAt
+                      - passwordSource
+                      - lastError
+                      - sentAt
+                      - openedAt
+                      - revokedAt
+                      - requestedBy
+                      - link
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+                    patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                    invoiceId: 4c1d2e3f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    documentId: null
+                    channel: EMAIL
+                    shape: LINK
+                    destinationMasked: r***@example.test
+                    status: REVOKED
+                    attemptCount: 1
+                    sendAt: null
+                    passwordSource: null
+                    lastError: null
+                    sentAt: 2026-09-29T08:00:12.000Z
+                    openedAt: 2026-09-29T08:14:03.000Z
+                    revokedAt: 2026-09-29T09:12:00.000Z
+                    requestedBy:
+                      id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                      email: kasir@klinik.example
+                    link:
+                      expiresAt: 2026-10-06T08:00:12.000Z
+                      revokedAt: 2026-09-29T09:12:00.000Z
+                      openCount: 1
+                      lastOpenedAt: 2026-09-29T08:14:03.000Z
+                    createdAt: 2026-09-29T08:00:00.000Z
+                    updatedAt: 2026-09-29T08:14:03.000Z
+                  message: Delivery revoked
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: The delivery does not exist.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The delivery does not exist.
+      security:
+        - bearer: []
+      summary: Withdraw a delivery, or kill its link
+      tags: *a52
+  /api/v1/delivery-links/{token}:
+    get:
+      operationId: DeliveryLinkPublicController_resolveLink_v1
+      parameters:
+        - name: token
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A presigned GET for the PDF with attachment disposition, valid for
+            minutes, and the file name to save it as. The open is counted on the
+            delivery. 404 `DELIVERY_LINK_UNAVAILABLE` — identically — for a
+            token that is unknown, expired, revoked, whose message never went
+            out, or whose invoice was voided. 429 `RATE_LIMITED` after 60 opens
+            a minute from one address or 10 of one token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      fileName:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - fileName
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://storage.example/invoices/…?X-Amz-Signature=…
+                    fileName: INV-2026-09-000123.pdf
+                    expiresAt: 2026-09-29T08:20:00.000Z
+        "404":
+          description: The link is no longer valid. The page tells the patient to contact
+            the clinic.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The link is no longer valid. The page tells the patient to contact the
+                      clinic.
+      summary: Open a delivery link
+      tags:
+        - Invoice Delivery
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -31310,7 +32548,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a51
+      tags: &a53
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -31427,7 +32665,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a51
+      tags: *a53
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -31550,7 +32788,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a52
+      tags: &a54
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -31637,7 +32875,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a52
+      tags: *a54
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -31717,7 +32955,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a52
+      tags: *a54
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -31836,7 +33074,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a52
+      tags: *a54
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -31935,7 +33173,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a52
+      tags: *a54
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -32011,7 +33249,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a52
+      tags: *a54
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -32157,7 +33395,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a52
+      tags: *a54
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -32249,7 +33487,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a52
+      tags: *a54
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -32341,7 +33579,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a52
+      tags: *a54
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -35248,6 +36486,36 @@ components:
       required:
         - channel
         - isGranted
+    RequestInvoiceDeliveryDto:
+      type: object
+      properties:
+        channels:
+          type: array
+          minItems: 1
+          maxItems: 2
+          items:
+            type: string
+            enum:
+              - WHATSAPP
+              - EMAIL
+        shape:
+          type: string
+          enum:
+            - ATTACHMENT
+            - LINK
+        sendAt:
+          type: string
+          format: date-time
+      required:
+        - channels
+    RescheduleDeliveryDto:
+      type: object
+      properties:
+        sendAt:
+          type: string
+          format: date-time
+      required:
+        - sendAt
     UpdateFeatureEntitlementDto:
       type: object
       properties:

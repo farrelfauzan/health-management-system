@@ -51,7 +51,12 @@
       "admitted": "ADMITTED",
       "occupied": "OCCUPIED",
       "maintenance": "MAINTENANCE",
-      "offboarding": "OFFBOARDING"
+      "offboarding": "OFFBOARDING",
+      "queued": "Queued",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "opened": "Opened",
+      "revoked": "Revoked"
     },
     "documentUpload": {
       "errors": {

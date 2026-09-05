@@ -158,3 +158,8 @@ export type RescheduleDeliveryInput = z.infer<typeof rescheduleDeliverySchema>;
 export const DELIVERY_LINK_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 
 export const deliveryLinkTokenSchema = z.string().regex(DELIVERY_LINK_TOKEN_PATTERN);
+
+/** The per-row acts the timeline offers (`P16-T25`/`T38`). */
+export const DELIVERY_ACTION_KINDS = ['retry', 'revoke', 'cancel'] as const;
+
+export type DeliveryActionKind = (typeof DELIVERY_ACTION_KINDS)[number];
