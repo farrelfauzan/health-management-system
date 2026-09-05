@@ -21,6 +21,13 @@ const TONE_BY_STATUS: Record<string, StatusTone> = {
   maintenance: 'warning',
   'partially-dispensed': 'warning',
   cancelled: 'danger',
+  // Document delivery (P16-T27): waiting, out, proven, dead.
+  queued: 'warning',
+  sent: 'info',
+  delivered: 'success',
+  opened: 'success',
+  failed: 'danger',
+  revoked: 'danger',
   stat: 'danger',
   urgent: 'danger',
   regular: 'neutral',

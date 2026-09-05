@@ -239,6 +239,19 @@
         "continue": "Tetap masuk",
         "endNow": "Serahkan sekarang"
       }
+    },
+    "deliveryLink": {
+      "metadataTitle": "Dokumen Anda | Saling Jaga",
+      "metadataDescription": "Unduh dokumen yang dikirimkan klinik kepada Anda",
+      "title": "Dokumen Anda dari klinik",
+      "checking": "Memeriksa tautan Anda…",
+      "ready": "Dokumen Anda siap diunduh. Tautan unduh ini berlaku beberapa menit; buka kembali tautan dari pesan Anda jika sudah kedaluwarsa.",
+      "download": "Unduh {fileName}",
+      "invalidTitle": "Tautan ini sudah tidak berlaku",
+      "invalidLink": "Tautan mungkin sudah kedaluwarsa, dicabut oleh klinik, atau dokumennya sudah tidak tersedia.",
+      "tooManyAttempts": "Terlalu banyak percobaan. Tunggu satu menit lalu coba lagi.",
+      "invalidHelp": "Hubungi klinik agar dokumen dikirimkan kembali.",
+      "footerNote": "Tidak ada data Anda yang ditampilkan di halaman ini; dokumen hanya diberikan kepada pemegang tautan yang dikirim klinik."
     }
   }
 }

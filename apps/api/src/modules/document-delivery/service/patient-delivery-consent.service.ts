@@ -6,6 +6,7 @@ import {
   DeliveryChannelValue,
   DeliveryConsentCheckInput,
   DeliveryConsentCheckResult,
+  DeliveryDestination,
   DeliveryGatePatientRecord,
   DeliveryRefusalReasonValue,
   PatientDeliveryConsentRecord,
@@ -113,6 +114,10 @@ export class PatientDeliveryConsentService {
    * and only here — it is evidence of an attempt to send to a number proven
    * for somebody else, and the readiness view the patient page renders is
    * not an attempt.
+   *
+   * An allowed result carries the destination the send goes to — the
+   * verified link's JID, or the email on the record — so the pipeline never
+   * resolves it a second way (`P16-T25`).
    */
   async isDeliveryAllowed(
     input: DeliveryConsentCheckInput,
@@ -125,19 +130,30 @@ export class PatientDeliveryConsentService {
     const consent = await this.consentRepository.findOne(input.patientId, input.channel);
     const consentRefusal = resolveConsentRefusal(consent);
     if (consentRefusal !== null) {
-      return { isAllowed: false, refusalReason: consentRefusal };
+      return { isAllowed: false, refusalReason: consentRefusal, destination: null };
     }
-    const channelRefusal = await this.resolveChannelRefusal(patient, input.channel);
-    if (channelRefusal === 'NUMBER_VERIFIED_FOR_ANOTHER_PATIENT') {
+    if (input.channel === 'EMAIL') {
+      return buildEmailCheckResult(patient, this.gateService.resolveEmailGate(patient));
+    }
+    const gate = await this.gateService.resolveWhatsappGate(patient);
+    if (gate.refusalReason === 'NUMBER_VERIFIED_FOR_ANOTHER_PATIENT') {
       await this.auditService.record({
         action: AuditAction.DELIVERY_CHANNEL_REFUSED,
         resource: CONSENT_AUDIT_RESOURCE,
         actorUserId,
         patientId: input.patientId,
-        metadata: { channel: input.channel, refusalReason: channelRefusal },
+        metadata: { channel: input.channel, refusalReason: gate.refusalReason },
       });
     }
-    return { isAllowed: channelRefusal === null, refusalReason: channelRefusal };
+    const destination: DeliveryDestination | null =
+      gate.link === null
+        ? null
+        : {
+            channel: 'WHATSAPP',
+            externalChatId: gate.link.externalChatId,
+            phoneNumber: gate.link.phoneNumber,
+          };
+    return { isAllowed: gate.isAllowed, refusalReason: gate.refusalReason, destination };
   }
 
   private async buildView(patientId: string): Promise<PatientDeliveryConsentsView> {
@@ -183,6 +199,20 @@ export class PatientDeliveryConsentService {
     const gate = await this.gateService.resolveWhatsappGate(patient);
     return gate.refusalReason;
   }
+}
+
+function buildEmailCheckResult(
+  patient: DeliveryGatePatientRecord,
+  refusalReason: DeliveryRefusalReasonValue | null,
+): DeliveryConsentCheckResult {
+  if (refusalReason !== null || patient.email === null) {
+    return { isAllowed: false, refusalReason: refusalReason ?? 'EMAIL_MISSING', destination: null };
+  }
+  return {
+    isAllowed: true,
+    refusalReason: null,
+    destination: { channel: 'EMAIL', email: patient.email.trim() },
+  };
 }
 
 function resolveConsentRefusal(

@@ -239,6 +239,19 @@
         "continue": "Stay signed in",
         "endNow": "Hand over now"
       }
+    },
+    "deliveryLink": {
+      "metadataTitle": "Your document | Saling Jaga",
+      "metadataDescription": "Download a document the clinic sent you",
+      "title": "Your document from the clinic",
+      "checking": "Checking your link…",
+      "ready": "Your document is ready to download. This download link is valid for a few minutes; reopen the link from your message if it has expired.",
+      "download": "Download {fileName}",
+      "invalidTitle": "This link is no longer valid",
+      "invalidLink": "The link may have expired, been withdrawn by the clinic, or the document may no longer be available.",
+      "tooManyAttempts": "Too many attempts. Please wait a minute and try again.",
+      "invalidHelp": "Contact the clinic to have the document sent again.",
+      "footerNote": "Nothing about you is shown on this page; the document itself is only served to whoever holds the link the clinic sent."
     }
   }
 }

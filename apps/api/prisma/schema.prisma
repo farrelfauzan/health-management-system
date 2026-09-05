@@ -169,6 +169,13 @@ enum AuditAction {
   DELIVERY_CONSENT_WITHDRAWN
   DELIVERY_CONSENT_OPTED_OUT
   DELIVERY_CHANNEL_REFUSED
+  DELIVERY_REQUESTED
+  DELIVERY_SENT
+  DELIVERY_FAILED
+  DELIVERY_OPENED
+  DELIVERY_REVOKED
+  DELIVERY_RETRIED
+  DELIVERY_CANCELLED
   /// Organization structure (SJ-1). Five verbs rather than the generic
   /// CREATE/UPDATE/DELETE above because the question asked of this table
   /// afterwards is "who reorganised the clinic", and a move is the one change
@@ -643,6 +650,7 @@ model User {
   grantedVaultShares         VaultDocumentShare[]         @relation("VaultDocumentGrantor")
   offboardingNotices         UserOffboardingNotice[]
   grantedDeliveryConsents    PatientDeliveryConsent[]     @relation("DeliveryConsentGrantedBy")
+  requestedDeliveries        DocumentDelivery[]           @relation("DeliveryRequestedBy")
 
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
@@ -989,6 +997,7 @@ model PatientProfile {
   admissions            Admission[]
   clinicalDocuments     Document[]
   deliveryConsents      PatientDeliveryConsent[]
+  deliveries            DocumentDelivery[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -1061,6 +1070,35 @@ enum DeliveryChannel {
   @@map("delivery_channel")
 }
 
+/// How a delivered document reaches the patient (`P16-T25`, FR-E4-05).
+/// `ATTACHMENT` is the default on both channels and is always a
+/// password-protected PDF (D-027); `LINK` mints a revocable, expiring token
+/// instead, for a clinic that prefers to be able to take a send back.
+enum DeliveryShape {
+  ATTACHMENT
+  LINK
+
+  @@map("delivery_shape")
+}
+
+/// Where one delivery is in its life (`P16-T25`, FR-E4-12). `QUEUED` until
+/// the worker sends it; `SENT` when the transport accepted it; `DELIVERED`
+/// and `OPENED` when the channel or the link route can prove more; `FAILED`
+/// once retries are exhausted; `REVOKED` when staff withdrew it — before it
+/// went, or by killing a link after; `CANCELLED` when a scheduled send was
+/// called off before it was due (`P16-T38`).
+enum DeliveryStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  OPENED
+  FAILED
+  REVOKED
+  CANCELLED
+
+  @@map("delivery_status")
+}
+
 /// Per-patient, per-channel permission to receive documents, with the notice
 /// version in force when it was captured (`P16-T24`, FR-E4-04).
 ///
@@ -1097,6 +1135,94 @@ model PatientDeliveryConsent {
   @@index([noticeVersionId])
   @@index([grantedById])
   @@map("patient_delivery_consents")
+}
+
+/// One attempt to put one rendered document in front of one patient
+/// (`P16-T25`, FR-E4-12) — an invoice today, a released clinical document
+/// under `P16-T40`. One table for both on purpose (D-028): the consent gate,
+/// the password lock, the worker and the timeline are the same whichever
+/// document is inside, and two tables would mean two workers that must never
+/// drift. Exactly one subject is set, enforced by a CHECK in the migration —
+/// the same shape `Invoice` uses for encounter-or-admission.
+///
+/// `destinationMasked` is what is stored for display — `0812****0024`,
+/// `r***@example.test`. The full destination is not duplicated here: it is
+/// re-resolved from the verified link or the patient row at send time
+/// (FR-E4-10), and a delivery log that accumulates plaintext contact details
+/// becomes its own disclosure risk.
+model DocumentDelivery {
+  id                String          @id @default(uuid()) @db.Uuid
+  patientId         String          @map("patient_id") @db.Uuid
+  invoiceId         String?         @map("invoice_id") @db.Uuid
+  /// The rendered snapshot the send carries — pinned at request time so a
+  /// re-render between request and send never changes what was delivered.
+  invoiceDocumentId String?         @map("invoice_document_id") @db.Uuid
+  /// The released clinical document (`P16-T40`). Null on an invoice delivery.
+  documentId        String?         @map("document_id") @db.Uuid
+  channel           DeliveryChannel
+  shape             DeliveryShape   @default(ATTACHMENT)
+  destinationMasked String          @map("destination_masked")
+  status            DeliveryStatus  @default(QUEUED)
+  attemptCount      Int             @default(0) @map("attempt_count")
+  /// When the send is due. Null means now. A future value parks the row until
+  /// the worker's sweep passes it (`P16-T38`) — the same lease and retry path
+  /// as an immediate send, one predicate wider.
+  sendAt            DateTime?       @map("send_at")
+  /// Backoff after a transient failure: the row is not due again before this.
+  nextAttemptAt     DateTime?       @map("next_attempt_at")
+  /// Lease claimed by one worker replica (`P16-T26`), the SATUSEHAT outbox
+  /// pattern: a worker that dies mid-send releases its row when this lapses.
+  leasedUntil       DateTime?       @map("leased_until")
+  leasedBy          String?         @map("leased_by")
+  /// How the attachment's password was derived, for support and for audit
+  /// (D-027). The password itself is never stored — it is recomputed at send
+  /// time from the source, so this row leaks nothing if read. Null on a LINK.
+  passwordSource    String?         @map("password_source")
+  providerMessageId String?         @map("provider_message_id")
+  lastError         String?         @map("last_error")
+  sentAt            DateTime?       @map("sent_at")
+  openedAt          DateTime?       @map("opened_at")
+  revokedAt         DateTime?       @map("revoked_at")
+  requestedById     String?         @map("requested_by_id") @db.Uuid
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  patient         PatientProfile        @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  invoice         Invoice?              @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  invoiceDocument InvoiceDocument?      @relation(fields: [invoiceDocumentId], references: [id], onDelete: Restrict)
+  document        Document?             @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  requestedBy     User?                 @relation("DeliveryRequestedBy", fields: [requestedById], references: [id], onDelete: SetNull)
+  link            DocumentDeliveryLink?
+
+  @@index([status, sendAt, nextAttemptAt, leasedUntil], map: "document_deliveries_due_idx")
+  @@index([invoiceId, createdAt])
+  @@index([documentId, createdAt])
+  @@index([patientId, createdAt])
+  @@index([invoiceDocumentId])
+  @@index([requestedById])
+  @@map("document_deliveries")
+}
+
+/// The revocable token behind a LINK delivery (`P16-T25`, FR-E4-11). Only a
+/// hash is stored, for the same reason the OTP challenge stores only a hash:
+/// this row is readable by anything that can read the database, and a live
+/// token is a working credential against a patient's bill. Minted when the
+/// message is sent, not when the delivery is requested — the plaintext has
+/// to reach the message and nowhere else.
+model DocumentDeliveryLink {
+  id           String    @id @default(uuid()) @db.Uuid
+  deliveryId   String    @unique @map("delivery_id") @db.Uuid
+  tokenHash    String    @unique @map("token_hash")
+  expiresAt    DateTime  @map("expires_at")
+  revokedAt    DateTime? @map("revoked_at")
+  openCount    Int       @default(0) @map("open_count")
+  lastOpenedAt DateTime? @map("last_opened_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  delivery DocumentDelivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@map("document_delivery_links")
 }
 
 /// Free-text substance plus a severity grade. Deliberately uncoded for now —
@@ -2073,6 +2199,7 @@ model Invoice {
   items     InvoiceItem[]
   payment   Payment?
   documents InvoiceDocument[]
+  deliveries DocumentDelivery[]
 
   @@index([encounterId])
   @@index([admissionId])
@@ -2253,6 +2380,7 @@ model InvoiceDocument {
 
   invoice         Invoice                  @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
   templateVersion DocumentTemplateVersion? @relation(fields: [templateVersionId], references: [id], onDelete: Restrict)
+  deliveries      DocumentDelivery[]
 
   @@index([invoiceId, createdAt])
   @@index([templateVersionId])
@@ -2931,6 +3059,7 @@ model Document {
 
   vaultExpiryNotices VaultDocumentExpiryNotice[]
   vaultShares        VaultDocumentShare[]
+  deliveries         DocumentDelivery[]
 
   /// One row per stored object. Confirming an upload is the only way a row
   /// is created, and a client that retries the confirm — or replays it —

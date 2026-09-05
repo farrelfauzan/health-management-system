@@ -25,6 +25,8 @@ import {
 } from './clinic-logo-storage-key-prefix';
 import { isStagedClinicLogoStorageKey } from './is-clinic-logo-storage-key';
 
+const DEFAULT_CLINIC_LABEL = 'Saling Jaga';
+
 const CLINIC_PROFILE_AUDIT_RESOURCE = 'clinic-profile';
 const LOGO_FILE_EXTENSION = 'png';
 /**
@@ -67,6 +69,18 @@ export class ClinicProfileService {
    * is called nothing" are different facts, and only the first has an action
    * attached to it.
    */
+  /**
+   * The name a message names the clinic by (`P16-T26`, FR-E4-15). Cheap on
+   * purpose — no signed logo URL — because it is read once per send. Falls
+   * back to the product label on a deployment that has not set up its
+   * profile yet, so a bill is never sent from "".
+   */
+  async getClinicName(): Promise<string> {
+    const record = await this.clinicProfileRepository.findProfile();
+    const name = record?.name.trim() ?? '';
+    return name === '' ? DEFAULT_CLINIC_LABEL : name;
+  }
+
   async getProfile(): Promise<ClinicProfileView> {
     const record = await this.clinicProfileRepository.findProfile();
     if (record === null) {

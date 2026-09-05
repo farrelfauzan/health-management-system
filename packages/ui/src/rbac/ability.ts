@@ -30,6 +30,8 @@ export type AppAction =
   // `write` for the same reason `release` is: editing a title must not read
   // as permission to give the file away.
   | 'share'
+  // P16-T25: sending a bill to the patient is not the same act as writing it.
+  | 'deliver'
   // P16-T41. Opening a person's 30-day export-only window. A super-admin
   // action and not deactivation, so it is not `update`.
   | 'offboard';

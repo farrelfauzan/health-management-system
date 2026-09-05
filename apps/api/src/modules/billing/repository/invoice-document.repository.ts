@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   CompleteInvoiceDocumentRenderPayload,
   CreateInvoiceDocumentRecordPayload,
+  InvoiceDeliverySubjectRecord,
   InvoiceDocumentRecord,
   InvoiceItemRecord,
   InvoiceRecord,
@@ -12,12 +13,7 @@ import {
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
-import {
-  Invoice,
-  InvoiceDocument,
-  InvoiceItem,
-  Prisma,
-} from '../../../generated/prisma/client';
+import { Invoice, InvoiceDocument, InvoiceItem, Prisma } from '../../../generated/prisma/client';
 
 type UserDisplayRow = {
   email: string;
@@ -195,6 +191,64 @@ export class InvoiceDocumentRepository {
       data: { status: 'FAILED', renderError },
     });
     return result.count === 1;
+  }
+
+  /**
+   * What a send needs to know (`P16-T25`): the bill, its latest live
+   * snapshot — the un-watermarked slot, because a VOID invoice is never
+   * deliverable and its watermarked render is never sent — and the patient
+   * fields the delivery gate and the password resolver read. Nothing else:
+   * the itemisation stays inside the PDF (FR-E4-15).
+   */
+  async findDeliverySubject(
+    invoiceId: string,
+    invoiceDocumentId: string | null = null,
+  ): Promise<InvoiceDeliverySubjectRecord | null> {
+    const row = await this.prismaService.invoice.findFirst({
+      where: { id: invoiceId, deletedAt: null },
+      select: {
+        id: true,
+        invoiceNumber: true,
+        status: true,
+        patientId: true,
+        totalAmount: true,
+        issuedAt: true,
+        patient: {
+          select: {
+            id: true,
+            mrn: true,
+            fullName: true,
+            dateOfBirth: true,
+            phoneNumber: true,
+            email: true,
+          },
+        },
+        documents: {
+          // The worker asks for the snapshot the request pinned; the request
+          // itself asks for the latest live one.
+          where:
+            invoiceDocumentId === null ? { hasVoidWatermark: false } : { id: invoiceDocumentId },
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          select: { id: true, status: true, storageKey: true },
+        },
+      },
+    });
+    if (row === null) {
+      return null;
+    }
+    return {
+      invoice: {
+        id: row.id,
+        invoiceNumber: row.invoiceNumber,
+        status: row.status,
+        patientId: row.patientId,
+        totalAmount: row.totalAmount.toNumber(),
+        issuedAt: row.issuedAt,
+      },
+      document: row.documents[0] ?? null,
+      patient: row.patient,
+    };
   }
 
   async findDocumentById(id: string): Promise<InvoiceDocumentRecord | null> {

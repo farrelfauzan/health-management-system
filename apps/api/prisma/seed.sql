@@ -162,6 +162,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('service-tariff.write:any', 'ServiceTariff', 'write', 'ANY', 'Create and update service tariffs'),
     ('invoice.read:any', 'Invoice', 'read', 'ANY', 'Read all invoices'),
     ('invoice.write:any', 'Invoice', 'write', 'ANY', 'Generate, issue, and void invoices'),
+    -- P16-T25. Separate from `invoice.write:any`: issuing a bill and
+    -- transmitting a patient's charges outside the building are different
+    -- acts, and a clinic that wants a junior cashier to do the first but not
+    -- the second says so here, not in code (PRD §7.4.10).
+    ('invoice.deliver:any', 'Invoice', 'deliver', 'ANY', 'Send invoices to patients over WhatsApp and email; retry and revoke deliveries'),
     ('payment.write:any', 'Payment', 'write', 'ANY', 'Record invoice payments'),
     -- P16-T02. Read is deliberately wider than write: the clinic's name,
     -- address and licence number are what every printed document is headed
@@ -444,6 +449,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'service-tariff.write:any'),
     ('ADMIN', 'invoice.read:any'),
     ('ADMIN', 'invoice.write:any'),
+    ('ADMIN', 'invoice.deliver:any'),
     ('ADMIN', 'payment.write:any'),
     ('ADMIN', 'clinic-profile.read:any'),
     ('ADMIN', 'clinic-profile.write:any'),

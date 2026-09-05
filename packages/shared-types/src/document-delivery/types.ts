@@ -1,8 +1,11 @@
+import type { InvoiceStatusValue } from '#billing/schemas';
 import type {
   ConsentRevokedReasonValue,
   DeliveryChannelValue,
   DeliveryPasswordSourceValue,
   DeliveryRefusalReasonValue,
+  DeliveryShapeValue,
+  DeliveryStatusValue,
 } from '#document-delivery/schemas';
 
 /** A consent row as the repository projects it. */
@@ -41,9 +44,23 @@ export type DeliveryConsentCheckInput = {
   channel: DeliveryChannelValue;
 };
 
+/**
+ * Where an allowed send goes: the verified WhatsApp link's JID, or the email
+ * on the patient record. Resolved at send time, never stored on the delivery
+ * row (FR-E4-10).
+ */
+export type DeliveryDestination =
+  | { channel: 'WHATSAPP'; externalChatId: string; phoneNumber: string }
+  | { channel: 'EMAIL'; email: string };
+
+/**
+ * `destination` is set only when the send is allowed — a caller holding a
+ * destination for a refused send is a caller one bug away from using it.
+ */
 export type DeliveryConsentCheckResult = {
   isAllowed: boolean;
   refusalReason: DeliveryRefusalReasonValue | null;
+  destination: DeliveryDestination | null;
 };
 
 /**
@@ -89,6 +106,26 @@ export type WhatsappDeliveryGateResult = {
  */
 export type DocumentDeliveryConfig = {
   readonly passwordSource: DeliveryPasswordSourceValue;
+  /** How long a LINK delivery's token resolves (FR-E4-11; default 7 days). */
+  readonly linkTtlHours: number;
+  /** The web origin a delivery link lands on — `<base>/inv/<token>`. */
+  readonly webAppBaseUrl: string;
+  /** The outbox worker (`P16-T26`): off only for a replica that must not send. */
+  readonly workerEnabled: boolean;
+  readonly workerPollIntervalMs: number;
+  /** Rows claimed per sweep, sent one after another behind the pacing chain. */
+  readonly workerBatchSize: number;
+  /** How long one replica owns a claimed row before another may take it. */
+  readonly leaseMs: number;
+  /** Transient failures retry with exponential backoff up to this many attempts. */
+  readonly maxAttempts: number;
+  readonly retryBaseDelayMs: number;
+  /**
+   * Sends allowed per rolling 24 hours, or null for no cap. Ships unset
+   * (§7.4.5.1): a guessed number is a support ticket, so production picks one
+   * once the clinic's own volume is known.
+   */
+  readonly dailySendCap: number | null;
 };
 
 /**
@@ -111,4 +148,164 @@ export type DeliveryPasswordPatientRecord = {
   id: string;
   mrn: string;
   dateOfBirth: Date | null;
+};
+
+/** The token's row as the repository projects it — never the token. */
+export type DeliveryLinkRecord = {
+  id: string;
+  deliveryId: string;
+  expiresAt: Date;
+  revokedAt: Date | null;
+  openCount: number;
+  lastOpenedAt: Date | null;
+};
+
+/** A delivery row as the repository projects it (`P16-T25`). */
+export type DeliveryRecord = {
+  id: string;
+  patientId: string;
+  invoiceId: string | null;
+  invoiceDocumentId: string | null;
+  documentId: string | null;
+  channel: DeliveryChannelValue;
+  shape: DeliveryShapeValue;
+  destinationMasked: string;
+  status: DeliveryStatusValue;
+  attemptCount: number;
+  sendAt: Date | null;
+  nextAttemptAt: Date | null;
+  leasedUntil: Date | null;
+  leasedBy: string | null;
+  passwordSource: DeliveryPasswordSourceValue | null;
+  providerMessageId: string | null;
+  lastError: string | null;
+  sentAt: Date | null;
+  openedAt: Date | null;
+  revokedAt: Date | null;
+  requestedBy: { id: string; email: string } | null;
+  link: DeliveryLinkRecord | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/** One QUEUED row per channel, written when a cashier asks for a send. */
+export type CreateDeliveryData = {
+  patientId: string;
+  invoiceId: string | null;
+  invoiceDocumentId: string | null;
+  documentId: string | null;
+  channel: DeliveryChannelValue;
+  shape: DeliveryShapeValue;
+  destinationMasked: string;
+  passwordSource: DeliveryPasswordSourceValue | null;
+  requestedById: string | null;
+  sendAt: Date | null;
+};
+
+/** The hash and the expiry — the token itself goes to the message, not here. */
+export type CreateDeliveryLinkData = {
+  deliveryId: string;
+  tokenHash: string;
+  expiresAt: Date;
+};
+
+/** What the send pipeline puts in the message: the URL and its expiry. */
+export type MintedDeliveryLink = {
+  url: string;
+  expiresAt: Date;
+};
+
+/**
+ * Everything the public route needs to decide whether a token still opens
+ * something (FR-E4-11, FR-E4-20): the link, its delivery, and the state of
+ * the bill behind it. `storageKey` is read here and turned into a presigned
+ * URL in the service; it never reaches the response.
+ */
+export type DeliveryLinkLookupRecord = {
+  link: DeliveryLinkRecord;
+  delivery: {
+    id: string;
+    patientId: string;
+    status: DeliveryStatusValue;
+  };
+  invoice: { id: string; invoiceNumber: string; status: InvoiceStatusValue } | null;
+  storageKey: string | null;
+};
+
+/** The one act the link route records: a successful open. */
+export type RecordDeliveryLinkOpenData = {
+  linkId: string;
+  deliveryId: string;
+  openedAt: Date;
+};
+
+/** One counter the public link route checks: a key and its per-minute limit. */
+export type PublicLinkRateLimitRequest = {
+  key: string;
+  limit: number;
+};
+
+/** The worker's claim (`P16-T26`): up to `limit` due rows, leased to `leasedBy`. */
+export type ClaimDueDeliveriesPayload = {
+  limit: number;
+  leaseMs: number;
+  leasedBy: string;
+};
+
+/** The transport accepted the message. */
+export type SettleDeliverySentData = {
+  id: string;
+  sentAt: Date;
+  providerMessageId: string | null;
+};
+
+/** A transient failure: back off, keep the row QUEUED. */
+export type RescheduleDeliveryAttemptData = {
+  id: string;
+  error: string;
+  nextAttemptAt: Date;
+};
+
+/** Attempts exhausted, or a failure that will not change: settle FAILED. */
+export type SettleDeliveryFailedData = {
+  id: string;
+  error: string;
+};
+
+/**
+ * A QUEUED send called off — by staff before it was due (`P16-T38`), or by
+ * the worker because the send-time re-check said no (FR-E4-10). `reason` is
+ * what the timeline shows.
+ */
+export type CancelDeliveryData = {
+  id: string;
+  reason: string;
+  cancelledAt: Date;
+};
+
+export type UpdateDeliveryScheduleData = {
+  id: string;
+  sendAt: Date;
+};
+
+/**
+ * What the message builders read (FR-E4-15): the clinic, the bill's identity
+ * and total, and either the password sentence or the link — never a line
+ * item, never a diagnosis.
+ */
+export type InvoiceDeliveryMessageContext = {
+  clinicName: string;
+  patientName: string;
+  invoiceNumber: string;
+  totalAmount: number;
+  issuedAt: Date | null;
+  /** The scheme sentence for an attachment (FR-E4-08); null on a link. */
+  passwordSentence: string | null;
+  /** The URL and its expiry on a link; null on an attachment. */
+  link: { url: string; expiresAt: Date } | null;
+};
+
+/** What one send attempt came back with. */
+export type DeliveryTransportResult = {
+  providerMessageId: string | null;
 };

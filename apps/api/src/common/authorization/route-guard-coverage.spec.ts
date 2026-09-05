@@ -43,6 +43,11 @@ const PUBLIC_ROUTE_ALLOWLIST: readonly string[] = [
   'BpjsAntreanWsController.issueToken',
   'BpjsAntreanWsController.registerNewPatient',
   'BpjsAntreanWsController.takeQueueNumber',
+  // P16-T25 — the patient opening a delivery link has no account. The token
+  // is the credential: 256 bits from the CSPRNG, stored only as a SHA-256,
+  // dead after DELIVERY_LINK_TTL_DAYS or a revoke; every failure is the same
+  // 404 and both counters are per minute.
+  'DeliveryLinkPublicController.resolveLink',
   'HealthController.getHealth',
   'TelegramWebhookController.receiveUpdate',
   // IMP-23 — the invitee has no account yet, so there is no session to check.

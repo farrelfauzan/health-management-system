@@ -315,6 +315,7 @@ export type InvoiceDocumentWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"InvoiceDocument"> | Date | string
   invoice?: Prisma.XOR<Prisma.InvoiceScalarRelationFilter, Prisma.InvoiceWhereInput>
   templateVersion?: Prisma.XOR<Prisma.DocumentTemplateVersionNullableScalarRelationFilter, Prisma.DocumentTemplateVersionWhereInput> | null
+  deliveries?: Prisma.DocumentDeliveryListRelationFilter
 }
 
 export type InvoiceDocumentOrderByWithRelationInput = {
@@ -336,6 +337,7 @@ export type InvoiceDocumentOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   invoice?: Prisma.InvoiceOrderByWithRelationInput
   templateVersion?: Prisma.DocumentTemplateVersionOrderByWithRelationInput
+  deliveries?: Prisma.DocumentDeliveryOrderByRelationAggregateInput
 }
 
 export type InvoiceDocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -360,6 +362,7 @@ export type InvoiceDocumentWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"InvoiceDocument"> | Date | string
   invoice?: Prisma.XOR<Prisma.InvoiceScalarRelationFilter, Prisma.InvoiceWhereInput>
   templateVersion?: Prisma.XOR<Prisma.DocumentTemplateVersionNullableScalarRelationFilter, Prisma.DocumentTemplateVersionWhereInput> | null
+  deliveries?: Prisma.DocumentDeliveryListRelationFilter
 }, "id">
 
 export type InvoiceDocumentOrderByWithAggregationInput = {
@@ -425,6 +428,7 @@ export type InvoiceDocumentCreateInput = {
   updatedAt?: Date | string
   invoice: Prisma.InvoiceCreateNestedOneWithoutDocumentsInput
   templateVersion?: Prisma.DocumentTemplateVersionCreateNestedOneWithoutRendersInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceDocumentInput
 }
 
 export type InvoiceDocumentUncheckedCreateInput = {
@@ -444,6 +448,7 @@ export type InvoiceDocumentUncheckedCreateInput = {
   renderedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceDocumentInput
 }
 
 export type InvoiceDocumentUpdateInput = {
@@ -463,6 +468,7 @@ export type InvoiceDocumentUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutDocumentsNestedInput
   templateVersion?: Prisma.DocumentTemplateVersionUpdateOneWithoutRendersNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceDocumentNestedInput
 }
 
 export type InvoiceDocumentUncheckedUpdateInput = {
@@ -482,6 +488,7 @@ export type InvoiceDocumentUncheckedUpdateInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceDocumentNestedInput
 }
 
 export type InvoiceDocumentCreateManyInput = {
@@ -537,6 +544,11 @@ export type InvoiceDocumentUncheckedUpdateManyInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type InvoiceDocumentNullableScalarRelationFilter = {
+  is?: Prisma.InvoiceDocumentWhereInput | null
+  isNot?: Prisma.InvoiceDocumentWhereInput | null
 }
 
 export type InvoiceDocumentListRelationFilter = {
@@ -610,6 +622,22 @@ export type InvoiceDocumentMinOrderByAggregateInput = {
 export type InvoiceDocumentSumOrderByAggregateInput = {
   sizeBytes?: Prisma.SortOrder
   pageCount?: Prisma.SortOrder
+}
+
+export type InvoiceDocumentCreateNestedOneWithoutDeliveriesInput = {
+  create?: Prisma.XOR<Prisma.InvoiceDocumentCreateWithoutDeliveriesInput, Prisma.InvoiceDocumentUncheckedCreateWithoutDeliveriesInput>
+  connectOrCreate?: Prisma.InvoiceDocumentCreateOrConnectWithoutDeliveriesInput
+  connect?: Prisma.InvoiceDocumentWhereUniqueInput
+}
+
+export type InvoiceDocumentUpdateOneWithoutDeliveriesNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceDocumentCreateWithoutDeliveriesInput, Prisma.InvoiceDocumentUncheckedCreateWithoutDeliveriesInput>
+  connectOrCreate?: Prisma.InvoiceDocumentCreateOrConnectWithoutDeliveriesInput
+  upsert?: Prisma.InvoiceDocumentUpsertWithoutDeliveriesInput
+  disconnect?: Prisma.InvoiceDocumentWhereInput | boolean
+  delete?: Prisma.InvoiceDocumentWhereInput | boolean
+  connect?: Prisma.InvoiceDocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InvoiceDocumentUpdateToOneWithWhereWithoutDeliveriesInput, Prisma.InvoiceDocumentUpdateWithoutDeliveriesInput>, Prisma.InvoiceDocumentUncheckedUpdateWithoutDeliveriesInput>
 }
 
 export type InvoiceDocumentCreateNestedManyWithoutInvoiceInput = {
@@ -700,6 +728,98 @@ export type EnumInvoiceDocumentStatusFieldUpdateOperationsInput = {
   set?: $Enums.InvoiceDocumentStatus
 }
 
+export type InvoiceDocumentCreateWithoutDeliveriesInput = {
+  id?: string
+  hasVoidWatermark?: boolean
+  wasBoundRetroactively?: boolean
+  renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.InvoiceDocumentStatus
+  storageKey?: string | null
+  checksum?: string | null
+  sizeBytes?: number | null
+  pageCount?: number | null
+  renderWarnings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  renderError?: string | null
+  renderedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invoice: Prisma.InvoiceCreateNestedOneWithoutDocumentsInput
+  templateVersion?: Prisma.DocumentTemplateVersionCreateNestedOneWithoutRendersInput
+}
+
+export type InvoiceDocumentUncheckedCreateWithoutDeliveriesInput = {
+  id?: string
+  invoiceId: string
+  templateVersionId?: string | null
+  hasVoidWatermark?: boolean
+  wasBoundRetroactively?: boolean
+  renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.InvoiceDocumentStatus
+  storageKey?: string | null
+  checksum?: string | null
+  sizeBytes?: number | null
+  pageCount?: number | null
+  renderWarnings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  renderError?: string | null
+  renderedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type InvoiceDocumentCreateOrConnectWithoutDeliveriesInput = {
+  where: Prisma.InvoiceDocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvoiceDocumentCreateWithoutDeliveriesInput, Prisma.InvoiceDocumentUncheckedCreateWithoutDeliveriesInput>
+}
+
+export type InvoiceDocumentUpsertWithoutDeliveriesInput = {
+  update: Prisma.XOR<Prisma.InvoiceDocumentUpdateWithoutDeliveriesInput, Prisma.InvoiceDocumentUncheckedUpdateWithoutDeliveriesInput>
+  create: Prisma.XOR<Prisma.InvoiceDocumentCreateWithoutDeliveriesInput, Prisma.InvoiceDocumentUncheckedCreateWithoutDeliveriesInput>
+  where?: Prisma.InvoiceDocumentWhereInput
+}
+
+export type InvoiceDocumentUpdateToOneWithWhereWithoutDeliveriesInput = {
+  where?: Prisma.InvoiceDocumentWhereInput
+  data: Prisma.XOR<Prisma.InvoiceDocumentUpdateWithoutDeliveriesInput, Prisma.InvoiceDocumentUncheckedUpdateWithoutDeliveriesInput>
+}
+
+export type InvoiceDocumentUpdateWithoutDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
+  storageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checksum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  renderWarnings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  renderError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invoice?: Prisma.InvoiceUpdateOneRequiredWithoutDocumentsNestedInput
+  templateVersion?: Prisma.DocumentTemplateVersionUpdateOneWithoutRendersNestedInput
+}
+
+export type InvoiceDocumentUncheckedUpdateWithoutDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  templateVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
+  storageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checksum?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  renderWarnings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  renderError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type InvoiceDocumentCreateWithoutInvoiceInput = {
   id?: string
   hasVoidWatermark?: boolean
@@ -716,6 +836,7 @@ export type InvoiceDocumentCreateWithoutInvoiceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   templateVersion?: Prisma.DocumentTemplateVersionCreateNestedOneWithoutRendersInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceDocumentInput
 }
 
 export type InvoiceDocumentUncheckedCreateWithoutInvoiceInput = {
@@ -734,6 +855,7 @@ export type InvoiceDocumentUncheckedCreateWithoutInvoiceInput = {
   renderedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceDocumentInput
 }
 
 export type InvoiceDocumentCreateOrConnectWithoutInvoiceInput = {
@@ -800,6 +922,7 @@ export type InvoiceDocumentCreateWithoutTemplateVersionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   invoice: Prisma.InvoiceCreateNestedOneWithoutDocumentsInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceDocumentInput
 }
 
 export type InvoiceDocumentUncheckedCreateWithoutTemplateVersionInput = {
@@ -818,6 +941,7 @@ export type InvoiceDocumentUncheckedCreateWithoutTemplateVersionInput = {
   renderedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceDocumentInput
 }
 
 export type InvoiceDocumentCreateOrConnectWithoutTemplateVersionInput = {
@@ -880,6 +1004,7 @@ export type InvoiceDocumentUpdateWithoutInvoiceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   templateVersion?: Prisma.DocumentTemplateVersionUpdateOneWithoutRendersNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceDocumentNestedInput
 }
 
 export type InvoiceDocumentUncheckedUpdateWithoutInvoiceInput = {
@@ -898,6 +1023,7 @@ export type InvoiceDocumentUncheckedUpdateWithoutInvoiceInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceDocumentNestedInput
 }
 
 export type InvoiceDocumentUncheckedUpdateManyWithoutInvoiceInput = {
@@ -952,6 +1078,7 @@ export type InvoiceDocumentUpdateWithoutTemplateVersionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutDocumentsNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceDocumentNestedInput
 }
 
 export type InvoiceDocumentUncheckedUpdateWithoutTemplateVersionInput = {
@@ -970,6 +1097,7 @@ export type InvoiceDocumentUncheckedUpdateWithoutTemplateVersionInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceDocumentNestedInput
 }
 
 export type InvoiceDocumentUncheckedUpdateManyWithoutTemplateVersionInput = {
@@ -991,6 +1119,35 @@ export type InvoiceDocumentUncheckedUpdateManyWithoutTemplateVersionInput = {
 }
 
 
+/**
+ * Count Type InvoiceDocumentCountOutputType
+ */
+
+export type InvoiceDocumentCountOutputType = {
+  deliveries: number
+}
+
+export type InvoiceDocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  deliveries?: boolean | InvoiceDocumentCountOutputTypeCountDeliveriesArgs
+}
+
+/**
+ * InvoiceDocumentCountOutputType without action
+ */
+export type InvoiceDocumentCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InvoiceDocumentCountOutputType
+   */
+  select?: Prisma.InvoiceDocumentCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * InvoiceDocumentCountOutputType without action
+ */
+export type InvoiceDocumentCountOutputTypeCountDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentDeliveryWhereInput
+}
+
 
 export type InvoiceDocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1011,6 +1168,8 @@ export type InvoiceDocumentSelect<ExtArgs extends runtime.Types.Extensions.Inter
   updatedAt?: boolean
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   templateVersion?: boolean | Prisma.InvoiceDocument$templateVersionArgs<ExtArgs>
+  deliveries?: boolean | Prisma.InvoiceDocument$deliveriesArgs<ExtArgs>
+  _count?: boolean | Prisma.InvoiceDocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["invoiceDocument"]>
 
 export type InvoiceDocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1078,6 +1237,8 @@ export type InvoiceDocumentOmit<ExtArgs extends runtime.Types.Extensions.Interna
 export type InvoiceDocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   templateVersion?: boolean | Prisma.InvoiceDocument$templateVersionArgs<ExtArgs>
+  deliveries?: boolean | Prisma.InvoiceDocument$deliveriesArgs<ExtArgs>
+  _count?: boolean | Prisma.InvoiceDocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InvoiceDocumentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
@@ -1093,6 +1254,7 @@ export type $InvoiceDocumentPayload<ExtArgs extends runtime.Types.Extensions.Int
   objects: {
     invoice: Prisma.$InvoicePayload<ExtArgs>
     templateVersion: Prisma.$DocumentTemplateVersionPayload<ExtArgs> | null
+    deliveries: Prisma.$DocumentDeliveryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1515,6 +1677,7 @@ export interface Prisma__InvoiceDocumentClient<T, Null = never, ExtArgs extends 
   readonly [Symbol.toStringTag]: "PrismaPromise"
   invoice<T extends Prisma.InvoiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceDefaultArgs<ExtArgs>>): Prisma.Prisma__InvoiceClient<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   templateVersion<T extends Prisma.InvoiceDocument$templateVersionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceDocument$templateVersionArgs<ExtArgs>>): Prisma.Prisma__DocumentTemplateVersionClient<runtime.Types.Result.GetResult<Prisma.$DocumentTemplateVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  deliveries<T extends Prisma.InvoiceDocument$deliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceDocument$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1977,6 +2140,30 @@ export type InvoiceDocument$templateVersionArgs<ExtArgs extends runtime.Types.Ex
    */
   include?: Prisma.DocumentTemplateVersionInclude<ExtArgs> | null
   where?: Prisma.DocumentTemplateVersionWhereInput
+}
+
+/**
+ * InvoiceDocument.deliveries
+ */
+export type InvoiceDocument$deliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentDelivery
+   */
+  select?: Prisma.DocumentDeliverySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocumentDelivery
+   */
+  omit?: Prisma.DocumentDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentDeliveryInclude<ExtArgs> | null
+  where?: Prisma.DocumentDeliveryWhereInput
+  orderBy?: Prisma.DocumentDeliveryOrderByWithRelationInput | Prisma.DocumentDeliveryOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentDeliveryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentDeliveryScalarFieldEnum | Prisma.DocumentDeliveryScalarFieldEnum[]
 }
 
 /**

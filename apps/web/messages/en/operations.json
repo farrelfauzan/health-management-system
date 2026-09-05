@@ -395,6 +395,69 @@
           "unknownTokensHint": "Remove or replace each chip below, save, then publish again.",
           "dismiss": "Dismiss"
         }
+      },
+      "delivery": {
+        "title": "Send to patient",
+        "description": "WhatsApp or email, as a password-protected PDF by default. Consent and a verified number are checked now and again when it goes out.",
+        "send": "Send to patient",
+        "sendNow": "Send now",
+        "schedule": "Schedule",
+        "scheduleHint": "Send later — the patient's consent and the invoice are re-checked when it fires.",
+        "scheduleDate": "Date",
+        "scheduleTime": "Time",
+        "scheduleInPast": "Pick a time in the future.",
+        "channels": "Channels",
+        "channelLabels": {
+          "WHATSAPP": "WhatsApp",
+          "EMAIL": "Email"
+        },
+        "shape": "Format",
+        "shapes": {
+          "ATTACHMENT": "Attachment (password-protected PDF)",
+          "LINK": "Link (revocable, expires)"
+        },
+        "passwordNote": "The message tells the patient how to open the file without disclosing the password.",
+        "noChannelSelected": "Pick at least one channel.",
+        "noChannelAvailable": "No channel is ready for this patient. Capture consent or verify the number on the patient record.",
+        "submit": "Queue delivery",
+        "submitting": "Queuing…",
+        "queued": "Delivery queued.",
+        "requestError": "The invoice could not be queued for sending.",
+        "refusedChannel": "{channel}: {reason}",
+        "timelineTitle": "Deliveries",
+        "timelineEmpty": "Not sent yet.",
+        "timelineError": "Deliveries could not be loaded.",
+        "requestedBy": "Requested by {email}",
+        "scheduledFor": "Scheduled for {date}",
+        "sentAt": "Sent {date}",
+        "openedAt": "Opened {date} · {count, plural, one {# open} other {# opens}}",
+        "linkExpires": "Link valid until {date}",
+        "linkRevoked": "Link revoked {date}",
+        "attempts": "{count, plural, one {# attempt} other {# attempts}}",
+        "passwordScheme": {
+          "DOB_DDMMYYYY": "Opens with the date of birth, DDMMYYYY",
+          "DOB_YYYYMMDD": "Opens with the date of birth, YYYYMMDD",
+          "MRN": "Opens with the medical record number"
+        },
+        "errors": {
+          "CANCELLED_BY_STAFF": "Called off before it was sent.",
+          "INVOICE_NO_LONGER_DELIVERABLE": "The invoice was voided or its document is no longer ready.",
+          "DELIVERY_REFUSED_AT_SEND_TIME": "Refused at send time: {reason}",
+          "MAIL_REJECTED_BY_TRANSPORT": "The email address was rejected. Check it on the patient record.",
+          "ServiceUnavailableException": "The gateway was unavailable. It retries automatically.",
+          "UNSUPPORTED_DELIVERY_SUBJECT": "This delivery cannot be sent by this version.",
+          "unknown": "Failed: {code}"
+        },
+        "actions": {
+          "retry": "Retry",
+          "revoke": "Revoke",
+          "cancel": "Cancel send",
+          "retrying": "Queuing…",
+          "revoking": "Revoking…",
+          "cancelling": "Cancelling…"
+        },
+        "actionError": "The delivery could not be updated.",
+        "cancelDialog": "Cancel"
       }
     },
     "integrations": {

@@ -48,9 +48,23 @@ export class DeliveryPasswordService {
   }
 
   resolvePassword(patient: DeliveryPasswordPatientRecord): string {
+    this.assertPasswordAvailable(patient);
     const source = this.deliveryConfig.passwordSource;
     if (source === 'MRN') {
       return patient.mrn;
+    }
+    return formatDateOfBirthPassword(patient.dateOfBirth as Date, source);
+  }
+
+  /**
+   * FR-E4-07 at request time (`P16-T25`): a send that could never be locked
+   * is refused when the cashier asks, with the field to complete — not hours
+   * later in the worker, where nobody is looking. Computes nothing; the
+   * password exists only inside {@link resolvePassword}.
+   */
+  assertPasswordAvailable(patient: DeliveryPasswordPatientRecord): void {
+    if (this.deliveryConfig.passwordSource === 'MRN') {
+      return;
     }
     if (patient.dateOfBirth === null) {
       throw new UnprocessableEntityException({
@@ -63,6 +77,5 @@ export class DeliveryPasswordService {
         },
       });
     }
-    return formatDateOfBirthPassword(patient.dateOfBirth, source);
   }
 }

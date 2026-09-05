@@ -63,6 +63,8 @@ export const ModelName = {
   PrivacyNoticeVersion: 'PrivacyNoticeVersion',
   PatientPrivacyNoticeRecord: 'PatientPrivacyNoticeRecord',
   PatientDeliveryConsent: 'PatientDeliveryConsent',
+  DocumentDelivery: 'DocumentDelivery',
+  DocumentDeliveryLink: 'DocumentDeliveryLink',
   PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
@@ -349,6 +351,49 @@ export const PatientDeliveryConsentScalarFieldEnum = {
 } as const
 
 export type PatientDeliveryConsentScalarFieldEnum = (typeof PatientDeliveryConsentScalarFieldEnum)[keyof typeof PatientDeliveryConsentScalarFieldEnum]
+
+
+export const DocumentDeliveryScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  invoiceId: 'invoiceId',
+  invoiceDocumentId: 'invoiceDocumentId',
+  documentId: 'documentId',
+  channel: 'channel',
+  shape: 'shape',
+  destinationMasked: 'destinationMasked',
+  status: 'status',
+  attemptCount: 'attemptCount',
+  sendAt: 'sendAt',
+  nextAttemptAt: 'nextAttemptAt',
+  leasedUntil: 'leasedUntil',
+  leasedBy: 'leasedBy',
+  passwordSource: 'passwordSource',
+  providerMessageId: 'providerMessageId',
+  lastError: 'lastError',
+  sentAt: 'sentAt',
+  openedAt: 'openedAt',
+  revokedAt: 'revokedAt',
+  requestedById: 'requestedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentDeliveryScalarFieldEnum = (typeof DocumentDeliveryScalarFieldEnum)[keyof typeof DocumentDeliveryScalarFieldEnum]
+
+
+export const DocumentDeliveryLinkScalarFieldEnum = {
+  id: 'id',
+  deliveryId: 'deliveryId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  revokedAt: 'revokedAt',
+  openCount: 'openCount',
+  lastOpenedAt: 'lastOpenedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type DocumentDeliveryLinkScalarFieldEnum = (typeof DocumentDeliveryLinkScalarFieldEnum)[keyof typeof DocumentDeliveryLinkScalarFieldEnum]
 
 
 export const PatientAllergyScalarFieldEnum = {

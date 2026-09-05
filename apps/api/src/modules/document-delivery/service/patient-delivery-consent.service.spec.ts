@@ -14,6 +14,13 @@ const PATIENT_ID = '7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c';
 const ACTOR = { sub: '0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40', email: 'kasir@klinik.example' };
 const NOTICE = { id: 'c2a3ecb0-a352-4d49-a47c-39d1b67904c9', version: '1.0' };
 const PATIENT_CONTACT = { id: PATIENT_ID, phoneNumber: '081210000001', email: null };
+const VERIFIED_LINK = {
+  id: 'link-1',
+  externalChatId: '6281210000001@s.whatsapp.net',
+  phoneNumber: '6281210000001',
+  patientId: PATIENT_ID,
+  isVerified: true,
+};
 
 function buildConsent(
   overrides: Partial<PatientDeliveryConsentRecord> = {},
@@ -56,7 +63,7 @@ describe('PatientDeliveryConsentService', () => {
     mockGateService = {
       resolveWhatsappGate: jest
         .fn()
-        .mockResolvedValue({ isAllowed: true, refusalReason: null, link: null }),
+        .mockResolvedValue({ isAllowed: true, refusalReason: null, link: VERIFIED_LINK }),
       resolveEmailGate: jest.fn().mockReturnValue('EMAIL_MISSING'),
     };
     mockPrivacyNoticeRepository = { findCurrentVersion: jest.fn().mockResolvedValue(NOTICE) };
@@ -174,7 +181,11 @@ describe('PatientDeliveryConsentService', () => {
         channel: 'WHATSAPP',
       });
 
-      expect(actual).toEqual({ isAllowed: false, refusalReason: 'CONSENT_MISSING' });
+      expect(actual).toEqual({
+        isAllowed: false,
+        refusalReason: 'CONSENT_MISSING',
+        destination: null,
+      });
       expect(mockGateService.resolveWhatsappGate).not.toHaveBeenCalled();
     });
 
@@ -188,7 +199,11 @@ describe('PatientDeliveryConsentService', () => {
         channel: 'WHATSAPP',
       });
 
-      expect(actual).toEqual({ isAllowed: false, refusalReason: 'CONSENT_REVOKED' });
+      expect(actual).toEqual({
+        isAllowed: false,
+        refusalReason: 'CONSENT_REVOKED',
+        destination: null,
+      });
     });
 
     it('allows a consented patient whose number is proven', async () => {
@@ -199,7 +214,15 @@ describe('PatientDeliveryConsentService', () => {
         channel: 'WHATSAPP',
       });
 
-      expect(actual).toEqual({ isAllowed: true, refusalReason: null });
+      expect(actual).toEqual({
+        isAllowed: true,
+        refusalReason: null,
+        destination: {
+          channel: 'WHATSAPP',
+          externalChatId: VERIFIED_LINK.externalChatId,
+          phoneNumber: VERIFIED_LINK.phoneNumber,
+        },
+      });
       expect(mockAuditService.record).not.toHaveBeenCalled();
     });
 
@@ -246,7 +269,12 @@ describe('PatientDeliveryConsentService', () => {
       const email = await service.isDeliveryAllowed({ patientId: PATIENT_ID, channel: 'EMAIL' });
 
       expect(whatsapp.isAllowed).toBe(false);
-      expect(email.isAllowed).toBe(true);
+      expect(whatsapp.destination).toBeNull();
+      expect(email).toEqual({
+        isAllowed: true,
+        refusalReason: null,
+        destination: { channel: 'EMAIL', email: 'rina@example.test' },
+      });
     });
 
     it('raises not-found for a patient that does not exist', async () => {

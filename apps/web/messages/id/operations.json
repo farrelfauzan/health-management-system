@@ -395,6 +395,69 @@
           "unknownTokensHint": "Hapus atau ganti setiap chip di bawah ini, simpan, lalu terbitkan lagi.",
           "dismiss": "Tutup"
         }
+      },
+      "delivery": {
+        "title": "Kirim ke pasien",
+        "description": "Lewat WhatsApp atau email, sebagai PDF berkata sandi secara bawaan. Persetujuan dan nomor terverifikasi diperiksa sekarang dan sekali lagi saat dikirim.",
+        "send": "Kirim ke pasien",
+        "sendNow": "Kirim sekarang",
+        "schedule": "Jadwalkan",
+        "scheduleHint": "Kirim nanti — persetujuan pasien dan tagihan diperiksa ulang saat waktunya tiba.",
+        "scheduleDate": "Tanggal",
+        "scheduleTime": "Jam",
+        "scheduleInPast": "Pilih waktu yang akan datang.",
+        "channels": "Saluran",
+        "channelLabels": {
+          "WHATSAPP": "WhatsApp",
+          "EMAIL": "Email"
+        },
+        "shape": "Bentuk",
+        "shapes": {
+          "ATTACHMENT": "Lampiran (PDF berkata sandi)",
+          "LINK": "Tautan (dapat dicabut, kedaluwarsa)"
+        },
+        "passwordNote": "Pesan memberi tahu pasien cara membuka berkas tanpa menyebutkan kata sandinya.",
+        "noChannelSelected": "Pilih minimal satu saluran.",
+        "noChannelAvailable": "Belum ada saluran yang siap untuk pasien ini. Catat persetujuan atau verifikasi nomor di data pasien.",
+        "submit": "Antrekan pengiriman",
+        "submitting": "Mengantrekan…",
+        "queued": "Pengiriman diantrekan.",
+        "requestError": "Tagihan tidak dapat diantrekan untuk dikirim.",
+        "refusedChannel": "{channel}: {reason}",
+        "timelineTitle": "Pengiriman",
+        "timelineEmpty": "Belum pernah dikirim.",
+        "timelineError": "Riwayat pengiriman tidak dapat dimuat.",
+        "requestedBy": "Diminta oleh {email}",
+        "scheduledFor": "Dijadwalkan {date}",
+        "sentAt": "Terkirim {date}",
+        "openedAt": "Dibuka {date} · {count, plural, one {# kali} other {# kali}}",
+        "linkExpires": "Tautan berlaku sampai {date}",
+        "linkRevoked": "Tautan dicabut {date}",
+        "attempts": "{count, plural, one {# percobaan} other {# percobaan}}",
+        "passwordScheme": {
+          "DOB_DDMMYYYY": "Dibuka dengan tanggal lahir, DDMMYYYY",
+          "DOB_YYYYMMDD": "Dibuka dengan tanggal lahir, YYYYMMDD",
+          "MRN": "Dibuka dengan nomor rekam medis"
+        },
+        "errors": {
+          "CANCELLED_BY_STAFF": "Dibatalkan sebelum terkirim.",
+          "INVOICE_NO_LONGER_DELIVERABLE": "Tagihan dibatalkan atau dokumennya tidak lagi siap.",
+          "DELIVERY_REFUSED_AT_SEND_TIME": "Ditolak saat pengiriman: {reason}",
+          "MAIL_REJECTED_BY_TRANSPORT": "Alamat email ditolak. Periksa alamatnya di data pasien.",
+          "ServiceUnavailableException": "Gateway tidak tersedia. Akan dicoba lagi secara otomatis.",
+          "UNSUPPORTED_DELIVERY_SUBJECT": "Pengiriman ini belum didukung versi ini.",
+          "unknown": "Gagal: {code}"
+        },
+        "actions": {
+          "retry": "Coba lagi",
+          "revoke": "Cabut",
+          "cancel": "Batalkan kirim",
+          "retrying": "Mengantrekan…",
+          "revoking": "Mencabut…",
+          "cancelling": "Membatalkan…"
+        },
+        "actionError": "Pengiriman tidak dapat diperbarui.",
+        "cancelDialog": "Batal"
       }
     },
     "integrations": {

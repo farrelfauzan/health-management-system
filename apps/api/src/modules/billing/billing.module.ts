@@ -56,6 +56,14 @@ import { ServiceTariffService } from './service/service-tariff.service';
   // REST route would not have produced.
   // Exported for IMP-15: the discharge transaction hands the finished stay to
   // the module that owns money, rather than writing invoice rows itself.
-  exports: [CashierReportService, AccommodationBillingService],
+  // `InvoiceDocumentService` for P16-T25: the delivery module asks it for the
+  // bill's state and its rendered snapshot, and applies the send rule itself.
+  // `ClinicProfileService` for P16-T26: the message names the clinic.
+  exports: [
+    CashierReportService,
+    AccommodationBillingService,
+    InvoiceDocumentService,
+    ClinicProfileService,
+  ],
 })
 export class BillingModule {}

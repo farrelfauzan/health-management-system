@@ -396,6 +396,8 @@ export const ModelName = {
   PrivacyNoticeVersion: 'PrivacyNoticeVersion',
   PatientPrivacyNoticeRecord: 'PatientPrivacyNoticeRecord',
   PatientDeliveryConsent: 'PatientDeliveryConsent',
+  DocumentDelivery: 'DocumentDelivery',
+  DocumentDeliveryLink: 'DocumentDeliveryLink',
   PatientAllergy: 'PatientAllergy',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
@@ -481,7 +483,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1370,6 +1372,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PatientDeliveryConsentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PatientDeliveryConsentCountAggregateOutputType> | number
+        }
+      }
+    }
+    DocumentDelivery: {
+      payload: Prisma.$DocumentDeliveryPayload<ExtArgs>
+      fields: Prisma.DocumentDeliveryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentDeliveryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentDeliveryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentDeliveryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentDeliveryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentDeliveryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentDeliveryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentDeliveryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentDeliveryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentDeliveryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload>
+        }
+        update: {
+          args: Prisma.DocumentDeliveryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentDeliveryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentDeliveryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentDeliveryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentDeliveryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentDeliveryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentDelivery>
+        }
+        groupBy: {
+          args: Prisma.DocumentDeliveryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentDeliveryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentDeliveryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentDeliveryCountAggregateOutputType> | number
+        }
+      }
+    }
+    DocumentDeliveryLink: {
+      payload: Prisma.$DocumentDeliveryLinkPayload<ExtArgs>
+      fields: Prisma.DocumentDeliveryLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentDeliveryLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentDeliveryLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentDeliveryLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentDeliveryLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentDeliveryLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentDeliveryLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentDeliveryLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentDeliveryLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentDeliveryLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload>
+        }
+        update: {
+          args: Prisma.DocumentDeliveryLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentDeliveryLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentDeliveryLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentDeliveryLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentDeliveryLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentDeliveryLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentDeliveryLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentDeliveryLink>
+        }
+        groupBy: {
+          args: Prisma.DocumentDeliveryLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentDeliveryLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentDeliveryLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentDeliveryLinkCountAggregateOutputType> | number
         }
       }
     }
@@ -6792,6 +6942,49 @@ export const PatientDeliveryConsentScalarFieldEnum = {
 export type PatientDeliveryConsentScalarFieldEnum = (typeof PatientDeliveryConsentScalarFieldEnum)[keyof typeof PatientDeliveryConsentScalarFieldEnum]
 
 
+export const DocumentDeliveryScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  invoiceId: 'invoiceId',
+  invoiceDocumentId: 'invoiceDocumentId',
+  documentId: 'documentId',
+  channel: 'channel',
+  shape: 'shape',
+  destinationMasked: 'destinationMasked',
+  status: 'status',
+  attemptCount: 'attemptCount',
+  sendAt: 'sendAt',
+  nextAttemptAt: 'nextAttemptAt',
+  leasedUntil: 'leasedUntil',
+  leasedBy: 'leasedBy',
+  passwordSource: 'passwordSource',
+  providerMessageId: 'providerMessageId',
+  lastError: 'lastError',
+  sentAt: 'sentAt',
+  openedAt: 'openedAt',
+  revokedAt: 'revokedAt',
+  requestedById: 'requestedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentDeliveryScalarFieldEnum = (typeof DocumentDeliveryScalarFieldEnum)[keyof typeof DocumentDeliveryScalarFieldEnum]
+
+
+export const DocumentDeliveryLinkScalarFieldEnum = {
+  id: 'id',
+  deliveryId: 'deliveryId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  revokedAt: 'revokedAt',
+  openCount: 'openCount',
+  lastOpenedAt: 'lastOpenedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type DocumentDeliveryLinkScalarFieldEnum = (typeof DocumentDeliveryLinkScalarFieldEnum)[keyof typeof DocumentDeliveryLinkScalarFieldEnum]
+
+
 export const PatientAllergyScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
@@ -8240,6 +8433,34 @@ export type ListEnumDeliveryChannelFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'DeliveryShape'
+ */
+export type EnumDeliveryShapeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryShape'>
+    
+
+
+/**
+ * Reference to a field of type 'DeliveryShape[]'
+ */
+export type ListEnumDeliveryShapeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryShape[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DeliveryStatus'
+ */
+export type EnumDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'DeliveryStatus[]'
+ */
+export type ListEnumDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'AllergySeverity'
  */
 export type EnumAllergySeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AllergySeverity'>
@@ -9102,6 +9323,8 @@ export type GlobalOmitConfig = {
   privacyNoticeVersion?: Prisma.PrivacyNoticeVersionOmit
   patientPrivacyNoticeRecord?: Prisma.PatientPrivacyNoticeRecordOmit
   patientDeliveryConsent?: Prisma.PatientDeliveryConsentOmit
+  documentDelivery?: Prisma.DocumentDeliveryOmit
+  documentDeliveryLink?: Prisma.DocumentDeliveryLinkOmit
   patientAllergy?: Prisma.PatientAllergyOmit
   specialty?: Prisma.SpecialtyOmit
   doctorProfile?: Prisma.DoctorProfileOmit
