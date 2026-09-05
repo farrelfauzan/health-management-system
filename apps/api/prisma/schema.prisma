@@ -158,6 +158,17 @@ enum AuditAction {
   USER_OFFBOARDED
   USER_REONBOARDED
   USER_OFFBOARDING_VAULT_PURGED
+  /// Document delivery consent (`P16-T24`, FR-E4-18). GRANTED and WITHDRAWN
+  /// are the counter's two acts; OPTED_OUT is the patient's own, typed as
+  /// `STOP` / `BERHENTI` into WhatsApp with no staff actor — it is its own
+  /// verb so a revocation the patient made is never mistaken for one a clerk
+  /// made. CHANNEL_REFUSED records a send the gate turned away because the
+  /// verified number belongs to a *different* patient (FR-E4-03): the one
+  /// refusal that is evidence of something rather than a missing step.
+  DELIVERY_CONSENT_GRANTED
+  DELIVERY_CONSENT_WITHDRAWN
+  DELIVERY_CONSENT_OPTED_OUT
+  DELIVERY_CHANNEL_REFUSED
   /// Organization structure (SJ-1). Five verbs rather than the generic
   /// CREATE/UPDATE/DELETE above because the question asked of this table
   /// afterwards is "who reorganised the clinic", and a move is the one change
@@ -631,6 +642,7 @@ model User {
   receivedVaultShares        VaultDocumentShare[]         @relation("VaultDocumentGrantee")
   grantedVaultShares         VaultDocumentShare[]         @relation("VaultDocumentGrantor")
   offboardingNotices         UserOffboardingNotice[]
+  grantedDeliveryConsents    PatientDeliveryConsent[]     @relation("DeliveryConsentGrantedBy")
 
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
@@ -976,6 +988,7 @@ model PatientProfile {
   prospectiveRecords    ProspectivePatient[]
   admissions            Admission[]
   clinicalDocuments     Document[]
+  deliveryConsents      PatientDeliveryConsent[]
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -1008,7 +1021,8 @@ model PrivacyNoticeVersion {
   counselApproved Boolean  @default(false) @map("counsel_approved")
   createdAt       DateTime @default(now()) @map("created_at")
 
-  records PatientPrivacyNoticeRecord[]
+  records          PatientPrivacyNoticeRecord[]
+  deliveryConsents PatientDeliveryConsent[]
 
   @@map("privacy_notice_versions")
 }
@@ -1037,6 +1051,52 @@ model PatientPrivacyNoticeRecord {
   @@index([patientId, privacyNoticeVersionId, outcome])
   @@index([actorUserId, recordedAt])
   @@map("patient_privacy_notice_records")
+}
+
+/// Which channels a document can be delivered on (`P16-T24`, PRD §7.4).
+enum DeliveryChannel {
+  WHATSAPP
+  EMAIL
+
+  @@map("delivery_channel")
+}
+
+/// Per-patient, per-channel permission to receive documents, with the notice
+/// version in force when it was captured (`P16-T24`, FR-E4-04).
+///
+/// Consent is a fact with a date and a text behind it, not a boolean on the
+/// patient row — the same reasoning that gave privacy-notice acceptance its
+/// own table. One row per `(patient, channel)`: a withdrawal *updates* the row
+/// rather than deleting it, because "this patient opted out on the 3rd" is a
+/// fact the clinic must be able to show, and a deleted row shows nothing.
+///
+/// `noticeVersionId` is `SetNull` on purpose. Notice versions are immutable
+/// legal evidence and are never deleted in practice; if one ever were, the
+/// consent must survive it — the patient still agreed — with the version
+/// reference gone rather than the consent.
+model PatientDeliveryConsent {
+  id              String          @id @default(uuid()) @db.Uuid
+  patientId       String          @map("patient_id") @db.Uuid
+  channel         DeliveryChannel
+  isGranted       Boolean         @default(true) @map("is_granted")
+  noticeVersionId String?         @map("notice_version_id") @db.Uuid
+  grantedAt       DateTime?       @map("granted_at")
+  grantedById     String?         @map("granted_by_id") @db.Uuid
+  revokedAt       DateTime?       @map("revoked_at")
+  /// `PATIENT_KEYWORD` when the patient sent STOP/BERHENTI; `STAFF` when a
+  /// clerk withdrew it at the counter. Two different facts about consent.
+  revokedReason   String?         @map("revoked_reason")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  patient       PatientProfile        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  noticeVersion PrivacyNoticeVersion? @relation(fields: [noticeVersionId], references: [id], onDelete: SetNull)
+  grantedBy     User?                 @relation("DeliveryConsentGrantedBy", fields: [grantedById], references: [id], onDelete: SetNull)
+
+  @@unique([patientId, channel])
+  @@index([noticeVersionId])
+  @@index([grantedById])
+  @@map("patient_delivery_consents")
 }
 
 /// Free-text substance plus a severity grade. Deliberately uncoded for now —

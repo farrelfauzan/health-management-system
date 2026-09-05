@@ -359,6 +359,37 @@
       "currentRecorded": "Pemberitahuan versi saat ini telah dicatat.",
       "historyCount": "{count, plural, =0 {Belum ada catatan} one {# catatan historis} other {# catatan historis}}"
     },
+    "deliveryConsent": {
+      "title": "Persetujuan pengiriman dokumen",
+      "description": "Izin mengirim kuitansi dan hasil pemeriksaan yang telah dirilis kepada pasien pada tiap kanal. Dicatat terhadap pemberitahuan privasi yang berlaku; dicabut di loket atau oleh pasien dengan membalas BERHENTI di WhatsApp.",
+      "loadError": "Persetujuan pengiriman tidak dapat dimuat.",
+      "updateError": "Persetujuan pengiriman tidak dapat diperbarui.",
+      "channels": {
+        "WHATSAPP": "WhatsApp",
+        "EMAIL": "Email"
+      },
+      "state": {
+        "granted": "Disetujui",
+        "withdrawn": "Dicabut",
+        "optedOut": "Dihentikan oleh pasien",
+        "notAsked": "Belum ditanyakan"
+      },
+      "grantedBy": "Dicatat oleh {email} pada {date}",
+      "noticeVersion": "Pemberitahuan privasi v{version}",
+      "revokedAt": "Dicabut pada {date}",
+      "ready": "Siap dikirim",
+      "refusals": {
+        "CONSENT_MISSING": "Belum ada persetujuan untuk kanal ini.",
+        "CONSENT_REVOKED": "Pasien menghentikan pengiriman melalui kanal ini.",
+        "NUMBER_NOT_LINKED": "Nomor pasien belum terverifikasi. Tawarkan verifikasi OTP WhatsApp.",
+        "NUMBER_UNVERIFIED": "Nomor pasien belum terverifikasi. Proses verifikasi sudah dimulai tetapi belum selesai.",
+        "NUMBER_VERIFIED_FOR_ANOTHER_PATIENT": "Nomor ini terverifikasi untuk pasien lain. Pengiriman ditolak dan dicatat dalam audit.",
+        "EMAIL_MISSING": "Tidak ada alamat email pada data pasien."
+      },
+      "capture": "Catat persetujuan",
+      "withdraw": "Cabut",
+      "recapture": "Catat ulang persetujuan"
+    },
     "licenceExpiry": {
       "title": "Masa berlaku STR/SIP",
       "breadcrumb": "Masa berlaku STR/SIP",

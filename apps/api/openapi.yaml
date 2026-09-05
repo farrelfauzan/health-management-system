@@ -30925,6 +30925,313 @@ paths:
         - bearer: []
       summary: The arriving person is new — register them and allocate their MRN
       tags: *a49
+  /api/v1/patients/{patientId}/delivery-consents:
+    get:
+      operationId: PatientDeliveryConsentController_listConsents_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "One entry per channel: the consent row (or null when never asked),
+            whether a document could be delivered right now, and if not, the
+            reason the send dialog should show. `NUMBER_*` reasons come from the
+            verified-number gate; `CONSENT_*` from this table; `EMAIL_MISSING`
+            from the patient record."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      patientId:
+                        type: string
+                      channels:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            channel:
+                              type: string
+                            consent:
+                              type: object
+                              properties:
+                                channel:
+                                  type: string
+                                isGranted:
+                                  type: boolean
+                                noticeVersion:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                    version:
+                                      type: string
+                                  required:
+                                    - id
+                                    - version
+                                grantedAt:
+                                  type: string
+                                grantedBy:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                    email:
+                                      type: string
+                                  required:
+                                    - id
+                                    - email
+                                revokedAt:
+                                  nullable: true
+                                revokedReason:
+                                  nullable: true
+                              required:
+                                - channel
+                                - isGranted
+                                - noticeVersion
+                                - grantedAt
+                                - grantedBy
+                                - revokedAt
+                                - revokedReason
+                            isDeliveryAllowed:
+                              type: boolean
+                            refusalReason:
+                              type: string
+                          required:
+                            - channel
+                            - consent
+                            - isDeliveryAllowed
+                            - refusalReason
+                    required:
+                      - patientId
+                      - channels
+                required:
+                  - data
+                example:
+                  data:
+                    patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                    channels:
+                      - channel: WHATSAPP
+                        consent:
+                          channel: WHATSAPP
+                          isGranted: true
+                          noticeVersion:
+                            id: c2a3ecb0-a352-4d49-a47c-39d1b67904c9
+                            version: "1.0"
+                          grantedAt: 2026-09-28T02:15:00.000Z
+                          grantedBy:
+                            id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                            email: kasir@klinik.example
+                          revokedAt: null
+                          revokedReason: null
+                        isDeliveryAllowed: false
+                        refusalReason: NUMBER_UNVERIFIED
+                      - channel: EMAIL
+                        consent: null
+                        isDeliveryAllowed: false
+                        refusalReason: CONSENT_MISSING
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: The patient does not exist or is outside your scope.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The patient does not exist or is outside your scope.
+      security:
+        - bearer: []
+      summary: Read a patient's delivery consent and channel readiness
+      tags: &a50
+        - Patient Delivery Consent
+    put:
+      operationId: PatientDeliveryConsentController_upsertConsent_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertPatientDeliveryConsentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  channel: WHATSAPP
+                  isGranted: true
+      responses:
+        "200":
+          description: The full per-channel state after the change. Capturing records the
+            privacy-notice version in force and the acting user; withdrawing
+            records the time with reason `STAFF`. Both are audited.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      patientId:
+                        type: string
+                      channels:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            channel:
+                              type: string
+                            consent:
+                              type: object
+                              properties:
+                                channel:
+                                  type: string
+                                isGranted:
+                                  type: boolean
+                                noticeVersion:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                    version:
+                                      type: string
+                                  required:
+                                    - id
+                                    - version
+                                grantedAt:
+                                  type: string
+                                grantedBy:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                    email:
+                                      type: string
+                                  required:
+                                    - id
+                                    - email
+                                revokedAt:
+                                  nullable: true
+                                revokedReason:
+                                  nullable: true
+                              required:
+                                - channel
+                                - isGranted
+                                - noticeVersion
+                                - grantedAt
+                                - grantedBy
+                                - revokedAt
+                                - revokedReason
+                            isDeliveryAllowed:
+                              type: boolean
+                            refusalReason:
+                              type: string
+                          required:
+                            - channel
+                            - consent
+                            - isDeliveryAllowed
+                            - refusalReason
+                    required:
+                      - patientId
+                      - channels
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                    channels:
+                      - channel: WHATSAPP
+                        consent:
+                          channel: WHATSAPP
+                          isGranted: true
+                          noticeVersion:
+                            id: c2a3ecb0-a352-4d49-a47c-39d1b67904c9
+                            version: "1.0"
+                          grantedAt: 2026-09-28T02:15:00.000Z
+                          grantedBy:
+                            id: 0f4b6f2a-5d7e-4c1b-9a3e-2b8c7d6e5f40
+                            email: kasir@klinik.example
+                          revokedAt: null
+                          revokedReason: null
+                        isDeliveryAllowed: false
+                        refusalReason: NUMBER_UNVERIFIED
+                      - channel: EMAIL
+                        consent: null
+                        isDeliveryAllowed: false
+                        refusalReason: CONSENT_MISSING
+                  message: Delivery consent updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: The patient does not exist or is outside your scope.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: The patient does not exist or is outside your scope.
+      security:
+        - bearer: []
+      summary: Capture or withdraw delivery consent for one channel
+      tags: *a50
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -31003,7 +31310,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a50
+      tags: &a51
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -31120,7 +31427,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a50
+      tags: *a51
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -31243,7 +31550,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a51
+      tags: &a52
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -31330,7 +31637,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a51
+      tags: *a52
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -31410,7 +31717,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a51
+      tags: *a52
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -31529,7 +31836,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a51
+      tags: *a52
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -31628,7 +31935,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a51
+      tags: *a52
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -31704,7 +32011,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a51
+      tags: *a52
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -31850,7 +32157,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a51
+      tags: *a52
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -31942,7 +32249,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a51
+      tags: *a52
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -32034,7 +32341,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a51
+      tags: *a52
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -34928,6 +35235,19 @@ components:
         - phoneNumber
         - address
         - privacyNotice
+    UpsertPatientDeliveryConsentDto:
+      type: object
+      properties:
+        channel:
+          type: string
+          enum:
+            - WHATSAPP
+            - EMAIL
+        isGranted:
+          type: boolean
+      required:
+        - channel
+        - isGranted
     UpdateFeatureEntitlementDto:
       type: object
       properties:

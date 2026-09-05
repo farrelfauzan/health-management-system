@@ -30,6 +30,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1090.0",
     "@aws-sdk/s3-request-presigner": "^3.1090.0",
+    "@cantoo/pdf-lib": "2.9.1",
     "@casl/ability": "^6.7.3",
     "@grammyjs/auto-retry": "^2.0.2",
     "@hms/shared-types": "workspace:*",
