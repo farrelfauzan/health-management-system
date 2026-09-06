@@ -21,6 +21,7 @@ export type PatientManagementControllerListPatientsV1200DataItem = {
   nikMasked: string;
   bpjsNumberMasked: string;
   hasSatusehatPatientId: boolean;
+  satusehatPatientIdMasked?: string;
   email: string;
   bloodType: string;
   rhesusFactor: string;

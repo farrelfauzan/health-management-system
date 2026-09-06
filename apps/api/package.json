@@ -18,6 +18,8 @@
     "prisma:validate": "prisma validate",
     "prisma:seed": "prisma db seed && prisma db execute --file prisma/lab-catalog.sql",
     "prisma:migrate:reset": "prisma migrate reset",
+    "backfill:satusehat-last4": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/backfill-satusehat-last4.js",
+    "backfill:satusehat-encounter-ids": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/backfill-satusehat-encounter-ids.js",
     "backfill:doctor-nik": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/backfill-doctor-nik.js",
     "seed:sandbox-practitioner-nik": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/seed-sandbox-practitioner-niks.js",
     "icd10:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-terminology-codes.js icd10",

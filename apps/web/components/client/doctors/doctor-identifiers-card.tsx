@@ -5,13 +5,18 @@ import type { DoctorDetail } from '@hms/shared-types';
 import { Button, Card, CardContent, CardHeader, CardTitle, Icon, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { DoctorSatusehatLinkButton } from '#components/client/doctors/doctor-satusehat-link-button';
 import { useDoctorIdentifiers } from '#lib/doctors/use-doctor-identifiers';
 
 type DoctorIdentifiersCardProps = {
   doctor: DoctorDetail;
+  isSatusehatEnabled: boolean;
 };
 
-export function DoctorIdentifiersCard({ doctor }: DoctorIdentifiersCardProps) {
+export function DoctorIdentifiersCard({
+  doctor,
+  isSatusehatEnabled,
+}: DoctorIdentifiersCardProps) {
   const ability = useAbility();
   const t = useTranslations('clinical');
   const [isRevealed, setIsRevealed] = useState<boolean>(false);
@@ -22,12 +27,20 @@ export function DoctorIdentifiersCard({ doctor }: DoctorIdentifiersCardProps) {
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader className="flex flex-row items-center justify-between gap-3">
         <CardTitle className="font-heading text-base">{t('doctors.identity')}</CardTitle>
-        {canReveal && !isRevealed ? (
-          <Button type="button" size="sm" variant="outline" onClick={() => setIsRevealed(true)}>
-            <Icon name="visibility" size={16} />
-            {t('doctors.reveal')}
-          </Button>
-        ) : null}
+        <div className="flex items-center gap-2">
+          <DoctorSatusehatLinkButton
+            doctorId={doctor.id}
+            hasNik={Boolean(doctor.nikMasked)}
+            isLinked={doctor.satusehatPractitionerId !== undefined}
+            isSatusehatEnabled={isSatusehatEnabled}
+          />
+          {canReveal && !isRevealed ? (
+            <Button type="button" size="sm" variant="outline" onClick={() => setIsRevealed(true)}>
+              <Icon name="visibility" size={16} />
+              {t('doctors.reveal')}
+            </Button>
+          ) : null}
+        </div>
       </CardHeader>
       <CardContent className="space-y-3">
         <dl className="grid gap-3 sm:grid-cols-2">

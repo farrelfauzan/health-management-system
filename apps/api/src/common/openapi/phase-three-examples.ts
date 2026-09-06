@@ -36,6 +36,10 @@ const patient = {
   nikMasked: '••••••••0001',
   bpjsNumberMasked: '••••••••7890',
   hasSatusehatPatientId: false,
+  // Absent here because this example patient is unlinked. A linked one carries
+  // the partial IHS number the card renders beside "tertaut" (P10-T13); the
+  // full value only ever comes from the audited identifiers route.
+  satusehatPatientIdMasked: optionalExample('••••5538'),
   email: 'aisha.rahman@example.com',
   bloodType: 'O',
   rhesusFactor: 'POSITIVE',
@@ -146,6 +150,25 @@ const procedureRecord = {
   display: icd9cmCode.display,
   performedAt: timestamp,
   recordedById: userId,
+  createdAt: timestamp,
+  updatedAt: timestamp,
+};
+const immunizationId = 'aaaaaaa5-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const immunizationRecord = {
+  id: immunizationId,
+  encounterId,
+  patientId,
+  medicationId,
+  medicationName: 'Vaksin DPT-HB-Hib',
+  kfaCode: '93000123',
+  occurredAt: timestamp,
+  lotNumber: 'LOT-DPT-2026-04',
+  expirationDate: '2027-04-30',
+  doseNumber: 3,
+  route: 'IM',
+  site: 'LEFT_THIGH',
+  performedById: doctorId,
+  performedByName: 'dr. Sari Wulandari',
   createdAt: timestamp,
   updatedAt: timestamp,
 };
@@ -825,6 +848,15 @@ export const PHASE_THREE_EXAMPLES = {
     vitalSigns,
     diagnosis,
     procedure: procedureRecord,
+    immunization: immunizationRecord,
+    immunizationRequest: {
+      medicationId,
+      lotNumber: 'LOT-DPT-2026-04',
+      expirationDate: '2027-04-30',
+      doseNumber: 3,
+      route: 'IM',
+      site: 'LEFT_THIGH',
+    },
     listItem: {
       ...encounter,
       patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
@@ -850,6 +882,7 @@ export const PHASE_THREE_EXAMPLES = {
       vitalSigns: [vitalSigns],
       diagnoses: [diagnosis],
       procedures: [procedureRecord],
+      immunizations: [immunizationRecord],
       prescriptions: [{ id: prescriptionId, status: 'ISSUED', issuedAt: timestamp, itemCount: 1 }],
     },
   },

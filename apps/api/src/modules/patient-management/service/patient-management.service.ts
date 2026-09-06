@@ -765,6 +765,7 @@ export class PatientManagementService {
       nikMasked: maskIdentifierLast4(patient.nikLast4),
       bpjsNumberMasked: maskIdentifierLast4(patient.bpjsNumberLast4),
       hasSatusehatPatientId: patient.hasSatusehatPatientId,
+      satusehatPatientIdMasked: maskIdentifierLast4(patient.satusehatPatientIdLast4),
       email: patient.email ?? undefined,
       bloodType: patient.bloodType ?? undefined,
       rhesusFactor: patient.rhesusFactor ?? undefined,

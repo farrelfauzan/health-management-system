@@ -144,7 +144,8 @@ export const ModelName = {
   LabTest: 'LabTest',
   LabReferenceRange: 'LabReferenceRange',
   LabPanel: 'LabPanel',
-  LabPanelMember: 'LabPanelMember'
+  LabPanelMember: 'LabPanelMember',
+  Immunization: 'Immunization'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -307,7 +308,8 @@ export const PatientProfileScalarFieldEnum = {
   bpjsNumberLast4: 'bpjsNumberLast4',
   bpjsNumberKeyVersion: 'bpjsNumberKeyVersion',
   satusehatPatientIdCiphertext: 'satusehatPatientIdCiphertext',
-  satusehatPatientIdKeyVersion: 'satusehatPatientIdKeyVersion'
+  satusehatPatientIdKeyVersion: 'satusehatPatientIdKeyVersion',
+  satusehatPatientIdLast4: 'satusehatPatientIdLast4'
 } as const
 
 export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]
@@ -412,6 +414,7 @@ export const PatientAllergyScalarFieldEnum = {
   substance: 'substance',
   reaction: 'reaction',
   severity: 'severity',
+  satusehatAllergyId: 'satusehatAllergyId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -634,7 +637,8 @@ export const EncounterScalarFieldEnum = {
   subjective: 'subjective',
   objective: 'objective',
   assessment: 'assessment',
-  plan: 'plan'
+  plan: 'plan',
+  prognosis: 'prognosis'
 } as const
 
 export type EncounterScalarFieldEnum = (typeof EncounterScalarFieldEnum)[keyof typeof EncounterScalarFieldEnum]
@@ -740,6 +744,7 @@ export const MedicationScalarFieldEnum = {
   category: 'category',
   reorderLevel: 'reorderLevel',
   unitPrice: 'unitPrice',
+  isVaccine: 'isVaccine',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -1726,6 +1731,28 @@ export const LabPanelMemberScalarFieldEnum = {
 } as const
 
 export type LabPanelMemberScalarFieldEnum = (typeof LabPanelMemberScalarFieldEnum)[keyof typeof LabPanelMemberScalarFieldEnum]
+
+
+export const ImmunizationScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  patientId: 'patientId',
+  medicationId: 'medicationId',
+  occurredAt: 'occurredAt',
+  lotNumber: 'lotNumber',
+  expirationDate: 'expirationDate',
+  doseNumber: 'doseNumber',
+  route: 'route',
+  site: 'site',
+  performedById: 'performedById',
+  notes: 'notes',
+  satusehatImmunizationId: 'satusehatImmunizationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ImmunizationScalarFieldEnum = (typeof ImmunizationScalarFieldEnum)[keyof typeof ImmunizationScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -379,7 +379,19 @@
             "unknown": "Failed: {code}"
           }
         }
-      }
+      },
+      "linkToSatusehat": "Link to SATUSEHAT",
+      "linking": "Linking...",
+      "linkSuccess": "Patient linked to SATUSEHAT.",
+      "linkErrors": {
+        "missingNik": "NIK is not on file yet. Add it before linking.",
+        "notFound": "This NIK is not in SATUSEHAT — check the number.",
+        "ambiguous": "More than one SATUSEHAT match — verify the patient in the portal first.",
+        "notConfigured": "The SATUSEHAT integration is not configured yet.",
+        "unreachable": "SATUSEHAT could not be reached. Try again."
+      },
+      "noImmunizations": "No vaccination recorded for this patient.",
+      "loadingImmunizations": "Loading the immunisation history..."
     },
     "privacyNotice": {
       "title": "Patient Privacy Notice",
@@ -633,7 +645,17 @@
       "attention": "{count, plural, one {# needs attention} other {# need attention}}",
       "licenseRequired": "No license recorded. A practicing doctor needs an STR and a SIP for each practice location.",
       "addEducation": "Add Education",
-      "identifiersError": "Unable to reveal practitioner identifiers."
+      "identifiersError": "Unable to reveal practitioner identifiers.",
+      "linkToSatusehat": "Link to SATUSEHAT",
+      "linking": "Linking...",
+      "linkSuccess": "Doctor linked to SATUSEHAT.",
+      "linkErrors": {
+        "missingNik": "NIK is not on file yet. Add it before linking.",
+        "notFound": "This NIK is not in SATUSEHAT — check the number.",
+        "ambiguous": "More than one SATUSEHAT match — verify the practitioner in the portal first.",
+        "notConfigured": "The SATUSEHAT integration is not configured yet.",
+        "unreachable": "SATUSEHAT could not be reached. Try again."
+      }
     },
     "portal": {
       "documents": {
@@ -784,7 +806,14 @@
         "assessment": "Assessment",
         "assessmentPlaceholder": "Clinical impression. Coded diagnoses are recorded separately.",
         "plan": "Plan",
-        "planPlaceholder": "Treatment, prescriptions, follow-up, and referral intent."
+        "planPlaceholder": "Treatment, prescriptions, follow-up, and referral intent.",
+        "prognosis": "Prognosis",
+        "prognosisOptions": {
+          "BONAM": "Bonam (good)",
+          "DUBIA_AD_BONAM": "Dubia ad bonam (guarded, leaning good)",
+          "DUBIA_AD_MALAM": "Dubia ad malam (guarded, leaning poor)",
+          "MALAM": "Malam (poor)"
+        }
       },
       "diagnosis": {
         "title": "Diagnoses (ICD-10)",
@@ -888,6 +917,39 @@
           "title": "Cancel this encounter?",
           "description": "Use this only for an encounter opened in error. The record and registration are retracted but remain auditable; the patient must register again.",
           "pending": "Cancelling..."
+        }
+      },
+      "immunization": {
+        "title": "Immunizations",
+        "empty": "No vaccination recorded on this visit.",
+        "add": "Record vaccination",
+        "addError": "Unable to record the vaccination. Please try again.",
+        "retract": "Retract the {vaccine} record",
+        "retractError": "Unable to retract this vaccination.",
+        "pick": "Choose the vaccine that was given.",
+        "vaccine": "Vaccine",
+        "vaccinePlaceholder": "Choose a vaccine",
+        "noVaccines": "No catalog item is marked as a vaccine yet. Mark one in the medication catalog first.",
+        "lotNumber": "Lot number",
+        "expirationDate": "Expiry",
+        "doseNumber": "Dose",
+        "dose": "Dose {number}",
+        "route": "Route",
+        "site": "Site",
+        "noKfa": "No KFA code — recorded here, not reported to SATUSEHAT.",
+        "routes": {
+          "IM": "Intramuscular",
+          "SC": "Subcutaneous",
+          "ID": "Intradermal",
+          "ORAL": "Oral",
+          "NASAL": "Nasal"
+        },
+        "sites": {
+          "LEFT_ARM": "Left arm",
+          "RIGHT_ARM": "Right arm",
+          "LEFT_THIGH": "Left thigh",
+          "RIGHT_THIGH": "Right thigh",
+          "OTHER": "Other"
         }
       }
     }

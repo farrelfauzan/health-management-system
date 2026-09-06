@@ -1221,3 +1221,13 @@ export type LabPanel = Prisma.LabPanelModel
  * fact worth keeping — what was actually ordered lives on the order rows.
  */
 export type LabPanelMember = Prisma.LabPanelMemberModel
+/**
+ * Model Immunization
+ * One vaccination given during a visit.
+ * 
+ * A parallel record to `Procedure` rather than a kind of it: the IG asks for
+ * the KFA vaccine code, the lot number, the expiry and the dose, none of
+ * which an ICD-9-CM procedure row can carry — and a vaccination written as a
+ * procedure is a vaccination that cannot be reported (P10-T16).
+ */
+export type Immunization = Prisma.ImmunizationModel

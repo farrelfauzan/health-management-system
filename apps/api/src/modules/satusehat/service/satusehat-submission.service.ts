@@ -1,9 +1,13 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionMedication,
+  SatusehatSubmissionImmunization,
+  SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
+  SaveAllergyIhsIdPayload,
 } from '@hms/shared-types';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -11,10 +15,14 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { SatusehatFhirMapper } from '../../../common/satusehat/satusehat-fhir.mapper';
 import {
+  SatusehatCompositionSectionInput,
+  SatusehatCreatedResourceLocation,
   SatusehatFhirBundleEntry,
   SatusehatFhirTransactionBundle,
   SatusehatTransactionResponse,
+  SatusehatTransactionResponseEntry,
 } from '../../../common/satusehat/satusehat-fhir.types';
+import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satusehat-ambiguous-match.error';
 import { SatusehatHttpClient } from '../../../common/satusehat/satusehat-http.client';
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
 import { SatusehatError } from '../../../common/satusehat/satusehat.error';
@@ -31,16 +39,9 @@ const PERMANENT_ERROR_CODES: readonly string[] = [
 ];
 const MAX_STORED_ERROR_LENGTH = 500;
 
-/**
- * Captures the Encounter id from a transaction-response `location`. The
- * platform answers with an absolute URL
- * (`https://…/fhir-r4/v1/Encounter/<id>/_history/<version>`) even though FHIR
- * also permits the relative `Encounter/<id>/_history/<version>` form, so the
- * match anchors on a path-segment boundary and accepts both. Declared without
- * the global flag on purpose: a `/g` regex carries `lastIndex` between
- * `test` and `exec` calls and would skip every other match.
- */
-const ENCOUNTER_LOCATION_PATTERN = /(?:^|\/)Encounter\/([^/?#]+)/;
+/** FHIR resource type names are upper camel case with no separators. */
+const FHIR_RESOURCE_TYPE_PATTERN = /^[A-Z][A-Za-z]+$/;
+const HISTORY_SEGMENT = '_history';
 
 /**
  * Processes one outbox row end to end: rebuilds the encounter bundle from the
@@ -90,18 +91,23 @@ export class SatusehatSubmissionService {
     }
     const patientIhsNumber = await this.resolvePatientIhsNumber(bundleData);
     const practitionerIhsNumber = await this.resolvePractitionerIhsNumber(bundleData);
+    const allergyFullUrls = new Map<string, string>();
     const bundle = this.buildTransactionBundle(
       bundleData,
       bundleData.endedAt,
       patientIhsNumber,
       practitionerIhsNumber,
+      allergyFullUrls,
     );
     const response = await this.httpClient.sendRequest<SatusehatTransactionResponse>({
       method: 'POST',
       path: '',
       body: bundle,
     });
-    return this.extractEncounterIhsId(response);
+    const createdResources = this.extractCreatedResources(bundle, response);
+    await this.saveAllergyIhsIds(allergyFullUrls, createdResources);
+    const encounterEntry = bundle.entry.find((entry) => entry.request.url === 'Encounter');
+    return encounterEntry ? (createdResources.get(encounterEntry.fullUrl)?.id ?? null) : null;
   }
 
   private buildTransactionBundle(
@@ -109,6 +115,7 @@ export class SatusehatSubmissionService {
     endedAt: Date,
     patientIhsNumber: string,
     practitionerIhsNumber: string,
+    allergyFullUrls: Map<string, string>,
   ): SatusehatFhirTransactionBundle {
     const encounterFullUrl = `urn:uuid:${randomUUID()}`;
     const conditionEntries: SatusehatFhirBundleEntry[] = this.sortDiagnoses(bundleData).map(
@@ -124,6 +131,26 @@ export class SatusehatSubmissionService {
         }),
         request: { method: 'POST', url: 'Condition' },
       }),
+    );
+    const procedureEntries = this.buildProcedureEntries(
+      bundleData,
+      endedAt,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+    );
+    const allergyEntries = this.buildAllergyEntries(
+      bundleData,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      allergyFullUrls,
+    );
+    const immunizationEntries = this.buildImmunizationEntries(
+      bundleData,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
     );
     const observationEntries: SatusehatFhirBundleEntry[] = bundleData.latestVitalSigns
       ? this.fhirMapper
@@ -154,10 +181,38 @@ export class SatusehatSubmissionService {
       arrivedAt: bundleData.arrivedAt,
       startedAt: bundleData.startedAt,
       endedAt,
+      ...(bundleData.admission
+        ? {
+            admission: {
+              admittedAt: bundleData.admission.admittedAt,
+              dischargedAt: bundleData.admission.dischargedAt,
+            },
+          }
+        : {}),
       conditionReferences: conditionEntries.map((entry, index) => ({
         reference: entry.fullUrl,
         rank: index + 1,
       })),
+    });
+    const clinicalImpressionEntry = this.buildClinicalImpressionEntry(
+      bundleData,
+      endedAt,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      conditionEntries,
+    );
+    const compositionEntry = this.buildCompositionEntry({
+      bundleData,
+      endedAt,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      conditionEntries,
+      procedureEntries,
+      observationEntries,
+      medicationEntries,
+      immunizationEntries,
     });
     return {
       resourceType: 'Bundle',
@@ -165,10 +220,352 @@ export class SatusehatSubmissionService {
       entry: [
         { fullUrl: encounterFullUrl, resource: encounterResource, request: { method: 'POST', url: 'Encounter' } },
         ...conditionEntries,
+        ...procedureEntries,
+        ...allergyEntries,
         ...observationEntries,
         ...medicationEntries,
+        ...immunizationEntries,
+        ...clinicalImpressionEntry,
+        ...compositionEntry,
       ],
     };
+  }
+
+  /**
+   * Builds the Composition — the *resume medis*, one document per episode —
+   * from the SOAP narrative and the entries already in the bundle. It is
+   * appended last because it references all of them.
+   *
+   * A section is emitted only when it has narrative or entries: an encounter
+   * with no procedures gets no "Tindakan" section rather than an empty one,
+   * which would assert the question was asked and answered with nothing. An
+   * encounter with nothing at all produces no Composition — a document with no
+   * sections is not a medical resume.
+   */
+  private buildCompositionEntry(context: {
+    bundleData: SatusehatSubmissionBundleData;
+    endedAt: Date;
+    encounterFullUrl: string;
+    patientIhsNumber: string;
+    practitionerIhsNumber: string;
+    conditionEntries: readonly SatusehatFhirBundleEntry[];
+    procedureEntries: readonly SatusehatFhirBundleEntry[];
+    observationEntries: readonly SatusehatFhirBundleEntry[];
+    medicationEntries: readonly SatusehatFhirBundleEntry[];
+    immunizationEntries: readonly SatusehatFhirBundleEntry[];
+  }): SatusehatFhirBundleEntry[] {
+    const { bundleData } = context;
+    const sections: SatusehatCompositionSectionInput[] = [
+      {
+        title: 'Anamnesis',
+        loincCode: '10164-2',
+        loincDisplay: 'History of present illness Narrative',
+        narrative: bundleData.soapNote.subjective ?? undefined,
+      },
+      {
+        title: 'Pemeriksaan',
+        loincCode: '29545-1',
+        loincDisplay: 'Physical findings Narrative',
+        narrative: bundleData.soapNote.objective ?? undefined,
+        entryReferences: context.observationEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Diagnosis',
+        loincCode: '29308-4',
+        loincDisplay: 'Diagnosis',
+        narrative: bundleData.soapNote.assessment ?? undefined,
+        entryReferences: context.conditionEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Tindakan',
+        loincCode: '29554-3',
+        loincDisplay: 'Procedure Narrative',
+        entryReferences: context.procedureEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Terapi',
+        loincCode: '10160-0',
+        loincDisplay: 'History of Medication use Narrative',
+        entryReferences: context.medicationEntries
+          .filter((entry) => entry.request.url === 'MedicationRequest')
+          .map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Imunisasi',
+        loincCode: '11369-6',
+        loincDisplay: 'History of Immunization Narrative',
+        entryReferences: context.immunizationEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Rencana',
+        loincCode: '18776-5',
+        loincDisplay: 'Plan of care note',
+        narrative: bundleData.soapNote.plan ?? undefined,
+      },
+    ];
+    const composition = this.fhirMapper.mapComposition({
+      encounterId: bundleData.encounterId,
+      patientIhsNumber: context.patientIhsNumber,
+      patientName: bundleData.patientName,
+      practitionerIhsNumber: context.practitionerIhsNumber,
+      practitionerName: bundleData.doctorName,
+      encounterReference: context.encounterFullUrl,
+      endedAt: context.endedAt,
+      sections,
+    });
+    if (composition.section.length === 0) {
+      return [];
+    }
+    return [
+      {
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: composition,
+        request: { method: 'POST', url: 'Composition' },
+      },
+    ];
+  }
+
+  /**
+   * The assessment narrative and the prognosis, as a ClinicalImpression beside
+   * the Composition. Skipped entirely when neither was recorded — an
+   * impression with no summary, no finding and no prognosis says nothing.
+   */
+  private buildClinicalImpressionEntry(
+    bundleData: SatusehatSubmissionBundleData,
+    endedAt: Date,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+    conditionEntries: readonly SatusehatFhirBundleEntry[],
+  ): SatusehatFhirBundleEntry[] {
+    const summary = bundleData.soapNote.assessment?.trim() ?? '';
+    const { prognosis } = bundleData.soapNote;
+    if (summary === '' && prognosis === null && conditionEntries.length === 0) {
+      return [];
+    }
+    return [
+      {
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: this.fhirMapper.mapClinicalImpression({
+          encounterId: bundleData.encounterId,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          practitionerIhsNumber,
+          practitionerName: bundleData.doctorName,
+          encounterReference: encounterFullUrl,
+          endedAt,
+          ...(summary === '' ? {} : { summary }),
+          findingReferences: conditionEntries.map((entry) => entry.fullUrl),
+          ...(prognosis === null ? {} : { prognosis }),
+        }),
+        request: { method: 'POST', url: 'ClinicalImpression' },
+      },
+    ];
+  }
+
+  /**
+   * Builds one Procedure entry per ICD-9-CM-coded tindakan recorded on the
+   * visit. A procedure typed as free text carries no ICD-9-CM code, so it is
+   * skipped and named in the gap report rather than sent under a coding the
+   * platform does not recognise — the same policy as the KFA medication gap
+   * (P10-T07).
+   */
+  private buildProcedureEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    endedAt: Date,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+  ): SatusehatFhirBundleEntry[] {
+    const skippedProcedures = bundleData.procedures.filter((procedure) => !procedure.isCoded);
+    this.reportProcedureGaps(skippedProcedures);
+    return bundleData.procedures
+      .filter((procedure) => procedure.isCoded)
+      .map((procedure) => ({
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: this.fhirMapper.mapProcedure({
+          procedureId: procedure.procedureId,
+          icd9cmCode: procedure.code,
+          icd9cmDisplay: procedure.display,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          practitionerIhsNumber,
+          practitionerName: bundleData.doctorName,
+          encounterReference: encounterFullUrl,
+          performedAt: procedure.performedAt,
+          encounterStartedAt: bundleData.startedAt,
+          encounterEndedAt: endedAt,
+          notes: procedure.notes ?? undefined,
+        }),
+        request: { method: 'POST', url: 'Procedure' },
+      }));
+  }
+
+  private reportProcedureGaps(
+    skippedProcedures: readonly SatusehatSubmissionProcedure[],
+  ): void {
+    if (skippedProcedures.length === 0) {
+      return;
+    }
+    const described = skippedProcedures
+      .map((procedure) => `${procedure.code} (${procedure.display})`)
+      .join(', ');
+    this.logger.warn(
+      `SATUSEHAT procedure mapping gap: skipped ${skippedProcedures.length} procedure(s) without an ICD-9-CM code: ${described}`,
+    );
+  }
+
+  /**
+   * Appends the patient's not-yet-reported active allergies to this encounter's
+   * bundle. Allergies are patient-scoped while the outbox is keyed by
+   * encounter, which is why they had never been reported at all; riding
+   * whichever visit comes next, then recording the returned id and never
+   * sending the row again, is the cheapest thing that gets a penicillin
+   * reaction into the national record without a second outbox.
+   *
+   * `recorder` is the attending doctor only when the row was written during
+   * this visit. An allergy taken down years ago by somebody else would
+   * otherwise be attributed to whoever happened to see the patient today.
+   */
+  private buildAllergyEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+    allergyFullUrls: Map<string, string>,
+  ): SatusehatFhirBundleEntry[] {
+    this.reportRetractedAllergyGap(bundleData.retractedReportedAllergyCount);
+    return bundleData.unreportedAllergies.map((allergy) => {
+      const fullUrl = `urn:uuid:${randomUUID()}`;
+      allergyFullUrls.set(fullUrl, allergy.allergyId);
+      return {
+        fullUrl,
+        resource: this.fhirMapper.mapAllergyToAllergyIntolerance({
+          allergyId: allergy.allergyId,
+          substance: allergy.substance,
+          reaction: allergy.reaction ?? undefined,
+          severity: allergy.severity,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          encounterReference: encounterFullUrl,
+          recordedAt: allergy.recordedAt,
+          ...(this.wasRecordedDuringEncounter(allergy, bundleData)
+            ? {
+                recorderIhsNumber: practitionerIhsNumber,
+                recorderName: bundleData.doctorName,
+              }
+            : {}),
+        }),
+        request: { method: 'POST', url: 'AllergyIntolerance' },
+      };
+    });
+  }
+
+  /**
+   * Retracting an allergy on the platform needs an `entered-in-error` update
+   * this adapter does not do yet. Logging the count leaves the divergence
+   * visible instead of silent — no identifying detail, the same discipline as
+   * the medication gap report.
+   */
+  private reportRetractedAllergyGap(retractedCount: number): void {
+    if (retractedCount === 0) {
+      return;
+    }
+    this.logger.warn(
+      `SATUSEHAT allergy retraction gap: ${retractedCount} reported allergy(ies) were deleted locally and remain active on the platform`,
+    );
+  }
+
+  private wasRecordedDuringEncounter(
+    allergy: SatusehatSubmissionAllergy,
+    bundleData: SatusehatSubmissionBundleData,
+  ): boolean {
+    if (bundleData.endedAt === null) {
+      return false;
+    }
+    const recordedAt = allergy.recordedAt.getTime();
+    return (
+      recordedAt >= bundleData.startedAt.getTime() && recordedAt <= bundleData.endedAt.getTime()
+    );
+  }
+
+  /**
+   * An allergy whose entry the platform did not confirm keeps its null id and
+   * is offered again on the next encounter. Two workers submitting concurrent
+   * encounters for the same patient can both include the same unreported
+   * allergy: the row lease (SJ-76) makes that rare, and the worst case is one
+   * duplicate resource on the platform rather than a silently unreported
+   * allergy — which is the right way round.
+   */
+  private async saveAllergyIhsIds(
+    allergyFullUrls: ReadonlyMap<string, string>,
+    createdResources: ReadonlyMap<string, SatusehatCreatedResourceLocation>,
+  ): Promise<void> {
+    const payloads: SaveAllergyIhsIdPayload[] = [];
+    for (const [fullUrl, allergyId] of allergyFullUrls) {
+      const created = createdResources.get(fullUrl);
+      if (created !== undefined) {
+        payloads.push({ allergyId, satusehatAllergyId: created.id });
+      }
+    }
+    await this.submissionRepository.saveAllergyIhsIds(payloads);
+  }
+
+  /**
+   * Builds one Immunization entry per KFA-coded vaccination on the visit.
+   *
+   * A vaccine whose catalog row has no KFA code is skipped and named in the
+   * gap report — the platform only accepts KFA-coded products, and the fix is
+   * the catalog, not a guessed code. The vaccination stays in the local record
+   * either way, which is the point of recording it structurally at all.
+   */
+  private buildImmunizationEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+  ): SatusehatFhirBundleEntry[] {
+    const skipped = bundleData.immunizations.filter(
+      (immunization) => immunization.kfaCode === null,
+    );
+    this.reportImmunizationGaps(skipped);
+    return bundleData.immunizations
+      .filter(
+        (immunization): immunization is SatusehatSubmissionImmunization & { kfaCode: string } =>
+          immunization.kfaCode !== null,
+      )
+      .map((immunization) => ({
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: this.fhirMapper.mapImmunization({
+          immunizationId: immunization.immunizationId,
+          kfaCode: immunization.kfaCode,
+          vaccineName: immunization.vaccineName,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          encounterReference: encounterFullUrl,
+          occurredAt: immunization.occurredAt,
+          lotNumber: immunization.lotNumber ?? undefined,
+          expirationDate: immunization.expirationDate ?? undefined,
+          doseNumber: immunization.doseNumber ?? undefined,
+          route: immunization.route ?? undefined,
+          site: immunization.site ?? undefined,
+          performerIhsNumber: practitionerIhsNumber,
+          performerName: bundleData.doctorName,
+          notes: immunization.notes ?? undefined,
+        }),
+        request: { method: 'POST', url: 'Immunization' },
+      }));
+  }
+
+  private reportImmunizationGaps(
+    skippedImmunizations: readonly SatusehatSubmissionImmunization[],
+  ): void {
+    if (skippedImmunizations.length === 0) {
+      return;
+    }
+    this.logger.warn(
+      `SATUSEHAT immunization mapping gap: skipped ${skippedImmunizations.length} vaccination(s) whose vaccine has no KFA code`,
+    );
   }
 
   /**
@@ -352,25 +749,102 @@ export class SatusehatSubmissionService {
     return ihsNumber;
   }
 
-  private extractEncounterIhsId(response: SatusehatTransactionResponse): string | null {
-    const encounterEntry = response.entry?.find(
-      (entry) =>
-        (typeof entry.response?.location === 'string' &&
-          ENCOUNTER_LOCATION_PATTERN.test(entry.response.location)) ||
-        entry.resource?.resourceType === 'Encounter',
-    );
-    if (!encounterEntry) {
-      return null;
-    }
-    const location = encounterEntry.response?.location;
-    if (typeof location === 'string') {
-      const matchedIhsId = ENCOUNTER_LOCATION_PATTERN.exec(location)?.[1];
-      if (matchedIhsId !== undefined && matchedIhsId !== '') {
-        return matchedIhsId;
+  /**
+   * Pairs each request entry with the resource the platform created for it and
+   * returns the created ids keyed by the request entry's `fullUrl`. Nothing in
+   * a transaction response echoes `fullUrl` back, so the only link between a
+   * `urn:uuid:` bundle-local reference and the id the platform assigned is
+   * order — which FHIR guarantees per resource type. Pairing is therefore done
+   * within a resource type and only when the platform returned exactly as many
+   * of that type as were requested; a type whose counts disagree is skipped
+   * whole, so a caller reading an absent key learns the id is unknown instead
+   * of receiving somebody else's.
+   */
+  private extractCreatedResources(
+    bundle: SatusehatFhirTransactionBundle,
+    response: SatusehatTransactionResponse,
+  ): Map<string, SatusehatCreatedResourceLocation> {
+    const createdByType = new Map<string, SatusehatCreatedResourceLocation[]>();
+    for (const responseEntry of response.entry ?? []) {
+      const created = this.parseCreatedResource(responseEntry);
+      if (created === null) {
+        continue;
+      }
+      const bucket = createdByType.get(created.resourceType);
+      if (bucket) {
+        bucket.push(created);
+      } else {
+        createdByType.set(created.resourceType, [created]);
       }
     }
-    const resourceId = encounterEntry.resource?.id;
-    return typeof resourceId === 'string' ? resourceId : null;
+    const createdResources = new Map<string, SatusehatCreatedResourceLocation>();
+    for (const [resourceType, fullUrls] of this.groupRequestedFullUrls(bundle)) {
+      const created = createdByType.get(resourceType) ?? [];
+      if (created.length !== fullUrls.length) {
+        this.logger.warn(
+          `SATUSEHAT transaction response returned ${created.length} ${resourceType} resource(s) for ${fullUrls.length} request(s); their ids were not resolved`,
+        );
+        continue;
+      }
+      fullUrls.forEach((fullUrl, index) => {
+        const createdResource = created[index];
+        if (createdResource !== undefined) {
+          createdResources.set(fullUrl, createdResource);
+        }
+      });
+    }
+    return createdResources;
+  }
+
+  private groupRequestedFullUrls(bundle: SatusehatFhirTransactionBundle): Map<string, string[]> {
+    const requestedFullUrls = new Map<string, string[]>();
+    for (const requestEntry of bundle.entry) {
+      const bucket = requestedFullUrls.get(requestEntry.request.url);
+      if (bucket) {
+        bucket.push(requestEntry.fullUrl);
+      } else {
+        requestedFullUrls.set(requestEntry.request.url, [requestEntry.fullUrl]);
+      }
+    }
+    return requestedFullUrls;
+  }
+
+  /**
+   * Reads the resource type and id out of one response entry. The platform
+   * answers with an absolute `location`
+   * (`https://…/fhir-r4/v1/Encounter/<id>/_history/<version>`) even though FHIR
+   * also permits the relative `Encounter/<id>/_history/<version>` form, so the
+   * path is walked by segment rather than matched against a fixed prefix. An
+   * inline `resource` is the fallback for servers that echo the created body.
+   */
+  private parseCreatedResource(
+    entry: SatusehatTransactionResponseEntry,
+  ): SatusehatCreatedResourceLocation | null {
+    const location = entry.response?.location;
+    if (typeof location === 'string') {
+      const parsed = this.parseResourceLocation(location);
+      if (parsed !== null) {
+        return parsed;
+      }
+    }
+    const { resourceType, id } = entry.resource ?? {};
+    if (typeof resourceType === 'string' && typeof id === 'string' && id !== '') {
+      return { resourceType, id };
+    }
+    return null;
+  }
+
+  private parseResourceLocation(location: string): SatusehatCreatedResourceLocation | null {
+    const path = location.split(/[?#]/)[0] ?? '';
+    const segments = path.split('/').filter((segment) => segment !== '');
+    const historyIndex = segments.lastIndexOf(HISTORY_SEGMENT);
+    const idIndex = historyIndex > 0 ? historyIndex - 1 : segments.length - 1;
+    const resourceType = segments[idIndex - 1];
+    const id = segments[idIndex];
+    if (resourceType === undefined || !FHIR_RESOURCE_TYPE_PATTERN.test(resourceType)) {
+      return null;
+    }
+    return id === undefined || id === '' ? null : { resourceType, id };
   }
 
   private async recordFailure(
@@ -378,6 +852,10 @@ export class SatusehatSubmissionService {
     attemptNumber: number,
     caughtError: unknown,
   ): Promise<void> {
+    if (caughtError instanceof SatusehatAmbiguousMatchError) {
+      await this.parkAmbiguousMatch(submission, caughtError);
+      return;
+    }
     const message = this.describeError(caughtError);
     const isPermanent =
       caughtError instanceof SatusehatSubmissionDataError ||
@@ -403,6 +881,37 @@ export class SatusehatSubmissionService {
     this.logger.warn(
       `SATUSEHAT submission attempt ${attemptNumber} failed transiently`,
     );
+  }
+
+  /**
+   * Ambiguity is not a failed attempt — it is a refusal. Retrying cannot
+   * resolve which of the matching national records is the right one, and the
+   * platform masks NIK so the code can never re-verify; a human has to settle
+   * it in the SATUSEHAT portal. The row is parked FAILED for the admin retry
+   * surface with the attempt budget untouched, so once the ambiguity is
+   * resolved upstream the operator still has every retry available.
+   */
+  private async parkAmbiguousMatch(
+    submission: SatusehatSubmissionRecord,
+    ambiguousMatchError: SatusehatAmbiguousMatchError,
+  ): Promise<void> {
+    await this.submissionRepository.markFailed({
+      id: submission.id,
+      attempts: submission.attempts,
+      lastError: this.describeError(ambiguousMatchError),
+    });
+    await this.auditService.record({
+      action: 'SATUSEHAT_LINK_AMBIGUOUS',
+      resource: 'SatusehatSubmission',
+      resourceId: submission.id,
+      actorUserId: null,
+      metadata: {
+        lookup: 'NIK',
+        trigger: 'SUBMISSION_WORKER',
+        matchCount: ambiguousMatchError.matchCount,
+      },
+    });
+    this.logger.warn('SATUSEHAT submission refused: the NIK matched more than one record');
   }
 
   private describeError(caughtError: unknown): string {

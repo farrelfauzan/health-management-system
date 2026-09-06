@@ -57,6 +57,7 @@ export class NationalIdentifierCryptoService {
   encryptSealedIdentifier(normalisedValue: string): SealedIdentifier {
     return {
       ciphertext: this.seal(normalisedValue),
+      last4: normalisedValue.slice(-MASK_VISIBLE_DIGITS),
       keyVersion: this.config.keyVersion,
     };
   }
