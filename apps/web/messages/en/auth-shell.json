@@ -121,7 +121,8 @@
         "conversations": "Conversations",
         "rooms": "Rooms",
         "admissions": "Admissions",
-        "organization": "Organization"
+        "organization": "Organization",
+        "documents": "Documents"
       },
       "search": {
         "label": "Search",

@@ -32666,6 +32666,718 @@ paths:
       summary: Open a delivery link
       tags:
         - Invoice Delivery
+  /api/v1/document-types:
+    get:
+      operationId: DocumentTypeController_listTypes_v1
+      parameters:
+        - name: includeInactive
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+      responses:
+        "200":
+          description: Every live type in the clinic’s order, each with its usage count
+            and default approvers (FR-E5-39). Deactivated types are omitted
+            unless `includeInactive=true` — the settings screen asks for them,
+            the new-document picker never does (FR-E5-36).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        behavior:
+                          type: string
+                        isSystem:
+                          type: boolean
+                        isApprovalRequired:
+                          type: boolean
+                        allowSelfApproval:
+                          type: boolean
+                        requiredApprovals:
+                          type: integer
+                        requiresPatient:
+                          type: boolean
+                        requiresDoctor:
+                          type: boolean
+                        contentMode:
+                          type: string
+                        isActive:
+                          type: boolean
+                        sortOrder:
+                          type: integer
+                        documentCount:
+                          type: integer
+                        defaultApprovers:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              email:
+                                type: string
+                            required:
+                              - id
+                              - email
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - code
+                        - name
+                        - behavior
+                        - isSystem
+                        - isApprovalRequired
+                        - allowSelfApproval
+                        - requiredApprovals
+                        - requiresPatient
+                        - requiresDoctor
+                        - contentMode
+                        - isActive
+                        - sortOrder
+                        - documentCount
+                        - defaultApprovers
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      description: Kesepakatan antara pasien dan klinik — tanggung jawab biaya,
+                        persetujuan umum perawatan
+                      behavior: GENERIC
+                      isSystem: true
+                      isApprovalRequired: true
+                      allowSelfApproval: false
+                      requiredApprovals: 1
+                      requiresPatient: true
+                      requiresDoctor: false
+                      contentMode: EITHER
+                      isActive: true
+                      sortOrder: 10
+                      documentCount: 12
+                      defaultApprovers:
+                        - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                          email: direktur.medis@klinik.example
+                      createdAt: 2026-09-30T00:00:00.000Z
+                      updatedAt: 2026-09-30T00:00:00.000Z
+                    - id: d1b9123f-2c5a-4d8b-8e3f-4a6b7c8d9e01
+                      code: SURAT_KETERANGAN_SEHAT
+                      name: Surat Keterangan Sehat
+                      description: Surat keterangan sehat untuk keperluan administrasi
+                      behavior: GENERIC
+                      isSystem: false
+                      isApprovalRequired: false
+                      allowSelfApproval: false
+                      requiredApprovals: 1
+                      requiresPatient: true
+                      requiresDoctor: false
+                      contentMode: DRAFTED
+                      isActive: true
+                      sortOrder: 100
+                      documentCount: 0
+                      defaultApprovers: []
+                      createdAt: 2026-09-30T00:00:00.000Z
+                      updatedAt: 2026-09-30T00:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List document types
+      tags: &a53
+        - Document Types
+    post:
+      operationId: DocumentTypeController_createType_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDocumentTypeDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Surat Keterangan Sehat
+                  description: Surat keterangan sehat untuk keperluan administrasi
+                  isApprovalRequired: false
+                  requiresPatient: true
+                  contentMode: DRAFTED
+                  sortOrder: 100
+      responses:
+        "201":
+          description: The new type, with `behavior = GENERIC` set by the server and
+            `code` generated from the name (a collision gets a numeric suffix).
+            A payload carrying `behavior`, `code` or `isSystem` is refused as a
+            validation error, never silently stripped (FR-E5-32).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      behavior:
+                        type: string
+                      isSystem:
+                        type: boolean
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      requiresPatient:
+                        type: boolean
+                      requiresDoctor:
+                        type: boolean
+                      contentMode:
+                        type: string
+                      isActive:
+                        type: boolean
+                      sortOrder:
+                        type: integer
+                      documentCount:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items: {}
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - behavior
+                      - isSystem
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - requiresPatient
+                      - requiresDoctor
+                      - contentMode
+                      - isActive
+                      - sortOrder
+                      - documentCount
+                      - defaultApprovers
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: d1b9123f-2c5a-4d8b-8e3f-4a6b7c8d9e01
+                    code: SURAT_KETERANGAN_SEHAT
+                    name: Surat Keterangan Sehat
+                    description: Surat keterangan sehat untuk keperluan administrasi
+                    behavior: GENERIC
+                    isSystem: false
+                    isApprovalRequired: false
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    requiresPatient: true
+                    requiresDoctor: false
+                    contentMode: DRAFTED
+                    isActive: true
+                    sortOrder: 100
+                    documentCount: 0
+                    defaultApprovers: []
+                    createdAt: 2026-09-30T00:00:00.000Z
+                    updatedAt: 2026-09-30T00:00:00.000Z
+                  message: Document type created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a clinic document type
+      tags: *a53
+  /api/v1/document-types/{id}:
+    patch:
+      operationId: DocumentTypeController_updateType_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDocumentTypeDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Templat kuitansi
+                  isApprovalRequired: true
+                  requiredApprovals: 1
+      responses:
+        "200":
+          description: The updated type. Name, description, approval policy, party flags,
+            content mode, ordering and the active flag are editable on every
+            row; `code` only on a clinic type (403 `DOCUMENT_TYPE_SYSTEM_ROW` on
+            a seeded one, FR-E5-33) and only to an unused value (409
+            `DOCUMENT_TYPE_CODE_TAKEN`). Any approval-policy change is audited;
+            enabling self-approval writes `SELF_APPROVAL_ENABLED` (NFR-AUD-03).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      behavior:
+                        type: string
+                      isSystem:
+                        type: boolean
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      requiresPatient:
+                        type: boolean
+                      requiresDoctor:
+                        type: boolean
+                      contentMode:
+                        type: string
+                      isActive:
+                        type: boolean
+                      sortOrder:
+                        type: integer
+                      documentCount:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - behavior
+                      - isSystem
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - requiresPatient
+                      - requiresDoctor
+                      - contentMode
+                      - isActive
+                      - sortOrder
+                      - documentCount
+                      - defaultApprovers
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                    code: AGREEMENT_PATIENT_CLINIC
+                    name: Perjanjian pasien–klinik
+                    description: Kesepakatan antara pasien dan klinik — tanggung jawab biaya,
+                      persetujuan umum perawatan
+                    behavior: GENERIC
+                    isSystem: true
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    requiresPatient: true
+                    requiresDoctor: false
+                    contentMode: EITHER
+                    isActive: true
+                    sortOrder: 10
+                    documentCount: 12
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: direktur.medis@klinik.example
+                    createdAt: 2026-09-30T00:00:00.000Z
+                    updatedAt: 2026-09-30T00:00:00.000Z
+                  message: Document type updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document type not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document type not found.
+      security:
+        - bearer: []
+      summary: Update a document type
+      tags: *a53
+    delete:
+      operationId: DocumentTypeController_deleteType_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Soft-deleted. Refused with 403 `DOCUMENT_TYPE_SYSTEM_ROW` on a
+            seeded type and with 409 `DOCUMENT_TYPE_IN_USE` — naming the count
+            in `error.details.documentCount` — while any document uses it;
+            deactivate instead (FR-E5-36). Documents never lose their type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      deletedAt:
+                        type: string
+                    required:
+                      - id
+                      - deletedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: d1b9123f-2c5a-4d8b-8e3f-4a6b7c8d9e01
+                    deletedAt: 2026-09-30T04:15:00.000Z
+                  message: Document type deleted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document type not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document type not found.
+      security:
+        - bearer: []
+      summary: Delete a clinic document type
+      tags: *a53
+  /api/v1/document-types/{id}/default-approvers:
+    put:
+      operationId: DocumentTypeController_setDefaultApprovers_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetDocumentTypeDefaultApproversDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  approverIds:
+                    - 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+      responses:
+        "200":
+          description: The type with its new default set. A default pre-fills the
+            drafter’s picker and never routes anything (FR-E5-38). Every id must
+            be an active staff account — a patient can never be named — and 422
+            `DOCUMENT_TYPE_APPROVER_INVALID` lists the ids that failed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      behavior:
+                        type: string
+                      isSystem:
+                        type: boolean
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      requiresPatient:
+                        type: boolean
+                      requiresDoctor:
+                        type: boolean
+                      contentMode:
+                        type: string
+                      isActive:
+                        type: boolean
+                      sortOrder:
+                        type: integer
+                      documentCount:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - behavior
+                      - isSystem
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - requiresPatient
+                      - requiresDoctor
+                      - contentMode
+                      - isActive
+                      - sortOrder
+                      - documentCount
+                      - defaultApprovers
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                    code: AGREEMENT_PATIENT_CLINIC
+                    name: Perjanjian pasien–klinik
+                    description: Kesepakatan antara pasien dan klinik — tanggung jawab biaya,
+                      persetujuan umum perawatan
+                    behavior: GENERIC
+                    isSystem: true
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    requiresPatient: true
+                    requiresDoctor: false
+                    contentMode: EITHER
+                    isActive: true
+                    sortOrder: 10
+                    documentCount: 12
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: direktur.medis@klinik.example
+                    createdAt: 2026-09-30T00:00:00.000Z
+                    updatedAt: 2026-09-30T00:00:00.000Z
+                  message: Default approvers updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document type not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document type not found.
+      security:
+        - bearer: []
+      summary: Replace the default approvers of a document type
+      tags: *a53
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -32744,7 +33456,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a53
+      tags: &a54
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -32861,7 +33573,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a53
+      tags: *a54
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -32984,7 +33696,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a54
+      tags: &a55
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -33071,7 +33783,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a54
+      tags: *a55
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -33151,7 +33863,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a54
+      tags: *a55
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -33270,7 +33982,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a54
+      tags: *a55
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -33369,7 +34081,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a54
+      tags: *a55
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -33445,7 +34157,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a54
+      tags: *a55
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -33591,7 +34303,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a54
+      tags: *a55
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -33683,7 +34395,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a54
+      tags: *a55
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -33775,7 +34487,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a54
+      tags: *a55
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -36732,6 +37444,105 @@ components:
           format: date-time
       required:
         - sendAt
+    CreateDocumentTypeDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+        isApprovalRequired:
+          type: boolean
+          default: false
+        allowSelfApproval:
+          type: boolean
+          default: false
+        requiredApprovals:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 5
+          exclusiveMaximum: false
+          default: 1
+        requiresPatient:
+          type: boolean
+          default: false
+        requiresDoctor:
+          type: boolean
+          default: false
+        contentMode:
+          type: string
+          enum:
+            - DRAFTED
+            - UPLOADED
+            - EITHER
+          default: EITHER
+        isActive:
+          type: boolean
+          default: true
+        sortOrder:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          default: 0
+      required:
+        - name
+    UpdateDocumentTypeDto:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^[A-Z][A-Z0-9_]{1,63}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+          nullable: true
+        isApprovalRequired:
+          type: boolean
+        allowSelfApproval:
+          type: boolean
+        requiredApprovals:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 5
+          exclusiveMaximum: false
+        requiresPatient:
+          type: boolean
+        requiresDoctor:
+          type: boolean
+        contentMode:
+          type: string
+          enum:
+            - DRAFTED
+            - UPLOADED
+            - EITHER
+        isActive:
+          type: boolean
+        sortOrder:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+    SetDocumentTypeDefaultApproversDto:
+      type: object
+      properties:
+        approverIds:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            format: uuid
+      required:
+        - approverIds
     UpdateFeatureEntitlementDto:
       type: object
       properties:

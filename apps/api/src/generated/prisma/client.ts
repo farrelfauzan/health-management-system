@@ -1118,3 +1118,24 @@ export type Notification = Prisma.NotificationModel
  * refuses it again if that check is ever bypassed.
  */
 export type OrganizationUnit = Prisma.OrganizationUnitModel
+/**
+ * Model DocumentType
+ * Master data for the documents module (P16-T39, FR-E5-31…39). Seeded rows
+ * carry `isSystem = true` and are refused for structural mutation exactly as
+ * seeded roles are (`rbac.service.ts`): their `code` and `behavior` are owned
+ * by `seed.sql` because code binds to them. Everything a clinic actually
+ * wants to change — the name, the approval policy, the ordering — stays
+ * editable on every row.
+ * 
+ * The approval policy lives here rather than in a second table: a policy
+ * about a type that is itself a row has no reason to be another row.
+ */
+export type DocumentType = Prisma.DocumentTypeModel
+/**
+ * Model DocumentTypeApprover
+ * Pre-fills the drafter's approver picker (FR-E5-38). Deliberately a default
+ * and not a rule: the drafter may remove anyone here and add anyone else.
+ * Both sides cascade — a default is bookkeeping about a type and a person,
+ * and means nothing once either is gone.
+ */
+export type DocumentTypeApprover = Prisma.DocumentTypeApproverModel

@@ -946,6 +946,120 @@
       "viewList": "Daftar",
       "viewChart": "Bagan",
       "chartHint": "Klik unit untuk melihat anggotanya."
+    },
+    "documents": {
+      "title": "Dokumen",
+      "subtitle": "Semua dokumen yang disusun, disetujui, dan diterbitkan klinik — beserta jenis pengarsipannya.",
+      "typesTab": "Jenis",
+      "types": {
+        "description": "Jenis dokumen yang diterbitkan klinik, dalam urutan yang ditampilkan pemilih dokumen baru. Ganti nama sesuka hati — kode adalah yang dipakai sistem.",
+        "readOnlyNotice": "Anda dapat melihat jenis dokumen tetapi tidak mengubahnya.",
+        "new": "Jenis baru",
+        "loadError": "Jenis dokumen tidak dapat dimuat",
+        "loadErrorDescription": "Terjadi kesalahan saat mengambil jenis dokumen. Sistem akan mencoba lagi otomatis.",
+        "empty": "Belum ada jenis dokumen",
+        "emptyDescription": "Buat jenis untuk mulai mengarsipkan dokumen di dalamnya.",
+        "showInactive": "Tampilkan yang dinonaktifkan",
+        "columns": {
+          "name": "Nama",
+          "code": "Kode",
+          "approval": "Persetujuan",
+          "parties": "Pihak",
+          "content": "Isi",
+          "documents": "Dokumen",
+          "status": "Status",
+          "actions": "Aksi"
+        },
+        "systemBadge": "Jenis sistem",
+        "inactiveBadge": "Dinonaktifkan",
+        "selfApprovalBadge": "Persetujuan mandiri aktif",
+        "approvalRequired": "{count, plural, one {# persetujuan} other {# persetujuan}}",
+        "approvalOff": "Tanpa persetujuan",
+        "parties": {
+          "none": "—",
+          "patient": "Pasien",
+          "doctor": "Dokter"
+        },
+        "contentModes": {
+          "DRAFTED": "Disusun di editor",
+          "UPLOADED": "Berkas diunggah",
+          "EITHER": "Disusun atau diunggah"
+        },
+        "behaviors": {
+          "GENERIC": "Umum",
+          "INVOICE_TEMPLATE": "Menerbitkan templat faktur",
+          "CLINIC_CORPUS": "Melepas ke korpus klinik",
+          "PATIENT_BILL": "Tagihan pasien (dibuat otomatis)"
+        },
+        "documentCount": "{count, plural, =0 {Belum dipakai} one {# dokumen} other {# dokumen}}",
+        "actions": {
+          "edit": "Ubah",
+          "approvers": "Penyetuju bawaan",
+          "activate": "Aktifkan",
+          "deactivate": "Nonaktifkan",
+          "delete": "Hapus",
+          "toggleError": "Status jenis tidak dapat diubah.",
+          "activated": "Jenis diaktifkan.",
+          "deactivated": "Jenis dinonaktifkan. Jenis ini tidak lagi muncul di pemilih dokumen baru."
+        },
+        "form": {
+          "createTitle": "Jenis dokumen baru",
+          "editTitle": "Ubah jenis dokumen",
+          "createDescription": "Jenis yang ditentukan klinik. Selalu bersifat umum: tidak dapat menerbitkan templat atau mengisi asisten.",
+          "editDescription": "Nama, deskripsi, kebijakan persetujuan, dan bentuknya dapat Anda ubah.",
+          "systemNote": "Ini jenis sistem. Kode dan perilakunya tetap karena dipakai oleh sistem; yang lain dapat diubah, dan mengganti nama tidak merusak apa pun.",
+          "name": "Nama",
+          "namePlaceholder": "mis. Surat Keterangan Sehat",
+          "description": "Deskripsi (opsional)",
+          "descriptionPlaceholder": "Untuk apa dokumen ini",
+          "code": "Kode",
+          "codeHint": "Dibuat dari nama saat jenis dibuat. Laporan dan integrasi mengacu padanya.",
+          "behavior": "Perilaku",
+          "parties": "Pihak yang harus disebut dokumen",
+          "requiresPatient": "Pasien",
+          "requiresDoctor": "Dokter",
+          "contentMode": "Isi",
+          "sortOrder": "Urutan di pemilih",
+          "isActive": "Aktif — ditawarkan di pemilih dokumen baru",
+          "submitCreate": "Buat jenis",
+          "submitEdit": "Simpan perubahan",
+          "created": "Jenis dokumen dibuat.",
+          "updated": "Jenis dokumen diperbarui.",
+          "error": "Jenis dokumen tidak dapat disimpan."
+        },
+        "approval": {
+          "title": "Kebijakan persetujuan",
+          "isApprovalRequired": "Perlu persetujuan sebelum dokumen jenis ini diterbitkan",
+          "requiredApprovals": "Jumlah persetujuan",
+          "allowSelfApproval": "Izinkan penyusun menyetujui dokumennya sendiri",
+          "selfApprovalHint": "Nonaktif secara bawaan. Klinik dengan satu orang yang berwenang boleh mengaktifkannya; pengaktifan dicatat di audit.",
+          "selfApprovalWarning": "Persetujuan mandiri aktif untuk jenis ini: penyusun dapat menyetujui dokumennya sendiri. Nonaktifkan kecuali klinik benar-benar hanya punya satu penyetuju yang berwenang."
+        },
+        "approvers": {
+          "title": "Penyetuju bawaan untuk {name}",
+          "description": "Mengisi awal pemilih penyetuju milik penyusun. Sekadar kemudahan, bukan aturan perutean — penyusun selalu dapat mengubahnya.",
+          "label": "Staf",
+          "placeholder": "Pilih staf",
+          "searchPlaceholder": "Cari berdasarkan email…",
+          "empty": "Tidak ada staf yang cocok",
+          "loadError": "Staf tidak dapat dimuat.",
+          "hint": "Akun staf mana pun dapat ditunjuk. Pasien tidak pernah bisa menjadi penyetuju.",
+          "remove": "Hapus {email}",
+          "save": "Simpan penyetuju",
+          "saved": "Penyetuju bawaan diperbarui.",
+          "error": "Penyetuju bawaan tidak dapat disimpan."
+        },
+        "delete": {
+          "title": "Hapus “{name}”?",
+          "description": "Jenis dihapus dari daftar. Kodenya tidak pernah dipakai ulang.",
+          "inUse": "{count, plural, one {# dokumen memakai} other {# dokumen memakai}} jenis ini, sehingga tidak dapat dihapus. Nonaktifkan saja — dokumen yang ada tetap memakai jenisnya dan tetap dapat dibaca.",
+          "confirm": "Hapus jenis",
+          "deleting": "Menghapus…",
+          "deactivateInstead": "Nonaktifkan saja",
+          "deleted": "Jenis dokumen dihapus.",
+          "error": "Jenis dokumen tidak dapat dihapus."
+        }
+      }
     }
   },
   "channelArrivals": {
