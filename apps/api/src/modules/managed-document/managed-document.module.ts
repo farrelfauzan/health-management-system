@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { MailModule } from '../../common/mail/mail.module';
 import { StorageModule } from '../../common/storage/storage.module';
@@ -57,10 +57,16 @@ import { ManagedDocumentService } from './service/managed-document.service';
   imports: [
     AuthModule,
     StorageModule,
-    DocumentManagementModule,
+    // See `DocumentManagementModule`'s note: `P16-T33` closed this loop on
+    // purpose, so both sides declare it.
+    forwardRef(() => DocumentManagementModule),
     NotificationModule,
     MailModule,
-    BillingModule,
+    // `forwardRef` since `P16-T32`: billing renders invoices from templates,
+    // templates now read this module's approval policy, and this module
+    // writes a PATIENT_BILL when billing issues an invoice. A real loop,
+    // declared on every side of it.
+    forwardRef(() => BillingModule),
   ],
   controllers: [DocumentTypeController, ManagedDocumentController, DocumentApprovalController],
   providers: [
@@ -78,6 +84,15 @@ import { ManagedDocumentService } from './service/managed-document.service';
   // Exported for the modules that will register their own rows here —
   // billing writes a PATIENT_BILL at invoice issue, templates and the corpus
   // their governed documents — through the service, never the repository.
-  exports: [DocumentTypeService, ManagedDocumentService],
+  // `DocumentIssueBehaviorService` and `DocumentApprovalService` are exported
+  // for `P16-T32`/`P16-T33`: the owning modules register their issue
+  // behaviour with the seam and read the round their own screens display.
+  // The arrow points that way on purpose — nothing here imports them back.
+  exports: [
+    DocumentTypeService,
+    ManagedDocumentService,
+    DocumentApprovalService,
+    DocumentIssueBehaviorService,
+  ],
 })
 export class ManagedDocumentModule {}

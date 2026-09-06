@@ -14,6 +14,7 @@ import {
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma } from '../../../generated/prisma/client';
 
 const PATIENT_ROLE_CODE = 'PATIENT';
@@ -251,7 +252,18 @@ export class DocumentApprovalRepository {
      * the payload frozen at submission, never a re-read of the live row.
      */
     frozenContent: DocumentApprovalIssueContent;
-  }): Promise<{ isResolved: boolean; approvalCount: number } | null> {
+    /**
+     * The type's issue behaviour (`P16-T32`/`P16-T33`), run inside this
+     * transaction once the row is `ISSUED`. A callback rather than a second
+     * call afterwards, because the whole point is that the template version
+     * — or the corpus document's release to the ingestion worker — commits
+     * with the issue or not at all. A handler that throws rolls the decision
+     * back with it, which is the correct outcome: an approver is told the
+     * approval failed rather than left with an issued document whose side
+     * effect never happened.
+     */
+    onIssued?: (tx: PrismaTransactionClient, decisionId: string) => Promise<void>;
+  }): Promise<{ isResolved: boolean; approvalCount: number; decisionId: string } | null> {
     return this.prismaService.executeTransaction(async (tx) => {
       const locked = await tx.$queryRaw<Array<{ id: string; status: string }>>`
         SELECT "id", "status"::text AS "status"
@@ -263,13 +275,14 @@ export class DocumentApprovalRepository {
       if (lockedRow === undefined || lockedRow.status !== 'PENDING') {
         return null;
       }
-      await tx.documentApprovalDecision.create({
+      const decision = await tx.documentApprovalDecision.create({
         data: {
           requestId: params.requestId,
           approverId: params.approverId,
           isApproved: params.isApproved,
           reason: params.reason,
         },
+        select: { id: true },
       });
       if (!params.isApproved) {
         await tx.documentApprovalRequest.update({
@@ -283,7 +296,7 @@ export class DocumentApprovalRepository {
           where: { id: params.frozenContent.documentId },
           data: { status: 'DRAFT' },
         });
-        return { isResolved: true, approvalCount: 0 };
+        return { isResolved: true, approvalCount: 0, decisionId: decision.id };
       }
       const approvalCount = await tx.documentApprovalDecision.count({
         where: { requestId: params.requestId, isApproved: true },
@@ -307,8 +320,9 @@ export class DocumentApprovalRepository {
             storageSizeBytes: params.frozenContent.storageSizeBytes,
           },
         });
+        await params.onIssued?.(tx, decision.id);
       }
-      return { isResolved, approvalCount };
+      return { isResolved, approvalCount, decisionId: decision.id };
     });
   }
 

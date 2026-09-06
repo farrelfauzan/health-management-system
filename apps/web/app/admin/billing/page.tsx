@@ -24,5 +24,5 @@ export default async function AdminBillingPage() {
     redirect('/admin/dashboard');
   }
 
-  return <BillingWorkspace />;
+  return <BillingWorkspace currentUserId={claims?.sub ?? null} />;
 }

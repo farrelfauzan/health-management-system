@@ -13,6 +13,7 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 
 import { AppModule } from '../../app.module';
+import { DocumentTypeRepository } from '../managed-document/repository/document-type.repository';
 import { AuditService } from '../../common/audit/audit.service';
 import { PdfRendererService } from '../../common/pdf/pdf-renderer.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
@@ -112,6 +113,10 @@ class InMemoryDocumentTemplateRepository {
       settings: existing.settings,
       publishedById: payload.publishedById,
       publishedAt: new Date(),
+      // Null: this fake covers the *direct* publish path, which is the
+      // default posture. The approval path publishes through
+      // `publishFrozenVersion` and is covered by its own spec.
+      approvalDecisionId: null,
     };
     versions.push(version);
     this.versionsByTemplate.set(payload.templateId, versions);
@@ -164,6 +169,17 @@ describe('Document templates integration', () => {
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   const prismaServiceMock = { $connect: jest.fn(), $disconnect: jest.fn() };
+  /**
+   * `P16-T32` has every template read consult the `INVOICE_TEMPLATE` approval
+   * policy. No type row is the **policy-off** posture — the default a clinic
+   * starts from, and the one this suite asserts E1's behaviour under.
+   *
+   * Overriding the repository rather than adding a Prisma delegate is what
+   * keeps the "nothing was persisted" assertion below true: with the policy
+   * off the approval service short-circuits before it touches the registry,
+   * so the preview path really does reach no persistence port at all.
+   */
+  const documentTypeRepositoryMock = { findByCode: jest.fn(async () => null) };
   const pdfRendererMock = { render: jest.fn() };
   const objectStorageMock = {
     generateObjectKey: jest.fn(),
@@ -206,6 +222,8 @@ describe('Document templates integration', () => {
       .useValue(auditServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
+      .overrideProvider(DocumentTypeRepository)
+      .useValue(documentTypeRepositoryMock)
       .overrideProvider(DocumentTemplateRepository)
       .useValue(fakeRepository)
       .overrideProvider(PdfRendererService)

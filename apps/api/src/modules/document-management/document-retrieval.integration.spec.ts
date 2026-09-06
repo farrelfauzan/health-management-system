@@ -46,6 +46,8 @@ describe('Hybrid document retrieval against Postgres', () => {
   let doctorId: string;
   let otherDoctorId: string;
   const createdDocumentIds: string[] = [];
+  const createdManagedDocumentIds: string[] = [];
+  const createdTypeIds: string[] = [];
 
   /**
    * A deterministic vector whose direction depends only on the seed, so two
@@ -162,13 +164,137 @@ describe('Hybrid document retrieval against Postgres', () => {
 
   afterEach(async () => {
     await prisma.documentChunk.deleteMany({ where: { documentId: { in: createdDocumentIds } } });
+    // Registry rows before their subjects: the FK to `documents` is
+    // `Restrict`, so a document cannot be deleted while a row still governs it.
+    await prisma.managedDocument.deleteMany({
+      where: { id: { in: createdManagedDocumentIds } },
+    });
     await prisma.document.deleteMany({ where: { id: { in: createdDocumentIds } } });
+    await prisma.documentType.deleteMany({ where: { id: { in: createdTypeIds } } });
     createdDocumentIds.length = 0;
+    createdManagedDocumentIds.length = 0;
+    createdTypeIds.length = 0;
   });
 
   afterAll(async () => {
     await prisma.user.deleteMany({ where: { id: { in: [uploaderId, doctorId, otherDoctorId] } } });
     await prisma.$disconnect();
+  });
+
+  describe('approval gate (P16-T33)', () => {
+    /**
+     * The registry row that governs a corpus document. Its own type row per
+     * test rather than the seeded `CLINIC_CORPUS_DOCUMENT`, so the case does
+     * not depend on `db:seed` having run and cannot be broken by a clinic
+     * editing the seeded row.
+     */
+    async function governDocument(
+      documentId: string,
+      status: 'DRAFT' | 'PENDING_APPROVAL' | 'ISSUED',
+    ): Promise<void> {
+      const type = await prisma.documentType.create({
+        data: {
+          code: `CORPUS_TEST_${randomUUID()}`,
+          name: 'Corpus under approval',
+          behavior: 'CLINIC_CORPUS',
+          isApprovalRequired: true,
+        },
+      });
+      createdTypeIds.push(type.id);
+      const managed = await prisma.managedDocument.create({
+        data: {
+          typeId: type.id,
+          status,
+          title: 'SOP Pendaftaran',
+          subjectDocumentId: documentId,
+          draftedById: uploaderId,
+          ...(status === 'ISSUED' ? { issuedAt: new Date() } : {}),
+        },
+      });
+      createdManagedDocumentIds.push(managed.id);
+    }
+
+    it('never makes a corpus document awaiting approval a candidate, at any similarity', async () => {
+      const documentId = await createDocument({
+        ownerType: 'CLINIC',
+        ownerId: null,
+        purpose: 'FAQ_KNOWLEDGE_BASE',
+      });
+      // The chunk is an exact match on both halves — same embedding as the
+      // query, same words as the query text. If exclusion were a ranking
+      // penalty rather than a candidate-set predicate, this is the row that
+      // would still come first.
+      await writeChunk(documentId);
+      await governDocument(documentId, 'PENDING_APPROVAL');
+
+      const actual = await searchBothHalves(buildSearchParams());
+
+      expect(actual.vector).not.toContain(documentId);
+      expect(actual.lexical).not.toContain(documentId);
+    });
+
+    it('excludes a corpus document whose registry row is still a draft', async () => {
+      const documentId = await createDocument({
+        ownerType: 'CLINIC',
+        ownerId: null,
+        purpose: 'FAQ_KNOWLEDGE_BASE',
+      });
+      await writeChunk(documentId);
+      await governDocument(documentId, 'DRAFT');
+
+      const actual = await searchBothHalves(buildSearchParams());
+
+      expect(actual.vector).not.toContain(documentId);
+      expect(actual.lexical).not.toContain(documentId);
+    });
+
+    it('admits a corpus document once its registry row is issued', async () => {
+      const documentId = await createDocument({
+        ownerType: 'CLINIC',
+        ownerId: null,
+        purpose: 'FAQ_KNOWLEDGE_BASE',
+      });
+      await writeChunk(documentId);
+      await governDocument(documentId, 'ISSUED');
+
+      const actual = await searchBothHalves(buildSearchParams());
+
+      expect(actual.vector).toContain(documentId);
+      expect(actual.lexical).toContain(documentId);
+    });
+
+    it('leaves a document with no registry row retrievable — enabling the policy is not retroactive (OQ-18)', async () => {
+      const documentId = await createDocument({
+        ownerType: 'CLINIC',
+        ownerId: null,
+        purpose: 'FAQ_KNOWLEDGE_BASE',
+      });
+      await writeChunk(documentId);
+
+      const actual = await searchBothHalves(buildSearchParams());
+
+      expect(actual.vector).toContain(documentId);
+      expect(actual.lexical).toContain(documentId);
+    });
+
+    it('ignores a soft-deleted registry row, which governs nothing', async () => {
+      const documentId = await createDocument({
+        ownerType: 'CLINIC',
+        ownerId: null,
+        purpose: 'FAQ_KNOWLEDGE_BASE',
+      });
+      await writeChunk(documentId);
+      await governDocument(documentId, 'PENDING_APPROVAL');
+      await prisma.managedDocument.updateMany({
+        where: { subjectDocumentId: documentId },
+        data: { deletedAt: new Date() },
+      });
+
+      const actual = await searchBothHalves(buildSearchParams());
+
+      expect(actual.vector).toContain(documentId);
+      expect(actual.lexical).toContain(documentId);
+    });
   });
 
   describe('scope predicate', () => {

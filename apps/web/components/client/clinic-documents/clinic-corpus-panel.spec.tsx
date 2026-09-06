@@ -36,6 +36,13 @@ function buildDocument(overrides: Record<string, unknown> = {}): Record<string, 
     ingestedAt: '2026-08-06T09:07:41.000Z',
     chunkCount: 12,
     uploadedById: 'user-1',
+    // Policy off — the default, so the approval column stays empty (US-E5-06).
+    approval: {
+      isApprovalRequired: false,
+      managedDocumentId: null,
+      status: null,
+      pendingRound: null,
+    },
     createdAt: '2026-08-06T09:05:12.000Z',
     updatedAt: '2026-08-06T09:07:41.000Z',
     ...overrides,

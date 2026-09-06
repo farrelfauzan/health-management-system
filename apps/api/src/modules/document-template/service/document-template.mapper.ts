@@ -14,7 +14,14 @@ import {
  */
 @Injectable()
 export class DocumentTemplateMapper {
-  toView(record: DocumentTemplateWithLatestVersionRecord): DocumentTemplateView {
+  /**
+   * Everything on the view except the approval block, which is a read the
+   * service owns (`P16-T32`): the mapper is a pure projection of one record
+   * and must not acquire a second query to stay honest.
+   */
+  toView(
+    record: DocumentTemplateWithLatestVersionRecord,
+  ): Omit<DocumentTemplateView, 'approval'> {
     return {
       id: record.id,
       kind: record.kind,

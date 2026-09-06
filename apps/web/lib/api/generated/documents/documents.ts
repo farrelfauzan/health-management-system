@@ -21,9 +21,11 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  BulkApproveDocumentsDto,
   CreateManagedDocumentDto,
   CreateManagedDocumentUploadUrlDto,
   DocumentApprovalControllerApproveV1200,
+  DocumentApprovalControllerBulkApproveV1200,
   DocumentApprovalControllerGetPendingCountV1200,
   DocumentApprovalControllerListApprovalsV1200,
   DocumentApprovalControllerListApprovalsV1Params,
@@ -1275,6 +1277,100 @@ export function useDocumentApprovalControllerGetPendingCountV1<TData = Awaited<R
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentApprovalControllerGetPendingCountV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Approve several documents in one call
+ */
+export const documentApprovalControllerBulkApproveV1 = (
+    bulkApproveDocumentsDto: BulkApproveDocumentsDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentApprovalControllerBulkApproveV1200>(
+      {url: `/api/v1/document-approvals/bulk-approve`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: bulkApproveDocumentsDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentApprovalControllerBulkApproveV1QueryKey = (bulkApproveDocumentsDto?: BulkApproveDocumentsDto,) => {
+    return [
+    'POST', `/api/v1/document-approvals/bulk-approve`, bulkApproveDocumentsDto
+    ] as const;
+    }
+
+
+export const getDocumentApprovalControllerBulkApproveV1QueryOptions = <TData = Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError = unknown>(bulkApproveDocumentsDto: BulkApproveDocumentsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentApprovalControllerBulkApproveV1QueryKey(bulkApproveDocumentsDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>> = ({ signal }) => documentApprovalControllerBulkApproveV1(bulkApproveDocumentsDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentApprovalControllerBulkApproveV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>>
+export type DocumentApprovalControllerBulkApproveV1QueryError = unknown
+
+
+export function useDocumentApprovalControllerBulkApproveV1<TData = Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError = unknown>(
+ bulkApproveDocumentsDto: BulkApproveDocumentsDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerBulkApproveV1<TData = Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError = unknown>(
+ bulkApproveDocumentsDto: BulkApproveDocumentsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerBulkApproveV1<TData = Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError = unknown>(
+ bulkApproveDocumentsDto: BulkApproveDocumentsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Approve several documents in one call
+ */
+
+export function useDocumentApprovalControllerBulkApproveV1<TData = Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError = unknown>(
+ bulkApproveDocumentsDto: BulkApproveDocumentsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerBulkApproveV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentApprovalControllerBulkApproveV1QueryOptions(bulkApproveDocumentsDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -15,6 +15,7 @@ import {
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { toDocumentRecord } from './to-document-record';
 
 /**
@@ -479,6 +480,28 @@ export class DocumentRepository {
       return { row: updated, chunkCount: remaining };
     });
     return toDocumentRecord(row, chunkCount);
+  }
+
+  /**
+   * Releases a document to the ingestion queue inside a caller's transaction
+   * (`P16-T33`).
+   *
+   * The transaction belongs to the approval that issued the registry row, so
+   * the release and the `ISSUED` status commit together: a corpus document
+   * can never say it was approved while the worker is still blind to it, nor
+   * enter the queue on the strength of an approval that then rolled back.
+   *
+   * `ingestError` is cleared with it — a document being released for the
+   * first time must not inherit a red row from an earlier attempt.
+   */
+  async releaseToIngestionQueue(
+    tx: PrismaTransactionClient,
+    documentId: string,
+  ): Promise<void> {
+    await tx.document.update({
+      where: { id: documentId, deletedAt: null },
+      data: { ingestStatus: 'PENDING', ingestError: null },
+    });
   }
 
   /**

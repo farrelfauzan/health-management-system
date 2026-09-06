@@ -419,6 +419,24 @@
           "archiving": "Archiving…",
           "success": "Template archived.",
           "error": "Unable to archive the template."
+        },
+        "approval": {
+          "required": "Publishing this template needs approval. Submit it, and it is published when your approvers sign off.",
+          "pending": "Waiting for approval. Approvers see the layout as it was when you submitted it.",
+          "supersedeWarning": "You have unsaved changes. Saving them ends the current approval round and your approvers have to look again.",
+          "loadingRegistryRow": "Loading the approval request…",
+          "review": {
+            "action": "Review submission",
+            "title": "Review this submission",
+            "description": "The layout as submitted, rendered against the built-in fixture invoice, and what changed since the version invoices render from today.",
+            "diffTitle": "Changes since version {version}",
+            "diffFirstPublish": "Nothing has been published yet — the whole layout is new.",
+            "noChanges": "The layout is identical to the published version.",
+            "added": "Added",
+            "removed": "Removed",
+            "openPreview": "Open the rendered PDF",
+            "error": "Unable to load this submission for review."
+          }
         }
       },
       "delivery": {
@@ -1275,8 +1293,10 @@
             "type": "Type",
             "drafter": "Drafted by",
             "dueAt": "Due",
-            "age": "Waiting since"
-          }
+            "age": "Waiting since",
+            "select": "Select"
+          },
+          "selectRow": "Select {title}"
         },
         "thread": {
           "loading": "Loading approval history…",
@@ -1295,6 +1315,12 @@
             "WITHDRAWN": "Withdrawn",
             "SUPERSEDED": "Superseded"
           }
+        },
+        "bulk": {
+          "action": "Approve {count, plural, one {# selected} other {# selected}}",
+          "success": "{count, plural, one {# document approved} other {# documents approved}}.",
+          "partial": "{approved} approved, {failed} could not be: {reason}",
+          "error": "Unable to approve the selected documents."
         }
       },
       "workspace": {

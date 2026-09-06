@@ -17,6 +17,7 @@ import { Auth } from '../../../common/authorization/auth.decorator';
 import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { MANAGED_DOCUMENT_EXAMPLES } from '../../../common/openapi/managed-document-examples';
+import { BulkApproveDocumentsDto } from '../dto/bulk-approve-documents.dto';
 import { ListDocumentApprovalsQueryDto } from '../dto/list-document-approvals-query.dto';
 import { RejectDocumentApprovalDto } from '../dto/reject-document-approval.dto';
 import { DocumentApprovalService } from '../service/document-approval.service';
@@ -76,6 +77,27 @@ export class DocumentApprovalController {
   async getPendingCount(@AuthUser() currentUser?: CurrentUser) {
     const actor = this.assertAuthenticated(currentUser);
     return { data: await this.documentApprovalService.getPendingCount(actor) };
+  }
+
+  /** Declared before `:id` so `bulk-approve` is not parsed as a request id. */
+  @Post('bulk-approve')
+  @HttpCode(OK_STATUS)
+  @Auth([{ action: 'decide', subject: 'DocumentApproval' }])
+  @ApiEndpoint({
+    summary: 'Approve several documents in one call',
+    responseDescription:
+      'One result line per request id (FR-E5-23). Every item runs the *same* checks as a single approve — named on the round, holding `document-approval.decide:any`, not self-approving, row-locked — so this spends fewer round trips and buys no weaker a decision. The batch is not a transaction: an ineligible item fails alone with its own code and message while the rest stand, which is what onboarding a forty-document corpus needs (R-18). Rejection is deliberately not offered in bulk: a rejection carries a reason specific to one document (FR-E5-17).',
+    responseExample: { data: MANAGED_DOCUMENT_EXAMPLES.bulkApprovalView },
+    requestType: BulkApproveDocumentsDto,
+    requestExample: MANAGED_DOCUMENT_EXAMPLES.bulkApproveRequest,
+  })
+  async bulkApprove(
+    @Body() payload: BulkApproveDocumentsDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const data = await this.documentApprovalService.bulkApprove(payload, actor);
+    return { data, message: `${data.approvedCount} approved, ${data.failedCount} failed` };
   }
 
   @Post(':id/approve')

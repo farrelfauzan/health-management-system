@@ -419,6 +419,24 @@
           "archiving": "Mengarsipkan…",
           "success": "Templat diarsipkan.",
           "error": "Templat tidak dapat diarsipkan."
+        },
+        "approval": {
+          "required": "Templat ini perlu persetujuan sebelum diterbitkan. Kirimkan, dan templat terbit setelah penyetuju menyetujuinya.",
+          "pending": "Menunggu persetujuan. Penyetuju melihat tata letak seperti saat Anda mengirimkannya.",
+          "supersedeWarning": "Ada perubahan yang belum disimpan. Menyimpannya mengakhiri putaran persetujuan berjalan dan penyetuju harus meninjau ulang.",
+          "loadingRegistryRow": "Memuat permintaan persetujuan…",
+          "review": {
+            "action": "Tinjau kiriman",
+            "title": "Tinjau kiriman ini",
+            "description": "Tata letak sebagaimana dikirim, dirender terhadap faktur contoh bawaan, beserta perubahannya dibanding versi yang dipakai faktur saat ini.",
+            "diffTitle": "Perubahan sejak versi {version}",
+            "diffFirstPublish": "Belum ada versi yang diterbitkan — seluruh tata letak masih baru.",
+            "noChanges": "Tata letak identik dengan versi yang diterbitkan.",
+            "added": "Ditambahkan",
+            "removed": "Dihapus",
+            "openPreview": "Buka PDF hasil render",
+            "error": "Tidak dapat memuat kiriman ini untuk ditinjau."
+          }
         }
       },
       "delivery": {
@@ -1275,8 +1293,10 @@
             "type": "Jenis",
             "drafter": "Dibuat oleh",
             "dueAt": "Tenggat",
-            "age": "Menunggu sejak"
-          }
+            "age": "Menunggu sejak",
+            "select": "Pilih"
+          },
+          "selectRow": "Pilih {title}"
         },
         "thread": {
           "loading": "Memuat riwayat persetujuan…",
@@ -1295,6 +1315,12 @@
             "WITHDRAWN": "Ditarik",
             "SUPERSEDED": "Dibatalkan karena berubah"
           }
+        },
+        "bulk": {
+          "action": "Setujui {count, plural, other {# terpilih}}",
+          "success": "{count, plural, other {# dokumen disetujui}}.",
+          "partial": "{approved} disetujui, {failed} gagal: {reason}",
+          "error": "Tidak dapat menyetujui dokumen yang dipilih."
         }
       },
       "workspace": {

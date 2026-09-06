@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import {
   DocumentTemplatePreviewView,
+  DocumentTemplateWithLatestVersionRecord,
   PaperSizeValue,
   TemplateSettingsValue,
 } from '@hms/shared-types';
@@ -77,10 +78,51 @@ export class DocumentTemplatePreviewService {
     if (template === null) {
       throw new NotFoundException('Document template not found');
     }
+    return this.renderPreview({
+      template,
+      contentHtml: template.contentHtml,
+      actor,
+      event: 'TEMPLATE_PREVIEWED',
+    });
+  }
+
+  /**
+   * The approver's view of a template submission (`P16-T32`, FR-E5-21).
+   *
+   * The caller supplies the **frozen** HTML from the round rather than an id
+   * to re-read, and that is the whole point: a drafter who edits after
+   * submitting changes the working copy and nothing the approver sees. The
+   * frozen copy was sanitised at write time, so it enters the renderer under
+   * the same guarantee the working copy does.
+   */
+  async previewSubmittedHtml(params: {
+    templateId: string;
+    contentHtml: string;
+    actor: CurrentUser;
+  }): Promise<DocumentTemplatePreviewView> {
+    const template = await this.documentTemplateRepository.findById(params.templateId);
+    if (template === null) {
+      throw new NotFoundException('Document template not found');
+    }
+    return this.renderPreview({
+      template,
+      contentHtml: params.contentHtml,
+      actor: params.actor,
+      event: 'TEMPLATE_SUBMISSION_PREVIEWED',
+    });
+  }
+
+  private async renderPreview(params: {
+    template: DocumentTemplateWithLatestVersionRecord;
+    contentHtml: string;
+    actor: CurrentUser;
+    event: string;
+  }): Promise<DocumentTemplatePreviewView> {
+    const { template, actor } = params;
     const fixture = buildInvoicePreviewFixture(this.clinicTimeZone);
     const resolved = resolveInvoiceVariables(fixture);
     const html = buildInvoiceDocumentHtml({
-      contentHtml: template.contentHtml,
+      contentHtml: params.contentHtml,
       resolved,
       watermark: { isVoid: false, reason: null, voidedByName: null },
       itemColumns: template.settings.itemsColumns,
@@ -113,7 +155,7 @@ export class DocumentTemplatePreviewService {
       resource: TEMPLATE_AUDIT_RESOURCE,
       resourceId: template.id,
       actorUserId: actor.sub,
-      metadata: { event: 'TEMPLATE_PREVIEWED', warningCount: resolved.warnings.length },
+      metadata: { event: params.event, warningCount: resolved.warnings.length },
     });
     return { url: signed.url, expiresAt: signed.expiresAt, warnings: [...resolved.warnings] };
   }

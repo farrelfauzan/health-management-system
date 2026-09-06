@@ -38,6 +38,8 @@ export type DocumentTemplateVersionRecord = {
   settings: TemplateSettingsValue;
   publishedById: string | null;
   publishedAt: Date;
+  /** The approval decision that released this version, when one did (P16-T32). */
+  approvalDecisionId: string | null;
 };
 
 export type DocumentTemplateWithLatestVersionRecord = DocumentTemplateRecord & {

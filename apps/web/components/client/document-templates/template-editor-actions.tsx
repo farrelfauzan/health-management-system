@@ -6,6 +6,7 @@ import type { DocumentTemplatePreviewView, DocumentTemplateView } from '@hms/sha
 import { Button, Icon, toast } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { TemplateApprovalPanel } from '#components/client/document-templates/template-approval-panel';
 import { TemplatePreviewDialog } from '#components/client/document-templates/template-preview-dialog';
 import { TemplatePublishErrors } from '#components/client/document-templates/template-publish-errors';
 import {
@@ -24,6 +25,8 @@ type TemplateEditorActionsProps = {
   isDirty: boolean;
   isSaving: boolean;
   hasContent: boolean;
+  /** Whose self-approval the submit dialog has to refuse (FR-E5-14). */
+  currentUserId: string | null;
   /**
    * Persists the draft first. Preview and publish both run against the
    * *saved* working copy, so with unsaved changes the action saves, then
@@ -38,6 +41,7 @@ export function TemplateEditorActions({
   isDirty,
   isSaving,
   hasContent,
+  currentUserId,
   onSaveDraft,
 }: TemplateEditorActionsProps) {
   const t = useTranslations('operations.billing.templates');
@@ -102,6 +106,11 @@ export function TemplateEditorActions({
 
   const isBusy = isSaving || previewMutation.isPending || publishMutation.isPending;
   const isActionDisabled = !canWrite || isBusy || !hasContent;
+  // §7.5.8: under an active policy the direct publish is refused by the API,
+  // so the button that would call it is not drawn. The 409 still lands if a
+  // client races the policy being switched on, and `notifyApiError` shows the
+  // service's own message, which names the submit path.
+  const isApprovalRequired = template.approval.isApprovalRequired;
 
   return (
     <div className="space-y-3" data-testid="template-editor-actions">
@@ -116,16 +125,25 @@ export function TemplateEditorActions({
           <Icon name="visibility" size={18} />
           {isDirty ? t('preview.saveAndPreview') : t('preview.action')}
         </Button>
-        <Button
-          type="button"
-          size="sm"
-          disabled={isActionDisabled}
-          onClick={() => publishMutation.mutate()}
-        >
-          <Icon name="publish" size={18} />
-          {isDirty ? t('publish.saveAndPublish') : t('publish.action')}
-        </Button>
+        {isApprovalRequired ? null : (
+          <Button
+            type="button"
+            size="sm"
+            disabled={isActionDisabled}
+            onClick={() => publishMutation.mutate()}
+          >
+            <Icon name="publish" size={18} />
+            {isDirty ? t('publish.saveAndPublish') : t('publish.action')}
+          </Button>
+        )}
       </div>
+      <TemplateApprovalPanel
+        approval={template.approval}
+        currentUserId={currentUserId}
+        canWrite={canWrite}
+        isDirty={isDirty}
+        onSaveDraft={onSaveDraft}
+      />
       {previewError ? (
         <div
           role="alert"

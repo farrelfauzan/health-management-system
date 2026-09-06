@@ -17,6 +17,13 @@ vi.mock('#lib/api/generated/document-templates/document-templates', () => ({
   documentTemplateControllerPublishTemplateV1: mocks.publish,
 }));
 
+// The approval panel fetches the registry row governing the template. Under
+// the default policy-off posture it is never rendered at all, so the double
+// only matters to the policy-on cases.
+vi.mock('#lib/managed-documents/use-managed-document', () => ({
+  useManagedDocument: () => ({ document: undefined }),
+}));
+
 const { TemplateEditorActions } = await import('./template-editor-actions');
 
 const TEMPLATE: DocumentTemplateView = {
@@ -33,21 +40,39 @@ const TEMPLATE: DocumentTemplateView = {
     marginMm: { top: 10, right: 10, bottom: 10, left: 10 },
     itemsColumns: ['item.no', 'item.description', 'item.quantity', 'item.unitPrice', 'item.amount'],
   },
+  // Policy off — the default posture, so the editor draws no approval chrome.
+  approval: {
+    isApprovalRequired: false,
+    managedDocumentId: null,
+    status: null,
+    pendingRound: null,
+  },
   createdAt: '2026-09-01T00:00:00.000Z',
   updatedAt: '2026-09-01T00:00:00.000Z',
 };
 
-function renderActions(overrides: { isDirty?: boolean; onSaveDraft?: () => Promise<boolean> } = {}) {
+function renderActions(
+  overrides: {
+    isDirty?: boolean;
+    onSaveDraft?: () => Promise<boolean>;
+    approval?: DocumentTemplateView['approval'];
+  } = {},
+) {
   const onSaveDraft = overrides.onSaveDraft ?? vi.fn(async () => true);
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
       <NextIntlClientProvider locale="id" messages={messages}>
         <TemplateEditorActions
-          template={TEMPLATE}
+          template={
+            overrides.approval === undefined
+              ? TEMPLATE
+              : { ...TEMPLATE, approval: overrides.approval }
+          }
           canWrite
           isDirty={overrides.isDirty ?? false}
           isSaving={false}
           hasContent
+          currentUserId="user-1"
           onSaveDraft={onSaveDraft}
         />
       </NextIntlClientProvider>
@@ -115,6 +140,64 @@ describe('TemplateEditorActions', () => {
     const alert = await screen.findByTestId('template-publish-errors');
     expect(alert).toHaveTextContent('Penerbitan ditolak: 1 variabel tidak ada di daftar');
     expect(alert).toHaveTextContent('{{patient.mrnTypo}}');
+  });
+
+  describe('approval policy (P16-T32, US-E5-06)', () => {
+    it('draws no approver field, banner or badge while the policy is off', () => {
+      renderActions();
+
+      expect(screen.getByRole('button', { name: 'Terbitkan' })).toBeInTheDocument();
+      expect(screen.queryByTestId('template-approval-panel')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('template-approval-required')).not.toBeInTheDocument();
+    });
+
+    it('replaces publish with submit-for-approval while the policy is on', () => {
+      renderActions({
+        approval: {
+          isApprovalRequired: true,
+          managedDocumentId: 'managed-1',
+          status: 'DRAFT',
+          pendingRound: null,
+        },
+      });
+
+      expect(screen.queryByRole('button', { name: 'Terbitkan' })).not.toBeInTheDocument();
+      expect(screen.getByTestId('template-approval-required')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Ajukan persetujuan' })).toBeInTheDocument();
+    });
+
+    it('offers withdraw, not another submission, while a round is open', () => {
+      renderActions({
+        approval: {
+          isApprovalRequired: true,
+          managedDocumentId: 'managed-1',
+          status: 'PENDING_APPROVAL',
+          pendingRound: null,
+        },
+      });
+
+      expect(screen.getByTestId('template-approval-pending')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Tarik' })).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Ajukan persetujuan' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('warns that saving an edit will cost the approvers their round (FR-E5-15)', () => {
+      renderActions({
+        isDirty: true,
+        approval: {
+          isApprovalRequired: true,
+          managedDocumentId: 'managed-1',
+          status: 'PENDING_APPROVAL',
+          pendingRound: null,
+        },
+      });
+
+      expect(screen.getByTestId('template-approval-pending')).toHaveTextContent(
+        /belum disimpan/i,
+      );
+    });
   });
 
   it('surfaces a preview failure with a retry, not a vanishing toast', async () => {

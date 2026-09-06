@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import type { DocumentApprovalQueueItemView } from '@hms/shared-types';
-import { Badge, TableCell, TableRow } from '@hms/ui';
+import { Badge, Checkbox, TableCell, TableRow } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 type DocumentApprovalQueueRowProps = {
   item: DocumentApprovalQueueItemView;
+  isSelected: boolean;
+  onSelectedChange: (isSelected: boolean) => void;
 };
 
 /**
@@ -16,13 +18,29 @@ type DocumentApprovalQueueRowProps = {
  * The row links into the workspace rather than carrying approve and reject
  * buttons of its own: a decision is made against the frozen submission
  * (FR-E5-21), and approving from a list would be approving a title.
+ *
+ * The checkbox is the exception `P16-T33` asks for (FR-E5-23, R-18), and it
+ * is deliberately a *selection* rather than a per-row approve: bulk approval
+ * exists for onboarding a corpus of low-risk documents, where the reviewer
+ * has read the batch and is confirming it, not for skimming a queue.
  */
-export function DocumentApprovalQueueRow({ item }: DocumentApprovalQueueRowProps) {
+export function DocumentApprovalQueueRow({
+  item,
+  isSelected,
+  onSelectedChange,
+}: DocumentApprovalQueueRowProps) {
   const t = useTranslations('operations.documents.approvals.queue');
   const format = useFormatter();
 
   return (
     <TableRow className="transition-colors hover:bg-slate-50">
+      <TableCell className="w-10 px-4 py-3">
+        <Checkbox
+          checked={isSelected}
+          aria-label={t('selectRow', { title: item.document.title })}
+          onCheckedChange={(checked) => onSelectedChange(checked === true)}
+        />
+      </TableCell>
       <TableCell className="px-4 py-3">
         <Link
           href={`/admin/documents/${item.document.id}`}

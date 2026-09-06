@@ -106,11 +106,15 @@ describe('ManagedDocumentService', () => {
     listHistory: jest.fn(),
     findPatientById: jest.fn(),
     findDoctorById: jest.fn(),
+    findBySubject: jest.fn(),
+    findBySubjectDocumentIds: jest.fn(),
+    transitionDocument: jest.fn(),
   };
   const accessServiceMock = { resolveContext: jest.fn() };
   const documentTypeServiceMock = {
     findActiveTypeOrThrow: jest.fn(),
     findTypeOrThrow: jest.fn(),
+    findTypeByCode: jest.fn(),
   };
   // The registry only ever asks the approval service read-side questions and
   // one write: superseding an open round when a draft under review is edited.
@@ -155,6 +159,85 @@ describe('ManagedDocumentService', () => {
     repositoryMock.findPatientById.mockResolvedValue({ id: 'patient-1' });
     repositoryMock.findDoctorById.mockResolvedValue({ id: 'doctor-1' });
     uploadGuardMock.guardUploadedDocument.mockImplementation(async () => ({ sizeBytes: 2048 }));
+    documentTypeServiceMock.findTypeByCode.mockResolvedValue(buildType({ code: 'INVOICE_TEMPLATE' }));
+    repositoryMock.findBySubject.mockResolvedValue(null);
+    repositoryMock.transitionDocument.mockImplementation(async (payload) =>
+      buildRecord({ id: payload.id, status: payload.status }),
+    );
+  });
+
+  describe('syncGovernedDocument (P16-T32/T33)', () => {
+    const SUBJECT = { kind: 'TEMPLATE', id: 'template-1' } as const;
+
+    function buildPayload(overrides: Record<string, unknown> = {}) {
+      return {
+        typeCode: 'INVOICE_TEMPLATE',
+        subject: SUBJECT,
+        title: 'Kuitansi A5',
+        contentHtml: '<p>Total</p>',
+        ...overrides,
+      };
+    }
+
+    it('creates the mirror as a DRAFT nobody has submitted', async () => {
+      await service.syncGovernedDocument(buildPayload(), ACTOR);
+
+      expect(repositoryMock.createDocument).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'DRAFT',
+          subjectTemplateId: 'template-1',
+          subjectDocumentId: null,
+          contentHtml: '<p>Total</p>',
+        }),
+      );
+    });
+
+    it('refuses when the type the caller names is not configured', async () => {
+      documentTypeServiceMock.findTypeByCode.mockResolvedValue(null);
+
+      await expect(service.syncGovernedDocument(buildPayload(), ACTOR)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+
+    it('writes nothing when the mirror already matches — an idle open must not cost a round', async () => {
+      repositoryMock.findBySubject.mockResolvedValue(
+        buildRecord({ title: 'Kuitansi A5', contentHtml: '<p>Total</p>' }),
+      );
+
+      await service.syncGovernedDocument(buildPayload(), ACTOR);
+
+      expect(repositoryMock.updateDocument).not.toHaveBeenCalled();
+      expect(approvalServiceMock.supersedeOpenRounds).not.toHaveBeenCalled();
+    });
+
+    it('voids the open round when the artefact changed under it (FR-E5-15)', async () => {
+      repositoryMock.findBySubject.mockResolvedValue(
+        buildRecord({ status: 'PENDING_APPROVAL', contentHtml: '<p>Old</p>' }),
+      );
+
+      await service.syncGovernedDocument(buildPayload(), ACTOR);
+
+      expect(approvalServiceMock.supersedeOpenRounds).toHaveBeenCalled();
+      expect(repositoryMock.updateDocument).toHaveBeenCalled();
+    });
+
+    it('returns an already-issued mirror to DRAFT, so the next release needs its own round', async () => {
+      repositoryMock.findBySubject.mockResolvedValue(
+        buildRecord({ status: 'ISSUED', contentHtml: '<p>Old</p>' }),
+      );
+      repositoryMock.updateDocument.mockResolvedValue(
+        buildRecord({ status: 'ISSUED', contentHtml: '<p>Total</p>' }),
+      );
+
+      await service.syncGovernedDocument(buildPayload(), ACTOR);
+
+      expect(repositoryMock.transitionDocument).toHaveBeenCalledWith({
+        id: 'doc-1',
+        status: 'DRAFT',
+        issuedAt: null,
+      });
+    });
   });
 
   describe('createDocument', () => {

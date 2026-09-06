@@ -56,6 +56,24 @@ export class DocumentTypeRepository {
     return toRecord(row, counts.get(row.id) ?? 0);
   }
 
+  /**
+   * A type by its stable machine identity (`P16-T32`/`P16-T33`). Code rather
+   * than id, because the code is what the seed owns and what a behaviour is
+   * bound to — a clinic renames `Templat faktur` freely, and a lookup by name
+   * would follow it off a cliff.
+   */
+  async findByCode(code: string): Promise<DocumentTypeRecord | null> {
+    const row = await this.prismaService.documentType.findFirst({
+      where: { code, deletedAt: null },
+      include: TYPE_INCLUDE,
+    });
+    if (row === null) {
+      return null;
+    }
+    const counts = await this.countDocumentsByType([row.id]);
+    return toRecord(row, counts.get(row.id) ?? 0);
+  }
+
   /** Every code in use, live or soft-deleted — a code is never reused. */
   async listAllCodes(): Promise<string[]> {
     const rows = await this.prismaService.documentType.findMany({ select: { code: true } });

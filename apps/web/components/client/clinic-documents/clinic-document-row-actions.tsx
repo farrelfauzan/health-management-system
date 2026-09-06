@@ -7,6 +7,7 @@ import { Button } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { ClinicDocumentEditDialog } from '#components/client/clinic-documents/clinic-document-edit-dialog';
+import { SendForReviewButton } from '#components/client/clinic-documents/send-for-review-button';
 import {
   documentAdminControllerDeleteDocumentV1,
   documentAdminControllerGetDownloadUrlV1,
@@ -117,6 +118,7 @@ export function ClinicDocumentRowActions({
       >
         {t('delete')}
       </Button>
+      <SendForReviewButton document={document} onResult={onResult} onError={onError} />
       <ClinicDocumentEditDialog
         open={isEditOpen}
         onOpenChange={setIsEditOpen}

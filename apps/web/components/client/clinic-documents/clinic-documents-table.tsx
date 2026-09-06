@@ -4,6 +4,7 @@ import type { ClinicDocumentView } from '@hms/shared-types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ClinicDocumentApprovalBadge } from '#components/client/clinic-documents/clinic-document-approval-badge';
 import { ClinicDocumentIngestBadge } from '#components/client/clinic-documents/clinic-document-ingest-badge';
 import { ClinicDocumentRowActions } from '#components/client/clinic-documents/clinic-document-row-actions';
 import { ClinicDocumentVisibilityBadge } from '#components/client/clinic-documents/clinic-document-visibility-badge';
@@ -35,6 +36,7 @@ export function ClinicDocumentsTable({
           <TableHead>{t('columns.title')}</TableHead>
           <TableHead>{t('columns.visibility')}</TableHead>
           <TableHead>{t('columns.status')}</TableHead>
+          <TableHead>{t('columns.approval')}</TableHead>
           <TableHead>{t('columns.chunks')}</TableHead>
           <TableHead>{t('columns.size')}</TableHead>
           <TableHead className="text-right">{t('columns.actions')}</TableHead>
@@ -55,6 +57,9 @@ export function ClinicDocumentsTable({
                 status={document.ingestStatus}
                 ingestError={document.ingestError}
               />
+            </TableCell>
+            <TableCell>
+              <ClinicDocumentApprovalBadge approval={document.approval} />
             </TableCell>
             {/* READY with zero chunks is a document that extracted to nothing.
                 Without the count that reads identically to a working one, and

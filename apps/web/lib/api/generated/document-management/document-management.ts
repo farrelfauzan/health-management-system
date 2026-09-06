@@ -39,6 +39,7 @@ import type {
   DocumentAdminControllerListDocumentsV1200,
   DocumentAdminControllerListDocumentsV1Params,
   DocumentAdminControllerReingestDocumentV1202,
+  DocumentAdminControllerSendDocumentForReviewV1200,
   DocumentAdminControllerUpdateDocumentV1200,
   EncounterDocumentControllerListEncounterDocumentsV1200,
   PatientDocumentControllerConfirmUploadV1200,
@@ -845,6 +846,98 @@ export function useDocumentAdminControllerReingestDocumentV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentAdminControllerReingestDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Put an existing corpus document behind the approval gate
+ */
+export const documentAdminControllerSendDocumentForReviewV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentAdminControllerSendDocumentForReviewV1200>(
+      {url: `/api/v1/admin/documents/${id}/send-for-review`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentAdminControllerSendDocumentForReviewV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/admin/documents/${id}/send-for-review`
+    ] as const;
+    }
+
+
+export const getDocumentAdminControllerSendDocumentForReviewV1QueryOptions = <TData = Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentAdminControllerSendDocumentForReviewV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>> = ({ signal }) => documentAdminControllerSendDocumentForReviewV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentAdminControllerSendDocumentForReviewV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>>
+export type DocumentAdminControllerSendDocumentForReviewV1QueryError = unknown
+
+
+export function useDocumentAdminControllerSendDocumentForReviewV1<TData = Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerSendDocumentForReviewV1<TData = Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerSendDocumentForReviewV1<TData = Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Put an existing corpus document behind the approval gate
+ */
+
+export function useDocumentAdminControllerSendDocumentForReviewV1<TData = Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSendDocumentForReviewV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentAdminControllerSendDocumentForReviewV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

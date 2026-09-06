@@ -2374,13 +2374,21 @@ model DocumentTemplateVersion {
   settings      Json
   publishedById String?  @map("published_by_id") @db.Uuid
   publishedAt   DateTime @default(now()) @map("published_at")
+  /// The decision that released this version (P16-T32), when it was published
+  /// through an approval round rather than directly. Null is the ordinary
+  /// case — a clinic that has not turned approval on for INVOICE_TEMPLATE
+  /// publishes in one click (US-E5-06) — so this is the audit link, never a
+  /// requirement.
+  approvalDecisionId String? @map("approval_decision_id") @db.Uuid
 
-  template    DocumentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  publishedBy User?            @relation("DocumentTemplateVersionPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
-  renders     InvoiceDocument[]
+  template         DocumentTemplate          @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  publishedBy      User?                     @relation("DocumentTemplateVersionPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+  approvalDecision DocumentApprovalDecision? @relation(fields: [approvalDecisionId], references: [id], onDelete: SetNull)
+  renders          InvoiceDocument[]
 
   @@unique([templateId, versionNumber])
   @@index([publishedById])
+  @@index([approvalDecisionId])
   @@map("document_template_versions")
 }
 
@@ -4288,6 +4296,11 @@ model DocumentApprovalDecision {
 
   request  DocumentApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
   approver User                    @relation(fields: [approverId], references: [id], onDelete: Restrict)
+
+  /// Versions this decision released (P16-T32). At most one in practice — a
+  /// decision resolves one round on one document — but the relation is the
+  /// back half of a nullable FK, so Prisma models it as a list.
+  releasedTemplateVersions DocumentTemplateVersion[]
 
   @@unique([requestId, approverId])
   @@index([approverId])
