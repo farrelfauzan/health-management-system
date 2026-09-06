@@ -21,6 +21,7 @@ import { PatientAllergiesCard } from '#components/client/patients/patient-allerg
 import { PatientDemographicsCard } from '#components/client/patients/patient-demographics-card';
 import { PatientDeliveryConsentCard } from '#components/client/patients/patient-delivery-consent-card';
 import { PatientIdentifiersCard } from '#components/client/patients/patient-identifiers-card';
+import { PatientImmunizationsCard } from '#components/client/patients/patient-immunizations-card';
 import { PatientPrivacyHistoryCard } from '#components/client/patients/patient-privacy-history-card';
 import { PatientDoctorsCard } from '#components/client/patients/patient-doctors-card';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
@@ -102,6 +103,7 @@ export function PatientDetailPanel({
                 patient={patient}
                 isSatusehatEnabled={isSatusehatEnabled}
               />
+              <PatientImmunizationsCard patientId={patient.id} />
             </div>
             <div className="space-y-6">
               <PatientAllergiesCard allergies={patient.allergies} />

@@ -18,6 +18,7 @@ export type MedicationResponse = {
   stockQty: number;
   reorderLevel: number;
   needsReorder: boolean;
+  isVaccine: boolean;
   createdAt: string;
   updatedAt: string;
 };

@@ -22,13 +22,16 @@ import type {
 
 import type {
   AddDiagnosisDto,
+  AddImmunizationDto,
   AddProcedureDto,
   EncounterClinicalDataControllerAddDiagnosisV1201,
+  EncounterClinicalDataControllerAddImmunizationV1201,
   EncounterClinicalDataControllerAddProcedureV1201,
   EncounterClinicalDataControllerGetBpjsReferralV1200,
   EncounterClinicalDataControllerRecordVitalSignsV1201,
   EncounterClinicalDataControllerRemoveBpjsReferralV1200,
   EncounterClinicalDataControllerRemoveDiagnosisV1200,
+  EncounterClinicalDataControllerRemoveImmunizationV1200,
   EncounterClinicalDataControllerRemoveProcedureV1200,
   EncounterClinicalDataControllerSaveBpjsReferralV1200,
   EncounterControllerCancelEncounterV1200,
@@ -39,6 +42,7 @@ import type {
   EncounterControllerOpenEncounterV1201,
   EncounterControllerUpdateEncounterSoapV1200,
   OpenEncounterDto,
+  PatientImmunizationControllerListPatientImmunizationsV1200,
   RecordVitalSignsDto,
   UpdateEncounterSoapDto,
   UpsertBpjsReferralDto
@@ -1130,6 +1134,206 @@ export function useEncounterClinicalDataControllerRemoveProcedureV1<TData = Awai
 
 
 /**
+ * @summary Record a vaccination
+ */
+export const encounterClinicalDataControllerAddImmunizationV1 = (
+    encounterId: string,
+    addImmunizationDto: AddImmunizationDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<EncounterClinicalDataControllerAddImmunizationV1201>(
+      {url: `/api/v1/encounters/${encounterId}/immunizations`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: addImmunizationDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getEncounterClinicalDataControllerAddImmunizationV1QueryKey = (encounterId: string,
+    addImmunizationDto?: AddImmunizationDto,) => {
+    return [
+    'POST', `/api/v1/encounters/${encounterId}/immunizations`, addImmunizationDto
+    ] as const;
+    }
+
+
+export const getEncounterClinicalDataControllerAddImmunizationV1QueryOptions = <TData = Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError = unknown>(encounterId: string,
+    addImmunizationDto: AddImmunizationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getEncounterClinicalDataControllerAddImmunizationV1QueryKey(encounterId,addImmunizationDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>> = ({ signal }) => encounterClinicalDataControllerAddImmunizationV1(encounterId,addImmunizationDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type EncounterClinicalDataControllerAddImmunizationV1QueryResult = NonNullable<Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>>
+export type EncounterClinicalDataControllerAddImmunizationV1QueryError = unknown
+
+
+export function useEncounterClinicalDataControllerAddImmunizationV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError = unknown>(
+ encounterId: string,
+    addImmunizationDto: AddImmunizationDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerAddImmunizationV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError = unknown>(
+ encounterId: string,
+    addImmunizationDto: AddImmunizationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerAddImmunizationV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError = unknown>(
+ encounterId: string,
+    addImmunizationDto: AddImmunizationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record a vaccination
+ */
+
+export function useEncounterClinicalDataControllerAddImmunizationV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError = unknown>(
+ encounterId: string,
+    addImmunizationDto: AddImmunizationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerAddImmunizationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getEncounterClinicalDataControllerAddImmunizationV1QueryOptions(encounterId,addImmunizationDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Retract a vaccination
+ */
+export const encounterClinicalDataControllerRemoveImmunizationV1 = (
+    encounterId: string,
+    immunizationId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<EncounterClinicalDataControllerRemoveImmunizationV1200>(
+      {url: `/api/v1/encounters/${encounterId}/immunizations/${immunizationId}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getEncounterClinicalDataControllerRemoveImmunizationV1QueryKey = (encounterId: string,
+    immunizationId: string,) => {
+    return [
+    'DELETE', `/api/v1/encounters/${encounterId}/immunizations/${immunizationId}`
+    ] as const;
+    }
+
+
+export const getEncounterClinicalDataControllerRemoveImmunizationV1QueryOptions = <TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError = unknown>(encounterId: string,
+    immunizationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getEncounterClinicalDataControllerRemoveImmunizationV1QueryKey(encounterId,immunizationId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>> = ({ signal }) => encounterClinicalDataControllerRemoveImmunizationV1(encounterId,immunizationId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined && immunizationId !== null && immunizationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type EncounterClinicalDataControllerRemoveImmunizationV1QueryResult = NonNullable<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>>
+export type EncounterClinicalDataControllerRemoveImmunizationV1QueryError = unknown
+
+
+export function useEncounterClinicalDataControllerRemoveImmunizationV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError = unknown>(
+ encounterId: string,
+    immunizationId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerRemoveImmunizationV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError = unknown>(
+ encounterId: string,
+    immunizationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>,
+          TError,
+          Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useEncounterClinicalDataControllerRemoveImmunizationV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError = unknown>(
+ encounterId: string,
+    immunizationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Retract a vaccination
+ */
+
+export function useEncounterClinicalDataControllerRemoveImmunizationV1<TData = Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError = unknown>(
+ encounterId: string,
+    immunizationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof encounterClinicalDataControllerRemoveImmunizationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getEncounterClinicalDataControllerRemoveImmunizationV1QueryOptions(encounterId,immunizationId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
  * @summary Record or replace the encounter’s BPJS rujukan
  */
 export const encounterClinicalDataControllerSaveBpjsReferralV1 = (
@@ -1403,6 +1607,98 @@ export function useEncounterClinicalDataControllerRemoveBpjsReferralV1<TData = A
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getEncounterClinicalDataControllerRemoveBpjsReferralV1QueryOptions(encounterId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read a patient's immunisation history
+ */
+export const patientImmunizationControllerListPatientImmunizationsV1 = (
+    patientId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientImmunizationControllerListPatientImmunizationsV1200>(
+      {url: `/api/v1/patients/${patientId}/immunizations`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientImmunizationControllerListPatientImmunizationsV1QueryKey = (patientId: string,) => {
+    return [
+    `/api/v1/patients/${patientId}/immunizations`
+    ] as const;
+    }
+
+
+export const getPatientImmunizationControllerListPatientImmunizationsV1QueryOptions = <TData = Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError = unknown>(patientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientImmunizationControllerListPatientImmunizationsV1QueryKey(patientId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>> = ({ signal }) => patientImmunizationControllerListPatientImmunizationsV1(patientId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: patientId !== null && patientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientImmunizationControllerListPatientImmunizationsV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>>
+export type PatientImmunizationControllerListPatientImmunizationsV1QueryError = unknown
+
+
+export function usePatientImmunizationControllerListPatientImmunizationsV1<TData = Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError = unknown>(
+ patientId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientImmunizationControllerListPatientImmunizationsV1<TData = Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError = unknown>(
+ patientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientImmunizationControllerListPatientImmunizationsV1<TData = Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError = unknown>(
+ patientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read a patient's immunisation history
+ */
+
+export function usePatientImmunizationControllerListPatientImmunizationsV1<TData = Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError = unknown>(
+ patientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientImmunizationControllerListPatientImmunizationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientImmunizationControllerListPatientImmunizationsV1QueryOptions(patientId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

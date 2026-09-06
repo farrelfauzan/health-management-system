@@ -9,6 +9,8 @@ import {
   EncounterListItem,
   EncounterResponse,
   EncounterWithRelationsRecord,
+  ImmunizationRecord,
+  ImmunizationResponse,
   ProcedureRecord,
   ProcedureResponse,
   VitalSignsRecord,
@@ -62,6 +64,7 @@ export class EncounterMapper {
       vitalSigns: encounter.vitalSigns.map((row) => this.toVitalSignsResponse(row)),
       diagnoses: encounter.diagnoses.map((row) => this.toDiagnosisResponse(row)),
       procedures: encounter.procedures.map((row) => this.toProcedureResponse(row)),
+      immunizations: encounter.immunizations.map((row) => this.toImmunizationResponse(row)),
       prescriptions: encounter.prescriptions.map((prescription) => ({
         id: prescription.id,
         status: prescription.status,
@@ -128,6 +131,30 @@ export class EncounterMapper {
     };
   }
 
+  toImmunizationResponse(immunization: ImmunizationRecord): ImmunizationResponse {
+    return {
+      id: immunization.id,
+      encounterId: immunization.encounterId,
+      patientId: immunization.patientId,
+      medicationId: immunization.medicationId,
+      medicationName: immunization.medicationName,
+      kfaCode: immunization.kfaCode ?? undefined,
+      occurredAt: immunization.occurredAt.toISOString(),
+      lotNumber: immunization.lotNumber ?? undefined,
+      // Date-only: an expiry is a calendar fact, and rendering it as an
+      // instant would put a timezone on something that does not have one.
+      expirationDate: immunization.expirationDate?.toISOString().slice(0, 10),
+      doseNumber: immunization.doseNumber ?? undefined,
+      route: immunization.route ?? undefined,
+      site: immunization.site ?? undefined,
+      performedById: immunization.performedById ?? undefined,
+      performedByName: immunization.performedByName ?? undefined,
+      notes: immunization.notes ?? undefined,
+      createdAt: immunization.createdAt.toISOString(),
+      updatedAt: immunization.updatedAt.toISOString(),
+    };
+  }
+
   toProcedureResponse(procedure: ProcedureRecord): ProcedureResponse {
     return {
       id: procedure.id,
@@ -158,6 +185,7 @@ export class EncounterMapper {
       objective: encounter.objective ?? undefined,
       assessment: encounter.assessment ?? undefined,
       plan: encounter.plan ?? undefined,
+      prognosis: encounter.prognosis ?? undefined,
       createdById: encounter.createdById ?? undefined,
       createdAt: encounter.createdAt.toISOString(),
       updatedAt: encounter.updatedAt.toISOString(),
