@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { SatusehatFhirMapper } from '../../../common/satusehat/satusehat-fhir.mapper';
 import {
+  SatusehatCompositionSectionInput,
   SatusehatCreatedResourceLocation,
   SatusehatFhirBundleEntry,
   SatusehatFhirTransactionBundle,
@@ -164,6 +165,25 @@ export class SatusehatSubmissionService {
         rank: index + 1,
       })),
     });
+    const clinicalImpressionEntry = this.buildClinicalImpressionEntry(
+      bundleData,
+      endedAt,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      conditionEntries,
+    );
+    const compositionEntry = this.buildCompositionEntry({
+      bundleData,
+      endedAt,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      conditionEntries,
+      procedureEntries,
+      observationEntries,
+      medicationEntries,
+    });
     return {
       resourceType: 'Bundle',
       type: 'transaction',
@@ -173,8 +193,135 @@ export class SatusehatSubmissionService {
         ...procedureEntries,
         ...observationEntries,
         ...medicationEntries,
+        ...clinicalImpressionEntry,
+        ...compositionEntry,
       ],
     };
+  }
+
+  /**
+   * Builds the Composition — the *resume medis*, one document per episode —
+   * from the SOAP narrative and the entries already in the bundle. It is
+   * appended last because it references all of them.
+   *
+   * A section is emitted only when it has narrative or entries: an encounter
+   * with no procedures gets no "Tindakan" section rather than an empty one,
+   * which would assert the question was asked and answered with nothing. An
+   * encounter with nothing at all produces no Composition — a document with no
+   * sections is not a medical resume.
+   */
+  private buildCompositionEntry(context: {
+    bundleData: SatusehatSubmissionBundleData;
+    endedAt: Date;
+    encounterFullUrl: string;
+    patientIhsNumber: string;
+    practitionerIhsNumber: string;
+    conditionEntries: readonly SatusehatFhirBundleEntry[];
+    procedureEntries: readonly SatusehatFhirBundleEntry[];
+    observationEntries: readonly SatusehatFhirBundleEntry[];
+    medicationEntries: readonly SatusehatFhirBundleEntry[];
+  }): SatusehatFhirBundleEntry[] {
+    const { bundleData } = context;
+    const sections: SatusehatCompositionSectionInput[] = [
+      {
+        title: 'Anamnesis',
+        loincCode: '10164-2',
+        loincDisplay: 'History of present illness Narrative',
+        narrative: bundleData.soapNote.subjective ?? undefined,
+      },
+      {
+        title: 'Pemeriksaan',
+        loincCode: '29545-1',
+        loincDisplay: 'Physical findings Narrative',
+        narrative: bundleData.soapNote.objective ?? undefined,
+        entryReferences: context.observationEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Diagnosis',
+        loincCode: '29308-4',
+        loincDisplay: 'Diagnosis',
+        narrative: bundleData.soapNote.assessment ?? undefined,
+        entryReferences: context.conditionEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Tindakan',
+        loincCode: '29554-3',
+        loincDisplay: 'Procedure Narrative',
+        entryReferences: context.procedureEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Terapi',
+        loincCode: '10160-0',
+        loincDisplay: 'History of Medication use Narrative',
+        entryReferences: context.medicationEntries
+          .filter((entry) => entry.request.url === 'MedicationRequest')
+          .map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Rencana',
+        loincCode: '18776-5',
+        loincDisplay: 'Plan of care note',
+        narrative: bundleData.soapNote.plan ?? undefined,
+      },
+    ];
+    const composition = this.fhirMapper.mapComposition({
+      encounterId: bundleData.encounterId,
+      patientIhsNumber: context.patientIhsNumber,
+      patientName: bundleData.patientName,
+      practitionerIhsNumber: context.practitionerIhsNumber,
+      practitionerName: bundleData.doctorName,
+      encounterReference: context.encounterFullUrl,
+      endedAt: context.endedAt,
+      sections,
+    });
+    if (composition.section.length === 0) {
+      return [];
+    }
+    return [
+      {
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: composition,
+        request: { method: 'POST', url: 'Composition' },
+      },
+    ];
+  }
+
+  /**
+   * The assessment narrative and the prognosis, as a ClinicalImpression beside
+   * the Composition. Skipped entirely when neither was recorded — an
+   * impression with no summary, no finding and no prognosis says nothing.
+   */
+  private buildClinicalImpressionEntry(
+    bundleData: SatusehatSubmissionBundleData,
+    endedAt: Date,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+    conditionEntries: readonly SatusehatFhirBundleEntry[],
+  ): SatusehatFhirBundleEntry[] {
+    const summary = bundleData.soapNote.assessment?.trim() ?? '';
+    const { prognosis } = bundleData.soapNote;
+    if (summary === '' && prognosis === null && conditionEntries.length === 0) {
+      return [];
+    }
+    return [
+      {
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: this.fhirMapper.mapClinicalImpression({
+          encounterId: bundleData.encounterId,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          practitionerIhsNumber,
+          practitionerName: bundleData.doctorName,
+          encounterReference: encounterFullUrl,
+          endedAt,
+          ...(summary === '' ? {} : { summary }),
+          findingReferences: conditionEntries.map((entry) => entry.fullUrl),
+          ...(prognosis === null ? {} : { prognosis }),
+        }),
+        request: { method: 'POST', url: 'ClinicalImpression' },
+      },
+    ];
   }
 
   /**

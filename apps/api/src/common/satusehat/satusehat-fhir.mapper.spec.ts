@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { SatusehatFhirMapper } from './satusehat-fhir.mapper';
 import { SatusehatError } from './satusehat.error';
 import {
+  SatusehatCompositionSectionInput,
   SatusehatProcedureMapInput,
   SatusehatVitalSignsMapInput,
 } from './satusehat-fhir.types';
@@ -329,6 +330,136 @@ describe('SatusehatFhirMapper', () => {
         start: '2026-07-28T02:20:00.000Z',
         end: '2026-07-28T02:20:00.000Z',
       });
+    });
+  });
+
+  describe('mapComposition', () => {
+    function buildCompositionInput(sections: SatusehatCompositionSectionInput[]) {
+      return {
+        encounterId: 'e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5',
+        patientIhsNumber: 'P02478375538',
+        patientName: 'Budi Santoso',
+        practitionerIhsNumber: 'N10000001',
+        practitionerName: 'dr. Sari Wulandari',
+        encounterReference: 'urn:uuid:encounter-entry',
+        endedAt,
+        sections,
+      };
+    }
+
+    it('titles the document and codes it as the rawat-jalan resume', () => {
+      const actualComposition = mapper.mapComposition(
+        buildCompositionInput([{ title: 'Anamnesis', narrative: 'Batuk 3 hari' }]),
+      );
+
+      expect(actualComposition.title).toBe('Resume Medis Rawat Jalan');
+      expect(actualComposition.type.coding[0]).toEqual({
+        system: 'http://loinc.org',
+        code: '18842-5',
+        display: 'Discharge summary',
+      });
+      expect(actualComposition.custodian).toEqual({ reference: 'Organization/10000004' });
+      expect(actualComposition.date).toBe('2026-07-28T02:20:00.000Z');
+      expect(actualComposition.author[0]?.reference).toBe('Practitioner/N10000001');
+    });
+
+    it('renders typed markup as literal characters, not tags', () => {
+      const actualComposition = mapper.mapComposition(
+        buildCompositionInput([
+          { title: 'Rencana', narrative: 'Lanjutkan <b>amoksisilin</b> & kontrol' },
+        ]),
+      );
+
+      expect(actualComposition.section[0]?.text?.div).toBe(
+        '<div xmlns="http://www.w3.org/1999/xhtml"><p>Lanjutkan &lt;b&gt;amoksisilin&lt;/b&gt; &amp; kontrol</p></div>',
+      );
+    });
+
+    it('omits a section with neither narrative nor entries', () => {
+      const actualComposition = mapper.mapComposition(
+        buildCompositionInput([
+          { title: 'Anamnesis', narrative: 'Batuk 3 hari' },
+          { title: 'Tindakan', entryReferences: [] },
+          { title: 'Rencana', narrative: '   ' },
+        ]),
+      );
+
+      expect(actualComposition.section.map((section) => section.title)).toEqual(['Anamnesis']);
+    });
+
+    it('points a section at the bundle-local entries it summarises', () => {
+      const actualComposition = mapper.mapComposition(
+        buildCompositionInput([
+          { title: 'Diagnosis', entryReferences: ['urn:uuid:cond-1', 'urn:uuid:cond-2'] },
+        ]),
+      );
+
+      expect(actualComposition.section[0]?.entry).toEqual([
+        { reference: 'urn:uuid:cond-1' },
+        { reference: 'urn:uuid:cond-2' },
+      ]);
+    });
+  });
+
+  describe('mapClinicalImpression', () => {
+    function buildImpressionInput(overrides: Record<string, unknown> = {}) {
+      return {
+        encounterId: 'e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5',
+        patientIhsNumber: 'P02478375538',
+        patientName: 'Budi Santoso',
+        practitionerIhsNumber: 'N10000001',
+        practitionerName: 'dr. Sari Wulandari',
+        encounterReference: 'urn:uuid:encounter-entry',
+        endedAt,
+        summary: 'ISPA viral, perbaikan diharapkan dalam 5 hari',
+        findingReferences: ['urn:uuid:cond-1'],
+        prognosis: 'BONAM' as const,
+        ...overrides,
+      };
+    }
+
+    it('carries the assessment narrative, the findings and the prognosis', () => {
+      const actualImpression = mapper.mapClinicalImpression(buildImpressionInput());
+
+      expect(actualImpression.summary).toBe('ISPA viral, perbaikan diharapkan dalam 5 hari');
+      expect(actualImpression.finding).toEqual([
+        { itemReference: { reference: 'urn:uuid:cond-1' } },
+      ]);
+      expect(actualImpression.prognosisCodeableConcept).toEqual([
+        {
+          coding: [
+            { system: 'http://snomed.info/sct', code: '170968001', display: 'Prognosis good' },
+          ],
+          text: 'BONAM',
+        },
+      ]);
+    });
+
+    it.each([
+      ['BONAM' as const, '170968001'],
+      ['DUBIA_AD_BONAM' as const, '170969009'],
+      ['DUBIA_AD_MALAM' as const, '170970005'],
+      ['MALAM' as const, '170970005'],
+    ])('maps %s to SNOMED %s', (prognosis, expectedCode) => {
+      const actualImpression = mapper.mapClinicalImpression(buildImpressionInput({ prognosis }));
+
+      expect(actualImpression.prognosisCodeableConcept?.[0]?.coding?.[0]?.code).toBe(expectedCode);
+    });
+
+    it('keeps the recorded term in text where two values share one SNOMED grade', () => {
+      const actualImpression = mapper.mapClinicalImpression(
+        buildImpressionInput({ prognosis: 'MALAM' }),
+      );
+
+      expect(actualImpression.prognosisCodeableConcept?.[0]?.text).toBe('MALAM');
+    });
+
+    it('omits the prognosis element when none was recorded', () => {
+      const actualImpression = mapper.mapClinicalImpression(
+        buildImpressionInput({ prognosis: undefined }),
+      );
+
+      expect(actualImpression.prognosisCodeableConcept).toBeUndefined();
     });
   });
 

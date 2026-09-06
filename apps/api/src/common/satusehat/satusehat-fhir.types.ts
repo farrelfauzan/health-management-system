@@ -16,6 +16,12 @@ export type SatusehatFhirCodeableConcept = {
   coding: SatusehatFhirCoding[];
 };
 
+/** A concept whose human-readable text is required alongside optional codes. */
+export type SatusehatFhirCodeableConceptWithText = {
+  coding?: SatusehatFhirCoding[];
+  text: string;
+};
+
 export type SatusehatFhirReference = {
   reference: string;
   display?: string;
@@ -209,6 +215,90 @@ export type SatusehatFhirMedicationDispense = {
   substitution: { wasSubstituted: boolean };
 };
 
+export type SatusehatFhirNarrative = {
+  status: 'generated';
+  div: string;
+};
+
+export type SatusehatFhirCompositionSection = {
+  title: string;
+  code?: SatusehatFhirCodeableConcept;
+  text?: SatusehatFhirNarrative;
+  entry?: SatusehatFhirReference[];
+};
+
+export type SatusehatFhirComposition = {
+  resourceType: 'Composition';
+  identifier: SatusehatFhirIdentifier[];
+  status: 'final';
+  type: SatusehatFhirCodeableConcept;
+  category: SatusehatFhirCodeableConcept[];
+  subject: SatusehatFhirReference;
+  encounter: SatusehatFhirReference;
+  date: string;
+  author: SatusehatFhirReference[];
+  title: string;
+  custodian: SatusehatFhirReference;
+  section: SatusehatFhirCompositionSection[];
+};
+
+export type SatusehatFhirClinicalImpression = {
+  resourceType: 'ClinicalImpression';
+  identifier: SatusehatFhirIdentifier[];
+  status: 'completed';
+  subject: SatusehatFhirReference;
+  encounter: SatusehatFhirReference;
+  effectiveDateTime: string;
+  assessor: SatusehatFhirReference;
+  summary?: string;
+  finding?: Array<{ itemReference: SatusehatFhirReference }>;
+  prognosisCodeableConcept?: SatusehatFhirCodeableConceptWithText[];
+};
+
+/**
+ * One Composition section as the submission service assembles it: a title, an
+ * optional LOINC code, the narrative text that belongs in it, and the
+ * bundle-local references it points at. A section with neither narrative nor
+ * entries is dropped rather than sent blank (P10-T15).
+ */
+export type SatusehatCompositionSectionInput = {
+  title: string;
+  loincCode?: string;
+  loincDisplay?: string;
+  narrative?: string;
+  entryReferences?: readonly string[];
+};
+
+export type SatusehatCompositionMapInput = {
+  encounterId: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  practitionerIhsNumber: string;
+  practitionerName?: string;
+  encounterReference: string;
+  endedAt: Date;
+  sections: readonly SatusehatCompositionSectionInput[];
+};
+
+export type SatusehatClinicalImpressionPrognosis =
+  | 'BONAM'
+  | 'DUBIA_AD_BONAM'
+  | 'DUBIA_AD_MALAM'
+  | 'MALAM';
+
+export type SatusehatClinicalImpressionMapInput = {
+  encounterId: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  practitionerIhsNumber: string;
+  practitionerName?: string;
+  encounterReference: string;
+  endedAt: Date;
+  summary?: string;
+  findingReferences?: readonly string[];
+  prognosis?: SatusehatClinicalImpressionPrognosis;
+};
+
 export type SatusehatFhirBundleEntry = {
   fullUrl: string;
   resource:
@@ -216,6 +306,8 @@ export type SatusehatFhirBundleEntry = {
     | SatusehatFhirCondition
     | SatusehatFhirProcedure
     | SatusehatFhirObservation
+    | SatusehatFhirComposition
+    | SatusehatFhirClinicalImpression
     | SatusehatFhirMedication
     | SatusehatFhirMedicationRequest
     | SatusehatFhirMedicationDispense;

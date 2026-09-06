@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { escapeXhtml } from './escape-xhtml';
 import { SatusehatError } from './satusehat.error';
 import { resolveSatusehatConfig } from './satusehat.config';
 import {
+  SatusehatClinicalImpressionMapInput,
+  SatusehatClinicalImpressionPrognosis,
+  SatusehatCompositionMapInput,
+  SatusehatCompositionSectionInput,
   SatusehatConditionMapInput,
   SatusehatEncounterMapInput,
   SatusehatEncounterStatusHistoryEntry,
+  SatusehatFhirClinicalImpression,
+  SatusehatFhirComposition,
+  SatusehatFhirCompositionSection,
   SatusehatFhirCondition,
   SatusehatFhirEncounter,
   SatusehatFhirMedication,
@@ -28,6 +36,31 @@ const ENCOUNTER_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/encounte
 const ICD10_SYSTEM = 'http://hl7.org/fhir/sid/icd-10';
 const ICD9CM_SYSTEM = 'http://hl7.org/fhir/sid/icd-9-cm';
 const PROCEDURE_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/procedure';
+const COMPOSITION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/composition';
+const CLINICAL_IMPRESSION_IDENTIFIER_SYSTEM_PREFIX =
+  'http://sys-ids.kemkes.go.id/clinicalimpression';
+const SNOMED_SYSTEM = 'http://snomed.info/sct';
+const COMPOSITION_TYPE_LOINC_CODE = '18842-5';
+const COMPOSITION_TYPE_LOINC_DISPLAY = 'Discharge summary';
+const COMPOSITION_CATEGORY_LOINC_CODE = '34117-2';
+const COMPOSITION_CATEGORY_LOINC_DISPLAY = 'History and physical note';
+const COMPOSITION_TITLE = 'Resume Medis Rawat Jalan';
+const XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+
+/**
+ * The three SNOMED prognosis grades the four recorded Latin terms map onto.
+ * DUBIA_AD_MALAM and MALAM share `poor` — SNOMED offers no fourth grade — so
+ * the recorded term is echoed in `text`, keeping the distinction the doctor
+ * made visible even where the coding cannot carry it.
+ */
+const PROGNOSIS_SNOMED_CODES: Readonly<
+  Record<SatusehatClinicalImpressionPrognosis, { code: string; display: string }>
+> = {
+  BONAM: { code: '170968001', display: 'Prognosis good' },
+  DUBIA_AD_BONAM: { code: '170969009', display: 'Prognosis fair' },
+  DUBIA_AD_MALAM: { code: '170970005', display: 'Prognosis poor' },
+  MALAM: { code: '170970005', display: 'Prognosis poor' },
+};
 const LOINC_SYSTEM = 'http://loinc.org';
 const UCUM_SYSTEM = 'http://unitsofmeasure.org';
 const ACT_ENCOUNTER_CODE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-ActCode';
@@ -220,6 +253,160 @@ export class SatusehatFhirMapper {
         : {}),
       ...(input.notes && input.notes.trim() !== '' ? { note: [{ text: input.notes }] } : {}),
     };
+  }
+
+  /**
+   * Maps the closed encounter to a Composition — the *resume medis*, one
+   * document per episode, which is also what PMK 24/2022 obliges the clinic to
+   * hold. It is appended last in the bundle because it references everything
+   * else.
+   *
+   * Every section's narrative is XHTML built through {@link escapeXhtml}: this
+   * is the first place free clinician text leaves the system as markup, and a
+   * plan typed with angle brackets must arrive as literal characters, not as
+   * tags. Sections with neither narrative nor entries are dropped rather than
+   * sent blank — an empty "Tindakan" section would assert that the question was
+   * asked and answered with nothing.
+   */
+  mapComposition(input: SatusehatCompositionMapInput): SatusehatFhirComposition {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'Composition',
+      identifier: [
+        {
+          system: `${COMPOSITION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.encounterId,
+        },
+      ],
+      status: 'final',
+      type: {
+        coding: [
+          {
+            system: LOINC_SYSTEM,
+            code: COMPOSITION_TYPE_LOINC_CODE,
+            display: COMPOSITION_TYPE_LOINC_DISPLAY,
+          },
+        ],
+      },
+      category: [
+        {
+          coding: [
+            {
+              system: LOINC_SYSTEM,
+              code: COMPOSITION_CATEGORY_LOINC_CODE,
+              display: COMPOSITION_CATEGORY_LOINC_DISPLAY,
+            },
+          ],
+        },
+      ],
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      date: this.toFhirInstant(input.endedAt),
+      author: [
+        this.buildReference(
+          `Practitioner/${input.practitionerIhsNumber}`,
+          input.practitionerName,
+        ),
+      ],
+      title: COMPOSITION_TITLE,
+      custodian: { reference: `Organization/${organizationId}` },
+      section: input.sections.flatMap((section) => this.buildCompositionSection(section)),
+    };
+  }
+
+  /**
+   * Maps the assessment narrative and prognosis to a ClinicalImpression, which
+   * sits beside the Composition in the IG's rawat-jalan set. `finding` points
+   * at the same Condition entries the Composition's diagnosis section lists —
+   * the impression is what the doctor concluded, the Conditions are what they
+   * coded.
+   */
+  mapClinicalImpression(
+    input: SatusehatClinicalImpressionMapInput,
+  ): SatusehatFhirClinicalImpression {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    const findingReferences = input.findingReferences ?? [];
+    return {
+      resourceType: 'ClinicalImpression',
+      identifier: [
+        {
+          system: `${CLINICAL_IMPRESSION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.encounterId,
+        },
+      ],
+      status: 'completed',
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      effectiveDateTime: this.toFhirInstant(input.endedAt),
+      assessor: this.buildReference(
+        `Practitioner/${input.practitionerIhsNumber}`,
+        input.practitionerName,
+      ),
+      ...(input.summary && input.summary.trim() !== '' ? { summary: input.summary } : {}),
+      ...(findingReferences.length > 0
+        ? {
+            finding: findingReferences.map((reference) => ({
+              itemReference: { reference },
+            })),
+          }
+        : {}),
+      ...(input.prognosis ? { prognosisCodeableConcept: [this.buildPrognosis(input.prognosis)] } : {}),
+    };
+  }
+
+  private buildPrognosis(prognosis: SatusehatClinicalImpressionPrognosis) {
+    const snomed = PROGNOSIS_SNOMED_CODES[prognosis];
+    return {
+      coding: [{ system: SNOMED_SYSTEM, code: snomed.code, display: snomed.display }],
+      text: prognosis,
+    };
+  }
+
+  private buildCompositionSection(
+    section: SatusehatCompositionSectionInput,
+  ): SatusehatFhirCompositionSection[] {
+    const entryReferences = section.entryReferences ?? [];
+    const narrative = section.narrative?.trim() ?? '';
+    if (narrative === '' && entryReferences.length === 0) {
+      return [];
+    }
+    return [
+      {
+        title: section.title,
+        ...(section.loincCode
+          ? {
+              code: {
+                coding: [
+                  {
+                    system: LOINC_SYSTEM,
+                    code: section.loincCode,
+                    ...(section.loincDisplay ? { display: section.loincDisplay } : {}),
+                  },
+                ],
+              },
+            }
+          : {}),
+        ...(narrative === ''
+          ? {}
+          : {
+              text: {
+                status: 'generated' as const,
+                div: `<div xmlns="${XHTML_NAMESPACE}"><p>${escapeXhtml(narrative)}</p></div>`,
+              },
+            }),
+        ...(entryReferences.length > 0
+          ? { entry: entryReferences.map((reference) => ({ reference })) }
+          : {}),
+      },
+    ];
   }
 
   /**

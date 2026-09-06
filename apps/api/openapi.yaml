@@ -41493,6 +41493,14 @@ components:
           type: string
           maxLength: 5000
           nullable: true
+        prognosis:
+          type: string
+          enum:
+            - BONAM
+            - DUBIA_AD_BONAM
+            - DUBIA_AD_MALAM
+            - MALAM
+          nullable: true
     RecordVitalSignsDto:
       type: object
       properties:

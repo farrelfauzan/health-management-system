@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateEncounterSoapDtoPrognosis } from './updateEncounterSoapDtoPrognosis';
 
 export interface UpdateEncounterSoapDto {
   /**
@@ -27,4 +28,6 @@ export interface UpdateEncounterSoapDto {
      * @nullable
      */
   plan?: string | null;
+  /** @nullable */
+  prognosis?: UpdateEncounterSoapDtoPrognosis;
 }

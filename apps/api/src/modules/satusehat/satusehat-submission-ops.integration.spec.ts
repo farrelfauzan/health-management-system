@@ -114,6 +114,13 @@ describe('SATUSEHAT submission ops integration', () => {
           recordedAt: new Date('2026-07-27T09:05:00.000Z'),
         },
       ],
+      soapNote: {
+        subjective: 'Batuk 3 hari',
+        objective: 'Faring hiperemis',
+        assessment: 'ISPA viral',
+        plan: 'Kontrol 3 hari',
+        prognosis: 'BONAM',
+      },
       procedures: [
         {
           procedureId: '8b9c0d1e-2f3a-4b5c-8d6e-7f8a9b0c1d2e',
@@ -463,6 +470,8 @@ describe('SATUSEHAT submission ops integration', () => {
         'Condition',
         'Procedure',
         'Observation',
+        'ClinicalImpression',
+        'Composition',
         'Medication',
         'MedicationRequest',
         'MedicationDispense',

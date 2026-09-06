@@ -1,4 +1,8 @@
-import type { DiagnosisTypeValue, EncounterStatusValue } from '#emr/schemas';
+import type {
+  DiagnosisTypeValue,
+  EncounterPrognosisValue,
+  EncounterStatusValue,
+} from '#emr/schemas';
 import type { PrescriptionStatusValue } from '#pharmacy-flow/schemas';
 import type { RegistrationStatusValue } from '#registration-flow/schemas';
 
@@ -13,6 +17,12 @@ export type SoapNote = {
   objective: string | null;
   assessment: string | null;
   plan: string | null;
+  /**
+   * The doctor's outlook for the episode (P10-T15). Part of the note rather
+   * than a field of its own because it is recorded in the same form and
+   * cleared the same way, and null means nobody recorded one — never "bonam".
+   */
+  prognosis: EncounterPrognosisValue | null;
 };
 
 export type EncounterRecord = SoapNote & {

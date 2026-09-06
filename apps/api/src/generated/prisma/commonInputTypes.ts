@@ -691,6 +691,13 @@ export type EnumEncounterStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumEncounterStatusFilter<$PrismaModel> | $Enums.EncounterStatus
 }
 
+export type EnumEncounterPrognosisNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.EncounterPrognosis | Prisma.EnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EncounterPrognosis[] | Prisma.ListEnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EncounterPrognosis[] | Prisma.ListEnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel> | $Enums.EncounterPrognosis | null
+}
+
 export type EnumEncounterStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.EncounterStatus | Prisma.EnumEncounterStatusFieldRefInput<$PrismaModel>
   in?: $Enums.EncounterStatus[] | Prisma.ListEnumEncounterStatusFieldRefInput<$PrismaModel>
@@ -699,6 +706,16 @@ export type EnumEncounterStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumEncounterStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumEncounterStatusFilter<$PrismaModel>
+}
+
+export type EnumEncounterPrognosisNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EncounterPrognosis | Prisma.EnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EncounterPrognosis[] | Prisma.ListEnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EncounterPrognosis[] | Prisma.ListEnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEncounterPrognosisNullableWithAggregatesFilter<$PrismaModel> | $Enums.EncounterPrognosis | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel>
 }
 
 export type DecimalNullableFilter<$PrismaModel = never> = {
@@ -2355,6 +2372,13 @@ export type NestedEnumEncounterStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumEncounterStatusFilter<$PrismaModel> | $Enums.EncounterStatus
 }
 
+export type NestedEnumEncounterPrognosisNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.EncounterPrognosis | Prisma.EnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EncounterPrognosis[] | Prisma.ListEnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EncounterPrognosis[] | Prisma.ListEnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel> | $Enums.EncounterPrognosis | null
+}
+
 export type NestedEnumEncounterStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.EncounterStatus | Prisma.EnumEncounterStatusFieldRefInput<$PrismaModel>
   in?: $Enums.EncounterStatus[] | Prisma.ListEnumEncounterStatusFieldRefInput<$PrismaModel>
@@ -2363,6 +2387,16 @@ export type NestedEnumEncounterStatusWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumEncounterStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumEncounterStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumEncounterPrognosisNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EncounterPrognosis | Prisma.EnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EncounterPrognosis[] | Prisma.ListEnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EncounterPrognosis[] | Prisma.ListEnumEncounterPrognosisFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEncounterPrognosisNullableWithAggregatesFilter<$PrismaModel> | $Enums.EncounterPrognosis | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel>
 }
 
 export type NestedDecimalNullableFilter<$PrismaModel = never> = {

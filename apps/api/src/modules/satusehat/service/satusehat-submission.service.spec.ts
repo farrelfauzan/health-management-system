@@ -85,6 +85,13 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
       temperatureCelsius: null,
       oxygenSaturation: null,
     },
+    soapNote: {
+      subjective: 'Batuk 3 hari',
+      objective: 'Faring hiperemis',
+      assessment: 'ISPA viral',
+      plan: 'Kontrol 3 hari',
+      prognosis: 'BONAM' as const,
+    },
     procedures: [],
     prescriptions: [],
     dispenseItems: [],
@@ -246,6 +253,8 @@ describe('SatusehatSubmissionService', () => {
       'Observation',
       'Observation',
       'Observation',
+      'ClinicalImpression',
+      'Composition',
     ]);
     expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
       buildSubmission().id,
@@ -470,6 +479,8 @@ describe('SatusehatSubmissionService', () => {
       'Medication',
       'MedicationRequest',
       'MedicationDispense',
+      'ClinicalImpression',
+      'Composition',
     ]);
     const medicationEntry = bundle.entry[1];
     const medicationResource = medicationEntry?.resource as {
@@ -511,6 +522,69 @@ describe('SatusehatSubmissionService', () => {
     expect(dispenseResource.performer[0]?.actor.reference).toBe('Organization/10000004');
     expect(dispenseResource.whenHandedOver).toBe('2026-07-28T02:30:00.000Z');
     expect(dispenseResource.substitution.wasSubstituted).toBe(false);
+  });
+
+  it('appends the Composition last, after every resource it references', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(buildBundleData());
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const requestUrls = bundle.entry.map((entry) => entry.request.url);
+    expect(requestUrls.at(-1)).toBe('Composition');
+    expect(requestUrls).toContain('ClinicalImpression');
+  });
+
+  it('wires the Composition sections to the entries they summarise', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(buildBundleData());
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const conditionFullUrls = bundle.entry
+      .filter((entry) => entry.request.url === 'Condition')
+      .map((entry) => entry.fullUrl);
+    const composition = bundle.entry.at(-1)?.resource as {
+      section: Array<{ title: string; entry?: Array<{ reference: string }> }>;
+    };
+    const diagnosisSection = composition.section.find((section) => section.title === 'Diagnosis');
+    expect(diagnosisSection?.entry?.map((entry) => entry.reference)).toEqual(conditionFullUrls);
+    expect(composition.section.map((section) => section.title)).not.toContain('Tindakan');
+  });
+
+  it('builds no Composition or ClinicalImpression for an encounter with nothing recorded', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        soapNote: {
+          subjective: null,
+          objective: null,
+          assessment: null,
+          plan: null,
+          prognosis: null,
+        },
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const requestUrls = bundle.entry.map((entry) => entry.request.url);
+    expect(requestUrls).not.toContain('Composition');
+    expect(requestUrls).not.toContain('ClinicalImpression');
   });
 
   it('adds one Procedure entry per ICD-9-CM-coded procedure, wired to the Encounter entry', async () => {
@@ -618,7 +692,7 @@ describe('SatusehatSubmissionService', () => {
     const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
       body: SatusehatFhirTransactionBundle;
     }).body;
-    expect(bundle.entry).toHaveLength(1);
+    expect(bundle.entry.filter((entry) => entry.request.url === 'Observation')).toHaveLength(0);
     expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
       buildSubmission().id,
       null,

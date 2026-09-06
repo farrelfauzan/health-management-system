@@ -158,6 +158,7 @@ export class EncounterMapper {
       objective: encounter.objective ?? undefined,
       assessment: encounter.assessment ?? undefined,
       plan: encounter.plan ?? undefined,
+      prognosis: encounter.prognosis ?? undefined,
       createdById: encounter.createdById ?? undefined,
       createdAt: encounter.createdAt.toISOString(),
       updatedAt: encounter.updatedAt.toISOString(),

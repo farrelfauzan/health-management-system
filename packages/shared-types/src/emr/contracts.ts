@@ -1,4 +1,8 @@
-import type { DiagnosisTypeValue, EncounterStatusValue } from '#emr/schemas';
+import type {
+  DiagnosisTypeValue,
+  EncounterPrognosisValue,
+  EncounterStatusValue,
+} from '#emr/schemas';
 import type { PrescriptionStatusValue } from '#pharmacy-flow/schemas';
 
 /**
@@ -127,6 +131,7 @@ export type EncounterResponse = {
   objective?: string;
   assessment?: string;
   plan?: string;
+  prognosis?: EncounterPrognosisValue;
   createdById?: string;
   createdAt: string;
   updatedAt: string;
