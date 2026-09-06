@@ -86,6 +86,8 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
       oxygenSaturation: null,
     },
     procedures: [],
+    unreportedAllergies: [],
+    retractedReportedAllergyCount: 0,
     prescriptions: [],
     dispenseItems: [],
     ...overrides,
@@ -181,6 +183,7 @@ describe('SatusehatSubmissionService', () => {
   const submissionRepositoryMock = {
     claimDueSubmissions: jest.fn(),
     findBundleData: jest.fn(),
+    saveAllergyIhsIds: jest.fn(),
     markSubmitted: jest.fn(),
     scheduleRetry: jest.fn(),
     markFailed: jest.fn(),
@@ -511,6 +514,136 @@ describe('SatusehatSubmissionService', () => {
     expect(dispenseResource.performer[0]?.actor.reference).toBe('Organization/10000004');
     expect(dispenseResource.whenHandedOver).toBe('2026-07-28T02:30:00.000Z');
     expect(dispenseResource.substitution.wasSubstituted).toBe(false);
+  });
+
+  it('appends unreported allergies and writes the returned ids back after a 201', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        unreportedAllergies: [
+          {
+            allergyId: 'allergy-new',
+            substance: 'Amoksisilin',
+            reaction: 'Ruam',
+            severity: 'SEVERE' as const,
+            recordedAt: new Date('2026-07-28T02:05:00.000Z'),
+          },
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({
+      entry: [
+        { response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } },
+        {
+          response: {
+            status: '201 Created',
+            location: 'AllergyIntolerance/ihs-allergy-1/_history/1',
+          },
+        },
+      ],
+    });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    expect(bundle.entry.filter((entry) => entry.request.url === 'AllergyIntolerance')).toHaveLength(
+      1,
+    );
+    expect(submissionRepositoryMock.saveAllergyIhsIds).toHaveBeenCalledWith([
+      { allergyId: 'allergy-new', satusehatAllergyId: 'ihs-allergy-1' },
+    ]);
+  });
+
+  it('names the attending doctor as recorder only for an allergy taken down this visit', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        unreportedAllergies: [
+          {
+            allergyId: 'allergy-this-visit',
+            substance: 'Amoksisilin',
+            reaction: null,
+            severity: 'MILD' as const,
+            recordedAt: new Date('2026-07-28T02:05:00.000Z'),
+          },
+          {
+            allergyId: 'allergy-years-ago',
+            substance: 'Udang',
+            reaction: null,
+            severity: 'MILD' as const,
+            recordedAt: new Date('2024-01-01T00:00:00.000Z'),
+          },
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const allergyEntries = bundle.entry.filter(
+      (entry) => entry.request.url === 'AllergyIntolerance',
+    );
+    const [thisVisit, yearsAgo] = allergyEntries.map(
+      (entry) => entry.resource as { recorder?: { reference: string } },
+    );
+    expect(thisVisit?.recorder?.reference).toBe('Practitioner/N10000001');
+    expect(yearsAgo?.recorder).toBeUndefined();
+  });
+
+  it('writes no allergy id back when the transaction did not confirm the entry', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        unreportedAllergies: [
+          {
+            allergyId: 'allergy-new',
+            substance: 'Amoksisilin',
+            reaction: null,
+            severity: 'MILD' as const,
+            recordedAt: new Date('2026-07-28T02:05:00.000Z'),
+          },
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    expect(submissionRepositoryMock.saveAllergyIhsIds).toHaveBeenCalledWith([]);
+  });
+
+  it('logs a gap when a reported allergy was retracted locally', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        retractedReportedAllergyCount: 2,
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+    const warnSpy = jest.spyOn(
+      (service as unknown as { logger: { warn: (message: string) => void } }).logger,
+      'warn',
+    );
+
+    await service.processSubmission(buildSubmission());
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('2 reported allergy(ies) were deleted locally'),
+    );
+    warnSpy.mockRestore();
   });
 
   it('adds one Procedure entry per ICD-9-CM-coded procedure, wired to the Encounter entry', async () => {

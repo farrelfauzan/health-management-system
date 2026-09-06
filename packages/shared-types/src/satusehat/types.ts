@@ -100,6 +100,20 @@ export type SatusehatSubmissionProcedure = {
   notes: string | null;
 };
 
+/**
+ * One recorded allergy that has not reached SATUSEHAT yet. Patient-scoped
+ * rather than encounter-scoped: the value of an allergy is entirely
+ * cross-facility, so each row is appended to whichever encounter bundle
+ * happens to be next and then never sent again (P10-T08).
+ */
+export type SatusehatSubmissionAllergy = {
+  allergyId: string;
+  substance: string;
+  reaction: string | null;
+  severity: 'MILD' | 'MODERATE' | 'SEVERE';
+  recordedAt: Date;
+};
+
 export type SatusehatSubmissionDispenseItem = {
   dispenseItemId: string;
   dispenseRecordId: string;
@@ -128,9 +142,26 @@ export type SatusehatSubmissionBundleData = {
   endedAt: Date | null;
   diagnoses: readonly SatusehatSubmissionDiagnosis[];
   procedures: readonly SatusehatSubmissionProcedure[];
+  unreportedAllergies: readonly SatusehatSubmissionAllergy[];
+  /**
+   * Allergies that were reported to SATUSEHAT and have since been retracted
+   * locally. Retracting one on the platform needs an `entered-in-error` update
+   * the adapter does not do yet (P10-T08), so the count is carried purely to
+   * be logged — the divergence is visible rather than silent.
+   */
+  retractedReportedAllergyCount: number;
   latestVitalSigns: SatusehatSubmissionVitalSigns | null;
   prescriptions: readonly SatusehatSubmissionPrescription[];
   dispenseItems: readonly SatusehatSubmissionDispenseItem[];
+};
+
+/**
+ * One allergy row and the IHS id the platform assigned it, written back after
+ * a successful transaction so the allergy is never reported twice (P10-T08).
+ */
+export type SaveAllergyIhsIdPayload = {
+  allergyId: string;
+  satusehatAllergyId: string;
 };
 
 export type MarkSubmissionRetryPayload = {

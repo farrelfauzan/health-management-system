@@ -4,9 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { SatusehatError } from './satusehat.error';
 import { resolveSatusehatConfig } from './satusehat.config';
 import {
+  SatusehatAllergyMapInput,
   SatusehatConditionMapInput,
   SatusehatEncounterMapInput,
   SatusehatEncounterStatusHistoryEntry,
+  SatusehatFhirAllergyIntolerance,
   SatusehatFhirCondition,
   SatusehatFhirEncounter,
   SatusehatFhirMedication,
@@ -28,6 +30,11 @@ const ENCOUNTER_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/encounte
 const ICD10_SYSTEM = 'http://hl7.org/fhir/sid/icd-10';
 const ICD9CM_SYSTEM = 'http://hl7.org/fhir/sid/icd-9-cm';
 const PROCEDURE_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/procedure';
+const ALLERGY_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/allergy';
+const ALLERGY_CLINICAL_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical';
+const ALLERGY_VERIFICATION_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/allergyintolerance-verification';
 const LOINC_SYSTEM = 'http://loinc.org';
 const UCUM_SYSTEM = 'http://unitsofmeasure.org';
 const ACT_ENCOUNTER_CODE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-ActCode';
@@ -219,6 +226,62 @@ export class SatusehatFhirMapper {
           }
         : {}),
       ...(input.notes && input.notes.trim() !== '' ? { note: [{ text: input.notes }] } : {}),
+    };
+  }
+
+  /**
+   * Maps one recorded allergy to a SATUSEHAT AllergyIntolerance.
+   *
+   * The coding is **text-first**: `substance` is free text in the record, FHIR
+   * permits `code.text` with no coding, and the IG only *prefers* SNOMED CT.
+   * Emitting `text` is therefore truthful where guessing a SNOMED code from
+   * prose would not be — a wrong allergen code is worse than an uncoded one,
+   * because the next clinic would act on it.
+   *
+   * `category` (food / medication / environment) is omitted: the row does not
+   * record it, and a keyword heuristic over free text would be inventing
+   * clinical classification. `verificationStatus` is `confirmed` because a
+   * clinician wrote the row down; nothing in the system records an unverified
+   * allergy.
+   */
+  mapAllergyToAllergyIntolerance(
+    input: SatusehatAllergyMapInput,
+  ): SatusehatFhirAllergyIntolerance {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'AllergyIntolerance',
+      identifier: [
+        {
+          system: `${ALLERGY_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.allergyId,
+        },
+      ],
+      clinicalStatus: {
+        coding: [{ system: ALLERGY_CLINICAL_SYSTEM, code: 'active', display: 'Active' }],
+      },
+      verificationStatus: {
+        coding: [{ system: ALLERGY_VERIFICATION_SYSTEM, code: 'confirmed', display: 'Confirmed' }],
+      },
+      code: { text: input.substance },
+      criticality: input.severity === 'SEVERE' ? 'high' : 'low',
+      patient: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      ...(input.encounterReference ? { encounter: { reference: input.encounterReference } } : {}),
+      recordedDate: this.toFhirInstant(input.recordedAt),
+      ...(input.recorderIhsNumber
+        ? {
+            recorder: this.buildReference(
+              `Practitioner/${input.recorderIhsNumber}`,
+              input.recorderName,
+            ),
+          }
+        : {}),
+      ...(input.reaction && input.reaction.trim() !== ''
+        ? { reaction: [{ description: input.reaction }] }
+        : {}),
     };
   }
 
