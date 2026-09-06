@@ -50,6 +50,14 @@ export const SATUSEHAT_SANDBOX_FIXTURES = {
       {
         response: {
           status: '201 Created',
+          location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Procedure/4a0b1c2d-3e4f-4a5b-8c6d-7e8f9a0b1c2d/_history/1',
+          etag: 'W/"1"',
+          lastModified: '2026-07-28T09:05:01.000+00:00',
+        },
+      },
+      {
+        response: {
+          status: '201 Created',
           location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Observation/6c2d3e4f-5a6b-4c7d-9e8f-0a1b2c3d4e5f/_history/1',
           etag: 'W/"1"',
           lastModified: '2026-07-28T09:05:01.000+00:00',
