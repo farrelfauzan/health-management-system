@@ -4366,7 +4366,7 @@ model LabTest {
   decimals     Int             @default(0)
   /// The closed list a CODED result is picked from, e.g. ["Negatif","Positif"].
   /// Empty for every other result type.
-  codedOptions String[]        @map("coded_options")
+  codedOptions String[]        @default([]) @map("coded_options")
   isActive     Boolean         @default(true) @map("is_active")
   /// Price, when one has been set. Nullable because a test is orderable before
   /// it is priced; an unpriced test becomes a visible invoice gap (P18-T06)
