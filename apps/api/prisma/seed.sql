@@ -189,6 +189,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- registry itself arrives with P16-T28.
     ('document-type.write:any', 'DocumentType', 'write', 'ANY', 'Create, rename, reorder, activate and deactivate document types and set their approval policy'),
     ('managed-document.read:any', 'ManagedDocument', 'read', 'ANY', 'See and search the documents registry, filtered per row by each source''s own access rule'),
+    -- P16-T28. Draft, edit, submit, withdraw and issue registry documents.
+    -- Separate from the read key so a records officer can search and export
+    -- without being able to author; approval (`document-approval.decide:any`)
+    -- stays a third key, landing with P16-T29.
+    ('managed-document.write:any', 'ManagedDocument', 'write', 'ANY', 'Draft, edit, submit, withdraw and issue documents in the registry'),
     ('satusehat.link:any', 'Satusehat', 'link', 'ANY', 'Link patients and practitioners to SATUSEHAT IHS records'),
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
@@ -470,6 +475,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- needs a second signature before it goes out.
     ('ADMIN', 'document-type.write:any'),
     ('ADMIN', 'managed-document.read:any'),
+    ('ADMIN', 'managed-document.write:any'),
     -- SATUSEHAT linkage is a national-identifier operation performed at the
     -- front desk / back office, never by doctors or patients themselves.
     ('ADMIN', 'satusehat.link:any'),

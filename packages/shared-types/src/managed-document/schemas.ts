@@ -169,3 +169,162 @@ export const documentTypeInUseDetailsSchema = z.object({
 });
 
 export type DocumentTypeInUseDetails = z.infer<typeof documentTypeInUseDetailsSchema>;
+
+/**
+ * Where a managed document is in its life (`P16-T28`). Mirrors the Prisma
+ * `ManagedDocumentStatus` enum.
+ */
+export const MANAGED_DOCUMENT_STATUSES = [
+  'DRAFT',
+  'PENDING_APPROVAL',
+  'ISSUED',
+  'ARCHIVED',
+] as const;
+
+export const managedDocumentStatusSchema = z.enum(MANAGED_DOCUMENT_STATUSES);
+
+export type ManagedDocumentStatusValue = z.infer<typeof managedDocumentStatusSchema>;
+
+export const MAX_MANAGED_DOCUMENT_TITLE_LENGTH = 200;
+
+export const MAX_MANAGED_DOCUMENT_NUMBER_LENGTH = 80;
+
+/**
+ * 500k characters of drafted HTML — an order of magnitude above any real
+ * agreement, and small enough that the sanitiser never chews through
+ * megabytes pasted in by mistake.
+ */
+export const MAX_MANAGED_DOCUMENT_CONTENT_HTML_LENGTH = 500_000;
+
+const MAX_STORAGE_KEY_LENGTH = 512;
+
+const managedDocumentTitleSchema = z.string().trim().min(1).max(MAX_MANAGED_DOCUMENT_TITLE_LENGTH);
+
+const managedDocumentNumberSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(MAX_MANAGED_DOCUMENT_NUMBER_LENGTH);
+
+const managedDocumentContentHtmlSchema = z.string().max(MAX_MANAGED_DOCUMENT_CONTENT_HTML_LENGTH);
+
+const managedDocumentStorageKeySchema = z.string().min(1).max(MAX_STORAGE_KEY_LENGTH);
+
+function hasAtMostOneContent(input: {
+  contentHtml?: string | null;
+  storageKey?: string | null;
+}): boolean {
+  const hasHtml = input.contentHtml !== undefined && input.contentHtml !== null;
+  const hasKey = input.storageKey !== undefined && input.storageKey !== null;
+  return !(hasHtml && hasKey);
+}
+
+/**
+ * Draft a registry document (`P16-T28`, FR-E5-01). A document is drafted or
+ * uploaded, never both — the refinement mirrors the database CHECK so the
+ * refusal is a 400 with a field name rather than a 500 from Postgres.
+ *
+ * **Strict**: `status`, `issuedAt`, the `subject*` links and `draftedById`
+ * are the service's. A `PATIENT_BILL` row is created by E1 at invoice
+ * issue, never by a request, and the subject links are what the per-row
+ * access rule reads (FR-E5-04) — a client that could set one could point a
+ * plain row at somebody's vault document and read it through the registry.
+ *
+ * Party requirements (`requiresPatient` / `requiresDoctor`) and content
+ * modes are enforced against the type row server-side (`P16-T36`).
+ */
+export const createManagedDocumentSchema = z
+  .object({
+    typeId: z.string().uuid(),
+    title: managedDocumentTitleSchema,
+    documentNumber: managedDocumentNumberSchema.optional(),
+    contentHtml: managedDocumentContentHtmlSchema.optional(),
+    storageKey: managedDocumentStorageKeySchema.optional(),
+    patientId: z.string().uuid().optional(),
+    doctorId: z.string().uuid().optional(),
+  })
+  .strict()
+  .refine(hasAtMostOneContent, {
+    message: 'A document is drafted or uploaded, never both',
+    path: ['storageKey'],
+  });
+
+export type CreateManagedDocumentInput = z.infer<typeof createManagedDocumentSchema>;
+
+/**
+ * Edit a draft. `null` clears an optional field; switching from drafted to
+ * uploaded means clearing one and setting the other in the same request.
+ */
+export const updateManagedDocumentSchema = z
+  .object({
+    title: managedDocumentTitleSchema.optional(),
+    documentNumber: managedDocumentNumberSchema.nullable().optional(),
+    contentHtml: managedDocumentContentHtmlSchema.nullable().optional(),
+    storageKey: managedDocumentStorageKeySchema.nullable().optional(),
+    patientId: z.string().uuid().nullable().optional(),
+    doctorId: z.string().uuid().nullable().optional(),
+  })
+  .strict()
+  .refine((input) => Object.values(input).some((value) => value !== undefined), {
+    message: 'At least one field must be provided',
+  })
+  .refine(hasAtMostOneContent, {
+    message: 'A document is drafted or uploaded, never both',
+    path: ['storageKey'],
+  });
+
+export type UpdateManagedDocumentInput = z.infer<typeof updateManagedDocumentSchema>;
+
+export const MANAGED_DOCUMENT_DATE_FIELDS = ['created', 'issued'] as const;
+
+export const managedDocumentDateFieldSchema = z.enum(MANAGED_DOCUMENT_DATE_FIELDS);
+
+export type ManagedDocumentDateFieldValue = z.infer<typeof managedDocumentDateFieldSchema>;
+
+const MAX_MANAGED_DOCUMENT_SEARCH_LENGTH = 120;
+
+const MANAGED_DOCUMENT_PAGE_MAX_LIMIT = 100;
+
+const MANAGED_DOCUMENT_PAGE_DEFAULT_LIMIT = 25;
+
+/**
+ * The registry's filters (FR-E5-02/03): type, status, drafter, approver, a
+ * date range on created or issued, and a search over title, document number
+ * and party names. `approver` is accepted now and matched once `P16-T29`
+ * lands the approval rounds — until then it narrows to nothing rather than
+ * being ignored, so a saved filter never silently widens.
+ */
+export const listManagedDocumentsQuerySchema = z.object({
+  typeId: z.string().uuid().optional(),
+  status: managedDocumentStatusSchema.optional(),
+  draftedBy: z.string().uuid().optional(),
+  approver: z.string().uuid().optional(),
+  from: z.string().date().optional(),
+  to: z.string().date().optional(),
+  dateField: managedDocumentDateFieldSchema.default('created'),
+  q: z.string().trim().min(1).max(MAX_MANAGED_DOCUMENT_SEARCH_LENGTH).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(MANAGED_DOCUMENT_PAGE_MAX_LIMIT)
+    .default(MANAGED_DOCUMENT_PAGE_DEFAULT_LIMIT),
+});
+
+export type ListManagedDocumentsQueryInput = z.infer<typeof listManagedDocumentsQuerySchema>;
+
+/** The CSV export takes the same filters and no page (FR-E5-07). */
+export const exportManagedDocumentsQuerySchema = listManagedDocumentsQuerySchema.omit({
+  page: true,
+  limit: true,
+});
+
+export type ExportManagedDocumentsQueryInput = z.infer<typeof exportManagedDocumentsQuerySchema>;
+
+/** How many rows one export may carry — a survey, not a dump. */
+export const MANAGED_DOCUMENT_EXPORT_MAX_ROWS = 5_000;
+
+export const MANAGED_DOCUMENT_CONTENT_CONFLICT_ERROR_CODE = 'MANAGED_DOCUMENT_CONTENT_CONFLICT';
+
+export const MANAGED_DOCUMENT_NOT_EDITABLE_ERROR_CODE = 'MANAGED_DOCUMENT_NOT_EDITABLE';

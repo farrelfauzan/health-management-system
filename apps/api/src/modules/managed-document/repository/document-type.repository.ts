@@ -27,8 +27,8 @@ type TypeRow = Prisma.DocumentTypeGetPayload<{ include: typeof TYPE_INCLUDE }>;
  * `behavior` is written from the payload the service builds and never from a
  * request — the repository has no way to tell the difference, which is why
  * the service is the boundary. `documentCount` is the registry's foreign key
- * count; the registry table lands with `P16-T28`, and until it does every
- * type counts as unused (see {@link countDocumentsByType}).
+ * count over `managed_documents`, which is what FR-E5-36's delete refusal
+ * and FR-E5-39's settings screen both read.
  */
 @Injectable()
 export class DocumentTypeRepository {
@@ -154,14 +154,17 @@ export class DocumentTypeRepository {
     }));
   }
 
-  /**
-   * How many registry rows point at each type (FR-E5-39). The registry
-   * (`ManagedDocument`) arrives with `P16-T28`, which replaces this body with
-   * a grouped count over `managed_documents.type_id`; until then no document
-   * can reference a type, so every count is zero by construction.
-   */
+  /** How many live registry rows point at each type (FR-E5-39). */
   async countDocumentsByType(typeIds: readonly string[]): Promise<Map<string, number>> {
-    return new Map(typeIds.map((typeId) => [typeId, 0]));
+    if (typeIds.length === 0) {
+      return new Map();
+    }
+    const groups = await this.prismaService.managedDocument.groupBy({
+      by: ['typeId'],
+      where: { typeId: { in: [...typeIds] }, deletedAt: null },
+      _count: { _all: true },
+    });
+    return new Map(groups.map((group) => [group.typeId, group._count._all]));
   }
 }
 

@@ -22,7 +22,7 @@ import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { DocumentTemplateRepository } from '../repository/document-template.repository';
 import { convertDocxToTemplateHtml } from './convert-docx-to-template-html';
-import { sanitiseTemplateHtml } from './sanitise-template-html';
+import { sanitiseRichTextHtml } from '../../../common/html/sanitise-rich-text-html';
 import {
   isStagedTemplateImportKey,
   TEMPLATE_IMPORT_STAGED_KEY_PREFIX,
@@ -92,7 +92,7 @@ export class DocumentTemplateImportService {
         await this.rejectStagedImport(input.stagedKey, verdict.reason, actor);
       }
       const converted = await convertDocxToTemplateHtml(content);
-      const contentHtml = sanitiseTemplateHtml(converted.html);
+      const contentHtml = sanitiseRichTextHtml(converted.html);
       if (contentHtml.length > MAX_TEMPLATE_CONTENT_HTML_LENGTH) {
         throw new UnprocessableEntityException({
           message:

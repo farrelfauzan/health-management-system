@@ -249,6 +249,7 @@ export type DocumentTemplateWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"DocumentTemplate"> | Date | string | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   versions?: Prisma.DocumentTemplateVersionListRelationFilter
+  managedDocuments?: Prisma.ManagedDocumentListRelationFilter
 }
 
 export type DocumentTemplateOrderByWithRelationInput = {
@@ -266,6 +267,7 @@ export type DocumentTemplateOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.UserOrderByWithRelationInput
   versions?: Prisma.DocumentTemplateVersionOrderByRelationAggregateInput
+  managedDocuments?: Prisma.ManagedDocumentOrderByRelationAggregateInput
 }
 
 export type DocumentTemplateWhereUniqueInput = Prisma.AtLeast<{
@@ -286,6 +288,7 @@ export type DocumentTemplateWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"DocumentTemplate"> | Date | string | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   versions?: Prisma.DocumentTemplateVersionListRelationFilter
+  managedDocuments?: Prisma.ManagedDocumentListRelationFilter
 }, "id">
 
 export type DocumentTemplateOrderByWithAggregationInput = {
@@ -338,6 +341,7 @@ export type DocumentTemplateCreateInput = {
   deletedAt?: Date | string | null
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedDocumentTemplatesInput
   versions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutTemplateInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectTemplateInput
 }
 
 export type DocumentTemplateUncheckedCreateInput = {
@@ -354,6 +358,7 @@ export type DocumentTemplateUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   versions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutTemplateInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectTemplateInput
 }
 
 export type DocumentTemplateUpdateInput = {
@@ -370,6 +375,7 @@ export type DocumentTemplateUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.UserUpdateOneWithoutCreatedDocumentTemplatesNestedInput
   versions?: Prisma.DocumentTemplateVersionUpdateManyWithoutTemplateNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectTemplateNestedInput
 }
 
 export type DocumentTemplateUncheckedUpdateInput = {
@@ -386,6 +392,7 @@ export type DocumentTemplateUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   versions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutTemplateNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectTemplateNestedInput
 }
 
 export type DocumentTemplateCreateManyInput = {
@@ -490,6 +497,11 @@ export type DocumentTemplateScalarRelationFilter = {
   isNot?: Prisma.DocumentTemplateWhereInput
 }
 
+export type DocumentTemplateNullableScalarRelationFilter = {
+  is?: Prisma.DocumentTemplateWhereInput | null
+  isNot?: Prisma.DocumentTemplateWhereInput | null
+}
+
 export type DocumentTemplateCreateNestedManyWithoutCreatedByInput = {
   create?: Prisma.XOR<Prisma.DocumentTemplateCreateWithoutCreatedByInput, Prisma.DocumentTemplateUncheckedCreateWithoutCreatedByInput> | Prisma.DocumentTemplateCreateWithoutCreatedByInput[] | Prisma.DocumentTemplateUncheckedCreateWithoutCreatedByInput[]
   connectOrCreate?: Prisma.DocumentTemplateCreateOrConnectWithoutCreatedByInput | Prisma.DocumentTemplateCreateOrConnectWithoutCreatedByInput[]
@@ -554,6 +566,22 @@ export type DocumentTemplateUpdateOneRequiredWithoutVersionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentTemplateUpdateToOneWithWhereWithoutVersionsInput, Prisma.DocumentTemplateUpdateWithoutVersionsInput>, Prisma.DocumentTemplateUncheckedUpdateWithoutVersionsInput>
 }
 
+export type DocumentTemplateCreateNestedOneWithoutManagedDocumentsInput = {
+  create?: Prisma.XOR<Prisma.DocumentTemplateCreateWithoutManagedDocumentsInput, Prisma.DocumentTemplateUncheckedCreateWithoutManagedDocumentsInput>
+  connectOrCreate?: Prisma.DocumentTemplateCreateOrConnectWithoutManagedDocumentsInput
+  connect?: Prisma.DocumentTemplateWhereUniqueInput
+}
+
+export type DocumentTemplateUpdateOneWithoutManagedDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentTemplateCreateWithoutManagedDocumentsInput, Prisma.DocumentTemplateUncheckedCreateWithoutManagedDocumentsInput>
+  connectOrCreate?: Prisma.DocumentTemplateCreateOrConnectWithoutManagedDocumentsInput
+  upsert?: Prisma.DocumentTemplateUpsertWithoutManagedDocumentsInput
+  disconnect?: Prisma.DocumentTemplateWhereInput | boolean
+  delete?: Prisma.DocumentTemplateWhereInput | boolean
+  connect?: Prisma.DocumentTemplateWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentTemplateUpdateToOneWithWhereWithoutManagedDocumentsInput, Prisma.DocumentTemplateUpdateWithoutManagedDocumentsInput>, Prisma.DocumentTemplateUncheckedUpdateWithoutManagedDocumentsInput>
+}
+
 export type DocumentTemplateCreateWithoutCreatedByInput = {
   id?: string
   kind: $Enums.DocumentTemplateKind
@@ -567,6 +595,7 @@ export type DocumentTemplateCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   versions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutTemplateInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectTemplateInput
 }
 
 export type DocumentTemplateUncheckedCreateWithoutCreatedByInput = {
@@ -582,6 +611,7 @@ export type DocumentTemplateUncheckedCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   versions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutTemplateInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectTemplateInput
 }
 
 export type DocumentTemplateCreateOrConnectWithoutCreatedByInput = {
@@ -641,6 +671,7 @@ export type DocumentTemplateCreateWithoutVersionsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedDocumentTemplatesInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectTemplateInput
 }
 
 export type DocumentTemplateUncheckedCreateWithoutVersionsInput = {
@@ -656,6 +687,7 @@ export type DocumentTemplateUncheckedCreateWithoutVersionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectTemplateInput
 }
 
 export type DocumentTemplateCreateOrConnectWithoutVersionsInput = {
@@ -687,6 +719,7 @@ export type DocumentTemplateUpdateWithoutVersionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.UserUpdateOneWithoutCreatedDocumentTemplatesNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectTemplateNestedInput
 }
 
 export type DocumentTemplateUncheckedUpdateWithoutVersionsInput = {
@@ -702,6 +735,87 @@ export type DocumentTemplateUncheckedUpdateWithoutVersionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectTemplateNestedInput
+}
+
+export type DocumentTemplateCreateWithoutManagedDocumentsInput = {
+  id?: string
+  kind: $Enums.DocumentTemplateKind
+  name: string
+  description?: string | null
+  status?: $Enums.DocumentTemplateStatus
+  isDefault?: boolean
+  contentHtml: string
+  settings: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedDocumentTemplatesInput
+  versions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutTemplateInput
+}
+
+export type DocumentTemplateUncheckedCreateWithoutManagedDocumentsInput = {
+  id?: string
+  kind: $Enums.DocumentTemplateKind
+  name: string
+  description?: string | null
+  status?: $Enums.DocumentTemplateStatus
+  isDefault?: boolean
+  contentHtml: string
+  settings: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  versions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutTemplateInput
+}
+
+export type DocumentTemplateCreateOrConnectWithoutManagedDocumentsInput = {
+  where: Prisma.DocumentTemplateWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentTemplateCreateWithoutManagedDocumentsInput, Prisma.DocumentTemplateUncheckedCreateWithoutManagedDocumentsInput>
+}
+
+export type DocumentTemplateUpsertWithoutManagedDocumentsInput = {
+  update: Prisma.XOR<Prisma.DocumentTemplateUpdateWithoutManagedDocumentsInput, Prisma.DocumentTemplateUncheckedUpdateWithoutManagedDocumentsInput>
+  create: Prisma.XOR<Prisma.DocumentTemplateCreateWithoutManagedDocumentsInput, Prisma.DocumentTemplateUncheckedCreateWithoutManagedDocumentsInput>
+  where?: Prisma.DocumentTemplateWhereInput
+}
+
+export type DocumentTemplateUpdateToOneWithWhereWithoutManagedDocumentsInput = {
+  where?: Prisma.DocumentTemplateWhereInput
+  data: Prisma.XOR<Prisma.DocumentTemplateUpdateWithoutManagedDocumentsInput, Prisma.DocumentTemplateUncheckedUpdateWithoutManagedDocumentsInput>
+}
+
+export type DocumentTemplateUpdateWithoutManagedDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumDocumentTemplateKindFieldUpdateOperationsInput | $Enums.DocumentTemplateKind
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumDocumentTemplateStatusFieldUpdateOperationsInput | $Enums.DocumentTemplateStatus
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contentHtml?: Prisma.StringFieldUpdateOperationsInput | string
+  settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedDocumentTemplatesNestedInput
+  versions?: Prisma.DocumentTemplateVersionUpdateManyWithoutTemplateNestedInput
+}
+
+export type DocumentTemplateUncheckedUpdateWithoutManagedDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumDocumentTemplateKindFieldUpdateOperationsInput | $Enums.DocumentTemplateKind
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumDocumentTemplateStatusFieldUpdateOperationsInput | $Enums.DocumentTemplateStatus
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contentHtml?: Prisma.StringFieldUpdateOperationsInput | string
+  settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutTemplateNestedInput
 }
 
 export type DocumentTemplateCreateManyCreatedByInput = {
@@ -731,6 +845,7 @@ export type DocumentTemplateUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   versions?: Prisma.DocumentTemplateVersionUpdateManyWithoutTemplateNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectTemplateNestedInput
 }
 
 export type DocumentTemplateUncheckedUpdateWithoutCreatedByInput = {
@@ -746,6 +861,7 @@ export type DocumentTemplateUncheckedUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   versions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutTemplateNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectTemplateNestedInput
 }
 
 export type DocumentTemplateUncheckedUpdateManyWithoutCreatedByInput = {
@@ -769,10 +885,12 @@ export type DocumentTemplateUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type DocumentTemplateCountOutputType = {
   versions: number
+  managedDocuments: number
 }
 
 export type DocumentTemplateCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   versions?: boolean | DocumentTemplateCountOutputTypeCountVersionsArgs
+  managedDocuments?: boolean | DocumentTemplateCountOutputTypeCountManagedDocumentsArgs
 }
 
 /**
@@ -792,6 +910,13 @@ export type DocumentTemplateCountOutputTypeCountVersionsArgs<ExtArgs extends run
   where?: Prisma.DocumentTemplateVersionWhereInput
 }
 
+/**
+ * DocumentTemplateCountOutputType without action
+ */
+export type DocumentTemplateCountOutputTypeCountManagedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ManagedDocumentWhereInput
+}
+
 
 export type DocumentTemplateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -808,6 +933,7 @@ export type DocumentTemplateSelect<ExtArgs extends runtime.Types.Extensions.Inte
   deletedAt?: boolean
   createdBy?: boolean | Prisma.DocumentTemplate$createdByArgs<ExtArgs>
   versions?: boolean | Prisma.DocumentTemplate$versionsArgs<ExtArgs>
+  managedDocuments?: boolean | Prisma.DocumentTemplate$managedDocumentsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentTemplateCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["documentTemplate"]>
 
@@ -862,6 +988,7 @@ export type DocumentTemplateOmit<ExtArgs extends runtime.Types.Extensions.Intern
 export type DocumentTemplateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.DocumentTemplate$createdByArgs<ExtArgs>
   versions?: boolean | Prisma.DocumentTemplate$versionsArgs<ExtArgs>
+  managedDocuments?: boolean | Prisma.DocumentTemplate$managedDocumentsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentTemplateCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DocumentTemplateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -876,6 +1003,7 @@ export type $DocumentTemplatePayload<ExtArgs extends runtime.Types.Extensions.In
   objects: {
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     versions: Prisma.$DocumentTemplateVersionPayload<ExtArgs>[]
+    managedDocuments: Prisma.$ManagedDocumentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1290,6 +1418,7 @@ export interface Prisma__DocumentTemplateClient<T, Null = never, ExtArgs extends
   readonly [Symbol.toStringTag]: "PrismaPromise"
   createdBy<T extends Prisma.DocumentTemplate$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentTemplate$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   versions<T extends Prisma.DocumentTemplate$versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentTemplate$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentTemplateVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  managedDocuments<T extends Prisma.DocumentTemplate$managedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentTemplate$managedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ManagedDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1772,6 +1901,30 @@ export type DocumentTemplate$versionsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.DocumentTemplateVersionScalarFieldEnum | Prisma.DocumentTemplateVersionScalarFieldEnum[]
+}
+
+/**
+ * DocumentTemplate.managedDocuments
+ */
+export type DocumentTemplate$managedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ManagedDocument
+   */
+  select?: Prisma.ManagedDocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ManagedDocument
+   */
+  omit?: Prisma.ManagedDocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ManagedDocumentInclude<ExtArgs> | null
+  where?: Prisma.ManagedDocumentWhereInput
+  orderBy?: Prisma.ManagedDocumentOrderByWithRelationInput | Prisma.ManagedDocumentOrderByWithRelationInput[]
+  cursor?: Prisma.ManagedDocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ManagedDocumentScalarFieldEnum | Prisma.ManagedDocumentScalarFieldEnum[]
 }
 
 /**

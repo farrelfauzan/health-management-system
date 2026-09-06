@@ -469,7 +469,8 @@ export const ModelName = {
   Notification: 'Notification',
   OrganizationUnit: 'OrganizationUnit',
   DocumentType: 'DocumentType',
-  DocumentTypeApprover: 'DocumentTypeApprover'
+  DocumentTypeApprover: 'DocumentTypeApprover',
+  ManagedDocument: 'ManagedDocument'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -485,7 +486,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -6853,6 +6854,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ManagedDocument: {
+      payload: Prisma.$ManagedDocumentPayload<ExtArgs>
+      fields: Prisma.ManagedDocumentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ManagedDocumentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ManagedDocumentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload>
+        }
+        findFirst: {
+          args: Prisma.ManagedDocumentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ManagedDocumentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload>
+        }
+        findMany: {
+          args: Prisma.ManagedDocumentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload>[]
+        }
+        create: {
+          args: Prisma.ManagedDocumentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload>
+        }
+        createMany: {
+          args: Prisma.ManagedDocumentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ManagedDocumentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload>[]
+        }
+        delete: {
+          args: Prisma.ManagedDocumentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload>
+        }
+        update: {
+          args: Prisma.ManagedDocumentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload>
+        }
+        deleteMany: {
+          args: Prisma.ManagedDocumentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ManagedDocumentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ManagedDocumentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload>[]
+        }
+        upsert: {
+          args: Prisma.ManagedDocumentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ManagedDocumentPayload>
+        }
+        aggregate: {
+          args: Prisma.ManagedDocumentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateManagedDocument>
+        }
+        groupBy: {
+          args: Prisma.ManagedDocumentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ManagedDocumentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ManagedDocumentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ManagedDocumentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -8329,6 +8404,31 @@ export const DocumentTypeApproverScalarFieldEnum = {
 export type DocumentTypeApproverScalarFieldEnum = (typeof DocumentTypeApproverScalarFieldEnum)[keyof typeof DocumentTypeApproverScalarFieldEnum]
 
 
+export const ManagedDocumentScalarFieldEnum = {
+  id: 'id',
+  typeId: 'typeId',
+  status: 'status',
+  title: 'title',
+  documentNumber: 'documentNumber',
+  contentHtml: 'contentHtml',
+  storageKey: 'storageKey',
+  storageMimeType: 'storageMimeType',
+  storageSizeBytes: 'storageSizeBytes',
+  patientId: 'patientId',
+  doctorId: 'doctorId',
+  subjectTemplateId: 'subjectTemplateId',
+  subjectDocumentId: 'subjectDocumentId',
+  subjectInvoiceId: 'subjectInvoiceId',
+  draftedById: 'draftedById',
+  issuedAt: 'issuedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ManagedDocumentScalarFieldEnum = (typeof ManagedDocumentScalarFieldEnum)[keyof typeof ManagedDocumentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -9399,6 +9499,20 @@ export type ListEnumDocumentContentModeFieldRefInput<$PrismaModel> = FieldRefInp
 
 
 /**
+ * Reference to a field of type 'ManagedDocumentStatus'
+ */
+export type EnumManagedDocumentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManagedDocumentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ManagedDocumentStatus[]'
+ */
+export type ListEnumManagedDocumentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManagedDocumentStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -9607,6 +9721,7 @@ export type GlobalOmitConfig = {
   organizationUnit?: Prisma.OrganizationUnitOmit
   documentType?: Prisma.DocumentTypeOmit
   documentTypeApprover?: Prisma.DocumentTypeApproverOmit
+  managedDocument?: Prisma.ManagedDocumentOmit
 }
 
 /* Types for Logging */
