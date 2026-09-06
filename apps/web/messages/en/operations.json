@@ -548,6 +548,7 @@
       "lastTest": "Last connection test: {date} · {result}",
       "lastSync": "Latest bulk sync: {date}",
       "retryError": "Unable to retry this submission.",
+      "lastUpdated": "Updated {time}",
       "selectCode": "Select a BPJS code",
       "searchDpho": "Search DPHO",
       "searchDphoPlaceholder": "Search BPJS DPHO (minimum 2 characters)",

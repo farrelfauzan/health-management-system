@@ -548,6 +548,7 @@
       "lastTest": "Uji koneksi terakhir: {date} · {result}",
       "lastSync": "Sinkronisasi massal terakhir: {date}",
       "retryError": "Pengiriman ini tidak dapat dicoba kembali.",
+      "lastUpdated": "Diperbarui {time}",
       "selectCode": "Pilih kode BPJS",
       "searchDpho": "Cari DPHO",
       "searchDphoPlaceholder": "Cari DPHO BPJS (minimal 2 karakter)",
