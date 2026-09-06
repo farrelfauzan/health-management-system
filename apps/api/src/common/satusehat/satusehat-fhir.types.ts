@@ -268,12 +268,27 @@ export type SatusehatFhirSimpleQuantity = {
   unit?: string;
 };
 
+export type SatusehatFhirMedicationIngredient = {
+  itemReference: SatusehatFhirReference;
+  strength?: {
+    numerator: SatusehatFhirSimpleQuantity;
+    denominator: SatusehatFhirSimpleQuantity;
+  };
+};
+
 export type SatusehatFhirMedication = {
   resourceType: 'Medication';
   identifier: SatusehatFhirIdentifier[];
   status: 'active';
-  code: SatusehatFhirCodeableConcept;
+  /**
+   * A catalog product carries a KFA coding. A compound the clinic mixed itself
+   * has no national code to carry, so it goes out as `text` — which is what
+   * FHIR provides for exactly this (P10-T18).
+   */
+  code: SatusehatFhirCodeableConcept & { text?: string };
   extension: SatusehatFhirExtension[];
+  /** Present only on a compound (type SD): its ingredients, one per entry. */
+  ingredient?: SatusehatFhirMedicationIngredient[];
 };
 
 export type SatusehatFhirMedicationRequest = {
@@ -442,6 +457,23 @@ export type SatusehatMedicationMapInput = {
   medicationCode: string;
   kfaCode: string;
   name: string;
+};
+
+/**
+ * A compounded medication (racikan, P10-T18). Each ingredient references a
+ * bundle-local `Medication` entry for the component product, which is why the
+ * caller passes references rather than codes — assembly stays with the caller,
+ * as it does for every other mapper here.
+ */
+export type SatusehatCompoundMedicationMapInput = {
+  prescriptionItemId: string;
+  compoundName: string;
+  ingredients: ReadonlyArray<{
+    medicationReference: string;
+    medicationDisplay: string;
+    quantity: number;
+    unit: string;
+  }>;
 };
 
 export type SatusehatMedicationRequestMapInput = {

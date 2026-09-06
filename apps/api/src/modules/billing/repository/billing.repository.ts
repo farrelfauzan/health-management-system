@@ -106,20 +106,59 @@ export class BillingRepository {
       },
       select: {
         medicationId: true,
+        prescriptionItemId: true,
         quantity: true,
         medication: { select: { id: true, name: true, unitPrice: true } },
+        prescriptionItem: {
+          select: {
+            id: true,
+            compoundName: true,
+            components: {
+              select: {
+                quantity: true,
+                medication: { select: { id: true, name: true, unitPrice: true } },
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'asc' },
     });
-    return rows.map((row) => ({
-      medicationId: row.medicationId,
-      quantity: row.quantity,
-      medication: {
-        id: row.medication.id,
-        name: row.medication.name,
-        unitPrice: row.medication.unitPrice === null ? null : Number(row.medication.unitPrice),
-      },
-    }));
+    return rows.map((row) =>
+      row.medication
+        ? {
+            medicationId: row.medication.id,
+            quantity: row.quantity,
+            medication: {
+              id: row.medication.id,
+              name: row.medication.name,
+              unitPrice:
+                row.medication.unitPrice === null ? null : Number(row.medication.unitPrice),
+            },
+            compound: null,
+          }
+        : {
+            medicationId: null,
+            quantity: row.quantity,
+            medication: null,
+            // A compound is priced from its ingredients plus a compounding
+            // fee (P10-T18): there is no single catalog price to read, and a
+            // clinic that sold a puyer sold labour as well as substance.
+            compound: {
+              prescriptionItemId: row.prescriptionItem?.id ?? '',
+              name: row.prescriptionItem?.compoundName ?? '',
+              components: (row.prescriptionItem?.components ?? []).map((component) => ({
+                medicationId: component.medication.id,
+                name: component.medication.name,
+                quantityPerCompound: Number(component.quantity),
+                unitPrice:
+                  component.medication.unitPrice === null
+                    ? null
+                    : Number(component.medication.unitPrice),
+              })),
+            },
+          },
+    );
   }
 
   /** The partial unique index enforces this too; the query exists to answer 409 before it fires. */

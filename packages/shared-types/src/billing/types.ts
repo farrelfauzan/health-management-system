@@ -168,14 +168,30 @@ export type BillingSourceEncounterRecord = {
   immunizations: Array<{ id: string; medicationCode: string; medicationName: string }>;
 };
 
+/**
+ * One dispensed line to bill. A product line carries `medication`; a compound
+ * line carries `compound` instead and is priced from its ingredients plus a
+ * compounding fee, because there is no single catalog price to read and a
+ * clinic that sold a puyer sold labour as well as substance (P10-T18).
+ */
 export type BillingDispensedItemRecord = {
-  medicationId: string;
+  medicationId: string | null;
   quantity: number;
   medication: {
     id: string;
     name: string;
     unitPrice: number | null;
-  };
+  } | null;
+  compound: {
+    prescriptionItemId: string;
+    name: string;
+    components: Array<{
+      medicationId: string;
+      name: string;
+      quantityPerCompound: number;
+      unitPrice: number | null;
+    }>;
+  } | null;
 };
 
 export type CreateInvoiceItemPayload = {

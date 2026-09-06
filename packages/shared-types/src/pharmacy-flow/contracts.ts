@@ -1,4 +1,5 @@
 import type {
+  CompoundPreparationValue,
   DispenseStatusValue,
   MedicationCategoryValue,
   MedicationUnitValue,
@@ -47,16 +48,35 @@ export type PrescriptionRelatedDoctor = {
   fullName: string;
 };
 
-export type PrescriptionItemResponse = {
+export type PrescriptionItemComponentResponse = {
   id: string;
   medicationId: string;
   medicationCode: string;
   medicationName: string;
+  quantity: number;
+  unit: string;
+};
+
+/**
+ * One prescription line. The product fields are absent exactly when
+ * `isCompound` is true — a compound has ingredients instead, and the label
+ * carries `compoundName` (P10-T18).
+ */
+export type PrescriptionItemResponse = {
+  id: string;
+  medicationId?: string;
+  medicationCode?: string;
+  medicationName?: string;
   dosage: string;
   frequency: string;
   durationDays?: number;
   quantity: number;
   instructions?: string;
+  isCompound: boolean;
+  compoundName?: string;
+  preparation?: CompoundPreparationValue;
+  dosageUnit?: string;
+  components: PrescriptionItemComponentResponse[];
 };
 
 export type PrescriptionResponse = {
@@ -76,9 +96,15 @@ export type PrescriptionResponse = {
 
 export type DispenseItemResponse = {
   id: string;
-  medicationId: string;
-  medicationCode: string;
-  medicationName: string;
+  medicationId?: string;
+  medicationCode?: string;
+  medicationName?: string;
+  /** Present on a compound line, absent on a product line. */
+  prescriptionItemId?: string;
+  compoundName?: string;
+  preparation?: CompoundPreparationValue;
+  dosageUnit?: string;
+  components: PrescriptionItemComponentResponse[];
   quantity: number;
   allocations: DispenseItemStockAllocationResponse[];
 };

@@ -3,8 +3,10 @@ import { randomUUID } from 'node:crypto';
 import {
   SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
+  SatusehatSubmissionDispenseItem,
   SatusehatSubmissionMedication,
   SatusehatSubmissionImmunization,
+  SatusehatSubmissionPrescriptionItem,
   SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
   SaveAllergyIhsIdPayload,
@@ -606,23 +608,84 @@ export class SatusehatSubmissionService {
       });
       return fullUrl;
     };
+    /**
+     * Registers a compound as one `Medication` of type SD whose ingredients
+     * reference the component products' own entries.
+     *
+     * A compound with **any** uncoded component is skipped whole rather than
+     * sent with the ingredients that happen to be coded: a half-described
+     * racikan is worse than an absent one, because the next clinic reads it as
+     * complete (P10-T18).
+     */
+    const compoundFullUrls = new Map<string, string>();
+    const skippedCompounds: string[] = [];
+    const registerCompound = (item: SatusehatSubmissionPrescriptionItem): string | null => {
+      const compound = item.compound;
+      if (compound === null) {
+        return null;
+      }
+      const existingFullUrl = compoundFullUrls.get(item.prescriptionItemId);
+      if (existingFullUrl) {
+        return existingFullUrl;
+      }
+      const ingredientReferences: Array<{
+        medicationReference: string;
+        medicationDisplay: string;
+        quantity: number;
+        unit: string;
+      }> = [];
+      for (const component of compound.components) {
+        const componentFullUrl = registerMedication(component.medication);
+        if (componentFullUrl === null) {
+          skippedCompounds.push(`${compound.compoundName} (${component.medication.code})`);
+          return null;
+        }
+        ingredientReferences.push({
+          medicationReference: componentFullUrl,
+          medicationDisplay: component.medication.name,
+          quantity: component.quantity,
+          unit: component.unit,
+        });
+      }
+      const fullUrl = `urn:uuid:${randomUUID()}`;
+      compoundFullUrls.set(item.prescriptionItemId, fullUrl);
+      medicationEntries.push({
+        fullUrl,
+        resource: this.fhirMapper.mapCompoundMedication({
+          prescriptionItemId: item.prescriptionItemId,
+          compoundName: compound.compoundName,
+          ingredients: ingredientReferences,
+        }),
+        request: { method: 'POST', url: 'Medication' },
+      });
+      return fullUrl;
+    };
     const requestFullUrls = new Map<string, string>();
     const requestEntries: SatusehatFhirBundleEntry[] = [];
     for (const prescription of bundleData.prescriptions) {
       for (const item of prescription.items) {
-        const medicationFullUrl = registerMedication(item.medication);
+        const medicationFullUrl = item.compound
+          ? registerCompound(item)
+          : item.medication
+            ? registerMedication(item.medication)
+            : null;
         if (medicationFullUrl === null) {
           continue;
         }
         const requestFullUrl = `urn:uuid:${randomUUID()}`;
-        requestFullUrls.set(`${item.prescriptionId}:${item.medication.medicationId}`, requestFullUrl);
+        // Keyed by the prescription line, not by the medication: a compound
+        // has no medication to key on, and a dispense of one has to find its
+        // request.
+        requestFullUrls.set(item.prescriptionItemId, requestFullUrl);
         requestEntries.push({
           fullUrl: requestFullUrl,
           resource: this.fhirMapper.mapPrescriptionItemToMedicationRequest({
             prescriptionId: item.prescriptionId,
             prescriptionItemId: item.prescriptionItemId,
             medicationReference: medicationFullUrl,
-            medicationDisplay: item.medication.name,
+            medicationDisplay: item.compound
+              ? item.compound.compoundName
+              : (item.medication?.name ?? ''),
             patientIhsNumber,
             patientName: bundleData.patientName,
             practitionerIhsNumber,
@@ -632,7 +695,9 @@ export class SatusehatSubmissionService {
             frequency: item.frequency,
             instructions: item.instructions ?? undefined,
             quantity: item.quantity,
-            unit: item.medication.unit ?? undefined,
+            unit: item.compound
+              ? undefined
+              : (item.medication?.unit ?? undefined),
             authoredOn: prescription.issuedAt ?? undefined,
           }),
           request: { method: 'POST', url: 'MedicationRequest' },
@@ -641,7 +706,11 @@ export class SatusehatSubmissionService {
     }
     const dispenseEntries: SatusehatFhirBundleEntry[] = [];
     for (const dispenseItem of bundleData.dispenseItems) {
-      const medicationFullUrl = registerMedication(dispenseItem.medication);
+      const medicationFullUrl = dispenseItem.prescriptionItemId
+        ? (compoundFullUrls.get(dispenseItem.prescriptionItemId) ?? null)
+        : dispenseItem.medication
+          ? registerMedication(dispenseItem.medication)
+          : null;
       if (medicationFullUrl === null) {
         continue;
       }
@@ -651,22 +720,55 @@ export class SatusehatSubmissionService {
           dispenseRecordId: dispenseItem.dispenseRecordId,
           dispenseItemId: dispenseItem.dispenseItemId,
           medicationReference: medicationFullUrl,
-          medicationDisplay: dispenseItem.medication.name,
+          medicationDisplay: dispenseItem.medication?.name ?? 'Racikan',
           patientIhsNumber,
           patientName: bundleData.patientName,
           encounterReference: encounterFullUrl,
-          medicationRequestReference: requestFullUrls.get(
-            `${dispenseItem.prescriptionId}:${dispenseItem.medication.medicationId}`,
-          ),
+          medicationRequestReference: dispenseItem.prescriptionItemId
+            ? requestFullUrls.get(dispenseItem.prescriptionItemId)
+            : this.resolveProductRequestReference(bundleData, dispenseItem, requestFullUrls),
           quantity: dispenseItem.quantity,
-          unit: dispenseItem.medication.unit ?? undefined,
+          unit: dispenseItem.medication?.unit ?? undefined,
           dispensedAt: dispenseItem.dispensedAt,
         }),
         request: { method: 'POST', url: 'MedicationDispense' },
       });
     }
+    this.reportCompoundGaps(skippedCompounds);
     this.reportMedicationGaps(skippedMedications);
     return [...medicationEntries, ...requestEntries, ...dispenseEntries];
+  }
+
+  /**
+   * A product dispense finds its request through the prescription line that
+   * named the same medication — the line id is the only key both sides share
+   * now that a line may have no medication at all.
+   */
+  private resolveProductRequestReference(
+    bundleData: SatusehatSubmissionBundleData,
+    dispenseItem: SatusehatSubmissionDispenseItem,
+    requestFullUrls: ReadonlyMap<string, string>,
+  ): string | undefined {
+    const line = bundleData.prescriptions
+      .find((prescription) => prescription.prescriptionId === dispenseItem.prescriptionId)
+      ?.items.find(
+        (item) => item.medication?.medicationId === dispenseItem.medication?.medicationId,
+      );
+    return line ? requestFullUrls.get(line.prescriptionItemId) : undefined;
+  }
+
+  /**
+   * A compound skipped for an uncoded ingredient names both the compound and
+   * the component, because the fix is the component's catalog row and an
+   * operator told only "a compound was skipped" cannot find it.
+   */
+  private reportCompoundGaps(skippedCompounds: readonly string[]): void {
+    if (skippedCompounds.length === 0) {
+      return;
+    }
+    this.logger.warn(
+      `SATUSEHAT compound mapping gap: skipped ${skippedCompounds.length} compound(s) with an uncoded component: ${skippedCompounds.join(', ')}`,
+    );
   }
 
   private reportMedicationGaps(

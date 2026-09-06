@@ -1,4 +1,5 @@
 import type {
+  CompoundPreparationValue,
   DispenseStatusValue,
   MedicationCategoryValue,
   MedicationUnitValue,
@@ -135,19 +136,43 @@ export type PrescriptionItemMedicationProjection = {
   name: string;
 };
 
-export type PrescriptionItemRecord = {
+/**
+ * One ingredient of a compound line (P10-T18). `quantity` is a number rather
+ * than a Decimal string because the repository converts at the Prisma
+ * boundary, as it does for every other decimal in this domain.
+ */
+export type PrescriptionItemComponentRecord = {
   id: string;
   medicationId: string;
+  quantity: number;
+  unit: string;
+  medication: PrescriptionItemMedicationProjection;
+};
+
+/**
+ * One prescription line. `medication` is null exactly when `isCompound` is
+ * true, which a database CHECK enforces — a reader never has to decide which
+ * of the two shapes a line meant.
+ */
+export type PrescriptionItemRecord = {
+  id: string;
+  medicationId: string | null;
   dosage: string;
   frequency: string;
   durationDays: number | null;
   quantity: number;
   instructions: string | null;
-  medication: PrescriptionItemMedicationProjection;
+  isCompound: boolean;
+  compoundName: string | null;
+  preparation: CompoundPreparationValue | null;
+  dosageUnit: string | null;
+  medication: PrescriptionItemMedicationProjection | null;
+  components: PrescriptionItemComponentRecord[];
 };
 
 export type PrescriptionDispenseItemProjection = {
-  medicationId: string;
+  medicationId: string | null;
+  prescriptionItemId: string | null;
   quantity: number;
 };
 
@@ -174,12 +199,17 @@ export type PrescriptionDetailRecord = {
 };
 
 export type CreatePrescriptionItemPayload = {
-  medicationId: string;
+  medicationId?: string;
   dosage: string;
   frequency: string;
   durationDays?: number;
   quantity: number;
   instructions?: string;
+  isCompound?: boolean;
+  compoundName?: string;
+  preparation?: CompoundPreparationValue;
+  dosageUnit?: string;
+  components?: Array<{ medicationId: string; quantity: number; unit: string }>;
 };
 
 export type CreatePrescriptionRecordPayload = {
@@ -190,8 +220,14 @@ export type CreatePrescriptionRecordPayload = {
   items: CreatePrescriptionItemPayload[];
 };
 
+/**
+ * One line being handed over: a catalog product, or a whole compound named by
+ * its prescription line. Exactly one of the two, which the schema refuses to
+ * validate otherwise.
+ */
 export type CreateDispenseItemPayload = {
-  medicationId: string;
+  medicationId?: string;
+  prescriptionItemId?: string;
   quantity: number;
 };
 
@@ -205,9 +241,18 @@ export type CreateDispenseRecordPayload = {
 
 export type DispenseItemWithMedicationRecord = {
   id: string;
-  medicationId: string;
+  medicationId: string | null;
+  prescriptionItemId: string | null;
   quantity: number;
-  medication: PrescriptionItemMedicationProjection;
+  medication: PrescriptionItemMedicationProjection | null;
+  /** The compound this line handed over, when it is not a product line. */
+  prescriptionItem: {
+    id: string;
+    compoundName: string | null;
+    preparation: CompoundPreparationValue | null;
+    dosageUnit: string | null;
+    components: PrescriptionItemComponentRecord[];
+  } | null;
   stockAllocations: Array<{
     quantity: number;
     stockReceipt: { id: string; batchNumber: string; expiryDate: Date | null };

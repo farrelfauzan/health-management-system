@@ -6,6 +6,8 @@ import {
   ListMedicationsParams,
   ListPrescriptionsParams,
   ListStockReceiptsParams,
+  DispenseRecordDetailRecord,
+  PrescriptionDetailRecord,
   PrescriptionScopeActor,
   resolvePrescriptionStatusAfterDispense,
   UpdateMedicationRecordPayload,
@@ -61,6 +63,10 @@ const PRESCRIPTION_DETAIL_INCLUDE = {
       medication: {
         select: MEDICATION_PROJECTION_SELECT,
       },
+      components: {
+        include: { medication: { select: MEDICATION_PROJECTION_SELECT } },
+        orderBy: { createdAt: 'asc' as const },
+      },
     },
   },
   dispenseRecords: {
@@ -73,6 +79,7 @@ const PRESCRIPTION_DETAIL_INCLUDE = {
       items: {
         select: {
           medicationId: true,
+          prescriptionItemId: true,
           quantity: true,
         },
       },
@@ -85,6 +92,18 @@ const DISPENSE_DETAIL_INCLUDE = {
     include: {
       medication: {
         select: MEDICATION_PROJECTION_SELECT,
+      },
+      prescriptionItem: {
+        select: {
+          id: true,
+          compoundName: true,
+          preparation: true,
+          dosageUnit: true,
+          components: {
+            include: { medication: { select: MEDICATION_PROJECTION_SELECT } },
+            orderBy: { createdAt: 'asc' as const },
+          },
+        },
       },
       stockAllocations: {
         include: {
@@ -101,6 +120,53 @@ const DISPENSE_DETAIL_INCLUDE = {
     },
   },
 } satisfies Prisma.DispenseRecordInclude;
+
+
+/**
+ * Component quantities are `Decimal` in Postgres — half a tablet is the point
+ * of a puyer — and no Prisma type leaves this layer, which is the rule the
+ * rest of this repository already follows for prices and stock.
+ */
+function toPrescriptionDetailRecord<
+  T extends {
+    items: Array<{ components: Array<{ quantity: { toNumber: () => number } }> }>;
+  },
+>(prescription: T): PrescriptionDetailRecord {
+  return {
+    ...prescription,
+    items: prescription.items.map((item) => ({
+      ...item,
+      components: item.components.map((component) => ({
+        ...component,
+        quantity: component.quantity.toNumber(),
+      })),
+    })),
+  } as unknown as PrescriptionDetailRecord;
+}
+
+function toDispenseRecordDetailRecord<
+  T extends {
+    items: Array<{
+      prescriptionItem: { components: Array<{ quantity: { toNumber: () => number } }> } | null;
+    }>;
+  },
+>(record: T): DispenseRecordDetailRecord {
+  return {
+    ...record,
+    items: record.items.map((item) => ({
+      ...item,
+      prescriptionItem: item.prescriptionItem
+        ? {
+            ...item.prescriptionItem,
+            components: item.prescriptionItem.components.map((component) => ({
+              ...component,
+              quantity: component.quantity.toNumber(),
+            })),
+          }
+        : null,
+    })),
+  } as unknown as DispenseRecordDetailRecord;
+}
 
 function isUniqueConstraintErrorOn(err: unknown, target: string): boolean {
   if (typeof err !== 'object' || err === null) {
@@ -203,7 +269,7 @@ export class PharmacyFlowRepository {
 
       const count = await this.prisma.countActive(tx.prescription, { where });
 
-      return [prescriptions, count] as const;
+      return [prescriptions.map((row) => toPrescriptionDetailRecord(row)), count] as const;
     });
 
     return {
@@ -465,18 +531,21 @@ export class PharmacyFlowRepository {
     });
   }
 
-  async findPrescriptionDetailById(id: string) {
-    return this.prisma.findUniqueActive(this.prisma.prescription, {
+  async findPrescriptionDetailById(id: string): Promise<PrescriptionDetailRecord | null> {
+    const prescription = await this.prisma.findUniqueActive(this.prisma.prescription, {
       where: {
         id,
       },
       include: PRESCRIPTION_DETAIL_INCLUDE,
     });
+    return prescription ? toPrescriptionDetailRecord(prescription) : null;
   }
 
-  async createPrescription(payload: CreatePrescriptionRecordPayload) {
+  async createPrescription(
+    payload: CreatePrescriptionRecordPayload,
+  ): Promise<PrescriptionDetailRecord> {
     return this.prisma.executeTransaction(async (tx) => {
-      return tx.prescription.create({
+      const created = await tx.prescription.create({
         data: {
           patientId: payload.patientId,
           doctorId: payload.doctorId,
@@ -486,17 +555,33 @@ export class PharmacyFlowRepository {
           notes: payload.notes,
           items: {
             create: payload.items.map((item) => ({
-              medicationId: item.medicationId,
+              medicationId: item.medicationId ?? null,
               dosage: item.dosage,
               frequency: item.frequency,
               durationDays: item.durationDays,
               quantity: item.quantity,
               instructions: item.instructions,
+              isCompound: item.isCompound ?? false,
+              compoundName: item.compoundName ?? null,
+              preparation: item.preparation ?? null,
+              dosageUnit: item.dosageUnit ?? null,
+              ...(item.components && item.components.length > 0
+                ? {
+                    components: {
+                      create: item.components.map((component) => ({
+                        medicationId: component.medicationId,
+                        quantity: component.quantity,
+                        unit: component.unit,
+                      })),
+                    },
+                  }
+                : {}),
             })),
           },
         },
         include: PRESCRIPTION_DETAIL_INCLUDE,
       });
+      return toPrescriptionDetailRecord(created);
     });
   }
 
@@ -515,7 +600,8 @@ export class PharmacyFlowRepository {
   async createDispense(payload: CreateDispenseRecordPayload) {
     return this.prisma.executeTransaction(async (tx) => {
       await this.lockPrescriptionRow(tx, payload.prescriptionId);
-      const hasRemainingQuantity = await this.assertRemainingQuantitiesCoverDispense(tx, payload);
+      const { hasRemainingQuantity, compoundComponents } =
+        await this.assertRemainingQuantitiesCoverDispense(tx, payload);
       await tx.prescription.update({
         where: {
           id: payload.prescriptionId,
@@ -531,19 +617,27 @@ export class PharmacyFlowRepository {
           notes: payload.notes,
           items: {
             create: payload.items.map((item) => ({
-              medicationId: item.medicationId,
+              medicationId: item.medicationId ?? null,
+              prescriptionItemId: item.prescriptionItemId ?? null,
               quantity: item.quantity,
             })),
           },
         },
         include: { items: true },
       });
-      await this.allocateStockFefo(tx, created.items, payload.items, payload.inventoryDate);
+      await this.allocateStockFefo(
+        tx,
+        created.items,
+        payload.items,
+        payload.inventoryDate,
+        compoundComponents,
+      );
       await this.enqueueBpjsObat(tx, payload.prescriptionId);
-      return tx.dispenseRecord.findUniqueOrThrow({
+      const persisted = await tx.dispenseRecord.findUniqueOrThrow({
         where: { id: created.id },
         include: DISPENSE_DETAIL_INCLUDE,
       });
+      return toDispenseRecordDetailRecord(persisted);
     });
   }
 
@@ -587,10 +681,18 @@ export class PharmacyFlowRepository {
     await tx.$queryRaw`SELECT id FROM "prescriptions" WHERE id = ${prescriptionId}::uuid FOR UPDATE`;
   }
 
+  /**
+   * Also returns the compound lines' ingredients, because the allocator needs
+   * them and this is the read that already has them — fetching the same rows
+   * twice inside one transaction would be a second lock for no reason.
+   */
   private async assertRemainingQuantitiesCoverDispense(
     tx: PrismaTransactionClient,
     payload: CreateDispenseRecordPayload,
-  ): Promise<boolean> {
+  ): Promise<{
+    hasRemainingQuantity: boolean;
+    compoundComponents: Map<string, Array<{ medicationId: string; quantity: number }>>;
+  }> {
     const prescription = await tx.prescription.findFirst({
       where: {
         id: payload.prescriptionId,
@@ -600,8 +702,11 @@ export class PharmacyFlowRepository {
         status: true,
         items: {
           select: {
+            id: true,
             medicationId: true,
             quantity: true,
+            isCompound: true,
+            components: { select: { medicationId: true, quantity: true } },
           },
         },
         dispenseRecords: {
@@ -612,6 +717,7 @@ export class PharmacyFlowRepository {
             items: {
               select: {
                 medicationId: true,
+                prescriptionItemId: true,
                 quantity: true,
               },
             },
@@ -624,66 +730,129 @@ export class PharmacyFlowRepository {
       throw new ConflictException('Prescription is not in a dispensable state');
     }
 
-    const dispensedByMedication = new Map<string, number>();
+    // Keyed by the line rather than by the medication (P10-T18). A compound
+    // has no medication to key on, and two lines may name the same product
+    // only if one of them is a compound — so the prescription line id is the
+    // only identity that holds for both shapes.
+    const dispensedByLine = new Map<string, number>();
     for (const record of prescription.dispenseRecords) {
       for (const item of record.items) {
-        const dispensedQty = dispensedByMedication.get(item.medicationId) ?? 0;
-        dispensedByMedication.set(item.medicationId, dispensedQty + item.quantity);
+        const lineKey = this.resolveDispenseLineKey(item, prescription.items);
+        if (lineKey === null) {
+          continue;
+        }
+        dispensedByLine.set(lineKey, (dispensedByLine.get(lineKey) ?? 0) + item.quantity);
       }
     }
 
-    const prescribedByMedication = new Map<string, number>(
-      prescription.items.map((item) => [item.medicationId, item.quantity]),
+    const prescribedByLine = new Map<string, number>(
+      prescription.items.map((item) => [item.id, item.quantity]),
     );
 
-    const dispensingByMedication = new Map<string, number>(
-      payload.items.map((item) => [item.medicationId, item.quantity]),
-    );
-
+    const dispensingByLine = new Map<string, number>();
     for (const item of payload.items) {
-      const prescribedQty = prescribedByMedication.get(item.medicationId);
-      if (prescribedQty === undefined) {
+      const lineKey = this.resolveRequestLineKey(item, prescription.items);
+      if (lineKey === null) {
         throw new ConflictException('Dispense item is not part of the prescription');
       }
-      const remainingQty = prescribedQty - (dispensedByMedication.get(item.medicationId) ?? 0);
+      dispensingByLine.set(lineKey, (dispensingByLine.get(lineKey) ?? 0) + item.quantity);
+      const prescribedQty = prescribedByLine.get(lineKey) ?? 0;
+      const remainingQty = prescribedQty - (dispensedByLine.get(lineKey) ?? 0);
       if (item.quantity > remainingQty) {
         throw new ConflictException('Dispense quantity exceeds remaining prescribed quantity');
       }
     }
 
-    return [...prescribedByMedication.entries()].some(([medicationId, prescribedQty]) => {
-      const alreadyDispensedQty = dispensedByMedication.get(medicationId) ?? 0;
-      const dispensingQty = dispensingByMedication.get(medicationId) ?? 0;
-      return prescribedQty - alreadyDispensedQty - dispensingQty > 0;
-    });
+    const compoundComponents = new Map<
+      string,
+      Array<{ medicationId: string; quantity: number }>
+    >();
+    for (const line of prescription.items) {
+      if (!line.isCompound) {
+        continue;
+      }
+      compoundComponents.set(
+        line.id,
+        line.components.map((component) => ({
+          medicationId: component.medicationId,
+          quantity: component.quantity.toNumber(),
+        })),
+      );
+    }
+
+    const hasRemainingQuantity = [...prescribedByLine.entries()].some(
+      ([lineId, prescribedQty]) => {
+        const alreadyDispensedQty = dispensedByLine.get(lineId) ?? 0;
+        const dispensingQty = dispensingByLine.get(lineId) ?? 0;
+        return prescribedQty - alreadyDispensedQty - dispensingQty > 0;
+      },
+    );
+    return { hasRemainingQuantity, compoundComponents };
   }
 
+  /** The prescription line a persisted dispense item belongs to. */
+  private resolveDispenseLineKey(
+    item: { medicationId: string | null; prescriptionItemId: string | null },
+    prescriptionItems: Array<{ id: string; medicationId: string | null }>,
+  ): string | null {
+    if (item.prescriptionItemId) {
+      return item.prescriptionItemId;
+    }
+    return (
+      prescriptionItems.find((line) => line.medicationId === item.medicationId)?.id ?? null
+    );
+  }
+
+  /** The prescription line a requested dispense item claims to fulfil. */
+  private resolveRequestLineKey(
+    item: { medicationId?: string; prescriptionItemId?: string },
+    prescriptionItems: Array<{ id: string; medicationId: string | null }>,
+  ): string | null {
+    if (item.prescriptionItemId) {
+      return (
+        prescriptionItems.find((line) => line.id === item.prescriptionItemId)?.id ?? null
+      );
+    }
+    return (
+      prescriptionItems.find((line) => line.medicationId === item.medicationId)?.id ?? null
+    );
+  }
+
+  /**
+   * Allocates stock first-expiry-first-out, one medication at a time, in a
+   * deterministic order — the ordering is what stops two concurrent dispenses
+   * deadlocking on the same receipts.
+   *
+   * A compound line expands into its ingredients first (P10-T18): dispensing
+   * four puyer of a two-ingredient compound takes four times each ingredient's
+   * per-compound quantity from stock, and every resulting allocation hangs off
+   * the one compound `DispenseItem`. Ingredient quantities are decimal (half a
+   * tablet is the point of a puyer) while stock is counted in whole units, so
+   * the total is rounded **up**: the pharmacist opened the packet, and a
+   * clinic that under-counts its own stock discovers it at the next count
+   * rather than at the bench.
+   */
   private async allocateStockFefo(
     tx: PrismaTransactionClient,
-    dispenseItems: Array<{ id: string; medicationId: string }>,
+    dispenseItems: Array<{ id: string; medicationId: string | null; prescriptionItemId: string | null }>,
     requestedItems: CreateDispenseRecordPayload['items'],
     clinicToday: Date,
+    compoundComponents: ReadonlyMap<string, ReadonlyArray<{ medicationId: string; quantity: number }>>,
   ): Promise<void> {
-    const sortedItems = [...requestedItems].sort((left, right) =>
-      left.medicationId.localeCompare(right.medicationId),
-    );
-    for (const requestItem of sortedItems) {
-      const dispenseItem = dispenseItems.find(
-        (candidate) => candidate.medicationId === requestItem.medicationId,
-      );
-      if (!dispenseItem) throw new ConflictException('Dispense item was not persisted');
+    const demands = this.buildStockDemands(dispenseItems, requestedItems, compoundComponents);
+    for (const demand of demands) {
       const receipts = await tx.$queryRaw<
         Array<{ id: string; remainingQuantity: number }>
       >`
         SELECT r.id, r."remaining_quantity" AS "remainingQuantity"
         FROM "medication_stock_receipts" r
-        WHERE r."medication_id" = ${requestItem.medicationId}::uuid
+        WHERE r."medication_id" = ${demand.medicationId}::uuid
           AND (r."expiry_date" IS NULL OR r."expiry_date" >= ${clinicToday}::date)
           AND r."remaining_quantity" > 0
         ORDER BY r."expiry_date" ASC NULLS LAST, r."received_at" ASC, r.id ASC
         FOR UPDATE OF r
       `;
-      let unallocated = requestItem.quantity;
+      let unallocated = demand.quantity;
       const allocations: Array<{ dispenseItemId: string; stockReceiptId: string; quantity: number }> = [];
       for (const receipt of receipts) {
         if (unallocated === 0) break;
@@ -695,7 +864,11 @@ export class PharmacyFlowRepository {
         if (decrement.count !== 1) {
           throw new ConflictException('Medication stock changed during dispense');
         }
-        allocations.push({ dispenseItemId: dispenseItem.id, stockReceiptId: receipt.id, quantity });
+        allocations.push({
+          dispenseItemId: demand.dispenseItemId,
+          stockReceiptId: receipt.id,
+          quantity,
+        });
         unallocated -= quantity;
       }
       if (unallocated > 0) {
@@ -703,6 +876,49 @@ export class PharmacyFlowRepository {
       }
       await tx.dispenseItemStockAllocation.createMany({ data: allocations });
     }
+  }
+
+  /**
+   * What comes out of stock, and which dispense item each draw belongs to.
+   * Sorted by medication so concurrent dispenses lock receipts in the same
+   * order, which is what the concurrency spec pins.
+   */
+  private buildStockDemands(
+    dispenseItems: Array<{ id: string; medicationId: string | null; prescriptionItemId: string | null }>,
+    requestedItems: CreateDispenseRecordPayload['items'],
+    compoundComponents: ReadonlyMap<string, ReadonlyArray<{ medicationId: string; quantity: number }>>,
+  ): Array<{ dispenseItemId: string; medicationId: string; quantity: number }> {
+    const demands: Array<{ dispenseItemId: string; medicationId: string; quantity: number }> = [];
+    for (const requestItem of requestedItems) {
+      const dispenseItem = dispenseItems.find((candidate) =>
+        requestItem.prescriptionItemId
+          ? candidate.prescriptionItemId === requestItem.prescriptionItemId
+          : candidate.medicationId === requestItem.medicationId,
+      );
+      if (!dispenseItem) {
+        throw new ConflictException('Dispense item was not persisted');
+      }
+      if (!requestItem.prescriptionItemId) {
+        demands.push({
+          dispenseItemId: dispenseItem.id,
+          medicationId: requestItem.medicationId as string,
+          quantity: requestItem.quantity,
+        });
+        continue;
+      }
+      const components = compoundComponents.get(requestItem.prescriptionItemId) ?? [];
+      if (components.length === 0) {
+        throw new ConflictException('Compound line has no ingredients to dispense');
+      }
+      for (const component of components) {
+        demands.push({
+          dispenseItemId: dispenseItem.id,
+          medicationId: component.medicationId,
+          quantity: Math.ceil(component.quantity * requestItem.quantity),
+        });
+      }
+    }
+    return demands.sort((left, right) => left.medicationId.localeCompare(right.medicationId));
   }
 
   private withComputedStock<

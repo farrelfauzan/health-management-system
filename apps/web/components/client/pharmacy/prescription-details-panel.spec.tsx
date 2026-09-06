@@ -57,6 +57,8 @@ const PRESCRIPTION: PrescriptionResponse = {
       durationDays: 7,
       quantity: 21,
       instructions: 'Take after meals.',
+      isCompound: false,
+      components: [],
     },
   ],
 };

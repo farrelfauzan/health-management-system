@@ -1334,6 +1334,18 @@
         "emptyBody": "Dokumen ini belum memiliki isi."
       }
     },
+    "pharmacyPrescriptions": {
+      "compoundBadge": "Racikan",
+      "compoundComponents": "Komposisi",
+      "compoundTotal": "total {total} {unit}",
+      "compoundPreparations": {
+        "PUYER": "Puyer",
+        "KAPSUL": "Kapsul",
+        "SIRUP": "Sirup",
+        "SALEP": "Salep",
+        "OTHER": "Racikan"
+      }
+    },
     "laboratory": {
       "title": "Katalog Laboratorium",
       "description": "Pemeriksaan yang tersedia, arti tiap hasil, dan paket yang dijual bersama.",

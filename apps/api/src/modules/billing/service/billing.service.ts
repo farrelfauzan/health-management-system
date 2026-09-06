@@ -55,6 +55,13 @@ type CollectedItems = {
   gaps: InvoiceGenerationGap[];
 };
 
+/**
+ * The tariff a compounding fee is read from (`jasa racik`, P10-T18). A code
+ * rather than a category: a clinic files it under OTHER alongside a dozen
+ * other fees, and the fee is one specific row, not a kind of row.
+ */
+const COMPOUNDING_FEE_TARIFF_CODE = 'JASA-RACIK';
+
 /** A hand-added tariff line is typed by the tariff's own category. */
 const ITEM_TYPE_BY_TARIFF_CATEGORY: Readonly<
   Record<ServiceTariffCategoryValue, InvoiceItemTypeValue>
@@ -312,6 +319,9 @@ export class BillingService {
     items.push(...immunizations.items);
     gaps.push(...immunizations.gaps);
     const medications = this.collectMedicationItems(dispensedItems);
+    const compounds = await this.collectCompoundItems(dispensedItems);
+    items.push(...compounds.items);
+    gaps.push(...compounds.gaps);
     items.push(...medications.items);
     gaps.push(...medications.gaps);
     return { items, gaps };
@@ -440,12 +450,19 @@ export class BillingService {
    * Dispensed quantities are billed per medication at its catalog price. An
    * unpriced medication is a gap to surface, not a free line — pricing it
    * later means voiding and regenerating, which is the correction path anyway.
+   *
+   * Compound lines are priced separately below: they have no single catalog
+   * price to read, and grouping them by medication id would collapse every
+   * compound on the visit into one row keyed by null.
    */
   private collectMedicationItems(dispensedItems: BillingDispensedItemRecord[]): CollectedItems {
     const items: CreateInvoiceItemPayload[] = [];
     const gaps: InvoiceGenerationGap[] = [];
     const grouped = new Map<string, BillingDispensedItemRecord>();
     for (const dispensed of dispensedItems) {
+      if (dispensed.medication === null || dispensed.medicationId === null) {
+        continue;
+      }
       const existing = grouped.get(dispensed.medicationId);
       grouped.set(dispensed.medicationId, {
         ...dispensed,
@@ -453,21 +470,85 @@ export class BillingService {
       });
     }
     for (const dispensed of grouped.values()) {
-      if (dispensed.medication.unitPrice === null) {
+      const medication = dispensed.medication;
+      if (medication === null) {
+        continue;
+      }
+      if (medication.unitPrice === null) {
         gaps.push({
           reason: 'UNPRICED_MEDICATION',
-          description: dispensed.medication.name,
+          description: medication.name,
         });
         continue;
       }
       items.push({
         itemType: 'MEDICATION',
-        medicationId: dispensed.medicationId,
-        description: dispensed.medication.name,
+        medicationId: dispensed.medicationId ?? undefined,
+        description: medication.name,
         quantity: dispensed.quantity,
-        unitPrice: dispensed.medication.unitPrice,
-        amount: toRupiah(dispensed.quantity * toCents(dispensed.medication.unitPrice)),
+        unitPrice: medication.unitPrice,
+        amount: toRupiah(dispensed.quantity * toCents(medication.unitPrice)),
       });
+    }
+    return { items, gaps };
+  }
+
+  /**
+   * A compound is priced as the sum of its ingredients plus a compounding fee
+   * (`jasa racik`): a clinic that sold a puyer sold labour as well as
+   * substance, and the ingredients alone would under-bill it every time
+   * (P10-T18).
+   *
+   * One ingredient with no price gaps the **whole compound** rather than
+   * pricing it partially. A half-priced racikan is worse than an unpriced one,
+   * because a cashier reading a plausible number has no reason to question it.
+   */
+  private async collectCompoundItems(
+    dispensedItems: BillingDispensedItemRecord[],
+  ): Promise<CollectedItems> {
+    const items: CreateInvoiceItemPayload[] = [];
+    const gaps: InvoiceGenerationGap[] = [];
+    const compoundLines = dispensedItems.filter((dispensed) => dispensed.compound !== null);
+    if (compoundLines.length === 0) {
+      return { items, gaps };
+    }
+    const [compoundingFeeTariff] = await this.serviceTariffRepository.findActiveTariffsByCodes([
+      COMPOUNDING_FEE_TARIFF_CODE,
+    ]);
+    for (const dispensed of compoundLines) {
+      const compound = dispensed.compound;
+      if (compound === null) {
+        continue;
+      }
+      const unpriced = compound.components.filter((component) => component.unitPrice === null);
+      if (unpriced.length > 0) {
+        gaps.push({
+          reason: 'UNPRICED_COMPOUND_COMPONENT',
+          description: `${compound.name}: ${unpriced.map((component) => component.name).join(', ')}`,
+        });
+        continue;
+      }
+      const componentCents = compound.components.reduce(
+        (total, component) =>
+          total + Math.round(component.quantityPerCompound * toCents(component.unitPrice ?? 0)),
+        0,
+      );
+      items.push({
+        itemType: 'MEDICATION',
+        description: compound.name,
+        quantity: dispensed.quantity,
+        unitPrice: toRupiah(componentCents),
+        amount: toRupiah(dispensed.quantity * componentCents),
+      });
+      if (!compoundingFeeTariff) {
+        gaps.push({
+          reason: 'NO_COMPOUNDING_FEE_TARIFF',
+          code: COMPOUNDING_FEE_TARIFF_CODE,
+          description: compound.name,
+        });
+        continue;
+      }
+      items.push(this.buildTariffItem(compoundingFeeTariff, 'OTHER', dispensed.quantity));
     }
     return { items, gaps };
   }

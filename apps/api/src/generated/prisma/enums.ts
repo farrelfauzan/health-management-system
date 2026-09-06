@@ -261,6 +261,17 @@ export const Religion = {
 export type Religion = (typeof Religion)[keyof typeof Religion]
 
 
+export const CompoundPreparation = {
+  PUYER: 'PUYER',
+  KAPSUL: 'KAPSUL',
+  SIRUP: 'SIRUP',
+  SALEP: 'SALEP',
+  OTHER: 'OTHER'
+} as const
+
+export type CompoundPreparation = (typeof CompoundPreparation)[keyof typeof CompoundPreparation]
+
+
 export const EncounterPrognosis = {
   BONAM: 'BONAM',
   DUBIA_AD_BONAM: 'DUBIA_AD_BONAM',

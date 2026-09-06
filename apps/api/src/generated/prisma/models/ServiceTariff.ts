@@ -530,14 +530,6 @@ export type EnumServiceTariffCategoryFieldUpdateOperationsInput = {
   set?: $Enums.ServiceTariffCategory
 }
 
-export type DecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
-}
-
 export type ServiceTariffCreateNestedOneWithoutInvoiceItemsInput = {
   create?: Prisma.XOR<Prisma.ServiceTariffCreateWithoutInvoiceItemsInput, Prisma.ServiceTariffUncheckedCreateWithoutInvoiceItemsInput>
   connectOrCreate?: Prisma.ServiceTariffCreateOrConnectWithoutInvoiceItemsInput

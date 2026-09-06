@@ -151,6 +151,7 @@ function buildPharmacyBundleData() {
             prescriptionItemId: 'presc-item-1',
             prescriptionId: 'presc-1',
             medication: codedMedication,
+            compound: null,
             dosage: '500 mg',
             frequency: '3x sehari',
             instructions: 'Sesudah makan',
@@ -160,6 +161,7 @@ function buildPharmacyBundleData() {
             prescriptionItemId: 'presc-item-2',
             prescriptionId: 'presc-1',
             medication: uncodedMedication,
+            compound: null,
             dosage: '1 bungkus',
             frequency: '2x sehari',
             instructions: null,
@@ -174,6 +176,7 @@ function buildPharmacyBundleData() {
         dispenseRecordId: 'disp-1',
         prescriptionId: 'presc-1',
         medication: codedMedication,
+        prescriptionItemId: null,
         quantity: 15,
         dispensedAt: new Date('2026-07-28T02:30:00.000Z'),
       },
@@ -182,6 +185,7 @@ function buildPharmacyBundleData() {
         dispenseRecordId: 'disp-1',
         prescriptionId: 'presc-1',
         medication: uncodedMedication,
+        prescriptionItemId: null,
         quantity: 10,
         dispensedAt: new Date('2026-07-28T02:30:00.000Z'),
       },
@@ -879,6 +883,121 @@ describe('SatusehatSubmissionService', () => {
         metadata: expect.objectContaining({ trigger: 'SUBMISSION_WORKER', matchCount: 2 }),
       }),
     );
+  });
+
+  it('reports a racikan as one SD Medication with its components as ingredients', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        prescriptions: [
+          {
+            prescriptionId: 'presc-1',
+            issuedAt: new Date('2026-07-28T02:15:00.000Z'),
+            items: [
+              {
+                prescriptionItemId: 'presc-item-compound',
+                prescriptionId: 'presc-1',
+                medication: null,
+                compound: {
+                  compoundName: 'Puyer batuk pilek',
+                  preparation: 'PUYER' as const,
+                  components: [
+                    { medication: codedMedication, quantity: 0.5, unit: 'TABLET' },
+                    {
+                      medication: { ...codedMedication, medicationId: 'med-ctm', code: 'CTM-4', kfaCode: '93002020', name: 'CTM 4 mg' },
+                      quantity: 0.25,
+                      unit: 'TABLET',
+                    },
+                  ],
+                },
+                dosage: '1 bungkus',
+                frequency: '3x sehari',
+                instructions: null,
+                quantity: 10,
+              },
+            ],
+          },
+        ],
+        dispenseItems: [],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const medicationEntries = bundle.entry.filter((entry) => entry.request.url === 'Medication');
+    // Two component products plus the compound itself.
+    expect(medicationEntries).toHaveLength(3);
+    const compoundResource = medicationEntries.at(-1)?.resource as {
+      extension: Array<{ valueCodeableConcept: { coding: Array<{ code: string }> } }>;
+      ingredient?: Array<{ itemReference: { reference: string } }>;
+    };
+    expect(compoundResource.extension[0]?.valueCodeableConcept.coding[0]?.code).toBe('SD');
+    expect(compoundResource.ingredient).toHaveLength(2);
+    expect(bundle.entry.filter((entry) => entry.request.url === 'MedicationRequest')).toHaveLength(
+      1,
+    );
+  });
+
+  it('skips a racikan whole when one component has no KFA code, and names both', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        prescriptions: [
+          {
+            prescriptionId: 'presc-1',
+            issuedAt: new Date('2026-07-28T02:15:00.000Z'),
+            items: [
+              {
+                prescriptionItemId: 'presc-item-compound',
+                prescriptionId: 'presc-1',
+                medication: null,
+                compound: {
+                  compoundName: 'Puyer batuk pilek',
+                  preparation: 'PUYER' as const,
+                  components: [
+                    { medication: codedMedication, quantity: 0.5, unit: 'TABLET' },
+                    { medication: uncodedMedication, quantity: 0.25, unit: 'TABLET' },
+                  ],
+                },
+                dosage: '1 bungkus',
+                frequency: '3x sehari',
+                instructions: null,
+                quantity: 10,
+              },
+            ],
+          },
+        ],
+        dispenseItems: [],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+    const warnSpy = jest.spyOn(
+      (service as unknown as { logger: { warn: (message: string) => void } }).logger,
+      'warn',
+    );
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    // No compound entry, and no MedicationRequest for it either: a
+    // half-described racikan is worse than an absent one.
+    expect(bundle.entry.filter((entry) => entry.request.url === 'MedicationRequest')).toHaveLength(
+      0,
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Puyer batuk pilek (RACIK-01)'),
+    );
+    warnSpy.mockRestore();
   });
 
   it('adds one Procedure entry per ICD-9-CM-coded procedure, wired to the Encounter entry', async () => {

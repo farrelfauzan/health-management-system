@@ -348,6 +348,19 @@ enum Religion {
   OTHER
 }
 
+/// How a racikan is compounded. The five a klinik pratama actually makes;
+/// puyer — paediatric doses ground from adult tablets — is by far the
+/// commonest, and is the case P10-T18 exists for.
+enum CompoundPreparation {
+  PUYER
+  KAPSUL
+  SIRUP
+  SALEP
+  OTHER
+
+  @@map("compound_preparation")
+}
+
 /// Prognosis in the Latin terms Indonesian clinicians write. Three SNOMED
 /// grades cover them (good / fair / poor), which is what the SATUSEHAT mapper
 /// sends — the recorded term is echoed in `text` so the distinction between
@@ -2024,6 +2037,7 @@ model Medication {
   deletedAt    DateTime?           @map("deleted_at")
 
   prescriptionItems PrescriptionMedication[]
+  compoundComponents PrescriptionItemComponent[]
   dispenseItems     DispenseItem[]
   stockReceipts     MedicationStockReceipt[]
   invoiceItems      InvoiceItem[]
@@ -2066,25 +2080,74 @@ model Prescription {
   @@map("prescriptions")
 }
 
+/// One prescription line — a catalog product, or a compound (racikan).
+///
+/// A compound is a line like any other from the doctor's, the pharmacist's and
+/// the patient's point of view; what changes is that `medicationId` is null and
+/// the ingredients live in `components`. Modelling it as a separate line type
+/// would fork every read in the pharmacy flow for no gain (P10-T18).
+///
+/// A CHECK in the migration enforces exactly one of the two shapes, and the
+/// old `(prescriptionId, medicationId)` unique became a partial index: a
+/// nullable column cannot carry a plain unique meaningfully, since Postgres
+/// treats NULLs as distinct — and a prescription may legitimately carry two
+/// different puyer.
 model PrescriptionMedication {
-  id             String   @id @default(uuid()) @db.Uuid
-  prescriptionId String   @map("prescription_id") @db.Uuid
-  medicationId   String   @map("medication_id") @db.Uuid
+  id             String               @id @default(uuid()) @db.Uuid
+  prescriptionId String               @map("prescription_id") @db.Uuid
+  /// Null for a compound line.
+  medicationId   String?              @map("medication_id") @db.Uuid
   dosage         String
   frequency      String
-  durationDays   Int?     @map("duration_days")
+  durationDays   Int?                 @map("duration_days")
+  /// How many units were prescribed. For a compound, how many of
+  /// {@link dosageUnit} — "10 bungkus".
   quantity       Int
   instructions   String?
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  isCompound     Boolean              @default(false) @map("is_compound")
+  /// What the compound is called on the label, e.g. "Puyer batuk pilek".
+  compoundName   String?              @map("compound_name")
+  preparation    CompoundPreparation?
+  /// What one unit of the compound is called: bungkus, kapsul, botol.
+  dosageUnit     String?              @map("dosage_unit")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
 
-  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
-  medication   Medication   @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  prescription  Prescription                @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medication    Medication?                 @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  components    PrescriptionItemComponent[]
+  dispenseItems DispenseItem[]
 
-  @@unique([prescriptionId, medicationId])
   @@index([prescriptionId])
   @@index([medicationId])
   @@map("prescription_medications")
+}
+
+/// One ingredient of a compound line.
+///
+/// `quantity` is decimal because a puyer routinely uses a third or a half of a
+/// tablet — which is the whole reason the compound exists.
+model PrescriptionItemComponent {
+  id                  String   @id @default(uuid()) @db.Uuid
+  prescriptionItemId  String   @map("prescription_item_id") @db.Uuid
+  medicationId        String   @map("medication_id") @db.Uuid
+  quantity            Decimal  @db.Decimal(12, 4)
+  unit                String
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  prescriptionItem PrescriptionMedication @relation(fields: [prescriptionItemId], references: [id], onDelete: Cascade)
+  medication       Medication             @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+
+  /// One row per ingredient. Two rows for the same product on one compound
+  /// would be an entry error, and the pharmacist would allocate its stock
+  /// twice. Declared here as well as in the migration: the drift check
+  /// compares the migrated database against this schema, and an index the
+  /// schema does not know about reads as one to drop.
+  @@unique([prescriptionItemId, medicationId], map: "prescription_item_components_item_medication_key")
+  @@index([prescriptionItemId])
+  @@index([medicationId])
+  @@map("prescription_item_components")
 }
 
 model DispenseRecord {
@@ -2107,20 +2170,31 @@ model DispenseRecord {
   @@map("dispense_records")
 }
 
+/// One line handed over the counter: a catalog product, or a compound.
+///
+/// A compound line points at the prescription item rather than at a product —
+/// there is no single product to point at — and its stock allocations resolve
+/// to the component medications through their receipts, which is what
+/// `DispenseItemStockAllocation` already records (P10-T18). A CHECK enforces
+/// exactly one of the two subjects.
 model DispenseItem {
-  id               String   @id @default(uuid()) @db.Uuid
-  dispenseRecordId String   @map("dispense_record_id") @db.Uuid
-  medicationId     String   @map("medication_id") @db.Uuid
-  quantity         Int
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  id                 String   @id @default(uuid()) @db.Uuid
+  dispenseRecordId   String   @map("dispense_record_id") @db.Uuid
+  medicationId       String?  @map("medication_id") @db.Uuid
+  prescriptionItemId String?  @map("prescription_item_id") @db.Uuid
+  /// For a compound line, how many whole compounds were handed over. Partial
+  /// dispense means fewer compounds — never a partial ingredient.
+  quantity           Int
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
   dispenseRecord   DispenseRecord                @relation(fields: [dispenseRecordId], references: [id], onDelete: Cascade)
-  medication       Medication                    @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  medication       Medication?                   @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  prescriptionItem PrescriptionMedication?       @relation(fields: [prescriptionItemId], references: [id], onDelete: Restrict)
   stockAllocations DispenseItemStockAllocation[]
 
-  @@unique([dispenseRecordId, medicationId])
   @@index([medicationId])
+  @@index([prescriptionItemId])
   @@map("dispense_items")
 }
 

@@ -898,6 +898,75 @@ describe('SatusehatFhirMapper', () => {
     });
   });
 
+  describe('mapCompoundMedication', () => {
+    it('maps a racikan to a Medication of type SD with its ingredients', () => {
+      const actualMedication = mapper.mapCompoundMedication({
+        prescriptionItemId: '5e6f7a8b-9c0d-4e1f-a02b-3c4d5e6f7a8b',
+        compoundName: 'Puyer batuk pilek',
+        ingredients: [
+          {
+            medicationReference: 'urn:uuid:med-1',
+            medicationDisplay: 'Paracetamol 500 mg',
+            quantity: 0.5,
+            unit: 'TABLET',
+          },
+          {
+            medicationReference: 'urn:uuid:med-2',
+            medicationDisplay: 'CTM 4 mg',
+            quantity: 0.25,
+            unit: 'TABLET',
+          },
+        ],
+      });
+
+      expect(actualMedication.extension[0]?.valueCodeableConcept.coding[0]?.code).toBe('SD');
+      expect(actualMedication.identifier[0]?.value).toBe('5e6f7a8b-9c0d-4e1f-a02b-3c4d5e6f7a8b');
+      expect(actualMedication.ingredient).toHaveLength(2);
+      expect(actualMedication.ingredient?.[0]?.itemReference).toEqual({
+        reference: 'urn:uuid:med-1',
+        display: 'Paracetamol 500 mg',
+      });
+    });
+
+    it('names the compound in text, since no KFA code exists for one the clinic mixed', () => {
+      const actualMedication = mapper.mapCompoundMedication({
+        prescriptionItemId: '5e6f7a8b-9c0d-4e1f-a02b-3c4d5e6f7a8b',
+        compoundName: 'Puyer batuk pilek',
+        ingredients: [
+          {
+            medicationReference: 'urn:uuid:med-1',
+            medicationDisplay: 'Paracetamol 500 mg',
+            quantity: 0.5,
+            unit: 'TABLET',
+          },
+        ],
+      });
+
+      expect(actualMedication.code.text).toBe('Puyer batuk pilek');
+      expect(actualMedication.code.coding).toEqual([]);
+    });
+
+    it('carries the per-compound quantity as strength — a third of a tablet is the point', () => {
+      const actualMedication = mapper.mapCompoundMedication({
+        prescriptionItemId: '5e6f7a8b-9c0d-4e1f-a02b-3c4d5e6f7a8b',
+        compoundName: 'Puyer',
+        ingredients: [
+          {
+            medicationReference: 'urn:uuid:med-1',
+            medicationDisplay: 'Paracetamol 500 mg',
+            quantity: 0.3333,
+            unit: 'TABLET',
+          },
+        ],
+      });
+
+      expect(actualMedication.ingredient?.[0]?.strength).toEqual({
+        numerator: { value: 0.3333, unit: 'TABLET' },
+        denominator: { value: 1 },
+      });
+    });
+  });
+
   describe('mapVitalSignsToObservations', () => {
     it('maps a full vitals row to eight LOINC-coded observations', () => {
       const actualObservations = mapper.mapVitalSignsToObservations(buildVitalSignsInput());

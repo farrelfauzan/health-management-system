@@ -109,12 +109,13 @@ export class ServiceTariffRepository {
   }
 
   /**
-   * Tariffs matched by their own `code`, which is how a vaccination is priced
-   * (P10-T16): a vaccine has no ICD-9-CM code, so the clinic prices it by
-   * giving a tariff the same code as the catalog row. Deliberately not
-   * restricted to one category — a clinic that files its vaccine tariffs under
-   * PROCEDURE rather than OTHER is not wrong, and refusing to find them would
-   * turn a naming preference into an unpriced line.
+   * Tariffs matched by their own `code`, which is how both a vaccination
+   * (P10-T16) and a compounding fee (P10-T18) are priced: neither has an
+   * ICD-9-CM code, so the clinic prices them by giving a tariff the same code
+   * as the catalog row. Deliberately not restricted to one category — a clinic
+   * that files those tariffs under PROCEDURE rather than OTHER is not wrong,
+   * and refusing to find them would turn a naming preference into an unpriced
+   * line.
    */
   async findActiveTariffsByCodes(codes: string[]): Promise<ServiceTariffRecord[]> {
     if (codes.length === 0) {

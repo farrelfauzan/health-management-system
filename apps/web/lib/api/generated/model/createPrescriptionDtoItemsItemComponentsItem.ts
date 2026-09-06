@@ -6,12 +6,16 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CreateDispenseDtoItemsItem = {
-  medicationId?: string;
-  prescriptionItemId?: string;
+export type CreatePrescriptionDtoItemsItemComponentsItem = {
+  medicationId: string;
   /**
-     * @minimum 1
      * @maximum 10000
+     * @exclusiveMinimum 0
      */
   quantity: number;
+  /**
+     * @minLength 1
+     * @maxLength 32
+     */
+  unit: string;
 };
