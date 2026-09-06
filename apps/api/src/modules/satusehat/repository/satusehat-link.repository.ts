@@ -42,6 +42,12 @@ export class SatusehatLinkRepository {
     };
   }
 
+  /**
+   * Ciphertext and `last4` are written in one update, from one derivation of
+   * the plaintext. Deriving the partial value anywhere else — from a later
+   * decrypt, or in a second statement — is how the two end up describing
+   * different numbers (P10-T13).
+   */
   async savePatientIhsNumber(payload: SavePatientIhsNumberPayload): Promise<void> {
     const sealed = this.cryptoService.encryptSealedIdentifier(payload.ihsNumber);
     await this.prisma.patientProfile.update({
@@ -49,6 +55,7 @@ export class SatusehatLinkRepository {
       data: {
         satusehatPatientIdCiphertext: sealed.ciphertext,
         satusehatPatientIdKeyVersion: sealed.keyVersion,
+        satusehatPatientIdLast4: sealed.last4,
       },
     });
   }

@@ -160,6 +160,7 @@ export type PatientRecord = {
   nikLast4: string | null;
   bpjsNumberLast4: string | null;
   hasSatusehatPatientId: boolean;
+  satusehatPatientIdLast4: string | null;
   email: string | null;
   bloodType: BloodTypeValue | null;
   rhesusFactor: RhesusFactorValue | null;

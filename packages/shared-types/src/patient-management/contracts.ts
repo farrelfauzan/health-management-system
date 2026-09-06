@@ -81,6 +81,15 @@ export type PatientProfile = {
   bpjsNumberMasked?: string;
   /** Whether a SATUSEHAT IHS number has been resolved for this patient. */
   hasSatusehatPatientId: boolean;
+  /**
+   * Masked IHS number (`••••1234`), rendered from the stored last four
+   * characters without decrypting a row — the same rule as
+   * {@link PatientProfile.nikMasked}. Absent when the patient is not linked,
+   * and absent on a linked row that predates `P10-T13` until the backfill has
+   * run. The full value comes from `GET /patients/{id}/identifiers`, which is
+   * audited.
+   */
+  satusehatPatientIdMasked?: string;
   email?: string;
   bloodType?: BloodTypeValue;
   rhesusFactor?: RhesusFactorValue;

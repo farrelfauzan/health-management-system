@@ -75,6 +75,7 @@ export type PatientProfileMinAggregateOutputType = {
   bpjsNumberKeyVersion: number | null
   satusehatPatientIdCiphertext: string | null
   satusehatPatientIdKeyVersion: number | null
+  satusehatPatientIdLast4: string | null
 }
 
 export type PatientProfileMaxAggregateOutputType = {
@@ -114,6 +115,7 @@ export type PatientProfileMaxAggregateOutputType = {
   bpjsNumberKeyVersion: number | null
   satusehatPatientIdCiphertext: string | null
   satusehatPatientIdKeyVersion: number | null
+  satusehatPatientIdLast4: string | null
 }
 
 export type PatientProfileCountAggregateOutputType = {
@@ -153,6 +155,7 @@ export type PatientProfileCountAggregateOutputType = {
   bpjsNumberKeyVersion: number
   satusehatPatientIdCiphertext: number
   satusehatPatientIdKeyVersion: number
+  satusehatPatientIdLast4: number
   _all: number
 }
 
@@ -206,6 +209,7 @@ export type PatientProfileMinAggregateInputType = {
   bpjsNumberKeyVersion?: true
   satusehatPatientIdCiphertext?: true
   satusehatPatientIdKeyVersion?: true
+  satusehatPatientIdLast4?: true
 }
 
 export type PatientProfileMaxAggregateInputType = {
@@ -245,6 +249,7 @@ export type PatientProfileMaxAggregateInputType = {
   bpjsNumberKeyVersion?: true
   satusehatPatientIdCiphertext?: true
   satusehatPatientIdKeyVersion?: true
+  satusehatPatientIdLast4?: true
 }
 
 export type PatientProfileCountAggregateInputType = {
@@ -284,6 +289,7 @@ export type PatientProfileCountAggregateInputType = {
   bpjsNumberKeyVersion?: true
   satusehatPatientIdCiphertext?: true
   satusehatPatientIdKeyVersion?: true
+  satusehatPatientIdLast4?: true
   _all?: true
 }
 
@@ -410,6 +416,7 @@ export type PatientProfileGroupByOutputType = {
   bpjsNumberKeyVersion: number | null
   satusehatPatientIdCiphertext: string | null
   satusehatPatientIdKeyVersion: number | null
+  satusehatPatientIdLast4: string | null
   _count: PatientProfileCountAggregateOutputType | null
   _avg: PatientProfileAvgAggregateOutputType | null
   _sum: PatientProfileSumAggregateOutputType | null
@@ -472,6 +479,7 @@ export type PatientProfileWhereInput = {
   bpjsNumberKeyVersion?: Prisma.IntNullableFilter<"PatientProfile"> | number | null
   satusehatPatientIdCiphertext?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   satusehatPatientIdKeyVersion?: Prisma.IntNullableFilter<"PatientProfile"> | number | null
+  satusehatPatientIdLast4?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   ownerUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   doctors?: Prisma.DoctorPatientListRelationFilter
   appointments?: Prisma.AppointmentListRelationFilter
@@ -529,6 +537,7 @@ export type PatientProfileOrderByWithRelationInput = {
   bpjsNumberKeyVersion?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatPatientIdCiphertext?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatPatientIdKeyVersion?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatPatientIdLast4?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerUser?: Prisma.UserOrderByWithRelationInput
   doctors?: Prisma.DoctorPatientOrderByRelationAggregateInput
   appointments?: Prisma.AppointmentOrderByRelationAggregateInput
@@ -589,6 +598,7 @@ export type PatientProfileWhereUniqueInput = Prisma.AtLeast<{
   bpjsNumberKeyVersion?: Prisma.IntNullableFilter<"PatientProfile"> | number | null
   satusehatPatientIdCiphertext?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   satusehatPatientIdKeyVersion?: Prisma.IntNullableFilter<"PatientProfile"> | number | null
+  satusehatPatientIdLast4?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   ownerUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   doctors?: Prisma.DoctorPatientListRelationFilter
   appointments?: Prisma.AppointmentListRelationFilter
@@ -646,6 +656,7 @@ export type PatientProfileOrderByWithAggregationInput = {
   bpjsNumberKeyVersion?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatPatientIdCiphertext?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatPatientIdKeyVersion?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatPatientIdLast4?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PatientProfileCountOrderByAggregateInput
   _avg?: Prisma.PatientProfileAvgOrderByAggregateInput
   _max?: Prisma.PatientProfileMaxOrderByAggregateInput
@@ -693,6 +704,7 @@ export type PatientProfileScalarWhereWithAggregatesInput = {
   bpjsNumberKeyVersion?: Prisma.IntNullableWithAggregatesFilter<"PatientProfile"> | number | null
   satusehatPatientIdCiphertext?: Prisma.StringNullableWithAggregatesFilter<"PatientProfile"> | string | null
   satusehatPatientIdKeyVersion?: Prisma.IntNullableWithAggregatesFilter<"PatientProfile"> | number | null
+  satusehatPatientIdLast4?: Prisma.StringNullableWithAggregatesFilter<"PatientProfile"> | string | null
 }
 
 export type PatientProfileCreateInput = {
@@ -731,6 +743,7 @@ export type PatientProfileCreateInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -788,6 +801,7 @@ export type PatientProfileUncheckedCreateInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -843,6 +857,7 @@ export type PatientProfileUpdateInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -900,6 +915,7 @@ export type PatientProfileUncheckedUpdateInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -956,6 +972,7 @@ export type PatientProfileCreateManyInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
 }
 
 export type PatientProfileUpdateManyMutationInput = {
@@ -994,6 +1011,7 @@ export type PatientProfileUpdateManyMutationInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PatientProfileUncheckedUpdateManyInput = {
@@ -1033,6 +1051,7 @@ export type PatientProfileUncheckedUpdateManyInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PatientProfileListRelationFilter = {
@@ -1082,6 +1101,7 @@ export type PatientProfileCountOrderByAggregateInput = {
   bpjsNumberKeyVersion?: Prisma.SortOrder
   satusehatPatientIdCiphertext?: Prisma.SortOrder
   satusehatPatientIdKeyVersion?: Prisma.SortOrder
+  satusehatPatientIdLast4?: Prisma.SortOrder
 }
 
 export type PatientProfileAvgOrderByAggregateInput = {
@@ -1127,6 +1147,7 @@ export type PatientProfileMaxOrderByAggregateInput = {
   bpjsNumberKeyVersion?: Prisma.SortOrder
   satusehatPatientIdCiphertext?: Prisma.SortOrder
   satusehatPatientIdKeyVersion?: Prisma.SortOrder
+  satusehatPatientIdLast4?: Prisma.SortOrder
 }
 
 export type PatientProfileMinOrderByAggregateInput = {
@@ -1166,6 +1187,7 @@ export type PatientProfileMinOrderByAggregateInput = {
   bpjsNumberKeyVersion?: Prisma.SortOrder
   satusehatPatientIdCiphertext?: Prisma.SortOrder
   satusehatPatientIdKeyVersion?: Prisma.SortOrder
+  satusehatPatientIdLast4?: Prisma.SortOrder
 }
 
 export type PatientProfileSumOrderByAggregateInput = {
@@ -1546,6 +1568,7 @@ export type PatientProfileCreateWithoutOwnerUserInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutPatientInput
@@ -1601,6 +1624,7 @@ export type PatientProfileUncheckedCreateWithoutOwnerUserInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -1686,6 +1710,7 @@ export type PatientProfileScalarWhereInput = {
   bpjsNumberKeyVersion?: Prisma.IntNullableFilter<"PatientProfile"> | number | null
   satusehatPatientIdCiphertext?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
   satusehatPatientIdKeyVersion?: Prisma.IntNullableFilter<"PatientProfile"> | number | null
+  satusehatPatientIdLast4?: Prisma.StringNullableFilter<"PatientProfile"> | string | null
 }
 
 export type PatientProfileCreateWithoutPrivacyNoticeRecordsInput = {
@@ -1724,6 +1749,7 @@ export type PatientProfileCreateWithoutPrivacyNoticeRecordsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -1780,6 +1806,7 @@ export type PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -1850,6 +1877,7 @@ export type PatientProfileUpdateWithoutPrivacyNoticeRecordsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -1906,6 +1934,7 @@ export type PatientProfileUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -1960,6 +1989,7 @@ export type PatientProfileCreateWithoutDeliveryConsentsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -2016,6 +2046,7 @@ export type PatientProfileUncheckedCreateWithoutDeliveryConsentsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -2086,6 +2117,7 @@ export type PatientProfileUpdateWithoutDeliveryConsentsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -2142,6 +2174,7 @@ export type PatientProfileUncheckedUpdateWithoutDeliveryConsentsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -2196,6 +2229,7 @@ export type PatientProfileCreateWithoutDeliveriesInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -2252,6 +2286,7 @@ export type PatientProfileUncheckedCreateWithoutDeliveriesInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -2322,6 +2357,7 @@ export type PatientProfileUpdateWithoutDeliveriesInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -2378,6 +2414,7 @@ export type PatientProfileUncheckedUpdateWithoutDeliveriesInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -2432,6 +2469,7 @@ export type PatientProfileCreateWithoutAllergiesInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -2488,6 +2526,7 @@ export type PatientProfileUncheckedCreateWithoutAllergiesInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -2558,6 +2597,7 @@ export type PatientProfileUpdateWithoutAllergiesInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -2614,6 +2654,7 @@ export type PatientProfileUncheckedUpdateWithoutAllergiesInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -2668,6 +2709,7 @@ export type PatientProfileCreateWithoutDoctorsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutPatientInput
@@ -2724,6 +2766,7 @@ export type PatientProfileUncheckedCreateWithoutDoctorsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
@@ -2794,6 +2837,7 @@ export type PatientProfileUpdateWithoutDoctorsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutPatientNestedInput
@@ -2850,6 +2894,7 @@ export type PatientProfileUncheckedUpdateWithoutDoctorsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
@@ -2904,6 +2949,7 @@ export type PatientProfileCreateWithoutAppointmentsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationCreateNestedManyWithoutPatientInput
@@ -2960,6 +3006,7 @@ export type PatientProfileUncheckedCreateWithoutAppointmentsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
@@ -3030,6 +3077,7 @@ export type PatientProfileUpdateWithoutAppointmentsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutPatientNestedInput
@@ -3086,6 +3134,7 @@ export type PatientProfileUncheckedUpdateWithoutAppointmentsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
@@ -3140,6 +3189,7 @@ export type PatientProfileCreateWithoutRegistrationsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -3196,6 +3246,7 @@ export type PatientProfileUncheckedCreateWithoutRegistrationsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
@@ -3266,6 +3317,7 @@ export type PatientProfileUpdateWithoutRegistrationsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -3322,6 +3374,7 @@ export type PatientProfileUncheckedUpdateWithoutRegistrationsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
@@ -3376,6 +3429,7 @@ export type PatientProfileCreateWithoutEncountersInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -3432,6 +3486,7 @@ export type PatientProfileUncheckedCreateWithoutEncountersInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -3502,6 +3557,7 @@ export type PatientProfileUpdateWithoutEncountersInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -3558,6 +3614,7 @@ export type PatientProfileUncheckedUpdateWithoutEncountersInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -3612,6 +3669,7 @@ export type PatientProfileCreateWithoutPrescriptionsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -3668,6 +3726,7 @@ export type PatientProfileUncheckedCreateWithoutPrescriptionsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -3738,6 +3797,7 @@ export type PatientProfileUpdateWithoutPrescriptionsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -3794,6 +3854,7 @@ export type PatientProfileUncheckedUpdateWithoutPrescriptionsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -3848,6 +3909,7 @@ export type PatientProfileCreateWithoutInvoicesInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -3904,6 +3966,7 @@ export type PatientProfileUncheckedCreateWithoutInvoicesInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -3974,6 +4037,7 @@ export type PatientProfileUpdateWithoutInvoicesInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -4030,6 +4094,7 @@ export type PatientProfileUncheckedUpdateWithoutInvoicesInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -4084,6 +4149,7 @@ export type PatientProfileCreateWithoutBpjsEligibilityChecksInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -4140,6 +4206,7 @@ export type PatientProfileUncheckedCreateWithoutBpjsEligibilityChecksInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -4210,6 +4277,7 @@ export type PatientProfileUpdateWithoutBpjsEligibilityChecksInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -4266,6 +4334,7 @@ export type PatientProfileUncheckedUpdateWithoutBpjsEligibilityChecksInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -4320,6 +4389,7 @@ export type PatientProfileCreateWithoutClinicalDocumentsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -4376,6 +4446,7 @@ export type PatientProfileUncheckedCreateWithoutClinicalDocumentsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -4446,6 +4517,7 @@ export type PatientProfileUpdateWithoutClinicalDocumentsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -4502,6 +4574,7 @@ export type PatientProfileUncheckedUpdateWithoutClinicalDocumentsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -4556,6 +4629,7 @@ export type PatientProfileCreateWithoutChannelLinksInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -4612,6 +4686,7 @@ export type PatientProfileUncheckedCreateWithoutChannelLinksInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -4682,6 +4757,7 @@ export type PatientProfileUpdateWithoutChannelLinksInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -4738,6 +4814,7 @@ export type PatientProfileUncheckedUpdateWithoutChannelLinksInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -4792,6 +4869,7 @@ export type PatientProfileCreateWithoutProspectiveRecordsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -4848,6 +4926,7 @@ export type PatientProfileUncheckedCreateWithoutProspectiveRecordsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -4918,6 +4997,7 @@ export type PatientProfileUpdateWithoutProspectiveRecordsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -4974,6 +5054,7 @@ export type PatientProfileUncheckedUpdateWithoutProspectiveRecordsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -5028,6 +5109,7 @@ export type PatientProfileCreateWithoutAdmissionsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -5084,6 +5166,7 @@ export type PatientProfileUncheckedCreateWithoutAdmissionsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -5154,6 +5237,7 @@ export type PatientProfileUpdateWithoutAdmissionsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -5210,6 +5294,7 @@ export type PatientProfileUncheckedUpdateWithoutAdmissionsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -5264,6 +5349,7 @@ export type PatientProfileCreateWithoutManagedDocumentsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -5320,6 +5406,7 @@ export type PatientProfileUncheckedCreateWithoutManagedDocumentsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -5390,6 +5477,7 @@ export type PatientProfileUpdateWithoutManagedDocumentsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -5446,6 +5534,7 @@ export type PatientProfileUncheckedUpdateWithoutManagedDocumentsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -5500,6 +5589,7 @@ export type PatientProfileCreateWithoutImmunizationsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
   doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
@@ -5556,6 +5646,7 @@ export type PatientProfileUncheckedCreateWithoutImmunizationsInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
   doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
@@ -5626,6 +5717,7 @@ export type PatientProfileUpdateWithoutImmunizationsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
@@ -5682,6 +5774,7 @@ export type PatientProfileUncheckedUpdateWithoutImmunizationsInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -5736,6 +5829,7 @@ export type PatientProfileCreateManyOwnerUserInput = {
   bpjsNumberKeyVersion?: number | null
   satusehatPatientIdCiphertext?: string | null
   satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
 }
 
 export type PatientProfileUpdateWithoutOwnerUserInput = {
@@ -5774,6 +5868,7 @@ export type PatientProfileUpdateWithoutOwnerUserInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUpdateManyWithoutPatientNestedInput
@@ -5829,6 +5924,7 @@ export type PatientProfileUncheckedUpdateWithoutOwnerUserInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
@@ -5884,6 +5980,7 @@ export type PatientProfileUncheckedUpdateManyWithoutOwnerUserInput = {
   bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -6098,6 +6195,7 @@ export type PatientProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   bpjsNumberKeyVersion?: boolean
   satusehatPatientIdCiphertext?: boolean
   satusehatPatientIdKeyVersion?: boolean
+  satusehatPatientIdLast4?: boolean
   ownerUser?: boolean | Prisma.PatientProfile$ownerUserArgs<ExtArgs>
   doctors?: boolean | Prisma.PatientProfile$doctorsArgs<ExtArgs>
   appointments?: boolean | Prisma.PatientProfile$appointmentsArgs<ExtArgs>
@@ -6156,6 +6254,7 @@ export type PatientProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   bpjsNumberKeyVersion?: boolean
   satusehatPatientIdCiphertext?: boolean
   satusehatPatientIdKeyVersion?: boolean
+  satusehatPatientIdLast4?: boolean
   ownerUser?: boolean | Prisma.PatientProfile$ownerUserArgs<ExtArgs>
 }, ExtArgs["result"]["patientProfile"]>
 
@@ -6196,6 +6295,7 @@ export type PatientProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   bpjsNumberKeyVersion?: boolean
   satusehatPatientIdCiphertext?: boolean
   satusehatPatientIdKeyVersion?: boolean
+  satusehatPatientIdLast4?: boolean
   ownerUser?: boolean | Prisma.PatientProfile$ownerUserArgs<ExtArgs>
 }, ExtArgs["result"]["patientProfile"]>
 
@@ -6236,9 +6336,10 @@ export type PatientProfileSelectScalar = {
   bpjsNumberKeyVersion?: boolean
   satusehatPatientIdCiphertext?: boolean
   satusehatPatientIdKeyVersion?: boolean
+  satusehatPatientIdLast4?: boolean
 }
 
-export type PatientProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mrn" | "source" | "fullName" | "dateOfBirth" | "placeOfBirth" | "sex" | "status" | "phoneNumber" | "address" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "lastVisitAt" | "email" | "bloodType" | "rhesusFactor" | "maritalStatus" | "occupation" | "religion" | "emergencyContactName" | "emergencyContactPhone" | "guardianName" | "guardianRelation" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "bpjsNumberCiphertext" | "bpjsNumberIndex" | "bpjsNumberLast4" | "bpjsNumberKeyVersion" | "satusehatPatientIdCiphertext" | "satusehatPatientIdKeyVersion", ExtArgs["result"]["patientProfile"]>
+export type PatientProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "mrn" | "source" | "fullName" | "dateOfBirth" | "placeOfBirth" | "sex" | "status" | "phoneNumber" | "address" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "lastVisitAt" | "email" | "bloodType" | "rhesusFactor" | "maritalStatus" | "occupation" | "religion" | "emergencyContactName" | "emergencyContactPhone" | "guardianName" | "guardianRelation" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "bpjsNumberCiphertext" | "bpjsNumberIndex" | "bpjsNumberLast4" | "bpjsNumberKeyVersion" | "satusehatPatientIdCiphertext" | "satusehatPatientIdKeyVersion" | "satusehatPatientIdLast4", ExtArgs["result"]["patientProfile"]>
 export type PatientProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownerUser?: boolean | Prisma.PatientProfile$ownerUserArgs<ExtArgs>
   doctors?: boolean | Prisma.PatientProfile$doctorsArgs<ExtArgs>
@@ -6342,6 +6443,13 @@ export type $PatientProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     bpjsNumberKeyVersion: number | null
     satusehatPatientIdCiphertext: string | null
     satusehatPatientIdKeyVersion: number | null
+    /**
+     * Last four characters of the IHS number, for display beside the masked
+     * value — the same role `nikLast4` plays (P10-T13). Written in the same
+     * update as the ciphertext, so the two can never describe different
+     * numbers.
+     */
+    satusehatPatientIdLast4: string | null
   }, ExtArgs["result"]["patientProfile"]>
   composites: {}
 }
@@ -6819,6 +6927,7 @@ export interface PatientProfileFieldRefs {
   readonly bpjsNumberKeyVersion: Prisma.FieldRef<"PatientProfile", 'Int'>
   readonly satusehatPatientIdCiphertext: Prisma.FieldRef<"PatientProfile", 'String'>
   readonly satusehatPatientIdKeyVersion: Prisma.FieldRef<"PatientProfile", 'Int'>
+  readonly satusehatPatientIdLast4: Prisma.FieldRef<"PatientProfile", 'String'>
 }
     
 

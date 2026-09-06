@@ -36,6 +36,10 @@ const patient = {
   nikMasked: '••••••••0001',
   bpjsNumberMasked: '••••••••7890',
   hasSatusehatPatientId: false,
+  // Absent here because this example patient is unlinked. A linked one carries
+  // the partial IHS number the card renders beside "tertaut" (P10-T13); the
+  // full value only ever comes from the audited identifiers route.
+  satusehatPatientIdMasked: optionalExample('••••5538'),
   email: 'aisha.rahman@example.com',
   bloodType: 'O',
   rhesusFactor: 'POSITIVE',
