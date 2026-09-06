@@ -662,6 +662,7 @@ model User {
   requestedDeliveries        DocumentDelivery[]           @relation("DeliveryRequestedBy")
   defaultApproverForTypes    DocumentTypeApprover[]
 
+  draftedManagedDocuments    ManagedDocument[]            @relation("ManagedDocumentDraftedBy")
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
   @@index([offboardedAt])
@@ -1009,6 +1010,7 @@ model PatientProfile {
   deliveryConsents      PatientDeliveryConsent[]
   deliveries            DocumentDelivery[]
 
+  managedDocuments      ManagedDocument[]
   @@index([deletedAt])
   @@index([ownerUserId])
   @@index([isActive])
@@ -1338,6 +1340,7 @@ model DoctorProfile {
   encounters          Encounter[]
   admissions          Admission[]
 
+  managedDocuments ManagedDocument[]
   @@index([deletedAt])
   @@index([isActive])
   @@index([fullName])
@@ -2211,6 +2214,7 @@ model Invoice {
   documents InvoiceDocument[]
   deliveries DocumentDelivery[]
 
+  managedDocuments ManagedDocument[]
   @@index([encounterId])
   @@index([admissionId])
   @@index([patientId, createdAt])
@@ -2322,6 +2326,7 @@ model DocumentTemplate {
   createdBy User?                     @relation("DocumentTemplateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   versions  DocumentTemplateVersion[]
 
+  managedDocuments ManagedDocument[]
   @@index([kind, status])
   @@index([createdById])
   @@index([deletedAt])
@@ -3077,6 +3082,7 @@ model Document {
   /// "the" document would leave the other one still serving it. Keys are
   /// server-minted UUIDs and never reused, so this constrains nothing an
   /// honest flow does.
+  managedDocuments   ManagedDocument[]
   @@unique([storageKey])
   @@index([ownerType, ownerId])
   @@index([purpose, ingestStatus])
@@ -4021,6 +4027,7 @@ model DocumentType {
 
   defaultApprovers DocumentTypeApprover[]
 
+  documents        ManagedDocument[]
   @@index([isActive, sortOrder])
   @@map("document_types")
 }
@@ -4040,4 +4047,87 @@ model DocumentTypeApprover {
   @@unique([typeId, approverId])
   @@index([approverId])
   @@map("document_type_approvers")
+}
+
+/// Where a managed document is in its life (P16-T28, §7.5.1). ISSUED is the
+/// only state a document is ever delivered or acted on from; a PATIENT_BILL
+/// is born ISSUED because E1 generated it and nobody drafts one.
+enum ManagedDocumentStatus {
+  DRAFT
+  PENDING_APPROVAL
+  ISSUED
+  ARCHIVED
+
+  @@map("managed_document_status")
+}
+
+/// The registry row (P16-T28, FR-E5-01…05). It carries what the module
+/// lists, filters and searches on; the payload lives either inline
+/// (`contentHtml`, for a drafted document, sanitised on every write) or in
+/// object storage (`storageKey`, for an uploaded one) — never both, enforced
+/// by a CHECK in the migration.
+///
+/// `subjectTemplateId` / `subjectDocumentId` / `subjectInvoiceId` link a
+/// registry row to the thing it governs where one already exists — the
+/// `Invoice.encounterId` / `admissionId` pattern of nullable FKs with a
+/// CHECK allowing at most one, so a managed document can never point at two
+/// subjects and a real foreign key stops it outliving what it describes. The
+/// subject is also what the per-row access rule reads (FR-E5-04): a row
+/// governing a vault document is visible to that document's owner alone, a
+/// PATIENT_BILL to a holder of `invoice.read`. The module is a surface over
+/// those sources, never a bypass of their rules (§7.5.3).
+model ManagedDocument {
+  id             String                @id @default(uuid()) @db.Uuid
+  /// A row in `DocumentType`, not an enum value — the clinic owns this list.
+  typeId         String                @map("type_id") @db.Uuid
+  status         ManagedDocumentStatus @default(DRAFT)
+  title          String
+  documentNumber String?               @map("document_number")
+  /// Drafted content, sanitised server-side like a template body.
+  contentHtml    String?               @map("content_html")
+  /// Uploaded payload. Exactly one of contentHtml / storageKey is set. The
+  /// two columns after it describe the stored object (P16-T36) and are set
+  /// together with it — a CHECK ties the three.
+  storageKey       String? @map("storage_key")
+  storageMimeType  String? @map("storage_mime_type")
+  storageSizeBytes Int?    @map("storage_size_bytes")
+
+  /// Parties, for agreements and consents. Nullable — a policy has none;
+  /// the type row says which are required (FR-E5-35).
+  patientId String? @map("patient_id") @db.Uuid
+  doctorId  String? @map("doctor_id") @db.Uuid
+
+  subjectTemplateId String? @map("subject_template_id") @db.Uuid
+  subjectDocumentId String? @map("subject_document_id") @db.Uuid
+  subjectInvoiceId  String? @map("subject_invoice_id") @db.Uuid
+
+  draftedById String    @map("drafted_by_id") @db.Uuid
+  issuedAt    DateTime? @map("issued_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  /// Restrict, so a type that documents point at cannot be deleted out from
+  /// under them — the API surfaces this as "deactivate instead" (FR-E5-36).
+  type            DocumentType      @relation(fields: [typeId], references: [id], onDelete: Restrict)
+  /// Restrict on both parties: losing a patient row must never orphan their agreements.
+  patient         PatientProfile?   @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor          DoctorProfile?    @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  draftedBy       User              @relation("ManagedDocumentDraftedBy", fields: [draftedById], references: [id], onDelete: Restrict)
+  subjectTemplate DocumentTemplate? @relation(fields: [subjectTemplateId], references: [id], onDelete: Restrict)
+  subjectDocument Document?         @relation(fields: [subjectDocumentId], references: [id], onDelete: Restrict)
+  subjectInvoice  Invoice?          @relation(fields: [subjectInvoiceId], references: [id], onDelete: Restrict)
+
+  /// The registry's own query shapes: list by type and status, sort by date,
+  /// and find a patient's agreements.
+  @@index([typeId, status, createdAt])
+  @@index([status, issuedAt])
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([draftedById])
+  @@index([subjectTemplateId])
+  @@index([subjectDocumentId])
+  @@index([subjectInvoiceId])
+  @@index([deletedAt])
+  @@map("managed_documents")
 }

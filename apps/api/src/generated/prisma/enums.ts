@@ -758,3 +758,13 @@ export const DocumentContentMode = {
 } as const
 
 export type DocumentContentMode = (typeof DocumentContentMode)[keyof typeof DocumentContentMode]
+
+
+export const ManagedDocumentStatus = {
+  DRAFT: 'DRAFT',
+  PENDING_APPROVAL: 'PENDING_APPROVAL',
+  ISSUED: 'ISSUED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type ManagedDocumentStatus = (typeof ManagedDocumentStatus)[keyof typeof ManagedDocumentStatus]

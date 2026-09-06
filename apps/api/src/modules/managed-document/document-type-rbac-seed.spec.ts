@@ -14,6 +14,7 @@ import { SYSTEM_DOCUMENT_TYPE_CODES } from '@hms/shared-types';
 describe('Document type RBAC seed', () => {
   const WRITE_PERMISSION_KEY = 'document-type.write:any';
   const READ_PERMISSION_KEY = 'managed-document.read:any';
+  const REGISTRY_WRITE_PERMISSION_KEY = 'managed-document.write:any';
 
   const seedSql = readFileSync(resolve(process.cwd(), 'prisma', 'seed.sql'), 'utf8');
 
@@ -46,12 +47,26 @@ describe('Document type RBAC seed', () => {
     expect(actualRow).toContain(`'ANY'`);
   });
 
-  it('binds both keys to ADMIN alone, and seeds no role for the documents module', () => {
+  it('defines the registry write permission against the ManagedDocument subject', () => {
+    // P16-T28. Separate from the read key so a records officer can search
+    // and export without being able to author.
+    const actualRow = findPermissionRow(REGISTRY_WRITE_PERMISSION_KEY);
+
+    expect(actualRow).toBeDefined();
+    expect(actualRow).toContain(`'ManagedDocument'`);
+    expect(actualRow).toContain(`'ANY'`);
+  });
+
+  it('binds every documents-module key to ADMIN alone, and seeds no role for the module', () => {
     // §7.5.9 / OQ-1: the keys ship so they can be assigned; the clinic
     // composes narrower roles. ADMIN holds them as back-office custody beside
-    // the template pair. A clinical or patient role acquiring either would
-    // be a widening this spec exists to catch.
-    for (const permissionKey of [WRITE_PERMISSION_KEY, READ_PERMISSION_KEY]) {
+    // the template pair. A clinical or patient role acquiring any would be a
+    // widening this spec exists to catch.
+    for (const permissionKey of [
+      WRITE_PERMISSION_KEY,
+      READ_PERMISSION_KEY,
+      REGISTRY_WRITE_PERMISSION_KEY,
+    ]) {
       expect(hasBinding('ADMIN', permissionKey)).toBe(true);
       for (const roleCode of ['DOCTOR', 'PHARMACIST', 'PATIENT']) {
         expect(hasBinding(roleCode, permissionKey)).toBe(false);

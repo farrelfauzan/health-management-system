@@ -325,6 +325,7 @@ export type DocumentTypeWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"DocumentType"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"DocumentType"> | Date | string | null
   defaultApprovers?: Prisma.DocumentTypeApproverListRelationFilter
+  documents?: Prisma.ManagedDocumentListRelationFilter
 }
 
 export type DocumentTypeOrderByWithRelationInput = {
@@ -346,6 +347,7 @@ export type DocumentTypeOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   defaultApprovers?: Prisma.DocumentTypeApproverOrderByRelationAggregateInput
+  documents?: Prisma.ManagedDocumentOrderByRelationAggregateInput
 }
 
 export type DocumentTypeWhereUniqueInput = Prisma.AtLeast<{
@@ -370,6 +372,7 @@ export type DocumentTypeWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"DocumentType"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"DocumentType"> | Date | string | null
   defaultApprovers?: Prisma.DocumentTypeApproverListRelationFilter
+  documents?: Prisma.ManagedDocumentListRelationFilter
 }, "id" | "code">
 
 export type DocumentTypeOrderByWithAggregationInput = {
@@ -439,6 +442,7 @@ export type DocumentTypeCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   defaultApprovers?: Prisma.DocumentTypeApproverCreateNestedManyWithoutTypeInput
+  documents?: Prisma.ManagedDocumentCreateNestedManyWithoutTypeInput
 }
 
 export type DocumentTypeUncheckedCreateInput = {
@@ -460,6 +464,7 @@ export type DocumentTypeUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   defaultApprovers?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutTypeInput
+  documents?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutTypeInput
 }
 
 export type DocumentTypeUpdateInput = {
@@ -481,6 +486,7 @@ export type DocumentTypeUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   defaultApprovers?: Prisma.DocumentTypeApproverUpdateManyWithoutTypeNestedInput
+  documents?: Prisma.ManagedDocumentUpdateManyWithoutTypeNestedInput
 }
 
 export type DocumentTypeUncheckedUpdateInput = {
@@ -502,6 +508,7 @@ export type DocumentTypeUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   defaultApprovers?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutTypeNestedInput
+  documents?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutTypeNestedInput
 }
 
 export type DocumentTypeCreateManyInput = {
@@ -661,6 +668,20 @@ export type DocumentTypeUpdateOneRequiredWithoutDefaultApproversNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentTypeUpdateToOneWithWhereWithoutDefaultApproversInput, Prisma.DocumentTypeUpdateWithoutDefaultApproversInput>, Prisma.DocumentTypeUncheckedUpdateWithoutDefaultApproversInput>
 }
 
+export type DocumentTypeCreateNestedOneWithoutDocumentsInput = {
+  create?: Prisma.XOR<Prisma.DocumentTypeCreateWithoutDocumentsInput, Prisma.DocumentTypeUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.DocumentTypeCreateOrConnectWithoutDocumentsInput
+  connect?: Prisma.DocumentTypeWhereUniqueInput
+}
+
+export type DocumentTypeUpdateOneRequiredWithoutDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentTypeCreateWithoutDocumentsInput, Prisma.DocumentTypeUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.DocumentTypeCreateOrConnectWithoutDocumentsInput
+  upsert?: Prisma.DocumentTypeUpsertWithoutDocumentsInput
+  connect?: Prisma.DocumentTypeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentTypeUpdateToOneWithWhereWithoutDocumentsInput, Prisma.DocumentTypeUpdateWithoutDocumentsInput>, Prisma.DocumentTypeUncheckedUpdateWithoutDocumentsInput>
+}
+
 export type DocumentTypeCreateWithoutDefaultApproversInput = {
   id?: string
   code: string
@@ -679,6 +700,7 @@ export type DocumentTypeCreateWithoutDefaultApproversInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  documents?: Prisma.ManagedDocumentCreateNestedManyWithoutTypeInput
 }
 
 export type DocumentTypeUncheckedCreateWithoutDefaultApproversInput = {
@@ -699,6 +721,7 @@ export type DocumentTypeUncheckedCreateWithoutDefaultApproversInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  documents?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutTypeInput
 }
 
 export type DocumentTypeCreateOrConnectWithoutDefaultApproversInput = {
@@ -735,6 +758,7 @@ export type DocumentTypeUpdateWithoutDefaultApproversInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  documents?: Prisma.ManagedDocumentUpdateManyWithoutTypeNestedInput
 }
 
 export type DocumentTypeUncheckedUpdateWithoutDefaultApproversInput = {
@@ -755,6 +779,107 @@ export type DocumentTypeUncheckedUpdateWithoutDefaultApproversInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  documents?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutTypeNestedInput
+}
+
+export type DocumentTypeCreateWithoutDocumentsInput = {
+  id?: string
+  code: string
+  name: string
+  description?: string | null
+  behavior?: $Enums.DocumentTypeBehavior
+  isSystem?: boolean
+  isApprovalRequired?: boolean
+  allowSelfApproval?: boolean
+  requiredApprovals?: number
+  requiresPatient?: boolean
+  requiresDoctor?: boolean
+  contentMode?: $Enums.DocumentContentMode
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  defaultApprovers?: Prisma.DocumentTypeApproverCreateNestedManyWithoutTypeInput
+}
+
+export type DocumentTypeUncheckedCreateWithoutDocumentsInput = {
+  id?: string
+  code: string
+  name: string
+  description?: string | null
+  behavior?: $Enums.DocumentTypeBehavior
+  isSystem?: boolean
+  isApprovalRequired?: boolean
+  allowSelfApproval?: boolean
+  requiredApprovals?: number
+  requiresPatient?: boolean
+  requiresDoctor?: boolean
+  contentMode?: $Enums.DocumentContentMode
+  isActive?: boolean
+  sortOrder?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  defaultApprovers?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutTypeInput
+}
+
+export type DocumentTypeCreateOrConnectWithoutDocumentsInput = {
+  where: Prisma.DocumentTypeWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentTypeCreateWithoutDocumentsInput, Prisma.DocumentTypeUncheckedCreateWithoutDocumentsInput>
+}
+
+export type DocumentTypeUpsertWithoutDocumentsInput = {
+  update: Prisma.XOR<Prisma.DocumentTypeUpdateWithoutDocumentsInput, Prisma.DocumentTypeUncheckedUpdateWithoutDocumentsInput>
+  create: Prisma.XOR<Prisma.DocumentTypeCreateWithoutDocumentsInput, Prisma.DocumentTypeUncheckedCreateWithoutDocumentsInput>
+  where?: Prisma.DocumentTypeWhereInput
+}
+
+export type DocumentTypeUpdateToOneWithWhereWithoutDocumentsInput = {
+  where?: Prisma.DocumentTypeWhereInput
+  data: Prisma.XOR<Prisma.DocumentTypeUpdateWithoutDocumentsInput, Prisma.DocumentTypeUncheckedUpdateWithoutDocumentsInput>
+}
+
+export type DocumentTypeUpdateWithoutDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  behavior?: Prisma.EnumDocumentTypeBehaviorFieldUpdateOperationsInput | $Enums.DocumentTypeBehavior
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApprovalRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowSelfApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiredApprovals?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresDoctor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contentMode?: Prisma.EnumDocumentContentModeFieldUpdateOperationsInput | $Enums.DocumentContentMode
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  defaultApprovers?: Prisma.DocumentTypeApproverUpdateManyWithoutTypeNestedInput
+}
+
+export type DocumentTypeUncheckedUpdateWithoutDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  behavior?: Prisma.EnumDocumentTypeBehaviorFieldUpdateOperationsInput | $Enums.DocumentTypeBehavior
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isApprovalRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  allowSelfApproval?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiredApprovals?: Prisma.IntFieldUpdateOperationsInput | number
+  requiresPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresDoctor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contentMode?: Prisma.EnumDocumentContentModeFieldUpdateOperationsInput | $Enums.DocumentContentMode
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  defaultApprovers?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutTypeNestedInput
 }
 
 
@@ -764,10 +889,12 @@ export type DocumentTypeUncheckedUpdateWithoutDefaultApproversInput = {
 
 export type DocumentTypeCountOutputType = {
   defaultApprovers: number
+  documents: number
 }
 
 export type DocumentTypeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   defaultApprovers?: boolean | DocumentTypeCountOutputTypeCountDefaultApproversArgs
+  documents?: boolean | DocumentTypeCountOutputTypeCountDocumentsArgs
 }
 
 /**
@@ -785,6 +912,13 @@ export type DocumentTypeCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types
  */
 export type DocumentTypeCountOutputTypeCountDefaultApproversArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DocumentTypeApproverWhereInput
+}
+
+/**
+ * DocumentTypeCountOutputType without action
+ */
+export type DocumentTypeCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ManagedDocumentWhereInput
 }
 
 
@@ -807,6 +941,7 @@ export type DocumentTypeSelect<ExtArgs extends runtime.Types.Extensions.Internal
   updatedAt?: boolean
   deletedAt?: boolean
   defaultApprovers?: boolean | Prisma.DocumentType$defaultApproversArgs<ExtArgs>
+  documents?: boolean | Prisma.DocumentType$documentsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentTypeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["documentType"]>
 
@@ -873,6 +1008,7 @@ export type DocumentTypeSelectScalar = {
 export type DocumentTypeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "behavior" | "isSystem" | "isApprovalRequired" | "allowSelfApproval" | "requiredApprovals" | "requiresPatient" | "requiresDoctor" | "contentMode" | "isActive" | "sortOrder" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["documentType"]>
 export type DocumentTypeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   defaultApprovers?: boolean | Prisma.DocumentType$defaultApproversArgs<ExtArgs>
+  documents?: boolean | Prisma.DocumentType$documentsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentTypeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DocumentTypeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -882,6 +1018,7 @@ export type $DocumentTypePayload<ExtArgs extends runtime.Types.Extensions.Intern
   name: "DocumentType"
   objects: {
     defaultApprovers: Prisma.$DocumentTypeApproverPayload<ExtArgs>[]
+    documents: Prisma.$ManagedDocumentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1308,6 +1445,7 @@ readonly fields: DocumentTypeFieldRefs;
 export interface Prisma__DocumentTypeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   defaultApprovers<T extends Prisma.DocumentType$defaultApproversArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentType$defaultApproversArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentTypeApproverPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  documents<T extends Prisma.DocumentType$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentType$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ManagedDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1768,6 +1906,30 @@ export type DocumentType$defaultApproversArgs<ExtArgs extends runtime.Types.Exte
   take?: number
   skip?: number
   distinct?: Prisma.DocumentTypeApproverScalarFieldEnum | Prisma.DocumentTypeApproverScalarFieldEnum[]
+}
+
+/**
+ * DocumentType.documents
+ */
+export type DocumentType$documentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ManagedDocument
+   */
+  select?: Prisma.ManagedDocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ManagedDocument
+   */
+  omit?: Prisma.ManagedDocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ManagedDocumentInclude<ExtArgs> | null
+  where?: Prisma.ManagedDocumentWhereInput
+  orderBy?: Prisma.ManagedDocumentOrderByWithRelationInput | Prisma.ManagedDocumentOrderByWithRelationInput[]
+  cursor?: Prisma.ManagedDocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ManagedDocumentScalarFieldEnum | Prisma.ManagedDocumentScalarFieldEnum[]
 }
 
 /**

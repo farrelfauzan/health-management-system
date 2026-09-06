@@ -1117,3 +1117,22 @@ export type DocumentType = Prisma.DocumentTypeModel
  * and means nothing once either is gone.
  */
 export type DocumentTypeApprover = Prisma.DocumentTypeApproverModel
+/**
+ * Model ManagedDocument
+ * The registry row (P16-T28, FR-E5-01…05). It carries what the module
+ * lists, filters and searches on; the payload lives either inline
+ * (`contentHtml`, for a drafted document, sanitised on every write) or in
+ * object storage (`storageKey`, for an uploaded one) — never both, enforced
+ * by a CHECK in the migration.
+ * 
+ * `subjectTemplateId` / `subjectDocumentId` / `subjectInvoiceId` link a
+ * registry row to the thing it governs where one already exists — the
+ * `Invoice.encounterId` / `admissionId` pattern of nullable FKs with a
+ * CHECK allowing at most one, so a managed document can never point at two
+ * subjects and a real foreign key stops it outliving what it describes. The
+ * subject is also what the per-row access rule reads (FR-E5-04): a row
+ * governing a vault document is visible to that document's owner alone, a
+ * PATIENT_BILL to a holder of `invoice.read`. The module is a surface over
+ * those sources, never a bypass of their rules (§7.5.3).
+ */
+export type ManagedDocument = Prisma.ManagedDocumentModel
