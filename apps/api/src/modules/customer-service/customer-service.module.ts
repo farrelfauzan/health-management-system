@@ -81,7 +81,8 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
     AiChatbotModule,
     AppointmentManagementModule,
     AuthModule,
-    DocumentManagementModule,
+    // `forwardRef` for the same loop the chatbot module names (`P16-T40`).
+    forwardRef(() => DocumentManagementModule),
     NotificationModule,
     PatientManagementModule,
   ],
@@ -121,6 +122,11 @@ import { CsToolRegistry } from './tools/cs-tool.registry';
       useClass: WhatsappOtpDeliveryAdapter,
     },
   ],
-  exports: [ConversationRepository, ProspectivePatientRepository, HandoffService, InboundMessageSink],
+  exports: [
+    ConversationRepository,
+    ProspectivePatientRepository,
+    HandoffService,
+    InboundMessageSink,
+  ],
 })
 export class CustomerServiceModule {}

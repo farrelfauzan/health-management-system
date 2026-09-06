@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { DeleteDocumentDialog } from '#components/client/patient-documents/delete-document-dialog';
 import { EditDocumentDialog } from '#components/client/patient-documents/edit-document-dialog';
+import { PatientDocumentDeliveriesDialog } from '#components/client/patient-documents/patient-document-deliveries-dialog';
 import { ReleaseDocumentButton } from '#components/client/patient-documents/release-document-button';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { openPatientDocument } from '#lib/patient-documents/open-patient-document';
@@ -41,6 +42,7 @@ export function DocumentRowActions({
   const canDelete = ability.can('delete', 'PatientDocument');
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeliveriesOpen, setIsDeliveriesOpen] = useState(false);
 
   const downloadMutation = useMutation({
     // No reading context: the patient tab is not an encounter, so the audit
@@ -59,6 +61,21 @@ export function DocumentRowActions({
         onResult={onResult}
         onError={onError}
       />
+      {/* P16-T40: what left the building, and whether it arrived. Only a
+          released file can have been sent, so the control appears with the
+          release badge. */}
+      {document.releasedToPatient ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={t('deliveries')}
+          title={t('deliveries')}
+          onClick={() => setIsDeliveriesOpen(true)}
+        >
+          <Icon name="send" size={18} className="text-slate-600" />
+        </Button>
+      ) : null}
       <Button
         type="button"
         variant="ghost"
@@ -102,6 +119,13 @@ export function DocumentRowActions({
           document={document}
           onSaved={onResult}
           onFailed={onError}
+        />
+      ) : null}
+      {isDeliveriesOpen ? (
+        <PatientDocumentDeliveriesDialog
+          open={isDeliveriesOpen}
+          onOpenChange={setIsDeliveriesOpen}
+          document={document}
         />
       ) : null}
       {isDeleteOpen ? (

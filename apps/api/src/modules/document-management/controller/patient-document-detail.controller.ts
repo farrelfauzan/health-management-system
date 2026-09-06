@@ -23,6 +23,7 @@ import { PATIENT_DOCUMENT_EXAMPLES } from '../../../common/openapi/patient-docum
 import { AuditAction } from '../../../generated/prisma/client';
 import { DeletePatientDocumentDto } from '../dto/delete-patient-document.dto';
 import { DownloadPatientDocumentQueryDto } from '../dto/download-patient-document-query.dto';
+import { ReleasePatientDocumentDto } from '../dto/release-patient-document.dto';
 import { UpdatePatientDocumentDto } from '../dto/update-patient-document.dto';
 import { PatientDocumentService } from '../service/patient-document.service';
 
@@ -113,23 +114,44 @@ export class PatientDocumentDetailController {
   @HttpCode(200)
   @Auth([{ action: 'release', subject: 'PatientDocument' }])
   @ApiEndpoint({
-    summary: 'Release one clinical file to the patient portal',
+    summary:
+      'Release one clinical file to the patient portal, and optionally send it to the patient',
     responseDescription:
-      'Marks the document visible to the patient (FR-E2-13); the release is audited with actor and timestamp. Idempotent — a repeat returns the already-released document without rewriting releasedAt. Restricted to the attending relationship: a doctor releases only for patients assigned to them.',
+      'Marks the document visible to the patient (FR-E2-13); the release is audited with actor and timestamp. Idempotent — a repeat returns the already-released document without rewriting releasedAt. With `dispatch`, the same action queues a password-protected PDF to the patient over each named channel under every E4 rule — consent, verified number, password lock, audit (FR-E4-24) — and tells the attending doctor of the document’s encounter in the bell (FR-E4-25). A channel that cannot be used is listed in `refusedChannels` with its reason and never fails the release; a document that is not a PDF or an image, or a patient with no date of birth to lock it with, refuses every channel the same way. Delivery happens only here, never on upload (FR-E4-26). The caption names the clinic, the document type and the date — no values, no diagnosis (FR-E4-27). Restricted to the attending relationship: a doctor releases only for patients assigned to them.',
     responseExample: {
-      data: PATIENT_DOCUMENT_EXAMPLES.releasedDocument,
+      data: PATIENT_DOCUMENT_EXAMPLES.releaseView,
       message: 'Document released to the patient',
     },
+    requestType: ReleasePatientDocumentDto,
+    requestExample: PATIENT_DOCUMENT_EXAMPLES.releaseRequest,
     notFoundDescription: 'Document not found.',
   })
   async releaseDocument(
     @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() body: ReleasePatientDocumentDto,
     @AuthUser() currentUser?: CurrentUser,
   ) {
     const actor = this.assertAuthenticated(currentUser);
-    const view = await this.patientDocumentService.releaseDocument(id, actor);
+    const view = await this.patientDocumentService.releaseDocument(id, body, actor);
 
     return { data: view, message: 'Document released to the patient' };
+  }
+
+  @Get(':id/deliveries')
+  @Auth([{ action: 'read', subject: 'PatientDocument' }])
+  @ApiEndpoint({
+    summary: 'Read a clinical file’s delivery timeline',
+    responseDescription:
+      'Every send ever queued for this document, newest first, in the same shape as an invoice’s timeline (FR-E4-14), plus whether the document’s category dispatches on release by default (FR-E4-28) — what the release dialog pre-checks. Readable under the same rule as the document itself.',
+    responseExample: { data: PATIENT_DOCUMENT_EXAMPLES.deliveryTimeline },
+    notFoundDescription: 'Document not found.',
+  })
+  async listDeliveries(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    return { data: await this.patientDocumentService.listDeliveries(id, actor) };
   }
 
   @Delete(':id')

@@ -2,20 +2,10 @@
 
 import { useState } from 'react';
 import type { PatientDocumentView } from '@hms/shared-types';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Icon,
-  useAbility,
-} from '@hms/ui';
+import { Button, Icon, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
-import { useReleaseDocument } from '#lib/patient-documents/use-release-document';
+import { ReleaseDocumentDialog } from '#components/client/patient-documents/release-document-dialog';
 
 type ReleaseDocumentButtonProps = {
   patientId: string;
@@ -25,23 +15,22 @@ type ReleaseDocumentButtonProps = {
 };
 
 /**
- * Releases one file to the patient's portal (FR-E2-13, US-E2-04).
+ * Releases one file to the patient's portal (FR-E2-13, US-E2-04) and, since
+ * `P16-T40`, offers to send it to the patient in the same action (§7.4.5).
  *
  * **Confirmed, and the confirmation names the consequence in the patient's
  * terms** — the patient will see this — rather than asking "are you sure".
- * Releasing is the moment a result stops being a clinical document and becomes
- * something a person reads at home, possibly alone, possibly a frightening
- * number with nobody to ask. A dialog that only said "confirm" would not be
- * telling the clinician what they are deciding.
+ * Releasing is the moment a result stops being a clinical document and
+ * becomes something a person reads at home, possibly alone. The dispatch
+ * options sit under that sentence in the dialog; the clinician's release
+ * decision is the gate, and sending is their call too.
  *
- * There is no un-release: the API has no such route, and offering an undo the
- * server cannot honour would be worse than not offering one. The dialog says
- * so, because that is exactly what a clinician needs to know *before* clicking
- * rather than after.
+ * There is no un-release: the API has no such route, and offering an undo
+ * the server cannot honour would be worse than not offering one.
  *
- * Visibility is CASL only (`release` on `PatientDocument`); the backend guard,
- * which additionally requires an active assignment, is what actually refuses —
- * so a refusal is surfaced rather than pre-empted.
+ * Visibility is CASL only (`release` on `PatientDocument`); the backend
+ * guard, which additionally requires an active assignment, is what actually
+ * refuses — so a refusal is surfaced rather than pre-empted.
  */
 export function ReleaseDocumentButton({
   patientId,
@@ -52,15 +41,6 @@ export function ReleaseDocumentButton({
   const t = useTranslations('clinical.patients.documents.release');
   const ability = useAbility();
   const [isOpen, setIsOpen] = useState(false);
-  const releaseMutation = useReleaseDocument({
-    patientId,
-    errorMessage: t('error'),
-    onError,
-    onSuccess: () => {
-      setIsOpen(false);
-      onResult(t('released'));
-    },
-  });
 
   if (!ability.can('release', 'PatientDocument') || document.releasedToPatient) {
     return null;
@@ -78,29 +58,15 @@ export function ReleaseDocumentButton({
       >
         <Icon name="share" size={18} />
       </Button>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('confirmTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('confirmBody', { title: document.title })}
-            </DialogDescription>
-          </DialogHeader>
-          <p className="text-sm text-slate-500">{t('noUndo')}</p>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-              {t('cancel')}
-            </Button>
-            <Button
-              type="button"
-              disabled={releaseMutation.isPending}
-              onClick={() => releaseMutation.mutate(document.id)}
-            >
-              {releaseMutation.isPending ? t('releasing') : t('confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {isOpen ? (
+        <ReleaseDocumentDialog
+          patientId={patientId}
+          document={document}
+          onOpenChange={setIsOpen}
+          onResult={onResult}
+          onError={onError}
+        />
+      ) : null}
     </>
   );
 }

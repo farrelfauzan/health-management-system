@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { EmbeddingModule } from '../../common/embedding/embedding.module';
 import { StorageModule } from '../../common/storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
+import { DocumentDeliveryModule } from '../document-delivery/document-delivery.module';
 import { NotificationModule } from '../notification/notification.module';
 import { DocumentAdminController } from './controller/document-admin.controller';
 import { EncounterDocumentController } from './controller/encounter-document.controller';
@@ -81,7 +82,17 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
  * the set it sees.
  */
 @Module({
-  imports: [AuthModule, StorageModule, EmbeddingModule, NotificationModule],
+  // `DocumentDeliveryModule` through `forwardRef`, because the import graph
+  // loops: delivery → channel gateway → customer service → this module (the
+  // FAQ search). Release (`P16-T40`) asks delivery to dispatch; nothing in
+  // delivery reaches back into a service here.
+  imports: [
+    AuthModule,
+    StorageModule,
+    EmbeddingModule,
+    NotificationModule,
+    forwardRef(() => DocumentDeliveryModule),
+  ],
   controllers: [
     DocumentAdminController,
     PersonalDocumentController,

@@ -42,6 +42,11 @@ export const NOTIFICATION_TYPES = [
    */
   'LICENCE_EXPIRING',
   'LICENCE_EXPIRED',
+  /**
+   * A clinical document was released to the patient (P16-T40, FR-E4-25),
+   * addressed to the attending doctor — the doctor's end of dual delivery.
+   */
+  'PATIENT_DOCUMENT_RELEASED',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;

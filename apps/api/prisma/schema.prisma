@@ -3855,6 +3855,13 @@ enum NotificationType {
   /// different audiences, and merging them would make one leak the other.
   LICENCE_EXPIRING
   LICENCE_EXPIRED
+  /// A clinical document was released to the patient (P16-T40, FR-E4-25),
+  /// addressed to the attending doctor of the encounter it belongs to. The
+  /// other end of dual delivery (§7.4.5): the patient may get the file on
+  /// WhatsApp in the same action, and this row is what keeps the doctor from
+  /// ever being behind them. Carries the category and the patient, never a
+  /// result value.
+  PATIENT_DOCUMENT_RELEASED
 
   @@map("notification_type")
 }

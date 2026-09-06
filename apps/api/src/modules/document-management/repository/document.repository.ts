@@ -241,6 +241,13 @@ export class DocumentRepository {
     return { document: toDocumentRecord(row, 0), deletedAt };
   }
 
+  async findPatientNameById(patientId: string): Promise<{ fullName: string } | null> {
+    return this.prismaService.patientProfile.findFirst({
+      where: { id: patientId },
+      select: { fullName: true },
+    });
+  }
+
   async findPatientProfileById(
     patientId: string,
   ): Promise<{ id: string; ownerUserId: string | null } | null> {
@@ -298,6 +305,22 @@ export class DocumentRepository {
       where: { id: encounterId, patientId, deletedAt: null },
       select: { id: true, patientId: true },
     });
+  }
+
+  /**
+   * The account behind an encounter's attending doctor (`P16-T40`,
+   * FR-E4-25), or null when the encounter has no doctor account to tell —
+   * a profile with no login, or one deactivated since the visit.
+   */
+  async findEncounterAttendingUserId(encounterId: string): Promise<string | null> {
+    const encounter = await this.prismaService.encounter.findFirst({
+      where: { id: encounterId, deletedAt: null },
+      select: { doctor: { select: { ownerUserId: true, isActive: true } } },
+    });
+    if (encounter === null || !encounter.doctor.isActive) {
+      return null;
+    }
+    return encounter.doctor.ownerUserId;
   }
 
   async findEncounterById(

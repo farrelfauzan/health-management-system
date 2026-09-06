@@ -59,6 +59,17 @@ export const DELIVERY_REFUSAL_REASONS = [
   'NUMBER_VERIFIED_FOR_ANOTHER_PATIENT',
   /** The patient record has no email address. */
   'EMAIL_MISSING',
+  /**
+   * Clinical dispatch (`P16-T40`). The attachment is locked with the
+   * patient's date of birth (FR-E4-07) and the record has none — release
+   * still happens, the send does not, and the reason names the field.
+   */
+  'DATE_OF_BIRTH_MISSING',
+  /**
+   * The stored file is not one that can be locked and sent: a text or
+   * Markdown note is a staff artefact, not a result a patient opens.
+   */
+  'FORMAT_NOT_DELIVERABLE',
 ] as const;
 
 export const deliveryRefusalReasonSchema = z.enum(DELIVERY_REFUSAL_REASONS);
@@ -163,3 +174,24 @@ export const deliveryLinkTokenSchema = z.string().regex(DELIVERY_LINK_TOKEN_PATT
 export const DELIVERY_ACTION_KINDS = ['retry', 'revoke', 'cancel'] as const;
 
 export type DeliveryActionKind = (typeof DELIVERY_ACTION_KINDS)[number];
+
+/**
+ * Dispatch a released clinical document to the patient in the same action as
+ * the release (`P16-T40`, FR-E4-24). Attachment only (D-027): a result
+ * always leaves as a password-protected PDF, and the revocable link is an
+ * invoice affordance. Each channel is judged on its own — a refused channel
+ * is reported, never fatal, because the release itself must still happen.
+ */
+export const requestClinicalDispatchSchema = z
+  .object({
+    channels: z
+      .array(deliveryChannelSchema)
+      .min(1, 'Pick at least one channel')
+      .max(DELIVERY_CHANNELS.length)
+      .refine((channels) => new Set(channels).size === channels.length, {
+        message: 'Each channel may appear once',
+      }),
+  })
+  .strict();
+
+export type RequestClinicalDispatchInput = z.infer<typeof requestClinicalDispatchSchema>;

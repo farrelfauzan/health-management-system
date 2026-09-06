@@ -179,6 +179,10 @@
         "licenceExpired": {
           "title": "Practitioner licence expired",
           "body": "{doctorName}'s {licenceType} {licenceNumber} expired on {expiresAt}."
+        },
+        "patientDocumentReleased": {
+          "title": "A result was released to your patient",
+          "body": "A {category} for {patientName} is now visible to the patient and in the visit's Documents panel."
         }
       },
       "profile": {

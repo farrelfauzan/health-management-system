@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import {
+  ClinicalDeliverySubjectRecord,
   DeliveryDestination,
   DeliveryRecord,
   DeliveryTransportResult,
@@ -12,6 +13,7 @@ import {
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { MailService } from '../../../common/mail/mail.service';
+import { RenderedMail } from '../../../common/mail/mail.types';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { AuditAction } from '../../../generated/prisma/client';
@@ -21,32 +23,50 @@ import { WhatsappGatewayService } from '../../channel-gateway/infrastructure/wha
 import { resolveDocumentDeliveryConfig } from '../document-delivery.config';
 import { DocumentDeliveryRepository } from '../repository/document-delivery.repository';
 import {
+  buildClinicalDeliveryMail,
+  buildClinicalWhatsappCaption,
+} from './build-clinical-delivery-copy';
+import {
   buildInvoiceDeliveryMail,
   buildInvoiceWhatsappCaption,
 } from './build-invoice-delivery-copy';
 import { DeliveryLinkService } from './delivery-link.service';
 import { PatientDeliveryConsentService } from './patient-delivery-consent.service';
 import { ProtectDeliveryDocumentService } from './protect-delivery-document.service';
+import { isPdfWrappableImageMimeType, wrapImageInPdf } from './wrap-image-in-pdf';
 
 const DELIVERY_AUDIT_RESOURCE = 'DocumentDelivery';
 const PDF_MIME_TYPE = 'application/pdf';
+const PDF_FILE_EXTENSION = '.pdf';
 const DELIVERABLE_INVOICE_STATUSES: ReadonlySet<string> = new Set(['ISSUED', 'PAID']);
 const BACKOFF_EXPONENT_BASE = 2;
+const ASCII_FILENAME_SAFE_PATTERN = /[^a-zA-Z0-9 ._-]/g;
+const MAX_FILENAME_STEM_LENGTH = 80;
+const FALLBACK_FILENAME_STEM = 'dokumen';
 
 export const SEND_CANCELLED_INVOICE_REASON = 'INVOICE_NO_LONGER_DELIVERABLE';
+export const SEND_CANCELLED_DOCUMENT_REASON = 'DOCUMENT_NO_LONGER_DELIVERABLE';
 export const SEND_CANCELLED_CONSENT_PREFIX = 'DELIVERY_REFUSED_AT_SEND_TIME';
 export const SEND_FAILED_MAIL_REJECTED = 'MAIL_REJECTED_BY_TRANSPORT';
+export const SEND_FAILED_FORMAT_NOT_DELIVERABLE = 'FORMAT_NOT_DELIVERABLE';
+
+/** What a send puts on the wire, whichever document is inside: one caption, one mail. */
+type DeliveryMessage = { caption: string; mail: RenderedMail };
 
 /**
- * One claimed row, sent (`P16-T26`, FR-E4-10/13/15/18).
+ * One claimed row, sent (`P16-T26`, FR-E4-10/13/15/18) — an invoice, or
+ * since `P16-T40` a released clinical document (D-028: one table, one
+ * worker, two subjects).
  *
  * Every rule the request checked is checked again here, because this is
  * when it has to be true: a scheduled send is days after the click, and a
- * consent withdrawn or an invoice voided in between cancels the send rather
- * than being honoured retroactively. The rendered snapshot the request
- * pinned is what goes out; for an attachment it is locked with the
- * patient's password first, for a link the token is minted now and the
- * plaintext lives only in the message.
+ * consent withdrawn, an invoice voided or a document retired in between
+ * cancels the send rather than being honoured retroactively. The rendered
+ * snapshot the request pinned is what goes out; for an attachment it is
+ * locked with the patient's password first, for a link the token is minted
+ * now and the plaintext lives only in the message. A clinical file that is
+ * an image becomes a one-page PDF first, because the lock is the whole
+ * reason it may leave (D-027).
  *
  * Outcomes are settled on the row, never thrown to the worker: the transport
  * rejecting or being unreachable reschedules with exponential backoff until
@@ -75,9 +95,11 @@ export class DeliverySendService {
   }
 
   async processDelivery(delivery: DeliveryRecord): Promise<void> {
+    if (delivery.documentId !== null) {
+      await this.processClinicalDelivery(delivery, delivery.documentId);
+      return;
+    }
     if (delivery.invoiceId === null || delivery.invoiceDocumentId === null) {
-      // Clinical-document deliveries arrive with P16-T40; until then a row
-      // without an invoice is a row this worker does not know how to send.
       await this.settleFailed(delivery, 'UNSUPPORTED_DELIVERY_SUBJECT');
       return;
     }
@@ -89,6 +111,51 @@ export class DeliverySendService {
       await this.cancel(delivery, SEND_CANCELLED_INVOICE_REASON);
       return;
     }
+    const destination = await this.resolveDestinationOrCancel(delivery);
+    if (destination === null) {
+      return;
+    }
+    try {
+      const result = await this.sendInvoice(delivery, subject, destination);
+      await this.settleSent(delivery, result);
+    } catch (err: unknown) {
+      await this.settleError(delivery, err);
+    }
+  }
+
+  /**
+   * FR-E4-26 at send time: the document must still be released and still
+   * live. A release is never undone, but a document can be retired between
+   * the click and the sweep, and a retired result must not go out.
+   */
+  private async processClinicalDelivery(
+    delivery: DeliveryRecord,
+    documentId: string,
+  ): Promise<void> {
+    const subject = await this.deliveryRepository.findClinicalDeliverySubject(documentId);
+    if (subject === null || !subject.document.releasedToPatient || subject.document.isDeleted) {
+      await this.cancel(delivery, SEND_CANCELLED_DOCUMENT_REASON);
+      return;
+    }
+    const destination = await this.resolveDestinationOrCancel(delivery);
+    if (destination === null) {
+      return;
+    }
+    try {
+      const result = await this.sendClinicalDocument(delivery, subject, destination);
+      await this.settleSent(delivery, result);
+    } catch (err: unknown) {
+      if (err instanceof FormatNotDeliverableError) {
+        await this.settleFailed(delivery, SEND_FAILED_FORMAT_NOT_DELIVERABLE);
+        return;
+      }
+      await this.settleError(delivery, err);
+    }
+  }
+
+  private async resolveDestinationOrCancel(
+    delivery: DeliveryRecord,
+  ): Promise<DeliveryDestination | null> {
     const check = await this.consentService.isDeliveryAllowed({
       patientId: delivery.patientId,
       channel: delivery.channel,
@@ -98,17 +165,12 @@ export class DeliverySendService {
         delivery,
         `${SEND_CANCELLED_CONSENT_PREFIX}:${check.refusalReason ?? 'UNKNOWN'}`,
       );
-      return;
+      return null;
     }
-    try {
-      const result = await this.send(delivery, subject, check.destination);
-      await this.settleSent(delivery, result);
-    } catch (err: unknown) {
-      await this.settleError(delivery, err);
-    }
+    return check.destination;
   }
 
-  private async send(
+  private async sendInvoice(
     delivery: DeliveryRecord,
     subject: InvoiceDeliverySubjectRecord,
     destination: DeliveryDestination,
@@ -129,7 +191,7 @@ export class DeliverySendService {
         passwordSentence: null,
         link,
       };
-      return this.transport(destination, context, null, fileName);
+      return this.transport(destination, buildInvoiceMessage(context), null, fileName);
     }
     const stored = await this.objectStorageService.getObject({
       key: subject.document?.storageKey ?? '',
@@ -143,21 +205,67 @@ export class DeliverySendService {
       passwordSentence: this.protectService.describeScheme(),
       link: null,
     };
-    return this.transport(destination, context, protectedDocument.content, fileName);
+    return this.transport(
+      destination,
+      buildInvoiceMessage(context),
+      protectedDocument.content,
+      fileName,
+    );
+  }
+
+  /**
+   * A released clinical document, as a locked PDF (`P16-T40`). Attachment
+   * only — a result never leaves as a link — and the caption names the
+   * clinic, the document type and the date, never the title (FR-E4-27).
+   */
+  private async sendClinicalDocument(
+    delivery: DeliveryRecord,
+    subject: ClinicalDeliverySubjectRecord,
+    destination: DeliveryDestination,
+  ): Promise<DeliveryTransportResult> {
+    const clinicName = await this.clinicProfileService.getClinicName();
+    const stored = await this.objectStorageService.getObject({ key: subject.document.storageKey });
+    const pdf = await this.resolvePdfBytes(stored.body, subject.document.mimeType);
+    const protectedDocument = await this.protectService.protectForPatient({
+      pdf,
+      patient: subject.patient,
+    });
+    const message = buildClinicalMessage({
+      clinicName,
+      patientName: subject.patient.fullName,
+      category: subject.document.category,
+      documentDate: subject.document.documentDate,
+      passwordSentence: this.protectService.describeScheme(),
+    });
+    return this.transport(
+      destination,
+      message,
+      protectedDocument.content,
+      buildClinicalFileName(subject.document.title),
+    );
+  }
+
+  private async resolvePdfBytes(body: Uint8Array, mimeType: string): Promise<Uint8Array> {
+    if (mimeType === PDF_MIME_TYPE) {
+      return body;
+    }
+    if (isPdfWrappableImageMimeType(mimeType)) {
+      return wrapImageInPdf({ image: body, mimeType });
+    }
+    throw new FormatNotDeliverableError(mimeType);
   }
 
   private async transport(
     destination: DeliveryDestination,
-    context: InvoiceDeliveryMessageContext,
+    message: DeliveryMessage,
     attachment: Uint8Array | null,
     fileName: string,
   ): Promise<DeliveryTransportResult> {
     if (destination.channel === 'WHATSAPP') {
-      const caption = buildInvoiceWhatsappCaption(context);
       if (attachment === null) {
         await this.whatsappGateway.sendText({
           externalChatId: destination.externalChatId,
-          text: caption,
+          text: message.caption,
         });
       } else {
         await this.whatsappGateway.sendDocument({
@@ -165,17 +273,16 @@ export class DeliverySendService {
           fileName,
           mimeType: PDF_MIME_TYPE,
           content: attachment,
-          caption,
+          caption: message.caption,
         });
       }
       return { providerMessageId: null };
     }
-    const mail = buildInvoiceDeliveryMail(context);
     const result = await this.mailService.sendMail({
       to: destination.email,
-      subject: mail.subject,
-      text: mail.text,
-      html: mail.html,
+      subject: message.mail.subject,
+      text: message.mail.text,
+      html: message.mail.html,
       attachments:
         attachment === null
           ? undefined
@@ -262,6 +369,7 @@ export class DeliverySendService {
         channel: delivery.channel,
         shape: delivery.shape,
         invoiceId: delivery.invoiceId,
+        documentId: delivery.documentId,
         ...metadata,
       },
     });
@@ -273,6 +381,42 @@ class MailRejectedError extends Error {
     super('The mail transport did not accept the message');
     this.name = 'MailRejectedError';
   }
+}
+
+/** A stored type that cannot become a locked PDF — final, not worth a retry. */
+class FormatNotDeliverableError extends Error {
+  constructor(mimeType: string) {
+    super(`A ${mimeType} document cannot be delivered as a locked PDF`);
+    this.name = 'FormatNotDeliverableError';
+  }
+}
+
+function buildInvoiceMessage(context: InvoiceDeliveryMessageContext): DeliveryMessage {
+  return { caption: buildInvoiceWhatsappCaption(context), mail: buildInvoiceDeliveryMail(context) };
+}
+
+function buildClinicalMessage(
+  context: Parameters<typeof buildClinicalWhatsappCaption>[0],
+): DeliveryMessage {
+  return {
+    caption: buildClinicalWhatsappCaption(context),
+    mail: buildClinicalDeliveryMail(context),
+  };
+}
+
+/**
+ * The file name the patient saves. The title is the one place the document's
+ * own words reach the transport — as a *file name*, which the lock-screen
+ * rule (FR-E4-27) does not cover — so it is reduced to ASCII and capped, and
+ * always ends in `.pdf` because that is what the locked bytes are.
+ */
+function buildClinicalFileName(title: string): string {
+  const stem = title
+    .replace(ASCII_FILENAME_SAFE_PATTERN, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, MAX_FILENAME_STEM_LENGTH);
+  return `${stem || FALLBACK_FILENAME_STEM}${PDF_FILE_EXTENSION}`;
 }
 
 /** FR-E4-02 again, at send time: still ISSUED or PAID, snapshot still READY. */

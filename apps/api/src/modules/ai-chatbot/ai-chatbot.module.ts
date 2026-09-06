@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { AppointmentManagementModule } from '../appointment-management/appointment-management.module';
 import { AuthModule } from '../auth/auth.module';
@@ -67,7 +67,11 @@ import { ListMyPatientsTool } from './tools/definitions/list-my-patients.tool';
     AppointmentManagementModule,
     RegistrationFlowModule,
     PharmacyFlowModule,
-    DocumentManagementModule,
+    // `forwardRef`, because the module graph now loops through here: document
+    // management imports delivery (`P16-T40`), delivery the channel gateway,
+    // the gateway customer service, and customer service this module — so
+    // `DocumentManagementModule` is still evaluating when this file loads.
+    forwardRef(() => DocumentManagementModule),
     BillingModule,
   ],
   controllers: [AiProviderController, ChatController],

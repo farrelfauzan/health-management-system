@@ -48,14 +48,26 @@
         "doctor": "Assigned Doctor"
       },
       "unassigned": "Unassigned",
-      "sex": { "MALE": "Male", "FEMALE": "Female", "OTHER": "Other", "UNKNOWN": "Unspecified" },
+      "sex": {
+        "MALE": "Male",
+        "FEMALE": "Female",
+        "OTHER": "Other",
+        "UNKNOWN": "Unspecified"
+      },
       "status": {
         "IN_PATIENT": "In-patient",
         "OUT_PATIENT": "Out-patient",
         "DISCHARGED": "Discharged"
       },
-      "severity": { "MILD": "Mild", "MODERATE": "Moderate", "SEVERE": "Severe" },
-      "rhesus": { "POSITIVE": "Positive", "NEGATIVE": "Negative" },
+      "severity": {
+        "MILD": "Mild",
+        "MODERATE": "Moderate",
+        "SEVERE": "Severe"
+      },
+      "rhesus": {
+        "POSITIVE": "Positive",
+        "NEGATIVE": "Negative"
+      },
       "maritalStatus": {
         "SINGLE": "Single",
         "MARRIED": "Married",
@@ -243,20 +255,31 @@
         "release": {
           "action": "Release to patient",
           "confirmTitle": "Release this document to the patient?",
-          "confirmBody": "The patient will see \u201c{title}\u201d in their portal and can download it.",
-          "noUndo": "This cannot be undone from here \u2014 there is no un-release.",
+          "confirmBody": "The patient will see “{title}” in their portal and can download it.",
+          "noUndo": "This cannot be undone from here — there is no un-release.",
           "confirm": "Release",
-          "releasing": "Releasing\u2026",
+          "releasing": "Releasing…",
           "cancel": "Cancel",
           "released": "Document released to the patient.",
           "error": "Unable to release this document.",
-          "releasedOn": "Released {date}"
+          "releasedOn": "Released {date}",
+          "dispatchTitle": "Also send to the patient",
+          "dispatchDescription": "A password-protected PDF over the channels you tick, in the same action. The attending doctor is told either way.",
+          "dispatchLoading": "Checking the patient's channels…",
+          "dispatchUnavailable": "No channel is ready for this patient. Release still puts the document in the portal.",
+          "dispatchDefaultHint": "Pre-selected for this kind of document. Untick to release without sending.",
+          "captionNote": "The message names the clinic, the document type and the date — never a result value.",
+          "releasedAndSent": "Document released and queued to the patient over {channels}.",
+          "releasedNotSent": "Document released. Not sent: {reasons}.",
+          "refusedChannel": "{channel} ({reason})",
+          "doctorNotified": "The attending doctor was notified."
         },
         "actions": {
           "download": "Download",
           "edit": "Edit",
           "delete": "Delete",
-          "downloadError": "Unable to open this document."
+          "downloadError": "Unable to open this document.",
+          "deliveries": "Deliveries"
         },
         "uploadDialog": {
           "title": "Upload documents",
@@ -324,6 +347,37 @@
           "error": "Unable to delete this document.",
           "cancel": "Cancel",
           "confirm": "Delete document"
+        },
+        "deliveries": {
+          "title": "Deliveries of “{title}”",
+          "description": "Every send queued for this document, newest first. Consent and the number are re-checked when each one goes out.",
+          "empty": "Not sent to the patient yet.",
+          "loadError": "Deliveries could not be loaded.",
+          "close": "Close",
+          "sentAt": "Sent {date}",
+          "requestedBy": "Requested by {email}",
+          "attempts": "{count, plural, one {# attempt} other {# attempts}}",
+          "queuedAt": "Queued {date}",
+          "statuses": {
+            "QUEUED": "Queued",
+            "SENT": "Sent",
+            "DELIVERED": "Delivered",
+            "OPENED": "Opened",
+            "FAILED": "Failed",
+            "REVOKED": "Revoked",
+            "CANCELLED": "Cancelled"
+          },
+          "errors": {
+            "CANCELLED_BY_STAFF": "Called off before it was sent.",
+            "INVOICE_NO_LONGER_DELIVERABLE": "The invoice was voided or its document is no longer ready.",
+            "DOCUMENT_NO_LONGER_DELIVERABLE": "The document was retired or is no longer released.",
+            "FORMAT_NOT_DELIVERABLE": "This file type cannot be sent as a locked PDF.",
+            "DELIVERY_REFUSED_AT_SEND_TIME": "Refused at send time: {reason}",
+            "MAIL_REJECTED_BY_TRANSPORT": "The email address was rejected. Check it on the patient record.",
+            "ServiceUnavailableException": "The gateway was unavailable. It retries automatically.",
+            "UNSUPPORTED_DELIVERY_SUBJECT": "This delivery cannot be sent by this version.",
+            "unknown": "Failed: {code}"
+          }
         }
       }
     },
@@ -379,7 +433,9 @@
         "NUMBER_NOT_LINKED": "This patient's number is not verified. Offer the WhatsApp OTP verification flow.",
         "NUMBER_UNVERIFIED": "This patient's number is not verified. The verification flow was started but not completed.",
         "NUMBER_VERIFIED_FOR_ANOTHER_PATIENT": "This number is verified for a different patient. Sending is refused and audited.",
-        "EMAIL_MISSING": "No email address on the patient record."
+        "EMAIL_MISSING": "No email address on the patient record.",
+        "DATE_OF_BIRTH_MISSING": "The patient has no date of birth on file, so the file cannot be password-protected. Complete the record first.",
+        "FORMAT_NOT_DELIVERABLE": "This file type cannot be sent as a locked PDF. Only PDF, JPEG and PNG documents are delivered."
       },
       "capture": "Capture consent",
       "withdraw": "Withdraw",
@@ -583,7 +639,7 @@
       "documents": {
         "title": "Documents",
         "subtitle": "Results and letters your clinic has shared with you.",
-        "loading": "Loading your documents\u2026",
+        "loading": "Loading your documents…",
         "loadError": "Unable to load your documents.",
         "emptyTitle": "Nothing shared yet",
         "emptyDescription": "Documents appear here once your clinic releases them to you. If you are expecting a result, ask at your next visit.",
@@ -591,9 +647,9 @@
         "noDate": "No date",
         "download": "Download",
         "downloadError": "Unable to open this document.",
-        "downloadNotice": "Documents open as downloads \u2014 they are not previewed in the browser.",
+        "downloadNotice": "Documents open as downloads — they are not previewed in the browser.",
         "loadMore": "Show more",
-        "loadingMore": "Loading\u2026",
+        "loadingMore": "Loading…",
         "categories": {
           "LAB_RESULT": "Lab result",
           "RADIOLOGY": "Radiology",
@@ -611,7 +667,7 @@
     "encounters": {
       "documents": {
         "title": "Documents",
-        "loading": "Loading documents\u2026",
+        "loading": "Loading documents…",
         "loadError": "Unable to load the documents for this encounter.",
         "accessLost": "You no longer have access to this patient's documents.",
         "thisVisit": "This visit",
@@ -639,7 +695,11 @@
         "doctor": "Attending Doctor",
         "records": "Clinical Records"
       },
-      "status": { "IN_PROGRESS": "In progress", "FINISHED": "Finished", "CANCELLED": "Cancelled" },
+      "status": {
+        "IN_PROGRESS": "In progress",
+        "FINISHED": "Finished",
+        "CANCELLED": "Cancelled"
+      },
       "vitalsCount": "Vital-sign sets recorded",
       "diagnosesCount": "Diagnoses coded",
       "proceduresCount": "Procedures coded",
@@ -738,7 +798,10 @@
         "retract": "Retract diagnosis {code}",
         "primaryRequired": "No primary diagnosis yet. BPJS and SATUSEHAT submissions require one; the visit cannot be claimed without it.",
         "empty": "No diagnosis coded for this visit.",
-        "types": { "PRIMARY": "Primary", "SECONDARY": "Secondary" }
+        "types": {
+          "PRIMARY": "Primary",
+          "SECONDARY": "Secondary"
+        }
       },
       "procedure": {
         "title": "Procedures (ICD-9-CM)",

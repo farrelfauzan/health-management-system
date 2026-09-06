@@ -471,7 +471,9 @@
           "MAIL_REJECTED_BY_TRANSPORT": "The email address was rejected. Check it on the patient record.",
           "ServiceUnavailableException": "The gateway was unavailable. It retries automatically.",
           "UNSUPPORTED_DELIVERY_SUBJECT": "This delivery cannot be sent by this version.",
-          "unknown": "Failed: {code}"
+          "unknown": "Failed: {code}",
+          "DOCUMENT_NO_LONGER_DELIVERABLE": "The document was retired or is no longer released.",
+          "FORMAT_NOT_DELIVERABLE": "This file type cannot be sent as a locked PDF."
         },
         "actions": {
           "retry": "Retry",

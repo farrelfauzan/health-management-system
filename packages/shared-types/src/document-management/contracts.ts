@@ -1,3 +1,4 @@
+import type { ClinicalDispatchRefusalView, DeliveryView } from '#document-delivery/contracts';
 import type {
   DocumentCategoryValue,
   DocumentIngestStatusValue,
@@ -394,4 +395,17 @@ export type VaultDocumentShareRecipientListView = {
 export type RevokedVaultDocumentShareView = {
   id: string;
   revokedAt: string;
+};
+
+/**
+ * What a release answers (`P16-T40`): the released document, the delivery
+ * rows queued for the patient, the channels that were refused and why —
+ * refusal is per channel and never fails the release — and whether the
+ * attending doctor was told.
+ */
+export type PatientDocumentReleaseView = {
+  document: PatientDocumentView;
+  deliveries: DeliveryView[];
+  refusedChannels: ClinicalDispatchRefusalView[];
+  isDoctorNotified: boolean;
 };

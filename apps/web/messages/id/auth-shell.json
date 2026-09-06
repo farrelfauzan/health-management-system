@@ -179,6 +179,10 @@
         "licenceExpired": {
           "title": "STR/SIP telah berakhir",
           "body": "{licenceType} {licenceNumber} milik {doctorName} berakhir pada {expiresAt}."
+        },
+        "patientDocumentReleased": {
+          "title": "Hasil dilepas ke pasien Anda",
+          "body": "{category} atas nama {patientName} kini terlihat oleh pasien dan ada di panel Dokumen kunjungan."
         }
       },
       "profile": {

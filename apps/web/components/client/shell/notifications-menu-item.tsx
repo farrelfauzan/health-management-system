@@ -15,6 +15,7 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   VAULT_DOCUMENT_OPENED: 'visibility',
   LICENCE_EXPIRING: 'gpp_maybe',
   LICENCE_EXPIRED: 'gpp_bad',
+  PATIENT_DOCUMENT_RELEASED: 'lab_profile',
 };
 
 type NotificationsMenuItemProps = {
