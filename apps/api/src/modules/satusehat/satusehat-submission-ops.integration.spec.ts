@@ -122,6 +122,7 @@ describe('SATUSEHAT submission ops integration', () => {
         plan: 'Kontrol 3 hari',
         prognosis: 'BONAM',
       },
+      immunizations: [],
       unreportedAllergies: [
         {
           allergyId: '9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f',

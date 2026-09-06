@@ -33,6 +33,7 @@
     "category": "Category",
     "stock": "Stock",
     "reorderLevel": "Reorder level",
+    "isVaccine": "Vaccine",
     "nearestExpiry": "Nearest expiry",
     "actions": "Actions",
     "batchNumber": "Lot / batch number",

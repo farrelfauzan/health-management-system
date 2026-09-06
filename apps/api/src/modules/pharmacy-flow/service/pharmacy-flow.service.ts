@@ -11,6 +11,7 @@ import {
   StockReceiptResponse,
   PrescriptionDetailRecord,
   PrescriptionResponse,
+  VaccineCatalogEntry,
 } from '@hms/shared-types';
 import {
   BadRequestException,
@@ -515,6 +516,20 @@ export class PharmacyFlowService {
     };
   }
 
+  /**
+   * The vaccine lookup the EMR module makes before recording an immunisation
+   * (P10-T16). A service call rather than a reach into this module's
+   * repository, and deliberately narrow: it answers "may this be recorded as a
+   * vaccination, and will it be reportable", not "give me the catalog row".
+   *
+   * Unpermissioned on purpose — the caller has already been checked for
+   * `encounter.write`, and a doctor who may record a vaccination does not
+   * separately need `medication.read` to name the vaccine they gave.
+   */
+  async findActiveVaccineById(id: string): Promise<VaccineCatalogEntry | null> {
+    return this.pharmacyFlowRepository.findActiveVaccineById(id);
+  }
+
   private toMedicationResponse(medication: MedicationRecord): MedicationResponse {
     return {
       id: medication.id,
@@ -529,6 +544,7 @@ export class PharmacyFlowService {
       stockQty: medication.stockQty,
       reorderLevel: medication.reorderLevel,
       needsReorder: medication.stockQty <= medication.reorderLevel,
+      isVaccine: medication.isVaccine,
       createdAt: medication.createdAt.toISOString(),
       updatedAt: medication.updatedAt.toISOString(),
     };

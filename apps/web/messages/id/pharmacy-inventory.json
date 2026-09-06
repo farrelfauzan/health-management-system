@@ -33,6 +33,7 @@
     "category": "Kategori",
     "stock": "Stok",
     "reorderLevel": "Batas pemesanan ulang",
+    "isVaccine": "Vaksin",
     "nearestExpiry": "Kedaluwarsa terdekat",
     "actions": "Tindakan",
     "batchNumber": "Nomor lot / batch",

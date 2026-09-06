@@ -223,6 +223,21 @@ export class SatusehatSubmissionRepository {
           take: 1,
           select: { id: true, admittedAt: true, dischargedAt: true },
         },
+        immunizations: {
+          where: { deletedAt: null },
+          orderBy: { occurredAt: 'asc' },
+          select: {
+            id: true,
+            occurredAt: true,
+            lotNumber: true,
+            expirationDate: true,
+            doseNumber: true,
+            route: true,
+            site: true,
+            notes: true,
+            medication: { select: { name: true, kfaCode: true } },
+          },
+        },
         procedures: {
           where: { deletedAt: null },
           orderBy: { performedAt: 'asc' },
@@ -302,6 +317,22 @@ export class SatusehatSubmissionRepository {
       admission: this.toSubmissionAdmission(encounter.admissions[0]),
       diagnoses: encounter.diagnoses,
       procedures: encounter.procedures.map((procedure) => this.toSubmissionProcedure(procedure)),
+      immunizations: encounter.immunizations.map((immunization) => ({
+        immunizationId: immunization.id,
+        kfaCode: immunization.medication.kfaCode,
+        vaccineName: immunization.medication.name,
+        occurredAt: immunization.occurredAt,
+        lotNumber: immunization.lotNumber,
+        // Date-only on the wire: an expiry is a calendar fact, and an instant
+        // would put a timezone on something that does not have one.
+        expirationDate: immunization.expirationDate
+          ? immunization.expirationDate.toISOString().slice(0, 10)
+          : null,
+        doseNumber: immunization.doseNumber,
+        route: immunization.route,
+        site: immunization.site,
+        notes: immunization.notes,
+      })),
       unreportedAllergies: encounter.patient.allergies
         .filter((allergy) => allergy.deletedAt === null)
         .map((allergy) => this.toSubmissionAllergy(allergy)),

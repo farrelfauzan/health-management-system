@@ -4,6 +4,7 @@ import {
   SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionMedication,
+  SatusehatSubmissionImmunization,
   SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
   SaveAllergyIhsIdPayload,
@@ -144,6 +145,12 @@ export class SatusehatSubmissionService {
       practitionerIhsNumber,
       allergyFullUrls,
     );
+    const immunizationEntries = this.buildImmunizationEntries(
+      bundleData,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+    );
     const observationEntries: SatusehatFhirBundleEntry[] = bundleData.latestVitalSigns
       ? this.fhirMapper
           .mapVitalSignsToObservations({
@@ -204,6 +211,7 @@ export class SatusehatSubmissionService {
       procedureEntries,
       observationEntries,
       medicationEntries,
+      immunizationEntries,
     });
     return {
       resourceType: 'Bundle',
@@ -215,6 +223,7 @@ export class SatusehatSubmissionService {
         ...allergyEntries,
         ...observationEntries,
         ...medicationEntries,
+        ...immunizationEntries,
         ...clinicalImpressionEntry,
         ...compositionEntry,
       ],
@@ -242,6 +251,7 @@ export class SatusehatSubmissionService {
     procedureEntries: readonly SatusehatFhirBundleEntry[];
     observationEntries: readonly SatusehatFhirBundleEntry[];
     medicationEntries: readonly SatusehatFhirBundleEntry[];
+    immunizationEntries: readonly SatusehatFhirBundleEntry[];
   }): SatusehatFhirBundleEntry[] {
     const { bundleData } = context;
     const sections: SatusehatCompositionSectionInput[] = [
@@ -278,6 +288,12 @@ export class SatusehatSubmissionService {
         entryReferences: context.medicationEntries
           .filter((entry) => entry.request.url === 'MedicationRequest')
           .map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Imunisasi',
+        loincCode: '11369-6',
+        loincDisplay: 'History of Immunization Narrative',
+        entryReferences: context.immunizationEntries.map((entry) => entry.fullUrl),
       },
       {
         title: 'Rencana',
@@ -492,6 +508,63 @@ export class SatusehatSubmissionService {
       }
     }
     await this.submissionRepository.saveAllergyIhsIds(payloads);
+  }
+
+  /**
+   * Builds one Immunization entry per KFA-coded vaccination on the visit.
+   *
+   * A vaccine whose catalog row has no KFA code is skipped and named in the
+   * gap report — the platform only accepts KFA-coded products, and the fix is
+   * the catalog, not a guessed code. The vaccination stays in the local record
+   * either way, which is the point of recording it structurally at all.
+   */
+  private buildImmunizationEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+  ): SatusehatFhirBundleEntry[] {
+    const skipped = bundleData.immunizations.filter(
+      (immunization) => immunization.kfaCode === null,
+    );
+    this.reportImmunizationGaps(skipped);
+    return bundleData.immunizations
+      .filter(
+        (immunization): immunization is SatusehatSubmissionImmunization & { kfaCode: string } =>
+          immunization.kfaCode !== null,
+      )
+      .map((immunization) => ({
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: this.fhirMapper.mapImmunization({
+          immunizationId: immunization.immunizationId,
+          kfaCode: immunization.kfaCode,
+          vaccineName: immunization.vaccineName,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          encounterReference: encounterFullUrl,
+          occurredAt: immunization.occurredAt,
+          lotNumber: immunization.lotNumber ?? undefined,
+          expirationDate: immunization.expirationDate ?? undefined,
+          doseNumber: immunization.doseNumber ?? undefined,
+          route: immunization.route ?? undefined,
+          site: immunization.site ?? undefined,
+          performerIhsNumber: practitionerIhsNumber,
+          performerName: bundleData.doctorName,
+          notes: immunization.notes ?? undefined,
+        }),
+        request: { method: 'POST', url: 'Immunization' },
+      }));
+  }
+
+  private reportImmunizationGaps(
+    skippedImmunizations: readonly SatusehatSubmissionImmunization[],
+  ): void {
+    if (skippedImmunizations.length === 0) {
+      return;
+    }
+    this.logger.warn(
+      `SATUSEHAT immunization mapping gap: skipped ${skippedImmunizations.length} vaccination(s) whose vaccine has no KFA code`,
+    );
   }
 
   /**

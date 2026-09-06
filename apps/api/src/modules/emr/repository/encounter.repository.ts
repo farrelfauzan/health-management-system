@@ -3,12 +3,14 @@ import {
   CloseEncounterRecordPayload,
   CreateDiagnosisRecordPayload,
   CreateEncounterRecordPayload,
+  CreateImmunizationRecordPayload,
   CreateProcedureRecordPayload,
   CreateVitalSignsRecordPayload,
   DiagnosisRecord,
   EncounterDetailRecord,
   EncounterSourceRegistrationRecord,
   EncounterWithRelationsRecord,
+  ImmunizationRecord,
   ListEncountersParams,
   ProcedureRecord,
   UpdateEncounterRecordPayload,
@@ -20,6 +22,57 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '../../../generated/prisma/client';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
+
+const IMMUNIZATION_INCLUDE = {
+  medication: { select: { name: true, kfaCode: true } },
+  performedBy: { select: { fullName: true } },
+};
+
+type ImmunizationRow = {
+  id: string;
+  encounterId: string;
+  patientId: string;
+  medicationId: string;
+  occurredAt: Date;
+  lotNumber: string | null;
+  expirationDate: Date | null;
+  doseNumber: number | null;
+  route: 'IM' | 'SC' | 'ID' | 'ORAL' | 'NASAL' | null;
+  site: 'LEFT_ARM' | 'RIGHT_ARM' | 'LEFT_THIGH' | 'RIGHT_THIGH' | 'OTHER' | null;
+  performedById: string | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  medication: { name: string; kfaCode: string | null };
+  performedBy: { fullName: string } | null;
+};
+
+/**
+ * Flattens the vaccine name and KFA code onto the record. Every reader needs
+ * both — the history row to render without a second call, and the bundle
+ * builder to decide whether the row is reportable at all.
+ */
+function toImmunizationRecord(row: ImmunizationRow): ImmunizationRecord {
+  return {
+    id: row.id,
+    encounterId: row.encounterId,
+    patientId: row.patientId,
+    medicationId: row.medicationId,
+    medicationName: row.medication.name,
+    kfaCode: row.medication.kfaCode,
+    occurredAt: row.occurredAt,
+    lotNumber: row.lotNumber,
+    expirationDate: row.expirationDate,
+    doseNumber: row.doseNumber,
+    route: row.route,
+    site: row.site,
+    performedById: row.performedById,
+    performedByName: row.performedBy?.fullName ?? null,
+    notes: row.notes,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
 
 const ENCOUNTER_PATIENT_SELECT = {
   id: true,
@@ -73,6 +126,11 @@ const ENCOUNTER_DETAIL_INCLUDE = {
   procedures: {
     where: { deletedAt: null },
     orderBy: { performedAt: 'asc' },
+  },
+  immunizations: {
+    where: { deletedAt: null },
+    orderBy: { occurredAt: 'asc' },
+    include: IMMUNIZATION_INCLUDE,
   },
   prescriptions: {
     where: { deletedAt: null },
@@ -246,6 +304,7 @@ export class EncounterRepository {
     return {
       ...encounter,
       vitalSigns: encounter.vitalSigns.map((row) => this.toVitalSignsRecord(row)),
+      immunizations: encounter.immunizations.map((row) => toImmunizationRecord(row)),
     };
   }
 
@@ -459,6 +518,63 @@ export class EncounterRepository {
 
   async softDeleteProcedure(id: string): Promise<void> {
     await this.prisma.softDelete(this.prisma.procedure, { id });
+  }
+
+  async createImmunization(
+    payload: CreateImmunizationRecordPayload,
+  ): Promise<ImmunizationRecord> {
+    const created = await this.prisma.immunization.create({
+      data: {
+        encounterId: payload.encounterId,
+        patientId: payload.patientId,
+        medicationId: payload.medicationId,
+        occurredAt: payload.occurredAt ?? new Date(),
+        lotNumber: payload.lotNumber,
+        expirationDate: payload.expirationDate,
+        doseNumber: payload.doseNumber,
+        route: payload.route,
+        site: payload.site,
+        performedById: payload.performedById,
+        notes: payload.notes,
+      },
+      include: IMMUNIZATION_INCLUDE,
+    });
+    return toImmunizationRecord(created);
+  }
+
+  async findImmunizationById(id: string): Promise<ImmunizationRecord | null> {
+    const row = await this.prisma.immunization.findFirst({
+      where: { id, deletedAt: null },
+      include: IMMUNIZATION_INCLUDE,
+    });
+    return row ? toImmunizationRecord(row) : null;
+  }
+
+  async listImmunizationsByEncounter(encounterId: string): Promise<ImmunizationRecord[]> {
+    const rows = await this.prisma.immunization.findMany({
+      where: { encounterId, deletedAt: null },
+      orderBy: { occurredAt: 'asc' },
+      include: IMMUNIZATION_INCLUDE,
+    });
+    return rows.map((row) => toImmunizationRecord(row));
+  }
+
+  /**
+   * Newest first: an immunisation history is read to answer "what has this
+   * patient had lately", and the most recent dose is the one that decides
+   * whether the next is due.
+   */
+  async listImmunizationsByPatient(patientId: string): Promise<ImmunizationRecord[]> {
+    const rows = await this.prisma.immunization.findMany({
+      where: { patientId, deletedAt: null },
+      orderBy: { occurredAt: 'desc' },
+      include: IMMUNIZATION_INCLUDE,
+    });
+    return rows.map((row) => toImmunizationRecord(row));
+  }
+
+  async softDeleteImmunization(id: string): Promise<void> {
+    await this.prisma.softDelete(this.prisma.immunization, { id });
   }
 
   private buildStartedAtFilter(params: ListEncountersParams) {

@@ -20,10 +20,12 @@ import {
   SatusehatFhirEncounterHospitalization,
   SatusehatFhirCoding,
   SatusehatFhirCondition,
+  SatusehatFhirImmunization,
   SatusehatFhirEncounter,
   SatusehatFhirMedication,
   SatusehatFhirMedicationDispense,
   SatusehatFhirMedicationRequest,
+  SatusehatImmunizationMapInput,
   SatusehatFhirObservation,
   SatusehatFhirProcedure,
   SatusehatFhirReference,
@@ -55,6 +57,33 @@ const COMPOSITION_CATEGORY_LOINC_CODE = '34117-2';
 const COMPOSITION_CATEGORY_LOINC_DISPLAY = 'History and physical note';
 const COMPOSITION_TITLE = 'Resume Medis Rawat Jalan';
 const XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+const IMMUNIZATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/immunization';
+const ACT_SITE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-ActSite';
+const ROUTE_OF_ADMINISTRATION_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/v3-RouteOfAdministration';
+
+/**
+ * The HL7 v3 route codes for the five routes a klinik pratama actually uses.
+ * Held here rather than in the database for the same reason the vital-sign
+ * LOINC table is: a coding correction should be an adapter change, not a
+ * migration.
+ */
+const IMMUNIZATION_ROUTE_CODES: Readonly<Record<string, { code: string; display: string }>> = {
+  IM: { code: 'IM', display: 'Injection, intramuscular' },
+  SC: { code: 'SQ', display: 'Injection, subcutaneous' },
+  ID: { code: 'IDINJ', display: 'Injection, intradermal' },
+  ORAL: { code: 'PO', display: 'Swallow, oral' },
+  NASAL: { code: 'NASINHL', display: 'Inhalation, nasal' },
+};
+
+const IMMUNIZATION_SITE_CODES: Readonly<Record<string, { code: string; display: string }>> = {
+  LEFT_ARM: { code: 'LA', display: 'Left arm' },
+  RIGHT_ARM: { code: 'RA', display: 'Right arm' },
+  LEFT_THIGH: { code: 'LT', display: 'Left thigh' },
+  RIGHT_THIGH: { code: 'RT', display: 'Right thigh' },
+  // No v3 code for "somewhere else": sending one would be inventing a site.
+  OTHER: { code: '', display: '' },
+};
 
 /**
  * The three SNOMED prognosis grades the four recorded Latin terms map onto.
@@ -482,6 +511,69 @@ export class SatusehatFhirMapper {
           : {}),
       },
     ];
+  }
+
+  /**
+   * Maps one recorded vaccination to a SATUSEHAT Immunization.
+   *
+   * The vaccine code is KFA, like every other medication the platform accepts,
+   * so callers must skip a vaccine whose catalog row has no `kfaCode` and
+   * report the gap — the vaccination stays in the local record either way.
+   *
+   * Lot, expiry, dose, route and site are all omitted when absent rather than
+   * defaulted. A nurse copying a vaccination off a patient's card may have
+   * only two of the five, and a record with two true facts is worth more than
+   * one with five where three are invented. `site: OTHER` has no v3 code at
+   * all, so it is omitted for the same reason.
+   */
+  mapImmunization(input: SatusehatImmunizationMapInput): SatusehatFhirImmunization {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    const route = input.route ? IMMUNIZATION_ROUTE_CODES[input.route] : undefined;
+    const site = input.site ? IMMUNIZATION_SITE_CODES[input.site] : undefined;
+    return {
+      resourceType: 'Immunization',
+      identifier: [
+        {
+          system: `${IMMUNIZATION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.immunizationId,
+        },
+      ],
+      status: 'completed',
+      vaccineCode: {
+        coding: [{ system: KFA_SYSTEM, code: input.kfaCode, display: input.vaccineName }],
+      },
+      patient: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      occurrenceDateTime: this.toFhirInstant(input.occurredAt),
+      ...(input.lotNumber ? { lotNumber: input.lotNumber } : {}),
+      ...(input.expirationDate ? { expirationDate: input.expirationDate } : {}),
+      ...(site && site.code
+        ? { site: { coding: [{ system: ACT_SITE_SYSTEM, ...site }] } }
+        : {}),
+      ...(route
+        ? { route: { coding: [{ system: ROUTE_OF_ADMINISTRATION_SYSTEM, ...route }] } }
+        : {}),
+      ...(input.performerIhsNumber
+        ? {
+            performer: [
+              {
+                actor: this.buildReference(
+                  `Practitioner/${input.performerIhsNumber}`,
+                  input.performerName,
+                ),
+              },
+            ],
+          }
+        : {}),
+      ...(input.doseNumber === undefined
+        ? {}
+        : { protocolApplied: [{ doseNumberPositiveInt: input.doseNumber }] }),
+      ...(input.notes && input.notes.trim() !== '' ? { note: [{ text: input.notes }] } : {}),
+    };
   }
 
   /**

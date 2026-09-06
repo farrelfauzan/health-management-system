@@ -2,6 +2,8 @@ import type {
   DiagnosisTypeValue,
   EncounterPrognosisValue,
   EncounterStatusValue,
+  ImmunizationRouteValue,
+  ImmunizationSiteValue,
 } from '#emr/schemas';
 import type { PrescriptionStatusValue } from '#pharmacy-flow/schemas';
 
@@ -61,6 +63,28 @@ export type DiagnosisResponse = {
   notes?: string;
   recordedAt: string;
   recordedById?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ImmunizationResponse = {
+  id: string;
+  encounterId: string;
+  patientId: string;
+  medicationId: string;
+  /** The vaccine's catalog name, so a history row reads without a second call. */
+  medicationName: string;
+  /** Absent when the catalog row has no KFA code — which is what stops it being reported. */
+  kfaCode?: string;
+  occurredAt: string;
+  lotNumber?: string;
+  expirationDate?: string;
+  doseNumber?: number;
+  route?: ImmunizationRouteValue;
+  site?: ImmunizationSiteValue;
+  performedById?: string;
+  performedByName?: string;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -159,6 +183,7 @@ export type EncounterDetail = EncounterResponse & {
   vitalSigns: VitalSignsResponse[];
   diagnoses: DiagnosisResponse[];
   procedures: ProcedureResponse[];
+  immunizations: ImmunizationResponse[];
   prescriptions: EncounterRelatedPrescription[];
 };
 

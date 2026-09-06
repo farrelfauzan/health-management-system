@@ -62,6 +62,8 @@ export const AuditAction = {
   SATUSEHAT_PATIENT_LINKED: 'SATUSEHAT_PATIENT_LINKED',
   SATUSEHAT_DOCTOR_LINKED: 'SATUSEHAT_DOCTOR_LINKED',
   SATUSEHAT_SUBMISSION_RETRIED: 'SATUSEHAT_SUBMISSION_RETRIED',
+  IMMUNIZATION_RECORDED: 'IMMUNIZATION_RECORDED',
+  IMMUNIZATION_REMOVED: 'IMMUNIZATION_REMOVED',
   BPJS_CONFIG_CREATED: 'BPJS_CONFIG_CREATED',
   BPJS_CONFIG_UPDATED: 'BPJS_CONFIG_UPDATED',
   BPJS_CONFIG_DELETED: 'BPJS_CONFIG_DELETED',
@@ -266,6 +268,28 @@ export const EncounterPrognosis = {
 } as const
 
 export type EncounterPrognosis = (typeof EncounterPrognosis)[keyof typeof EncounterPrognosis]
+
+
+export const ImmunizationRoute = {
+  IM: 'IM',
+  SC: 'SC',
+  ID: 'ID',
+  ORAL: 'ORAL',
+  NASAL: 'NASAL'
+} as const
+
+export type ImmunizationRoute = (typeof ImmunizationRoute)[keyof typeof ImmunizationRoute]
+
+
+export const ImmunizationSite = {
+  LEFT_ARM: 'LEFT_ARM',
+  RIGHT_ARM: 'RIGHT_ARM',
+  LEFT_THIGH: 'LEFT_THIGH',
+  RIGHT_THIGH: 'RIGHT_THIGH',
+  OTHER: 'OTHER'
+} as const
+
+export type ImmunizationSite = (typeof ImmunizationSite)[keyof typeof ImmunizationSite]
 
 
 export const AllergySeverity = {

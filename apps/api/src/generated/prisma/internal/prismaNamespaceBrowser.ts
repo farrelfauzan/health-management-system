@@ -140,7 +140,8 @@ export const ModelName = {
   ManagedDocument: 'ManagedDocument',
   DocumentApprovalRequest: 'DocumentApprovalRequest',
   DocumentApprovalApprover: 'DocumentApprovalApprover',
-  DocumentApprovalDecision: 'DocumentApprovalDecision'
+  DocumentApprovalDecision: 'DocumentApprovalDecision',
+  Immunization: 'Immunization'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -738,6 +739,7 @@ export const MedicationScalarFieldEnum = {
   category: 'category',
   reorderLevel: 'reorderLevel',
   unitPrice: 'unitPrice',
+  isVaccine: 'isVaccine',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -1661,6 +1663,28 @@ export const DocumentApprovalDecisionScalarFieldEnum = {
 } as const
 
 export type DocumentApprovalDecisionScalarFieldEnum = (typeof DocumentApprovalDecisionScalarFieldEnum)[keyof typeof DocumentApprovalDecisionScalarFieldEnum]
+
+
+export const ImmunizationScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  patientId: 'patientId',
+  medicationId: 'medicationId',
+  occurredAt: 'occurredAt',
+  lotNumber: 'lotNumber',
+  expirationDate: 'expirationDate',
+  doseNumber: 'doseNumber',
+  route: 'route',
+  site: 'site',
+  performedById: 'performedById',
+  notes: 'notes',
+  satusehatImmunizationId: 'satusehatImmunizationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ImmunizationScalarFieldEnum = (typeof ImmunizationScalarFieldEnum)[keyof typeof ImmunizationScalarFieldEnum]
 
 
 export const SortOrder = {

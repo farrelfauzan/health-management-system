@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { GenerateInvoiceDialog } from '#components/client/billing/generate-invoice-dialog';
 import { EncounterDiagnosesCard } from '#components/client/encounters/encounter-diagnoses-card';
 import { EncounterPrescriptionsCard } from '#components/client/encounters/encounter-prescriptions-card';
+import { EncounterImmunizationsCard } from '#components/client/encounters/encounter-immunizations-card';
 import { EncounterProceduresCard } from '#components/client/encounters/encounter-procedures-card';
 import { EncounterReferralCard } from '#components/client/encounters/encounter-referral-card';
 import { EncounterDocumentsPanel } from '#components/client/patient-documents/encounter-documents-panel';
@@ -145,6 +146,11 @@ export function EncounterWorkspace({
           <EncounterProceduresCard
             encounterId={encounter.id}
             procedures={encounter.procedures}
+            isEditable={isEditable}
+          />
+          <EncounterImmunizationsCard
+            encounterId={encounter.id}
+            immunizations={encounter.immunizations}
             isEditable={isEditable}
           />
           <EncounterReferralCard encounterId={encounter.id} isEditable={isEditable} />

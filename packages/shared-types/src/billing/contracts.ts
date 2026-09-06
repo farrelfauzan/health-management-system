@@ -98,7 +98,8 @@ export type InvoiceGenerationGapReason =
   | 'NO_CONSULTATION_TARIFF'
   | 'NO_TARIFF_FOR_PROCEDURE'
   | 'UNPRICED_MEDICATION'
-  | 'NO_ACCOMMODATION_TARIFF';
+  | 'NO_ACCOMMODATION_TARIFF'
+  | 'NO_TARIFF_FOR_IMMUNIZATION';
 
 /**
  * A billable thing the generator found on the encounter but could not price.

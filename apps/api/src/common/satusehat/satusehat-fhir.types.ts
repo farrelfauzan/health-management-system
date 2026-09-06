@@ -122,6 +122,23 @@ export type SatusehatFhirAllergyIntolerance = {
   reaction?: SatusehatFhirAllergyReaction[];
 };
 
+export type SatusehatFhirImmunization = {
+  resourceType: 'Immunization';
+  identifier: SatusehatFhirIdentifier[];
+  status: 'completed';
+  vaccineCode: SatusehatFhirCodeableConcept;
+  patient: SatusehatFhirReference;
+  encounter: SatusehatFhirReference;
+  occurrenceDateTime: string;
+  lotNumber?: string;
+  expirationDate?: string;
+  site?: SatusehatFhirCodeableConcept;
+  route?: SatusehatFhirCodeableConcept;
+  performer?: Array<{ actor: SatusehatFhirReference }>;
+  protocolApplied?: Array<{ doseNumberPositiveInt: number }>;
+  note?: SatusehatFhirAnnotation[];
+};
+
 export type SatusehatFhirObservation = {
   resourceType: 'Observation';
   status: 'final';
@@ -205,6 +222,25 @@ export type SatusehatAllergyMapInput = {
   recordedAt: Date;
   recorderIhsNumber?: string;
   recorderName?: string;
+};
+
+export type SatusehatImmunizationMapInput = {
+  immunizationId: string;
+  kfaCode: string;
+  vaccineName: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  encounterReference: string;
+  occurredAt: Date;
+  lotNumber?: string;
+  /** Calendar date, `YYYY-MM-DD` — an expiry has no time and no timezone. */
+  expirationDate?: string;
+  doseNumber?: number;
+  route?: 'IM' | 'SC' | 'ID' | 'ORAL' | 'NASAL';
+  site?: 'LEFT_ARM' | 'RIGHT_ARM' | 'LEFT_THIGH' | 'RIGHT_THIGH' | 'OTHER';
+  performerIhsNumber?: string;
+  performerName?: string;
+  notes?: string;
 };
 
 export type SatusehatVitalSignsMapInput = {
@@ -359,6 +395,7 @@ export type SatusehatFhirBundleEntry = {
     | SatusehatFhirEncounter
     | SatusehatFhirCondition
     | SatusehatFhirProcedure
+    | SatusehatFhirImmunization
     | SatusehatFhirAllergyIntolerance
     | SatusehatFhirObservation
     | SatusehatFhirComposition

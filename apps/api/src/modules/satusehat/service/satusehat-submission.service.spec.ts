@@ -94,6 +94,7 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
       prognosis: 'BONAM' as const,
     },
     procedures: [],
+    immunizations: [],
     unreportedAllergies: [],
     retractedReportedAllergyCount: 0,
     prescriptions: [],
@@ -526,6 +527,100 @@ describe('SatusehatSubmissionService', () => {
     expect(dispenseResource.performer[0]?.actor.reference).toBe('Organization/10000004');
     expect(dispenseResource.whenHandedOver).toBe('2026-07-28T02:30:00.000Z');
     expect(dispenseResource.substitution.wasSubstituted).toBe(false);
+  });
+
+  it('adds an Immunization entry per KFA-coded vaccination and an Imunisasi section', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        immunizations: [
+          {
+            immunizationId: 'imm-1',
+            kfaCode: '93000123',
+            vaccineName: 'Vaksin DPT-HB-Hib',
+            occurredAt: new Date('2026-07-28T02:10:00.000Z'),
+            lotNumber: 'LOT-DPT-2026-04',
+            expirationDate: '2027-04-30',
+            doseNumber: 3,
+            route: 'IM' as const,
+            site: 'LEFT_THIGH' as const,
+            notes: null,
+          },
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const immunizationEntries = bundle.entry.filter(
+      (entry) => entry.request.url === 'Immunization',
+    );
+    expect(immunizationEntries).toHaveLength(1);
+    const composition = bundle.entry.at(-1)?.resource as {
+      section: Array<{ title: string; entry?: Array<{ reference: string }> }>;
+    };
+    const immunisationSection = composition.section.find(
+      (section) => section.title === 'Imunisasi',
+    );
+    expect(immunisationSection?.entry?.[0]?.reference).toBe(immunizationEntries[0]?.fullUrl);
+  });
+
+  it('skips a vaccine with no KFA code, keeps the rest, and logs the gap', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        immunizations: [
+          {
+            immunizationId: 'imm-coded',
+            kfaCode: '93000123',
+            vaccineName: 'Vaksin DPT-HB-Hib',
+            occurredAt: new Date('2026-07-28T02:10:00.000Z'),
+            lotNumber: null,
+            expirationDate: null,
+            doseNumber: null,
+            route: null,
+            site: null,
+            notes: null,
+          },
+          {
+            immunizationId: 'imm-uncoded',
+            kfaCode: null,
+            vaccineName: 'Vaksin lokal tanpa KFA',
+            occurredAt: new Date('2026-07-28T02:12:00.000Z'),
+            lotNumber: null,
+            expirationDate: null,
+            doseNumber: null,
+            route: null,
+            site: null,
+            notes: null,
+          },
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+    const warnSpy = jest.spyOn(
+      (service as unknown as { logger: { warn: (message: string) => void } }).logger,
+      'warn',
+    );
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    expect(bundle.entry.filter((entry) => entry.request.url === 'Immunization')).toHaveLength(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('skipped 1 vaccination(s) whose vaccine has no KFA code'),
+    );
+    warnSpy.mockRestore();
   });
 
   it('appends the Composition last, after every resource it references', async () => {

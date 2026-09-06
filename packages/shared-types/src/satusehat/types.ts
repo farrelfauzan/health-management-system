@@ -122,6 +122,24 @@ export type SatusehatSubmissionAllergy = {
   recordedAt: Date;
 };
 
+/**
+ * One vaccination on the visit. `kfaCode` is null when the catalog row is
+ * uncoded, which is what makes the row unreportable — recorded locally,
+ * skipped in the bundle, named in the gap log (P10-T16).
+ */
+export type SatusehatSubmissionImmunization = {
+  immunizationId: string;
+  kfaCode: string | null;
+  vaccineName: string;
+  occurredAt: Date;
+  lotNumber: string | null;
+  expirationDate: string | null;
+  doseNumber: number | null;
+  route: 'IM' | 'SC' | 'ID' | 'ORAL' | 'NASAL' | null;
+  site: 'LEFT_ARM' | 'RIGHT_ARM' | 'LEFT_THIGH' | 'RIGHT_THIGH' | 'OTHER' | null;
+  notes: string | null;
+};
+
 export type SatusehatSubmissionDispenseItem = {
   dispenseItemId: string;
   dispenseRecordId: string;
@@ -170,6 +188,7 @@ export type SatusehatSubmissionBundleData = {
   admission: SatusehatSubmissionAdmission | null;
   diagnoses: readonly SatusehatSubmissionDiagnosis[];
   procedures: readonly SatusehatSubmissionProcedure[];
+  immunizations: readonly SatusehatSubmissionImmunization[];
   unreportedAllergies: readonly SatusehatSubmissionAllergy[];
   /**
    * Allergies that were reported to SATUSEHAT and have since been retracted

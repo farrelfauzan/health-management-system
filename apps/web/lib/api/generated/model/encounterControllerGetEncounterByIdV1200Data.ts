@@ -7,6 +7,7 @@
  */
 import type { EncounterControllerGetEncounterByIdV1200DataDiagnosesItem } from './encounterControllerGetEncounterByIdV1200DataDiagnosesItem';
 import type { EncounterControllerGetEncounterByIdV1200DataDoctor } from './encounterControllerGetEncounterByIdV1200DataDoctor';
+import type { EncounterControllerGetEncounterByIdV1200DataImmunizationsItem } from './encounterControllerGetEncounterByIdV1200DataImmunizationsItem';
 import type { EncounterControllerGetEncounterByIdV1200DataPatient } from './encounterControllerGetEncounterByIdV1200DataPatient';
 import type { EncounterControllerGetEncounterByIdV1200DataPrescriptionsItem } from './encounterControllerGetEncounterByIdV1200DataPrescriptionsItem';
 import type { EncounterControllerGetEncounterByIdV1200DataProceduresItem } from './encounterControllerGetEncounterByIdV1200DataProceduresItem';
@@ -31,5 +32,6 @@ export type EncounterControllerGetEncounterByIdV1200Data = {
   vitalSigns: EncounterControllerGetEncounterByIdV1200DataVitalSignsItem[];
   diagnoses: EncounterControllerGetEncounterByIdV1200DataDiagnosesItem[];
   procedures: EncounterControllerGetEncounterByIdV1200DataProceduresItem[];
+  immunizations: EncounterControllerGetEncounterByIdV1200DataImmunizationsItem[];
   prescriptions: EncounterControllerGetEncounterByIdV1200DataPrescriptionsItem[];
 };
