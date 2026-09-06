@@ -1,5 +1,6 @@
 import type { TemplateVariableWarning } from '#billing/types';
 import type {
+  DocumentTemplateImportWarningCode,
   DocumentTemplateKindValue,
   DocumentTemplateStatusValue,
   TemplateSettingsValue,
@@ -53,4 +54,28 @@ export type DocumentTemplatePreviewView = {
   url: string;
   expiresAt: string;
   warnings: TemplateVariableWarning[];
+};
+
+/** One signed, browser-direct PUT for a `.docx` (`P16-T42`). */
+export type DocumentTemplateImportUploadUrlView = {
+  url: string;
+  storageKey: string;
+  expiresAt: string;
+  requiredHeaders: Readonly<Record<string, string>>;
+};
+
+export type DocumentTemplateImportWarning = {
+  code: DocumentTemplateImportWarningCode;
+  message: string;
+  detail?: string;
+};
+
+/**
+ * The converted layout, ready for the editor and **not yet saved**: the
+ * author reviews it, and the working copy changes only when they press
+ * Save. `warnings` lists what did not survive the trip from Word.
+ */
+export type DocumentTemplateImportView = {
+  contentHtml: string;
+  warnings: DocumentTemplateImportWarning[];
 };

@@ -67,6 +67,23 @@ The same architecture with one extra move, and the extra move is the point:
 | Inert serving | The signed GET pins `attachment; filename="clinic-logo.png"` and `image/png`. Browsers ignore `Content-Disposition` on a subresource load, so `<img src>` still renders the admin preview — what the header changes is that *navigating* to the URL downloads instead of rendering |
 | Upload ties to a record | Claim-or-nothing: a signed URL nobody claims leaves a staged object and no row. Replacing a logo deletes the previous object **after** the write commits, so a failed write never leaves the profile pointing at bytes that are gone |
 
+## Controls in force (template import: `/api/v1/document-templates/import-upload-url`, `:id/import`, P16-T42)
+
+A Word file a clinic already prints receipts from, staged for conversion into
+the template editor's HTML. The object is **transient**: read once, converted,
+and deleted in the same request, whatever the outcome — it is never served and
+never referenced by a row.
+
+| Control | How |
+| --- | --- |
+| Presigned PUT, bytes never through the API | `POST /document-templates/import-upload-url` signs one PUT for exactly `DOCUMENT_TEMPLATE_IMPORT_MIME_TYPE` at the declared size, under `document-templates/imports/staged/<uuid>.docx`; the import route accepts only a key matching that prefix (`is-staged-template-import-key`), so "convert my upload" can never become "read any object" |
+| Per-surface allowlist | One type, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`, capped at `DOCUMENT_TEMPLATE_IMPORT_MAX_UPLOAD_SIZE_BYTES` (5 MiB), declared in `@hms/shared-types/document-templates`; the bucket allowlist gained the type in the same change |
+| Magic-byte validation | `validate-docx-content.ts` at the first point the server holds the bytes: the ZIP local-header signature must sit at offset zero (a polyglot with a prologue is refused) and the archive must carry `word/document.xml`. A password-protected Word file is an OLE compound file, not a ZIP, and fails the first check — an archive the server cannot open is not an accepted type. Size is re-checked from `HEAD`, not trusted from the signing call |
+| Images are re-encoded, never kept verbatim | Every embedded image is validated with `common/image/validate-image-content.ts` and re-encoded with `reencode-image.ts` (PNG, JPEG, WebP; longest edge capped) before it becomes an inline `data:` image in the HTML. EMF, WMF, SVG and anything else are dropped with a warning the author sees |
+| Output goes through the template sanitiser | The converted HTML passes `sanitise-template-html.ts` like any editor save, so the import cannot introduce anything a hand-typed template could not; the result is returned to the editor as an unsaved draft, never written to the working copy by the import itself |
+| Refusals audited | A file refused on its bytes writes `DOCUMENT_UPLOAD_REJECTED` with the key and reason, the same verb the document store and the clinic logo use |
+| Serving | Not applicable — the staged object is deleted after conversion and no download URL for it is ever minted |
+
 ## The standard for any new upload surface
 
 A PR adding an upload surface must answer every row above for its own surface,

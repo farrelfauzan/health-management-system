@@ -19,8 +19,11 @@ import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { DOCUMENT_TEMPLATE_EXAMPLES } from '../../../common/openapi/document-template-examples';
 import { CreateDocumentTemplateDto } from '../dto/create-document-template.dto';
+import { CreateDocumentTemplateImportUploadUrlDto } from '../dto/create-document-template-import-upload-url.dto';
+import { ImportDocumentTemplateDto } from '../dto/import-document-template.dto';
 import { ListDocumentTemplatesQueryDto } from '../dto/list-document-templates-query.dto';
 import { UpdateDocumentTemplateDto } from '../dto/update-document-template.dto';
+import { DocumentTemplateImportService } from '../service/document-template-import.service';
 import { DocumentTemplatePreviewService } from '../service/document-template-preview.service';
 import { DocumentTemplateService } from '../service/document-template.service';
 
@@ -33,6 +36,7 @@ export class DocumentTemplateController {
   constructor(
     private readonly documentTemplateService: DocumentTemplateService,
     private readonly documentTemplatePreviewService: DocumentTemplatePreviewService,
+    private readonly documentTemplateImportService: DocumentTemplateImportService,
   ) {}
 
   @Get()
@@ -105,6 +109,42 @@ export class DocumentTemplateController {
       data: template,
       message: 'Document template updated',
     };
+  }
+
+  @Post('import-upload-url')
+  @HttpCode(200)
+  @Auth([{ action: 'write', subject: 'DocumentTemplate' }])
+  @ApiEndpoint({
+    summary: 'Sign a browser-direct upload of a Word file to import as a template',
+    responseDescription:
+      'A short-lived PUT URL for exactly one `.docx` of the declared size. Nothing is persisted: a URL nobody claims leaves a staged object that the import route never sees and a sweep can remove. Send `requiredHeaders` verbatim on the PUT.',
+    responseExample: { data: DOCUMENT_TEMPLATE_EXAMPLES.importUploadUrlView },
+    requestType: CreateDocumentTemplateImportUploadUrlDto,
+    requestExample: DOCUMENT_TEMPLATE_EXAMPLES.importUploadUrlRequest,
+  })
+  async createImportUploadUrl(@Body() payload: CreateDocumentTemplateImportUploadUrlDto) {
+    return { data: await this.documentTemplateImportService.createImportUploadUrl(payload) };
+  }
+
+  @Post(':id/import')
+  @HttpCode(200)
+  @Auth([{ action: 'write', subject: 'DocumentTemplate' }])
+  @ApiEndpoint({
+    summary: 'Convert a staged Word file into a layout the editor can load',
+    responseDescription:
+      'The Word file’s headings, paragraphs, emphasis, tables and embedded images as sanitised editor HTML, with `{{token}}` placeholders turned into variable chips. **Nothing is saved**: the client loads it into the editor as an unsaved draft and the working copy changes only on Save. `warnings` lists placeholders the registry does not know, images that could not be carried over, and anything else the converter dropped. The staged file is deleted whatever the outcome; a file that is not a Word document is refused on its bytes and audited.',
+    responseExample: { data: DOCUMENT_TEMPLATE_EXAMPLES.importView },
+    requestType: ImportDocumentTemplateDto,
+    requestExample: DOCUMENT_TEMPLATE_EXAMPLES.importRequest,
+    notFoundDescription: 'Document template not found.',
+  })
+  async importTemplate(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() payload: ImportDocumentTemplateDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    return { data: await this.documentTemplateImportService.importTemplate(id, payload, actor) };
   }
 
   @Post(':id/preview')

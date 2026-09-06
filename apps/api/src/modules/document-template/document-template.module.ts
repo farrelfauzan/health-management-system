@@ -5,6 +5,7 @@ import { StorageModule } from '../../common/storage/storage.module';
 import { DocumentTemplateController } from './controller/document-template.controller';
 import { DocumentTemplateVariableController } from './controller/document-template-variable.controller';
 import { DocumentTemplateRepository } from './repository/document-template.repository';
+import { DocumentTemplateImportService } from './service/document-template-import.service';
 import { DocumentTemplateMapper } from './service/document-template.mapper';
 import { DocumentTemplatePreviewService } from './service/document-template-preview.service';
 import { DocumentTemplateService } from './service/document-template.service';
@@ -26,6 +27,7 @@ import { DocumentTemplateService } from './service/document-template.service';
     DocumentTemplateMapper,
     DocumentTemplateService,
     DocumentTemplatePreviewService,
+    DocumentTemplateImportService,
   ],
   // Exported for P16-T06: the invoice render service resolves "the default
   // template's latest published version" through this service — a service

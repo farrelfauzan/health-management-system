@@ -62,6 +62,29 @@ export const DOCUMENT_TEMPLATE_EXAMPLES = {
     id: '5b7c1a02-88d4-4f0f-bb0e-9f2ad4e6a913',
     archivedAt: '2026-09-01T05:00:00.000Z',
   },
+  importUploadUrlRequest: { sizeBytes: 184_320 },
+  importUploadUrlView: {
+    url: 'https://storage.example/document-templates/imports/staged/5d0e8442-1d1a-4f9c-beb3-6fb6cfd2cf21.docx?X-Amz-Signature=…',
+    storageKey: 'document-templates/imports/staged/5d0e8442-1d1a-4f9c-beb3-6fb6cfd2cf21.docx',
+    expiresAt: '2026-09-05T13:05:00.000Z',
+    requiredHeaders: {
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    },
+  },
+  importRequest: {
+    stagedKey: 'document-templates/imports/staged/5d0e8442-1d1a-4f9c-beb3-6fb6cfd2cf21.docx',
+  },
+  importView: {
+    contentHtml:
+      '<h1><span data-hms-var="clinic.name"></span></h1><p>No. <span data-hms-var="invoice.number"></span></p><div data-hms-var="items"></div><p>{{tanda.tangan}}</p>',
+    warnings: [
+      {
+        code: 'UNKNOWN_PLACEHOLDER',
+        message: '{{tanda.tangan}} is not a template variable and was left as text',
+        detail: optionalExample('tanda.tangan'),
+      },
+    ],
+  },
   previewView: {
     url: 'https://objects.example/document-templates/previews/3f1c…/preview.pdf?X-Amz-Signature=…',
     expiresAt: '2026-09-01T05:05:00.000Z',

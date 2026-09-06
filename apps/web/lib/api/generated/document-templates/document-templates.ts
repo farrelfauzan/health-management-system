@@ -22,8 +22,11 @@ import type {
 
 import type {
   CreateDocumentTemplateDto,
+  CreateDocumentTemplateImportUploadUrlDto,
   DocumentTemplateControllerArchiveTemplateV1200,
+  DocumentTemplateControllerCreateImportUploadUrlV1200,
   DocumentTemplateControllerCreateTemplateV1201,
+  DocumentTemplateControllerImportTemplateV1200,
   DocumentTemplateControllerListTemplatesV1200,
   DocumentTemplateControllerListTemplatesV1Params,
   DocumentTemplateControllerPreviewTemplateV1200,
@@ -32,6 +35,7 @@ import type {
   DocumentTemplateControllerUpdateTemplateV1200,
   DocumentTemplateVariableControllerListTemplateVariablesV1200,
   DocumentTemplateVariableControllerListTemplateVariablesV1Params,
+  ImportDocumentTemplateDto,
   UpdateDocumentTemplateDto
 } from '../model';
 
@@ -424,6 +428,201 @@ export function useDocumentTemplateControllerArchiveTemplateV1<TData = Awaited<R
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentTemplateControllerArchiveTemplateV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Sign a browser-direct upload of a Word file to import as a template
+ */
+export const documentTemplateControllerCreateImportUploadUrlV1 = (
+    createDocumentTemplateImportUploadUrlDto: CreateDocumentTemplateImportUploadUrlDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerCreateImportUploadUrlV1200>(
+      {url: `/api/v1/document-templates/import-upload-url`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createDocumentTemplateImportUploadUrlDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerCreateImportUploadUrlV1QueryKey = (createDocumentTemplateImportUploadUrlDto?: CreateDocumentTemplateImportUploadUrlDto,) => {
+    return [
+    'POST', `/api/v1/document-templates/import-upload-url`, createDocumentTemplateImportUploadUrlDto
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerCreateImportUploadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError = unknown>(createDocumentTemplateImportUploadUrlDto: CreateDocumentTemplateImportUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerCreateImportUploadUrlV1QueryKey(createDocumentTemplateImportUploadUrlDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>> = ({ signal }) => documentTemplateControllerCreateImportUploadUrlV1(createDocumentTemplateImportUploadUrlDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerCreateImportUploadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>>
+export type DocumentTemplateControllerCreateImportUploadUrlV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerCreateImportUploadUrlV1<TData = Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError = unknown>(
+ createDocumentTemplateImportUploadUrlDto: CreateDocumentTemplateImportUploadUrlDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerCreateImportUploadUrlV1<TData = Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError = unknown>(
+ createDocumentTemplateImportUploadUrlDto: CreateDocumentTemplateImportUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerCreateImportUploadUrlV1<TData = Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError = unknown>(
+ createDocumentTemplateImportUploadUrlDto: CreateDocumentTemplateImportUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Sign a browser-direct upload of a Word file to import as a template
+ */
+
+export function useDocumentTemplateControllerCreateImportUploadUrlV1<TData = Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError = unknown>(
+ createDocumentTemplateImportUploadUrlDto: CreateDocumentTemplateImportUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerCreateImportUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerCreateImportUploadUrlV1QueryOptions(createDocumentTemplateImportUploadUrlDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Convert a staged Word file into a layout the editor can load
+ */
+export const documentTemplateControllerImportTemplateV1 = (
+    id: string,
+    importDocumentTemplateDto: ImportDocumentTemplateDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerImportTemplateV1200>(
+      {url: `/api/v1/document-templates/${id}/import`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: importDocumentTemplateDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerImportTemplateV1QueryKey = (id: string,
+    importDocumentTemplateDto?: ImportDocumentTemplateDto,) => {
+    return [
+    'POST', `/api/v1/document-templates/${id}/import`, importDocumentTemplateDto
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerImportTemplateV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError = unknown>(id: string,
+    importDocumentTemplateDto: ImportDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerImportTemplateV1QueryKey(id,importDocumentTemplateDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>> = ({ signal }) => documentTemplateControllerImportTemplateV1(id,importDocumentTemplateDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerImportTemplateV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>>
+export type DocumentTemplateControllerImportTemplateV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerImportTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError = unknown>(
+ id: string,
+    importDocumentTemplateDto: ImportDocumentTemplateDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerImportTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError = unknown>(
+ id: string,
+    importDocumentTemplateDto: ImportDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerImportTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError = unknown>(
+ id: string,
+    importDocumentTemplateDto: ImportDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Convert a staged Word file into a layout the editor can load
+ */
+
+export function useDocumentTemplateControllerImportTemplateV1<TData = Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError = unknown>(
+ id: string,
+    importDocumentTemplateDto: ImportDocumentTemplateDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerImportTemplateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerImportTemplateV1QueryOptions(id,importDocumentTemplateDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
+  DocumentTemplateImportView,
+  DocumentTemplateImportWarning,
   DocumentTemplateView,
   InvoiceItemColumnToken,
   TemplateSettingsValue,
@@ -23,6 +25,8 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { ItemsColumnsConfig } from '#components/client/document-templates/items-columns-config';
 import { TemplateEditorActions } from '#components/client/document-templates/template-editor-actions';
+import { TemplateImportButton } from '#components/client/document-templates/template-import-button';
+import { TemplateImportWarnings } from '#components/client/document-templates/template-import-warnings';
 import { TemplateSettingsFields } from '#components/client/document-templates/template-settings-fields';
 import { TemplateVariablePalette } from '#components/client/document-templates/template-variable-palette';
 import { documentTemplateControllerUpdateTemplateV1 } from '#lib/api/generated/document-templates/document-templates';
@@ -62,6 +66,9 @@ export function TemplateEditor({ template, canWrite, onBack }: TemplateEditorPro
   const [isItemsBlockSelected, setIsItemsBlockSelected] = useState<boolean>(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [importWarnings, setImportWarnings] = useState<readonly DocumentTemplateImportWarning[]>(
+    [],
+  );
   const variablesQuery = useTemplateVariables(template.kind);
   const richTextVariables = useMemo(
     () => toRichTextVariables(variablesQuery.variables, locale),
@@ -98,6 +105,18 @@ export function TemplateEditor({ template, canWrite, onBack }: TemplateEditorPro
   const handleEditorReady = useCallback((instance: RichTextEditorInstance | null) => {
     setEditor(instance);
   }, []);
+
+  /**
+   * The Word import (P16-T42) lands as an unsaved draft: the editor content
+   * changes, the dirty badge appears, and nothing reaches the server until
+   * Save — so an import that turned out wrong is undone by leaving.
+   */
+  function handleImported(view: DocumentTemplateImportView): void {
+    setContentHtml(view.contentHtml);
+    setImportWarnings(view.warnings);
+    setError(null);
+    setNotice(t('import.loaded'));
+  }
 
   useEffect(() => {
     if (!editor) {
@@ -183,6 +202,17 @@ export function TemplateEditor({ template, canWrite, onBack }: TemplateEditorPro
           />
           {isDirty ? <Badge variant="outline">{t('unsaved')}</Badge> : null}
         </div>
+        {canWrite ? (
+          <TemplateImportButton
+            templateId={template.id}
+            isDisabled={!isEditable || saveMutation.isPending}
+            onImported={handleImported}
+            onError={(message) => {
+              setNotice(null);
+              setError(message);
+            }}
+          />
+        ) : null}
         <Button type="button" size="sm" disabled={isSaveDisabled} onClick={handleSave}>
           <Icon name="save" size={18} />
           {t('save')}
@@ -196,6 +226,7 @@ export function TemplateEditor({ template, canWrite, onBack }: TemplateEditorPro
           {error}
         </p>
       ) : null}
+      <TemplateImportWarnings warnings={importWarnings} onDismiss={() => setImportWarnings([])} />
       {variablesQuery.isError ? (
         <p role="alert" className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
           {t('editor.variablesError')}
@@ -224,7 +255,10 @@ export function TemplateEditor({ template, canWrite, onBack }: TemplateEditorPro
           <div className="space-y-1">
             <Label htmlFor="template-editor-content">{t('editor.contentLabel')}</Label>
             {variablesQuery.isPending ? (
-              <Skeleton className="h-64 w-full rounded-md" aria-label={t('editor.variablesLoading')} />
+              <Skeleton
+                className="h-64 w-full rounded-md"
+                aria-label={t('editor.variablesLoading')}
+              />
             ) : (
               <RichTextEditor
                 id="template-editor-content"
