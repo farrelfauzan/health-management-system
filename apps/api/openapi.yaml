@@ -8497,6 +8497,8 @@ paths:
                           type: string
                         hasSatusehatPatientId:
                           type: boolean
+                        satusehatPatientIdMasked:
+                          type: string
                         email:
                           type: string
                         bloodType:
@@ -8607,6 +8609,7 @@ paths:
                       nikMasked: ••••••••0001
                       bpjsNumberMasked: ••••••••7890
                       hasSatusehatPatientId: false
+                      satusehatPatientIdMasked: ••••5538
                       email: aisha.rahman@example.com
                       bloodType: O
                       rhesusFactor: POSITIVE
@@ -8728,6 +8731,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -8811,6 +8816,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -8905,6 +8911,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -9020,6 +9028,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -9138,6 +9147,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -9221,6 +9232,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -9337,6 +9349,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -9420,6 +9434,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE

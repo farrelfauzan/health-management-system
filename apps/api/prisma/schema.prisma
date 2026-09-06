@@ -1019,6 +1019,11 @@ model PatientProfile {
   bpjsNumberKeyVersion         Int?    @map("bpjs_number_key_version") @db.SmallInt
   satusehatPatientIdCiphertext String? @map("satusehat_patient_id_ciphertext")
   satusehatPatientIdKeyVersion Int?    @map("satusehat_patient_id_key_version") @db.SmallInt
+  /// Last four characters of the IHS number, for display beside the masked
+  /// value — the same role `nikLast4` plays (P10-T13). Written in the same
+  /// update as the ciphertext, so the two can never describe different
+  /// numbers.
+  satusehatPatientIdLast4      String? @map("satusehat_patient_id_last4")
 
   ownerUser             User?                        @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
   doctors               DoctorPatient[]

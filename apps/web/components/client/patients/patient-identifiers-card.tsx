@@ -50,6 +50,7 @@ export function PatientIdentifiersCard({ patient }: PatientIdentifiersCardProps)
             <dt className="font-heading text-xs font-medium text-slate-600">SATUSEHAT (IHS)</dt>
             <dd className="font-mono text-sm text-slate-800">
               {identifiers?.satusehatPatientId ??
+                patient.satusehatPatientIdMasked ??
                 (patient.hasSatusehatPatientId ? t('patients.linked') : t('patients.notLinked'))}
             </dd>
           </div>

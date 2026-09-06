@@ -303,7 +303,8 @@ export const PatientProfileScalarFieldEnum = {
   bpjsNumberLast4: 'bpjsNumberLast4',
   bpjsNumberKeyVersion: 'bpjsNumberKeyVersion',
   satusehatPatientIdCiphertext: 'satusehatPatientIdCiphertext',
-  satusehatPatientIdKeyVersion: 'satusehatPatientIdKeyVersion'
+  satusehatPatientIdKeyVersion: 'satusehatPatientIdKeyVersion',
+  satusehatPatientIdLast4: 'satusehatPatientIdLast4'
 } as const
 
 export type PatientProfileScalarFieldEnum = (typeof PatientProfileScalarFieldEnum)[keyof typeof PatientProfileScalarFieldEnum]

@@ -23,8 +23,13 @@ export type EncryptedIdentifier = {
 
 /**
  * A sealed identifier that is never looked up by value (no blind index).
+ * `last4` still travels with it: displaying a partial value is not searching
+ * for one, and deriving it here — from the plaintext, in the same call that
+ * produced the ciphertext — is what keeps the two from ever describing
+ * different numbers (P10-T13).
  */
 export type SealedIdentifier = {
   readonly ciphertext: string;
+  readonly last4: string;
   readonly keyVersion: number;
 };
