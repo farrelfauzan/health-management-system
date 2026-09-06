@@ -112,3 +112,7 @@ export * from '#managed-document/schemas';
 export * from '#managed-document/contracts';
 export * from '#managed-document/types';
 export * from '#managed-document/validate-against-type';
+export * from '#document-approval/schemas';
+export * from '#document-approval/contracts';
+export * from '#document-approval/types';
+export * from '#document-approval/config';

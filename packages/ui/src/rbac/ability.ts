@@ -34,7 +34,13 @@ export type AppAction =
   | 'deliver'
   // P16-T41. Opening a person's 30-day export-only window. A super-admin
   // action and not deactivation, so it is not `update`.
-  | 'offboard';
+  | 'offboard'
+  // P16-T29. Signing a document off. Deliberately not `approve` and
+  // deliberately not `write`: `approve` is already the appointment verb, and
+  // folding this into `write` would erase the one separation the documents
+  // module exists to enforce — authoring a document is not signing it
+  // (§7.5.9).
+  | 'decide';
 export type AppSubject =
   | 'User'
   | 'Role'
@@ -100,6 +106,12 @@ export type AppSubject =
   // approves and issues. One subject for the surface; each row still answers
   // to its own source's rule on the API (FR-E5-04).
   | 'ManagedDocument'
+  // P16-T29. Deciding on a document. Its own subject rather than an action on
+  // `ManagedDocument`, mirroring the API's catalogue: a records officer who
+  // may draft and edit is not thereby a person who may sign off, and one
+  // subject holding both actions would make the two indistinguishable
+  // wherever a component asks "can this user act here".
+  | 'DocumentApproval'
   | 'BpjsConfig'
   | 'BpjsReference'
   | 'BpjsMapping'

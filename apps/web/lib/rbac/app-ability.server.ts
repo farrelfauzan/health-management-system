@@ -43,6 +43,10 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   // P16-T25. Every `invoice.deliver:any` in a session hint was dropped here
   // until this line existed, which hid the Send button from every admin.
   'deliver',
+  // P16-T29. Same trap, same fix: `document-approval.decide:any` resolves to
+  // nothing without this entry, and the approve/reject controls silently
+  // never render for anyone.
+  'decide',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',
@@ -104,6 +108,10 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // → resource `managed-document`, action `read`.
   'document-type': 'DocumentType',
   'managed-document': 'ManagedDocument',
+  // P16-T29. Same hyphenated single-segment shape:
+  // `document-approval.decide:any` → resource `document-approval`, action
+  // `decide`.
+  'document-approval': 'DocumentApproval',
   // Both scopes collapse to one subject here. `permissionToRule` drops the
   // `:own` / `:any` suffix, so this cannot distinguish an admin's clinic-corpus
   // grant from a clinician's personal one — and must not try to. It decides

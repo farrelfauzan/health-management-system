@@ -7,10 +7,11 @@ import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
+import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
 
 /**
- * The documents module (`P16-T39`): Documents → Types today, the registry
- * and the approval workspace as the rest of E5 lands.
+ * The documents module (`P16-T31`): the registry, the caller's own approval
+ * queue, and the type settings.
  *
  * Gated on the registry read alone. An account that may look but not edit
  * belongs here — it gets the type list with no controls, which is why the
@@ -30,5 +31,10 @@ export default async function AdminDocumentsPage() {
     redirect('/admin/dashboard');
   }
 
-  return <DocumentsWorkspace />;
+  return (
+    <DocumentsWorkspace
+      currentUserId={claims?.sub ?? null}
+      isApprovalEnabled={isFeatureEnabled(claims, 'document-approval')}
+    />
+  );
 }

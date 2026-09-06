@@ -1,8 +1,9 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
+import Link from 'next/link';
 import type { ManagedDocumentView } from '@hms/shared-types';
-import { Button, Icon, TableCell, TableRow } from '@hms/ui';
+import { Badge, Button, Icon, TableCell, TableRow } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { StatusBadge } from '#components/shared/status-badge';
@@ -20,6 +21,10 @@ type ManagedDocumentsTableRowProps = {
  * patient's agreements never opens one to find out. Download appears only
  * on an uploaded body — a drafted document has no file, and a button the
  * API would refuse is worse than none.
+ *
+ * The overdue flag (`P16-T31`, FR-E5-27) sits beside the status rather than
+ * replacing it, because an overdue round is still PENDING and still
+ * actionable: a deadline raises attention, it never decides (FR-E5-28).
  */
 export function ManagedDocumentsTableRow({ document, onError }: ManagedDocumentsTableRowProps) {
   const t = useTranslations('operations.documents.registry');
@@ -36,7 +41,12 @@ export function ManagedDocumentsTableRow({ document, onError }: ManagedDocuments
   return (
     <TableRow className="transition-colors hover:bg-slate-50">
       <TableCell className="px-4 py-3">
-        <p className="text-sm font-medium text-slate-900">{document.title}</p>
+        <Link
+          href={`/admin/documents/${document.id}`}
+          className="text-sm font-medium text-slate-900 underline-offset-2 hover:underline"
+        >
+          {document.title}
+        </Link>
         <p className="text-xs text-slate-500">
           {document.documentNumber ? `${document.documentNumber} · ` : ''}
           {document.storageKey ? t('bodyKinds.uploaded') : t('bodyKinds.drafted')}
@@ -47,7 +57,12 @@ export function ManagedDocumentsTableRow({ document, onError }: ManagedDocuments
         {parties.length === 0 ? t('noParties') : parties.join(' · ')}
       </TableCell>
       <TableCell className="px-4">
-        <StatusBadge status={document.status} label={t(`statuses.${document.status}`)} />
+        <div className="flex flex-wrap items-center gap-1.5">
+          <StatusBadge status={document.status} label={t(`statuses.${document.status}`)} />
+          {document.approval?.isOverdue ? (
+            <Badge variant="destructive">{t('overdue')}</Badge>
+          ) : null}
+        </div>
       </TableCell>
       <TableCell className="px-4 text-sm text-slate-600">{document.draftedBy.email}</TableCell>
       <TableCell className="px-4 text-sm text-slate-600">

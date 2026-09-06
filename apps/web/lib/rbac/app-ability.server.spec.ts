@@ -401,4 +401,36 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
       ),
     ).toBe(true);
   });
+  it('maps the document-approval decide key to its own subject, not to the registry', () => {
+    // P16-T29. The trap this catches twice over: an action missing from
+    // SUPPORTED_ACTIONS resolves to nothing and the approve/reject controls
+    // silently never render, and a decide key folded onto `ManagedDocument`
+    // would make signing off indistinguishable from authoring (§7.5.9).
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['document-approval.decide:any'] }),
+    );
+
+    expect(ability.can('decide', 'DocumentApproval')).toBe(true);
+    expect(ability.can('write', 'ManagedDocument')).toBe(false);
+    expect(ability.can('decide', 'ManagedDocument')).toBe(false);
+  });
+
+  it('does not give a registry author the decide grant', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: ['managed-document.read:any', 'managed-document.write:any'],
+      }),
+    );
+
+    expect(ability.can('write', 'ManagedDocument')).toBe(true);
+    expect(ability.can('decide', 'DocumentApproval')).toBe(false);
+  });
+
+  it('gives the ADMIN fallback preset the decide grant', () => {
+    // An admin whose session hint predates the key falls back to the preset;
+    // without the preset line the approval queue renders with no controls.
+    const ability = buildAppAbility(resolveAppAbilityRules({ roles: ['ADMIN'] }));
+
+    expect(ability.can('decide', 'DocumentApproval')).toBe(true);
+  });
 });

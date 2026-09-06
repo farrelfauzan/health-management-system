@@ -34198,6 +34198,8 @@ paths:
                               required:
                                 - id
                                 - email
+                            approval:
+                              nullable: true
                             issuedAt:
                               nullable: true
                             createdAt:
@@ -34218,6 +34220,7 @@ paths:
                             - doctor
                             - subject
                             - draftedBy
+                            - approval
                             - issuedAt
                             - createdAt
                             - updatedAt
@@ -34264,6 +34267,7 @@ paths:
                         draftedBy:
                           id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
                           email: admin@klinik.example
+                        approval: null
                         issuedAt: null
                         createdAt: 2026-09-30T02:00:00.000Z
                         updatedAt: 2026-09-30T02:05:00.000Z
@@ -34394,6 +34398,8 @@ paths:
                         required:
                           - id
                           - email
+                      approval:
+                        nullable: true
                       issuedAt:
                         nullable: true
                       createdAt:
@@ -34402,6 +34408,24 @@ paths:
                         type: string
                       contentHtml:
                         type: string
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
                     required:
                       - id
                       - type
@@ -34416,10 +34440,15 @@ paths:
                       - doctor
                       - subject
                       - draftedBy
+                      - approval
                       - issuedAt
                       - createdAt
                       - updatedAt
                       - contentHtml
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - defaultApprovers
                   message:
                     type: string
                 required:
@@ -34449,11 +34478,18 @@ paths:
                     draftedBy:
                       id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
                       email: admin@klinik.example
+                    approval: null
                     issuedAt: null
                     createdAt: 2026-09-30T02:00:00.000Z
                     updatedAt: 2026-09-30T02:05:00.000Z
                     contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
                       biaya perawatan.</p>
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: admin@klinik.example
                   message: Document drafted
         "400":
           description: Request validation failed.
@@ -34739,6 +34775,8 @@ paths:
                         required:
                           - id
                           - email
+                      approval:
+                        nullable: true
                       issuedAt:
                         nullable: true
                       createdAt:
@@ -34747,6 +34785,24 @@ paths:
                         type: string
                       contentHtml:
                         type: string
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
                     required:
                       - id
                       - type
@@ -34761,10 +34817,15 @@ paths:
                       - doctor
                       - subject
                       - draftedBy
+                      - approval
                       - issuedAt
                       - createdAt
                       - updatedAt
                       - contentHtml
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - defaultApprovers
                 required:
                   - data
                 example:
@@ -34791,11 +34852,18 @@ paths:
                     draftedBy:
                       id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
                       email: admin@klinik.example
+                    approval: null
                     issuedAt: null
                     createdAt: 2026-09-30T02:00:00.000Z
                     updatedAt: 2026-09-30T02:05:00.000Z
                     contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
                       biaya perawatan.</p>
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: admin@klinik.example
         "401":
           description: Authentication is required.
           content:
@@ -34923,6 +34991,8 @@ paths:
                         required:
                           - id
                           - email
+                      approval:
+                        nullable: true
                       issuedAt:
                         nullable: true
                       createdAt:
@@ -34931,6 +35001,24 @@ paths:
                         type: string
                       contentHtml:
                         type: string
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
                     required:
                       - id
                       - type
@@ -34945,10 +35033,15 @@ paths:
                       - doctor
                       - subject
                       - draftedBy
+                      - approval
                       - issuedAt
                       - createdAt
                       - updatedAt
                       - contentHtml
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - defaultApprovers
                   message:
                     type: string
                 required:
@@ -34978,11 +35071,18 @@ paths:
                     draftedBy:
                       id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
                       email: admin@klinik.example
+                    approval: null
                     issuedAt: null
                     createdAt: 2026-09-30T02:00:00.000Z
                     updatedAt: 2026-09-30T02:05:00.000Z
                     contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
                       biaya perawatan.</p>
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: admin@klinik.example
                   message: Document updated
         "400":
           description: Request validation failed.
@@ -35161,12 +35261,80 @@ paths:
                             - actor
                             - metadata
                             - occurredAt
+                      rounds:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            documentId:
+                              type: string
+                            status:
+                              type: string
+                            submittedBy:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                email:
+                                  type: string
+                              required:
+                                - id
+                                - email
+                            submittedAt:
+                              type: string
+                            dueAt:
+                              type: string
+                            isOverdue:
+                              type: boolean
+                            resolvedAt:
+                              nullable: true
+                            approvers:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                  email:
+                                    type: string
+                                  isEligible:
+                                    type: boolean
+                                required:
+                                  - id
+                                  - email
+                                  - isEligible
+                            decisions:
+                              type: array
+                              items: {}
+                            requiredApprovals:
+                              type: integer
+                            approvalCount:
+                              type: integer
+                            hasNoEligibleApprover:
+                              type: boolean
+                          required:
+                            - id
+                            - documentId
+                            - status
+                            - submittedBy
+                            - submittedAt
+                            - dueAt
+                            - isOverdue
+                            - resolvedAt
+                            - approvers
+                            - decisions
+                            - requiredApprovals
+                            - approvalCount
+                            - hasNoEligibleApprover
                     required:
                       - documentId
                       - createdAt
                       - updatedAt
                       - issuedAt
                       - entries
+                      - rounds
                 required:
                   - data
                 example:
@@ -35195,6 +35363,25 @@ paths:
                             - contentHtml
                             - title
                         occurredAt: 2026-09-30T02:05:00.000Z
+                    rounds:
+                      - id: 5d4c3b2a-1f0e-49d8-a7b6-c5d4e3f2a1b0
+                        documentId: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                        status: PENDING
+                        submittedBy:
+                          id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                          email: admin@klinik.example
+                        submittedAt: 2026-09-30T02:10:00.000Z
+                        dueAt: 2026-10-03T10:00:00.000Z
+                        isOverdue: false
+                        resolvedAt: null
+                        approvers:
+                          - id: 8c7d6e5f-4a3b-42c1-9d0e-7f6a5b4c3d2e
+                            email: dr.sari@klinik.example
+                            isEligible: true
+                        decisions: []
+                        requiredApprovals: 1
+                        approvalCount: 0
+                        hasNoEligibleApprover: false
         "401":
           description: Authentication is required.
           content:
@@ -35226,6 +35413,1442 @@ paths:
         - bearer: []
       summary: Read a document’s history
       tags: *a54
+  /api/v1/documents/{id}/submit:
+    post:
+      operationId: ManagedDocumentController_submitDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitDocumentForApprovalDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  approverIds:
+                    - 8c7d6e5f-4a3b-42c1-9d0e-7f6a5b4c3d2e
+                  dueAt: 2026-10-03T10:00:00.000Z
+      responses:
+        "200":
+          description: "The document, now PENDING_APPROVAL, with its open round summarised
+            in `approval`. The drafter names who approves *this* document and
+            when it is due (FR-E5-09/10) — any live staff account, never a
+            patient (422 `DOCUMENT_APPROVER_INELIGIBLE`). Submission freezes the
+            content and the panel: an approver approves a specific artefact
+            reviewed by a specific panel, and editing either afterwards voids
+            the round (FR-E5-15). A panel naming only the drafter is refused
+            here, while it can still be fixed, unless the type allows
+            self-approval (422 `DOCUMENT_SELF_APPROVAL_FORBIDDEN`). `dueAt` buys
+            reminders and an overdue flag and nothing else — no deadline ever
+            decides (FR-E5-28). Only a draft may be submitted, and only one
+            round may be open at a time (409 `DOCUMENT_NOT_SUBMITTABLE`)."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          behavior:
+                            type: string
+                          contentMode:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                          - behavior
+                          - contentMode
+                      status:
+                        type: string
+                      title:
+                        type: string
+                      documentNumber:
+                        type: string
+                      hasContentHtml:
+                        type: boolean
+                      storageKey:
+                        nullable: true
+                      storageMimeType:
+                        nullable: true
+                      storageSizeBytes:
+                        nullable: true
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - fullName
+                      doctor:
+                        nullable: true
+                      subject:
+                        nullable: true
+                      draftedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      approval:
+                        type: object
+                        properties:
+                          roundId:
+                            type: string
+                          status:
+                            type: string
+                          dueAt:
+                            type: string
+                          isOverdue:
+                            type: boolean
+                          submittedAt:
+                            type: string
+                          approverCount:
+                            type: integer
+                          approvalCount:
+                            type: integer
+                          requiredApprovals:
+                            type: integer
+                          hasNoEligibleApprover:
+                            type: boolean
+                        required:
+                          - roundId
+                          - status
+                          - dueAt
+                          - isOverdue
+                          - submittedAt
+                          - approverCount
+                          - approvalCount
+                          - requiredApprovals
+                          - hasNoEligibleApprover
+                      issuedAt:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      contentHtml:
+                        type: string
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                    required:
+                      - id
+                      - type
+                      - status
+                      - title
+                      - documentNumber
+                      - hasContentHtml
+                      - storageKey
+                      - storageMimeType
+                      - storageSizeBytes
+                      - patient
+                      - doctor
+                      - subject
+                      - draftedBy
+                      - approval
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - contentHtml
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - defaultApprovers
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    type:
+                      id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      behavior: GENERIC
+                      contentMode: EITHER
+                    status: PENDING_APPROVAL
+                    title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                    documentNumber: AGR/2026/0007
+                    hasContentHtml: true
+                    storageKey: null
+                    storageMimeType: null
+                    storageSizeBytes: null
+                    patient:
+                      id: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                      fullName: Rina Wulandari
+                    doctor: null
+                    subject: null
+                    draftedBy:
+                      id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                      email: admin@klinik.example
+                    approval:
+                      roundId: 5d4c3b2a-1f0e-49d8-a7b6-c5d4e3f2a1b0
+                      status: PENDING
+                      dueAt: 2026-10-03T10:00:00.000Z
+                      isOverdue: false
+                      submittedAt: 2026-09-30T02:10:00.000Z
+                      approverCount: 2
+                      approvalCount: 0
+                      requiredApprovals: 1
+                      hasNoEligibleApprover: false
+                    issuedAt: null
+                    createdAt: 2026-09-30T02:00:00.000Z
+                    updatedAt: 2026-09-30T02:05:00.000Z
+                    contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
+                      biaya perawatan.</p>
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: admin@klinik.example
+                  message: Document submitted for approval
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Submit a draft for approval
+      tags: *a54
+  /api/v1/documents/{id}/withdraw:
+    post:
+      operationId: ManagedDocumentController_withdrawDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The document, back in DRAFT, with its round marked WITHDRAWN
+            (FR-E5-18). Nothing is decided — a withdrawal is the drafter
+            changing their mind about asking, which is why it is a different
+            outcome from a rejection and from the SUPERSEDED an edit produces. A
+            document with no open round answers 409 `DOCUMENT_NOT_SUBMITTABLE`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          behavior:
+                            type: string
+                          contentMode:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                          - behavior
+                          - contentMode
+                      status:
+                        type: string
+                      title:
+                        type: string
+                      documentNumber:
+                        type: string
+                      hasContentHtml:
+                        type: boolean
+                      storageKey:
+                        nullable: true
+                      storageMimeType:
+                        nullable: true
+                      storageSizeBytes:
+                        nullable: true
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - fullName
+                      doctor:
+                        nullable: true
+                      subject:
+                        nullable: true
+                      draftedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      approval:
+                        nullable: true
+                      issuedAt:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      contentHtml:
+                        type: string
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                    required:
+                      - id
+                      - type
+                      - status
+                      - title
+                      - documentNumber
+                      - hasContentHtml
+                      - storageKey
+                      - storageMimeType
+                      - storageSizeBytes
+                      - patient
+                      - doctor
+                      - subject
+                      - draftedBy
+                      - approval
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - contentHtml
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - defaultApprovers
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    type:
+                      id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      behavior: GENERIC
+                      contentMode: EITHER
+                    status: DRAFT
+                    title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                    documentNumber: AGR/2026/0007
+                    hasContentHtml: true
+                    storageKey: null
+                    storageMimeType: null
+                    storageSizeBytes: null
+                    patient:
+                      id: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                      fullName: Rina Wulandari
+                    doctor: null
+                    subject: null
+                    draftedBy:
+                      id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                      email: admin@klinik.example
+                    approval: null
+                    issuedAt: null
+                    createdAt: 2026-09-30T02:00:00.000Z
+                    updatedAt: 2026-09-30T02:05:00.000Z
+                    contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
+                      biaya perawatan.</p>
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: admin@klinik.example
+                  message: Approval request withdrawn
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Withdraw an open approval request
+      tags: *a54
+  /api/v1/documents/{id}/issue:
+    post:
+      operationId: ManagedDocumentController_issueDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The document, ISSUED and dated (FR-E5-12). Available only for a
+            type whose approval policy is off: when the type requires approval,
+            ISSUED is reachable **only** through an approved round and this
+            route answers 409 `DOCUMENT_APPROVAL_REQUIRED` regardless of what
+            the client offered (FR-E5-11, NFR-SEC-09). A type whose issue step
+            does something beyond releasing the row — publishing a template
+            version, releasing a corpus file — is refused with 409
+            `DOCUMENT_ISSUE_BEHAVIOR_UNSUPPORTED` until P16-T32/T33 wire that
+            behaviour, rather than being marked issued while the side effect
+            never happened."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          behavior:
+                            type: string
+                          contentMode:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                          - behavior
+                          - contentMode
+                      status:
+                        type: string
+                      title:
+                        type: string
+                      documentNumber:
+                        type: string
+                      hasContentHtml:
+                        type: boolean
+                      storageKey:
+                        nullable: true
+                      storageMimeType:
+                        nullable: true
+                      storageSizeBytes:
+                        nullable: true
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - fullName
+                      doctor:
+                        nullable: true
+                      subject:
+                        nullable: true
+                      draftedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      approval:
+                        nullable: true
+                      issuedAt:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      contentHtml:
+                        type: string
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                    required:
+                      - id
+                      - type
+                      - status
+                      - title
+                      - documentNumber
+                      - hasContentHtml
+                      - storageKey
+                      - storageMimeType
+                      - storageSizeBytes
+                      - patient
+                      - doctor
+                      - subject
+                      - draftedBy
+                      - approval
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - contentHtml
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - defaultApprovers
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    type:
+                      id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      behavior: GENERIC
+                      contentMode: EITHER
+                    status: DRAFT
+                    title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                    documentNumber: AGR/2026/0007
+                    hasContentHtml: true
+                    storageKey: null
+                    storageMimeType: null
+                    storageSizeBytes: null
+                    patient:
+                      id: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                      fullName: Rina Wulandari
+                    doctor: null
+                    subject: null
+                    draftedBy:
+                      id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                      email: admin@klinik.example
+                    approval: null
+                    issuedAt: null
+                    createdAt: 2026-09-30T02:00:00.000Z
+                    updatedAt: 2026-09-30T02:05:00.000Z
+                    contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
+                      biaya perawatan.</p>
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: admin@klinik.example
+                  message: Document issued
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Issue a draft directly
+      tags: *a54
+  /api/v1/document-approvals:
+    get:
+      operationId: DocumentApprovalController_listApprovals_v1
+      parameters:
+        - name: assignedToMe
+          required: false
+          in: query
+          schema:
+            default: "true"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - APPROVED
+              - REJECTED
+              - WITHDRAWN
+              - SUPERSEDED
+        - name: overdueOnly
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 25
+            type: integer
+      responses:
+        "200":
+          description: The approval queue. `assignedToMe` defaults to true, so the queue
+            is the caller’s own work list rather than everybody’s (US-E5-02);
+            pass `assignedToMe=false` for the clinic-wide view. Rounds are
+            ordered by deadline with undated ones last, so the most pressing
+            sits at the top. `overdueOnly=true` narrows to rounds past `dueAt` —
+            which are still PENDING and still actionable, because a deadline
+            changes nothing about a round’s state (FR-E5-28).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            round:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                documentId:
+                                  type: string
+                                status:
+                                  type: string
+                                submittedBy:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                    email:
+                                      type: string
+                                  required:
+                                    - id
+                                    - email
+                                submittedAt:
+                                  type: string
+                                dueAt:
+                                  type: string
+                                isOverdue:
+                                  type: boolean
+                                resolvedAt:
+                                  nullable: true
+                                approvers:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                      email:
+                                        type: string
+                                      isEligible:
+                                        type: boolean
+                                    required:
+                                      - id
+                                      - email
+                                      - isEligible
+                                decisions:
+                                  type: array
+                                  items: {}
+                                requiredApprovals:
+                                  type: integer
+                                approvalCount:
+                                  type: integer
+                                hasNoEligibleApprover:
+                                  type: boolean
+                              required:
+                                - id
+                                - documentId
+                                - status
+                                - submittedBy
+                                - submittedAt
+                                - dueAt
+                                - isOverdue
+                                - resolvedAt
+                                - approvers
+                                - decisions
+                                - requiredApprovals
+                                - approvalCount
+                                - hasNoEligibleApprover
+                            document:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                title:
+                                  type: string
+                                documentNumber:
+                                  type: string
+                                type:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                    code:
+                                      type: string
+                                    name:
+                                      type: string
+                                    behavior:
+                                      type: string
+                                    contentMode:
+                                      type: string
+                                  required:
+                                    - id
+                                    - code
+                                    - name
+                                    - behavior
+                                    - contentMode
+                              required:
+                                - id
+                                - title
+                                - documentNumber
+                                - type
+                          required:
+                            - round
+                            - document
+                      meta:
+                        type: object
+                        properties:
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+                        required:
+                          - page
+                          - limit
+                          - total
+                    required:
+                      - items
+                      - meta
+                required:
+                  - data
+                example:
+                  data:
+                    items:
+                      - round:
+                          id: 5d4c3b2a-1f0e-49d8-a7b6-c5d4e3f2a1b0
+                          documentId: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                          status: PENDING
+                          submittedBy:
+                            id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                            email: admin@klinik.example
+                          submittedAt: 2026-09-30T02:10:00.000Z
+                          dueAt: 2026-10-03T10:00:00.000Z
+                          isOverdue: false
+                          resolvedAt: null
+                          approvers:
+                            - id: 8c7d6e5f-4a3b-42c1-9d0e-7f6a5b4c3d2e
+                              email: dr.sari@klinik.example
+                              isEligible: true
+                          decisions: []
+                          requiredApprovals: 1
+                          approvalCount: 0
+                          hasNoEligibleApprover: false
+                        document:
+                          id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                          title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                          documentNumber: AGR/2026/0007
+                          type:
+                            id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                            code: AGREEMENT_PATIENT_CLINIC
+                            name: Perjanjian pasien–klinik
+                            behavior: GENERIC
+                            contentMode: EITHER
+                    meta:
+                      page: 1
+                      limit: 25
+                      total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List approval requests
+      tags: &a55
+        - Documents
+  /api/v1/document-approvals/pending-count:
+    get:
+      operationId: DocumentApprovalController_getPendingCount_v1
+      parameters: []
+      responses:
+        "200":
+          description: "What the sidebar badge renders (FR-E5-27): how many open rounds
+            name the caller, and how many of those are past their deadline.
+            `overdue` is a subset of `pending`, never a separate bucket to add."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      pending:
+                        type: integer
+                      overdue:
+                        type: integer
+                    required:
+                      - pending
+                      - overdue
+                required:
+                  - data
+                example:
+                  data:
+                    pending: 3
+                    overdue: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Count the approvals waiting on the caller
+      tags: *a55
+  /api/v1/document-approvals/{id}/approve:
+    post:
+      operationId: DocumentApprovalController_approve_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The document as it stands after the decision. When this approval
+            is the one the round was waiting for, the **frozen version** is
+            issued in the same transaction (FR-E5-16) — what the approver
+            reviewed, not whatever the row says now. Approving needs both being
+            named on the round (403 `DOCUMENT_APPROVAL_NOT_AN_APPROVER`) and
+            holding `document-approval.decide:any`; neither is sufficient alone
+            (FR-E5-13). A drafter cannot approve their own document unless the
+            type allows it (403 `DOCUMENT_SELF_APPROVAL_FORBIDDEN`). Two
+            approvers deciding at once produce one decision: the round is
+            row-locked, and the loser gets 409
+            `DOCUMENT_APPROVAL_ALREADY_DECIDED`."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          behavior:
+                            type: string
+                          contentMode:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                          - behavior
+                          - contentMode
+                      status:
+                        type: string
+                      title:
+                        type: string
+                      documentNumber:
+                        type: string
+                      hasContentHtml:
+                        type: boolean
+                      storageKey:
+                        nullable: true
+                      storageMimeType:
+                        nullable: true
+                      storageSizeBytes:
+                        nullable: true
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - fullName
+                      doctor:
+                        nullable: true
+                      subject:
+                        nullable: true
+                      draftedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      approval:
+                        nullable: true
+                      issuedAt:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      contentHtml:
+                        type: string
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                    required:
+                      - id
+                      - type
+                      - status
+                      - title
+                      - documentNumber
+                      - hasContentHtml
+                      - storageKey
+                      - storageMimeType
+                      - storageSizeBytes
+                      - patient
+                      - doctor
+                      - subject
+                      - draftedBy
+                      - approval
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - contentHtml
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - defaultApprovers
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    type:
+                      id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      behavior: GENERIC
+                      contentMode: EITHER
+                    status: DRAFT
+                    title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                    documentNumber: AGR/2026/0007
+                    hasContentHtml: true
+                    storageKey: null
+                    storageMimeType: null
+                    storageSizeBytes: null
+                    patient:
+                      id: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                      fullName: Rina Wulandari
+                    doctor: null
+                    subject: null
+                    draftedBy:
+                      id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                      email: admin@klinik.example
+                    approval: null
+                    issuedAt: null
+                    createdAt: 2026-09-30T02:00:00.000Z
+                    updatedAt: 2026-09-30T02:05:00.000Z
+                    contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
+                      biaya perawatan.</p>
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: admin@klinik.example
+                  message: Document approved
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Approval request not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Approval request not found.
+      security:
+        - bearer: []
+      summary: Approve a document
+      tags: *a55
+  /api/v1/document-approvals/{id}/reject:
+    post:
+      operationId: DocumentApprovalController_reject_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectDocumentApprovalDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  reason: Pasal 4 bertentangan dengan kebijakan pengembalian dana klinik.
+      responses:
+        "200":
+          description: The document, returned to DRAFT with the round marked REJECTED
+            (FR-E5-17). The reason is required — by this schema, by the service
+            and by a CHECK on the table — and it stays in the document’s history
+            forever, because a drafter who is told only "rejected" has been told
+            nothing (US-E5-03). The same named-plus-permitted rule and the same
+            row lock apply as on approve.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          behavior:
+                            type: string
+                          contentMode:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                          - behavior
+                          - contentMode
+                      status:
+                        type: string
+                      title:
+                        type: string
+                      documentNumber:
+                        type: string
+                      hasContentHtml:
+                        type: boolean
+                      storageKey:
+                        nullable: true
+                      storageMimeType:
+                        nullable: true
+                      storageSizeBytes:
+                        nullable: true
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - fullName
+                      doctor:
+                        nullable: true
+                      subject:
+                        nullable: true
+                      draftedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      approval:
+                        nullable: true
+                      issuedAt:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      contentHtml:
+                        type: string
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                    required:
+                      - id
+                      - type
+                      - status
+                      - title
+                      - documentNumber
+                      - hasContentHtml
+                      - storageKey
+                      - storageMimeType
+                      - storageSizeBytes
+                      - patient
+                      - doctor
+                      - subject
+                      - draftedBy
+                      - approval
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - contentHtml
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - defaultApprovers
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    type:
+                      id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      behavior: GENERIC
+                      contentMode: EITHER
+                    status: DRAFT
+                    title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                    documentNumber: AGR/2026/0007
+                    hasContentHtml: true
+                    storageKey: null
+                    storageMimeType: null
+                    storageSizeBytes: null
+                    patient:
+                      id: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                      fullName: Rina Wulandari
+                    doctor: null
+                    subject: null
+                    draftedBy:
+                      id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                      email: admin@klinik.example
+                    approval: null
+                    issuedAt: null
+                    createdAt: 2026-09-30T02:00:00.000Z
+                    updatedAt: 2026-09-30T02:05:00.000Z
+                    contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
+                      biaya perawatan.</p>
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: admin@klinik.example
+                  message: Document rejected
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Approval request not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Approval request not found.
+      security:
+        - bearer: []
+      summary: Reject a document
+      tags: *a55
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -35304,7 +36927,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a55
+      tags: &a56
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -35421,7 +37044,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a55
+      tags: *a56
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -35544,7 +37167,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a56
+      tags: &a57
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -35631,7 +37254,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a56
+      tags: *a57
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -35711,7 +37334,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a56
+      tags: *a57
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -35830,7 +37453,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a56
+      tags: *a57
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -35929,7 +37552,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a56
+      tags: *a57
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -36005,7 +37628,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a56
+      tags: *a57
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -36151,7 +37774,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a56
+      tags: *a57
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -36243,7 +37866,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a56
+      tags: *a57
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -36335,7 +37958,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a56
+      tags: *a57
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -39504,6 +41127,30 @@ components:
           type: string
           format: uuid
           nullable: true
+    SubmitDocumentForApprovalDto:
+      type: object
+      properties:
+        approverIds:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            type: string
+            format: uuid
+        dueAt:
+          type: string
+          format: date-time
+      required:
+        - approverIds
+    RejectDocumentApprovalDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - reason
     UpdateFeatureEntitlementDto:
       type: object
       properties:

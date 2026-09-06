@@ -66,6 +66,18 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
     navHrefs: ['/admin/knowledge-base', '/admin/clinic-corpus', '/doctor/knowledge-base'],
   },
   {
+    // P16-T29/T31. The approval workflow over the documents module, not the
+    // module itself: switching it off leaves the registry, the search and the
+    // export exactly as they were, and takes away the second signature. A
+    // clinic small enough that one person writes and issues everything is not
+    // served by a queue that always names them.
+    key: 'document-approval',
+    name: 'Document Approval',
+    description:
+      'Approval rounds over the documents registry: named approvers, deadlines and the approval queue.',
+    navHrefs: [],
+  },
+  {
     key: 'cs-channels',
     name: 'Customer Service Channels',
     description: 'The WhatsApp and Telegram inbox, and booking by chat.',

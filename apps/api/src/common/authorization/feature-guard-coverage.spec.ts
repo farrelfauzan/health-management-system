@@ -54,6 +54,10 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   BedController: 'room-management',
   RoomOccupancyController: 'room-management',
   AdmissionFlowController: 'room-management',
+  // P16-T31. Only the deciding surface. The registry controller is
+  // deliberately absent: with approval switched off the clinic still lists,
+  // searches and exports its documents, and issues them directly (FR-E5-12).
+  DocumentApprovalController: 'document-approval',
 };
 
 /**

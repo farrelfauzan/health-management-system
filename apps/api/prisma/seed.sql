@@ -194,6 +194,12 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- without being able to author; approval (`document-approval.decide:any`)
     -- stays a third key, landing with P16-T29.
     ('managed-document.write:any', 'ManagedDocument', 'write', 'ANY', 'Draft, edit, submit, withdraw and issue documents in the registry'),
+    -- P16-T29. Deliberately a third key rather than part of the write above
+    -- (§7.5.9): the separation between authoring a document and signing it off
+    -- is the control the whole approval feature exists to provide. Holding it
+    -- is still not enough on its own — an approver must also be named on the
+    -- round (FR-E5-13), and being named grants nothing without this key.
+    ('document-approval.decide:any', 'DocumentApproval', 'decide', 'ANY', 'Approve or reject documents you have been named on in the registry'),
     ('satusehat.link:any', 'Satusehat', 'link', 'ANY', 'Link patients and practitioners to SATUSEHAT IHS records'),
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
@@ -476,6 +482,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'document-type.write:any'),
     ('ADMIN', 'managed-document.read:any'),
     ('ADMIN', 'managed-document.write:any'),
+    -- P16-T29. No role is seeded for the documents module (OQ-1); the decide
+    -- key sits with ADMIN as the back-office default beside the two above, and
+    -- a clinic composes a narrower approver role from it in the portal.
+    ('ADMIN', 'document-approval.decide:any'),
     -- SATUSEHAT linkage is a national-identifier operation performed at the
     -- front desk / back office, never by doctors or patients themselves.
     ('ADMIN', 'satusehat.link:any'),
@@ -1068,6 +1078,10 @@ FROM (
     ('bpjs-antrean'),
     ('satusehat'),
     ('document-management'),
+    -- P16-T29/T31. On by default, like every other row here: a clinic that
+    -- bought the documents module gets its approval workflow, and switching
+    -- this off leaves the registry intact and takes away the second signature.
+    ('document-approval'),
     ('cs-channels')
 ) AS seed_feature_entitlements(feature_key)
 ON CONFLICT ("feature_key") DO NOTHING;

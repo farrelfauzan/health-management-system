@@ -12,6 +12,7 @@ export type FeatureKey =
   | 'bpjs-antrean'
   | 'satusehat'
   | 'document-management'
+  | 'document-approval'
   | 'cs-channels';
 
 /**

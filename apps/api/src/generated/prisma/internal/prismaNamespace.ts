@@ -470,7 +470,10 @@ export const ModelName = {
   OrganizationUnit: 'OrganizationUnit',
   DocumentType: 'DocumentType',
   DocumentTypeApprover: 'DocumentTypeApprover',
-  ManagedDocument: 'ManagedDocument'
+  ManagedDocument: 'ManagedDocument',
+  DocumentApprovalRequest: 'DocumentApprovalRequest',
+  DocumentApprovalApprover: 'DocumentApprovalApprover',
+  DocumentApprovalDecision: 'DocumentApprovalDecision'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -486,7 +489,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -6928,6 +6931,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DocumentApprovalRequest: {
+      payload: Prisma.$DocumentApprovalRequestPayload<ExtArgs>
+      fields: Prisma.DocumentApprovalRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentApprovalRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentApprovalRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentApprovalRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentApprovalRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentApprovalRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentApprovalRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentApprovalRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentApprovalRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentApprovalRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload>
+        }
+        update: {
+          args: Prisma.DocumentApprovalRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentApprovalRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentApprovalRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentApprovalRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentApprovalRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentApprovalRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentApprovalRequest>
+        }
+        groupBy: {
+          args: Prisma.DocumentApprovalRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentApprovalRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentApprovalRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentApprovalRequestCountAggregateOutputType> | number
+        }
+      }
+    }
+    DocumentApprovalApprover: {
+      payload: Prisma.$DocumentApprovalApproverPayload<ExtArgs>
+      fields: Prisma.DocumentApprovalApproverFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentApprovalApproverFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentApprovalApproverFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentApprovalApproverFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentApprovalApproverFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentApprovalApproverFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentApprovalApproverCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentApprovalApproverCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentApprovalApproverCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentApprovalApproverDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload>
+        }
+        update: {
+          args: Prisma.DocumentApprovalApproverUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentApprovalApproverDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentApprovalApproverUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentApprovalApproverUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentApprovalApproverUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalApproverPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentApprovalApproverAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentApprovalApprover>
+        }
+        groupBy: {
+          args: Prisma.DocumentApprovalApproverGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentApprovalApproverGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentApprovalApproverCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentApprovalApproverCountAggregateOutputType> | number
+        }
+      }
+    }
+    DocumentApprovalDecision: {
+      payload: Prisma.$DocumentApprovalDecisionPayload<ExtArgs>
+      fields: Prisma.DocumentApprovalDecisionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentApprovalDecisionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentApprovalDecisionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentApprovalDecisionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentApprovalDecisionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentApprovalDecisionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentApprovalDecisionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentApprovalDecisionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentApprovalDecisionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentApprovalDecisionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload>
+        }
+        update: {
+          args: Prisma.DocumentApprovalDecisionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentApprovalDecisionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentApprovalDecisionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentApprovalDecisionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentApprovalDecisionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentApprovalDecisionPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentApprovalDecisionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentApprovalDecision>
+        }
+        groupBy: {
+          args: Prisma.DocumentApprovalDecisionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentApprovalDecisionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentApprovalDecisionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentApprovalDecisionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -8429,6 +8654,45 @@ export const ManagedDocumentScalarFieldEnum = {
 export type ManagedDocumentScalarFieldEnum = (typeof ManagedDocumentScalarFieldEnum)[keyof typeof ManagedDocumentScalarFieldEnum]
 
 
+export const DocumentApprovalRequestScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  frozenPayload: 'frozenPayload',
+  status: 'status',
+  submittedById: 'submittedById',
+  submittedAt: 'submittedAt',
+  dueAt: 'dueAt',
+  resolvedAt: 'resolvedAt',
+  dueSoonNotifiedAt: 'dueSoonNotifiedAt',
+  overdueNotifiedAt: 'overdueNotifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentApprovalRequestScalarFieldEnum = (typeof DocumentApprovalRequestScalarFieldEnum)[keyof typeof DocumentApprovalRequestScalarFieldEnum]
+
+
+export const DocumentApprovalApproverScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  approverId: 'approverId'
+} as const
+
+export type DocumentApprovalApproverScalarFieldEnum = (typeof DocumentApprovalApproverScalarFieldEnum)[keyof typeof DocumentApprovalApproverScalarFieldEnum]
+
+
+export const DocumentApprovalDecisionScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  approverId: 'approverId',
+  isApproved: 'isApproved',
+  reason: 'reason',
+  decidedAt: 'decidedAt'
+} as const
+
+export type DocumentApprovalDecisionScalarFieldEnum = (typeof DocumentApprovalDecisionScalarFieldEnum)[keyof typeof DocumentApprovalDecisionScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -9513,6 +9777,20 @@ export type ListEnumManagedDocumentStatusFieldRefInput<$PrismaModel> = FieldRefI
 
 
 /**
+ * Reference to a field of type 'DocumentApprovalStatus'
+ */
+export type EnumDocumentApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentApprovalStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentApprovalStatus[]'
+ */
+export type ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentApprovalStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -9722,6 +10000,9 @@ export type GlobalOmitConfig = {
   documentType?: Prisma.DocumentTypeOmit
   documentTypeApprover?: Prisma.DocumentTypeApproverOmit
   managedDocument?: Prisma.ManagedDocumentOmit
+  documentApprovalRequest?: Prisma.DocumentApprovalRequestOmit
+  documentApprovalApprover?: Prisma.DocumentApprovalApproverOmit
+  documentApprovalDecision?: Prisma.DocumentApprovalDecisionOmit
 }
 
 /* Types for Logging */

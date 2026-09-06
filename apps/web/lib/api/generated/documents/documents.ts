@@ -23,15 +23,25 @@ import type {
 import type {
   CreateManagedDocumentDto,
   CreateManagedDocumentUploadUrlDto,
+  DocumentApprovalControllerApproveV1200,
+  DocumentApprovalControllerGetPendingCountV1200,
+  DocumentApprovalControllerListApprovalsV1200,
+  DocumentApprovalControllerListApprovalsV1Params,
+  DocumentApprovalControllerRejectV1200,
   ManagedDocumentControllerCreateDocumentV1201,
   ManagedDocumentControllerCreateUploadUrlV1200,
   ManagedDocumentControllerExportDocumentsV1Params,
   ManagedDocumentControllerGetDocumentV1200,
   ManagedDocumentControllerGetDownloadUrlV1200,
   ManagedDocumentControllerGetHistoryV1200,
+  ManagedDocumentControllerIssueDocumentV1200,
   ManagedDocumentControllerListDocumentsV1200,
   ManagedDocumentControllerListDocumentsV1Params,
+  ManagedDocumentControllerSubmitDocumentV1200,
   ManagedDocumentControllerUpdateDocumentV1200,
+  ManagedDocumentControllerWithdrawDocumentV1200,
+  RejectDocumentApprovalDto,
+  SubmitDocumentForApprovalDto,
   UpdateManagedDocumentDto
 } from '../model';
 
@@ -795,6 +805,669 @@ export function useManagedDocumentControllerGetHistoryV1<TData = Awaited<ReturnT
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getManagedDocumentControllerGetHistoryV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Submit a draft for approval
+ */
+export const managedDocumentControllerSubmitDocumentV1 = (
+    id: string,
+    submitDocumentForApprovalDto: SubmitDocumentForApprovalDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ManagedDocumentControllerSubmitDocumentV1200>(
+      {url: `/api/v1/documents/${id}/submit`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: submitDocumentForApprovalDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getManagedDocumentControllerSubmitDocumentV1QueryKey = (id: string,
+    submitDocumentForApprovalDto?: SubmitDocumentForApprovalDto,) => {
+    return [
+    'POST', `/api/v1/documents/${id}/submit`, submitDocumentForApprovalDto
+    ] as const;
+    }
+
+
+export const getManagedDocumentControllerSubmitDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError = unknown>(id: string,
+    submitDocumentForApprovalDto: SubmitDocumentForApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getManagedDocumentControllerSubmitDocumentV1QueryKey(id,submitDocumentForApprovalDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>> = ({ signal }) => managedDocumentControllerSubmitDocumentV1(id,submitDocumentForApprovalDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ManagedDocumentControllerSubmitDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>>
+export type ManagedDocumentControllerSubmitDocumentV1QueryError = unknown
+
+
+export function useManagedDocumentControllerSubmitDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError = unknown>(
+ id: string,
+    submitDocumentForApprovalDto: SubmitDocumentForApprovalDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerSubmitDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError = unknown>(
+ id: string,
+    submitDocumentForApprovalDto: SubmitDocumentForApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerSubmitDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError = unknown>(
+ id: string,
+    submitDocumentForApprovalDto: SubmitDocumentForApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Submit a draft for approval
+ */
+
+export function useManagedDocumentControllerSubmitDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError = unknown>(
+ id: string,
+    submitDocumentForApprovalDto: SubmitDocumentForApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerSubmitDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getManagedDocumentControllerSubmitDocumentV1QueryOptions(id,submitDocumentForApprovalDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Withdraw an open approval request
+ */
+export const managedDocumentControllerWithdrawDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ManagedDocumentControllerWithdrawDocumentV1200>(
+      {url: `/api/v1/documents/${id}/withdraw`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getManagedDocumentControllerWithdrawDocumentV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/documents/${id}/withdraw`
+    ] as const;
+    }
+
+
+export const getManagedDocumentControllerWithdrawDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getManagedDocumentControllerWithdrawDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>> = ({ signal }) => managedDocumentControllerWithdrawDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ManagedDocumentControllerWithdrawDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>>
+export type ManagedDocumentControllerWithdrawDocumentV1QueryError = unknown
+
+
+export function useManagedDocumentControllerWithdrawDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerWithdrawDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerWithdrawDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Withdraw an open approval request
+ */
+
+export function useManagedDocumentControllerWithdrawDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerWithdrawDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getManagedDocumentControllerWithdrawDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Issue a draft directly
+ */
+export const managedDocumentControllerIssueDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ManagedDocumentControllerIssueDocumentV1200>(
+      {url: `/api/v1/documents/${id}/issue`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getManagedDocumentControllerIssueDocumentV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/documents/${id}/issue`
+    ] as const;
+    }
+
+
+export const getManagedDocumentControllerIssueDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getManagedDocumentControllerIssueDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>> = ({ signal }) => managedDocumentControllerIssueDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ManagedDocumentControllerIssueDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>>
+export type ManagedDocumentControllerIssueDocumentV1QueryError = unknown
+
+
+export function useManagedDocumentControllerIssueDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerIssueDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerIssueDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Issue a draft directly
+ */
+
+export function useManagedDocumentControllerIssueDocumentV1<TData = Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerIssueDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getManagedDocumentControllerIssueDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List approval requests
+ */
+export const documentApprovalControllerListApprovalsV1 = (
+    params?: DocumentApprovalControllerListApprovalsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentApprovalControllerListApprovalsV1200>(
+      {url: `/api/v1/document-approvals`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentApprovalControllerListApprovalsV1QueryKey = (params?: DocumentApprovalControllerListApprovalsV1Params,) => {
+    return [
+    `/api/v1/document-approvals`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getDocumentApprovalControllerListApprovalsV1QueryOptions = <TData = Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError = unknown>(params?: DocumentApprovalControllerListApprovalsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentApprovalControllerListApprovalsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>> = ({ signal }) => documentApprovalControllerListApprovalsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentApprovalControllerListApprovalsV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>>
+export type DocumentApprovalControllerListApprovalsV1QueryError = unknown
+
+
+export function useDocumentApprovalControllerListApprovalsV1<TData = Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError = unknown>(
+ params: undefined |  DocumentApprovalControllerListApprovalsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerListApprovalsV1<TData = Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError = unknown>(
+ params?: DocumentApprovalControllerListApprovalsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerListApprovalsV1<TData = Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError = unknown>(
+ params?: DocumentApprovalControllerListApprovalsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List approval requests
+ */
+
+export function useDocumentApprovalControllerListApprovalsV1<TData = Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError = unknown>(
+ params?: DocumentApprovalControllerListApprovalsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerListApprovalsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentApprovalControllerListApprovalsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Count the approvals waiting on the caller
+ */
+export const documentApprovalControllerGetPendingCountV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentApprovalControllerGetPendingCountV1200>(
+      {url: `/api/v1/document-approvals/pending-count`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentApprovalControllerGetPendingCountV1QueryKey = () => {
+    return [
+    `/api/v1/document-approvals/pending-count`
+    ] as const;
+    }
+
+
+export const getDocumentApprovalControllerGetPendingCountV1QueryOptions = <TData = Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentApprovalControllerGetPendingCountV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>> = ({ signal }) => documentApprovalControllerGetPendingCountV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentApprovalControllerGetPendingCountV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>>
+export type DocumentApprovalControllerGetPendingCountV1QueryError = unknown
+
+
+export function useDocumentApprovalControllerGetPendingCountV1<TData = Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerGetPendingCountV1<TData = Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerGetPendingCountV1<TData = Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Count the approvals waiting on the caller
+ */
+
+export function useDocumentApprovalControllerGetPendingCountV1<TData = Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerGetPendingCountV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentApprovalControllerGetPendingCountV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Approve a document
+ */
+export const documentApprovalControllerApproveV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentApprovalControllerApproveV1200>(
+      {url: `/api/v1/document-approvals/${id}/approve`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentApprovalControllerApproveV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/document-approvals/${id}/approve`
+    ] as const;
+    }
+
+
+export const getDocumentApprovalControllerApproveV1QueryOptions = <TData = Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentApprovalControllerApproveV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>> = ({ signal }) => documentApprovalControllerApproveV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentApprovalControllerApproveV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>>
+export type DocumentApprovalControllerApproveV1QueryError = unknown
+
+
+export function useDocumentApprovalControllerApproveV1<TData = Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerApproveV1<TData = Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerApproveV1<TData = Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Approve a document
+ */
+
+export function useDocumentApprovalControllerApproveV1<TData = Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerApproveV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentApprovalControllerApproveV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Reject a document
+ */
+export const documentApprovalControllerRejectV1 = (
+    id: string,
+    rejectDocumentApprovalDto: RejectDocumentApprovalDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentApprovalControllerRejectV1200>(
+      {url: `/api/v1/document-approvals/${id}/reject`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: rejectDocumentApprovalDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentApprovalControllerRejectV1QueryKey = (id: string,
+    rejectDocumentApprovalDto?: RejectDocumentApprovalDto,) => {
+    return [
+    'POST', `/api/v1/document-approvals/${id}/reject`, rejectDocumentApprovalDto
+    ] as const;
+    }
+
+
+export const getDocumentApprovalControllerRejectV1QueryOptions = <TData = Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError = unknown>(id: string,
+    rejectDocumentApprovalDto: RejectDocumentApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentApprovalControllerRejectV1QueryKey(id,rejectDocumentApprovalDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>> = ({ signal }) => documentApprovalControllerRejectV1(id,rejectDocumentApprovalDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentApprovalControllerRejectV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>>
+export type DocumentApprovalControllerRejectV1QueryError = unknown
+
+
+export function useDocumentApprovalControllerRejectV1<TData = Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError = unknown>(
+ id: string,
+    rejectDocumentApprovalDto: RejectDocumentApprovalDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerRejectV1<TData = Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError = unknown>(
+ id: string,
+    rejectDocumentApprovalDto: RejectDocumentApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentApprovalControllerRejectV1<TData = Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError = unknown>(
+ id: string,
+    rejectDocumentApprovalDto: RejectDocumentApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Reject a document
+ */
+
+export function useDocumentApprovalControllerRejectV1<TData = Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError = unknown>(
+ id: string,
+    rejectDocumentApprovalDto: RejectDocumentApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentApprovalControllerRejectV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentApprovalControllerRejectV1QueryOptions(id,rejectDocumentApprovalDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

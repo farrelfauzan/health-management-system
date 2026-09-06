@@ -47,6 +47,23 @@ export const NOTIFICATION_TYPES = [
    * addressed to the attending doctor — the doctor's end of dual delivery.
    */
   'PATIENT_DOCUMENT_RELEASED',
+  /**
+   * Document approval (P16-T30, FR-E5-25/26). Six kinds because each has a
+   * different audience and a different sentence: `REQUESTED` goes to every
+   * named approver, the next three to the drafter, and the last two back to
+   * the approvers who have not answered.
+   *
+   * `DUE_SOON` and `OVERDUE` are the *entire* effect a deadline has
+   * (FR-E5-28). A round past its deadline is still pending and still
+   * actionable — nothing here decides, and an approval nobody made must
+   * never exist.
+   */
+  'DOCUMENT_APPROVAL_REQUESTED',
+  'DOCUMENT_APPROVAL_APPROVED',
+  'DOCUMENT_APPROVAL_REJECTED',
+  'DOCUMENT_APPROVAL_SUPERSEDED',
+  'DOCUMENT_APPROVAL_DUE_SOON',
+  'DOCUMENT_APPROVAL_OVERDUE',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;

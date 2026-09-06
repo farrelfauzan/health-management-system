@@ -1652,6 +1652,23 @@ export type EnumManagedDocumentStatusWithAggregatesFilter<$PrismaModel = never> 
   _max?: Prisma.NestedEnumManagedDocumentStatusFilter<$PrismaModel>
 }
 
+export type EnumDocumentApprovalStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentApprovalStatus | Prisma.EnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentApprovalStatus[] | Prisma.ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentApprovalStatus[] | Prisma.ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel> | $Enums.DocumentApprovalStatus
+}
+
+export type EnumDocumentApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentApprovalStatus | Prisma.EnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentApprovalStatus[] | Prisma.ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentApprovalStatus[] | Prisma.ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.DocumentApprovalStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -3243,6 +3260,23 @@ export type NestedEnumManagedDocumentStatusWithAggregatesFilter<$PrismaModel = n
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumManagedDocumentStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumManagedDocumentStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentApprovalStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentApprovalStatus | Prisma.EnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentApprovalStatus[] | Prisma.ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentApprovalStatus[] | Prisma.ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel> | $Enums.DocumentApprovalStatus
+}
+
+export type NestedEnumDocumentApprovalStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentApprovalStatus | Prisma.EnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentApprovalStatus[] | Prisma.ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DocumentApprovalStatus[] | Prisma.ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDocumentApprovalStatusWithAggregatesFilter<$PrismaModel> | $Enums.DocumentApprovalStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
 }
 
 

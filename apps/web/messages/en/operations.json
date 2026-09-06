@@ -1116,7 +1116,29 @@
         "noParties": "—",
         "actions": {
           "download": "Download file",
-          "downloadError": "Unable to download this file."
+          "downloadError": "Unable to download this file.",
+          "export": "Export CSV",
+          "exportError": "Unable to export the registry."
+        },
+        "overdue": "Overdue",
+        "filters": {
+          "type": "Type",
+          "anyType": "Any type",
+          "status": "Status",
+          "anyStatus": "Any status",
+          "dateField": "Date",
+          "dateFields": {
+            "created": "Created",
+            "issued": "Issued"
+          },
+          "from": "From",
+          "to": "To"
+        },
+        "savedFilters": {
+          "all": "All documents",
+          "awaitingMe": "Awaiting my approval",
+          "myDrafts": "My drafts",
+          "issued": "Issued"
         }
       },
       "form": {
@@ -1177,6 +1199,112 @@
         "submit": "Create document",
         "submitting": "Saving…",
         "created": "Document drafted."
+      },
+      "approvalsTab": "Approvals",
+      "approvals": {
+        "badge": {
+          "label": "{count, plural, one {# document awaiting your approval} other {# documents awaiting your approval}}"
+        },
+        "panel": {
+          "title": "Approval",
+          "notSubmitted": "Not submitted for approval yet.",
+          "progress": "{approved} of {required} approvals",
+          "noApprovalNeeded": "This document type needs no approval — it can be issued directly.",
+          "overdue": "Overdue",
+          "dueAt": "Due {date}",
+          "noEligibleApprover": "Nobody named on this request can approve it any more. Withdraw it and name someone else."
+        },
+        "picker": {
+          "label": "Approvers",
+          "placeholder": "Choose who approves this document",
+          "searchPlaceholder": "Search staff by email",
+          "empty": "No staff match that search",
+          "loadError": "Unable to load staff",
+          "remove": "Remove {email}"
+        },
+        "submit": {
+          "action": "Submit for approval",
+          "title": "Submit for approval",
+          "description": "Name who approves this document and, if you want one, when it is due. Submitting freezes the content and the approver list.",
+          "dueAt": "Deadline (optional)",
+          "dueAtHint": "A deadline sends reminders and flags the document as overdue. It never approves or rejects anything on its own.",
+          "selfApprovalOnly": "You are the only approver, and this type does not allow a drafter to approve their own document. Name someone else.",
+          "submit": "Submit",
+          "submitted": "Submitted for approval.",
+          "error": "Unable to submit this document for approval."
+        },
+        "approve": {
+          "action": "Approve",
+          "approved": "Document approved and issued.",
+          "error": "Unable to approve this document."
+        },
+        "reject": {
+          "action": "Reject",
+          "title": "Reject this document",
+          "description": "The drafter sees your reason, and it stays in the document’s history.",
+          "reason": "Reason",
+          "reasonPlaceholder": "What has to change before this can be approved?",
+          "reasonHint": "Required. “Rejected” with no explanation tells the drafter nothing.",
+          "submit": "Reject",
+          "rejected": "Document rejected and returned to draft.",
+          "error": "Unable to reject this document."
+        },
+        "withdraw": {
+          "action": "Withdraw",
+          "withdrawn": "Approval request withdrawn.",
+          "error": "Unable to withdraw this approval request."
+        },
+        "issue": {
+          "action": "Issue",
+          "issued": "Document issued.",
+          "error": "Unable to issue this document."
+        },
+        "queue": {
+          "description": "Every document waiting on your approval, most pressing first.",
+          "overdueOnly": "Overdue only",
+          "overdue": "Overdue",
+          "noDueDate": "No deadline",
+          "empty": "Nothing waiting on you",
+          "emptyDescription": "Documents named to you for approval appear here.",
+          "loadError": "Unable to load approvals",
+          "loadErrorDescription": "Something went wrong while fetching the queue. It retries automatically.",
+          "notAnApprover": "You are not an approver",
+          "notAnApproverDescription": "Approving documents needs the document-approval permission.",
+          "columns": {
+            "document": "Document",
+            "type": "Type",
+            "drafter": "Drafted by",
+            "dueAt": "Due",
+            "age": "Waiting since"
+          }
+        },
+        "thread": {
+          "loading": "Loading approval history…",
+          "empty": "This document has not been through approval.",
+          "submittedBy": "Submitted by {email} on {date}",
+          "approvers": "Approvers: {emails}",
+          "dueAt": "due {date}",
+          "noDecisions": "No decisions yet.",
+          "approvedBy": "Approved by {email} on {date}",
+          "rejectedBy": "Rejected by {email} on {date}",
+          "overdue": "Overdue",
+          "statuses": {
+            "PENDING": "Pending",
+            "APPROVED": "Approved",
+            "REJECTED": "Rejected",
+            "WITHDRAWN": "Withdrawn",
+            "SUPERSEDED": "Superseded"
+          }
+        }
+      },
+      "workspace": {
+        "breadcrumb": "Documents",
+        "loading": "Loading document…",
+        "loadError": "This document could not be loaded. It may not exist, or it may not be yours to open.",
+        "issuedAt": "Issued",
+        "notIssued": "Not issued",
+        "uploadedBody": "This document was uploaded as a file.",
+        "emptyBody": "This document has no content yet."
       }
     }
   },

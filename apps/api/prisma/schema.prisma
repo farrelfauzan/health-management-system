@@ -210,6 +210,28 @@ enum AuditAction {
   /// verb rather than hiding inside a field list.
   APPROVAL_POLICY_CHANGED
   SELF_APPROVAL_ENABLED
+  /// Document approval rounds (P16-T29, NFR-AUD-03). Six verbs rather than
+  /// generic UPDATEs because the questions asked of this table afterwards are
+  /// "who was asked to sign", "who actually signed", "who refused and why",
+  /// and "what changed under a panel mid-review" — and an UPDATE row looks
+  /// identical for all four.
+  ///
+  /// `APPROVERS_ASSIGNED` is separate from `APPROVAL_SUBMITTED` because the
+  /// panel is the half a dispute turns on: a document approved by the wrong
+  /// people is a different failure from one approved too fast. Every row
+  /// carries the document type, so "how much of what we issue skips a second
+  /// pair of eyes" is answerable from the log alone.
+  APPROVAL_SUBMITTED
+  APPROVERS_ASSIGNED
+  APPROVAL_WITHDRAWN
+  APPROVAL_SUPERSEDED
+  APPROVAL_GRANTED
+  APPROVAL_REJECTED
+  /// A document left DRAFT for good (P16-T29, FR-E5-11/12). Written on both
+  /// paths — straight from a drafter when the type needs no approval, and
+  /// from the approving transaction when it does — so "what did we issue"
+  /// never depends on which route it took.
+  DOCUMENT_ISSUED
 }
 
 enum BpjsSubmissionType {
@@ -665,6 +687,9 @@ model User {
   defaultApproverForTypes    DocumentTypeApprover[]
 
   draftedManagedDocuments    ManagedDocument[]            @relation("ManagedDocumentDraftedBy")
+  submittedApprovalRequests  DocumentApprovalRequest[]    @relation("DocumentApprovalSubmittedBy")
+  namedApprovalRounds        DocumentApprovalApprover[]
+  approvalDecisions          DocumentApprovalDecision[]
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
   @@index([offboardedAt])
@@ -3880,6 +3905,22 @@ enum NotificationType {
   /// ever being behind them. Carries the category and the patient, never a
   /// result value.
   PATIENT_DOCUMENT_RELEASED
+  /// Document approval (P16-T30, FR-E5-25/26). Six kinds because each has a
+  /// different audience and a different sentence: the first goes to every
+  /// named approver, the next three to the drafter, and the last two back to
+  /// the approvers who have not answered. They are separate values rather
+  /// than one `DOCUMENT_APPROVAL` with a payload discriminator because the
+  /// feed renders copy per type and a deep link per type.
+  ///
+  /// `DOCUMENT_APPROVAL_DUE_SOON` and `_OVERDUE` are the deadline's *entire*
+  /// effect (FR-E5-28). Nothing in the scheduler writes a decision; a missed
+  /// deadline raises attention and never resolves a round.
+  DOCUMENT_APPROVAL_REQUESTED
+  DOCUMENT_APPROVAL_APPROVED
+  DOCUMENT_APPROVAL_REJECTED
+  DOCUMENT_APPROVAL_SUPERSEDED
+  DOCUMENT_APPROVAL_DUE_SOON
+  DOCUMENT_APPROVAL_OVERDUE
 
   @@map("notification_type")
 }
@@ -4139,4 +4180,116 @@ model ManagedDocument {
   @@index([subjectInvoiceId])
   @@index([deletedAt])
   @@map("managed_documents")
+
+  approvalRequests DocumentApprovalRequest[]
+}
+
+/// Where one round of review stands (P16-T29, §7.5.4).
+///
+/// `SUPERSEDED` is deliberately distinct from `WITHDRAWN`: both end a round
+/// without a decision, but they are different facts. A withdrawal is the
+/// drafter changing their mind about asking; a supersede is the artefact
+/// under review having changed underneath the panel, which is the one
+/// outcome an approver needs to be told about (FR-E5-15).
+enum DocumentApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WITHDRAWN
+  SUPERSEDED
+
+  @@map("document_approval_status")
+}
+
+/// One round of review over one document (P16-T29, FR-E5-08…18).
+///
+/// `frozenPayload` is the whole point of the model. An approver approves a
+/// *specific artefact reviewed by a specific panel*, so submission freezes
+/// both — the content as submitted and the approver set as named — and any
+/// change to either voids the round rather than quietly moving the target.
+/// Approval then releases the frozen version, not whatever the document
+/// happens to say when the button is pressed (FR-E5-16).
+///
+/// `dueAt` drives reminders and an overdue flag and **nothing else**
+/// (FR-E5-28). No code path in this repo reads it to decide anything: a
+/// missed deadline escalates attention, and an approval nobody made must
+/// never exist.
+///
+/// One round with N approvers. Sequential chains are an explicit non-goal
+/// (§4), which is why there is no ordinal on the approver rows.
+model DocumentApprovalRequest {
+  id            String                 @id @default(uuid()) @db.Uuid
+  documentId    String                 @map("document_id") @db.Uuid
+  /// Content + approver set as submitted. A snapshot, never a live read.
+  frozenPayload Json                   @map("frozen_payload")
+  status        DocumentApprovalStatus @default(PENDING)
+  submittedById String                 @map("submitted_by_id") @db.Uuid
+  submittedAt   DateTime               @default(now()) @map("submitted_at")
+  /// Reminders and the overdue flag only — never a decision.
+  dueAt         DateTime?              @map("due_at")
+  resolvedAt    DateTime?              @map("resolved_at")
+  /// Set once the due-soon reminder has fired for this round, so a second
+  /// sweep tick sends nothing (FR-E5-27). Two columns rather than a notice
+  /// table: a round has exactly one deadline, so there is nothing to key on.
+  dueSoonNotifiedAt DateTime?          @map("due_soon_notified_at")
+  overdueNotifiedAt DateTime?          @map("overdue_notified_at")
+  createdAt     DateTime               @default(now()) @map("created_at")
+  updatedAt     DateTime               @updatedAt @map("updated_at")
+
+  document    ManagedDocument            @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  submittedBy User                       @relation("DocumentApprovalSubmittedBy", fields: [submittedById], references: [id], onDelete: Restrict)
+  approvers   DocumentApprovalApprover[]
+  decisions   DocumentApprovalDecision[]
+
+  /// The scheduler's one read: pending rounds with a deadline.
+  @@index([status, dueAt])
+  @@index([documentId, submittedAt])
+  @@map("document_approval_requests")
+}
+
+/// The panel named on one round (P16-T29, FR-E5-09).
+///
+/// A table rather than an array column because "everything awaiting my
+/// approval" is the module's most-run query (US-E5-02) and it has to be an
+/// indexed join, not a scan with a JSON containment test.
+///
+/// Naming somebody here grants them nothing. Deciding needs both this row
+/// and `document-approval.decide:any` (FR-E5-13) — the separation is the
+/// control (§7.5.9).
+model DocumentApprovalApprover {
+  id         String @id @default(uuid()) @db.Uuid
+  requestId  String @map("request_id") @db.Uuid
+  approverId String @map("approver_id") @db.Uuid
+
+  request  DocumentApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  approver User                    @relation(fields: [approverId], references: [id], onDelete: Restrict)
+
+  @@unique([requestId, approverId])
+  @@index([approverId])
+  @@map("document_approval_approvers")
+}
+
+/// One approver's decision on one round (P16-T29, FR-E5-16/17).
+///
+/// `reason` is required on a rejection and a CHECK in the migration enforces
+/// it: "returned to draft" with no explanation is the failure mode the
+/// requirement exists to prevent, and it stays in the document's history
+/// forever (US-E5-03).
+///
+/// `Restrict` on the approver: a decision is the record of who signed, and
+/// deleting the account must never quietly unsign the document.
+model DocumentApprovalDecision {
+  id         String   @id @default(uuid()) @db.Uuid
+  requestId  String   @map("request_id") @db.Uuid
+  approverId String   @map("approver_id") @db.Uuid
+  isApproved Boolean  @map("is_approved")
+  reason     String?
+  decidedAt  DateTime @default(now()) @map("decided_at")
+
+  request  DocumentApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  approver User                    @relation(fields: [approverId], references: [id], onDelete: Restrict)
+
+  @@unique([requestId, approverId])
+  @@index([approverId])
+  @@map("document_approval_decisions")
 }

@@ -34,7 +34,14 @@ export type ShellNavigationKey =
  * number because this table is static data read on the server, while every
  * count it can name is client state.
  */
-export type ShellNavBadgeKey = 'aiAssistantUnread' | 'conversationHandoff';
+export type ShellNavBadgeKey =
+  | 'aiAssistantUnread'
+  | 'conversationHandoff'
+  // P16-T31. How many approval rounds name the viewer (FR-E5-27). The count
+  // the badge shows is `pending`, not `overdue`: an overdue round is a subset
+  // of what is waiting, and a badge that showed only late work would read as
+  // "nothing to do" on a queue that has plenty.
+  | 'documentApprovals';
 
 export type AdminNavItem = {
   href: string;
@@ -142,14 +149,15 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         ],
       },
       {
-        // P16-T39. The documents module: types now, the registry and the
-        // approval workspace as E5 lands. One entry, gated on the registry
-        // read — the type list is its first tab.
+        // P16-T39/T31. The documents module: the registry, the approval
+        // queue and the type settings. One entry, gated on the registry
+        // read, with a badge for what is waiting on this person.
         href: '/admin/documents',
         label: 'Documents',
         labelKey: 'documents',
         icon: 'folder_managed',
         ability: { action: 'read', subject: 'ManagedDocument' },
+        badgeKey: 'documentApprovals',
       },
     ],
   },

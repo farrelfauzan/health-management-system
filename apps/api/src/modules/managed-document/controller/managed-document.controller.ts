@@ -17,11 +17,14 @@ import { Audited } from '../../../common/audit/audited.decorator';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { BinaryResponseWriter } from '../../../common/http/binary-response.types';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { MANAGED_DOCUMENT_EXAMPLES } from '../../../common/openapi/managed-document-examples';
 import { AuditAction } from '../../../generated/prisma/client';
 import { CreateManagedDocumentDto } from '../dto/create-managed-document.dto';
+import { SubmitDocumentForApprovalDto } from '../dto/submit-document-for-approval.dto';
+import { DocumentApprovalService } from '../service/document-approval.service';
 import { CreateManagedDocumentUploadUrlDto } from '../dto/create-managed-document-upload-url.dto';
 import { ExportManagedDocumentsQueryDto } from '../dto/export-managed-documents-query.dto';
 import { ListManagedDocumentsQueryDto } from '../dto/list-managed-documents-query.dto';
@@ -36,8 +39,10 @@ const MANAGED_DOCUMENT_AUDIT_RESOURCE = 'managed-document';
 
 /**
  * The documents registry (`P16-T28`, §7.5.8): list, search, draft, edit,
- * read, history and export. The lifecycle verbs (submit, withdraw, issue)
- * arrive with `P16-T29`; the party and content-mode rules with `P16-T36`.
+ * read, history and export, plus the lifecycle verbs `P16-T29` adds — submit,
+ * withdraw and issue. Deciding lives on its own controller under its own
+ * permission (`DocumentApprovalController`), because authoring a document and
+ * signing it off are the two acts the module exists to keep apart (§7.5.9).
  *
  * Reading the registry needs `managed-document.read:any`. That is the gate
  * on the *surface*; every row still answers to its own source's rule inside
@@ -50,7 +55,10 @@ const MANAGED_DOCUMENT_AUDIT_RESOURCE = 'managed-document';
   path: 'documents',
 })
 export class ManagedDocumentController {
-  constructor(private readonly managedDocumentService: ManagedDocumentService) {}
+  constructor(
+    private readonly managedDocumentService: ManagedDocumentService,
+    private readonly documentApprovalService: DocumentApprovalService,
+  ) {}
 
   @Get()
   @Auth([{ action: 'read', subject: 'ManagedDocument' }])
@@ -208,6 +216,77 @@ export class ManagedDocumentController {
   ) {
     const actor = this.assertAuthenticated(currentUser);
     return { data: await this.managedDocumentService.getHistory(id, actor) };
+  }
+
+  // Route-level rather than class-level (`P16-T31`): the registry itself is
+  // never switched off, and a clinic without the approval entitlement must not
+  // be able to park a document in PENDING_APPROVAL that nobody can decide.
+  @Post(':id/submit')
+  @HttpCode(OK_STATUS)
+  @RequireFeature('document-approval')
+  @Auth([{ action: 'write', subject: 'ManagedDocument' }])
+  @ApiEndpoint({
+    summary: 'Submit a draft for approval',
+    responseDescription:
+      'The document, now PENDING_APPROVAL, with its open round summarised in `approval`. The drafter names who approves *this* document and when it is due (FR-E5-09/10) — any live staff account, never a patient (422 `DOCUMENT_APPROVER_INELIGIBLE`). Submission freezes the content and the panel: an approver approves a specific artefact reviewed by a specific panel, and editing either afterwards voids the round (FR-E5-15). A panel naming only the drafter is refused here, while it can still be fixed, unless the type allows self-approval (422 `DOCUMENT_SELF_APPROVAL_FORBIDDEN`). `dueAt` buys reminders and an overdue flag and nothing else — no deadline ever decides (FR-E5-28). Only a draft may be submitted, and only one round may be open at a time (409 `DOCUMENT_NOT_SUBMITTABLE`).',
+    responseExample: {
+      data: MANAGED_DOCUMENT_EXAMPLES.pendingDetailView,
+      message: 'Document submitted for approval',
+    },
+    requestType: SubmitDocumentForApprovalDto,
+    requestExample: MANAGED_DOCUMENT_EXAMPLES.submitRequest,
+    notFoundDescription: 'Document not found.',
+  })
+  async submitDocument(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() payload: SubmitDocumentForApprovalDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const data = await this.documentApprovalService.submitForApproval(id, payload, actor);
+    return { data, message: 'Document submitted for approval' };
+  }
+
+  @Post(':id/withdraw')
+  @HttpCode(OK_STATUS)
+  @RequireFeature('document-approval')
+  @Auth([{ action: 'write', subject: 'ManagedDocument' }])
+  @ApiEndpoint({
+    summary: 'Withdraw an open approval request',
+    responseDescription:
+      'The document, back in DRAFT, with its round marked WITHDRAWN (FR-E5-18). Nothing is decided — a withdrawal is the drafter changing their mind about asking, which is why it is a different outcome from a rejection and from the SUPERSEDED an edit produces. A document with no open round answers 409 `DOCUMENT_NOT_SUBMITTABLE`.',
+    responseExample: {
+      data: MANAGED_DOCUMENT_EXAMPLES.detailView,
+      message: 'Approval request withdrawn',
+    },
+    notFoundDescription: 'Document not found.',
+  })
+  async withdrawDocument(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const data = await this.documentApprovalService.withdraw(id, actor);
+    return { data, message: 'Approval request withdrawn' };
+  }
+
+  @Post(':id/issue')
+  @HttpCode(OK_STATUS)
+  @Auth([{ action: 'write', subject: 'ManagedDocument' }])
+  @ApiEndpoint({
+    summary: 'Issue a draft directly',
+    responseDescription:
+      'The document, ISSUED and dated (FR-E5-12). Available only for a type whose approval policy is off: when the type requires approval, ISSUED is reachable **only** through an approved round and this route answers 409 `DOCUMENT_APPROVAL_REQUIRED` regardless of what the client offered (FR-E5-11, NFR-SEC-09). A type whose issue step does something beyond releasing the row — publishing a template version, releasing a corpus file — is refused with 409 `DOCUMENT_ISSUE_BEHAVIOR_UNSUPPORTED` until P16-T32/T33 wire that behaviour, rather than being marked issued while the side effect never happened.',
+    responseExample: { data: MANAGED_DOCUMENT_EXAMPLES.detailView, message: 'Document issued' },
+    notFoundDescription: 'Document not found.',
+  })
+  async issueDocument(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const data = await this.documentApprovalService.issue(id, actor);
+    return { data, message: 'Document issued' };
   }
 
   private assertAuthenticated(currentUser?: CurrentUser): CurrentUser {

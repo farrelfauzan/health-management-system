@@ -1136,3 +1136,49 @@ export type DocumentTypeApprover = Prisma.DocumentTypeApproverModel
  * those sources, never a bypass of their rules (§7.5.3).
  */
 export type ManagedDocument = Prisma.ManagedDocumentModel
+/**
+ * Model DocumentApprovalRequest
+ * One round of review over one document (P16-T29, FR-E5-08…18).
+ * 
+ * `frozenPayload` is the whole point of the model. An approver approves a
+ * *specific artefact reviewed by a specific panel*, so submission freezes
+ * both — the content as submitted and the approver set as named — and any
+ * change to either voids the round rather than quietly moving the target.
+ * Approval then releases the frozen version, not whatever the document
+ * happens to say when the button is pressed (FR-E5-16).
+ * 
+ * `dueAt` drives reminders and an overdue flag and **nothing else**
+ * (FR-E5-28). No code path in this repo reads it to decide anything: a
+ * missed deadline escalates attention, and an approval nobody made must
+ * never exist.
+ * 
+ * One round with N approvers. Sequential chains are an explicit non-goal
+ * (§4), which is why there is no ordinal on the approver rows.
+ */
+export type DocumentApprovalRequest = Prisma.DocumentApprovalRequestModel
+/**
+ * Model DocumentApprovalApprover
+ * The panel named on one round (P16-T29, FR-E5-09).
+ * 
+ * A table rather than an array column because "everything awaiting my
+ * approval" is the module's most-run query (US-E5-02) and it has to be an
+ * indexed join, not a scan with a JSON containment test.
+ * 
+ * Naming somebody here grants them nothing. Deciding needs both this row
+ * and `document-approval.decide:any` (FR-E5-13) — the separation is the
+ * control (§7.5.9).
+ */
+export type DocumentApprovalApprover = Prisma.DocumentApprovalApproverModel
+/**
+ * Model DocumentApprovalDecision
+ * One approver's decision on one round (P16-T29, FR-E5-16/17).
+ * 
+ * `reason` is required on a rejection and a CHECK in the migration enforces
+ * it: "returned to draft" with no explanation is the failure mode the
+ * requirement exists to prevent, and it stays in the document's history
+ * forever (US-E5-03).
+ * 
+ * `Restrict` on the approver: a decision is the record of who signed, and
+ * deleting the account must never quietly unsign the document.
+ */
+export type DocumentApprovalDecision = Prisma.DocumentApprovalDecisionModel

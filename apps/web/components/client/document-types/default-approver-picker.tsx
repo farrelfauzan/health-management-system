@@ -7,10 +7,10 @@ import { useTranslations } from 'next-intl';
 
 import { useDebouncedValue } from '#hooks/use-debounced-value';
 import { useAdminUsersList } from '#lib/admin-users/use-admin-users-list';
+import { filterStaffUsers } from '#lib/managed-documents/filter-staff-users';
 
 const SEARCH_DEBOUNCE_MS = 300;
 const STAFF_OPTIONS_LIMIT = 50;
-const PATIENT_ROLE_CODE = 'PATIENT';
 
 type DefaultApproverPickerProps = {
   selected: DocumentTypeApproverView[];
@@ -33,9 +33,7 @@ export function DefaultApproverPicker({ selected, onChange }: DefaultApproverPic
     isActive: 'true',
     ...(debouncedSearch === '' ? {} : { search: debouncedSearch }),
   });
-  const staff = usersQuery.users.filter(
-    (user) => !user.roles.some((role) => role.code === PATIENT_ROLE_CODE),
-  );
+  const staff = filterStaffUsers(usersQuery.users);
   const options: MultiComboboxOption[] = staff.map((user) => ({
     value: user.id,
     label: user.email,

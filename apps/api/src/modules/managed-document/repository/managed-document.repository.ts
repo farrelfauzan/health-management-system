@@ -7,6 +7,7 @@ import {
   ManagedDocumentHistoryEntryRecord,
   ManagedDocumentPage,
   ManagedDocumentRecord,
+  TransitionManagedDocumentPayload,
   UpdateManagedDocumentRecordPayload,
 } from '@hms/shared-types';
 
@@ -32,6 +33,9 @@ const DOCUMENT_INCLUDE = {
       requiresPatient: true,
       requiresDoctor: true,
       isActive: true,
+      isApprovalRequired: true,
+      allowSelfApproval: true,
+      requiredApprovals: true,
     },
   },
   patient: { select: { id: true, fullName: true } },
@@ -148,6 +152,23 @@ export class ManagedDocumentRepository {
   }
 
   /**
+   * Moves a document between lifecycle states (`P16-T29`). Its own method
+   * rather than a branch of {@link updateDocument} because the two are
+   * refused under opposite conditions: an edit only inside DRAFT, a
+   * transition only *out* of wherever the row is.
+   */
+  async transitionDocument(
+    payload: TransitionManagedDocumentPayload,
+  ): Promise<ManagedDocumentRecord> {
+    const row = await this.prismaService.managedDocument.update({
+      where: { id: payload.id },
+      data: { status: payload.status, issuedAt: payload.issuedAt },
+      include: DOCUMENT_INCLUDE,
+    });
+    return toRecord(row);
+  }
+
+  /**
    * The audit events recorded against one document, oldest first, with the
    * actor's email joined in (FR-E5-05). `audit_logs` has no relation to
    * `users` by design — a log row must outlive the account that wrote it —
@@ -240,11 +261,12 @@ function buildListWhere(params: ListManagedDocumentsParams): Prisma.ManagedDocum
   if (params.draftedById !== undefined) {
     conditions.push({ draftedById: params.draftedById });
   }
-  if (params.approverId !== undefined) {
-    // Approval rounds arrive with P16-T29. Until then a filter on approver
-    // matches nothing rather than everything, so a saved "awaiting me" view
-    // never silently widens into the whole registry.
-    conditions.push({ id: { in: [] } });
+  if (params.awaitingApprovalDocumentIds !== undefined) {
+    // Already resolved to ids by the approval repository. An empty array is
+    // the meaningful case rather than a degenerate one: nothing is waiting on
+    // that approver, so the filter must narrow to nothing rather than
+    // silently widen into the whole registry.
+    conditions.push({ id: { in: params.awaitingApprovalDocumentIds } });
   }
   const dateWhere = buildDateWhere(params);
   if (dateWhere !== null) {
