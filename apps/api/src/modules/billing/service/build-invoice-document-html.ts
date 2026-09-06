@@ -88,7 +88,8 @@ function fillTemplateTokens(
 ): string {
   const dom = htmlparser2.parseDocument(contentHtml);
   const tokenElements = domutils.findAll(
-    (node): node is Element => node instanceof Element && node.attribs[TOKEN_ATTRIBUTE] !== undefined,
+    (node): node is Element =>
+      node instanceof Element && node.attribs[TOKEN_ATTRIBUTE] !== undefined,
     [dom],
   );
   for (const element of tokenElements) {
@@ -217,6 +218,22 @@ const BASE_DOCUMENT_CSS = [
   // overlapping a neighbour (US-E1-06).
   '.hms-document { overflow-wrap: anywhere; }',
   '.hms-document td, .hms-document th { overflow-wrap: anywhere; vertical-align: top; }',
+  // Layout tables come out of the editor with pixel widths that mean nothing
+  // on paper: TipTap turns `width="68%"` into `width:68px` and a fresh table
+  // into `min-width:75px`, so a template that looked right in the editor
+  // rendered as 100px-wide columns wrapping one character per line. Every
+  // non-item table spans the printable width and lays out fixed, which keeps
+  // the author's column *ratios* whatever unit they arrived in.
+  '.hms-document table:not(.hms-items) { width: 100% !important; table-layout: fixed; border-collapse: collapse; }',
+  '.hms-document table:not(.hms-items) td, .hms-document table:not(.hms-items) th { padding: 0.5mm 1.5mm; }',
+  // The editor keeps structure, not inline styles, so the document's own
+  // typography comes from here: tight paragraph spacing and heading sizes a
+  // receipt can live with.
+  '.hms-document p { margin: 0 0 1mm 0; }',
+  '.hms-document h1 { font-size: 16pt; margin: 0 0 1mm 0; }',
+  '.hms-document h2 { font-size: 13pt; margin: 0 0 1mm 0; }',
+  '.hms-document h3 { font-size: 11pt; margin: 0 0 1mm 0; }',
+  '.hms-document hr { border: 0; border-top: 1px solid #444; margin: 2mm 0; }',
   '.hms-items { width: 100%; border-collapse: collapse; font-size: 10pt; }',
   '.hms-items th, .hms-items td { border: 1px solid #444; padding: 1.5mm 2mm; }',
   '.hms-items th { background-color: #eee; text-align: left; }',
