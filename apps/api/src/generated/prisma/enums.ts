@@ -114,7 +114,9 @@ export const AuditAction = {
   ORGANIZATION_UNIT_ARCHIVED: 'ORGANIZATION_UNIT_ARCHIVED',
   ORGANIZATION_UNIT_DELETED: 'ORGANIZATION_UNIT_DELETED',
   ORGANIZATION_UNIT_MEMBER_ASSIGNED: 'ORGANIZATION_UNIT_MEMBER_ASSIGNED',
-  ORGANIZATION_UNIT_MEMBER_UNASSIGNED: 'ORGANIZATION_UNIT_MEMBER_UNASSIGNED'
+  ORGANIZATION_UNIT_MEMBER_UNASSIGNED: 'ORGANIZATION_UNIT_MEMBER_UNASSIGNED',
+  APPROVAL_POLICY_CHANGED: 'APPROVAL_POLICY_CHANGED',
+  SELF_APPROVAL_ENABLED: 'SELF_APPROVAL_ENABLED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -737,3 +739,22 @@ export const OrganizationUnitKind = {
 } as const
 
 export type OrganizationUnitKind = (typeof OrganizationUnitKind)[keyof typeof OrganizationUnitKind]
+
+
+export const DocumentTypeBehavior = {
+  GENERIC: 'GENERIC',
+  INVOICE_TEMPLATE: 'INVOICE_TEMPLATE',
+  CLINIC_CORPUS: 'CLINIC_CORPUS',
+  PATIENT_BILL: 'PATIENT_BILL'
+} as const
+
+export type DocumentTypeBehavior = (typeof DocumentTypeBehavior)[keyof typeof DocumentTypeBehavior]
+
+
+export const DocumentContentMode = {
+  DRAFTED: 'DRAFTED',
+  UPLOADED: 'UPLOADED',
+  EITHER: 'EITHER'
+} as const
+
+export type DocumentContentMode = (typeof DocumentContentMode)[keyof typeof DocumentContentMode]

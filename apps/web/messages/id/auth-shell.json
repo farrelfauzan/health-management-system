@@ -121,7 +121,8 @@
         "conversations": "Percakapan",
         "rooms": "Kamar",
         "admissions": "Rawat Inap",
-        "organization": "Organisasi"
+        "organization": "Organisasi",
+        "documents": "Dokumen"
       },
       "search": {
         "label": "Cari",

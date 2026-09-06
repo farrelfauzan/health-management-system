@@ -946,6 +946,120 @@
       "viewList": "List",
       "viewChart": "Chart",
       "chartHint": "Click a unit to see its members."
+    },
+    "documents": {
+      "title": "Documents",
+      "subtitle": "Every document the clinic drafts, approves and issues — and the types it files them under.",
+      "typesTab": "Types",
+      "types": {
+        "description": "The document types a clinic issues, in the order the new-document picker shows them. Rename freely — the code is what handlers key on.",
+        "readOnlyNotice": "You can view the document types but not change them.",
+        "new": "New type",
+        "loadError": "Unable to load document types",
+        "loadErrorDescription": "Something went wrong while fetching the types. It retries automatically.",
+        "empty": "No document types yet",
+        "emptyDescription": "Create a type to start filing documents under it.",
+        "showInactive": "Show deactivated",
+        "columns": {
+          "name": "Name",
+          "code": "Code",
+          "approval": "Approval",
+          "parties": "Parties",
+          "content": "Content",
+          "documents": "Documents",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "systemBadge": "System type",
+        "inactiveBadge": "Deactivated",
+        "selfApprovalBadge": "Self-approval on",
+        "approvalRequired": "{count, plural, one {# approval} other {# approvals}}",
+        "approvalOff": "No approval",
+        "parties": {
+          "none": "—",
+          "patient": "Patient",
+          "doctor": "Doctor"
+        },
+        "contentModes": {
+          "DRAFTED": "Drafted in the editor",
+          "UPLOADED": "Uploaded file",
+          "EITHER": "Drafted or uploaded"
+        },
+        "behaviors": {
+          "GENERIC": "Generic",
+          "INVOICE_TEMPLATE": "Publishes an invoice template",
+          "CLINIC_CORPUS": "Releases to the clinic corpus",
+          "PATIENT_BILL": "Generated patient bill"
+        },
+        "documentCount": "{count, plural, =0 {Unused} one {# document} other {# documents}}",
+        "actions": {
+          "edit": "Edit",
+          "approvers": "Default approvers",
+          "activate": "Activate",
+          "deactivate": "Deactivate",
+          "delete": "Delete",
+          "toggleError": "Unable to change the type's status.",
+          "activated": "Type activated.",
+          "deactivated": "Type deactivated. It no longer appears in the new-document picker."
+        },
+        "form": {
+          "createTitle": "New document type",
+          "editTitle": "Edit document type",
+          "createDescription": "A type the clinic defines. It is always generic: it cannot publish a template or feed the assistant.",
+          "editDescription": "Name, description, approval policy and shape are yours to change.",
+          "systemNote": "This is a system type. Its code and behaviour are fixed because code binds to them; everything else is editable, and renaming it breaks nothing.",
+          "name": "Name",
+          "namePlaceholder": "e.g. Surat Keterangan Sehat",
+          "description": "Description (optional)",
+          "descriptionPlaceholder": "What this document is for",
+          "code": "Code",
+          "codeHint": "Generated from the name when the type is created. Reports and integrations key on it.",
+          "behavior": "Behaviour",
+          "parties": "Parties a document must name",
+          "requiresPatient": "A patient",
+          "requiresDoctor": "A doctor",
+          "contentMode": "Content",
+          "sortOrder": "Order in the picker",
+          "isActive": "Active — offered in the new-document picker",
+          "submitCreate": "Create type",
+          "submitEdit": "Save changes",
+          "created": "Document type created.",
+          "updated": "Document type updated.",
+          "error": "Unable to save the document type."
+        },
+        "approval": {
+          "title": "Approval policy",
+          "isApprovalRequired": "Approval required before a document of this type is issued",
+          "requiredApprovals": "Approvals needed",
+          "allowSelfApproval": "Allow the drafter to approve their own document",
+          "selfApprovalHint": "Off by default. A clinic with one eligible person may turn it on; enabling it is audited.",
+          "selfApprovalWarning": "Self-approval is on for this type: a drafter can approve their own document. Turn it off unless the clinic genuinely has only one eligible approver."
+        },
+        "approvers": {
+          "title": "Default approvers for {name}",
+          "description": "Pre-fills the drafter's approver picker. A convenience, never a routing rule — the drafter can always change it.",
+          "label": "Staff",
+          "placeholder": "Pick staff",
+          "searchPlaceholder": "Search by email…",
+          "empty": "No matching staff",
+          "loadError": "Unable to load staff.",
+          "hint": "Any staff account can be named. Patients can never be approvers.",
+          "remove": "Remove {email}",
+          "save": "Save approvers",
+          "saved": "Default approvers updated.",
+          "error": "Unable to save the default approvers."
+        },
+        "delete": {
+          "title": "Delete “{name}”?",
+          "description": "The type is removed from the list. Its code is never reused.",
+          "inUse": "{count, plural, one {# document uses} other {# documents use}} this type, so it cannot be deleted. Deactivate it instead — existing documents keep their type and stay readable.",
+          "confirm": "Delete type",
+          "deleting": "Deleting…",
+          "deactivateInstead": "Deactivate instead",
+          "deleted": "Document type deleted.",
+          "error": "Unable to delete the document type."
+        }
+      }
     }
   },
   "channelArrivals": {

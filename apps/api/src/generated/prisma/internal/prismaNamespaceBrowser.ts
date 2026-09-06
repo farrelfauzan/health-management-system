@@ -134,7 +134,9 @@ export const ModelName = {
   Admission: 'Admission',
   BedAssignment: 'BedAssignment',
   Notification: 'Notification',
-  OrganizationUnit: 'OrganizationUnit'
+  OrganizationUnit: 'OrganizationUnit',
+  DocumentType: 'DocumentType',
+  DocumentTypeApprover: 'DocumentTypeApprover'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1556,6 +1558,38 @@ export const OrganizationUnitScalarFieldEnum = {
 } as const
 
 export type OrganizationUnitScalarFieldEnum = (typeof OrganizationUnitScalarFieldEnum)[keyof typeof OrganizationUnitScalarFieldEnum]
+
+
+export const DocumentTypeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  behavior: 'behavior',
+  isSystem: 'isSystem',
+  isApprovalRequired: 'isApprovalRequired',
+  allowSelfApproval: 'allowSelfApproval',
+  requiredApprovals: 'requiredApprovals',
+  requiresPatient: 'requiresPatient',
+  requiresDoctor: 'requiresDoctor',
+  contentMode: 'contentMode',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DocumentTypeScalarFieldEnum = (typeof DocumentTypeScalarFieldEnum)[keyof typeof DocumentTypeScalarFieldEnum]
+
+
+export const DocumentTypeApproverScalarFieldEnum = {
+  id: 'id',
+  typeId: 'typeId',
+  approverId: 'approverId'
+} as const
+
+export type DocumentTypeApproverScalarFieldEnum = (typeof DocumentTypeApproverScalarFieldEnum)[keyof typeof DocumentTypeApproverScalarFieldEnum]
 
 
 export const SortOrder = {
