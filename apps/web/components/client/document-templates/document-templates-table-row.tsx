@@ -38,7 +38,10 @@ export function DocumentTemplatesTableRow({
       label: t('actions.archive'),
       icon: 'archive',
       isDestructive: true,
-      isDisabled: isMutating || template.isDefault,
+      // Reachable on the default template on purpose: the dialog explains
+      // that another default must be chosen first, which a greyed-out item
+      // never could.
+      isDisabled: isMutating,
       onSelect: () => onArchive(template),
     },
   ];

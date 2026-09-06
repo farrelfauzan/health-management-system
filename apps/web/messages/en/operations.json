@@ -315,10 +315,7 @@
           "setDefault": "Set as default",
           "archive": "Archive",
           "setDefaultSuccess": "Default template updated.",
-          "setDefaultError": "Unable to set the default template.",
-          "archiveSuccess": "Template archived.",
-          "archiveError": "Unable to archive the template.",
-          "archiveConfirm": "Archive this template? Published versions stay attached to the invoices that used them."
+          "setDefaultError": "Unable to set the default template."
         },
         "create": {
           "title": "New invoice template",
@@ -411,6 +408,17 @@
           },
           "reviewHint": "Fonts, colours and cell shading do not carry over: the editor keeps structure and the PDF stylesheet owns typography. Headers and footers from Word are not included.",
           "dismiss": "Dismiss"
+        },
+        "archiveDialog": {
+          "title": "Archive “{name}”?",
+          "description": "The template leaves the list and can no longer be edited or set as default.",
+          "versionsNote": "Published versions stay attached to the invoices that rendered from them, so past receipts re-render exactly as issued.",
+          "defaultBlocked": "This is the default template. Set another template as default first, then archive this one.",
+          "cancel": "Cancel",
+          "confirm": "Archive template",
+          "archiving": "Archiving…",
+          "success": "Template archived.",
+          "error": "Unable to archive the template."
         }
       },
       "delivery": {
