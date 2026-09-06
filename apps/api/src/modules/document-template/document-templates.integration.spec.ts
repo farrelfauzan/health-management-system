@@ -13,6 +13,7 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 
 import { AppModule } from '../../app.module';
+import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { PdfRendererService } from '../../common/pdf/pdf-renderer.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
@@ -164,6 +165,18 @@ describe('Document templates integration', () => {
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   const prismaServiceMock = { $connect: jest.fn(), $disconnect: jest.fn() };
+  /**
+   * `P16-T21` put this controller behind an entitlement, and `FeatureGuard`
+   * resolves it through Prisma on every request — which this suite replaces
+   * wholesale. Overriding the cache rather than adding a Prisma delegate
+   * keeps the "nothing was persisted" assertions below meaningful: the
+   * entitlement read is not a persistence call this feature makes.
+   *
+   * Always enabled, which is the seeded default.
+   */
+  const featureAvailabilityCacheMock = {
+    isEnabled: jest.fn<Promise<boolean>, [string]>(async () => true),
+  };
   const pdfRendererMock = { render: jest.fn() };
   const objectStorageMock = {
     generateObjectKey: jest.fn(),
@@ -206,6 +219,8 @@ describe('Document templates integration', () => {
       .useValue(auditServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
+      .overrideProvider(FeatureAvailabilityCacheService)
+      .useValue(featureAvailabilityCacheMock)
       .overrideProvider(DocumentTemplateRepository)
       .useValue(fakeRepository)
       .overrideProvider(PdfRendererService)
