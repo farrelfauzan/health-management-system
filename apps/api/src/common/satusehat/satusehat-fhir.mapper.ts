@@ -13,11 +13,13 @@ import {
   SatusehatFhirMedicationDispense,
   SatusehatFhirMedicationRequest,
   SatusehatFhirObservation,
+  SatusehatFhirProcedure,
   SatusehatFhirReference,
   SatusehatMedicationDispenseMapInput,
   SatusehatCompoundMedicationMapInput,
   SatusehatMedicationMapInput,
   SatusehatMedicationRequestMapInput,
+  SatusehatProcedureMapInput,
   SatusehatVitalSignField,
   SatusehatVitalSignsMapInput,
 } from './satusehat-fhir.types';
@@ -25,6 +27,8 @@ import { SatusehatConfig } from './satusehat.types';
 
 const ENCOUNTER_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/encounter';
 const ICD10_SYSTEM = 'http://hl7.org/fhir/sid/icd-10';
+const ICD9CM_SYSTEM = 'http://hl7.org/fhir/sid/icd-9-cm';
+const PROCEDURE_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/procedure';
 const LOINC_SYSTEM = 'http://loinc.org';
 const UCUM_SYSTEM = 'http://unitsofmeasure.org';
 const ACT_ENCOUNTER_CODE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-ActCode';
@@ -166,6 +170,56 @@ export class SatusehatFhirMapper {
       subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
       encounter: { reference: input.encounterReference },
       recordedDate: this.toFhirInstant(input.recordedAt),
+    };
+  }
+
+  /**
+   * Maps one ICD-9-CM-coded procedure to a SATUSEHAT Procedure. `category` is
+   * optional in the IG and the ICD-9-CM catalog carries no category column, so
+   * it is omitted rather than invented. The performer is the attending doctor;
+   * `recordedById` is a `User`, not a practitioner, and is never sent. Callers
+   * must skip free-text procedures (no `icd9cmCodeId`) and report the gap.
+   */
+  mapProcedure(input: SatusehatProcedureMapInput): SatusehatFhirProcedure {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    const performedAt = this.clampToEncounterPeriod(input);
+    return {
+      resourceType: 'Procedure',
+      identifier: [
+        {
+          system: `${PROCEDURE_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.procedureId,
+        },
+      ],
+      status: 'completed',
+      code: {
+        coding: [
+          { system: ICD9CM_SYSTEM, code: input.icd9cmCode, display: input.icd9cmDisplay },
+        ],
+      },
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      performedPeriod: {
+        start: this.toFhirInstant(performedAt),
+        end: this.toFhirInstant(performedAt),
+      },
+      ...(input.practitionerIhsNumber
+        ? {
+            performer: [
+              {
+                actor: this.buildReference(
+                  `Practitioner/${input.practitionerIhsNumber}`,
+                  input.practitionerName,
+                ),
+              },
+            ],
+          }
+        : {}),
+      ...(input.notes && input.notes.trim() !== '' ? { note: [{ text: input.notes }] } : {}),
     };
   }
 
@@ -435,6 +489,22 @@ export class SatusehatFhirMapper {
         rank: conditionReference.rank,
       })),
     };
+  }
+
+  /**
+   * A procedure stamped outside the visit it belongs to (backdated entry,
+   * clock skew) would produce a period the platform rejects against the
+   * referenced Encounter — clamp it into the encounter period, as check-in is
+   * clamped in `resolveArrivedAt`.
+   */
+  private clampToEncounterPeriod(input: SatusehatProcedureMapInput): Date {
+    if (input.performedAt.getTime() < input.encounterStartedAt.getTime()) {
+      return input.encounterStartedAt;
+    }
+    if (input.performedAt.getTime() > input.encounterEndedAt.getTime()) {
+      return input.encounterEndedAt;
+    }
+    return input.performedAt;
   }
 
   /**

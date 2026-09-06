@@ -5,6 +5,7 @@ import {
   SatusehatSubmissionDispenseItem,
   SatusehatSubmissionMedication,
   SatusehatSubmissionPrescriptionItem,
+  SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
 } from '@hms/shared-types';
 import { Injectable, Logger } from '@nestjs/common';
@@ -13,9 +14,11 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { SatusehatFhirMapper } from '../../../common/satusehat/satusehat-fhir.mapper';
 import {
+  SatusehatCreatedResourceLocation,
   SatusehatFhirBundleEntry,
   SatusehatFhirTransactionBundle,
   SatusehatTransactionResponse,
+  SatusehatTransactionResponseEntry,
 } from '../../../common/satusehat/satusehat-fhir.types';
 import { SatusehatHttpClient } from '../../../common/satusehat/satusehat-http.client';
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
@@ -33,16 +36,9 @@ const PERMANENT_ERROR_CODES: readonly string[] = [
 ];
 const MAX_STORED_ERROR_LENGTH = 500;
 
-/**
- * Captures the Encounter id from a transaction-response `location`. The
- * platform answers with an absolute URL
- * (`https://…/fhir-r4/v1/Encounter/<id>/_history/<version>`) even though FHIR
- * also permits the relative `Encounter/<id>/_history/<version>` form, so the
- * match anchors on a path-segment boundary and accepts both. Declared without
- * the global flag on purpose: a `/g` regex carries `lastIndex` between
- * `test` and `exec` calls and would skip every other match.
- */
-const ENCOUNTER_LOCATION_PATTERN = /(?:^|\/)Encounter\/([^/?#]+)/;
+/** FHIR resource type names are upper camel case with no separators. */
+const FHIR_RESOURCE_TYPE_PATTERN = /^[A-Z][A-Za-z]+$/;
+const HISTORY_SEGMENT = '_history';
 
 /**
  * Processes one outbox row end to end: rebuilds the encounter bundle from the
@@ -103,7 +99,9 @@ export class SatusehatSubmissionService {
       path: '',
       body: bundle,
     });
-    return this.extractEncounterIhsId(response);
+    const createdResources = this.extractCreatedResources(bundle, response);
+    const encounterEntry = bundle.entry.find((entry) => entry.request.url === 'Encounter');
+    return encounterEntry ? (createdResources.get(encounterEntry.fullUrl)?.id ?? null) : null;
   }
 
   private buildTransactionBundle(
@@ -126,6 +124,13 @@ export class SatusehatSubmissionService {
         }),
         request: { method: 'POST', url: 'Condition' },
       }),
+    );
+    const procedureEntries = this.buildProcedureEntries(
+      bundleData,
+      endedAt,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
     );
     const observationEntries: SatusehatFhirBundleEntry[] = bundleData.latestVitalSigns
       ? this.fhirMapper
@@ -167,10 +172,63 @@ export class SatusehatSubmissionService {
       entry: [
         { fullUrl: encounterFullUrl, resource: encounterResource, request: { method: 'POST', url: 'Encounter' } },
         ...conditionEntries,
+        ...procedureEntries,
         ...observationEntries,
         ...medicationEntries,
       ],
     };
+  }
+
+  /**
+   * Builds one Procedure entry per ICD-9-CM-coded tindakan recorded on the
+   * visit. A procedure typed as free text carries no ICD-9-CM code, so it is
+   * skipped and named in the gap report rather than sent under a coding the
+   * platform does not recognise — the same policy as the KFA medication gap
+   * (P10-T07).
+   */
+  private buildProcedureEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    endedAt: Date,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+  ): SatusehatFhirBundleEntry[] {
+    const skippedProcedures = bundleData.procedures.filter((procedure) => !procedure.isCoded);
+    this.reportProcedureGaps(skippedProcedures);
+    return bundleData.procedures
+      .filter((procedure) => procedure.isCoded)
+      .map((procedure) => ({
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: this.fhirMapper.mapProcedure({
+          procedureId: procedure.procedureId,
+          icd9cmCode: procedure.code,
+          icd9cmDisplay: procedure.display,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          practitionerIhsNumber,
+          practitionerName: bundleData.doctorName,
+          encounterReference: encounterFullUrl,
+          performedAt: procedure.performedAt,
+          encounterStartedAt: bundleData.startedAt,
+          encounterEndedAt: endedAt,
+          notes: procedure.notes ?? undefined,
+        }),
+        request: { method: 'POST', url: 'Procedure' },
+      }));
+  }
+
+  private reportProcedureGaps(
+    skippedProcedures: readonly SatusehatSubmissionProcedure[],
+  ): void {
+    if (skippedProcedures.length === 0) {
+      return;
+    }
+    const described = skippedProcedures
+      .map((procedure) => `${procedure.code} (${procedure.display})`)
+      .join(', ');
+    this.logger.warn(
+      `SATUSEHAT procedure mapping gap: skipped ${skippedProcedures.length} procedure(s) without an ICD-9-CM code: ${described}`,
+    );
   }
 
   /**
@@ -454,25 +512,102 @@ export class SatusehatSubmissionService {
     return ihsNumber;
   }
 
-  private extractEncounterIhsId(response: SatusehatTransactionResponse): string | null {
-    const encounterEntry = response.entry?.find(
-      (entry) =>
-        (typeof entry.response?.location === 'string' &&
-          ENCOUNTER_LOCATION_PATTERN.test(entry.response.location)) ||
-        entry.resource?.resourceType === 'Encounter',
-    );
-    if (!encounterEntry) {
-      return null;
-    }
-    const location = encounterEntry.response?.location;
-    if (typeof location === 'string') {
-      const matchedIhsId = ENCOUNTER_LOCATION_PATTERN.exec(location)?.[1];
-      if (matchedIhsId !== undefined && matchedIhsId !== '') {
-        return matchedIhsId;
+  /**
+   * Pairs each request entry with the resource the platform created for it and
+   * returns the created ids keyed by the request entry's `fullUrl`. Nothing in
+   * a transaction response echoes `fullUrl` back, so the only link between a
+   * `urn:uuid:` bundle-local reference and the id the platform assigned is
+   * order — which FHIR guarantees per resource type. Pairing is therefore done
+   * within a resource type and only when the platform returned exactly as many
+   * of that type as were requested; a type whose counts disagree is skipped
+   * whole, so a caller reading an absent key learns the id is unknown instead
+   * of receiving somebody else's.
+   */
+  private extractCreatedResources(
+    bundle: SatusehatFhirTransactionBundle,
+    response: SatusehatTransactionResponse,
+  ): Map<string, SatusehatCreatedResourceLocation> {
+    const createdByType = new Map<string, SatusehatCreatedResourceLocation[]>();
+    for (const responseEntry of response.entry ?? []) {
+      const created = this.parseCreatedResource(responseEntry);
+      if (created === null) {
+        continue;
+      }
+      const bucket = createdByType.get(created.resourceType);
+      if (bucket) {
+        bucket.push(created);
+      } else {
+        createdByType.set(created.resourceType, [created]);
       }
     }
-    const resourceId = encounterEntry.resource?.id;
-    return typeof resourceId === 'string' ? resourceId : null;
+    const createdResources = new Map<string, SatusehatCreatedResourceLocation>();
+    for (const [resourceType, fullUrls] of this.groupRequestedFullUrls(bundle)) {
+      const created = createdByType.get(resourceType) ?? [];
+      if (created.length !== fullUrls.length) {
+        this.logger.warn(
+          `SATUSEHAT transaction response returned ${created.length} ${resourceType} resource(s) for ${fullUrls.length} request(s); their ids were not resolved`,
+        );
+        continue;
+      }
+      fullUrls.forEach((fullUrl, index) => {
+        const createdResource = created[index];
+        if (createdResource !== undefined) {
+          createdResources.set(fullUrl, createdResource);
+        }
+      });
+    }
+    return createdResources;
+  }
+
+  private groupRequestedFullUrls(bundle: SatusehatFhirTransactionBundle): Map<string, string[]> {
+    const requestedFullUrls = new Map<string, string[]>();
+    for (const requestEntry of bundle.entry) {
+      const bucket = requestedFullUrls.get(requestEntry.request.url);
+      if (bucket) {
+        bucket.push(requestEntry.fullUrl);
+      } else {
+        requestedFullUrls.set(requestEntry.request.url, [requestEntry.fullUrl]);
+      }
+    }
+    return requestedFullUrls;
+  }
+
+  /**
+   * Reads the resource type and id out of one response entry. The platform
+   * answers with an absolute `location`
+   * (`https://…/fhir-r4/v1/Encounter/<id>/_history/<version>`) even though FHIR
+   * also permits the relative `Encounter/<id>/_history/<version>` form, so the
+   * path is walked by segment rather than matched against a fixed prefix. An
+   * inline `resource` is the fallback for servers that echo the created body.
+   */
+  private parseCreatedResource(
+    entry: SatusehatTransactionResponseEntry,
+  ): SatusehatCreatedResourceLocation | null {
+    const location = entry.response?.location;
+    if (typeof location === 'string') {
+      const parsed = this.parseResourceLocation(location);
+      if (parsed !== null) {
+        return parsed;
+      }
+    }
+    const { resourceType, id } = entry.resource ?? {};
+    if (typeof resourceType === 'string' && typeof id === 'string' && id !== '') {
+      return { resourceType, id };
+    }
+    return null;
+  }
+
+  private parseResourceLocation(location: string): SatusehatCreatedResourceLocation | null {
+    const path = location.split(/[?#]/)[0] ?? '';
+    const segments = path.split('/').filter((segment) => segment !== '');
+    const historyIndex = segments.lastIndexOf(HISTORY_SEGMENT);
+    const idIndex = historyIndex > 0 ? historyIndex - 1 : segments.length - 1;
+    const resourceType = segments[idIndex - 1];
+    const id = segments[idIndex];
+    if (resourceType === undefined || !FHIR_RESOURCE_TYPE_PATTERN.test(resourceType)) {
+      return null;
+    }
+    return id === undefined || id === '' ? null : { resourceType, id };
   }
 
   private async recordFailure(

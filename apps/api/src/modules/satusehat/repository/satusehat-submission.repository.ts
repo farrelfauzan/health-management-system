@@ -8,6 +8,7 @@ import {
   SatusehatSubmissionMedication,
   SatusehatSubmissionPage,
   SatusehatSubmissionPrescription,
+  SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
@@ -45,6 +46,15 @@ type MedicationRow = {
   kfaCode: string | null;
   name: string;
   unit: string | null;
+};
+
+type ProcedureRow = {
+  id: string;
+  icd9cmCodeId: string | null;
+  code: string;
+  display: string;
+  performedAt: Date;
+  notes: string | null;
 };
 
 type PrescriptionRow = {
@@ -179,6 +189,18 @@ export class SatusehatSubmissionRepository {
           orderBy: { recordedAt: 'asc' },
           select: { code: true, display: true, type: true, recordedAt: true },
         },
+        procedures: {
+          where: { deletedAt: null },
+          orderBy: { performedAt: 'asc' },
+          select: {
+            id: true,
+            icd9cmCodeId: true,
+            code: true,
+            display: true,
+            performedAt: true,
+            notes: true,
+          },
+        },
         vitalSigns: {
           where: { deletedAt: null },
           orderBy: { recordedAt: 'desc' },
@@ -253,6 +275,7 @@ export class SatusehatSubmissionRepository {
       startedAt: encounter.startedAt,
       endedAt: encounter.endedAt,
       diagnoses: encounter.diagnoses,
+      procedures: encounter.procedures.map((procedure) => this.toSubmissionProcedure(procedure)),
       latestVitalSigns: latestVitals
         ? {
             recordedAt: latestVitals.recordedAt,
@@ -272,6 +295,23 @@ export class SatusehatSubmissionRepository {
       dispenseItems: encounter.prescriptions.flatMap((prescription) =>
         this.toSubmissionDispenseItems(prescription),
       ),
+    };
+  }
+
+  /**
+   * A procedure without an `icd9cmCodeId` was typed as free text; the code
+   * column then holds whatever the doctor wrote, which is not an ICD-9-CM
+   * code. The flag lets the submission service skip and gap-report it instead
+   * of sending an unrecognised coding (P10-T07).
+   */
+  private toSubmissionProcedure(procedure: ProcedureRow): SatusehatSubmissionProcedure {
+    return {
+      procedureId: procedure.id,
+      code: procedure.code,
+      display: procedure.display,
+      isCoded: procedure.icd9cmCodeId !== null,
+      performedAt: procedure.performedAt,
+      notes: procedure.notes,
     };
   }
 

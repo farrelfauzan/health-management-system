@@ -2,7 +2,10 @@ import { ConfigService } from '@nestjs/config';
 
 import { SatusehatFhirMapper } from './satusehat-fhir.mapper';
 import { SatusehatError } from './satusehat.error';
-import { SatusehatVitalSignsMapInput } from './satusehat-fhir.types';
+import {
+  SatusehatProcedureMapInput,
+  SatusehatVitalSignsMapInput,
+} from './satusehat-fhir.types';
 
 function buildConfigService(overrides: Record<string, string> = {}): ConfigService {
   const values: Record<string, string> = {
@@ -226,6 +229,105 @@ describe('SatusehatFhirMapper', () => {
         subject: { reference: 'Patient/P02478375538', display: 'Budi Santoso' },
         encounter: { reference: 'urn:uuid:encounter-entry' },
         recordedDate: '2026-07-28T02:00:00.000Z',
+      });
+    });
+  });
+
+  describe('mapProcedure', () => {
+    function buildProcedureInput(overrides: Partial<SatusehatProcedureMapInput> = {}) {
+      return {
+        procedureId: '7c1f0f2a-4b3d-4e5f-9a8b-0c1d2e3f4a5b',
+        icd9cmCode: '93.94',
+        icd9cmDisplay: 'Respiratory medication administered by nebulizer',
+        patientIhsNumber: 'P02478375538',
+        patientName: 'Budi Santoso',
+        practitionerIhsNumber: 'N10000001',
+        practitionerName: 'dr. Sari Wulandari',
+        encounterReference: 'urn:uuid:encounter-entry',
+        performedAt: new Date('2026-07-28T02:10:00.000Z'),
+        encounterStartedAt: startedAt,
+        encounterEndedAt: endedAt,
+        notes: 'Nebulisasi 10 menit',
+        ...overrides,
+      };
+    }
+
+    it('maps an ICD-9-CM-coded procedure to a completed Procedure', () => {
+      const actualProcedure = mapper.mapProcedure(buildProcedureInput());
+
+      expect(actualProcedure).toEqual({
+        resourceType: 'Procedure',
+        identifier: [
+          {
+            system: 'http://sys-ids.kemkes.go.id/procedure/10000004',
+            use: 'official',
+            value: '7c1f0f2a-4b3d-4e5f-9a8b-0c1d2e3f4a5b',
+          },
+        ],
+        status: 'completed',
+        code: {
+          coding: [
+            {
+              system: 'http://hl7.org/fhir/sid/icd-9-cm',
+              code: '93.94',
+              display: 'Respiratory medication administered by nebulizer',
+            },
+          ],
+        },
+        subject: { reference: 'Patient/P02478375538', display: 'Budi Santoso' },
+        encounter: { reference: 'urn:uuid:encounter-entry' },
+        performedPeriod: {
+          start: '2026-07-28T02:10:00.000Z',
+          end: '2026-07-28T02:10:00.000Z',
+        },
+        performer: [
+          {
+            actor: { reference: 'Practitioner/N10000001', display: 'dr. Sari Wulandari' },
+          },
+        ],
+        note: [{ text: 'Nebulisasi 10 menit' }],
+      });
+    });
+
+    it('omits the note when the procedure carries none', () => {
+      const actualProcedure = mapper.mapProcedure(buildProcedureInput({ notes: undefined }));
+
+      expect(actualProcedure.note).toBeUndefined();
+    });
+
+    it('omits the note when the recorded text is only whitespace', () => {
+      const actualProcedure = mapper.mapProcedure(buildProcedureInput({ notes: '   ' }));
+
+      expect(actualProcedure.note).toBeUndefined();
+    });
+
+    it('omits the performer when the doctor has no IHS practitioner number', () => {
+      const actualProcedure = mapper.mapProcedure(
+        buildProcedureInput({ practitionerIhsNumber: undefined }),
+      );
+
+      expect(actualProcedure.performer).toBeUndefined();
+    });
+
+    it('clamps a procedure performed before the encounter opened to the encounter start', () => {
+      const actualProcedure = mapper.mapProcedure(
+        buildProcedureInput({ performedAt: new Date('2026-07-28T01:00:00.000Z') }),
+      );
+
+      expect(actualProcedure.performedPeriod).toEqual({
+        start: '2026-07-28T02:00:00.000Z',
+        end: '2026-07-28T02:00:00.000Z',
+      });
+    });
+
+    it('clamps a procedure performed after the encounter closed to the encounter end', () => {
+      const actualProcedure = mapper.mapProcedure(
+        buildProcedureInput({ performedAt: new Date('2026-07-28T05:00:00.000Z') }),
+      );
+
+      expect(actualProcedure.performedPeriod).toEqual({
+        start: '2026-07-28T02:20:00.000Z',
+        end: '2026-07-28T02:20:00.000Z',
       });
     });
   });

@@ -85,11 +85,30 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
       temperatureCelsius: null,
       oxygenSaturation: null,
     },
+    procedures: [],
     prescriptions: [],
     dispenseItems: [],
     ...overrides,
   };
 }
+
+const codedProcedure = {
+  procedureId: 'proc-coded',
+  code: '93.94',
+  display: 'Respiratory medication administered by nebulizer',
+  isCoded: true,
+  performedAt: new Date('2026-07-28T02:12:00.000Z'),
+  notes: 'Nebulisasi 10 menit',
+};
+
+const uncodedProcedure = {
+  procedureId: 'proc-uncoded',
+  code: 'RAWAT-LUKA',
+  display: 'Rawat luka ringan',
+  isCoded: false,
+  performedAt: new Date('2026-07-28T02:14:00.000Z'),
+  notes: null,
+};
 
 const codedMedication = {
   medicationId: 'med-coded',
@@ -609,6 +628,64 @@ describe('SatusehatSubmissionService', () => {
     );
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('Puyer batuk pilek (RACIK-01)'),
+    );
+    warnSpy.mockRestore();
+  });
+
+  it('adds one Procedure entry per ICD-9-CM-coded procedure, wired to the Encounter entry', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        procedures: [codedProcedure, { ...codedProcedure, procedureId: 'proc-coded-2' }],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const procedureEntries = bundle.entry.filter((entry) => entry.request.url === 'Procedure');
+    expect(procedureEntries).toHaveLength(2);
+    const procedureResource = procedureEntries[0]?.resource as {
+      encounter: { reference: string };
+      code: { coding: Array<{ code: string }> };
+      performer?: Array<{ actor: { reference: string } }>;
+    };
+    expect(procedureResource.encounter.reference).toBe(bundle.entry[0]?.fullUrl);
+    expect(procedureResource.code.coding[0]?.code).toBe('93.94');
+    expect(procedureResource.performer?.[0]?.actor.reference).toBe('Practitioner/N10000001');
+  });
+
+  it('skips a free-text procedure, submits the rest, and names it in the gap log', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        procedures: [codedProcedure, uncodedProcedure],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+    const warnSpy = jest.spyOn(
+      (service as unknown as { logger: { warn: (message: string) => void } }).logger,
+      'warn',
+    );
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    expect(bundle.entry.filter((entry) => entry.request.url === 'Procedure')).toHaveLength(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('skipped 1 procedure(s) without an ICD-9-CM code'),
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('RAWAT-LUKA (Rawat luka ringan)'),
     );
     warnSpy.mockRestore();
   });
