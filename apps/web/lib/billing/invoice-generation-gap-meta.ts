@@ -14,4 +14,6 @@ export const INVOICE_GENERATION_GAP_MESSAGES: Record<InvoiceGenerationGapReason,
     'This dispensed medication has no price on its record, so it was left off the invoice.',
   NO_ACCOMMODATION_TARIFF:
     'This ward class has no active accommodation tariff, so its nights were left off the bill. Add one under Tariffs and reissue.',
+  NO_TARIFF_FOR_IMMUNIZATION:
+    'This vaccination has no matching tariff. Add a tariff whose code matches the vaccine’s catalog code and regenerate, or add the line by hand from the draft invoice.',
 };

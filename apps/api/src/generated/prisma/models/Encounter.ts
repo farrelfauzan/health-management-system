@@ -288,6 +288,7 @@ export type EncounterWhereInput = {
   vitalSigns?: Prisma.VitalSignsListRelationFilter
   diagnoses?: Prisma.DiagnosisListRelationFilter
   procedures?: Prisma.ProcedureListRelationFilter
+  immunizations?: Prisma.ImmunizationListRelationFilter
   prescriptions?: Prisma.PrescriptionListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   satusehatSubmission?: Prisma.XOR<Prisma.SatusehatSubmissionNullableScalarRelationFilter, Prisma.SatusehatSubmissionWhereInput> | null
@@ -320,6 +321,7 @@ export type EncounterOrderByWithRelationInput = {
   vitalSigns?: Prisma.VitalSignsOrderByRelationAggregateInput
   diagnoses?: Prisma.DiagnosisOrderByRelationAggregateInput
   procedures?: Prisma.ProcedureOrderByRelationAggregateInput
+  immunizations?: Prisma.ImmunizationOrderByRelationAggregateInput
   prescriptions?: Prisma.PrescriptionOrderByRelationAggregateInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
   satusehatSubmission?: Prisma.SatusehatSubmissionOrderByWithRelationInput
@@ -355,6 +357,7 @@ export type EncounterWhereUniqueInput = Prisma.AtLeast<{
   vitalSigns?: Prisma.VitalSignsListRelationFilter
   diagnoses?: Prisma.DiagnosisListRelationFilter
   procedures?: Prisma.ProcedureListRelationFilter
+  immunizations?: Prisma.ImmunizationListRelationFilter
   prescriptions?: Prisma.PrescriptionListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   satusehatSubmission?: Prisma.XOR<Prisma.SatusehatSubmissionNullableScalarRelationFilter, Prisma.SatusehatSubmissionWhereInput> | null
@@ -427,6 +430,7 @@ export type EncounterCreateInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -455,6 +459,7 @@ export type EncounterUncheckedCreateInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -483,6 +488,7 @@ export type EncounterUpdateInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -511,6 +517,7 @@ export type EncounterUncheckedUpdateInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -949,6 +956,20 @@ export type EncounterUpdateOneWithoutAdmissionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutAdmissionsInput, Prisma.EncounterUpdateWithoutAdmissionsInput>, Prisma.EncounterUncheckedUpdateWithoutAdmissionsInput>
 }
 
+export type EncounterCreateNestedOneWithoutImmunizationsInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutImmunizationsInput, Prisma.EncounterUncheckedCreateWithoutImmunizationsInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutImmunizationsInput
+  connect?: Prisma.EncounterWhereUniqueInput
+}
+
+export type EncounterUpdateOneRequiredWithoutImmunizationsNestedInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutImmunizationsInput, Prisma.EncounterUncheckedCreateWithoutImmunizationsInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutImmunizationsInput
+  upsert?: Prisma.EncounterUpsertWithoutImmunizationsInput
+  connect?: Prisma.EncounterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutImmunizationsInput, Prisma.EncounterUpdateWithoutImmunizationsInput>, Prisma.EncounterUncheckedUpdateWithoutImmunizationsInput>
+}
+
 export type EncounterCreateWithoutCreatedByInput = {
   id?: string
   status?: $Enums.EncounterStatus
@@ -968,6 +989,7 @@ export type EncounterCreateWithoutCreatedByInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -995,6 +1017,7 @@ export type EncounterUncheckedCreateWithoutCreatedByInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -1070,6 +1093,7 @@ export type EncounterCreateWithoutPatientInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -1097,6 +1121,7 @@ export type EncounterUncheckedCreateWithoutPatientInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -1150,6 +1175,7 @@ export type EncounterCreateWithoutDoctorInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -1177,6 +1203,7 @@ export type EncounterUncheckedCreateWithoutDoctorInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -1230,6 +1257,7 @@ export type EncounterCreateWithoutRegistrationInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -1257,6 +1285,7 @@ export type EncounterUncheckedCreateWithoutRegistrationInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -1300,6 +1329,7 @@ export type EncounterUpdateWithoutRegistrationInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -1327,6 +1357,7 @@ export type EncounterUncheckedUpdateWithoutRegistrationInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -1354,6 +1385,7 @@ export type EncounterCreateWithoutVitalSignsInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -1381,6 +1413,7 @@ export type EncounterUncheckedCreateWithoutVitalSignsInput = {
   prognosis?: $Enums.EncounterPrognosis | null
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -1424,6 +1457,7 @@ export type EncounterUpdateWithoutVitalSignsInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -1451,6 +1485,7 @@ export type EncounterUncheckedUpdateWithoutVitalSignsInput = {
   prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -1478,6 +1513,7 @@ export type EncounterCreateWithoutDiagnosesInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -1505,6 +1541,7 @@ export type EncounterUncheckedCreateWithoutDiagnosesInput = {
   prognosis?: $Enums.EncounterPrognosis | null
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -1548,6 +1585,7 @@ export type EncounterUpdateWithoutDiagnosesInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -1575,6 +1613,7 @@ export type EncounterUncheckedUpdateWithoutDiagnosesInput = {
   prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -1602,6 +1641,7 @@ export type EncounterCreateWithoutProceduresInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -1629,6 +1669,7 @@ export type EncounterUncheckedCreateWithoutProceduresInput = {
   prognosis?: $Enums.EncounterPrognosis | null
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -1672,6 +1713,7 @@ export type EncounterUpdateWithoutProceduresInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -1699,6 +1741,7 @@ export type EncounterUncheckedUpdateWithoutProceduresInput = {
   prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -1727,6 +1770,7 @@ export type EncounterCreateWithoutPrescriptionsInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
   bpjsReferral?: Prisma.BpjsReferralCreateNestedOneWithoutEncounterInput
@@ -1754,6 +1798,7 @@ export type EncounterUncheckedCreateWithoutPrescriptionsInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
   bpjsReferral?: Prisma.BpjsReferralUncheckedCreateNestedOneWithoutEncounterInput
@@ -1797,6 +1842,7 @@ export type EncounterUpdateWithoutPrescriptionsInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
   bpjsReferral?: Prisma.BpjsReferralUpdateOneWithoutEncounterNestedInput
@@ -1824,6 +1870,7 @@ export type EncounterUncheckedUpdateWithoutPrescriptionsInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
   bpjsReferral?: Prisma.BpjsReferralUncheckedUpdateOneWithoutEncounterNestedInput
@@ -1851,6 +1898,7 @@ export type EncounterCreateWithoutInvoicesInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
   bpjsReferral?: Prisma.BpjsReferralCreateNestedOneWithoutEncounterInput
@@ -1878,6 +1926,7 @@ export type EncounterUncheckedCreateWithoutInvoicesInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
   bpjsReferral?: Prisma.BpjsReferralUncheckedCreateNestedOneWithoutEncounterInput
@@ -1921,6 +1970,7 @@ export type EncounterUpdateWithoutInvoicesInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
   bpjsReferral?: Prisma.BpjsReferralUpdateOneWithoutEncounterNestedInput
@@ -1948,6 +1998,7 @@ export type EncounterUncheckedUpdateWithoutInvoicesInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
   bpjsReferral?: Prisma.BpjsReferralUncheckedUpdateOneWithoutEncounterNestedInput
@@ -1975,6 +2026,7 @@ export type EncounterCreateWithoutSatusehatSubmissionInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   bpjsReferral?: Prisma.BpjsReferralCreateNestedOneWithoutEncounterInput
@@ -2002,6 +2054,7 @@ export type EncounterUncheckedCreateWithoutSatusehatSubmissionInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   bpjsReferral?: Prisma.BpjsReferralUncheckedCreateNestedOneWithoutEncounterInput
@@ -2045,6 +2098,7 @@ export type EncounterUpdateWithoutSatusehatSubmissionInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   bpjsReferral?: Prisma.BpjsReferralUpdateOneWithoutEncounterNestedInput
@@ -2072,6 +2126,7 @@ export type EncounterUncheckedUpdateWithoutSatusehatSubmissionInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   bpjsReferral?: Prisma.BpjsReferralUncheckedUpdateOneWithoutEncounterNestedInput
@@ -2099,6 +2154,7 @@ export type EncounterCreateWithoutBpjsReferralInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -2126,6 +2182,7 @@ export type EncounterUncheckedCreateWithoutBpjsReferralInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -2169,6 +2226,7 @@ export type EncounterUpdateWithoutBpjsReferralInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -2196,6 +2254,7 @@ export type EncounterUncheckedUpdateWithoutBpjsReferralInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -2223,6 +2282,7 @@ export type EncounterCreateWithoutClinicalDocumentsInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -2250,6 +2310,7 @@ export type EncounterUncheckedCreateWithoutClinicalDocumentsInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -2293,6 +2354,7 @@ export type EncounterUpdateWithoutClinicalDocumentsInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -2320,6 +2382,7 @@ export type EncounterUncheckedUpdateWithoutClinicalDocumentsInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -2347,6 +2410,7 @@ export type EncounterCreateWithoutAdmissionsInput = {
   vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
@@ -2374,6 +2438,7 @@ export type EncounterUncheckedCreateWithoutAdmissionsInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
   diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
@@ -2417,6 +2482,7 @@ export type EncounterUpdateWithoutAdmissionsInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -2444,10 +2510,139 @@ export type EncounterUncheckedUpdateWithoutAdmissionsInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
   bpjsReferral?: Prisma.BpjsReferralUncheckedUpdateOneWithoutEncounterNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
+}
+
+export type EncounterCreateWithoutImmunizationsInput = {
+  id?: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  prognosis?: $Enums.EncounterPrognosis | null
+  registration: Prisma.RegistrationCreateNestedOneWithoutEncounterInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutEncountersInput
+  doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
+  vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
+  satusehatSubmission?: Prisma.SatusehatSubmissionCreateNestedOneWithoutEncounterInput
+  bpjsReferral?: Prisma.BpjsReferralCreateNestedOneWithoutEncounterInput
+  admissions?: Prisma.AdmissionCreateNestedManyWithoutSourceEncounterInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
+}
+
+export type EncounterUncheckedCreateWithoutImmunizationsInput = {
+  id?: string
+  registrationId: string
+  patientId: string
+  doctorId: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  prognosis?: $Enums.EncounterPrognosis | null
+  vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
+  satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput
+  bpjsReferral?: Prisma.BpjsReferralUncheckedCreateNestedOneWithoutEncounterInput
+  admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutSourceEncounterInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
+}
+
+export type EncounterCreateOrConnectWithoutImmunizationsInput = {
+  where: Prisma.EncounterWhereUniqueInput
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutImmunizationsInput, Prisma.EncounterUncheckedCreateWithoutImmunizationsInput>
+}
+
+export type EncounterUpsertWithoutImmunizationsInput = {
+  update: Prisma.XOR<Prisma.EncounterUpdateWithoutImmunizationsInput, Prisma.EncounterUncheckedUpdateWithoutImmunizationsInput>
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutImmunizationsInput, Prisma.EncounterUncheckedCreateWithoutImmunizationsInput>
+  where?: Prisma.EncounterWhereInput
+}
+
+export type EncounterUpdateToOneWithWhereWithoutImmunizationsInput = {
+  where?: Prisma.EncounterWhereInput
+  data: Prisma.XOR<Prisma.EncounterUpdateWithoutImmunizationsInput, Prisma.EncounterUncheckedUpdateWithoutImmunizationsInput>
+}
+
+export type EncounterUpdateWithoutImmunizationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutEncounterNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutEncountersNestedInput
+  doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
+  vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
+  satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
+  bpjsReferral?: Prisma.BpjsReferralUpdateOneWithoutEncounterNestedInput
+  admissions?: Prisma.AdmissionUpdateManyWithoutSourceEncounterNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
+}
+
+export type EncounterUncheckedUpdateWithoutImmunizationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
+  vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
+  satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
+  bpjsReferral?: Prisma.BpjsReferralUncheckedUpdateOneWithoutEncounterNestedInput
+  admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutSourceEncounterNestedInput
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
@@ -2488,6 +2683,7 @@ export type EncounterUpdateWithoutCreatedByInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -2515,6 +2711,7 @@ export type EncounterUncheckedUpdateWithoutCreatedByInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -2578,6 +2775,7 @@ export type EncounterUpdateWithoutPatientInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -2605,6 +2803,7 @@ export type EncounterUncheckedUpdateWithoutPatientInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -2668,6 +2867,7 @@ export type EncounterUpdateWithoutDoctorInput = {
   vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUpdateOneWithoutEncounterNestedInput
@@ -2695,6 +2895,7 @@ export type EncounterUncheckedUpdateWithoutDoctorInput = {
   vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
   diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
   satusehatSubmission?: Prisma.SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput
@@ -2730,6 +2931,7 @@ export type EncounterCountOutputType = {
   vitalSigns: number
   diagnoses: number
   procedures: number
+  immunizations: number
   prescriptions: number
   invoices: number
   admissions: number
@@ -2740,6 +2942,7 @@ export type EncounterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   vitalSigns?: boolean | EncounterCountOutputTypeCountVitalSignsArgs
   diagnoses?: boolean | EncounterCountOutputTypeCountDiagnosesArgs
   procedures?: boolean | EncounterCountOutputTypeCountProceduresArgs
+  immunizations?: boolean | EncounterCountOutputTypeCountImmunizationsArgs
   prescriptions?: boolean | EncounterCountOutputTypeCountPrescriptionsArgs
   invoices?: boolean | EncounterCountOutputTypeCountInvoicesArgs
   admissions?: boolean | EncounterCountOutputTypeCountAdmissionsArgs
@@ -2775,6 +2978,13 @@ export type EncounterCountOutputTypeCountDiagnosesArgs<ExtArgs extends runtime.T
  */
 export type EncounterCountOutputTypeCountProceduresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ProcedureWhereInput
+}
+
+/**
+ * EncounterCountOutputType without action
+ */
+export type EncounterCountOutputTypeCountImmunizationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImmunizationWhereInput
 }
 
 /**
@@ -2830,6 +3040,7 @@ export type EncounterSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   vitalSigns?: boolean | Prisma.Encounter$vitalSignsArgs<ExtArgs>
   diagnoses?: boolean | Prisma.Encounter$diagnosesArgs<ExtArgs>
   procedures?: boolean | Prisma.Encounter$proceduresArgs<ExtArgs>
+  immunizations?: boolean | Prisma.Encounter$immunizationsArgs<ExtArgs>
   prescriptions?: boolean | Prisma.Encounter$prescriptionsArgs<ExtArgs>
   invoices?: boolean | Prisma.Encounter$invoicesArgs<ExtArgs>
   satusehatSubmission?: boolean | Prisma.Encounter$satusehatSubmissionArgs<ExtArgs>
@@ -2913,6 +3124,7 @@ export type EncounterInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   vitalSigns?: boolean | Prisma.Encounter$vitalSignsArgs<ExtArgs>
   diagnoses?: boolean | Prisma.Encounter$diagnosesArgs<ExtArgs>
   procedures?: boolean | Prisma.Encounter$proceduresArgs<ExtArgs>
+  immunizations?: boolean | Prisma.Encounter$immunizationsArgs<ExtArgs>
   prescriptions?: boolean | Prisma.Encounter$prescriptionsArgs<ExtArgs>
   invoices?: boolean | Prisma.Encounter$invoicesArgs<ExtArgs>
   satusehatSubmission?: boolean | Prisma.Encounter$satusehatSubmissionArgs<ExtArgs>
@@ -2944,6 +3156,7 @@ export type $EncounterPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     vitalSigns: Prisma.$VitalSignsPayload<ExtArgs>[]
     diagnoses: Prisma.$DiagnosisPayload<ExtArgs>[]
     procedures: Prisma.$ProcedurePayload<ExtArgs>[]
+    immunizations: Prisma.$ImmunizationPayload<ExtArgs>[]
     prescriptions: Prisma.$PrescriptionPayload<ExtArgs>[]
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
     satusehatSubmission: Prisma.$SatusehatSubmissionPayload<ExtArgs> | null
@@ -3388,6 +3601,7 @@ export interface Prisma__EncounterClient<T, Null = never, ExtArgs extends runtim
   vitalSigns<T extends Prisma.Encounter$vitalSignsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$vitalSignsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VitalSignsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   diagnoses<T extends Prisma.Encounter$diagnosesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$diagnosesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   procedures<T extends Prisma.Encounter$proceduresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$proceduresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProcedurePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immunizations<T extends Prisma.Encounter$immunizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$immunizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   prescriptions<T extends Prisma.Encounter$prescriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$prescriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoices<T extends Prisma.Encounter$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   satusehatSubmission<T extends Prisma.Encounter$satusehatSubmissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$satusehatSubmissionArgs<ExtArgs>>): Prisma.Prisma__SatusehatSubmissionClient<runtime.Types.Result.GetResult<Prisma.$SatusehatSubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -3928,6 +4142,30 @@ export type Encounter$proceduresArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ProcedureScalarFieldEnum | Prisma.ProcedureScalarFieldEnum[]
+}
+
+/**
+ * Encounter.immunizations
+ */
+export type Encounter$immunizationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Immunization
+   */
+  select?: Prisma.ImmunizationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Immunization
+   */
+  omit?: Prisma.ImmunizationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmunizationInclude<ExtArgs> | null
+  where?: Prisma.ImmunizationWhereInput
+  orderBy?: Prisma.ImmunizationOrderByWithRelationInput | Prisma.ImmunizationOrderByWithRelationInput[]
+  cursor?: Prisma.ImmunizationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImmunizationScalarFieldEnum | Prisma.ImmunizationScalarFieldEnum[]
 }
 
 /**

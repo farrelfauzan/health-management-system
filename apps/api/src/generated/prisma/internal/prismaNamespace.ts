@@ -473,7 +473,8 @@ export const ModelName = {
   ManagedDocument: 'ManagedDocument',
   DocumentApprovalRequest: 'DocumentApprovalRequest',
   DocumentApprovalApprover: 'DocumentApprovalApprover',
-  DocumentApprovalDecision: 'DocumentApprovalDecision'
+  DocumentApprovalDecision: 'DocumentApprovalDecision',
+  Immunization: 'Immunization'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -489,7 +490,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "immunization"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -7153,6 +7154,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Immunization: {
+      payload: Prisma.$ImmunizationPayload<ExtArgs>
+      fields: Prisma.ImmunizationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ImmunizationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ImmunizationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload>
+        }
+        findFirst: {
+          args: Prisma.ImmunizationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ImmunizationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload>
+        }
+        findMany: {
+          args: Prisma.ImmunizationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload>[]
+        }
+        create: {
+          args: Prisma.ImmunizationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload>
+        }
+        createMany: {
+          args: Prisma.ImmunizationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ImmunizationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload>[]
+        }
+        delete: {
+          args: Prisma.ImmunizationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload>
+        }
+        update: {
+          args: Prisma.ImmunizationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ImmunizationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ImmunizationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ImmunizationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ImmunizationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmunizationPayload>
+        }
+        aggregate: {
+          args: Prisma.ImmunizationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateImmunization>
+        }
+        groupBy: {
+          args: Prisma.ImmunizationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmunizationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ImmunizationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmunizationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -7770,6 +7845,7 @@ export const MedicationScalarFieldEnum = {
   category: 'category',
   reorderLevel: 'reorderLevel',
   unitPrice: 'unitPrice',
+  isVaccine: 'isVaccine',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -8693,6 +8769,28 @@ export const DocumentApprovalDecisionScalarFieldEnum = {
 } as const
 
 export type DocumentApprovalDecisionScalarFieldEnum = (typeof DocumentApprovalDecisionScalarFieldEnum)[keyof typeof DocumentApprovalDecisionScalarFieldEnum]
+
+
+export const ImmunizationScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  patientId: 'patientId',
+  medicationId: 'medicationId',
+  occurredAt: 'occurredAt',
+  lotNumber: 'lotNumber',
+  expirationDate: 'expirationDate',
+  doseNumber: 'doseNumber',
+  route: 'route',
+  site: 'site',
+  performedById: 'performedById',
+  notes: 'notes',
+  satusehatImmunizationId: 'satusehatImmunizationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ImmunizationScalarFieldEnum = (typeof ImmunizationScalarFieldEnum)[keyof typeof ImmunizationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -9807,6 +9905,34 @@ export type ListEnumDocumentApprovalStatusFieldRefInput<$PrismaModel> = FieldRef
 
 
 /**
+ * Reference to a field of type 'ImmunizationRoute'
+ */
+export type EnumImmunizationRouteFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImmunizationRoute'>
+    
+
+
+/**
+ * Reference to a field of type 'ImmunizationRoute[]'
+ */
+export type ListEnumImmunizationRouteFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImmunizationRoute[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ImmunizationSite'
+ */
+export type EnumImmunizationSiteFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImmunizationSite'>
+    
+
+
+/**
+ * Reference to a field of type 'ImmunizationSite[]'
+ */
+export type ListEnumImmunizationSiteFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImmunizationSite[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -10019,6 +10145,7 @@ export type GlobalOmitConfig = {
   documentApprovalRequest?: Prisma.DocumentApprovalRequestOmit
   documentApprovalApprover?: Prisma.DocumentApprovalApproverOmit
   documentApprovalDecision?: Prisma.DocumentApprovalDecisionOmit
+  immunization?: Prisma.ImmunizationOmit
 }
 
 /* Types for Logging */

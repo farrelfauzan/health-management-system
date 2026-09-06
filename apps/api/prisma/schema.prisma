@@ -86,6 +86,8 @@ enum AuditAction {
   SATUSEHAT_PATIENT_LINKED
   SATUSEHAT_DOCTOR_LINKED
   SATUSEHAT_SUBMISSION_RETRIED
+  IMMUNIZATION_RECORDED
+  IMMUNIZATION_REMOVED
   BPJS_CONFIG_CREATED
   BPJS_CONFIG_UPDATED
   BPJS_CONFIG_DELETED
@@ -356,6 +358,30 @@ enum EncounterPrognosis {
   MALAM
 
   @@map("encounter_prognosis")
+}
+
+/// How a vaccine was given. Maps onto the HL7 v3 RouteOfAdministration codes
+/// in the SATUSEHAT mapper rather than storing them here, so a coding
+/// correction is an adapter change (P10-T16).
+enum ImmunizationRoute {
+  IM
+  SC
+  ID
+  ORAL
+  NASAL
+
+  @@map("immunization_route")
+}
+
+/// Where it was given. Maps onto HL7 v3 ActSite in the mapper, same reasoning.
+enum ImmunizationSite {
+  LEFT_ARM
+  RIGHT_ARM
+  LEFT_THIGH
+  RIGHT_THIGH
+  OTHER
+
+  @@map("immunization_site")
 }
 
 enum AllergySeverity {
@@ -1039,6 +1065,7 @@ model PatientProfile {
   registrations         Registration[]
   prescriptions         Prescription[]
   allergies             PatientAllergy[]
+  immunizations         Immunization[]
   encounters            Encounter[]
   invoices              Invoice[]
   bpjsEligibilityChecks BpjsEligibilityCheck[]
@@ -1379,6 +1406,7 @@ model DoctorProfile {
   educations          DoctorEducation[]
   encounters          Encounter[]
   admissions          Admission[]
+  immunizations       Immunization[]       @relation("ImmunizationPerformedBy")
 
   managedDocuments ManagedDocument[]
   @@index([deletedAt])
@@ -1762,6 +1790,7 @@ model Encounter {
   vitalSigns          VitalSigns[]
   diagnoses           Diagnosis[]
   procedures          Procedure[]
+  immunizations       Immunization[]
   prescriptions       Prescription[]
   invoices            Invoice[]
   satusehatSubmission SatusehatSubmission?
@@ -1970,6 +1999,10 @@ model Medication {
   /// predates billing; invoice generation treats an unpriced dispensed
   /// medication as a gap to surface, not a free item.
   unitPrice    Decimal?            @map("unit_price") @db.Decimal(12, 2)
+  /// Whether this catalog row is a vaccine (P10-T16). Vaccines live here
+  /// rather than in a catalog of their own because they *are* KFA products;
+  /// the flag is what filters the immunisation picker down to them.
+  isVaccine    Boolean             @default(false) @map("is_vaccine")
   createdAt    DateTime            @default(now()) @map("created_at")
   updatedAt    DateTime            @updatedAt @map("updated_at")
   deletedAt    DateTime?           @map("deleted_at")
@@ -1978,9 +2011,11 @@ model Medication {
   dispenseItems     DispenseItem[]
   stockReceipts     MedicationStockReceipt[]
   invoiceItems      InvoiceItem[]
+  immunizations     Immunization[]
 
   @@index([name])
   @@index([category])
+  @@index([isVaccine])
   @@index([reorderLevel])
   @@index([deletedAt])
   @@map("medications")
@@ -4323,4 +4358,47 @@ model DocumentApprovalDecision {
   @@unique([requestId, approverId])
   @@index([approverId])
   @@map("document_approval_decisions")
+}
+
+/// One vaccination given during a visit.
+///
+/// A parallel record to `Procedure` rather than a kind of it: the IG asks for
+/// the KFA vaccine code, the lot number, the expiry and the dose, none of
+/// which an ICD-9-CM procedure row can carry — and a vaccination written as a
+/// procedure is a vaccination that cannot be reported (P10-T16).
+model Immunization {
+  id                      String             @id @default(uuid()) @db.Uuid
+  encounterId             String             @map("encounter_id") @db.Uuid
+  /// Denormalised from the encounter so a patient's immunisation history is
+  /// one indexed read rather than a join through every visit. It is also the
+  /// fact that outlives the visit: a vaccination belongs to a person's record,
+  /// not to an appointment.
+  patientId               String             @map("patient_id") @db.Uuid
+  /// The vaccine, from the medication catalog. Reportable only when the
+  /// catalog row carries a `kfaCode`.
+  medicationId            String             @map("medication_id") @db.Uuid
+  occurredAt              DateTime           @map("occurred_at")
+  lotNumber               String?            @map("lot_number")
+  expirationDate          DateTime?          @map("expiration_date") @db.Date
+  doseNumber              Int?               @map("dose_number")
+  route                   ImmunizationRoute?
+  site                    ImmunizationSite?
+  performedById           String?            @map("performed_by_id") @db.Uuid
+  notes                   String?
+  /// IHS id returned by SATUSEHAT on first successful submission. Non-null
+  /// means reported.
+  satusehatImmunizationId String?            @map("satusehat_immunization_id")
+  createdAt               DateTime           @default(now()) @map("created_at")
+  updatedAt               DateTime           @updatedAt @map("updated_at")
+  deletedAt               DateTime?          @map("deleted_at")
+
+  encounter   Encounter      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  patient     PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  medication  Medication     @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  performedBy DoctorProfile? @relation("ImmunizationPerformedBy", fields: [performedById], references: [id], onDelete: SetNull)
+
+  @@index([patientId, occurredAt])
+  @@index([encounterId])
+  @@index([deletedAt])
+  @@map("immunizations")
 }

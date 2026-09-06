@@ -121,6 +121,7 @@ describe('SATUSEHAT submission ops integration', () => {
         plan: 'Kontrol 3 hari',
         prognosis: 'BONAM',
       },
+      immunizations: [],
       procedures: [
         {
           procedureId: '8b9c0d1e-2f3a-4b5c-8d6e-7f8a9b0c1d2e',

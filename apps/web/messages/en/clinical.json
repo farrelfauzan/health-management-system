@@ -379,7 +379,9 @@
             "unknown": "Failed: {code}"
           }
         }
-      }
+      },
+      "noImmunizations": "No vaccination recorded for this patient.",
+      "loadingImmunizations": "Loading the immunisation history..."
     },
     "privacyNotice": {
       "title": "Patient Privacy Notice",
@@ -895,6 +897,39 @@
           "title": "Cancel this encounter?",
           "description": "Use this only for an encounter opened in error. The record and registration are retracted but remain auditable; the patient must register again.",
           "pending": "Cancelling..."
+        }
+      },
+      "immunization": {
+        "title": "Immunizations",
+        "empty": "No vaccination recorded on this visit.",
+        "add": "Record vaccination",
+        "addError": "Unable to record the vaccination. Please try again.",
+        "retract": "Retract the {vaccine} record",
+        "retractError": "Unable to retract this vaccination.",
+        "pick": "Choose the vaccine that was given.",
+        "vaccine": "Vaccine",
+        "vaccinePlaceholder": "Choose a vaccine",
+        "noVaccines": "No catalog item is marked as a vaccine yet. Mark one in the medication catalog first.",
+        "lotNumber": "Lot number",
+        "expirationDate": "Expiry",
+        "doseNumber": "Dose",
+        "dose": "Dose {number}",
+        "route": "Route",
+        "site": "Site",
+        "noKfa": "No KFA code — recorded here, not reported to SATUSEHAT.",
+        "routes": {
+          "IM": "Intramuscular",
+          "SC": "Subcutaneous",
+          "ID": "Intradermal",
+          "ORAL": "Oral",
+          "NASAL": "Nasal"
+        },
+        "sites": {
+          "LEFT_ARM": "Left arm",
+          "RIGHT_ARM": "Right arm",
+          "LEFT_THIGH": "Left thigh",
+          "RIGHT_THIGH": "Right thigh",
+          "OTHER": "Other"
         }
       }
     }

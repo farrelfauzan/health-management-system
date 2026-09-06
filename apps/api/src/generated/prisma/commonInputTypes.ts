@@ -1686,6 +1686,40 @@ export type EnumDocumentApprovalStatusWithAggregatesFilter<$PrismaModel = never>
   _max?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
 }
 
+export type EnumImmunizationRouteNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationRoute | Prisma.EnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationRouteNullableFilter<$PrismaModel> | $Enums.ImmunizationRoute | null
+}
+
+export type EnumImmunizationSiteNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationSite | Prisma.EnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationSite[] | Prisma.ListEnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationSite[] | Prisma.ListEnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel> | $Enums.ImmunizationSite | null
+}
+
+export type EnumImmunizationRouteNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationRoute | Prisma.EnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationRouteNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImmunizationRoute | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImmunizationRouteNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImmunizationRouteNullableFilter<$PrismaModel>
+}
+
+export type EnumImmunizationSiteNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationSite | Prisma.EnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationSite[] | Prisma.ListEnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationSite[] | Prisma.ListEnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationSiteNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImmunizationSite | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -3311,6 +3345,40 @@ export type NestedEnumDocumentApprovalStatusWithAggregatesFilter<$PrismaModel = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumImmunizationRouteNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationRoute | Prisma.EnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationRouteNullableFilter<$PrismaModel> | $Enums.ImmunizationRoute | null
+}
+
+export type NestedEnumImmunizationSiteNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationSite | Prisma.EnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationSite[] | Prisma.ListEnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationSite[] | Prisma.ListEnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel> | $Enums.ImmunizationSite | null
+}
+
+export type NestedEnumImmunizationRouteNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationRoute | Prisma.EnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationRouteNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImmunizationRoute | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImmunizationRouteNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImmunizationRouteNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumImmunizationSiteNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationSite | Prisma.EnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationSite[] | Prisma.ListEnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationSite[] | Prisma.ListEnumImmunizationSiteFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationSiteNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImmunizationSite | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
 }
 
 

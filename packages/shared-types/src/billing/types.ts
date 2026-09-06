@@ -159,6 +159,13 @@ export type BillingSourceEncounterRecord = {
   status: EncounterStatusValue;
   patientId: string;
   procedures: Array<{ id: string; code: string; display: string }>;
+  /**
+   * Vaccinations given on the visit (P10-T16). Priced from a `ServiceTariff`
+   * matched on the vaccine's catalog code, the way a procedure is priced from
+   * one matched on its ICD-9-CM code — an administered vaccine is a billable
+   * act, not a dispensed product, and never crosses the pharmacy counter.
+   */
+  immunizations: Array<{ id: string; medicationCode: string; medicationName: string }>;
 };
 
 export type BillingDispensedItemRecord = {

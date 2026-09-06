@@ -379,7 +379,9 @@
             "unknown": "Gagal: {code}"
           }
         }
-      }
+      },
+      "noImmunizations": "Belum ada imunisasi tercatat untuk pasien ini.",
+      "loadingImmunizations": "Memuat riwayat imunisasi..."
     },
     "privacyNotice": {
       "title": "Pemberitahuan Privasi Pasien",
@@ -895,6 +897,39 @@
           "title": "Batalkan kunjungan ini?",
           "description": "Gunakan hanya untuk kunjungan yang dibuka karena kesalahan. Rekam dan pendaftaran ditarik tetapi tetap dapat diaudit; pasien harus mendaftar kembali.",
           "pending": "Membatalkan..."
+        }
+      },
+      "immunization": {
+        "title": "Imunisasi",
+        "empty": "Belum ada imunisasi pada kunjungan ini.",
+        "add": "Catat imunisasi",
+        "addError": "Imunisasi tidak dapat dicatat. Coba lagi.",
+        "retract": "Tarik catatan {vaccine}",
+        "retractError": "Imunisasi ini tidak dapat ditarik.",
+        "pick": "Pilih vaksin yang diberikan.",
+        "vaccine": "Vaksin",
+        "vaccinePlaceholder": "Pilih vaksin",
+        "noVaccines": "Belum ada item katalog yang ditandai sebagai vaksin. Tandai dulu di katalog obat.",
+        "lotNumber": "Nomor batch",
+        "expirationDate": "Kedaluwarsa",
+        "doseNumber": "Dosis ke-",
+        "dose": "Dosis ke-{number}",
+        "route": "Rute",
+        "site": "Lokasi",
+        "noKfa": "Tanpa kode KFA — tercatat di sini, tidak dilaporkan ke SATUSEHAT.",
+        "routes": {
+          "IM": "Intramuskular",
+          "SC": "Subkutan",
+          "ID": "Intradermal",
+          "ORAL": "Oral",
+          "NASAL": "Nasal"
+        },
+        "sites": {
+          "LEFT_ARM": "Lengan kiri",
+          "RIGHT_ARM": "Lengan kanan",
+          "LEFT_THIGH": "Paha kiri",
+          "RIGHT_THIGH": "Paha kanan",
+          "OTHER": "Lainnya"
         }
       }
     }

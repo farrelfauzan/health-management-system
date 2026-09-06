@@ -333,6 +333,116 @@ describe('SatusehatFhirMapper', () => {
     });
   });
 
+  describe('mapImmunization', () => {
+    function buildImmunizationInput(overrides: Record<string, unknown> = {}) {
+      return {
+        immunizationId: '3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f',
+        kfaCode: '93000123',
+        vaccineName: 'Vaksin DPT-HB-Hib',
+        patientIhsNumber: 'P02478375538',
+        patientName: 'Budi Santoso',
+        encounterReference: 'urn:uuid:encounter-entry',
+        occurredAt: startedAt,
+        lotNumber: 'LOT-DPT-2026-04',
+        expirationDate: '2027-04-30',
+        doseNumber: 3,
+        route: 'IM' as const,
+        site: 'LEFT_THIGH' as const,
+        performerIhsNumber: 'N10000001',
+        performerName: 'dr. Sari Wulandari',
+        ...overrides,
+      };
+    }
+
+    it('maps a KFA-coded vaccination to a completed Immunization', () => {
+      const actualImmunization = mapper.mapImmunization(buildImmunizationInput());
+
+      expect(actualImmunization).toEqual({
+        resourceType: 'Immunization',
+        identifier: [
+          {
+            system: 'http://sys-ids.kemkes.go.id/immunization/10000004',
+            use: 'official',
+            value: '3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f',
+          },
+        ],
+        status: 'completed',
+        vaccineCode: {
+          coding: [
+            {
+              system: 'http://sys-ids.kemkes.go.id/kfa',
+              code: '93000123',
+              display: 'Vaksin DPT-HB-Hib',
+            },
+          ],
+        },
+        patient: { reference: 'Patient/P02478375538', display: 'Budi Santoso' },
+        encounter: { reference: 'urn:uuid:encounter-entry' },
+        occurrenceDateTime: '2026-07-28T02:00:00.000Z',
+        lotNumber: 'LOT-DPT-2026-04',
+        expirationDate: '2027-04-30',
+        site: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/v3-ActSite',
+              code: 'LT',
+              display: 'Left thigh',
+            },
+          ],
+        },
+        route: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/v3-RouteOfAdministration',
+              code: 'IM',
+              display: 'Injection, intramuscular',
+            },
+          ],
+        },
+        performer: [
+          { actor: { reference: 'Practitioner/N10000001', display: 'dr. Sari Wulandari' } },
+        ],
+        protocolApplied: [{ doseNumberPositiveInt: 3 }],
+      });
+    });
+
+    it('omits the dose when none was recorded, rather than sending 1', () => {
+      const actualImmunization = mapper.mapImmunization(
+        buildImmunizationInput({ doseNumber: undefined }),
+      );
+
+      expect(actualImmunization.protocolApplied).toBeUndefined();
+    });
+
+    it('omits the lot and expiry a nurse copying from a card may not have', () => {
+      const actualImmunization = mapper.mapImmunization(
+        buildImmunizationInput({ lotNumber: undefined, expirationDate: undefined }),
+      );
+
+      expect(actualImmunization.lotNumber).toBeUndefined();
+      expect(actualImmunization.expirationDate).toBeUndefined();
+    });
+
+    it('omits site OTHER, because v3 has no code for "somewhere else"', () => {
+      const actualImmunization = mapper.mapImmunization(
+        buildImmunizationInput({ site: 'OTHER' }),
+      );
+
+      expect(actualImmunization.site).toBeUndefined();
+    });
+
+    it.each([
+      ['SC' as const, 'SQ'],
+      ['ID' as const, 'IDINJ'],
+      ['ORAL' as const, 'PO'],
+      ['NASAL' as const, 'NASINHL'],
+    ])('maps route %s to the v3 code %s', (route, expectedCode) => {
+      const actualImmunization = mapper.mapImmunization(buildImmunizationInput({ route }));
+
+      expect(actualImmunization.route?.coding[0]?.code).toBe(expectedCode);
+    });
+  });
+
   describe('mapComposition', () => {
     function buildCompositionInput(sections: SatusehatCompositionSectionInput[]) {
       return {
