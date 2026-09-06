@@ -1,5 +1,6 @@
 import {
   FEATURE_CATALOG,
+  FEATURE_PREREQUISITES,
   FeatureAvailabilityView,
   FeatureCatalogEntry,
   FeatureEntitlementRecord,
@@ -9,12 +10,14 @@ import {
   findFeatureCatalogEntry,
   isFeatureKey,
 } from '@hms/shared-types';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuditAction } from '../../../generated/prisma/client';
 import { FeatureEntitlementRepository } from '../repository/feature-entitlement.repository';
 import { FeatureAvailabilityCacheService } from './feature-availability-cache.service';
+
+export const FEATURE_PREREQUISITE_DISABLED_ERROR_CODE = 'FEATURE_PREREQUISITE_DISABLED';
 
 /**
  * The per-client feature switches (IMP-7).
@@ -62,6 +65,9 @@ export class FeatureEntitlementService {
     const entry = this.findCatalogEntry(featureKey);
     const recordsByKey = await this.loadRecordsByKey();
     const previous = recordsByKey.get(entry.key);
+    if (input.isEnabled) {
+      this.assertPrerequisiteEnabled(entry.key, recordsByKey);
+    }
     const record = await this.featureEntitlementRepository.upsertEntitlement({
       featureKey: entry.key,
       isEnabled: input.isEnabled,
@@ -83,6 +89,30 @@ export class FeatureEntitlementService {
       },
     });
     return this.toView(entry, record);
+  }
+
+  /**
+   * Refuses to switch a feature on while the one it is built out of is off
+   * (`P16-T21`, §10.6).
+   *
+   * Checked on enable only. Disabling never cascades — a rollback that
+   * switched off a second feature would be wider than the operator asked for
+   * — and the dependent feature's own guard refuses its routes regardless of
+   * how the two switches ended up.
+   */
+  private assertPrerequisiteEnabled(
+    featureKey: FeatureKey,
+    recordsByKey: Map<FeatureKey, FeatureEntitlementRecord>,
+  ): void {
+    const prerequisite = FEATURE_PREREQUISITES[featureKey];
+    if (prerequisite === undefined || this.resolveIsEnabled(recordsByKey.get(prerequisite))) {
+      return;
+    }
+    throw new UnprocessableEntityException({
+      message: `${featureKey} cannot be enabled while ${prerequisite} is off`,
+      code: FEATURE_PREREQUISITE_DISABLED_ERROR_CODE,
+      errors: { featureKey, prerequisite },
+    });
   }
 
   /**

@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { TEMPLATE_VARIABLES_BY_KIND } from '@hms/shared-types';
 
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { TEMPLATE_VARIABLE_EXAMPLES } from '../../../common/openapi/template-variable-examples';
 import { ListTemplateVariablesQueryDto } from '../dto/list-template-variables-query.dto';
@@ -18,6 +19,7 @@ import { ListTemplateVariablesQueryDto } from '../dto/list-template-variables-qu
  * that exists is the invoice one.
  */
 @ApiTags('Document Templates')
+@RequireFeature('invoice-documents')
 @Controller({
   version: '1',
   path: 'document-templates',

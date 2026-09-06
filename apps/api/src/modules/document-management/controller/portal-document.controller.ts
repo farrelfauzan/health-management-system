@@ -20,7 +20,7 @@ import { PatientDocumentService } from '../service/patient-document.service';
  * shape names another patient.
  */
 @ApiTags('Document Management')
-@RequireFeature('document-management')
+@RequireFeature('patient-documents')
 @Controller({
   version: '1',
   path: 'portal/me/documents',

@@ -36,7 +36,7 @@ import { PatientDocumentService } from '../service/patient-document.service';
  * reason) the route interceptor cannot know.
  */
 @ApiTags('Document Management')
-@RequireFeature('document-management')
+@RequireFeature('patient-documents')
 @Controller({
   version: '1',
   path: 'patient-documents',

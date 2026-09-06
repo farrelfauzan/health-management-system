@@ -13,6 +13,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { DOCUMENT_DELIVERY_EXAMPLES } from '../../../common/openapi/document-delivery-examples';
 import { RescheduleDeliveryDto } from '../dto/reschedule-delivery.dto';
@@ -29,6 +30,7 @@ const OK_STATUS = 200;
  * whichever document is inside.
  */
 @ApiTags('Invoice Delivery')
+@RequireFeature('invoice-delivery')
 @Controller({
   version: '1',
   path: 'deliveries',

@@ -31,7 +31,7 @@ import { PatientDocumentService } from '../service/patient-document.service';
  * regulatory question for a clinical record is "who looked" (FR-E2-07).
  */
 @ApiTags('Document Management')
-@RequireFeature('document-management')
+@RequireFeature('patient-documents')
 @Controller({
   version: '1',
   path: 'patients/:patientId/documents',

@@ -40,7 +40,7 @@ import { VaultDocumentShareService } from '../service/vault-document-share.servi
  * number, no issue date. Those are the owner's private notes to themselves.
  */
 @ApiTags('Document Management')
-@RequireFeature('document-management')
+@RequireFeature('doctor-credentials')
 @Controller({
   version: '1',
   path: 'shared-with-me/documents',

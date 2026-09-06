@@ -12,6 +12,13 @@ export type FeatureKey =
   | 'bpjs-antrean'
   | 'satusehat'
   | 'document-management'
+  // P16-T21: the four Phase-16 epics that are sold apart from the documents
+  // module itself. E5's registry stays platform-adjacent and ungated; only
+  // its approval workflow has a key.
+  | 'invoice-documents'
+  | 'patient-documents'
+  | 'doctor-credentials'
+  | 'invoice-delivery'
   | 'document-approval'
   | 'cs-channels';
 

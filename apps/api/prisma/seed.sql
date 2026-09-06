@@ -1078,6 +1078,15 @@ FROM (
     ('bpjs-antrean'),
     ('satusehat'),
     ('document-management'),
+    -- P16-T21. The four Phase-16 epics, on by default like every other row.
+    -- Enabling by default is what keeps adding a key a packaging change
+    -- rather than an outage: a clinic already using patient documents must
+    -- not lose them to a deploy that merely gave the feature a switch. The
+    -- pilot turns them *off* deliberately, per §10.
+    ('invoice-documents'),
+    ('patient-documents'),
+    ('doctor-credentials'),
+    ('invoice-delivery'),
     -- P16-T29/T31. On by default, like every other row here: a clinic that
     -- bought the documents module gets its approval workflow, and switching
     -- this off leaves the registry intact and takes away the second signature.

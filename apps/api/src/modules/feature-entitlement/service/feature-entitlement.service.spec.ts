@@ -1,5 +1,5 @@
 import { FEATURE_KEYS, FeatureEntitlementRecord } from '@hms/shared-types';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuditAction } from '../../../generated/prisma/client';
@@ -50,6 +50,58 @@ describe('FeatureEntitlementService', () => {
     const actual = await service.getAvailability();
 
     expect(actual.enabledKeys).toEqual([...FEATURE_KEYS]);
+  });
+
+  describe('prerequisites (P16-T21, §10.6)', () => {
+    it('refuses to enable delivery while invoice documents are off', async () => {
+      const { service, mockRepository } = buildService([
+        buildRecord({ featureKey: 'invoice-documents', isEnabled: false }),
+      ]);
+
+      await expect(
+        service.updateEntitlement('invoice-delivery', { isEnabled: true }, ACTOR_USER_ID),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+      expect(mockRepository.upsertEntitlement).not.toHaveBeenCalled();
+    });
+
+    it('enables delivery once invoice documents are on', async () => {
+      const { service, mockRepository } = buildService([
+        buildRecord({ featureKey: 'invoice-documents', isEnabled: true }),
+      ]);
+      mockRepository.upsertEntitlement.mockResolvedValue(
+        buildRecord({ featureKey: 'invoice-delivery', isEnabled: true }),
+      );
+
+      await service.updateEntitlement('invoice-delivery', { isEnabled: true }, ACTOR_USER_ID);
+
+      expect(mockRepository.upsertEntitlement).toHaveBeenCalled();
+    });
+
+    it('never blocks a rollback: disabling is allowed whatever the prerequisite says', async () => {
+      const { service, mockRepository } = buildService([
+        buildRecord({ featureKey: 'invoice-documents', isEnabled: false }),
+      ]);
+      mockRepository.upsertEntitlement.mockResolvedValue(
+        buildRecord({ featureKey: 'invoice-delivery', isEnabled: false }),
+      );
+
+      await service.updateEntitlement('invoice-delivery', { isEnabled: false }, ACTOR_USER_ID);
+
+      expect(mockRepository.upsertEntitlement).toHaveBeenCalled();
+    });
+
+    it('does not cascade: turning invoice documents off leaves delivery’s own row alone', async () => {
+      const { service, mockRepository } = buildService([
+        buildRecord({ featureKey: 'invoice-delivery', isEnabled: true }),
+      ]);
+      mockRepository.upsertEntitlement.mockResolvedValue(
+        buildRecord({ featureKey: 'invoice-documents', isEnabled: false }),
+      );
+
+      await service.updateEntitlement('invoice-documents', { isEnabled: false }, ACTOR_USER_ID);
+
+      expect(mockRepository.upsertEntitlement).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('omits a disabled key from availability', async () => {

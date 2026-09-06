@@ -13,6 +13,7 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import request from 'supertest';
 
 import { AppModule } from '../../app.module';
+import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
 import { DocumentTypeRepository } from '../managed-document/repository/document-type.repository';
 import { AuditService } from '../../common/audit/audit.service';
 import { PdfRendererService } from '../../common/pdf/pdf-renderer.service';
@@ -170,14 +171,25 @@ describe('Document templates integration', () => {
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   const prismaServiceMock = { $connect: jest.fn(), $disconnect: jest.fn() };
   /**
+   * `P16-T21` put this controller behind an entitlement, and `FeatureGuard`
+   * resolves it through Prisma on every request — which this suite replaces
+   * wholesale. Always enabled, which is the seeded default.
+   */
+  const featureAvailabilityCacheMock = {
+    isEnabled: jest.fn<Promise<boolean>, [string]>(async () => true),
+  };
+  /**
    * `P16-T32` has every template read consult the `INVOICE_TEMPLATE` approval
    * policy. No type row is the **policy-off** posture — the default a clinic
    * starts from, and the one this suite asserts E1's behaviour under.
    *
-   * Overriding the repository rather than adding a Prisma delegate is what
-   * keeps the "nothing was persisted" assertion below true: with the policy
-   * off the approval service short-circuits before it touches the registry,
-   * so the preview path really does reach no persistence port at all.
+   * Both doubles override a narrow collaborator rather than widening the
+   * Prisma stub, and for the same reason: it is what keeps the "nothing was
+   * persisted" assertion below true rather than merely passing. Neither the
+   * entitlement read nor the policy read is a persistence call this feature
+   * makes — with the policy off the approval service short-circuits before it
+   * touches the registry, so the preview path really does reach no
+   * persistence port at all.
    */
   const documentTypeRepositoryMock = { findByCode: jest.fn(async () => null) };
   const pdfRendererMock = { render: jest.fn() };
@@ -222,6 +234,8 @@ describe('Document templates integration', () => {
       .useValue(auditServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
+      .overrideProvider(FeatureAvailabilityCacheService)
+      .useValue(featureAvailabilityCacheMock)
       .overrideProvider(DocumentTypeRepository)
       .useValue(documentTypeRepositoryMock)
       .overrideProvider(DocumentTemplateRepository)
