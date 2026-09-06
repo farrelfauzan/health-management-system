@@ -7,6 +7,7 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { SatusehatAmbiguousMatchError } from '../../common/satusehat/satusehat-ambiguous-match.error';
 import { SatusehatMasterDataClient } from '../../common/satusehat/satusehat-master-data.client';
 import { SatusehatError } from '../../common/satusehat/satusehat.error';
 import { AuthRepository } from '../auth/repository/auth.repository';
@@ -211,6 +212,40 @@ describe('SATUSEHAT link integration', () => {
 
     expect(response.status).toBe(404);
     expect(satusehatLinkRepositoryMock.savePatientIhsNumber).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 and stores nothing when the index reports more than one match', async () => {
+    const token = await buildToken('actor-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'link', resource: 'Satusehat', scope: 'ANY' }]);
+    satusehatLinkRepositoryMock.findPatientLinkTarget.mockResolvedValue({
+      id: patientId,
+      nik: syntheticNik,
+      hasSatusehatPatientId: false,
+    });
+    masterDataClientMock.findPatientIhsNumberByNik.mockRejectedValue(
+      new SatusehatAmbiguousMatchError(2),
+    );
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/satusehat/patients/${patientId}/link`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(409);
+    expect(response.body.error.message).toContain('portal');
+    expect(satusehatLinkRepositoryMock.savePatientIhsNumber).not.toHaveBeenCalled();
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'SATUSEHAT_LINK_AMBIGUOUS',
+        resource: 'PatientProfile',
+        resourceId: patientId,
+        actorUserId: 'actor-user',
+        metadata: expect.objectContaining({ trigger: 'LINK_ENDPOINT', matchCount: 2 }),
+      }),
+    );
+    expect(auditServiceMock.record).not.toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'SATUSEHAT_PATIENT_LINKED' }),
+    );
+    expect(JSON.stringify(response.body)).not.toContain(syntheticNik);
   });
 
   it('returns 503 when the SATUSEHAT adapter is not configured', async () => {

@@ -22,6 +22,7 @@ import {
   SatusehatTransactionResponse,
   SatusehatTransactionResponseEntry,
 } from '../../../common/satusehat/satusehat-fhir.types';
+import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satusehat-ambiguous-match.error';
 import { SatusehatHttpClient } from '../../../common/satusehat/satusehat-http.client';
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
 import { SatusehatError } from '../../../common/satusehat/satusehat.error';
@@ -851,6 +852,10 @@ export class SatusehatSubmissionService {
     attemptNumber: number,
     caughtError: unknown,
   ): Promise<void> {
+    if (caughtError instanceof SatusehatAmbiguousMatchError) {
+      await this.parkAmbiguousMatch(submission, caughtError);
+      return;
+    }
     const message = this.describeError(caughtError);
     const isPermanent =
       caughtError instanceof SatusehatSubmissionDataError ||
@@ -876,6 +881,37 @@ export class SatusehatSubmissionService {
     this.logger.warn(
       `SATUSEHAT submission attempt ${attemptNumber} failed transiently`,
     );
+  }
+
+  /**
+   * Ambiguity is not a failed attempt — it is a refusal. Retrying cannot
+   * resolve which of the matching national records is the right one, and the
+   * platform masks NIK so the code can never re-verify; a human has to settle
+   * it in the SATUSEHAT portal. The row is parked FAILED for the admin retry
+   * surface with the attempt budget untouched, so once the ambiguity is
+   * resolved upstream the operator still has every retry available.
+   */
+  private async parkAmbiguousMatch(
+    submission: SatusehatSubmissionRecord,
+    ambiguousMatchError: SatusehatAmbiguousMatchError,
+  ): Promise<void> {
+    await this.submissionRepository.markFailed({
+      id: submission.id,
+      attempts: submission.attempts,
+      lastError: this.describeError(ambiguousMatchError),
+    });
+    await this.auditService.record({
+      action: 'SATUSEHAT_LINK_AMBIGUOUS',
+      resource: 'SatusehatSubmission',
+      resourceId: submission.id,
+      actorUserId: null,
+      metadata: {
+        lookup: 'NIK',
+        trigger: 'SUBMISSION_WORKER',
+        matchCount: ambiguousMatchError.matchCount,
+      },
+    });
+    this.logger.warn('SATUSEHAT submission refused: the NIK matched more than one record');
   }
 
   private describeError(caughtError: unknown): string {
