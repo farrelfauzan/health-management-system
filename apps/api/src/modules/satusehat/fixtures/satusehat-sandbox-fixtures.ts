@@ -58,6 +58,14 @@ export const SATUSEHAT_SANDBOX_FIXTURES = {
       {
         response: {
           status: '201 Created',
+          location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/AllergyIntolerance/5b1c2d3e-4f5a-4b6c-8d7e-9f0a1b2c3d4f/_history/1',
+          etag: 'W/"1"',
+          lastModified: '2026-07-28T09:05:01.000+00:00',
+        },
+      },
+      {
+        response: {
+          status: '201 Created',
           location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Observation/6c2d3e4f-5a6b-4c7d-9e8f-0a1b2c3d4e5f/_history/1',
           etag: 'W/"1"',
           lastModified: '2026-07-28T09:05:01.000+00:00',

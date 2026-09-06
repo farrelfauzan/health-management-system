@@ -1,10 +1,12 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionMedication,
   SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
+  SaveAllergyIhsIdPayload,
 } from '@hms/shared-types';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -86,11 +88,13 @@ export class SatusehatSubmissionService {
     }
     const patientIhsNumber = await this.resolvePatientIhsNumber(bundleData);
     const practitionerIhsNumber = await this.resolvePractitionerIhsNumber(bundleData);
+    const allergyFullUrls = new Map<string, string>();
     const bundle = this.buildTransactionBundle(
       bundleData,
       bundleData.endedAt,
       patientIhsNumber,
       practitionerIhsNumber,
+      allergyFullUrls,
     );
     const response = await this.httpClient.sendRequest<SatusehatTransactionResponse>({
       method: 'POST',
@@ -98,6 +102,7 @@ export class SatusehatSubmissionService {
       body: bundle,
     });
     const createdResources = this.extractCreatedResources(bundle, response);
+    await this.saveAllergyIhsIds(allergyFullUrls, createdResources);
     const encounterEntry = bundle.entry.find((entry) => entry.request.url === 'Encounter');
     return encounterEntry ? (createdResources.get(encounterEntry.fullUrl)?.id ?? null) : null;
   }
@@ -107,6 +112,7 @@ export class SatusehatSubmissionService {
     endedAt: Date,
     patientIhsNumber: string,
     practitionerIhsNumber: string,
+    allergyFullUrls: Map<string, string>,
   ): SatusehatFhirTransactionBundle {
     const encounterFullUrl = `urn:uuid:${randomUUID()}`;
     const conditionEntries: SatusehatFhirBundleEntry[] = this.sortDiagnoses(bundleData).map(
@@ -129,6 +135,13 @@ export class SatusehatSubmissionService {
       encounterFullUrl,
       patientIhsNumber,
       practitionerIhsNumber,
+    );
+    const allergyEntries = this.buildAllergyEntries(
+      bundleData,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      allergyFullUrls,
     );
     const observationEntries: SatusehatFhirBundleEntry[] = bundleData.latestVitalSigns
       ? this.fhirMapper
@@ -179,6 +192,7 @@ export class SatusehatSubmissionService {
         { fullUrl: encounterFullUrl, resource: encounterResource, request: { method: 'POST', url: 'Encounter' } },
         ...conditionEntries,
         ...procedureEntries,
+        ...allergyEntries,
         ...observationEntries,
         ...medicationEntries,
       ],
@@ -235,6 +249,102 @@ export class SatusehatSubmissionService {
     this.logger.warn(
       `SATUSEHAT procedure mapping gap: skipped ${skippedProcedures.length} procedure(s) without an ICD-9-CM code: ${described}`,
     );
+  }
+
+  /**
+   * Appends the patient's not-yet-reported active allergies to this encounter's
+   * bundle. Allergies are patient-scoped while the outbox is keyed by
+   * encounter, which is why they had never been reported at all; riding
+   * whichever visit comes next, then recording the returned id and never
+   * sending the row again, is the cheapest thing that gets a penicillin
+   * reaction into the national record without a second outbox.
+   *
+   * `recorder` is the attending doctor only when the row was written during
+   * this visit. An allergy taken down years ago by somebody else would
+   * otherwise be attributed to whoever happened to see the patient today.
+   */
+  private buildAllergyEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+    allergyFullUrls: Map<string, string>,
+  ): SatusehatFhirBundleEntry[] {
+    this.reportRetractedAllergyGap(bundleData.retractedReportedAllergyCount);
+    return bundleData.unreportedAllergies.map((allergy) => {
+      const fullUrl = `urn:uuid:${randomUUID()}`;
+      allergyFullUrls.set(fullUrl, allergy.allergyId);
+      return {
+        fullUrl,
+        resource: this.fhirMapper.mapAllergyToAllergyIntolerance({
+          allergyId: allergy.allergyId,
+          substance: allergy.substance,
+          reaction: allergy.reaction ?? undefined,
+          severity: allergy.severity,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          encounterReference: encounterFullUrl,
+          recordedAt: allergy.recordedAt,
+          ...(this.wasRecordedDuringEncounter(allergy, bundleData)
+            ? {
+                recorderIhsNumber: practitionerIhsNumber,
+                recorderName: bundleData.doctorName,
+              }
+            : {}),
+        }),
+        request: { method: 'POST', url: 'AllergyIntolerance' },
+      };
+    });
+  }
+
+  /**
+   * Retracting an allergy on the platform needs an `entered-in-error` update
+   * this adapter does not do yet. Logging the count leaves the divergence
+   * visible instead of silent — no identifying detail, the same discipline as
+   * the medication gap report.
+   */
+  private reportRetractedAllergyGap(retractedCount: number): void {
+    if (retractedCount === 0) {
+      return;
+    }
+    this.logger.warn(
+      `SATUSEHAT allergy retraction gap: ${retractedCount} reported allergy(ies) were deleted locally and remain active on the platform`,
+    );
+  }
+
+  private wasRecordedDuringEncounter(
+    allergy: SatusehatSubmissionAllergy,
+    bundleData: SatusehatSubmissionBundleData,
+  ): boolean {
+    if (bundleData.endedAt === null) {
+      return false;
+    }
+    const recordedAt = allergy.recordedAt.getTime();
+    return (
+      recordedAt >= bundleData.startedAt.getTime() && recordedAt <= bundleData.endedAt.getTime()
+    );
+  }
+
+  /**
+   * An allergy whose entry the platform did not confirm keeps its null id and
+   * is offered again on the next encounter. Two workers submitting concurrent
+   * encounters for the same patient can both include the same unreported
+   * allergy: the row lease (SJ-76) makes that rare, and the worst case is one
+   * duplicate resource on the platform rather than a silently unreported
+   * allergy — which is the right way round.
+   */
+  private async saveAllergyIhsIds(
+    allergyFullUrls: ReadonlyMap<string, string>,
+    createdResources: ReadonlyMap<string, SatusehatCreatedResourceLocation>,
+  ): Promise<void> {
+    const payloads: SaveAllergyIhsIdPayload[] = [];
+    for (const [fullUrl, allergyId] of allergyFullUrls) {
+      const created = createdResources.get(fullUrl);
+      if (created !== undefined) {
+        payloads.push({ allergyId, satusehatAllergyId: created.id });
+      }
+    }
+    await this.submissionRepository.saveAllergyIhsIds(payloads);
   }
 
   /**

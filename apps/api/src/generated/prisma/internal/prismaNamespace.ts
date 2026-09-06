@@ -7441,6 +7441,7 @@ export const PatientAllergyScalarFieldEnum = {
   substance: 'substance',
   reaction: 'reaction',
   severity: 'severity',
+  satusehatAllergyId: 'satusehatAllergyId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
