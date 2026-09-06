@@ -20,7 +20,10 @@ export type FeatureKey =
   | 'doctor-credentials'
   | 'invoice-delivery'
   | 'document-approval'
-  | 'cs-channels';
+  | 'cs-channels'
+  // P18-T01: the laboratory module, sold as its own product. Default off — a
+  // clinic that sends specimens out has no use for a worklist.
+  | 'laboratory';
 
 /**
  * One optional product feature, as both the API and the web app know it.

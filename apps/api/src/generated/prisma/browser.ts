@@ -1182,3 +1182,42 @@ export type DocumentApprovalApprover = Prisma.DocumentApprovalApproverModel
  * deleting the account must never quietly unsign the document.
  */
 export type DocumentApprovalDecision = Prisma.DocumentApprovalDecisionModel
+/**
+ * Model LabTest
+ * One orderable laboratory test.
+ * 
+ * Modelled on the `ServiceTariff` + `Icd10Code` split the repo already uses:
+ * the code lives here, the price lives in `ServiceTariff` (category LAB) and
+ * is referenced. That keeps a price change from touching the coded catalog,
+ * and lets a test exist before anyone has decided what to charge for it.
+ */
+export type LabTest = Prisma.LabTestModel
+/**
+ * Model LabReferenceRange
+ * One sex- and age-banded normal range for a test.
+ * 
+ * Snapshotted onto the result at entry time (P18-T04) rather than read back
+ * later: a range edited in 2027 must not re-flag a 2026 result, because the
+ * flag records what was abnormal *by the standard in force when it was
+ * measured*.
+ * 
+ * Age bands are in days so a neonatal band (0–28 days) and an adult band are
+ * the same kind of row. A band with both bounds null applies to every age,
+ * which is what almost every adult range is.
+ */
+export type LabReferenceRange = Prisma.LabReferenceRangeModel
+/**
+ * Model LabPanel
+ * A named group of tests ordered together — darah rutin, profil lipid.
+ * 
+ * A panel carries its own tariff so it can be priced once rather than as the
+ * sum of its members, which is how clinics actually sell them (P18-T06).
+ */
+export type LabPanel = Prisma.LabPanelModel
+/**
+ * Model LabPanelMember
+ * Membership, with the order the tests appear on the report. No soft delete:
+ * removing a test from a panel is a change to the panel, not a historical
+ * fact worth keeping — what was actually ordered lives on the order rows.
+ */
+export type LabPanelMember = Prisma.LabPanelMemberModel

@@ -70,6 +70,11 @@ export type AppSubject =
   | 'Bed'
   | 'Admission'
   | 'ServiceTariff'
+  // P18-T01. One subject for the whole lab catalog: tests, their reference
+  // ranges and the panels built from them are edited on one screen by one
+  // person, and splitting them would imply a role that may add a test but not
+  // say what its normal range is.
+  | 'LabTest'
   | 'Invoice'
   | 'Payment'
   | 'ChatSession'

@@ -33,7 +33,12 @@ WITH seed_roles(code, name, description) AS (
     -- Its grants below are the shortest list in this file, deliberately: this
     -- is the reach an anonymous member of the public gets if the webhook's
     -- secret-token check is ever defeated.
-    ('CUSTOMER_SERVICE_CHANNEL', 'Customer Service Channel', 'Reserved service account for WhatsApp/Telegram chat bookings')
+    ('CUSTOMER_SERVICE_CHANNEL', 'Customer Service Channel', 'Reserved service account for WhatsApp/Telegram chat bookings'),
+    -- P18-T01. The analis who runs the bench: reads the catalog, and from
+    -- P18-T03/T04 collects specimens and enters results. Deliberately holds
+    -- no clinical `:any` key beyond the lab ones — a lab technician has no
+    -- reason to read an encounter note.
+    ('LAB_TECHNICIAN', 'Lab Technician', 'Laboratory workflow operator')
 )
 INSERT INTO "roles" (
   "id",
@@ -73,6 +78,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- and stays role-gated until a custom role needs it.
     ('portal.admin-access:any', 'Portal', 'admin-access', 'ANY', 'Access the admin web shell'),
     ('portal.doctor-access:any', 'Portal', 'doctor-access', 'ANY', 'Access the doctor web shell'),
+    -- P18-T01. Read is split from write because the two are different jobs:
+    -- the analis and the ordering doctor read the catalog constantly, and
+    -- deciding what the clinic offers is an administrative decision.
+    ('lab-test.read:any', 'LabTest', 'read', 'ANY', 'Read the laboratory catalog'),
+    ('lab-test.write:any', 'LabTest', 'write', 'ANY', 'Create and edit laboratory tests and panels'),
     ('portal.patient-access:own', 'Portal', 'patient-access', 'OWN', 'Access the patient portal'),
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
@@ -466,6 +476,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- clinical decision.
     ('ADMIN', 'service-tariff.read:any'),
     ('ADMIN', 'service-tariff.write:any'),
+    ('ADMIN', 'lab-test.read:any'),
+    ('ADMIN', 'lab-test.write:any'),
     ('ADMIN', 'invoice.read:any'),
     ('ADMIN', 'invoice.write:any'),
     ('ADMIN', 'invoice.deliver:any'),
@@ -606,6 +618,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'icd10-code.read:any'),
     ('DOCTOR', 'icd9cm-code.read:any'),
     ('DOCTOR', 'medication.read:any'),
+    -- Read only. A doctor orders from the catalog (P18-T02) and needs to see
+    -- what a test measures and what its normal range is; what the clinic
+    -- offers is not their decision.
+    ('DOCTOR', 'lab-test.read:any'),
     ('DOCTOR', 'prescription.read:own'),
     ('DOCTOR', 'prescription.write:own'),
     ('DOCTOR', 'chat.session.create:own'),
@@ -644,6 +660,14 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- headed with the clinic's identity, and a doctor who cannot read it
     -- cannot produce one. Editing it is not a clinical act.
     ('DOCTOR', 'clinic-profile.read:any'),
+    ('LAB_TECHNICIAN', 'portal.admin-access:any'),
+    ('LAB_TECHNICIAN', 'auth.logout:own'),
+    -- Read only. Deciding what the clinic offers and what it costs is an
+    -- administrative act; running the test is not.
+    ('LAB_TECHNICIAN', 'lab-test.read:any'),
+    -- Read only, and only because a specimen label and a lab report carry the
+    -- clinic's identity — the same reason PHARMACIST and DOCTOR have it.
+    ('LAB_TECHNICIAN', 'clinic-profile.read:any'),
     ('PHARMACIST', 'auth.logout:own'),
     ('PHARMACIST', 'medication.read:any'),
     ('PHARMACIST', 'medication.create:any'),
@@ -1065,34 +1089,45 @@ INSERT INTO "feature_entitlements" (
 SELECT
   md5('feature_entitlement:' || feature_key)::uuid,
   feature_key,
-  TRUE,
+  is_enabled,
   NOW(),
   NOW()
 FROM (
   VALUES
-    ('ai-chatbot'),
-    ('room-management'),
-    ('pharmacy'),
-    ('billing'),
-    ('bpjs-pcare'),
-    ('bpjs-antrean'),
-    ('satusehat'),
-    ('document-management'),
+    -- Second column is the default. Almost every row is TRUE, and that is the
+    -- rule rather than an accident: enabling by default is what keeps adding a
+    -- key a packaging change rather than an outage, because a clinic already
+    -- using a capability must not lose it to a deploy that merely gave it a
+    -- switch. A key is seeded FALSE only when the capability is genuinely new
+    -- and nobody is using it yet.
+    ('ai-chatbot', TRUE),
+    ('room-management', TRUE),
+    ('pharmacy', TRUE),
+    ('billing', TRUE),
+    ('bpjs-pcare', TRUE),
+    ('bpjs-antrean', TRUE),
+    ('satusehat', TRUE),
+    ('document-management', TRUE),
     -- P16-T21. The four Phase-16 epics, on by default like every other row.
     -- Enabling by default is what keeps adding a key a packaging change
     -- rather than an outage: a clinic already using patient documents must
     -- not lose them to a deploy that merely gave the feature a switch. The
     -- pilot turns them *off* deliberately, per §10.
-    ('invoice-documents'),
-    ('patient-documents'),
-    ('doctor-credentials'),
-    ('invoice-delivery'),
+    ('invoice-documents', TRUE),
+    ('patient-documents', TRUE),
+    ('doctor-credentials', TRUE),
+    ('invoice-delivery', TRUE),
     -- P16-T29/T31. On by default, like every other row here: a clinic that
     -- bought the documents module gets its approval workflow, and switching
     -- this off leaves the registry intact and takes away the second signature.
-    ('document-approval'),
-    ('cs-channels')
-) AS seed_feature_entitlements(feature_key)
+    ('document-approval', TRUE),
+    ('cs-channels', TRUE),
+    -- P18-T01. The one row seeded FALSE. The laboratory module is new, no
+    -- clinic is using it, and a klinik that sends its specimens out has no use
+    -- for a worklist — so an operator switches it on deliberately rather than
+    -- finding lab screens they did not ask for.
+    ('laboratory', FALSE)
+) AS seed_feature_entitlements(feature_key, is_enabled)
 ON CONFLICT ("feature_key") DO NOTHING;
 
 UPDATE "mrn_counters"

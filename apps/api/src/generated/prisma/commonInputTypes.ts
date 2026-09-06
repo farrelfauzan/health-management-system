@@ -1669,6 +1669,57 @@ export type EnumDocumentApprovalStatusWithAggregatesFilter<$PrismaModel = never>
   _max?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
 }
 
+export type EnumLabSpecimenTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenType | Prisma.EnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LabSpecimenType[] | Prisma.ListEnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabSpecimenType[] | Prisma.ListEnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabSpecimenTypeFilter<$PrismaModel> | $Enums.LabSpecimenType
+}
+
+export type EnumLabResultTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabResultType | Prisma.EnumLabResultTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LabResultType[] | Prisma.ListEnumLabResultTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabResultType[] | Prisma.ListEnumLabResultTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabResultTypeFilter<$PrismaModel> | $Enums.LabResultType
+}
+
+export type EnumLabSpecimenTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenType | Prisma.EnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LabSpecimenType[] | Prisma.ListEnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabSpecimenType[] | Prisma.ListEnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabSpecimenTypeWithAggregatesFilter<$PrismaModel> | $Enums.LabSpecimenType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabSpecimenTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabSpecimenTypeFilter<$PrismaModel>
+}
+
+export type EnumLabResultTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabResultType | Prisma.EnumLabResultTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LabResultType[] | Prisma.ListEnumLabResultTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabResultType[] | Prisma.ListEnumLabResultTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabResultTypeWithAggregatesFilter<$PrismaModel> | $Enums.LabResultType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabResultTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabResultTypeFilter<$PrismaModel>
+}
+
+export type EnumPatientSexNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel> | $Enums.PatientSex | null
+}
+
+export type EnumPatientSexNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPatientSexNullableWithAggregatesFilter<$PrismaModel> | $Enums.PatientSex | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -3277,6 +3328,57 @@ export type NestedEnumDocumentApprovalStatusWithAggregatesFilter<$PrismaModel = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDocumentApprovalStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumLabSpecimenTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenType | Prisma.EnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LabSpecimenType[] | Prisma.ListEnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabSpecimenType[] | Prisma.ListEnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabSpecimenTypeFilter<$PrismaModel> | $Enums.LabSpecimenType
+}
+
+export type NestedEnumLabResultTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabResultType | Prisma.EnumLabResultTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LabResultType[] | Prisma.ListEnumLabResultTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabResultType[] | Prisma.ListEnumLabResultTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabResultTypeFilter<$PrismaModel> | $Enums.LabResultType
+}
+
+export type NestedEnumLabSpecimenTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenType | Prisma.EnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LabSpecimenType[] | Prisma.ListEnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabSpecimenType[] | Prisma.ListEnumLabSpecimenTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabSpecimenTypeWithAggregatesFilter<$PrismaModel> | $Enums.LabSpecimenType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabSpecimenTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabSpecimenTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumLabResultTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabResultType | Prisma.EnumLabResultTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.LabResultType[] | Prisma.ListEnumLabResultTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabResultType[] | Prisma.ListEnumLabResultTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabResultTypeWithAggregatesFilter<$PrismaModel> | $Enums.LabResultType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabResultTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabResultTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumPatientSexNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel> | $Enums.PatientSex | null
+}
+
+export type NestedEnumPatientSexNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PatientSex | Prisma.EnumPatientSexFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PatientSex[] | Prisma.ListEnumPatientSexFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPatientSexNullableWithAggregatesFilter<$PrismaModel> | $Enums.PatientSex | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
 }
 
 

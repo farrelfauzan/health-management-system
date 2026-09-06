@@ -140,7 +140,11 @@ export const ModelName = {
   ManagedDocument: 'ManagedDocument',
   DocumentApprovalRequest: 'DocumentApprovalRequest',
   DocumentApprovalApprover: 'DocumentApprovalApprover',
-  DocumentApprovalDecision: 'DocumentApprovalDecision'
+  DocumentApprovalDecision: 'DocumentApprovalDecision',
+  LabTest: 'LabTest',
+  LabReferenceRange: 'LabReferenceRange',
+  LabPanel: 'LabPanel',
+  LabPanelMember: 'LabPanelMember'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1659,6 +1663,69 @@ export const DocumentApprovalDecisionScalarFieldEnum = {
 } as const
 
 export type DocumentApprovalDecisionScalarFieldEnum = (typeof DocumentApprovalDecisionScalarFieldEnum)[keyof typeof DocumentApprovalDecisionScalarFieldEnum]
+
+
+export const LabTestScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  loincCode: 'loincCode',
+  loincDisplay: 'loincDisplay',
+  specimenType: 'specimenType',
+  resultType: 'resultType',
+  unit: 'unit',
+  decimals: 'decimals',
+  codedOptions: 'codedOptions',
+  isActive: 'isActive',
+  serviceTariffId: 'serviceTariffId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type LabTestScalarFieldEnum = (typeof LabTestScalarFieldEnum)[keyof typeof LabTestScalarFieldEnum]
+
+
+export const LabReferenceRangeScalarFieldEnum = {
+  id: 'id',
+  labTestId: 'labTestId',
+  sex: 'sex',
+  ageMinDays: 'ageMinDays',
+  ageMaxDays: 'ageMaxDays',
+  low: 'low',
+  high: 'high',
+  criticalLow: 'criticalLow',
+  criticalHigh: 'criticalHigh',
+  textNormal: 'textNormal',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabReferenceRangeScalarFieldEnum = (typeof LabReferenceRangeScalarFieldEnum)[keyof typeof LabReferenceRangeScalarFieldEnum]
+
+
+export const LabPanelScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  isActive: 'isActive',
+  serviceTariffId: 'serviceTariffId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type LabPanelScalarFieldEnum = (typeof LabPanelScalarFieldEnum)[keyof typeof LabPanelScalarFieldEnum]
+
+
+export const LabPanelMemberScalarFieldEnum = {
+  panelId: 'panelId',
+  labTestId: 'labTestId',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type LabPanelMemberScalarFieldEnum = (typeof LabPanelMemberScalarFieldEnum)[keyof typeof LabPanelMemberScalarFieldEnum]
 
 
 export const SortOrder = {

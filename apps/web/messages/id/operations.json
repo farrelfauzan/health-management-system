@@ -1332,6 +1332,54 @@
         "uploadedBody": "Dokumen ini diunggah sebagai berkas.",
         "emptyBody": "Dokumen ini belum memiliki isi."
       }
+    },
+    "laboratory": {
+      "title": "Katalog Laboratorium",
+      "description": "Pemeriksaan yang tersedia, arti tiap hasil, dan paket yang dijual bersama.",
+      "tabs": {
+        "tests": "Pemeriksaan",
+        "panels": "Paket"
+      },
+      "columns": {
+        "code": "Kode",
+        "name": "Pemeriksaan",
+        "specimen": "Spesimen",
+        "result": "Hasil",
+        "referenceRange": "Rentang rujukan",
+        "price": "Tarif",
+        "status": "Status",
+        "members": "Isi paket"
+      },
+      "searchLabel": "Cari katalog laboratorium",
+      "searchPlaceholder": "Cari berdasarkan kode atau nama",
+      "noLoinc": "Tanpa kode LOINC — tidak dilaporkan ke SATUSEHAT",
+      "noReferenceRange": "Tidak ada rentang rujukan",
+      "unpriced": "Belum ada tarif",
+      "active": "Aktif",
+      "inactive": "Nonaktif",
+      "loading": "Memuat katalog...",
+      "loadError": "Katalog laboratorium tidak dapat dimuat.",
+      "noTests": "Tidak ada pemeriksaan yang cocok.",
+      "noPanels": "Tidak ada paket yang cocok.",
+      "specimenTypes": {
+        "WHOLE_BLOOD": "Darah lengkap",
+        "SERUM": "Serum",
+        "PLASMA": "Plasma",
+        "URINE": "Urin",
+        "STOOL": "Feses",
+        "SPUTUM": "Sputum",
+        "SWAB": "Swab",
+        "OTHER": "Lainnya"
+      },
+      "resultTypes": {
+        "NUMERIC": "Numerik",
+        "TEXT": "Teks",
+        "CODED": "Berkode"
+      },
+      "sexes": {
+        "MALE": "L",
+        "FEMALE": "P"
+      }
     }
   },
   "channelArrivals": {
