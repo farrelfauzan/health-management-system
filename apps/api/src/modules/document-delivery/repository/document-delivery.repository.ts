@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   CancelDeliveryData,
   ClaimDueDeliveriesPayload,
+  ClinicalDeliverySubjectRecord,
   CreateDeliveryData,
   CreateDeliveryLinkData,
   DeliveryLinkLookupRecord,
@@ -116,6 +117,73 @@ export class DocumentDeliveryRepository {
       select: DELIVERY_SELECT,
     });
     return row === null ? null : toDeliveryRecord(row);
+  }
+
+  /** The timeline of one released clinical document (`P16-T40`), newest first. */
+  async findByDocument(documentId: string): Promise<DeliveryRecord[]> {
+    const rows = await this.prisma.documentDelivery.findMany({
+      where: { documentId },
+      orderBy: [{ createdAt: 'desc' }, { channel: 'asc' }],
+      select: DELIVERY_SELECT,
+    });
+    return rows.map(toDeliveryRecord);
+  }
+
+  /**
+   * The clinical file a dispatch carries and the patient it belongs to
+   * (`P16-T40`), or null when no such live clinical file exists. Read here
+   * rather than through the document module's service because that module
+   * is the one calling *in* at release time — the dependency runs from the
+   * record to the pipe, never back. A soft-deleted row is returned with
+   * `isDeleted` set so the worker can cancel a queued send with the reason
+   * on the timeline rather than failing it.
+   */
+  async findClinicalDeliverySubject(
+    documentId: string,
+  ): Promise<ClinicalDeliverySubjectRecord | null> {
+    const row = await this.prisma.document.findFirst({
+      where: { id: documentId, purpose: 'PATIENT_CLINICAL' },
+      select: {
+        id: true,
+        title: true,
+        category: true,
+        documentDate: true,
+        mimeType: true,
+        storageKey: true,
+        patientId: true,
+        encounterId: true,
+        releasedToPatient: true,
+        deletedAt: true,
+        patient: {
+          select: {
+            id: true,
+            mrn: true,
+            fullName: true,
+            dateOfBirth: true,
+            phoneNumber: true,
+            email: true,
+          },
+        },
+      },
+    });
+    if (row === null || row.patient === null || row.patientId === null) {
+      return null;
+    }
+    return {
+      document: {
+        id: row.id,
+        title: row.title,
+        category: row.category ?? 'OTHER',
+        documentDate: row.documentDate,
+        mimeType: row.mimeType,
+        storageKey: row.storageKey,
+        patientId: row.patientId,
+        encounterId: row.encounterId,
+        releasedToPatient: row.releasedToPatient,
+        isDeleted: row.deletedAt !== null,
+      },
+      patient: row.patient,
+    };
   }
 
   async findByInvoice(invoiceId: string): Promise<DeliveryRecord[]> {

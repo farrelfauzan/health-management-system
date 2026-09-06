@@ -5,23 +5,13 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { PatientDocumentDetailControllerReleaseDocumentV1200DataDeliveriesItem } from './patientDocumentDetailControllerReleaseDocumentV1200DataDeliveriesItem';
+import type { PatientDocumentDetailControllerReleaseDocumentV1200DataDocument } from './patientDocumentDetailControllerReleaseDocumentV1200DataDocument';
+import type { PatientDocumentDetailControllerReleaseDocumentV1200DataRefusedChannelsItem } from './patientDocumentDetailControllerReleaseDocumentV1200DataRefusedChannelsItem';
 
 export type PatientDocumentDetailControllerReleaseDocumentV1200Data = {
-  id: string;
-  patientId: string;
-  encounterId: unknown | null;
-  admissionId: unknown | null;
-  category: string;
-  title: string;
-  mimeType: string;
-  sizeBytes: number;
-  language: string;
-  documentDate: string;
-  notes: string;
-  releasedToPatient: boolean;
-  releasedAt: string;
-  releasedById: string;
-  uploadedById: string;
-  createdAt: string;
-  updatedAt: string;
+  document: PatientDocumentDetailControllerReleaseDocumentV1200DataDocument;
+  deliveries: PatientDocumentDetailControllerReleaseDocumentV1200DataDeliveriesItem[];
+  refusedChannels: PatientDocumentDetailControllerReleaseDocumentV1200DataRefusedChannelsItem[];
+  isDoctorNotified: boolean;
 };

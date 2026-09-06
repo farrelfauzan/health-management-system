@@ -4,6 +4,8 @@ import type { DeliveryRefusalReasonValue } from '@hms/shared-types';
 export const KNOWN_DELIVERY_ERROR_CODES = [
   'CANCELLED_BY_STAFF',
   'INVOICE_NO_LONGER_DELIVERABLE',
+  'DOCUMENT_NO_LONGER_DELIVERABLE',
+  'FORMAT_NOT_DELIVERABLE',
   'DELIVERY_REFUSED_AT_SEND_TIME',
   'MAIL_REJECTED_BY_TRANSPORT',
   'ServiceUnavailableException',

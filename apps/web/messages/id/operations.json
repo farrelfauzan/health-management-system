@@ -471,7 +471,9 @@
           "MAIL_REJECTED_BY_TRANSPORT": "Alamat email ditolak. Periksa alamatnya di data pasien.",
           "ServiceUnavailableException": "Gateway tidak tersedia. Akan dicoba lagi secara otomatis.",
           "UNSUPPORTED_DELIVERY_SUBJECT": "Pengiriman ini belum didukung versi ini.",
-          "unknown": "Gagal: {code}"
+          "unknown": "Gagal: {code}",
+          "DOCUMENT_NO_LONGER_DELIVERABLE": "Dokumen telah ditarik atau tidak lagi dilepas.",
+          "FORMAT_NOT_DELIVERABLE": "Jenis berkas ini tidak dapat dikirim sebagai PDF terkunci."
         },
         "actions": {
           "retry": "Coba lagi",

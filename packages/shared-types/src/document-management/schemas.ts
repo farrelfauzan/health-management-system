@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { requestClinicalDispatchSchema } from '#document-delivery/schemas';
+
 /**
  * Who a document belongs to. Mirrors the Prisma `DocumentOwnerType` enum.
  * `CLINIC` is the shared corpus every channel may read subject to
@@ -172,11 +174,7 @@ export type DocumentLanguageValue = z.infer<typeof documentLanguageSchema>;
  * list actually encodes — a type added here without one becomes a row the
  * pipeline can only ever fail on.
  */
-export const DOCUMENT_TEXT_MIME_TYPES = [
-  'application/pdf',
-  'text/markdown',
-  'text/plain',
-] as const;
+export const DOCUMENT_TEXT_MIME_TYPES = ['application/pdf', 'text/markdown', 'text/plain'] as const;
 
 /**
  * The image types the document store accepts (`P16-T03`). Scans get
@@ -387,10 +385,9 @@ export const updatePersonalDocumentSchema = z
     title: z.string().trim().min(1).max(DOCUMENT_TITLE_MAX_LENGTH).optional(),
     language: documentLanguageSchema.optional(),
   })
-  .refine(
-    (value) => value.title !== undefined || value.language !== undefined,
-    { message: 'At least one field must be provided' },
-  );
+  .refine((value) => value.title !== undefined || value.language !== undefined, {
+    message: 'At least one field must be provided',
+  });
 
 export type UpdatePersonalDocumentInput = z.infer<typeof updatePersonalDocumentSchema>;
 
@@ -662,9 +659,7 @@ export const downloadPatientDocumentQuerySchema = z.object({
   encounterId: z.string().uuid().optional(),
 });
 
-export type DownloadPatientDocumentQueryInput = z.infer<
-  typeof downloadPatientDocumentQuerySchema
->;
+export type DownloadPatientDocumentQueryInput = z.infer<typeof downloadPatientDocumentQuerySchema>;
 
 /**
  * Creates one share of one vault document with one named person
@@ -738,3 +733,18 @@ export const listSharedWithMeDocumentsQuerySchema = z.object({
 export type ListSharedWithMeDocumentsQueryInput = z.infer<
   typeof listSharedWithMeDocumentsQuerySchema
 >;
+
+/**
+ * Release a clinical file to the patient portal, optionally dispatching it
+ * to the patient in the same action (`P16-T40`, FR-E4-24). No body at all
+ * is the plain release P16-T08 shipped; `dispatch` adds the destination.
+ * Delivery happens only here, never on upload (FR-E4-26) — there is no
+ * dispatch field on the confirm-upload schema, by design.
+ */
+export const releasePatientDocumentSchema = z
+  .object({
+    dispatch: requestClinicalDispatchSchema.optional(),
+  })
+  .strict();
+
+export type ReleasePatientDocumentInput = z.infer<typeof releasePatientDocumentSchema>;
