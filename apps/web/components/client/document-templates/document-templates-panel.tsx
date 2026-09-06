@@ -6,13 +6,11 @@ import type { DocumentTemplateView } from '@hms/shared-types';
 import { Button, Card, CardContent, Icon, toast, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ArchiveTemplateDialog } from '#components/client/document-templates/archive-template-dialog';
 import { CreateTemplateDialog } from '#components/client/document-templates/create-template-dialog';
 import { DocumentTemplatesTable } from '#components/client/document-templates/document-templates-table';
 import { TemplateEditor } from '#components/client/document-templates/template-editor';
-import {
-  documentTemplateControllerArchiveTemplateV1,
-  documentTemplateControllerSetDefaultTemplateV1,
-} from '#lib/api/generated/document-templates/document-templates';
+import { documentTemplateControllerSetDefaultTemplateV1 } from '#lib/api/generated/document-templates/document-templates';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateDocumentTemplateQueries } from '#lib/document-templates/invalidate-document-template-queries';
@@ -49,25 +47,7 @@ export function DocumentTemplatesPanel() {
     },
     onError: (err: unknown) => notifyApiError(err, t('actions.setDefaultError')),
   });
-  const archiveMutation = useMutation({
-    mutationFn: async (template: DocumentTemplateView) =>
-      parseApiSuccess(
-        await documentTemplateControllerArchiveTemplateV1(template.id),
-        t('actions.archiveError'),
-      ),
-    onSuccess: async () => {
-      await invalidateDocumentTemplateQueries(queryClient);
-      toast.success(t('actions.archiveSuccess'));
-    },
-    onError: (err: unknown) => notifyApiError(err, t('actions.archiveError')),
-  });
-
-  function handleArchive(template: DocumentTemplateView): void {
-    if (!window.confirm(t('actions.archiveConfirm'))) {
-      return;
-    }
-    archiveMutation.mutate(template);
-  }
+  const [templateToArchive, setTemplateToArchive] = useState<DocumentTemplateView | null>(null);
 
   if (selectedTemplate !== null) {
     return (
@@ -103,13 +83,21 @@ export function DocumentTemplatesPanel() {
             isPending={templatesQuery.isPending}
             isError={templatesQuery.isError}
             canWrite={canWrite}
-            isMutating={setDefaultMutation.isPending || archiveMutation.isPending}
+            isMutating={setDefaultMutation.isPending}
             onEdit={(template) => setSelectedTemplateId(template.id)}
             onSetDefault={(template) => setDefaultMutation.mutate(template)}
-            onArchive={handleArchive}
+            onArchive={setTemplateToArchive}
           />
         </CardContent>
       </Card>
+      <ArchiveTemplateDialog
+        template={templateToArchive}
+        onOpenChange={(open) => {
+          if (!open) setTemplateToArchive(null);
+        }}
+        onArchived={(message) => toast.success(message)}
+        onFailed={(message) => toast.error(message)}
+      />
       {isCreateOpen ? (
         <CreateTemplateDialog
           open={isCreateOpen}

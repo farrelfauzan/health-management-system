@@ -315,10 +315,7 @@
           "setDefault": "Jadikan bawaan",
           "archive": "Arsipkan",
           "setDefaultSuccess": "Templat bawaan diperbarui.",
-          "setDefaultError": "Templat bawaan tidak dapat diatur.",
-          "archiveSuccess": "Templat diarsipkan.",
-          "archiveError": "Templat tidak dapat diarsipkan.",
-          "archiveConfirm": "Arsipkan templat ini? Versi yang sudah terbit tetap melekat pada faktur yang memakainya."
+          "setDefaultError": "Templat bawaan tidak dapat diatur."
         },
         "create": {
           "title": "Templat faktur baru",
@@ -411,6 +408,17 @@
           },
           "reviewHint": "Font, warna, dan arsiran sel tidak terbawa: editor hanya menyimpan struktur dan tipografi diatur stylesheet PDF. Header dan footer dari Word tidak ikut.",
           "dismiss": "Tutup"
+        },
+        "archiveDialog": {
+          "title": "Arsipkan “{name}”?",
+          "description": "Templat hilang dari daftar dan tidak dapat lagi diubah atau dijadikan bawaan.",
+          "versionsNote": "Versi yang sudah terbit tetap melekat pada faktur yang memakainya, sehingga kuitansi lama tetap tercetak persis seperti saat diterbitkan.",
+          "defaultBlocked": "Ini templat bawaan. Jadikan templat lain sebagai bawaan lebih dulu, lalu arsipkan templat ini.",
+          "cancel": "Batal",
+          "confirm": "Arsipkan templat",
+          "archiving": "Mengarsipkan…",
+          "success": "Templat diarsipkan.",
+          "error": "Templat tidak dapat diarsipkan."
         }
       },
       "delivery": {
