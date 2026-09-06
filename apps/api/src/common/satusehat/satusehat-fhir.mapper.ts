@@ -15,6 +15,7 @@ import {
   SatusehatFhirObservation,
   SatusehatFhirReference,
   SatusehatMedicationDispenseMapInput,
+  SatusehatCompoundMedicationMapInput,
   SatusehatMedicationMapInput,
   SatusehatMedicationRequestMapInput,
   SatusehatVitalSignField,
@@ -212,6 +213,60 @@ export class SatusehatFhirMapper {
           },
         },
       ],
+    };
+  }
+
+  /**
+   * Maps one compounded prescription line to a SATUSEHAT Medication of type
+   * `SD` — the platform's code for a compound, as against the `NC` every
+   * catalog product goes out as.
+   *
+   * Ingredients reference bundle-local `Medication` entries for their
+   * component products, so the caller must register those first. A compound
+   * whose components are not all KFA-coded must be skipped entirely by the
+   * caller: a half-described compound is worse than an absent one, because the
+   * next clinic reads it as complete.
+   *
+   * `strength` carries the per-compound quantity — a third of a tablet per
+   * bungkus is what makes a racikan a racikan, and a compound without it is
+   * just a list of names.
+   */
+  mapCompoundMedication(input: SatusehatCompoundMedicationMapInput): SatusehatFhirMedication {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'Medication',
+      identifier: [
+        {
+          system: `${MEDICATION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.prescriptionItemId,
+        },
+      ],
+      status: 'active',
+      // No KFA code exists for a compound the clinic mixed itself, so the name
+      // is the code — `text` is what FHIR provides for exactly this.
+      code: { coding: [], text: input.compoundName },
+      extension: [
+        {
+          url: MEDICATION_TYPE_EXTENSION_URL,
+          valueCodeableConcept: {
+            coding: [{ system: MEDICATION_TYPE_SYSTEM, code: 'SD', display: 'Compound' }],
+          },
+        },
+      ],
+      ingredient: input.ingredients.map((ingredient) => ({
+        itemReference: this.buildReference(
+          ingredient.medicationReference,
+          ingredient.medicationDisplay,
+        ),
+        strength: {
+          numerator: { value: ingredient.quantity, unit: ingredient.unit },
+          denominator: { value: 1 },
+        },
+      })),
     };
   }
 

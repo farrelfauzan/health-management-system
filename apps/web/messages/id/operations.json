@@ -1332,6 +1332,18 @@
         "uploadedBody": "Dokumen ini diunggah sebagai berkas.",
         "emptyBody": "Dokumen ini belum memiliki isi."
       }
+    },
+    "pharmacyPrescriptions": {
+      "compoundBadge": "Racikan",
+      "compoundComponents": "Komposisi",
+      "compoundTotal": "total {total} {unit}",
+      "compoundPreparations": {
+        "PUYER": "Puyer",
+        "KAPSUL": "Kapsul",
+        "SIRUP": "Sirup",
+        "SALEP": "Salep",
+        "OTHER": "Racikan"
+      }
     }
   },
   "channelArrivals": {

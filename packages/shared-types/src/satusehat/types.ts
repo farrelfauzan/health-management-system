@@ -69,10 +69,28 @@ export type SatusehatSubmissionMedication = {
   unit: string | null;
 };
 
+/**
+ * A compounded prescription line (racikan, P10-T18). Reported as one
+ * `Medication` of type SD with an `ingredient[]` per component — and skipped
+ * whole when any component lacks a KFA code, because a half-described compound
+ * is worse than an absent one: the next clinic would read it as complete.
+ */
+export type SatusehatSubmissionCompound = {
+  compoundName: string;
+  preparation: 'PUYER' | 'KAPSUL' | 'SIRUP' | 'SALEP' | 'OTHER' | null;
+  components: ReadonlyArray<{
+    medication: SatusehatSubmissionMedication;
+    quantity: number;
+    unit: string;
+  }>;
+};
+
 export type SatusehatSubmissionPrescriptionItem = {
   prescriptionItemId: string;
   prescriptionId: string;
-  medication: SatusehatSubmissionMedication;
+  /** Null for a compound line, which carries {@link compound} instead. */
+  medication: SatusehatSubmissionMedication | null;
+  compound: SatusehatSubmissionCompound | null;
   dosage: string;
   frequency: string;
   instructions: string | null;
@@ -89,7 +107,9 @@ export type SatusehatSubmissionDispenseItem = {
   dispenseItemId: string;
   dispenseRecordId: string;
   prescriptionId: string;
-  medication: SatusehatSubmissionMedication;
+  /** Null for a compound line; `prescriptionItemId` identifies it instead. */
+  medication: SatusehatSubmissionMedication | null;
+  prescriptionItemId: string | null;
   quantity: number;
   dispensedAt: Date;
 };

@@ -194,7 +194,14 @@ export class BpjsSubmissionRepository {
             prescriptions: {
               where: { deletedAt: null },
               select: {
-                items: { select: { medicationId: true, frequency: true } },
+                items: {
+                  select: {
+                    id: true,
+                    medicationId: true,
+                    frequency: true,
+                    compoundName: true,
+                  },
+                },
                 dispenseRecords: {
                   where: { status: 'DISPENSED' },
                   select: {
@@ -202,6 +209,7 @@ export class BpjsSubmissionRepository {
                       select: {
                         quantity: true,
                         medicationId: true,
+                        prescriptionItemId: true,
                         medication: { select: { name: true, dphoCode: true } },
                       },
                     },
@@ -358,15 +366,22 @@ export class BpjsSubmissionRepository {
     };
   }
 
+  /**
+   * PCare's `obat` list takes DPHO-coded products. A compound line has no
+   * single product and no DPHO code of its own, so it is reported by name with
+   * a null code — the same shape an uncoded product already takes, which the
+   * builder already treats as a gap rather than a guess (P10-T18).
+   */
   private collectDispensedMedications(
     encounter: {
       prescriptions: Array<{
-        items: Array<{ medicationId: string; frequency: string }>;
+        items: Array<{ id: string; medicationId: string | null; frequency: string; compoundName: string | null }>;
         dispenseRecords: Array<{
           items: Array<{
             quantity: number;
-            medicationId: string;
-            medication: { name: string; dphoCode: string | null };
+            medicationId: string | null;
+            prescriptionItemId: string | null;
+            medication: { name: string; dphoCode: string | null } | null;
           }>;
         }>;
       }>;
@@ -378,15 +393,35 @@ export class BpjsSubmissionRepository {
     const dispensedMedications: BpjsSubmissionDispensedMedicationData[] = [];
     for (const prescription of encounter.prescriptions) {
       const frequencyByMedicationId = new Map(
-        prescription.items.map((item) => [item.medicationId, item.frequency]),
+        prescription.items
+          .filter((item) => item.medicationId !== null)
+          .map((item) => [item.medicationId as string, item.frequency]),
+      );
+      const compoundLines = new Map(
+        prescription.items.map((item) => [item.id, item]),
       );
       for (const dispenseRecord of prescription.dispenseRecords) {
         for (const item of dispenseRecord.items) {
+          if (item.medication !== null && item.medicationId !== null) {
+            dispensedMedications.push({
+              medicationName: item.medication.name,
+              dphoCode: item.medication.dphoCode,
+              quantity: item.quantity,
+              frequency: frequencyByMedicationId.get(item.medicationId) ?? null,
+            });
+            continue;
+          }
+          const compoundLine = item.prescriptionItemId
+            ? compoundLines.get(item.prescriptionItemId)
+            : undefined;
+          if (!compoundLine) {
+            continue;
+          }
           dispensedMedications.push({
-            medicationName: item.medication.name,
-            dphoCode: item.medication.dphoCode,
+            medicationName: compoundLine.compoundName ?? 'Racikan',
+            dphoCode: null,
             quantity: item.quantity,
-            frequency: frequencyByMedicationId.get(item.medicationId) ?? null,
+            frequency: compoundLine.frequency,
           });
         }
       }

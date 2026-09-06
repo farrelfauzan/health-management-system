@@ -5,6 +5,7 @@ describe('PharmacyFlowRepository inventory', () => {
   const medicationId = '9a1f34c8-8e10-4d0e-8c31-4f6a1de1a004';
   const prescriptionId = '0d9b34a1-7c2f-4bd0-8a8e-6a3c1de1a001';
   const dispenseItemId = 'e5f6a7b8-3333-4444-8555-bf6a1de1a008';
+  const prescriptionItemId = 'c1b2a3d4-1111-4222-8333-9f6a1de1a006';
   const firstReceiptId = 'a5f6a7b8-3333-4444-8555-bf6a1de1a009';
   const secondReceiptId = 'b5f6a7b8-3333-4444-8555-bf6a1de1a010';
 
@@ -72,7 +73,15 @@ describe('PharmacyFlowRepository inventory', () => {
       prescription: {
         findFirst: jest.fn().mockResolvedValue({
           status: 'ISSUED',
-          items: [{ medicationId, quantity: 9 }],
+          items: [
+            {
+              id: prescriptionItemId,
+              medicationId,
+              quantity: 9,
+              isCompound: false,
+              components: [],
+            },
+          ],
           dispenseRecords: [],
         }),
         update: jest.fn(),
@@ -81,7 +90,7 @@ describe('PharmacyFlowRepository inventory', () => {
       dispenseRecord: {
         create: jest.fn().mockResolvedValue({
           id: finalRecord.id,
-          items: [{ id: dispenseItemId, medicationId }],
+          items: [{ id: dispenseItemId, medicationId, prescriptionItemId: null }],
         }),
         findUniqueOrThrow: jest.fn().mockResolvedValue(finalRecord),
       },
@@ -118,7 +127,15 @@ describe('PharmacyFlowRepository inventory', () => {
       prescription: {
         findFirst: jest.fn().mockResolvedValue({
           status: 'ISSUED',
-          items: [{ medicationId, quantity: 9 }],
+          items: [
+            {
+              id: prescriptionItemId,
+              medicationId,
+              quantity: 9,
+              isCompound: false,
+              components: [],
+            },
+          ],
           dispenseRecords: [],
         }),
         update: jest.fn(),
@@ -126,7 +143,7 @@ describe('PharmacyFlowRepository inventory', () => {
       dispenseRecord: {
         create: jest.fn().mockResolvedValue({
           id: 'd4e5f6a7-2222-4333-8444-af6a1de1a007',
-          items: [{ id: dispenseItemId, medicationId }],
+          items: [{ id: dispenseItemId, medicationId, prescriptionItemId: null }],
         }),
       },
       dispenseItemStockAllocation: { createMany: jest.fn() },

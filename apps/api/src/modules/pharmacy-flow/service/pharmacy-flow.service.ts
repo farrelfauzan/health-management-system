@@ -194,7 +194,17 @@ export class PharmacyFlowService {
       await this.assertActiveAssignment(doctorId, payload.patientId);
     }
 
-    await this.assertMedicationsExist(payload.items.map((item) => item.medicationId));
+    // Both shapes are checked: a product line's medication, and every
+    // ingredient of every compound line. A compound naming a medication that
+    // does not exist is a compound nobody can dispense.
+    await this.assertMedicationsExist([
+      ...payload.items
+        .map((item) => item.medicationId)
+        .filter((medicationId): medicationId is string => medicationId !== undefined),
+      ...payload.items.flatMap((item) =>
+        (item.components ?? []).map((component) => component.medicationId),
+      ),
+    ]);
 
     if (payload.encounterId) {
       await this.assertEncounterAcceptsPrescription(payload.encounterId, payload.patientId);
@@ -415,10 +425,11 @@ export class PharmacyFlowService {
     prescription: PrescriptionDetailRecord,
     payload: CreateDispenseDto,
   ): void {
-    const remainingByMedication = this.calculateRemainingQuantities(prescription);
+    const remainingByLine = this.calculateRemainingQuantities(prescription);
 
     for (const item of payload.items) {
-      const remainingQty = remainingByMedication.get(item.medicationId);
+      const lineId = this.resolvePrescriptionLineId(prescription, item);
+      const remainingQty = lineId === null ? undefined : remainingByLine.get(lineId);
 
       if (remainingQty === undefined) {
         throw new BadRequestException('Dispense item is not part of the prescription');
@@ -430,19 +441,45 @@ export class PharmacyFlowService {
     }
   }
 
+  /**
+   * Which prescription line a requested dispense item fulfils. Keyed by line
+   * rather than by medication since P10-T18: a compound has no medication to
+   * key on, and the same product may appear on two lines when one is a
+   * compound's ingredient.
+   */
+  private resolvePrescriptionLineId(
+    prescription: PrescriptionDetailRecord,
+    item: { medicationId?: string; prescriptionItemId?: string },
+  ): string | null {
+    if (item.prescriptionItemId) {
+      return (
+        prescription.items.find((line) => line.id === item.prescriptionItemId)?.id ?? null
+      );
+    }
+    return (
+      prescription.items.find((line) => line.medicationId === item.medicationId)?.id ?? null
+    );
+  }
+
   private calculateRemainingQuantities(prescription: PrescriptionDetailRecord): Map<string, number> {
-    const remainingByMedication = new Map<string, number>(
-      prescription.items.map((item) => [item.medicationId, item.quantity]),
+    const remainingByLine = new Map<string, number>(
+      prescription.items.map((item) => [item.id, item.quantity]),
     );
 
     for (const record of prescription.dispenseRecords) {
       for (const item of record.items) {
-        const remainingQty = remainingByMedication.get(item.medicationId) ?? 0;
-        remainingByMedication.set(item.medicationId, remainingQty - item.quantity);
+        const lineId = item.prescriptionItemId
+          ? item.prescriptionItemId
+          : (prescription.items.find((line) => line.medicationId === item.medicationId)?.id ??
+            null);
+        if (lineId === null) {
+          continue;
+        }
+        remainingByLine.set(lineId, (remainingByLine.get(lineId) ?? 0) - item.quantity);
       }
     }
 
-    return remainingByMedication;
+    return remainingByLine;
   }
 
   private async assertMedicationCodeAvailable(code: string, excludedId?: string): Promise<void> {
@@ -557,14 +594,26 @@ export class PharmacyFlowService {
       },
       items: prescription.items.map((item) => ({
         id: item.id,
-        medicationId: item.medicationId,
-        medicationCode: item.medication.code,
-        medicationName: item.medication.name,
+        medicationId: item.medicationId ?? undefined,
+        medicationCode: item.medication?.code,
+        medicationName: item.medication?.name,
         dosage: item.dosage,
         frequency: item.frequency,
         durationDays: item.durationDays ?? undefined,
         quantity: item.quantity,
         instructions: item.instructions ?? undefined,
+        isCompound: item.isCompound,
+        compoundName: item.compoundName ?? undefined,
+        preparation: item.preparation ?? undefined,
+        dosageUnit: item.dosageUnit ?? undefined,
+        components: item.components.map((component) => ({
+          id: component.id,
+          medicationId: component.medicationId,
+          medicationCode: component.medication.code,
+          medicationName: component.medication.name,
+          quantity: component.quantity,
+          unit: component.unit,
+        })),
       })),
     };
   }
@@ -582,9 +631,21 @@ export class PharmacyFlowService {
       updatedAt: record.updatedAt.toISOString(),
       items: record.items.map((item) => ({
         id: item.id,
-        medicationId: item.medicationId,
-        medicationCode: item.medication.code,
-        medicationName: item.medication.name,
+        medicationId: item.medicationId ?? undefined,
+        medicationCode: item.medication?.code,
+        medicationName: item.medication?.name,
+        prescriptionItemId: item.prescriptionItemId ?? undefined,
+        compoundName: item.prescriptionItem?.compoundName ?? undefined,
+        preparation: item.prescriptionItem?.preparation ?? undefined,
+        dosageUnit: item.prescriptionItem?.dosageUnit ?? undefined,
+        components: (item.prescriptionItem?.components ?? []).map((component) => ({
+          id: component.id,
+          medicationId: component.medicationId,
+          medicationCode: component.medication.code,
+          medicationName: component.medication.name,
+          quantity: component.quantity,
+          unit: component.unit,
+        })),
         quantity: item.quantity,
         allocations: item.stockAllocations.map((allocation) => ({
           stockReceiptId: allocation.stockReceipt.id,

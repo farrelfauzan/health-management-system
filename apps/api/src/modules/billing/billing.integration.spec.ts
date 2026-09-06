@@ -41,6 +41,7 @@ describe('Billing integration', () => {
     findServiceTariffById: jest.fn(),
     findActiveConsultationTariffs: jest.fn(),
     findActiveTariffsByIcd9cmCodes: jest.fn(),
+    findActiveTariffsByCodes: jest.fn(() => Promise.resolve([])),
     createServiceTariff: jest.fn(),
     updateServiceTariff: jest.fn(),
   };
@@ -227,6 +228,7 @@ describe('Billing integration', () => {
         medicationId: 'medication-1',
         quantity: 10,
         medication: { id: 'medication-1', name: 'Paracetamol 500 mg', unitPrice: null },
+        compound: null,
       },
     ]);
     serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([tariffRecord]);

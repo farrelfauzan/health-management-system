@@ -421,6 +421,7 @@ export const ModelName = {
   Medication: 'Medication',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
+  PrescriptionItemComponent: 'PrescriptionItemComponent',
   DispenseRecord: 'DispenseRecord',
   DispenseItem: 'DispenseItem',
   MedicationStockReceipt: 'MedicationStockReceipt',
@@ -489,7 +490,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3228,6 +3229,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PrescriptionMedicationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PrescriptionMedicationCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrescriptionItemComponent: {
+      payload: Prisma.$PrescriptionItemComponentPayload<ExtArgs>
+      fields: Prisma.PrescriptionItemComponentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrescriptionItemComponentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrescriptionItemComponentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload>
+        }
+        findFirst: {
+          args: Prisma.PrescriptionItemComponentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrescriptionItemComponentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload>
+        }
+        findMany: {
+          args: Prisma.PrescriptionItemComponentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload>[]
+        }
+        create: {
+          args: Prisma.PrescriptionItemComponentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload>
+        }
+        createMany: {
+          args: Prisma.PrescriptionItemComponentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrescriptionItemComponentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload>[]
+        }
+        delete: {
+          args: Prisma.PrescriptionItemComponentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload>
+        }
+        update: {
+          args: Prisma.PrescriptionItemComponentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrescriptionItemComponentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrescriptionItemComponentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrescriptionItemComponentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrescriptionItemComponentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionItemComponentPayload>
+        }
+        aggregate: {
+          args: Prisma.PrescriptionItemComponentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrescriptionItemComponent>
+        }
+        groupBy: {
+          args: Prisma.PrescriptionItemComponentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrescriptionItemComponentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrescriptionItemComponentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrescriptionItemComponentCountAggregateOutputType> | number
         }
       }
     }
@@ -7802,11 +7877,28 @@ export const PrescriptionMedicationScalarFieldEnum = {
   durationDays: 'durationDays',
   quantity: 'quantity',
   instructions: 'instructions',
+  isCompound: 'isCompound',
+  compoundName: 'compoundName',
+  preparation: 'preparation',
+  dosageUnit: 'dosageUnit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PrescriptionMedicationScalarFieldEnum = (typeof PrescriptionMedicationScalarFieldEnum)[keyof typeof PrescriptionMedicationScalarFieldEnum]
+
+
+export const PrescriptionItemComponentScalarFieldEnum = {
+  id: 'id',
+  prescriptionItemId: 'prescriptionItemId',
+  medicationId: 'medicationId',
+  quantity: 'quantity',
+  unit: 'unit',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrescriptionItemComponentScalarFieldEnum = (typeof PrescriptionItemComponentScalarFieldEnum)[keyof typeof PrescriptionItemComponentScalarFieldEnum]
 
 
 export const DispenseRecordScalarFieldEnum = {
@@ -7827,6 +7919,7 @@ export const DispenseItemScalarFieldEnum = {
   id: 'id',
   dispenseRecordId: 'dispenseRecordId',
   medicationId: 'medicationId',
+  prescriptionItemId: 'prescriptionItemId',
   quantity: 'quantity',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -9204,6 +9297,20 @@ export type ListEnumPrescriptionStatusFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'CompoundPreparation'
+ */
+export type EnumCompoundPreparationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CompoundPreparation'>
+    
+
+
+/**
+ * Reference to a field of type 'CompoundPreparation[]'
+ */
+export type ListEnumCompoundPreparationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CompoundPreparation[]'>
+    
+
+
+/**
  * Reference to a field of type 'DispenseStatus'
  */
 export type EnumDispenseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DispenseStatus'>
@@ -9951,6 +10058,7 @@ export type GlobalOmitConfig = {
   medication?: Prisma.MedicationOmit
   prescription?: Prisma.PrescriptionOmit
   prescriptionMedication?: Prisma.PrescriptionMedicationOmit
+  prescriptionItemComponent?: Prisma.PrescriptionItemComponentOmit
   dispenseRecord?: Prisma.DispenseRecordOmit
   dispenseItem?: Prisma.DispenseItemOmit
   medicationStockReceipt?: Prisma.MedicationStockReceiptOmit

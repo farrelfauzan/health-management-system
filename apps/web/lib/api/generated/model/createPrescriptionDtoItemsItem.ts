@@ -5,9 +5,11 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreatePrescriptionDtoItemsItemComponentsItem } from './createPrescriptionDtoItemsItemComponentsItem';
+import type { CreatePrescriptionDtoItemsItemPreparation } from './createPrescriptionDtoItemsItemPreparation';
 
 export type CreatePrescriptionDtoItemsItem = {
-  medicationId: string;
+  medicationId?: string;
   /**
      * @minLength 1
      * @maxLength 100
@@ -33,4 +35,21 @@ export type CreatePrescriptionDtoItemsItem = {
      * @maxLength 500
      */
   instructions?: string;
+  isCompound?: boolean;
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  compoundName?: string;
+  preparation?: CreatePrescriptionDtoItemsItemPreparation;
+  /**
+     * @minLength 1
+     * @maxLength 32
+     */
+  dosageUnit?: string;
+  /**
+     * @minItems 1
+     * @maxItems 20
+     */
+  components?: CreatePrescriptionDtoItemsItemComponentsItem[];
 };

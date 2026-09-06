@@ -29,9 +29,10 @@ function summarizeMedications(
     return emptyLabel;
   }
   const remainingCount = prescription.items.length - 1;
-  return remainingCount > 0
-    ? more(firstItem.medicationName, remainingCount)
-    : firstItem.medicationName;
+  // A compound line has no catalog name; the label the pharmacist put on it is
+  // what the queue should say (P10-T18).
+  const firstLabel = firstItem.medicationName ?? firstItem.compoundName ?? '';
+  return remainingCount > 0 ? more(firstLabel, remainingCount) : firstLabel;
 }
 
 export function PrescriptionQueueCard({

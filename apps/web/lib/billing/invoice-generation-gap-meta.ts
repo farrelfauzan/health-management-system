@@ -14,4 +14,8 @@ export const INVOICE_GENERATION_GAP_MESSAGES: Record<InvoiceGenerationGapReason,
     'This dispensed medication has no price on its record, so it was left off the invoice.',
   NO_ACCOMMODATION_TARIFF:
     'This ward class has no active accommodation tariff, so its nights were left off the bill. Add one under Tariffs and reissue.',
+  UNPRICED_COMPOUND_COMPONENT:
+    'One ingredient of this compound has no price, so the whole compound was left off — a half-priced racikan reads as a real number. Price the named ingredient and regenerate.',
+  NO_COMPOUNDING_FEE_TARIFF:
+    'The compound was priced from its ingredients, but there is no active JASA-RACIK tariff, so the compounding fee was not billed. Add one under Tariffs and reissue.',
 };

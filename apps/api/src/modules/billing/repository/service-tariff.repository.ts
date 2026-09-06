@@ -108,6 +108,23 @@ export class ServiceTariffRepository {
     return rows.map((row) => this.toServiceTariffRecord(row));
   }
 
+  /**
+   * Tariffs matched by their own `code`. Deliberately not restricted to one
+   * category: a clinic that files its compounding fee under PROCEDURE rather
+   * than OTHER is not wrong, and refusing to find it would turn a naming
+   * preference into an unpriced line (P10-T18).
+   */
+  async findActiveTariffsByCodes(codes: string[]): Promise<ServiceTariffRecord[]> {
+    if (codes.length === 0) {
+      return [];
+    }
+    const rows = await this.prisma.findManyActive(this.prisma.serviceTariff, {
+      where: { code: { in: codes }, isActive: true },
+      include: SERVICE_TARIFF_INCLUDE,
+    });
+    return rows.map((row) => this.toServiceTariffRecord(row));
+  }
+
   async createServiceTariff(
     payload: CreateServiceTariffRecordPayload,
   ): Promise<ServiceTariffRecord> {

@@ -56,12 +56,25 @@ type PrescriptionRow = {
     frequency: string;
     instructions: string | null;
     quantity: number;
-    medication: MedicationRow;
+    isCompound: boolean;
+    compoundName: string | null;
+    preparation: 'PUYER' | 'KAPSUL' | 'SIRUP' | 'SALEP' | 'OTHER' | null;
+    medication: MedicationRow | null;
+    components: Array<{
+      quantity: { toNumber: () => number };
+      unit: string;
+      medication: MedicationRow;
+    }>;
   }>;
   dispenseRecords: Array<{
     id: string;
     dispensedAt: Date;
-    items: Array<{ id: string; quantity: number; medication: MedicationRow }>;
+    items: Array<{
+      id: string;
+      quantity: number;
+      prescriptionItemId: string | null;
+      medication: MedicationRow | null;
+    }>;
   }>;
 };
 
@@ -188,7 +201,18 @@ export class SatusehatSubmissionRepository {
                 frequency: true,
                 instructions: true,
                 quantity: true,
+                isCompound: true,
+                compoundName: true,
+                preparation: true,
                 medication: MEDICATION_SELECT,
+                components: {
+                  orderBy: { createdAt: 'asc' },
+                  select: {
+                    quantity: true,
+                    unit: true,
+                    medication: MEDICATION_SELECT,
+                  },
+                },
               },
             },
             dispenseRecords: {
@@ -199,7 +223,12 @@ export class SatusehatSubmissionRepository {
                 dispensedAt: true,
                 items: {
                   orderBy: { createdAt: 'asc' },
-                  select: { id: true, quantity: true, medication: MEDICATION_SELECT },
+                  select: {
+                    id: true,
+                    quantity: true,
+                    prescriptionItemId: true,
+                    medication: MEDICATION_SELECT,
+                  },
                 },
               },
             },
@@ -253,7 +282,18 @@ export class SatusehatSubmissionRepository {
       items: prescription.items.map((item) => ({
         prescriptionItemId: item.id,
         prescriptionId: prescription.id,
-        medication: this.toSubmissionMedication(item.medication),
+        medication: item.medication ? this.toSubmissionMedication(item.medication) : null,
+        compound: item.isCompound
+          ? {
+              compoundName: item.compoundName ?? 'Racikan',
+              preparation: item.preparation,
+              components: item.components.map((component) => ({
+                medication: this.toSubmissionMedication(component.medication),
+                quantity: component.quantity.toNumber(),
+                unit: component.unit,
+              })),
+            }
+          : null,
         dosage: item.dosage,
         frequency: item.frequency,
         instructions: item.instructions,
@@ -270,7 +310,8 @@ export class SatusehatSubmissionRepository {
         dispenseItemId: item.id,
         dispenseRecordId: dispenseRecord.id,
         prescriptionId: prescription.id,
-        medication: this.toSubmissionMedication(item.medication),
+        medication: item.medication ? this.toSubmissionMedication(item.medication) : null,
+        prescriptionItemId: item.prescriptionItemId,
         quantity: item.quantity,
         dispensedAt: dispenseRecord.dispensedAt,
       })),

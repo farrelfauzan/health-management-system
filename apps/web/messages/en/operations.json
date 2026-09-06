@@ -1332,6 +1332,18 @@
         "uploadedBody": "This document was uploaded as a file.",
         "emptyBody": "This document has no content yet."
       }
+    },
+    "pharmacyPrescriptions": {
+      "compoundBadge": "Compound",
+      "compoundComponents": "Ingredients",
+      "compoundTotal": "{total} {unit} total",
+      "compoundPreparations": {
+        "PUYER": "Puyer",
+        "KAPSUL": "Capsule",
+        "SIRUP": "Syrup",
+        "SALEP": "Ointment",
+        "OTHER": "Compound"
+      }
     }
   },
   "channelArrivals": {

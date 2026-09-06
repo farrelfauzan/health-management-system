@@ -1,3 +1,4 @@
+import type { ServiceTariffRecord } from '@hms/shared-types';
 import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -32,6 +33,9 @@ describe('BillingService', () => {
     findServiceTariffById: jest.fn(),
     findActiveConsultationTariffs: jest.fn(),
     findActiveTariffsByIcd9cmCodes: jest.fn(),
+    findActiveTariffsByCodes: jest.fn<Promise<ServiceTariffRecord[]>, [string[]]>(() =>
+      Promise.resolve([]),
+    ),
   };
 
   const auditServiceMock = {
@@ -154,11 +158,13 @@ describe('BillingService', () => {
           medicationId: 'medication-1',
           quantity: 10,
           medication: { id: 'medication-1', name: 'Amoxicillin 500 mg', unitPrice: 1500 },
+          compound: null,
         },
         {
           medicationId: 'medication-1',
           quantity: 5,
           medication: { id: 'medication-1', name: 'Amoxicillin 500 mg', unitPrice: 1500 },
+          compound: null,
         },
       ]);
 
@@ -192,6 +198,108 @@ describe('BillingService', () => {
       expect(actualResult.gaps).toEqual([]);
     });
 
+    it('prices a racikan as the sum of its ingredients plus the compounding fee', async () => {
+      billingRepositoryMock.findDispensedItemsByEncounterId.mockResolvedValue([
+        {
+          medicationId: null,
+          quantity: 10,
+          medication: null,
+          compound: {
+            prescriptionItemId: 'presc-item-compound',
+            name: 'Puyer batuk pilek',
+            components: [
+              {
+                medicationId: 'medication-1',
+                name: 'Paracetamol 500 mg',
+                quantityPerCompound: 0.5,
+                unitPrice: 1000,
+              },
+              {
+                medicationId: 'medication-2',
+                name: 'CTM 4 mg',
+                quantityPerCompound: 0.25,
+                unitPrice: 400,
+              },
+            ],
+          },
+        },
+      ]);
+      serviceTariffRepositoryMock.findActiveTariffsByCodes.mockResolvedValue([
+        {
+          id: 'tariff-racik',
+          code: 'JASA-RACIK',
+          name: 'Jasa Racik',
+          category: 'OTHER' as const,
+          icd9cmCode: null,
+          roomClass: null,
+          price: 5000,
+          isActive: true,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      ]);
+
+      await service.generateInvoice(inputPayload, cashierUser);
+
+      const createPayload = billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0];
+      expect(createPayload.items).toEqual(
+        expect.arrayContaining([
+          // 0.5 × 1000 + 0.25 × 400 = 600 per bungkus, ten of them.
+          expect.objectContaining({
+            description: 'Puyer batuk pilek',
+            quantity: 10,
+            unitPrice: 600,
+            amount: 6000,
+          }),
+          expect.objectContaining({ description: 'Jasa Racik', quantity: 10 }),
+        ]),
+      );
+    });
+
+    it('gaps a whole racikan when one ingredient has no price, rather than half-pricing it', async () => {
+      billingRepositoryMock.findDispensedItemsByEncounterId.mockResolvedValue([
+        {
+          medicationId: null,
+          quantity: 10,
+          medication: null,
+          compound: {
+            prescriptionItemId: 'presc-item-compound',
+            name: 'Puyer batuk pilek',
+            components: [
+              {
+                medicationId: 'medication-1',
+                name: 'Paracetamol 500 mg',
+                quantityPerCompound: 0.5,
+                unitPrice: 1000,
+              },
+              {
+                medicationId: 'medication-2',
+                name: 'CTM 4 mg',
+                quantityPerCompound: 0.25,
+                unitPrice: null,
+              },
+            ],
+          },
+        },
+      ]);
+      serviceTariffRepositoryMock.findActiveTariffsByCodes.mockResolvedValue([]);
+
+      const actualResult = await service.generateInvoice(inputPayload, cashierUser);
+
+      const createPayload = billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0];
+      expect(createPayload.items).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ description: 'Puyer batuk pilek' })]),
+      );
+      expect(actualResult.gaps).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            reason: 'UNPRICED_COMPOUND_COMPONENT',
+            description: expect.stringContaining('CTM 4 mg'),
+          }),
+        ]),
+      );
+    });
+
     it('reports unpriced billables as gaps instead of dropping them silently', async () => {
       serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([]);
       serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([]);
@@ -200,6 +308,7 @@ describe('BillingService', () => {
           medicationId: 'medication-2',
           quantity: 10,
           medication: { id: 'medication-2', name: 'Paracetamol 500 mg', unitPrice: null },
+          compound: null,
         },
       ]);
 

@@ -14,7 +14,13 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model DispenseItem
+ * One line handed over the counter: a catalog product, or a compound.
  * 
+ * A compound line points at the prescription item rather than at a product —
+ * there is no single product to point at — and its stock allocations resolve
+ * to the component medications through their receipts, which is what
+ * `DispenseItemStockAllocation` already records (P10-T18). A CHECK enforces
+ * exactly one of the two subjects.
  */
 export type DispenseItemModel = runtime.Types.Result.DefaultSelection<Prisma.$DispenseItemPayload>
 
@@ -38,6 +44,7 @@ export type DispenseItemMinAggregateOutputType = {
   id: string | null
   dispenseRecordId: string | null
   medicationId: string | null
+  prescriptionItemId: string | null
   quantity: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -47,6 +54,7 @@ export type DispenseItemMaxAggregateOutputType = {
   id: string | null
   dispenseRecordId: string | null
   medicationId: string | null
+  prescriptionItemId: string | null
   quantity: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -56,6 +64,7 @@ export type DispenseItemCountAggregateOutputType = {
   id: number
   dispenseRecordId: number
   medicationId: number
+  prescriptionItemId: number
   quantity: number
   createdAt: number
   updatedAt: number
@@ -75,6 +84,7 @@ export type DispenseItemMinAggregateInputType = {
   id?: true
   dispenseRecordId?: true
   medicationId?: true
+  prescriptionItemId?: true
   quantity?: true
   createdAt?: true
   updatedAt?: true
@@ -84,6 +94,7 @@ export type DispenseItemMaxAggregateInputType = {
   id?: true
   dispenseRecordId?: true
   medicationId?: true
+  prescriptionItemId?: true
   quantity?: true
   createdAt?: true
   updatedAt?: true
@@ -93,6 +104,7 @@ export type DispenseItemCountAggregateInputType = {
   id?: true
   dispenseRecordId?: true
   medicationId?: true
+  prescriptionItemId?: true
   quantity?: true
   createdAt?: true
   updatedAt?: true
@@ -188,7 +200,8 @@ export type DispenseItemGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 export type DispenseItemGroupByOutputType = {
   id: string
   dispenseRecordId: string
-  medicationId: string
+  medicationId: string | null
+  prescriptionItemId: string | null
   quantity: number
   createdAt: Date
   updatedAt: Date
@@ -220,47 +233,53 @@ export type DispenseItemWhereInput = {
   NOT?: Prisma.DispenseItemWhereInput | Prisma.DispenseItemWhereInput[]
   id?: Prisma.UuidFilter<"DispenseItem"> | string
   dispenseRecordId?: Prisma.UuidFilter<"DispenseItem"> | string
-  medicationId?: Prisma.UuidFilter<"DispenseItem"> | string
+  medicationId?: Prisma.UuidNullableFilter<"DispenseItem"> | string | null
+  prescriptionItemId?: Prisma.UuidNullableFilter<"DispenseItem"> | string | null
   quantity?: Prisma.IntFilter<"DispenseItem"> | number
   createdAt?: Prisma.DateTimeFilter<"DispenseItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DispenseItem"> | Date | string
   dispenseRecord?: Prisma.XOR<Prisma.DispenseRecordScalarRelationFilter, Prisma.DispenseRecordWhereInput>
-  medication?: Prisma.XOR<Prisma.MedicationScalarRelationFilter, Prisma.MedicationWhereInput>
+  medication?: Prisma.XOR<Prisma.MedicationNullableScalarRelationFilter, Prisma.MedicationWhereInput> | null
+  prescriptionItem?: Prisma.XOR<Prisma.PrescriptionMedicationNullableScalarRelationFilter, Prisma.PrescriptionMedicationWhereInput> | null
   stockAllocations?: Prisma.DispenseItemStockAllocationListRelationFilter
 }
 
 export type DispenseItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   dispenseRecordId?: Prisma.SortOrder
-  medicationId?: Prisma.SortOrder
+  medicationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriptionItemId?: Prisma.SortOrderInput | Prisma.SortOrder
   quantity?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   dispenseRecord?: Prisma.DispenseRecordOrderByWithRelationInput
   medication?: Prisma.MedicationOrderByWithRelationInput
+  prescriptionItem?: Prisma.PrescriptionMedicationOrderByWithRelationInput
   stockAllocations?: Prisma.DispenseItemStockAllocationOrderByRelationAggregateInput
 }
 
 export type DispenseItemWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  dispenseRecordId_medicationId?: Prisma.DispenseItemDispenseRecordIdMedicationIdCompoundUniqueInput
   AND?: Prisma.DispenseItemWhereInput | Prisma.DispenseItemWhereInput[]
   OR?: Prisma.DispenseItemWhereInput[]
   NOT?: Prisma.DispenseItemWhereInput | Prisma.DispenseItemWhereInput[]
   dispenseRecordId?: Prisma.UuidFilter<"DispenseItem"> | string
-  medicationId?: Prisma.UuidFilter<"DispenseItem"> | string
+  medicationId?: Prisma.UuidNullableFilter<"DispenseItem"> | string | null
+  prescriptionItemId?: Prisma.UuidNullableFilter<"DispenseItem"> | string | null
   quantity?: Prisma.IntFilter<"DispenseItem"> | number
   createdAt?: Prisma.DateTimeFilter<"DispenseItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DispenseItem"> | Date | string
   dispenseRecord?: Prisma.XOR<Prisma.DispenseRecordScalarRelationFilter, Prisma.DispenseRecordWhereInput>
-  medication?: Prisma.XOR<Prisma.MedicationScalarRelationFilter, Prisma.MedicationWhereInput>
+  medication?: Prisma.XOR<Prisma.MedicationNullableScalarRelationFilter, Prisma.MedicationWhereInput> | null
+  prescriptionItem?: Prisma.XOR<Prisma.PrescriptionMedicationNullableScalarRelationFilter, Prisma.PrescriptionMedicationWhereInput> | null
   stockAllocations?: Prisma.DispenseItemStockAllocationListRelationFilter
-}, "id" | "dispenseRecordId_medicationId">
+}, "id">
 
 export type DispenseItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   dispenseRecordId?: Prisma.SortOrder
-  medicationId?: Prisma.SortOrder
+  medicationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  prescriptionItemId?: Prisma.SortOrderInput | Prisma.SortOrder
   quantity?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -277,7 +296,8 @@ export type DispenseItemScalarWhereWithAggregatesInput = {
   NOT?: Prisma.DispenseItemScalarWhereWithAggregatesInput | Prisma.DispenseItemScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"DispenseItem"> | string
   dispenseRecordId?: Prisma.UuidWithAggregatesFilter<"DispenseItem"> | string
-  medicationId?: Prisma.UuidWithAggregatesFilter<"DispenseItem"> | string
+  medicationId?: Prisma.UuidNullableWithAggregatesFilter<"DispenseItem"> | string | null
+  prescriptionItemId?: Prisma.UuidNullableWithAggregatesFilter<"DispenseItem"> | string | null
   quantity?: Prisma.IntWithAggregatesFilter<"DispenseItem"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"DispenseItem"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"DispenseItem"> | Date | string
@@ -289,14 +309,16 @@ export type DispenseItemCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dispenseRecord: Prisma.DispenseRecordCreateNestedOneWithoutItemsInput
-  medication: Prisma.MedicationCreateNestedOneWithoutDispenseItemsInput
+  medication?: Prisma.MedicationCreateNestedOneWithoutDispenseItemsInput
+  prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutDispenseItemsInput
   stockAllocations?: Prisma.DispenseItemStockAllocationCreateNestedManyWithoutDispenseItemInput
 }
 
 export type DispenseItemUncheckedCreateInput = {
   id?: string
   dispenseRecordId: string
-  medicationId: string
+  medicationId?: string | null
+  prescriptionItemId?: string | null
   quantity: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -309,14 +331,16 @@ export type DispenseItemUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dispenseRecord?: Prisma.DispenseRecordUpdateOneRequiredWithoutItemsNestedInput
-  medication?: Prisma.MedicationUpdateOneRequiredWithoutDispenseItemsNestedInput
+  medication?: Prisma.MedicationUpdateOneWithoutDispenseItemsNestedInput
+  prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutDispenseItemsNestedInput
   stockAllocations?: Prisma.DispenseItemStockAllocationUpdateManyWithoutDispenseItemNestedInput
 }
 
 export type DispenseItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   dispenseRecordId?: Prisma.StringFieldUpdateOperationsInput | string
-  medicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriptionItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -326,7 +350,8 @@ export type DispenseItemUncheckedUpdateInput = {
 export type DispenseItemCreateManyInput = {
   id?: string
   dispenseRecordId: string
-  medicationId: string
+  medicationId?: string | null
+  prescriptionItemId?: string | null
   quantity: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -342,7 +367,8 @@ export type DispenseItemUpdateManyMutationInput = {
 export type DispenseItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   dispenseRecordId?: Prisma.StringFieldUpdateOperationsInput | string
-  medicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriptionItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -358,15 +384,11 @@ export type DispenseItemOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type DispenseItemDispenseRecordIdMedicationIdCompoundUniqueInput = {
-  dispenseRecordId: string
-  medicationId: string
-}
-
 export type DispenseItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   dispenseRecordId?: Prisma.SortOrder
   medicationId?: Prisma.SortOrder
+  prescriptionItemId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -380,6 +402,7 @@ export type DispenseItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   dispenseRecordId?: Prisma.SortOrder
   medicationId?: Prisma.SortOrder
+  prescriptionItemId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -389,6 +412,7 @@ export type DispenseItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   dispenseRecordId?: Prisma.SortOrder
   medicationId?: Prisma.SortOrder
+  prescriptionItemId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -442,6 +466,48 @@ export type DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput = {
   connect?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
   update?: Prisma.DispenseItemUpdateWithWhereUniqueWithoutMedicationInput | Prisma.DispenseItemUpdateWithWhereUniqueWithoutMedicationInput[]
   updateMany?: Prisma.DispenseItemUpdateManyWithWhereWithoutMedicationInput | Prisma.DispenseItemUpdateManyWithWhereWithoutMedicationInput[]
+  deleteMany?: Prisma.DispenseItemScalarWhereInput | Prisma.DispenseItemScalarWhereInput[]
+}
+
+export type DispenseItemCreateNestedManyWithoutPrescriptionItemInput = {
+  create?: Prisma.XOR<Prisma.DispenseItemCreateWithoutPrescriptionItemInput, Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput> | Prisma.DispenseItemCreateWithoutPrescriptionItemInput[] | Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput[]
+  connectOrCreate?: Prisma.DispenseItemCreateOrConnectWithoutPrescriptionItemInput | Prisma.DispenseItemCreateOrConnectWithoutPrescriptionItemInput[]
+  createMany?: Prisma.DispenseItemCreateManyPrescriptionItemInputEnvelope
+  connect?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+}
+
+export type DispenseItemUncheckedCreateNestedManyWithoutPrescriptionItemInput = {
+  create?: Prisma.XOR<Prisma.DispenseItemCreateWithoutPrescriptionItemInput, Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput> | Prisma.DispenseItemCreateWithoutPrescriptionItemInput[] | Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput[]
+  connectOrCreate?: Prisma.DispenseItemCreateOrConnectWithoutPrescriptionItemInput | Prisma.DispenseItemCreateOrConnectWithoutPrescriptionItemInput[]
+  createMany?: Prisma.DispenseItemCreateManyPrescriptionItemInputEnvelope
+  connect?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+}
+
+export type DispenseItemUpdateManyWithoutPrescriptionItemNestedInput = {
+  create?: Prisma.XOR<Prisma.DispenseItemCreateWithoutPrescriptionItemInput, Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput> | Prisma.DispenseItemCreateWithoutPrescriptionItemInput[] | Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput[]
+  connectOrCreate?: Prisma.DispenseItemCreateOrConnectWithoutPrescriptionItemInput | Prisma.DispenseItemCreateOrConnectWithoutPrescriptionItemInput[]
+  upsert?: Prisma.DispenseItemUpsertWithWhereUniqueWithoutPrescriptionItemInput | Prisma.DispenseItemUpsertWithWhereUniqueWithoutPrescriptionItemInput[]
+  createMany?: Prisma.DispenseItemCreateManyPrescriptionItemInputEnvelope
+  set?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+  disconnect?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+  delete?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+  connect?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+  update?: Prisma.DispenseItemUpdateWithWhereUniqueWithoutPrescriptionItemInput | Prisma.DispenseItemUpdateWithWhereUniqueWithoutPrescriptionItemInput[]
+  updateMany?: Prisma.DispenseItemUpdateManyWithWhereWithoutPrescriptionItemInput | Prisma.DispenseItemUpdateManyWithWhereWithoutPrescriptionItemInput[]
+  deleteMany?: Prisma.DispenseItemScalarWhereInput | Prisma.DispenseItemScalarWhereInput[]
+}
+
+export type DispenseItemUncheckedUpdateManyWithoutPrescriptionItemNestedInput = {
+  create?: Prisma.XOR<Prisma.DispenseItemCreateWithoutPrescriptionItemInput, Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput> | Prisma.DispenseItemCreateWithoutPrescriptionItemInput[] | Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput[]
+  connectOrCreate?: Prisma.DispenseItemCreateOrConnectWithoutPrescriptionItemInput | Prisma.DispenseItemCreateOrConnectWithoutPrescriptionItemInput[]
+  upsert?: Prisma.DispenseItemUpsertWithWhereUniqueWithoutPrescriptionItemInput | Prisma.DispenseItemUpsertWithWhereUniqueWithoutPrescriptionItemInput[]
+  createMany?: Prisma.DispenseItemCreateManyPrescriptionItemInputEnvelope
+  set?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+  disconnect?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+  delete?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+  connect?: Prisma.DispenseItemWhereUniqueInput | Prisma.DispenseItemWhereUniqueInput[]
+  update?: Prisma.DispenseItemUpdateWithWhereUniqueWithoutPrescriptionItemInput | Prisma.DispenseItemUpdateWithWhereUniqueWithoutPrescriptionItemInput[]
+  updateMany?: Prisma.DispenseItemUpdateManyWithWhereWithoutPrescriptionItemInput | Prisma.DispenseItemUpdateManyWithWhereWithoutPrescriptionItemInput[]
   deleteMany?: Prisma.DispenseItemScalarWhereInput | Prisma.DispenseItemScalarWhereInput[]
 }
 
@@ -507,12 +573,14 @@ export type DispenseItemCreateWithoutMedicationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dispenseRecord: Prisma.DispenseRecordCreateNestedOneWithoutItemsInput
+  prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutDispenseItemsInput
   stockAllocations?: Prisma.DispenseItemStockAllocationCreateNestedManyWithoutDispenseItemInput
 }
 
 export type DispenseItemUncheckedCreateWithoutMedicationInput = {
   id?: string
   dispenseRecordId: string
+  prescriptionItemId?: string | null
   quantity: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -551,10 +619,57 @@ export type DispenseItemScalarWhereInput = {
   NOT?: Prisma.DispenseItemScalarWhereInput | Prisma.DispenseItemScalarWhereInput[]
   id?: Prisma.UuidFilter<"DispenseItem"> | string
   dispenseRecordId?: Prisma.UuidFilter<"DispenseItem"> | string
-  medicationId?: Prisma.UuidFilter<"DispenseItem"> | string
+  medicationId?: Prisma.UuidNullableFilter<"DispenseItem"> | string | null
+  prescriptionItemId?: Prisma.UuidNullableFilter<"DispenseItem"> | string | null
   quantity?: Prisma.IntFilter<"DispenseItem"> | number
   createdAt?: Prisma.DateTimeFilter<"DispenseItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DispenseItem"> | Date | string
+}
+
+export type DispenseItemCreateWithoutPrescriptionItemInput = {
+  id?: string
+  quantity: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  dispenseRecord: Prisma.DispenseRecordCreateNestedOneWithoutItemsInput
+  medication?: Prisma.MedicationCreateNestedOneWithoutDispenseItemsInput
+  stockAllocations?: Prisma.DispenseItemStockAllocationCreateNestedManyWithoutDispenseItemInput
+}
+
+export type DispenseItemUncheckedCreateWithoutPrescriptionItemInput = {
+  id?: string
+  dispenseRecordId: string
+  medicationId?: string | null
+  quantity: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  stockAllocations?: Prisma.DispenseItemStockAllocationUncheckedCreateNestedManyWithoutDispenseItemInput
+}
+
+export type DispenseItemCreateOrConnectWithoutPrescriptionItemInput = {
+  where: Prisma.DispenseItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.DispenseItemCreateWithoutPrescriptionItemInput, Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput>
+}
+
+export type DispenseItemCreateManyPrescriptionItemInputEnvelope = {
+  data: Prisma.DispenseItemCreateManyPrescriptionItemInput | Prisma.DispenseItemCreateManyPrescriptionItemInput[]
+  skipDuplicates?: boolean
+}
+
+export type DispenseItemUpsertWithWhereUniqueWithoutPrescriptionItemInput = {
+  where: Prisma.DispenseItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.DispenseItemUpdateWithoutPrescriptionItemInput, Prisma.DispenseItemUncheckedUpdateWithoutPrescriptionItemInput>
+  create: Prisma.XOR<Prisma.DispenseItemCreateWithoutPrescriptionItemInput, Prisma.DispenseItemUncheckedCreateWithoutPrescriptionItemInput>
+}
+
+export type DispenseItemUpdateWithWhereUniqueWithoutPrescriptionItemInput = {
+  where: Prisma.DispenseItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.DispenseItemUpdateWithoutPrescriptionItemInput, Prisma.DispenseItemUncheckedUpdateWithoutPrescriptionItemInput>
+}
+
+export type DispenseItemUpdateManyWithWhereWithoutPrescriptionItemInput = {
+  where: Prisma.DispenseItemScalarWhereInput
+  data: Prisma.XOR<Prisma.DispenseItemUpdateManyMutationInput, Prisma.DispenseItemUncheckedUpdateManyWithoutPrescriptionItemInput>
 }
 
 export type DispenseItemCreateWithoutDispenseRecordInput = {
@@ -562,13 +677,15 @@ export type DispenseItemCreateWithoutDispenseRecordInput = {
   quantity: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  medication: Prisma.MedicationCreateNestedOneWithoutDispenseItemsInput
+  medication?: Prisma.MedicationCreateNestedOneWithoutDispenseItemsInput
+  prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutDispenseItemsInput
   stockAllocations?: Prisma.DispenseItemStockAllocationCreateNestedManyWithoutDispenseItemInput
 }
 
 export type DispenseItemUncheckedCreateWithoutDispenseRecordInput = {
   id?: string
-  medicationId: string
+  medicationId?: string | null
+  prescriptionItemId?: string | null
   quantity: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -607,13 +724,15 @@ export type DispenseItemCreateWithoutStockAllocationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dispenseRecord: Prisma.DispenseRecordCreateNestedOneWithoutItemsInput
-  medication: Prisma.MedicationCreateNestedOneWithoutDispenseItemsInput
+  medication?: Prisma.MedicationCreateNestedOneWithoutDispenseItemsInput
+  prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutDispenseItemsInput
 }
 
 export type DispenseItemUncheckedCreateWithoutStockAllocationsInput = {
   id?: string
   dispenseRecordId: string
-  medicationId: string
+  medicationId?: string | null
+  prescriptionItemId?: string | null
   quantity: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -641,13 +760,15 @@ export type DispenseItemUpdateWithoutStockAllocationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dispenseRecord?: Prisma.DispenseRecordUpdateOneRequiredWithoutItemsNestedInput
-  medication?: Prisma.MedicationUpdateOneRequiredWithoutDispenseItemsNestedInput
+  medication?: Prisma.MedicationUpdateOneWithoutDispenseItemsNestedInput
+  prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutDispenseItemsNestedInput
 }
 
 export type DispenseItemUncheckedUpdateWithoutStockAllocationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   dispenseRecordId?: Prisma.StringFieldUpdateOperationsInput | string
-  medicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriptionItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -656,6 +777,7 @@ export type DispenseItemUncheckedUpdateWithoutStockAllocationsInput = {
 export type DispenseItemCreateManyMedicationInput = {
   id?: string
   dispenseRecordId: string
+  prescriptionItemId?: string | null
   quantity: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -667,12 +789,14 @@ export type DispenseItemUpdateWithoutMedicationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dispenseRecord?: Prisma.DispenseRecordUpdateOneRequiredWithoutItemsNestedInput
+  prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutDispenseItemsNestedInput
   stockAllocations?: Prisma.DispenseItemStockAllocationUpdateManyWithoutDispenseItemNestedInput
 }
 
 export type DispenseItemUncheckedUpdateWithoutMedicationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   dispenseRecordId?: Prisma.StringFieldUpdateOperationsInput | string
+  prescriptionItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -682,6 +806,45 @@ export type DispenseItemUncheckedUpdateWithoutMedicationInput = {
 export type DispenseItemUncheckedUpdateManyWithoutMedicationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   dispenseRecordId?: Prisma.StringFieldUpdateOperationsInput | string
+  prescriptionItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type DispenseItemCreateManyPrescriptionItemInput = {
+  id?: string
+  dispenseRecordId: string
+  medicationId?: string | null
+  quantity: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type DispenseItemUpdateWithoutPrescriptionItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dispenseRecord?: Prisma.DispenseRecordUpdateOneRequiredWithoutItemsNestedInput
+  medication?: Prisma.MedicationUpdateOneWithoutDispenseItemsNestedInput
+  stockAllocations?: Prisma.DispenseItemStockAllocationUpdateManyWithoutDispenseItemNestedInput
+}
+
+export type DispenseItemUncheckedUpdateWithoutPrescriptionItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  dispenseRecordId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockAllocations?: Prisma.DispenseItemStockAllocationUncheckedUpdateManyWithoutDispenseItemNestedInput
+}
+
+export type DispenseItemUncheckedUpdateManyWithoutPrescriptionItemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  dispenseRecordId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -689,7 +852,8 @@ export type DispenseItemUncheckedUpdateManyWithoutMedicationInput = {
 
 export type DispenseItemCreateManyDispenseRecordInput = {
   id?: string
-  medicationId: string
+  medicationId?: string | null
+  prescriptionItemId?: string | null
   quantity: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -700,13 +864,15 @@ export type DispenseItemUpdateWithoutDispenseRecordInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  medication?: Prisma.MedicationUpdateOneRequiredWithoutDispenseItemsNestedInput
+  medication?: Prisma.MedicationUpdateOneWithoutDispenseItemsNestedInput
+  prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutDispenseItemsNestedInput
   stockAllocations?: Prisma.DispenseItemStockAllocationUpdateManyWithoutDispenseItemNestedInput
 }
 
 export type DispenseItemUncheckedUpdateWithoutDispenseRecordInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  medicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriptionItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -715,7 +881,8 @@ export type DispenseItemUncheckedUpdateWithoutDispenseRecordInput = {
 
 export type DispenseItemUncheckedUpdateManyWithoutDispenseRecordInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  medicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriptionItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -756,11 +923,13 @@ export type DispenseItemSelect<ExtArgs extends runtime.Types.Extensions.Internal
   id?: boolean
   dispenseRecordId?: boolean
   medicationId?: boolean
+  prescriptionItemId?: boolean
   quantity?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   dispenseRecord?: boolean | Prisma.DispenseRecordDefaultArgs<ExtArgs>
-  medication?: boolean | Prisma.MedicationDefaultArgs<ExtArgs>
+  medication?: boolean | Prisma.DispenseItem$medicationArgs<ExtArgs>
+  prescriptionItem?: boolean | Prisma.DispenseItem$prescriptionItemArgs<ExtArgs>
   stockAllocations?: boolean | Prisma.DispenseItem$stockAllocationsArgs<ExtArgs>
   _count?: boolean | Prisma.DispenseItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["dispenseItem"]>
@@ -769,60 +938,74 @@ export type DispenseItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   dispenseRecordId?: boolean
   medicationId?: boolean
+  prescriptionItemId?: boolean
   quantity?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   dispenseRecord?: boolean | Prisma.DispenseRecordDefaultArgs<ExtArgs>
-  medication?: boolean | Prisma.MedicationDefaultArgs<ExtArgs>
+  medication?: boolean | Prisma.DispenseItem$medicationArgs<ExtArgs>
+  prescriptionItem?: boolean | Prisma.DispenseItem$prescriptionItemArgs<ExtArgs>
 }, ExtArgs["result"]["dispenseItem"]>
 
 export type DispenseItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   dispenseRecordId?: boolean
   medicationId?: boolean
+  prescriptionItemId?: boolean
   quantity?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   dispenseRecord?: boolean | Prisma.DispenseRecordDefaultArgs<ExtArgs>
-  medication?: boolean | Prisma.MedicationDefaultArgs<ExtArgs>
+  medication?: boolean | Prisma.DispenseItem$medicationArgs<ExtArgs>
+  prescriptionItem?: boolean | Prisma.DispenseItem$prescriptionItemArgs<ExtArgs>
 }, ExtArgs["result"]["dispenseItem"]>
 
 export type DispenseItemSelectScalar = {
   id?: boolean
   dispenseRecordId?: boolean
   medicationId?: boolean
+  prescriptionItemId?: boolean
   quantity?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type DispenseItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "dispenseRecordId" | "medicationId" | "quantity" | "createdAt" | "updatedAt", ExtArgs["result"]["dispenseItem"]>
+export type DispenseItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "dispenseRecordId" | "medicationId" | "prescriptionItemId" | "quantity" | "createdAt" | "updatedAt", ExtArgs["result"]["dispenseItem"]>
 export type DispenseItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   dispenseRecord?: boolean | Prisma.DispenseRecordDefaultArgs<ExtArgs>
-  medication?: boolean | Prisma.MedicationDefaultArgs<ExtArgs>
+  medication?: boolean | Prisma.DispenseItem$medicationArgs<ExtArgs>
+  prescriptionItem?: boolean | Prisma.DispenseItem$prescriptionItemArgs<ExtArgs>
   stockAllocations?: boolean | Prisma.DispenseItem$stockAllocationsArgs<ExtArgs>
   _count?: boolean | Prisma.DispenseItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DispenseItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   dispenseRecord?: boolean | Prisma.DispenseRecordDefaultArgs<ExtArgs>
-  medication?: boolean | Prisma.MedicationDefaultArgs<ExtArgs>
+  medication?: boolean | Prisma.DispenseItem$medicationArgs<ExtArgs>
+  prescriptionItem?: boolean | Prisma.DispenseItem$prescriptionItemArgs<ExtArgs>
 }
 export type DispenseItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   dispenseRecord?: boolean | Prisma.DispenseRecordDefaultArgs<ExtArgs>
-  medication?: boolean | Prisma.MedicationDefaultArgs<ExtArgs>
+  medication?: boolean | Prisma.DispenseItem$medicationArgs<ExtArgs>
+  prescriptionItem?: boolean | Prisma.DispenseItem$prescriptionItemArgs<ExtArgs>
 }
 
 export type $DispenseItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "DispenseItem"
   objects: {
     dispenseRecord: Prisma.$DispenseRecordPayload<ExtArgs>
-    medication: Prisma.$MedicationPayload<ExtArgs>
+    medication: Prisma.$MedicationPayload<ExtArgs> | null
+    prescriptionItem: Prisma.$PrescriptionMedicationPayload<ExtArgs> | null
     stockAllocations: Prisma.$DispenseItemStockAllocationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     dispenseRecordId: string
-    medicationId: string
+    medicationId: string | null
+    prescriptionItemId: string | null
+    /**
+     * For a compound line, how many whole compounds were handed over. Partial
+     * dispense means fewer compounds — never a partial ingredient.
+     */
     quantity: number
     createdAt: Date
     updatedAt: Date
@@ -1221,7 +1404,8 @@ readonly fields: DispenseItemFieldRefs;
 export interface Prisma__DispenseItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   dispenseRecord<T extends Prisma.DispenseRecordDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DispenseRecordDefaultArgs<ExtArgs>>): Prisma.Prisma__DispenseRecordClient<runtime.Types.Result.GetResult<Prisma.$DispenseRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  medication<T extends Prisma.MedicationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MedicationDefaultArgs<ExtArgs>>): Prisma.Prisma__MedicationClient<runtime.Types.Result.GetResult<Prisma.$MedicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  medication<T extends Prisma.DispenseItem$medicationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DispenseItem$medicationArgs<ExtArgs>>): Prisma.Prisma__MedicationClient<runtime.Types.Result.GetResult<Prisma.$MedicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  prescriptionItem<T extends Prisma.DispenseItem$prescriptionItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DispenseItem$prescriptionItemArgs<ExtArgs>>): Prisma.Prisma__PrescriptionMedicationClient<runtime.Types.Result.GetResult<Prisma.$PrescriptionMedicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   stockAllocations<T extends Prisma.DispenseItem$stockAllocationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DispenseItem$stockAllocationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DispenseItemStockAllocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1255,6 +1439,7 @@ export interface DispenseItemFieldRefs {
   readonly id: Prisma.FieldRef<"DispenseItem", 'String'>
   readonly dispenseRecordId: Prisma.FieldRef<"DispenseItem", 'String'>
   readonly medicationId: Prisma.FieldRef<"DispenseItem", 'String'>
+  readonly prescriptionItemId: Prisma.FieldRef<"DispenseItem", 'String'>
   readonly quantity: Prisma.FieldRef<"DispenseItem", 'Int'>
   readonly createdAt: Prisma.FieldRef<"DispenseItem", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"DispenseItem", 'DateTime'>
@@ -1656,6 +1841,44 @@ export type DispenseItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many DispenseItems to delete.
    */
   limit?: number
+}
+
+/**
+ * DispenseItem.medication
+ */
+export type DispenseItem$medicationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Medication
+   */
+  select?: Prisma.MedicationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Medication
+   */
+  omit?: Prisma.MedicationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MedicationInclude<ExtArgs> | null
+  where?: Prisma.MedicationWhereInput
+}
+
+/**
+ * DispenseItem.prescriptionItem
+ */
+export type DispenseItem$prescriptionItemArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PrescriptionMedication
+   */
+  select?: Prisma.PrescriptionMedicationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PrescriptionMedication
+   */
+  omit?: Prisma.PrescriptionMedicationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PrescriptionMedicationInclude<ExtArgs> | null
+  where?: Prisma.PrescriptionMedicationWhereInput
 }
 
 /**

@@ -131,6 +131,11 @@ describe('PharmacyFlowService', () => {
         durationDays: 5,
         quantity: 15,
         instructions: null,
+        isCompound: false,
+        compoundName: null,
+        preparation: null,
+        dosageUnit: null,
+        components: [],
         medication: {
           id: medicationId,
           code: 'MED-0001',

@@ -454,9 +454,28 @@ export type Medication = Prisma.MedicationModel
 export type Prescription = Prisma.PrescriptionModel
 /**
  * Model PrescriptionMedication
+ * One prescription line — a catalog product, or a compound (racikan).
  * 
+ * A compound is a line like any other from the doctor's, the pharmacist's and
+ * the patient's point of view; what changes is that `medicationId` is null and
+ * the ingredients live in `components`. Modelling it as a separate line type
+ * would fork every read in the pharmacy flow for no gain (P10-T18).
+ * 
+ * A CHECK in the migration enforces exactly one of the two shapes, and the
+ * old `(prescriptionId, medicationId)` unique became a partial index: a
+ * nullable column cannot carry a plain unique meaningfully, since Postgres
+ * treats NULLs as distinct — and a prescription may legitimately carry two
+ * different puyer.
  */
 export type PrescriptionMedication = Prisma.PrescriptionMedicationModel
+/**
+ * Model PrescriptionItemComponent
+ * One ingredient of a compound line.
+ * 
+ * `quantity` is decimal because a puyer routinely uses a third or a half of a
+ * tablet — which is the whole reason the compound exists.
+ */
+export type PrescriptionItemComponent = Prisma.PrescriptionItemComponentModel
 /**
  * Model DispenseRecord
  * 
@@ -464,7 +483,13 @@ export type PrescriptionMedication = Prisma.PrescriptionMedicationModel
 export type DispenseRecord = Prisma.DispenseRecordModel
 /**
  * Model DispenseItem
+ * One line handed over the counter: a catalog product, or a compound.
  * 
+ * A compound line points at the prescription item rather than at a product —
+ * there is no single product to point at — and its stock allocations resolve
+ * to the component medications through their receipts, which is what
+ * `DispenseItemStockAllocation` already records (P10-T18). A CHECK enforces
+ * exactly one of the two subjects.
  */
 export type DispenseItem = Prisma.DispenseItemModel
 /**

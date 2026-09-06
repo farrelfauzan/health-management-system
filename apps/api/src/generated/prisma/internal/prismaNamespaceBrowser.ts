@@ -88,6 +88,7 @@ export const ModelName = {
   Medication: 'Medication',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
+  PrescriptionItemComponent: 'PrescriptionItemComponent',
   DispenseRecord: 'DispenseRecord',
   DispenseItem: 'DispenseItem',
   MedicationStockReceipt: 'MedicationStockReceipt',
@@ -769,11 +770,28 @@ export const PrescriptionMedicationScalarFieldEnum = {
   durationDays: 'durationDays',
   quantity: 'quantity',
   instructions: 'instructions',
+  isCompound: 'isCompound',
+  compoundName: 'compoundName',
+  preparation: 'preparation',
+  dosageUnit: 'dosageUnit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PrescriptionMedicationScalarFieldEnum = (typeof PrescriptionMedicationScalarFieldEnum)[keyof typeof PrescriptionMedicationScalarFieldEnum]
+
+
+export const PrescriptionItemComponentScalarFieldEnum = {
+  id: 'id',
+  prescriptionItemId: 'prescriptionItemId',
+  medicationId: 'medicationId',
+  quantity: 'quantity',
+  unit: 'unit',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrescriptionItemComponentScalarFieldEnum = (typeof PrescriptionItemComponentScalarFieldEnum)[keyof typeof PrescriptionItemComponentScalarFieldEnum]
 
 
 export const DispenseRecordScalarFieldEnum = {
@@ -794,6 +812,7 @@ export const DispenseItemScalarFieldEnum = {
   id: 'id',
   dispenseRecordId: 'dispenseRecordId',
   medicationId: 'medicationId',
+  prescriptionItemId: 'prescriptionItemId',
   quantity: 'quantity',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

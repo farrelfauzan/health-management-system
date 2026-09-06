@@ -428,6 +428,8 @@ export * from './createPersonalDocumentUploadUrlDto';
 export * from './createPersonalDocumentUploadUrlDtoMimeType';
 export * from './createPrescriptionDto';
 export * from './createPrescriptionDtoItemsItem';
+export * from './createPrescriptionDtoItemsItemComponentsItem';
+export * from './createPrescriptionDtoItemsItemPreparation';
 export * from './createRegistrationDto';
 export * from './createRegistrationDtoPrivacyNotice';
 export * from './createRegistrationDtoPrivacyNoticeLocale';

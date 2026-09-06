@@ -44,6 +44,8 @@ function buildPrescription(overrides: Partial<PrescriptionResponse>): Prescripti
         dosage: '500 mg',
         frequency: '3x daily',
         quantity: 21,
+        isCompound: false,
+        components: [],
       },
     ],
     ...overrides,

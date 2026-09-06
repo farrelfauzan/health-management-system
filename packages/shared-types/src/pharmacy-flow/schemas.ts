@@ -73,8 +73,15 @@ export function resolvePrescriptionStatusAfterDispense(
   return hasRemainingQuantity ? 'PARTIALLY_DISPENSED' : 'DISPENSED';
 }
 
-function hasUniqueMedicationIds(items: Array<{ medicationId: string }>): boolean {
-  const medicationIds = items.map((item) => item.medicationId);
+/**
+ * Product lines must name distinct medications. Compound lines are exempt and
+ * always have been in spirit: a prescription may legitimately carry two
+ * different puyer, and neither names a product at all (P10-T18).
+ */
+function hasUniqueMedicationIds(items: Array<{ medicationId?: string }>): boolean {
+  const medicationIds = items
+    .map((item) => item.medicationId)
+    .filter((medicationId): medicationId is string => medicationId !== undefined);
   return new Set(medicationIds).size === medicationIds.length;
 }
 
@@ -147,14 +154,96 @@ export const listPrescriptionsQuerySchema = z.object({
   encounterId: z.string().uuid().optional(),
 });
 
-export const prescriptionItemSchema = z.object({
+export const compoundPreparationSchema = z.enum([
+  'PUYER',
+  'KAPSUL',
+  'SIRUP',
+  'SALEP',
+  'OTHER',
+]);
+
+export const prescriptionItemComponentSchema = z.object({
   medicationId: z.string().uuid(),
-  dosage: z.string().trim().min(1).max(100),
-  frequency: z.string().trim().min(1).max(100),
-  durationDays: z.number().int().min(1).max(365).optional(),
-  quantity: z.number().int().min(1).max(10000),
-  instructions: z.string().trim().min(1).max(500).optional(),
+  /**
+   * Decimal, because a puyer routinely uses a third or a half of a tablet —
+   * which is the whole reason the compound exists. Four places, matching the
+   * column.
+   */
+  quantity: z.number().positive().max(10000),
+  unit: z.string().trim().min(1).max(32),
 });
+
+/**
+ * One prescription line: a catalog product, or a compound (racikan).
+ *
+ * The two shapes are refused if mixed. A line carrying both a product and a
+ * compound name would leave every reader downstream deciding which one it
+ * meant, and the database CHECK would reject it anyway — better to say so
+ * where the doctor can still fix it.
+ */
+export const prescriptionItemSchema = z
+  .object({
+    medicationId: z.string().uuid().optional(),
+    dosage: z.string().trim().min(1).max(100),
+    frequency: z.string().trim().min(1).max(100),
+    durationDays: z.number().int().min(1).max(365).optional(),
+    quantity: z.number().int().min(1).max(10000),
+    instructions: z.string().trim().min(1).max(500).optional(),
+    isCompound: z.boolean().optional(),
+    compoundName: z.string().trim().min(1).max(200).optional(),
+    preparation: compoundPreparationSchema.optional(),
+    dosageUnit: z.string().trim().min(1).max(32).optional(),
+    components: z.array(prescriptionItemComponentSchema).min(1).max(20).optional(),
+  })
+  .superRefine((item, context) => {
+    if (item.isCompound) {
+      if (item.medicationId) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['medicationId'],
+          message: 'A compound line names its ingredients, not a catalog product',
+        });
+      }
+      if (!item.compoundName) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['compoundName'],
+          message: 'A compound needs a name for its label',
+        });
+      }
+      if (!item.components || item.components.length === 0) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['components'],
+          message: 'A compound needs at least one ingredient',
+        });
+      }
+      const componentIds = (item.components ?? []).map((component) => component.medicationId);
+      if (new Set(componentIds).size !== componentIds.length) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['components'],
+          // Two rows for one product would allocate its stock twice.
+          message: 'A compound cannot list the same ingredient twice',
+        });
+      }
+      return;
+    }
+    if (!item.medicationId) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['medicationId'],
+        message: 'A prescription line names a medication, or is a compound',
+      });
+    }
+    if (item.components && item.components.length > 0) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['components'],
+        message: 'Only a compound line has ingredients',
+      });
+    }
+  });
 
 export const createPrescriptionSchema = z
   .object({
@@ -174,10 +263,24 @@ export const createPrescriptionSchema = z
     path: ['items'],
   });
 
-export const dispenseItemInputSchema = z.object({
-  medicationId: z.string().uuid(),
-  quantity: z.number().int().min(1).max(10000),
-});
+/**
+ * One line handed over: a catalog product, or a whole compound named by its
+ * prescription line. Quantity for a compound is how many whole compounds —
+ * partial dispense means fewer of them, never a partial ingredient.
+ */
+export const dispenseItemInputSchema = z
+  .object({
+    medicationId: z.string().uuid().optional(),
+    prescriptionItemId: z.string().uuid().optional(),
+    quantity: z.number().int().min(1).max(10000),
+  })
+  .refine(
+    (item) => Boolean(item.medicationId) !== Boolean(item.prescriptionItemId),
+    {
+      path: ['medicationId'],
+      message: 'Name either a medication or a compound prescription line, not both',
+    },
+  );
 
 export const createDispenseSchema = z
   .object({
@@ -188,7 +291,18 @@ export const createDispenseSchema = z
   .refine((payload) => hasUniqueMedicationIds(payload.items), {
     message: 'Dispense items must reference unique medications',
     path: ['items'],
+  })
+  .refine((payload) => hasUniqueCompoundLines(payload.items), {
+    message: 'Dispense items must reference unique compound lines',
+    path: ['items'],
   });
+
+function hasUniqueCompoundLines(items: Array<{ prescriptionItemId?: string }>): boolean {
+  const itemIds = items
+    .map((item) => item.prescriptionItemId)
+    .filter((itemId): itemId is string => itemId !== undefined);
+  return new Set(itemIds).size === itemIds.length;
+}
 
 const inventoryDateSchema = z
   .string()
@@ -218,6 +332,9 @@ export const expiryReportQuerySchema = z.object({
 });
 
 export type ListMedicationsQueryInput = z.infer<typeof listMedicationsQuerySchema>;
+export type CompoundPreparationValue = z.infer<typeof compoundPreparationSchema>;
+export type PrescriptionItemComponentInput = z.infer<typeof prescriptionItemComponentSchema>;
+
 export type CreateMedicationInput = z.infer<typeof createMedicationSchema>;
 export type UpdateMedicationInput = z.infer<typeof updateMedicationSchema>;
 export type ListPrescriptionsQueryInput = z.infer<typeof listPrescriptionsQuerySchema>;
