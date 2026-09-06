@@ -114,6 +114,16 @@ describe('SATUSEHAT submission ops integration', () => {
           recordedAt: new Date('2026-07-27T09:05:00.000Z'),
         },
       ],
+      procedures: [
+        {
+          procedureId: '8b9c0d1e-2f3a-4b5c-8d6e-7f8a9b0c1d2e',
+          code: '93.94',
+          display: 'Respiratory medication administered by nebulizer',
+          isCoded: true,
+          performedAt: new Date('2026-07-27T09:10:00.000Z'),
+          notes: 'Nebulisasi 10 menit',
+        },
+      ],
       latestVitalSigns: {
         recordedAt: new Date('2026-07-27T08:35:00.000Z'),
         heightCm: 165,
@@ -451,6 +461,7 @@ describe('SATUSEHAT submission ops integration', () => {
       expect.arrayContaining([
         'Encounter',
         'Condition',
+        'Procedure',
         'Observation',
         'Medication',
         'MedicationRequest',

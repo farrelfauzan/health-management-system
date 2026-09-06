@@ -96,6 +96,21 @@ export type SatusehatSubmissionPrescription = {
   items: readonly SatusehatSubmissionPrescriptionItem[];
 };
 
+/**
+ * One ICD-9-CM-coded procedure performed during the visit. `code` and
+ * `display` are the snapshot written at recording time; `isCoded` is false for
+ * free-text procedures, which are skipped in the bundle and gap-reported
+ * rather than guessed at (P10-T07).
+ */
+export type SatusehatSubmissionProcedure = {
+  procedureId: string;
+  code: string;
+  display: string;
+  isCoded: boolean;
+  performedAt: Date;
+  notes: string | null;
+};
+
 export type SatusehatSubmissionDispenseItem = {
   dispenseItemId: string;
   dispenseRecordId: string;
@@ -123,6 +138,7 @@ export type SatusehatSubmissionBundleData = {
   startedAt: Date;
   endedAt: Date | null;
   diagnoses: readonly SatusehatSubmissionDiagnosis[];
+  procedures: readonly SatusehatSubmissionProcedure[];
   latestVitalSigns: SatusehatSubmissionVitalSigns | null;
   prescriptions: readonly SatusehatSubmissionPrescription[];
   dispenseItems: readonly SatusehatSubmissionDispenseItem[];

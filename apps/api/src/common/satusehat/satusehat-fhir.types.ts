@@ -77,6 +77,22 @@ export type SatusehatFhirCondition = {
   recordedDate: string;
 };
 
+export type SatusehatFhirAnnotation = {
+  text: string;
+};
+
+export type SatusehatFhirProcedure = {
+  resourceType: 'Procedure';
+  identifier: SatusehatFhirIdentifier[];
+  status: 'completed';
+  code: SatusehatFhirCodeableConcept;
+  subject: SatusehatFhirReference;
+  encounter: SatusehatFhirReference;
+  performedPeriod: SatusehatFhirPeriod;
+  performer?: Array<{ actor: SatusehatFhirReference }>;
+  note?: SatusehatFhirAnnotation[];
+};
+
 export type SatusehatFhirObservation = {
   resourceType: 'Observation';
   status: 'final';
@@ -108,6 +124,27 @@ export type SatusehatConditionMapInput = {
   patientName?: string;
   encounterReference: string;
   recordedAt: Date;
+};
+
+/**
+ * Input for one ICD-9-CM-coded procedure. `performedAt` is clamped into the
+ * encounter period by the caller-supplied bounds the same way check-in is
+ * clamped in `mapEncounter`: the platform rejects a period that falls outside
+ * the visit it references.
+ */
+export type SatusehatProcedureMapInput = {
+  procedureId: string;
+  icd9cmCode: string;
+  icd9cmDisplay: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  practitionerIhsNumber?: string;
+  practitionerName?: string;
+  encounterReference: string;
+  performedAt: Date;
+  encounterStartedAt: Date;
+  encounterEndedAt: Date;
+  notes?: string;
 };
 
 export type SatusehatVitalSignsMapInput = {
@@ -177,6 +214,7 @@ export type SatusehatFhirBundleEntry = {
   resource:
     | SatusehatFhirEncounter
     | SatusehatFhirCondition
+    | SatusehatFhirProcedure
     | SatusehatFhirObservation
     | SatusehatFhirMedication
     | SatusehatFhirMedicationRequest
@@ -203,6 +241,17 @@ export type SatusehatTransactionResponseEntry = {
 
 export type SatusehatTransactionResponse = {
   readonly entry?: readonly SatusehatTransactionResponseEntry[];
+};
+
+/**
+ * One resource created by a transaction bundle, as parsed from the
+ * corresponding response entry's `location`. Keyed back to the request entry's
+ * `fullUrl` so callers can write the returned id onto the row that produced it
+ * (P10-T08's allergy write-back, P10-T09's encounter provenance).
+ */
+export type SatusehatCreatedResourceLocation = {
+  resourceType: string;
+  id: string;
 };
 
 export type SatusehatMedicationMapInput = {
