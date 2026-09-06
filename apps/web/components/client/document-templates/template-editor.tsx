@@ -44,6 +44,8 @@ const VARIABLE_BLOCK_NODE_NAME = 'variableBlock';
 type TemplateEditorProps = {
   template: DocumentTemplateView;
   canWrite: boolean;
+  /** Read only by the approval half (`P16-T32`), to flag a self-only panel. */
+  currentUserId: string | null;
   onBack: () => void;
 };
 
@@ -54,7 +56,7 @@ type TemplateEditorProps = {
  * the server sanitises the HTML and canonicalises every chip, so what comes
  * back is the byte-exact dialect the render service substitutes into.
  */
-export function TemplateEditor({ template, canWrite, onBack }: TemplateEditorProps) {
+export function TemplateEditor({ template, canWrite, currentUserId, onBack }: TemplateEditorProps) {
   const t = useTranslations('operations.billing.templates');
   const locale = useLocale();
   const queryClient = useQueryClient();
@@ -238,6 +240,7 @@ export function TemplateEditor({ template, canWrite, onBack }: TemplateEditorPro
         isDirty={isDirty}
         isSaving={saveMutation.isPending}
         hasContent={contentHtml.trim() !== '' && contentHtml !== '<p></p>'}
+        currentUserId={currentUserId}
         onSaveDraft={saveDraft}
       />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">

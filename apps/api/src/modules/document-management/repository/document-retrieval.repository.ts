@@ -34,14 +34,24 @@ type RetrievalRow = {
  * query, one full-text query, both over the same candidate set, fused by the
  * caller.
  *
- * **The scope predicate is the security boundary and it is written once.**
- * Both halves call {@link buildScopePredicate}, so there is no way for the
- * lexical query to see a document the vector query could not — a divergence
- * that would be invisible in every test that only checked the ranked output.
- * The predicate is the union §5.5 names and nothing else: the clinic corpus
- * filtered by the asking channel's visibility, plus the asking user's own
- * knowledge base. Another doctor's document is not outranked, it is not a
- * candidate.
+ * **The scope predicate is the security boundary.** The two halves carry
+ * character-identical `WHERE` clauses, and they have to: a divergence would
+ * let the lexical query see a document the vector query could not, and would
+ * be invisible in every test that only checked the ranked output. Any change
+ * to one is a change to both. The predicate is the union §5.5 names and
+ * nothing else: the clinic corpus filtered by the asking channel's
+ * visibility, plus the asking user's own knowledge base. Another doctor's
+ * document is not outranked, it is not a candidate.
+ *
+ * `P16-T33` adds the approval clause to the clinic half, and it is a
+ * candidate-set exclusion rather than a ranking penalty on purpose
+ * (NFR-SEC-10): a corpus document whose registry row is not `ISSUED` is
+ * awaiting a second signature, and the assistant must be unable to cite it
+ * at all — not merely unlikely to. A document with **no** registry row is a
+ * candidate, which is what makes enabling the policy non-retroactive
+ * (OQ-18): switching approval on writes no rows and changes no answer, and
+ * only an explicit "send for review" puts an existing document behind the
+ * gate.
  *
  * Raw SQL by necessity rather than by preference: `embedding` and
  * `search_vector` are `Unsupported` columns Prisma Client cannot select, let
@@ -88,6 +98,12 @@ export class DocumentRetrievalRepository {
             d."owner_type"::text = 'CLINIC'
             AND d."purpose"::text = 'FAQ_KNOWLEDGE_BASE'
             AND c."visibility"::text IN (${params.channelVisibility}, 'BOTH')
+            AND NOT EXISTS (
+              SELECT 1 FROM "managed_documents" md
+              WHERE md."subject_document_id" = d."id"
+                AND md."deleted_at" IS NULL
+                AND md."status"::text <> 'ISSUED'
+            )
           )
           OR (
             ${params.ownerUserId}::uuid IS NOT NULL
@@ -172,6 +188,12 @@ export class DocumentRetrievalRepository {
             d."owner_type"::text = 'CLINIC'
             AND d."purpose"::text = 'FAQ_KNOWLEDGE_BASE'
             AND c."visibility"::text IN (${params.channelVisibility}, 'BOTH')
+            AND NOT EXISTS (
+              SELECT 1 FROM "managed_documents" md
+              WHERE md."subject_document_id" = d."id"
+                AND md."deleted_at" IS NULL
+                AND md."status"::text <> 'ISSUED'
+            )
           )
           OR (
             ${params.ownerUserId}::uuid IS NOT NULL

@@ -12,6 +12,7 @@ import {
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { DocumentTemplate, DocumentTemplateVersion, Prisma } from '../../../generated/prisma/client';
 
 type TemplateRowWithVersions = DocumentTemplate & { versions: DocumentTemplateVersion[] };
@@ -98,26 +99,85 @@ export class DocumentTemplateRepository {
       const template = await tx.documentTemplate.findUniqueOrThrow({
         where: { id: payload.templateId },
       });
-      const latest = await tx.documentTemplateVersion.aggregate({
-        where: { templateId: payload.templateId },
-        _max: { versionNumber: true },
+      return this.cutVersion(tx, {
+        templateId: payload.templateId,
+        contentHtml: template.contentHtml,
+        settings: template.settings as Prisma.InputJsonValue,
+        publishedById: payload.publishedById,
+        approvalDecisionId: null,
       });
-      const nextVersionNumber = (latest._max.versionNumber ?? 0) + 1;
-      const version = await tx.documentTemplateVersion.create({
-        data: {
-          templateId: payload.templateId,
-          versionNumber: nextVersionNumber,
-          contentHtml: template.contentHtml,
-          settings: template.settings as Prisma.InputJsonValue,
-          publishedById: payload.publishedById,
-        },
-      });
-      const published = await tx.documentTemplate.update({
-        where: { id: payload.templateId },
-        data: { status: 'PUBLISHED' },
-      });
-      return { template: this.toRecord(published), version: this.toVersionRecord(version) };
     });
+  }
+
+  /**
+   * Publishes an **already-frozen** layout inside a caller's transaction
+   * (`P16-T32`).
+   *
+   * The content comes from the approval round's frozen payload rather than
+   * the working copy, so what an approver looked at is what gets published —
+   * an edit landing between the decision and the commit changes the draft
+   * and nothing else. The caller supplies the transaction because the version
+   * and the `ISSUED` registry row have to commit together (FR-E5-16).
+   */
+  async publishFrozenVersion(
+    tx: PrismaTransactionClient,
+    payload: {
+      templateId: string;
+      contentHtml: string;
+      publishedById: string;
+      approvalDecisionId: string | null;
+    },
+  ): Promise<{ template: DocumentTemplateRecord; version: DocumentTemplateVersionRecord }> {
+    const template = await tx.documentTemplate.findUniqueOrThrow({
+      where: { id: payload.templateId },
+    });
+    return this.cutVersion(tx, {
+      templateId: payload.templateId,
+      contentHtml: payload.contentHtml,
+      // Settings are the working copy's: they are page geometry and clinic
+      // identity, not the reviewed body, and a version rendering under last
+      // month's margins would be the surprise here.
+      settings: template.settings as Prisma.InputJsonValue,
+      publishedById: payload.publishedById,
+      approvalDecisionId: payload.approvalDecisionId,
+    });
+  }
+
+  /**
+   * Cuts version `max + 1` and flips the working copy to `PUBLISHED`. Two
+   * concurrent publishes both computing the same number resolve at the
+   * `(templateId, versionNumber)` unique index — the loser surfaces as a
+   * unique-constraint error for the service to translate.
+   */
+  private async cutVersion(
+    tx: PrismaTransactionClient,
+    payload: {
+      templateId: string;
+      contentHtml: string;
+      settings: Prisma.InputJsonValue;
+      publishedById: string;
+      approvalDecisionId: string | null;
+    },
+  ): Promise<{ template: DocumentTemplateRecord; version: DocumentTemplateVersionRecord }> {
+    const latest = await tx.documentTemplateVersion.aggregate({
+      where: { templateId: payload.templateId },
+      _max: { versionNumber: true },
+    });
+    const version = await tx.documentTemplateVersion.create({
+      data: {
+        templateId: payload.templateId,
+        versionNumber: (latest._max.versionNumber ?? 0) + 1,
+        contentHtml: payload.contentHtml,
+        settings: payload.settings,
+        publishedById: payload.publishedById,
+        approvalDecisionId: payload.approvalDecisionId,
+      },
+    });
+    const published = await tx.documentTemplate.update({
+      where: { id: payload.templateId },
+      data: { status: 'PUBLISHED' },
+    });
+    return { template: this.toRecord(published), version: this.toVersionRecord(version) };
   }
 
   /**
@@ -203,6 +263,7 @@ export class DocumentTemplateRepository {
       settings: templateSettingsSchema.parse(row.settings),
       publishedById: row.publishedById,
       publishedAt: row.publishedAt,
+      approvalDecisionId: row.approvalDecisionId,
     };
   }
 }

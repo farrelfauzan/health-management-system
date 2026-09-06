@@ -139,7 +139,18 @@ export function ClinicDocumentEditDialog({
           </div>
           {isVisibilityChanged ? (
             <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
-              {t('reingestWarning')}
+              {/*
+                FR-E5-20: on an *issued* document, changing visibility is a
+                new decision rather than an edit — the field decides whether
+                the assistant may quote this document to a patient — so it
+                goes back for approval and leaves the retrieval candidate set
+                until somebody signs it off. Saying so here is the difference
+                between a deliberate change and an admin wondering why the bot
+                stopped citing a document they only renamed the audience of.
+              */}
+              {document.approval.status === 'ISSUED'
+                ? t('reapprovalWarning')
+                : t('reingestWarning')}
             </p>
           ) : null}
         </div>

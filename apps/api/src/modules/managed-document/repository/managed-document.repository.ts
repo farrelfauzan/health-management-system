@@ -7,11 +7,13 @@ import {
   ManagedDocumentHistoryEntryRecord,
   ManagedDocumentPage,
   ManagedDocumentRecord,
+  ManagedDocumentSubjectRef,
   TransitionManagedDocumentPayload,
   UpdateManagedDocumentRecordPayload,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma } from '../../../generated/prisma/client';
 
 const MANAGED_DOCUMENT_AUDIT_RESOURCE = 'managed-document';
@@ -105,6 +107,53 @@ export class ManagedDocumentRepository {
     return row === null ? null : toRecord(row);
   }
 
+  /**
+   * The registry row governing another module's artefact, if one exists
+   * (`P16-T32`/`P16-T33`).
+   *
+   * No access context: the caller is the module that owns the subject and has
+   * already decided whether the actor may touch it. Folding the registry's
+   * per-row rule in here as well would mean a template's own editor could not
+   * see the approval state of the template it is editing.
+   */
+  async findBySubject(subject: ManagedDocumentSubjectRef): Promise<ManagedDocumentRecord | null> {
+    const row = await this.prismaService.managedDocument.findFirst({
+      where: {
+        deletedAt: null,
+        ...(subject.kind === 'TEMPLATE'
+          ? { subjectTemplateId: subject.id }
+          : { subjectDocumentId: subject.id }),
+      },
+      include: DOCUMENT_INCLUDE,
+      orderBy: { createdAt: 'desc' },
+    });
+    return row === null ? null : toRecord(row);
+  }
+
+  /**
+   * The same lookup for a whole page of subjects, keyed by subject id. One
+   * query rather than one per row: the corpus list shows an approval column
+   * on every row (`P16-T33`), and a per-row read would be a query per
+   * document on every list call.
+   */
+  async findBySubjectDocumentIds(
+    subjectDocumentIds: readonly string[],
+  ): Promise<Map<string, ManagedDocumentRecord>> {
+    if (subjectDocumentIds.length === 0) {
+      return new Map();
+    }
+    const rows = await this.prismaService.managedDocument.findMany({
+      where: { deletedAt: null, subjectDocumentId: { in: [...subjectDocumentIds] } },
+      include: DOCUMENT_INCLUDE,
+      orderBy: { createdAt: 'asc' },
+    });
+    // Ascending, so a later row overwrites an earlier one and the map ends
+    // up holding the newest — the same row `findBySubject` returns.
+    return new Map(
+      rows.flatMap((row) => (row.subjectDocumentId === null ? [] : [[row.subjectDocumentId, toRecord(row)] as const])),
+    );
+  }
+
   async createDocument(
     payload: CreateManagedDocumentRecordPayload,
   ): Promise<ManagedDocumentRecord> {
@@ -166,6 +215,33 @@ export class ManagedDocumentRepository {
       include: DOCUMENT_INCLUDE,
     });
     return toRecord(row);
+  }
+
+  /**
+   * The direct-issue path (FR-E5-12) with its type's behaviour attached
+   * (`P16-T32`/`P16-T33`).
+   *
+   * Separate from {@link transitionDocument} because the side effect and the
+   * status change have to commit together: a template row that says `ISSUED`
+   * while no version was published is a lie the clinic then acts on. The
+   * approval path gets the same guarantee from
+   * `DocumentApprovalRepository.claimDecision`, which runs its callback
+   * inside the decision's own transaction.
+   */
+  async issueDocument(payload: {
+    id: string;
+    issuedAt: Date;
+    onIssued: (tx: PrismaTransactionClient) => Promise<void>;
+  }): Promise<ManagedDocumentRecord> {
+    return this.prismaService.executeTransaction(async (tx) => {
+      const row = await tx.managedDocument.update({
+        where: { id: payload.id },
+        data: { status: 'ISSUED', issuedAt: payload.issuedAt },
+        include: DOCUMENT_INCLUDE,
+      });
+      await payload.onIssued(tx);
+      return toRecord(row);
+    });
   }
 
   /**

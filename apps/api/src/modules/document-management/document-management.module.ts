@@ -4,6 +4,7 @@ import { EmbeddingModule } from '../../common/embedding/embedding.module';
 import { StorageModule } from '../../common/storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
 import { DocumentDeliveryModule } from '../document-delivery/document-delivery.module';
+import { ManagedDocumentModule } from '../managed-document/managed-document.module';
 import { NotificationModule } from '../notification/notification.module';
 import { DocumentAdminController } from './controller/document-admin.controller';
 import { EncounterDocumentController } from './controller/encounter-document.controller';
@@ -25,6 +26,8 @@ import { VaultDocumentService } from './service/vault-document.service';
 import { VaultDocumentExpiryWorker } from './service/vault-document-expiry.worker';
 import { VaultDocumentShareService } from './service/vault-document-share.service';
 import { VaultOffboardingService } from './service/vault-offboarding.service';
+import { ClinicCorpusApprovalService } from './service/clinic-corpus-approval.service';
+import { ClinicCorpusIssueHandler } from './service/clinic-corpus-issue.handler';
 import { DocumentIngestionService } from './service/document-ingestion.service';
 import { DocumentIngestionWorker } from './service/document-ingestion.worker';
 import { DocumentRetrievalService } from './service/document-retrieval.service';
@@ -92,6 +95,12 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     EmbeddingModule,
     NotificationModule,
     forwardRef(() => DocumentDeliveryModule),
+    // `ManagedDocumentModule` through `forwardRef` because this loop is
+    // genuine and both directions are load-bearing: the registry reads this
+    // module's upload guard when a governed row points at a stored file, and
+    // `P16-T33` has the corpus read the registry's approval state before it
+    // will queue one for ingestion.
+    forwardRef(() => ManagedDocumentModule),
   ],
   controllers: [
     DocumentAdminController,
@@ -117,6 +126,8 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     DocumentChunkRepository,
     DocumentRetrievalRepository,
     DocumentService,
+    ClinicCorpusApprovalService,
+    ClinicCorpusIssueHandler,
     PersonalDocumentService,
     PatientDocumentService,
     PatientDocumentAccessService,

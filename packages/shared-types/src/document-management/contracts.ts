@@ -1,4 +1,6 @@
 import type { ClinicalDispatchRefusalView, DeliveryView } from '#document-delivery/contracts';
+import type { ManagedDocumentApprovalSummaryView } from '#managed-document/contracts';
+import type { ManagedDocumentStatusValue } from '#managed-document/schemas';
 import type {
   DocumentCategoryValue,
   DocumentIngestStatusValue,
@@ -52,6 +54,8 @@ export type ClinicDocumentView = {
   ingestedAt: string | null;
   chunkCount: number;
   uploadedById: string;
+  /** See {@link ClinicDocumentApprovalView} (`P16-T33`). */
+  approval: ClinicDocumentApprovalView;
   createdAt: string;
   updatedAt: string;
 };
@@ -408,4 +412,20 @@ export type PatientDocumentReleaseView = {
   deliveries: DeliveryView[];
   refusedChannels: ClinicalDispatchRefusalView[];
   isDoctorNotified: boolean;
+};
+
+/**
+ * The approval state of one clinic-corpus document (`P16-T33`).
+ *
+ * All-off by default: a clinic that has not switched approval on for
+ * `CLINIC_CORPUS_DOCUMENT` sees `isApprovalRequired: false` and no registry
+ * row, and the corpus screen draws no approval column or notice at all
+ * (US-E5-06). A `managedDocumentId` with a status other than `ISSUED` is the
+ * screen's cue for "the assistant cannot retrieve this yet".
+ */
+export type ClinicDocumentApprovalView = {
+  isApprovalRequired: boolean;
+  managedDocumentId: string | null;
+  status: ManagedDocumentStatusValue | null;
+  pendingRound: ManagedDocumentApprovalSummaryView | null;
 };

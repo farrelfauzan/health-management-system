@@ -450,7 +450,8 @@
         "status": "Status",
         "chunks": "Cuplikan",
         "size": "Ukuran",
-        "actions": "Tindakan"
+        "actions": "Tindakan",
+        "approval": "Persetujuan"
       }
     },
     "visibility": {
@@ -525,7 +526,8 @@
       "save": "Simpan",
       "success": "Dokumen diperbarui.",
       "successWithReingest": "Dokumen diperbarui. Sedang diproses ulang dan tidak menjawab apa pun sampai selesai.",
-      "error": "Tidak dapat memperbarui dokumen ini."
+      "error": "Tidak dapat memperbarui dokumen ini.",
+      "reapprovalWarning": "Dokumen ini sudah disetujui. Mengubah siapa yang boleh melihatnya mengembalikannya ke proses persetujuan, dan asisten berhenti dapat mengutipnya sampai disetujui kembali."
     },
     "actions": {
       "download": "Unduh",
@@ -543,6 +545,25 @@
         "download": "Tidak dapat membuat tautan unduhan.",
         "reingest": "Tidak dapat memasukkan dokumen ini ke antrean pemrosesan ulang.",
         "delete": "Tidak dapat memensiunkan dokumen ini."
+      }
+    },
+    "approval": {
+      "status": {
+        "DRAFT": "Belum dikirim",
+        "PENDING_APPROVAL": "Menunggu persetujuan",
+        "ISSUED": "Disetujui",
+        "ARCHIVED": "Diarsipkan"
+      },
+      "notRetrievableYet": "Asisten belum dapat mengambil dokumen ini.",
+      "sendForReview": "Kirim untuk ditinjau",
+      "confirm": {
+        "sendForReview": "Kirim “{title}” untuk disetujui? Asisten berhenti dapat mengutipnya sampai ada yang menyetujui."
+      },
+      "success": {
+        "sendForReview": "Dokumen dikirim untuk disetujui."
+      },
+      "errors": {
+        "sendForReview": "Tidak dapat mengirim dokumen ini untuk disetujui."
       }
     }
   },

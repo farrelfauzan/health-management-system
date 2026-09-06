@@ -11,6 +11,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DocumentRepository } from '../repository/document.repository';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
+import { ClinicCorpusApprovalService } from './clinic-corpus-approval.service';
 import { DocumentService } from './document.service';
 import { UploadedDocumentGuardService } from './uploaded-document-guard.service';
 
@@ -79,6 +80,7 @@ describe('DocumentService', () => {
   let mockObjectStorageService: jest.Mocked<ObjectStorageService>;
   let mockAuthRepository: jest.Mocked<AuthRepository>;
   let mockUploadedDocumentGuardService: jest.Mocked<UploadedDocumentGuardService>;
+  let mockCorpusApprovalService: jest.Mocked<ClinicCorpusApprovalService>;
   let documentService: DocumentService;
 
   beforeEach(() => {
@@ -102,11 +104,29 @@ describe('DocumentService', () => {
     mockUploadedDocumentGuardService = {
       guardUploadedDocument: jest.fn().mockResolvedValue({ sizeBytes: 999 }),
     } as unknown as jest.Mocked<UploadedDocumentGuardService>;
+    // The policy-off posture, which is the default (`P16-T33`): the gate
+    // passes the proposed status straight through and no registry row exists.
+    mockCorpusApprovalService = {
+      resolveGatedIngestStatus: jest.fn(async (proposed: unknown) => proposed),
+      syncRegistryRow: jest.fn().mockResolvedValue(null),
+      sendForReview: jest.fn(),
+      assertIngestAllowed: jest.fn(),
+      requiresReapprovalOnVisibilityChange: jest.fn().mockResolvedValue(false),
+      reopenForVisibilityChange: jest.fn(),
+      resolveApprovalView: jest.fn().mockResolvedValue({
+        isApprovalRequired: false,
+        managedDocumentId: null,
+        status: null,
+        pendingRound: null,
+      }),
+      resolveApprovalViews: jest.fn().mockResolvedValue(new Map()),
+    } as unknown as jest.Mocked<ClinicCorpusApprovalService>;
     documentService = new DocumentService(
       mockDocumentRepository,
       mockObjectStorageService,
       mockAuthRepository,
       mockUploadedDocumentGuardService,
+      mockCorpusApprovalService,
     );
   });
 

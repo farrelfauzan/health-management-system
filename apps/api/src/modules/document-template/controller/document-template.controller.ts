@@ -24,6 +24,7 @@ import { CreateDocumentTemplateImportUploadUrlDto } from '../dto/create-document
 import { ImportDocumentTemplateDto } from '../dto/import-document-template.dto';
 import { ListDocumentTemplatesQueryDto } from '../dto/list-document-templates-query.dto';
 import { UpdateDocumentTemplateDto } from '../dto/update-document-template.dto';
+import { DocumentTemplateApprovalService } from '../service/document-template-approval.service';
 import { DocumentTemplateImportService } from '../service/document-template-import.service';
 import { DocumentTemplatePreviewService } from '../service/document-template-preview.service';
 import { DocumentTemplateService } from '../service/document-template.service';
@@ -39,6 +40,7 @@ export class DocumentTemplateController {
     private readonly documentTemplateService: DocumentTemplateService,
     private readonly documentTemplatePreviewService: DocumentTemplatePreviewService,
     private readonly documentTemplateImportService: DocumentTemplateImportService,
+    private readonly documentTemplateApprovalService: DocumentTemplateApprovalService,
   ) {}
 
   @Get()
@@ -168,6 +170,27 @@ export class DocumentTemplateController {
 
     return {
       data: preview,
+    };
+  }
+
+  @Post(':id/approval-preview')
+  @HttpCode(200)
+  @Auth([{ action: 'decide', subject: 'DocumentApproval' }])
+  @ApiEndpoint({
+    summary: "Render a template's open submission and diff it against the published version",
+    responseDescription:
+      'The frozen submission — not the working copy — rendered against the hostile fixture, plus a block-level diff against the version invoices currently render from. An edit made after the submission changes neither. 404 when the template has no open approval request.',
+    responseExample: { data: DOCUMENT_TEMPLATE_EXAMPLES.approvalPreviewView },
+    notFoundDescription: 'Document template not found, or it has no open approval request.',
+  })
+  async previewTemplateSubmission(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+
+    return {
+      data: await this.documentTemplateApprovalService.previewOpenSubmission(id, actor),
     };
   }
 

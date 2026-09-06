@@ -21,6 +21,7 @@ import {
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { DocumentTemplateRepository } from '../repository/document-template.repository';
+import { DocumentTemplateApprovalService } from './document-template-approval.service';
 import { DocumentTemplateMapper } from './document-template.mapper';
 import { findUnknownTemplateTokens } from './find-unknown-template-tokens';
 import { sanitiseRichTextHtml } from '../../../common/html/sanitise-rich-text-html';
@@ -43,12 +44,13 @@ export class DocumentTemplateService {
   constructor(
     private readonly documentTemplateRepository: DocumentTemplateRepository,
     private readonly documentTemplateMapper: DocumentTemplateMapper,
+    private readonly approvalService: DocumentTemplateApprovalService,
     private readonly auditService: AuditService,
   ) {}
 
   async listTemplates(query: ListDocumentTemplatesQueryInput): Promise<DocumentTemplateView[]> {
     const records = await this.documentTemplateRepository.listByKind(query.kind);
-    return records.map((record) => this.documentTemplateMapper.toView(record));
+    return Promise.all(records.map(async (record) => this.toViewWithApproval(record)));
   }
 
   async createTemplate(
@@ -70,7 +72,8 @@ export class DocumentTemplateService {
       actorUserId: actor.sub,
       metadata: { kind: record.kind },
     });
-    return this.documentTemplateMapper.toView({ ...record, latestPublishedVersion: null });
+    await this.approvalService.syncRegistryRow(record, actor);
+    return this.toViewWithApproval({ ...record, latestPublishedVersion: null });
   }
 
   async updateTemplate(
@@ -99,7 +102,11 @@ export class DocumentTemplateService {
           .sort(),
       },
     });
-    return this.documentTemplateMapper.toView(record);
+    // FR-E5-15. Editing the layout an approver is looking at voids their
+    // round — the same rule a registry edit obeys, reached through the same
+    // service, so the two can never drift apart.
+    await this.approvalService.syncRegistryRow(record, actor);
+    return this.toViewWithApproval(record);
   }
 
   /**
@@ -116,6 +123,10 @@ export class DocumentTemplateService {
       throw new ConflictException('A template with no content cannot be published');
     }
     this.assertKnownTokens(existing);
+    // §7.5.8. Under an active policy a template is published *by* an
+    // approval and never alongside one, so the direct route closes — in the
+    // service, so it closes for every client (NFR-SEC-09).
+    await this.approvalService.assertPublishAllowed(existing);
     try {
       const published = await this.documentTemplateRepository.publishTemplate({
         templateId: id,
@@ -128,7 +139,7 @@ export class DocumentTemplateService {
         actorUserId: actor.sub,
         metadata: { event: 'TEMPLATE_PUBLISHED', versionNumber: published.version.versionNumber },
       });
-      return this.documentTemplateMapper.toView({
+      return this.toViewWithApproval({
         ...published.template,
         latestPublishedVersion: published.version,
       });
@@ -160,7 +171,7 @@ export class DocumentTemplateService {
         actorUserId: actor.sub,
         metadata: { event: 'TEMPLATE_SET_DEFAULT', kind: existing.kind },
       });
-      return this.documentTemplateMapper.toView(record);
+      return this.toViewWithApproval(record);
     } catch (err: unknown) {
       if (this.isUniqueConstraintError(err)) {
         throw new ConflictException('The default template changed concurrently — retry');
@@ -213,6 +224,21 @@ export class DocumentTemplateService {
    */
   async findVersionById(id: string): Promise<DocumentTemplateVersionRecord | null> {
     return this.documentTemplateRepository.findVersionById(id);
+  }
+
+  /**
+   * The view every template route returns: the mapper's shape plus the
+   * approval block (`P16-T32`). One extra read while the policy is on, and
+   * none at all while it is off — the type lookup answers "no" and short
+   * circuits before the registry is touched.
+   */
+  private async toViewWithApproval(
+    record: DocumentTemplateWithLatestVersionRecord,
+  ): Promise<DocumentTemplateView> {
+    return {
+      ...this.documentTemplateMapper.toView(record),
+      approval: await this.approvalService.resolveApprovalView(record.id),
+    };
   }
 
   private assertKnownTokens(template: DocumentTemplateWithLatestVersionRecord): void {

@@ -107,6 +107,39 @@ export const listDocumentApprovalsQuerySchema = z.object({
 
 export type ListDocumentApprovalsQueryInput = z.infer<typeof listDocumentApprovalsQuerySchema>;
 
+/**
+ * How many rounds one bulk approval may carry (FR-E5-23).
+ *
+ * A cap rather than none: onboarding a 40-document corpus is the case this
+ * exists for (R-18), and a request that could name ten thousand rounds would
+ * be a way to hold a connection open while the database does an unbounded
+ * amount of work. Fifty covers the real batch and keeps the request honest.
+ */
+export const MAX_BULK_DOCUMENT_APPROVALS = 50;
+
+/**
+ * Approve several rounds at once (FR-E5-23).
+ *
+ * Deliberately only *approve*. A rejection carries a reason that is specific
+ * to the document (FR-E5-17), and a bulk rejection would either invent one
+ * or paste the same sentence onto twenty different documents — which is the
+ * rubber-stamping this feature exists to make visible, running in the
+ * opposite direction.
+ */
+export const bulkApproveDocumentsSchema = z
+  .object({
+    requestIds: z
+      .array(z.string().uuid())
+      .min(1)
+      .max(MAX_BULK_DOCUMENT_APPROVALS)
+      .refine((ids) => new Set(ids).size === ids.length, {
+        message: 'Each approval request may appear once',
+      }),
+  })
+  .strict();
+
+export type BulkApproveDocumentsInput = z.infer<typeof bulkApproveDocumentsSchema>;
+
 /** Issuing a document whose type requires an approved round (FR-E5-11). */
 export const DOCUMENT_APPROVAL_REQUIRED_ERROR_CODE = 'DOCUMENT_APPROVAL_REQUIRED';
 

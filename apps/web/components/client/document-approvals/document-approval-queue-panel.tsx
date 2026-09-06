@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Card, CardContent, Checkbox, Label, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { BulkApproveButton } from '#components/client/document-approvals/bulk-approve-button';
 import { DocumentApprovalQueueTable } from '#components/client/document-approvals/document-approval-queue-table';
 import { EmptyState } from '#components/shared/empty-state';
 import { useDocumentApprovalQueue } from '#lib/document-approvals/use-document-approval-queue';
@@ -22,6 +23,7 @@ export function DocumentApprovalQueuePanel() {
   const ability = useAbility();
   const canDecide = ability.can('decide', 'DocumentApproval');
   const [isOverdueOnly, setIsOverdueOnly] = useState<boolean>(false);
+  const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(new Set());
   const queue = useDocumentApprovalQueue(
     {
       assignedToMe: 'true',
@@ -30,6 +32,24 @@ export function DocumentApprovalQueuePanel() {
       ...(isOverdueOnly ? { overdueOnly: 'true' } : {}),
     },
     canDecide,
+  );
+
+  const toggleSelected = useCallback((roundId: string, isSelected: boolean) => {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (isSelected) {
+        next.add(roundId);
+      } else {
+        next.delete(roundId);
+      }
+      return next;
+    });
+  }, []);
+  // Only the rounds still on screen. A selection that survived a filter
+  // change would let an approver approve rows they can no longer see.
+  const selectedRequestIds = useMemo(
+    () => queue.approvals.filter((item) => selectedIds.has(item.round.id)).map((item) => item.round.id),
+    [queue.approvals, selectedIds],
   );
 
   if (!canDecide) {
@@ -47,6 +67,12 @@ export function DocumentApprovalQueuePanel() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-slate-500">{t('description')}</p>
         <div className="flex items-center gap-2">
+          {selectedRequestIds.length === 0 ? null : (
+            <BulkApproveButton
+              requestIds={selectedRequestIds}
+              onDone={() => setSelectedIds(new Set())}
+            />
+          )}
           <Checkbox
             id="document-approvals-overdue-only"
             checked={isOverdueOnly}
@@ -63,6 +89,8 @@ export function DocumentApprovalQueuePanel() {
             items={queue.approvals}
             isPending={queue.isPending}
             isError={queue.isError}
+            selectedIds={selectedIds}
+            onSelectedChange={toggleSelected}
           />
         </CardContent>
       </Card>

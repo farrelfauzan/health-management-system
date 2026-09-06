@@ -10,12 +10,14 @@ import { DataTableHeaderCell } from '#components/shared/data-table-header-cell';
 import { EmptyState } from '#components/shared/empty-state';
 import { TableSkeleton } from '#components/shared/table-skeleton';
 
-const TABLE_COLUMN_COUNT = 5;
+const TABLE_COLUMN_COUNT = 6;
 
 type DocumentApprovalQueueTableProps = {
   items: DocumentApprovalQueueItemView[];
   isPending: boolean;
   isError: boolean;
+  selectedIds: ReadonlySet<string>;
+  onSelectedChange: (roundId: string, isSelected: boolean) => void;
 };
 
 /** The queue, deadline-first: the most pressing decision is the top row. */
@@ -23,6 +25,8 @@ export function DocumentApprovalQueueTable({
   items,
   isPending,
   isError,
+  selectedIds,
+  onSelectedChange,
 }: DocumentApprovalQueueTableProps) {
   const t = useTranslations('operations.documents.approvals.queue');
 
@@ -41,6 +45,9 @@ export function DocumentApprovalQueueTable({
     <DataTable className="rounded-xl border-0" minWidthClassName="min-w-[56rem]">
       <TableHeader>
         <TableRow>
+          <DataTableHeaderCell className="w-10">
+            <span className="sr-only">{t('columns.select')}</span>
+          </DataTableHeaderCell>
           <DataTableHeaderCell>{t('columns.document')}</DataTableHeaderCell>
           <DataTableHeaderCell>{t('columns.type')}</DataTableHeaderCell>
           <DataTableHeaderCell>{t('columns.drafter')}</DataTableHeaderCell>
@@ -52,7 +59,14 @@ export function DocumentApprovalQueueTable({
         {isPending ? (
           <TableSkeleton columns={TABLE_COLUMN_COUNT} />
         ) : (
-          items.map((item) => <DocumentApprovalQueueRow key={item.round.id} item={item} />)
+          items.map((item) => (
+            <DocumentApprovalQueueRow
+              key={item.round.id}
+              item={item}
+              isSelected={selectedIds.has(item.round.id)}
+              onSelectedChange={(isSelected) => onSelectedChange(item.round.id, isSelected)}
+            />
+          ))
         )}
       </TableBody>
     </DataTable>

@@ -23,6 +23,15 @@ const TEMPLATE_VIEW_EXAMPLE = {
     publishedAt: '2026-09-01T04:20:00.000Z',
     publishedById: optionalExample('4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91'),
   }),
+  // All-off, which is the default posture: `INVOICE_TEMPLATE` ships with
+  // approval switched off, so a clinic that never turns it on sees no
+  // approver field, banner or badge anywhere (US-E5-06).
+  approval: {
+    isApprovalRequired: false,
+    managedDocumentId: null,
+    status: null,
+    pendingRound: null,
+  },
   createdAt: '2026-08-30T08:00:00.000Z',
   updatedAt: '2026-09-01T04:20:00.000Z',
 };
@@ -43,6 +52,12 @@ export const DOCUMENT_TEMPLATE_EXAMPLES = {
     isDefault: false,
     contentHtml: '<div><h1><span data-hms-var="clinic.name"></span></h1></div>',
     settings: TEMPLATE_SETTINGS_EXAMPLE,
+    approval: {
+      isApprovalRequired: false,
+      managedDocumentId: null,
+      status: null,
+      pendingRound: null,
+    },
     createdAt: '2026-09-01T04:00:00.000Z',
     updatedAt: '2026-09-01T04:00:00.000Z',
   },
@@ -93,6 +108,19 @@ export const DOCUMENT_TEMPLATE_EXAMPLES = {
         token: 'clinic.logo',
         reason: 'The fixture carries no clinic logo',
       },
+    ],
+  },
+  approvalPreviewView: {
+    preview: {
+      url: 'https://objects.example/document-templates/previews/8b2e…/preview.pdf?X-Amz-Signature=…',
+      expiresAt: '2026-09-01T05:05:00.000Z',
+      warnings: [],
+    },
+    baseVersionNumber: 3,
+    diff: [
+      { kind: 'UNCHANGED', text: '<h1><span data-hms-var="clinic.name"></span></h1>' },
+      { kind: 'REMOVED', text: '<p>Terima kasih</p>' },
+      { kind: 'ADDED', text: '<p>Terima kasih atas kunjungan Anda</p>' },
     ],
   },
 } as const;

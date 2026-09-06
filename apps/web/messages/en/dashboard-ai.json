@@ -450,7 +450,8 @@
         "status": "Status",
         "chunks": "Passages",
         "size": "Size",
-        "actions": "Actions"
+        "actions": "Actions",
+        "approval": "Approval"
       }
     },
     "visibility": {
@@ -525,7 +526,8 @@
       "save": "Save",
       "success": "Document updated.",
       "successWithReingest": "Document updated. It is being reprocessed and will answer nothing until that finishes.",
-      "error": "Unable to update this document."
+      "error": "Unable to update this document.",
+      "reapprovalWarning": "This document has been approved. Changing who can be shown it sends it back for approval, and the assistant stops being able to cite it until it is approved again."
     },
     "actions": {
       "download": "Download",
@@ -543,6 +545,25 @@
         "download": "Unable to create a download link.",
         "reingest": "Unable to queue this document for reprocessing.",
         "delete": "Unable to retire this document."
+      }
+    },
+    "approval": {
+      "status": {
+        "DRAFT": "Not submitted",
+        "PENDING_APPROVAL": "Awaiting approval",
+        "ISSUED": "Approved",
+        "ARCHIVED": "Archived"
+      },
+      "notRetrievableYet": "The assistant cannot retrieve this yet.",
+      "sendForReview": "Send for review",
+      "confirm": {
+        "sendForReview": "Send “{title}” for approval? The assistant stops being able to cite it until somebody approves it."
+      },
+      "success": {
+        "sendForReview": "Document sent for approval."
+      },
+      "errors": {
+        "sendForReview": "Unable to send this document for approval."
       }
     }
   },

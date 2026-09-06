@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { DocumentTemplateControllerCreateTemplateV1201DataApproval } from './documentTemplateControllerCreateTemplateV1201DataApproval';
 import type { DocumentTemplateControllerCreateTemplateV1201DataSettings } from './documentTemplateControllerCreateTemplateV1201DataSettings';
 
 export type DocumentTemplateControllerCreateTemplateV1201Data = {
@@ -16,6 +17,7 @@ export type DocumentTemplateControllerCreateTemplateV1201Data = {
   isDefault: boolean;
   contentHtml: string;
   settings: DocumentTemplateControllerCreateTemplateV1201DataSettings;
+  approval: DocumentTemplateControllerCreateTemplateV1201DataApproval;
   createdAt: string;
   updatedAt: string;
 };

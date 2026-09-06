@@ -1,12 +1,14 @@
 import {
   ConflictException,
   ForbiddenException,
+  HttpException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 
 import {
+  BulkApproveDocumentsInput,
   DOCUMENT_APPROVAL_ALREADY_DECIDED_ERROR_CODE,
   DOCUMENT_APPROVAL_NOT_AN_APPROVER_ERROR_CODE,
   DOCUMENT_APPROVAL_REQUIRED_ERROR_CODE,
@@ -17,6 +19,8 @@ import {
   DocumentApprovalPendingCountView,
   DocumentApprovalQueueView,
   DocumentApprovalRequestRecord,
+  DocumentBulkApprovalItemView,
+  DocumentBulkApprovalView,
   ListDocumentApprovalsQueryInput,
   ManagedDocumentDetailView,
   ManagedDocumentRecord,
@@ -138,12 +142,30 @@ export class DocumentApprovalService {
     const document = await this.findReadableOrThrow(documentId, actor);
     assertIssuableDirectly(document);
     this.issueBehaviorService.assertBehaviorSupported(document);
-    await this.managedDocumentRepository.transitionDocument({
+    await this.managedDocumentRepository.issueDocument({
       id: documentId,
-      status: 'ISSUED',
       issuedAt: new Date(),
+      onIssued: async (tx) =>
+        this.issueBehaviorService.executeIssue(
+          {
+            document,
+            issuedContent: {
+              contentHtml: document.contentHtml,
+              storageKey: document.storageKey,
+            },
+            actorUserId: actor.sub,
+            decisionId: null,
+          },
+          tx,
+        ),
     });
     await this.record(AuditAction.DOCUMENT_ISSUED, document, actor, { viaApproval: false });
+    await this.issueBehaviorService.announceIssued({
+      document,
+      issuedContent: { contentHtml: document.contentHtml, storageKey: document.storageKey },
+      actorUserId: actor.sub,
+      decisionId: null,
+    });
     return this.buildDetail(documentId, actor);
   }
 
@@ -189,6 +211,45 @@ export class DocumentApprovalService {
     actor: CurrentUser,
   ): Promise<ManagedDocumentDetailView> {
     return this.decide({ requestId, actor, isApproved: false, reason: input.reason });
+  }
+
+  /**
+   * Approves several rounds in one call (FR-E5-23, R-18).
+   *
+   * Each item goes through {@link approve} unchanged — the same named-on-panel
+   * check, the same self-approval rule, the same row lock, the same issue
+   * behaviour. Bulk is a way to spend fewer round trips, never a way to skip
+   * a check: onboarding a forty-document corpus should not cost forty visits,
+   * and it should not buy a weaker decision either.
+   *
+   * Sequential rather than parallel, and each failure is reported rather than
+   * thrown. One ineligible round fails alone; the rest of the batch stands.
+   */
+  async bulkApprove(
+    input: BulkApproveDocumentsInput,
+    actor: CurrentUser,
+  ): Promise<DocumentBulkApprovalView> {
+    const items: DocumentBulkApprovalItemView[] = [];
+    for (const requestId of input.requestIds) {
+      items.push(await this.tryApprove(requestId, actor));
+    }
+    return {
+      approvedCount: items.filter((item) => item.isApproved).length,
+      failedCount: items.filter((item) => !item.isApproved).length,
+      items,
+    };
+  }
+
+  private async tryApprove(
+    requestId: string,
+    actor: CurrentUser,
+  ): Promise<DocumentBulkApprovalItemView> {
+    try {
+      await this.approve(requestId, actor);
+      return { requestId, isApproved: true, error: null };
+    } catch (err: unknown) {
+      return { requestId, isApproved: false, error: toBulkApprovalError(err) };
+    }
   }
 
   /** The caller's queue (US-E5-02), or the whole one when they ask for it. */
@@ -273,13 +334,30 @@ export class DocumentApprovalService {
     assertNamedOnPanel(round, params.actor.sub);
     assertNotSelfApproval(document, params.actor.sub);
     this.issueBehaviorService.assertBehaviorSupported(document);
+    const issuedContent = toIssueContent(round.frozenPayload, document);
     const claimed = await this.approvalRepository.claimDecision({
       requestId: round.id,
       approverId: params.actor.sub,
       isApproved: params.isApproved,
       reason: params.reason,
       requiredApprovals: document.type.requiredApprovals,
-      frozenContent: { documentId: document.id, ...toIssueContent(round.frozenPayload, document) },
+      frozenContent: { documentId: document.id, ...issuedContent },
+      // FR-E5-16: the type's issue behaviour rides the decision's own
+      // transaction, so a template version — or a corpus release — is
+      // published by the approval, never alongside it.
+      onIssued: async (tx, decisionId) =>
+        this.issueBehaviorService.executeIssue(
+          {
+            document,
+            issuedContent: {
+              contentHtml: issuedContent.contentHtml,
+              storageKey: issuedContent.storageKey,
+            },
+            actorUserId: params.actor.sub,
+            decisionId,
+          },
+          tx,
+        ),
     });
     if (claimed === null) {
       throw new ConflictException({
@@ -288,6 +366,17 @@ export class DocumentApprovalService {
       });
     }
     await this.recordDecision({ round, document, ...params, isResolved: claimed.isResolved });
+    if (params.isApproved && claimed.isResolved) {
+      await this.issueBehaviorService.announceIssued({
+        document,
+        issuedContent: {
+          contentHtml: issuedContent.contentHtml,
+          storageKey: issuedContent.storageKey,
+        },
+        actorUserId: params.actor.sub,
+        decisionId: claimed.decisionId,
+      });
+    }
     await this.announceDecision({ round, document, ...params, isResolved: claimed.isResolved });
     return this.buildDetail(document.id, params.actor);
   }
@@ -566,3 +655,27 @@ function toIssueContent(
   };
 }
 
+
+/**
+ * The refusal, flattened for one line of a batch result.
+ *
+ * Only `HttpException`s are unwrapped — those are the deliberate refusals
+ * this service raises, and their bodies are already written for a person to
+ * read. Anything else is a bug rather than a decision, and it reports as one
+ * generic line rather than leaking an internal message into a list an
+ * approver is scanning.
+ */
+function toBulkApprovalError(err: unknown): { code: string; message: string } {
+  if (!(err instanceof HttpException)) {
+    return { code: 'DOCUMENT_APPROVAL_FAILED', message: 'This approval could not be recorded' };
+  }
+  const response = err.getResponse();
+  if (typeof response === 'object' && response !== null) {
+    const body = response as { code?: unknown; message?: unknown };
+    return {
+      code: typeof body.code === 'string' ? body.code : 'DOCUMENT_APPROVAL_FAILED',
+      message: typeof body.message === 'string' ? body.message : err.message,
+    };
+  }
+  return { code: 'DOCUMENT_APPROVAL_FAILED', message: err.message };
+}

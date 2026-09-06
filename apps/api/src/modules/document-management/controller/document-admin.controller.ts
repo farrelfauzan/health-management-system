@@ -190,6 +190,29 @@ export class DocumentAdminController {
     return { data: view, message: 'Document queued for ingestion' };
   }
 
+  @Post(':id/send-for-review')
+  @HttpCode(200)
+  @Auth([{ action: 'write', subject: 'Document' }])
+  @ApiEndpoint({
+    summary: 'Put an existing corpus document behind the approval gate',
+    responseDescription:
+      'Registers the document with the documents registry so it can be submitted for approval (FR-E5-19, R-19). Turning the approval policy on is deliberately **not** retroactive — a document ingested before the switch keeps answering questions (OQ-18) — and this is the explicit action that changes that for one document. From this call until somebody approves it, the assistant cannot retrieve it. Returns 400 for a purpose that is never retrieved, where there would be nothing to review.',
+    responseExample: {
+      data: DOCUMENT_MANAGEMENT_EXAMPLES.pendingApprovalDocument,
+      message: 'Document sent for review',
+    },
+    notFoundDescription: 'Document not found.',
+  })
+  async sendDocumentForReview(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const view = await this.documentService.sendForReview(id, actor);
+
+    return { data: view, message: 'Document sent for review' };
+  }
+
   @Delete(':id')
   @Auth([{ action: 'write', subject: 'Document' }])
   @ApiEndpoint({

@@ -15,6 +15,7 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { DocumentTemplateRepository } from '../repository/document-template.repository';
 import { DocumentTemplateMapper } from './document-template.mapper';
+import { DocumentTemplateApprovalService } from './document-template-approval.service';
 import { DocumentTemplateService } from './document-template.service';
 
 describe('DocumentTemplateService', () => {
@@ -31,10 +32,23 @@ describe('DocumentTemplateService', () => {
     findLatestPublishedVersionByKind: jest.fn(),
   };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
+  // Policy off, which is the default posture (`P16-T32`, US-E5-06): the gate
+  // permits every publish and no registry row is ever written.
+  const approvalServiceMock = {
+    assertPublishAllowed: jest.fn(),
+    syncRegistryRow: jest.fn().mockResolvedValue(null),
+    resolveApprovalView: jest.fn().mockResolvedValue({
+      isApprovalRequired: false,
+      managedDocumentId: null,
+      status: null,
+      pendingRound: null,
+    }),
+  };
 
   const service = new DocumentTemplateService(
     repositoryMock as unknown as DocumentTemplateRepository,
     new DocumentTemplateMapper(),
+    approvalServiceMock as unknown as DocumentTemplateApprovalService,
     auditServiceMock as unknown as AuditService,
   );
 
@@ -66,6 +80,7 @@ describe('DocumentTemplateService', () => {
       settings: resolveDefaultTemplateSettings(),
       publishedById: 'admin-user',
       publishedAt: new Date('2026-09-01T01:00:00Z'),
+      approvalDecisionId: null,
       ...overrides,
     };
   }

@@ -100,6 +100,27 @@ export const MANAGED_DOCUMENT_EXAMPLES = {
     dueAt: '2026-10-03T10:00:00.000Z',
   },
   rejectRequest: { reason: 'Pasal 4 bertentangan dengan kebijakan pengembalian dana klinik.' },
+  bulkApproveRequest: {
+    requestIds: [
+      '2f8a6b1c-9d43-4a17-9c58-0b6e5f1a7d24',
+      '7c1d0e93-4b2a-4f88-9a10-3d5c6b7e8f01',
+    ],
+  },
+  bulkApprovalView: {
+    approvedCount: 1,
+    failedCount: 1,
+    items: [
+      { requestId: '2f8a6b1c-9d43-4a17-9c58-0b6e5f1a7d24', isApproved: true, error: null },
+      {
+        requestId: '7c1d0e93-4b2a-4f88-9a10-3d5c6b7e8f01',
+        isApproved: false,
+        error: {
+          code: 'DOCUMENT_APPROVAL_NOT_AN_APPROVER',
+          message: 'You were not named as an approver on this request',
+        },
+      },
+    ],
+  },
   approvalQueue: {
     items: [
       {
