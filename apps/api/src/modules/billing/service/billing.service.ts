@@ -8,7 +8,9 @@ import {
   InvoiceGenerationGap,
   InvoiceListItem,
   InvoicesListMeta,
+  InvoiceItemTypeValue,
   InvoiceStatusValue,
+  ServiceTariffCategoryValue,
   ServiceTariffRecord,
 } from '@hms/shared-types';
 import {
@@ -21,6 +23,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AddInvoiceItemDto } from '../dto/add-invoice-item.dto';
 import { GenerateInvoiceDto } from '../dto/generate-invoice.dto';
 import { ListInvoicesQueryDto } from '../dto/list-invoices-query.dto';
 import { RecordPaymentDto } from '../dto/record-payment.dto';
@@ -50,6 +53,16 @@ function toRupiah(cents: number): number {
 type CollectedItems = {
   items: CreateInvoiceItemPayload[];
   gaps: InvoiceGenerationGap[];
+};
+
+/** A hand-added tariff line is typed by the tariff's own category. */
+const ITEM_TYPE_BY_TARIFF_CATEGORY: Readonly<
+  Record<ServiceTariffCategoryValue, InvoiceItemTypeValue>
+> = {
+  CONSULTATION: 'CONSULTATION',
+  PROCEDURE: 'PROCEDURE',
+  ACCOMMODATION: 'ACCOMMODATION',
+  OTHER: 'OTHER',
 };
 
 /**
@@ -210,6 +223,72 @@ export class BillingService {
     return this.billingMapper.toInvoiceDetail(voided);
   }
 
+  /**
+   * Adds one tariff line to a DRAFT invoice by hand. Generation only reaches
+   * tariffs it can match on its own — the consultation fee, procedures by
+   * ICD-9-CM code, ward nights — so an unmapped or OTHER tariff has no other
+   * way onto the bill. ISSUED and later are immutable: correct those by
+   * voiding and reissuing, the same as every other edit.
+   */
+  async addInvoiceItem(
+    id: string,
+    payload: AddInvoiceItemDto,
+    currentUser: CurrentUser,
+  ): Promise<InvoiceDetail> {
+    const invoice = await this.findInvoiceOrThrow(id);
+    this.assertDraft(invoice.status);
+    const tariff = await this.findBillableTariffOrThrow(payload.serviceTariffId);
+    const item = this.buildTariffItem(
+      tariff,
+      ITEM_TYPE_BY_TARIFF_CATEGORY[tariff.category],
+      payload.quantity,
+    );
+    const updated = await this.billingRepository.addInvoiceItem({ invoiceId: invoice.id, item });
+    await this.auditService.record({
+      action: 'INVOICE_ITEM_ADDED',
+      resource: 'Invoice',
+      resourceId: invoice.id,
+      actorUserId: currentUser.sub,
+      metadata: { serviceTariffId: tariff.id, tariffCode: tariff.code, quantity: item.quantity },
+    });
+
+    return this.billingMapper.toInvoiceDetail(updated);
+  }
+
+  /** Removes one line from a DRAFT invoice; the total follows the lines that remain. */
+  async removeInvoiceItem(
+    id: string,
+    itemId: string,
+    currentUser: CurrentUser,
+  ): Promise<InvoiceDetail> {
+    const invoice = await this.findInvoiceDetailOrThrow(id);
+    this.assertDraft(invoice.status);
+    const item = invoice.items.find((candidate) => candidate.id === itemId);
+
+    if (!item) {
+      throw new NotFoundException('Invoice item not found');
+    }
+
+    const updated = await this.billingRepository.removeInvoiceItem({
+      invoiceId: invoice.id,
+      itemId: item.id,
+    });
+    await this.auditService.record({
+      action: 'INVOICE_ITEM_REMOVED',
+      resource: 'Invoice',
+      resourceId: invoice.id,
+      actorUserId: currentUser.sub,
+      metadata: {
+        itemId: item.id,
+        itemType: item.itemType,
+        description: item.description,
+        amount: item.amount,
+      },
+    });
+
+    return this.billingMapper.toInvoiceDetail(updated);
+  }
+
   private async collectInvoiceItems(params: {
     encounter: BillingSourceEncounterRecord;
     dispensedItems: BillingDispensedItemRecord[];
@@ -245,7 +324,12 @@ export class BillingService {
     gap?: InvoiceGenerationGap;
   }> {
     if (consultationTariffId) {
-      return { item: this.buildTariffItem(await this.findConsultationTariffOrThrow(consultationTariffId), 'CONSULTATION') };
+      return {
+        item: this.buildTariffItem(
+          await this.findConsultationTariffOrThrow(consultationTariffId),
+          'CONSULTATION',
+        ),
+      };
     }
     const activeTariffs = await this.serviceTariffRepository.findActiveConsultationTariffs();
     if (activeTariffs.length === 0) {
@@ -340,7 +424,7 @@ export class BillingService {
 
   private buildTariffItem(
     tariff: ServiceTariffRecord,
-    itemType: 'CONSULTATION' | 'PROCEDURE',
+    itemType: InvoiceItemTypeValue,
     quantity = 1,
   ): CreateInvoiceItemPayload {
     return {
@@ -400,6 +484,34 @@ export class BillingService {
         `Invoice status can not change from ${fromStatus} to ${toStatus}`,
       );
     }
+  }
+
+  private assertDraft(status: InvoiceStatusValue): void {
+    if (status !== 'DRAFT') {
+      throw new ConflictException(
+        `Invoice lines can only change while the invoice is DRAFT; it is ${status}. Void and reissue to correct it.`,
+      );
+    }
+  }
+
+  private async findBillableTariffOrThrow(id: string): Promise<ServiceTariffRecord> {
+    const tariff = await this.serviceTariffRepository.findServiceTariffById(id);
+
+    if (!tariff || !tariff.isActive) {
+      throw new BadRequestException('serviceTariffId must name an active service tariff');
+    }
+
+    return tariff;
+  }
+
+  private async findInvoiceDetailOrThrow(id: string) {
+    const invoice = await this.billingRepository.findInvoiceDetailById(id);
+
+    if (!invoice) {
+      throw new NotFoundException('Invoice not found');
+    }
+
+    return invoice;
   }
 
   private async findInvoiceOrThrow(id: string) {

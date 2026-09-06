@@ -82,6 +82,10 @@ export const BILLING_EXAMPLES = {
       cashierId: 'd6e7f8a9-b0c1-4d2e-9f3a-4b5c6d7e8f9a',
       createdAt: '2026-07-28T03:20:00.000Z',
     },
+    addItemRequest: {
+      serviceTariffId: '9d2e4f60-7b8c-4c9d-a0e1-4f5a6b7c8d9e',
+      quantity: 1,
+    },
     voidRequest: {
       reason: 'Wrong consultation tariff applied; reissuing with the corrected price list',
     },

@@ -18704,6 +18704,345 @@ paths:
         - bearer: []
       summary: Get an invoice
       tags: *a28
+  /api/v1/invoices/{id}/items:
+    post:
+      operationId: InvoiceController_addInvoiceItem_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddInvoiceItemDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  serviceTariffId: 9d2e4f60-7b8c-4c9d-a0e1-4f5a6b7c8d9e
+                  quantity: 1
+      responses:
+        "200":
+          description: The DRAFT invoice with the new line and a recomputed total. This is
+            how a tariff generation cannot match on its own — one without an
+            ICD-9-CM mapping, or an OTHER charge — reaches the bill. Only DRAFT
+            invoices accept lines; correct anything later by voiding and
+            reissuing.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      invoiceNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      status:
+                        type: string
+                      totalAmount:
+                        type: integer
+                      itemCount:
+                        type: integer
+                      issuedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            itemType:
+                              type: string
+                            serviceTariffId:
+                              type: string
+                            description:
+                              type: string
+                            quantity:
+                              type: integer
+                            unitPrice:
+                              type: integer
+                            amount:
+                              type: integer
+                          required:
+                            - id
+                            - itemType
+                            - serviceTariffId
+                            - description
+                            - quantity
+                            - unitPrice
+                            - amount
+                    required:
+                      - id
+                      - invoiceNumber
+                      - encounterId
+                      - patientId
+                      - patient
+                      - status
+                      - totalAmount
+                      - itemCount
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - items
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                    invoiceNumber: INV/20260728/0001
+                    encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+                    patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                    patient:
+                      id: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                      mrn: RM-000123
+                      fullName: Budi Santoso
+                    status: DRAFT
+                    totalAmount: 125000
+                    itemCount: 3
+                    issuedAt: 2026-07-28T03:15:00.000Z
+                    createdAt: 2026-07-28T03:10:00.000Z
+                    updatedAt: 2026-07-28T03:15:00.000Z
+                    items:
+                      - id: b4c5d6e7-f8a9-4b0c-9d1e-2f3a4b5c6d7e
+                        itemType: CONSULTATION
+                        serviceTariffId: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                        description: Konsultasi Dokter Umum
+                        quantity: 1
+                        unitPrice: 50000
+                        amount: 50000
+                  message: Invoice line added
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Invoice not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Invoice not found.
+      security:
+        - bearer: []
+      summary: Add a tariff line to a draft invoice
+      tags: *a28
+  /api/v1/invoices/{id}/items/{itemId}:
+    delete:
+      operationId: InvoiceController_removeInvoiceItem_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: itemId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The DRAFT invoice without the line and with a recomputed total.
+            Only DRAFT invoices can lose lines.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      invoiceNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      status:
+                        type: string
+                      totalAmount:
+                        type: integer
+                      itemCount:
+                        type: integer
+                      issuedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            itemType:
+                              type: string
+                            serviceTariffId:
+                              type: string
+                            description:
+                              type: string
+                            quantity:
+                              type: integer
+                            unitPrice:
+                              type: integer
+                            amount:
+                              type: integer
+                          required:
+                            - id
+                            - itemType
+                            - serviceTariffId
+                            - description
+                            - quantity
+                            - unitPrice
+                            - amount
+                    required:
+                      - id
+                      - invoiceNumber
+                      - encounterId
+                      - patientId
+                      - patient
+                      - status
+                      - totalAmount
+                      - itemCount
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - items
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                    invoiceNumber: INV/20260728/0001
+                    encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+                    patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                    patient:
+                      id: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                      mrn: RM-000123
+                      fullName: Budi Santoso
+                    status: DRAFT
+                    totalAmount: 125000
+                    itemCount: 3
+                    issuedAt: 2026-07-28T03:15:00.000Z
+                    createdAt: 2026-07-28T03:10:00.000Z
+                    updatedAt: 2026-07-28T03:15:00.000Z
+                    items:
+                      - id: b4c5d6e7-f8a9-4b0c-9d1e-2f3a4b5c6d7e
+                        itemType: CONSULTATION
+                        serviceTariffId: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                        description: Konsultasi Dokter Umum
+                        quantity: 1
+                        unitPrice: 50000
+                        amount: 50000
+                  message: Invoice line removed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Invoice or invoice line not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Invoice or invoice line not found.
+      security:
+        - bearer: []
+      summary: Remove a line from a draft invoice
+      tags: *a28
   /api/v1/invoices/{id}/issue:
     post:
       operationId: InvoiceController_issueInvoice_v1
@@ -35546,6 +35885,21 @@ components:
           format: uuid
       required:
         - encounterId
+    AddInvoiceItemDto:
+      type: object
+      properties:
+        serviceTariffId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 999
+          exclusiveMaximum: false
+          default: 1
+      required:
+        - serviceTariffId
     RecordPaymentDto:
       type: object
       properties:

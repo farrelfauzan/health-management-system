@@ -30,15 +30,13 @@ export type InvoiceStatusValue = z.infer<typeof invoiceStatusSchema>;
  * v1 — refunds are out of scope, so a mistaken payment is an operational
  * correction, not a status transition. VOID is terminal by definition.
  */
-export const INVOICE_STATUS_TRANSITIONS: Record<
-  InvoiceStatusValue,
-  readonly InvoiceStatusValue[]
-> = {
-  DRAFT: ['ISSUED', 'VOID'],
-  ISSUED: ['PAID', 'VOID'],
-  PAID: [],
-  VOID: [],
-} as const;
+export const INVOICE_STATUS_TRANSITIONS: Record<InvoiceStatusValue, readonly InvoiceStatusValue[]> =
+  {
+    DRAFT: ['ISSUED', 'VOID'],
+    ISSUED: ['PAID', 'VOID'],
+    PAID: [],
+    VOID: [],
+  } as const;
 
 export const INVOICE_ITEM_TYPES = [
   'CONSULTATION',
@@ -190,6 +188,20 @@ export const generateInvoiceSchema = z.object({
   consultationTariffId: z.string().uuid().optional(),
 });
 
+/** A line is at most a few hundred units of one tariff — anything larger is a typo, not a bill. */
+export const MAX_INVOICE_ITEM_QUANTITY = 999;
+
+/**
+ * Attaches one service tariff to a DRAFT invoice by hand. Generation only
+ * reaches tariffs it can match on its own (the consultation fee, procedures
+ * by ICD-9-CM code, ward nights), so a tariff with no code mapping — or an
+ * OTHER-category charge — has no other way onto the bill.
+ */
+export const addInvoiceItemSchema = z.object({
+  serviceTariffId: z.string().uuid(),
+  quantity: z.coerce.number().int().min(1).max(MAX_INVOICE_ITEM_QUANTITY).default(1),
+});
+
 /**
  * `amount` must equal the invoice total. Requiring the client to repeat the
  * number is deliberate: it proves the cashier saw the amount they took, and a
@@ -232,6 +244,7 @@ export type CreateServiceTariffInput = z.infer<typeof createServiceTariffSchema>
 export type UpdateServiceTariffInput = z.infer<typeof updateServiceTariffSchema>;
 export type ListServiceTariffsQueryInput = z.infer<typeof listServiceTariffsQuerySchema>;
 export type GenerateInvoiceInput = z.infer<typeof generateInvoiceSchema>;
+export type AddInvoiceItemInput = z.infer<typeof addInvoiceItemSchema>;
 export type RecordPaymentInput = z.infer<typeof recordPaymentSchema>;
 export type VoidInvoiceInput = z.infer<typeof voidInvoiceSchema>;
 export type ListInvoicesQueryInput = z.infer<typeof listInvoicesQuerySchema>;

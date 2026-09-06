@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -16,6 +17,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { BILLING_EXAMPLES } from '../../../common/openapi/billing-examples';
+import { AddInvoiceItemDto } from '../dto/add-invoice-item.dto';
 import { GenerateInvoiceDto } from '../dto/generate-invoice.dto';
 import { ListInvoicesQueryDto } from '../dto/list-invoices-query.dto';
 import { RecordPaymentDto } from '../dto/record-payment.dto';
@@ -101,6 +103,70 @@ export class InvoiceController {
       data: result.invoice,
       meta: { gaps: result.gaps },
       message: 'Invoice generated',
+    };
+  }
+
+  @Post(':id/items')
+  @HttpCode(200)
+  @Auth([{ action: 'write', subject: 'Invoice' }])
+  @ApiEndpoint({
+    summary: 'Add a tariff line to a draft invoice',
+    responseDescription:
+      'The DRAFT invoice with the new line and a recomputed total. This is how a tariff generation cannot match on its own — one without an ICD-9-CM mapping, or an OTHER charge — reaches the bill. Only DRAFT invoices accept lines; correct anything later by voiding and reissuing.',
+    responseExample: {
+      data: {
+        ...BILLING_EXAMPLES.invoice.listItem,
+        status: 'DRAFT',
+        items: BILLING_EXAMPLES.invoice.detailItems,
+      },
+      message: 'Invoice line added',
+    },
+    requestType: AddInvoiceItemDto,
+    requestExample: BILLING_EXAMPLES.invoice.addItemRequest,
+    notFoundDescription: 'Invoice not found.',
+  })
+  async addInvoiceItem(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() payload: AddInvoiceItemDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const invoice = await this.billingService.addInvoiceItem(id, payload, actor);
+
+    return {
+      data: invoice,
+      message: 'Invoice line added',
+    };
+  }
+
+  @Delete(':id/items/:itemId')
+  @HttpCode(200)
+  @Auth([{ action: 'write', subject: 'Invoice' }])
+  @ApiEndpoint({
+    summary: 'Remove a line from a draft invoice',
+    responseDescription:
+      'The DRAFT invoice without the line and with a recomputed total. Only DRAFT invoices can lose lines.',
+    responseExample: {
+      data: {
+        ...BILLING_EXAMPLES.invoice.listItem,
+        status: 'DRAFT',
+        items: BILLING_EXAMPLES.invoice.detailItems,
+      },
+      message: 'Invoice line removed',
+    },
+    notFoundDescription: 'Invoice or invoice line not found.',
+  })
+  async removeInvoiceItem(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('itemId', new ParseUUIDPipe()) itemId: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const invoice = await this.billingService.removeInvoiceItem(id, itemId, actor);
+
+    return {
+      data: invoice,
+      message: 'Invoice line removed',
     };
   }
 

@@ -31,6 +31,8 @@ describe('Billing integration', () => {
     issueInvoice: jest.fn(),
     recordPayment: jest.fn(),
     voidInvoice: jest.fn(),
+    addInvoiceItem: jest.fn(),
+    removeInvoiceItem: jest.fn(),
     findPaymentsForCashierReport: jest.fn(),
   };
 
@@ -59,7 +61,12 @@ describe('Billing integration', () => {
   const tariffId = '7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e';
   const timestamp = new Date('2026-07-28T03:00:00.000Z');
 
-  const patientRecord = { id: patientId, mrn: 'RM-000123', fullName: 'Budi Santoso', ownerUserId: null };
+  const patientRecord = {
+    id: patientId,
+    mrn: 'RM-000123',
+    fullName: 'Budi Santoso',
+    ownerUserId: null,
+  };
 
   const invoiceDetailRecord = {
     id: invoiceId,
@@ -407,9 +414,7 @@ describe('Billing integration', () => {
     expect(response.status).toBe(200);
     expect(response.body.data.date).toBe('2026-07-28');
     expect(response.body.data.totals).toEqual({ count: 1, totalAmount: 50000 });
-    expect(response.body.data.byMethod).toEqual([
-      { method: 'CASH', count: 1, totalAmount: 50000 },
-    ]);
+    expect(response.body.data.byMethod).toEqual([{ method: 'CASH', count: 1, totalAmount: 50000 }]);
   });
 
   it('returns 403 for the report without invoice.read permission', async () => {
@@ -450,5 +455,113 @@ describe('Billing integration', () => {
       });
 
     expect(response.status).toBe(403);
+  });
+  it('adds a tariff that has no ICD-9-CM mapping to a draft invoice', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'Invoice', scope: 'ANY' }]);
+    billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue(
+      invoiceWithRelationsRecord,
+    );
+    serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue({
+      ...tariffRecord,
+      category: 'PROCEDURE',
+      code: 'TIND-JAHIT-LUKA',
+      name: 'Jahit Luka Ringan',
+      price: 75000,
+    });
+    billingRepositoryMock.addInvoiceItem.mockResolvedValue({
+      ...invoiceDetailRecord,
+      totalAmount: 125000,
+    });
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/invoices/${invoiceId}/items`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ serviceTariffId: tariffId, quantity: 1 });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.totalAmount).toBe(125000);
+    expect(billingRepositoryMock.addInvoiceItem).toHaveBeenCalledWith({
+      invoiceId,
+      item: expect.objectContaining({
+        itemType: 'PROCEDURE',
+        serviceTariffId: tariffId,
+        description: 'Jahit Luka Ringan',
+        quantity: 1,
+        unitPrice: 75000,
+        amount: 75000,
+      }),
+    });
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'INVOICE_ITEM_ADDED', resourceId: invoiceId }),
+    );
+  });
+
+  it('rejects an invoice line with a zero quantity', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'Invoice', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/invoices/${invoiceId}/items`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ serviceTariffId: tariffId, quantity: 0 });
+
+    expect(response.status).toBe(400);
+    expect(billingRepositoryMock.addInvoiceItem).not.toHaveBeenCalled();
+  });
+
+  it('returns 409 when adding a line to an issued invoice', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'Invoice', scope: 'ANY' }]);
+    billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue({
+      ...invoiceWithRelationsRecord,
+      status: 'ISSUED',
+    });
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/invoices/${invoiceId}/items`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ serviceTariffId: tariffId });
+
+    expect(response.status).toBe(409);
+  });
+
+  it('removes a line from a draft invoice', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'Invoice', scope: 'ANY' }]);
+    const itemId = '1b2c3d4e-5f60-4718-8a9b-0c1d2e3f4a5b';
+    billingRepositoryMock.findInvoiceDetailById.mockResolvedValue({
+      ...invoiceDetailRecord,
+      items: invoiceDetailRecord.items.map((item) => ({ ...item, id: itemId })),
+    });
+    billingRepositoryMock.removeInvoiceItem.mockResolvedValue({
+      ...invoiceDetailRecord,
+      items: [],
+      totalAmount: 0,
+    });
+
+    const response = await request(app.getHttpServer())
+      .delete(`/api/v1/v1/invoices/${invoiceId}/items/${itemId}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.items).toEqual([]);
+    expect(response.body.data.totalAmount).toBe(0);
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'INVOICE_ITEM_REMOVED', resourceId: invoiceId }),
+    );
+  });
+
+  it('returns 403 for an invoice line write without the write grant', async () => {
+    const token = await buildToken('read-only-user', 'read-only@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Invoice', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/invoices/${invoiceId}/items`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ serviceTariffId: tariffId });
+
+    expect(response.status).toBe(403);
+    expect(billingRepositoryMock.addInvoiceItem).not.toHaveBeenCalled();
   });
 });
