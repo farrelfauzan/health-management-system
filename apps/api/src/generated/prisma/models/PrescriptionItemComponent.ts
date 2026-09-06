@@ -253,6 +253,7 @@ export type PrescriptionItemComponentOrderByWithRelationInput = {
 
 export type PrescriptionItemComponentWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  prescriptionItemId_medicationId?: Prisma.PrescriptionItemComponentPrescriptionItemIdMedicationIdCompoundUniqueInput
   AND?: Prisma.PrescriptionItemComponentWhereInput | Prisma.PrescriptionItemComponentWhereInput[]
   OR?: Prisma.PrescriptionItemComponentWhereInput[]
   NOT?: Prisma.PrescriptionItemComponentWhereInput | Prisma.PrescriptionItemComponentWhereInput[]
@@ -264,7 +265,7 @@ export type PrescriptionItemComponentWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"PrescriptionItemComponent"> | Date | string
   prescriptionItem?: Prisma.XOR<Prisma.PrescriptionMedicationScalarRelationFilter, Prisma.PrescriptionMedicationWhereInput>
   medication?: Prisma.XOR<Prisma.MedicationScalarRelationFilter, Prisma.MedicationWhereInput>
-}, "id">
+}, "id" | "prescriptionItemId_medicationId">
 
 export type PrescriptionItemComponentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -370,6 +371,11 @@ export type PrescriptionItemComponentListRelationFilter = {
 
 export type PrescriptionItemComponentOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type PrescriptionItemComponentPrescriptionItemIdMedicationIdCompoundUniqueInput = {
+  prescriptionItemId: string
+  medicationId: string
 }
 
 export type PrescriptionItemComponentCountOrderByAggregateInput = {

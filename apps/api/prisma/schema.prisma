@@ -2070,6 +2070,12 @@ model PrescriptionItemComponent {
   prescriptionItem PrescriptionMedication @relation(fields: [prescriptionItemId], references: [id], onDelete: Cascade)
   medication       Medication             @relation(fields: [medicationId], references: [id], onDelete: Restrict)
 
+  /// One row per ingredient. Two rows for the same product on one compound
+  /// would be an entry error, and the pharmacist would allocate its stock
+  /// twice. Declared here as well as in the migration: the drift check
+  /// compares the migrated database against this schema, and an index the
+  /// schema does not know about reads as one to drop.
+  @@unique([prescriptionItemId, medicationId], map: "prescription_item_components_item_medication_key")
   @@index([prescriptionItemId])
   @@index([medicationId])
   @@map("prescription_item_components")
