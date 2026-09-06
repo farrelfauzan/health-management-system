@@ -2,6 +2,7 @@ import { SatusehatSubmissionRecord } from '@hms/shared-types';
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satusehat-ambiguous-match.error';
 import { SatusehatFhirMapper } from '../../../common/satusehat/satusehat-fhir.mapper';
 import { SatusehatFhirTransactionBundle } from '../../../common/satusehat/satusehat-fhir.types';
 import { SatusehatHttpClient } from '../../../common/satusehat/satusehat-http.client';
@@ -492,6 +493,40 @@ describe('SatusehatSubmissionService', () => {
     expect(dispenseResource.performer[0]?.actor.reference).toBe('Organization/10000004');
     expect(dispenseResource.whenHandedOver).toBe('2026-07-28T02:30:00.000Z');
     expect(dispenseResource.substitution.wasSubstituted).toBe(false);
+  });
+
+  it('parks an ambiguous NIK match FAILED without consuming an attempt', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({ patientIhsNumber: null }),
+    );
+    linkRepositoryMock.findPatientLinkTarget.mockResolvedValue({
+      id: patientId,
+      nik: '3204120101900001',
+      hasSatusehatPatientId: false,
+    });
+    masterDataClientMock.findPatientIhsNumberByNik.mockRejectedValue(
+      new SatusehatAmbiguousMatchError(2),
+    );
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission({ attempts: 1 }));
+
+    expect(submissionRepositoryMock.markFailed).toHaveBeenCalledWith({
+      id: buildSubmission().id,
+      attempts: 1,
+      lastError: 'more than one SATUSEHAT match (2) — verify in portal',
+    });
+    expect(submissionRepositoryMock.scheduleRetry).not.toHaveBeenCalled();
+    expect(linkRepositoryMock.savePatientIhsNumber).not.toHaveBeenCalled();
+    expect(httpClientMock.sendRequest).not.toHaveBeenCalled();
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'SATUSEHAT_LINK_AMBIGUOUS',
+        resourceId: buildSubmission().id,
+        actorUserId: null,
+        metadata: expect.objectContaining({ trigger: 'SUBMISSION_WORKER', matchCount: 2 }),
+      }),
+    );
   });
 
   it('logs only a count for catalog items skipped for a missing KFA code', async () => {

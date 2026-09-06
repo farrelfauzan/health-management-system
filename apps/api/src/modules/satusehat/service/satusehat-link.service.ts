@@ -1,9 +1,11 @@
 import {
   SatusehatDoctorLinkResult,
+  SatusehatLinkAuditTarget,
   SatusehatPatientLinkResult,
 } from '@hms/shared-types';
 import {
   BadGatewayException,
+  ConflictException,
   Injectable,
   NotFoundException,
   ServiceUnavailableException,
@@ -12,6 +14,7 @@ import {
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satusehat-ambiguous-match.error';
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
 import { SatusehatError } from '../../../common/satusehat/satusehat.error';
 import { SatusehatLinkRepository } from '../repository/satusehat-link.repository';
@@ -41,7 +44,11 @@ export class SatusehatLinkService {
     if (target.hasSatusehatPatientId) {
       return { patientId, hasSatusehatPatientId: true, alreadyLinked: true };
     }
-    const ihsNumber = await this.lookupPatientIhsNumber(target.nik);
+    const ihsNumber = await this.lookupPatientIhsNumber(target.nik, {
+      resource: PATIENT_AUDIT_RESOURCE,
+      resourceId: patientId,
+      actorUserId: currentUser.sub,
+    });
     await this.satusehatLinkRepository.savePatientIhsNumber({ patientId, ihsNumber });
     await this.auditService.record({
       action: 'SATUSEHAT_PATIENT_LINKED',
@@ -65,7 +72,11 @@ export class SatusehatLinkService {
         alreadyLinked: true,
       };
     }
-    const ihsNumber = await this.lookupPractitionerIhsNumber(target.nik);
+    const ihsNumber = await this.lookupPractitionerIhsNumber(target.nik, {
+      resource: DOCTOR_AUDIT_RESOURCE,
+      resourceId: doctorId,
+      actorUserId: currentUser.sub,
+    });
     await this.satusehatLinkRepository.saveDoctorIhsNumber({ doctorId, ihsNumber });
     await this.auditService.record({
       action: 'SATUSEHAT_DOCTOR_LINKED',
@@ -77,14 +88,18 @@ export class SatusehatLinkService {
     return { doctorId, satusehatPractitionerId: ihsNumber, alreadyLinked: false };
   }
 
-  private async lookupPatientIhsNumber(nik: string | null): Promise<string> {
+  private async lookupPatientIhsNumber(
+    nik: string | null,
+    profile: SatusehatLinkAuditTarget,
+  ): Promise<string> {
     if (nik === null) {
       throw new UnprocessableEntityException(
         'Patient has no NIK on record; add the NIK before linking to SATUSEHAT',
       );
     }
-    const ihsNumber = await this.resolveUpstream(() =>
-      this.masterDataClient.findPatientIhsNumberByNik(nik),
+    const ihsNumber = await this.resolveUpstream(
+      () => this.masterDataClient.findPatientIhsNumberByNik(nik),
+      profile,
     );
     if (ihsNumber === null) {
       throw new NotFoundException('No SATUSEHAT patient record matches the stored NIK');
@@ -92,14 +107,18 @@ export class SatusehatLinkService {
     return ihsNumber;
   }
 
-  private async lookupPractitionerIhsNumber(nik: string | null): Promise<string> {
+  private async lookupPractitionerIhsNumber(
+    nik: string | null,
+    profile: SatusehatLinkAuditTarget,
+  ): Promise<string> {
     if (nik === null) {
       throw new UnprocessableEntityException(
         'Doctor has no NIK on record; add the NIK before linking to SATUSEHAT',
       );
     }
-    const ihsNumber = await this.resolveUpstream(() =>
-      this.masterDataClient.findPractitionerIhsNumberByNik(nik),
+    const ihsNumber = await this.resolveUpstream(
+      () => this.masterDataClient.findPractitionerIhsNumberByNik(nik),
+      profile,
     );
     if (ihsNumber === null) {
       throw new NotFoundException('No SATUSEHAT practitioner record matches the stored NIK');
@@ -107,17 +126,46 @@ export class SatusehatLinkService {
     return ihsNumber;
   }
 
-  private async resolveUpstream<T>(sendLookup: () => Promise<T>): Promise<T> {
+  private async resolveUpstream<T>(
+    sendLookup: () => Promise<T>,
+    profile: SatusehatLinkAuditTarget,
+  ): Promise<T> {
     try {
       return await sendLookup();
     } catch (caughtError) {
+      if (caughtError instanceof SatusehatAmbiguousMatchError) {
+        await this.recordAmbiguousMatch(profile, caughtError.matchCount);
+      }
       throw this.mapSatusehatFailure(caughtError);
     }
+  }
+
+  /**
+   * A refused link is worth recording precisely because nothing changed: the
+   * next person to ask why a patient is still unlinked needs the count and the
+   * moment, not an absence. The NIK is never part of the trail.
+   */
+  private async recordAmbiguousMatch(
+    profile: SatusehatLinkAuditTarget,
+    matchCount: number,
+  ): Promise<void> {
+    await this.auditService.record({
+      action: 'SATUSEHAT_LINK_AMBIGUOUS',
+      resource: profile.resource,
+      resourceId: profile.resourceId,
+      actorUserId: profile.actorUserId,
+      metadata: { lookup: 'NIK', trigger: 'LINK_ENDPOINT', matchCount },
+    });
   }
 
   private mapSatusehatFailure(caughtError: unknown): unknown {
     if (!(caughtError instanceof SatusehatError)) {
       return caughtError;
+    }
+    if (caughtError.code === 'SATUSEHAT_AMBIGUOUS_MATCH') {
+      return new ConflictException(
+        'SATUSEHAT returned more than one match for this NIK; verify the patient in the SATUSEHAT portal before linking',
+      );
     }
     if (caughtError.code === 'SATUSEHAT_NOT_CONFIGURED') {
       return new ServiceUnavailableException(

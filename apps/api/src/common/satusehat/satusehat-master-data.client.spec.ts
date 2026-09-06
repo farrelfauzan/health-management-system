@@ -1,3 +1,4 @@
+import { SatusehatAmbiguousMatchError } from './satusehat-ambiguous-match.error';
 import { SatusehatHttpClient } from './satusehat-http.client';
 import { SatusehatMasterDataClient } from './satusehat-master-data.client';
 import { SatusehatError } from './satusehat.error';
@@ -52,6 +53,66 @@ describe('SatusehatMasterDataClient', () => {
     const actualIhsNumber = await client.findPatientIhsNumberByNik('3204120101900001');
 
     expect(actualIhsNumber).toBeNull();
+  });
+
+  it('refuses the lookup when the index reports more than one match', async () => {
+    mockSendRequest.mockResolvedValue({
+      resourceType: 'Bundle',
+      total: 2,
+      entry: [
+        { resource: { resourceType: 'Patient', id: 'P02478375538' } },
+        { resource: { resourceType: 'Patient', id: 'P09876543210' } },
+      ],
+    });
+
+    const actualError = await client
+      .findPatientIhsNumberByNik('3204120101900001')
+      .catch((caughtError: unknown) => caughtError);
+
+    expect(actualError).toBeInstanceOf(SatusehatAmbiguousMatchError);
+    expect((actualError as SatusehatAmbiguousMatchError).code).toBe('SATUSEHAT_AMBIGUOUS_MATCH');
+    expect((actualError as SatusehatAmbiguousMatchError).matchCount).toBe(2);
+  });
+
+  it('refuses the lookup on multiple entries even when total is absent', async () => {
+    mockSendRequest.mockResolvedValue({
+      resourceType: 'Bundle',
+      entry: [
+        { resource: { resourceType: 'Patient', id: 'P02478375538' } },
+        { resource: { resourceType: 'Patient', id: 'P09876543210' } },
+      ],
+    });
+
+    const actualError = await client
+      .findPatientIhsNumberByNik('3204120101900001')
+      .catch((caughtError: unknown) => caughtError);
+
+    expect(actualError).toBeInstanceOf(SatusehatAmbiguousMatchError);
+  });
+
+  it('trusts total over a truncated entry list', async () => {
+    mockSendRequest.mockResolvedValue({
+      resourceType: 'Bundle',
+      total: 3,
+      entry: [{ resource: { resourceType: 'Patient', id: 'P02478375538' } }],
+    });
+
+    const actualError = await client
+      .findPatientIhsNumberByNik('3204120101900001')
+      .catch((caughtError: unknown) => caughtError);
+
+    expect(actualError).toBeInstanceOf(SatusehatAmbiguousMatchError);
+    expect((actualError as SatusehatAmbiguousMatchError).matchCount).toBe(3);
+  });
+
+  it('never names the NIK in the refusal message', async () => {
+    mockSendRequest.mockResolvedValue({ resourceType: 'Bundle', total: 2 });
+
+    const actualError = await client
+      .findPatientIhsNumberByNik('3204120101900001')
+      .catch((caughtError: unknown) => caughtError);
+
+    expect((actualError as Error).message).not.toContain('3204120101900001');
   });
 
   it('throws SATUSEHAT_UNAVAILABLE when an entry carries no resource id', async () => {

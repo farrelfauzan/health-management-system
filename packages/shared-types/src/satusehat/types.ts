@@ -28,6 +28,17 @@ export type SaveDoctorIhsNumberPayload = {
   ihsNumber: string;
 };
 
+/**
+ * Who and what a refused link attempt is recorded against (P10-T10). The NIK
+ * is deliberately absent: the audit trail names the profile, never the
+ * identifier that failed to disambiguate.
+ */
+export type SatusehatLinkAuditTarget = {
+  resource: string;
+  resourceId: string;
+  actorUserId: string;
+};
+
 export type SatusehatSubmissionRecord = {
   id: string;
   encounterId: string;
