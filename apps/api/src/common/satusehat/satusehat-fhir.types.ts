@@ -50,6 +50,10 @@ export type SatusehatFhirEncounterDiagnosis = {
   rank: number;
 };
 
+export type SatusehatFhirEncounterHospitalization = {
+  dischargeDisposition: SatusehatFhirCodeableConcept;
+};
+
 export type SatusehatFhirEncounter = {
   resourceType: 'Encounter';
   identifier: SatusehatFhirIdentifier[];
@@ -63,6 +67,7 @@ export type SatusehatFhirEncounter = {
   period: SatusehatFhirPeriod;
   location: Array<{ location: SatusehatFhirReference }>;
   statusHistory: SatusehatEncounterStatusHistoryEntry[];
+  hospitalization?: SatusehatFhirEncounterHospitalization;
   diagnosis?: SatusehatFhirEncounterDiagnosis[];
   serviceProvider: SatusehatFhirReference;
 };
@@ -105,6 +110,17 @@ export type SatusehatFhirObservation = {
   valueQuantity: SatusehatFhirQuantity;
 };
 
+/**
+ * The inpatient stay an encounter belongs to, when it has one. Its presence is
+ * what makes the visit `IMP` rather than `AMB`, and its timestamps bound the
+ * reported period — the episode ends at discharge, not when the doctor closed
+ * the note.
+ */
+export type SatusehatEncounterAdmission = {
+  admittedAt: Date;
+  dischargedAt: Date;
+};
+
 export type SatusehatEncounterMapInput = {
   encounterId: string;
   patientIhsNumber: string;
@@ -114,6 +130,7 @@ export type SatusehatEncounterMapInput = {
   arrivedAt: Date;
   startedAt: Date;
   endedAt: Date;
+  admission?: SatusehatEncounterAdmission;
   conditionReferences?: ReadonlyArray<{ reference: string; rank: number }>;
 };
 

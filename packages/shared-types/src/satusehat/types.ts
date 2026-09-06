@@ -110,6 +110,19 @@ export type SatusehatSubmissionDispenseItem = {
 };
 
 /**
+ * The inpatient stay this encounter belongs to, when it has one, loaded with
+ * the encounter so the bundle can report `class: IMP` over the admission's own
+ * period (P10-T09). Null for an ordinary outpatient visit, and for an
+ * admission that was cancelled — a stay that never happened is not an
+ * inpatient episode.
+ */
+export type SatusehatSubmissionAdmission = {
+  admissionId: string;
+  admittedAt: Date;
+  dischargedAt: Date;
+};
+
+/**
  * Everything the submission worker needs to rebuild one encounter bundle at
  * send time. IHS numbers are null when the profile is not linked yet — the
  * worker then attempts an automatic NIK lookup before failing the submission.
@@ -126,6 +139,7 @@ export type SatusehatSubmissionBundleData = {
   arrivedAt: Date;
   startedAt: Date;
   endedAt: Date | null;
+  admission: SatusehatSubmissionAdmission | null;
   diagnoses: readonly SatusehatSubmissionDiagnosis[];
   procedures: readonly SatusehatSubmissionProcedure[];
   latestVitalSigns: SatusehatSubmissionVitalSigns | null;

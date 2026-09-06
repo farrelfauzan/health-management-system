@@ -6,6 +6,7 @@ import {
   SatusehatSubmissionBundleData,
   SatusehatSubmissionDispenseItem,
   SatusehatSubmissionMedication,
+  SatusehatSubmissionAdmission,
   SatusehatSubmissionPage,
   SatusehatSubmissionPrescription,
   SatusehatSubmissionProcedure,
@@ -176,6 +177,12 @@ export class SatusehatSubmissionRepository {
           orderBy: { recordedAt: 'asc' },
           select: { code: true, display: true, type: true, recordedAt: true },
         },
+        admissions: {
+          where: { deletedAt: null, status: 'DISCHARGED', dischargedAt: { not: null } },
+          orderBy: { admittedAt: 'desc' },
+          take: 1,
+          select: { id: true, admittedAt: true, dischargedAt: true },
+        },
         procedures: {
           where: { deletedAt: null },
           orderBy: { performedAt: 'asc' },
@@ -245,6 +252,7 @@ export class SatusehatSubmissionRepository {
       arrivedAt: encounter.registration.checkedInAt ?? encounter.startedAt,
       startedAt: encounter.startedAt,
       endedAt: encounter.endedAt,
+      admission: this.toSubmissionAdmission(encounter.admissions[0]),
       diagnoses: encounter.diagnoses,
       procedures: encounter.procedures.map((procedure) => this.toSubmissionProcedure(procedure)),
       latestVitalSigns: latestVitals
@@ -266,6 +274,24 @@ export class SatusehatSubmissionRepository {
       dispenseItems: encounter.prescriptions.flatMap((prescription) =>
         this.toSubmissionDispenseItems(prescription),
       ),
+    };
+  }
+
+  /**
+   * Only a discharged stay is reported as inpatient. An admission still open
+   * has no episode end to report, and a cancelled one is a stay that never
+   * happened — both leave the visit ambulatory (P10-T09).
+   */
+  private toSubmissionAdmission(
+    admission: { id: string; admittedAt: Date; dischargedAt: Date | null } | undefined,
+  ): SatusehatSubmissionAdmission | null {
+    if (admission === undefined || admission.dischargedAt === null) {
+      return null;
+    }
+    return {
+      admissionId: admission.id,
+      admittedAt: admission.admittedAt,
+      dischargedAt: admission.dischargedAt,
     };
   }
 
