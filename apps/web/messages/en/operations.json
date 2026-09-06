@@ -471,7 +471,9 @@
           "MAIL_REJECTED_BY_TRANSPORT": "The email address was rejected. Check it on the patient record.",
           "ServiceUnavailableException": "The gateway was unavailable. It retries automatically.",
           "UNSUPPORTED_DELIVERY_SUBJECT": "This delivery cannot be sent by this version.",
-          "unknown": "Failed: {code}"
+          "unknown": "Failed: {code}",
+          "DOCUMENT_NO_LONGER_DELIVERABLE": "The document was retired or is no longer released.",
+          "FORMAT_NOT_DELIVERABLE": "This file type cannot be sent as a locked PDF."
         },
         "actions": {
           "retry": "Retry",
@@ -964,6 +966,218 @@
       "viewList": "List",
       "viewChart": "Chart",
       "chartHint": "Click a unit to see its members."
+    },
+    "documents": {
+      "title": "Documents",
+      "subtitle": "Every document the clinic drafts, approves and issues — and the types it files them under.",
+      "typesTab": "Types",
+      "types": {
+        "description": "The document types a clinic issues, in the order the new-document picker shows them. Rename freely — the code is what handlers key on.",
+        "readOnlyNotice": "You can view the document types but not change them.",
+        "new": "New type",
+        "loadError": "Unable to load document types",
+        "loadErrorDescription": "Something went wrong while fetching the types. It retries automatically.",
+        "empty": "No document types yet",
+        "emptyDescription": "Create a type to start filing documents under it.",
+        "showInactive": "Show deactivated",
+        "columns": {
+          "name": "Name",
+          "code": "Code",
+          "approval": "Approval",
+          "parties": "Parties",
+          "content": "Content",
+          "documents": "Documents",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "systemBadge": "System type",
+        "inactiveBadge": "Deactivated",
+        "selfApprovalBadge": "Self-approval on",
+        "approvalRequired": "{count, plural, one {# approval} other {# approvals}}",
+        "approvalOff": "No approval",
+        "parties": {
+          "none": "—",
+          "patient": "Patient",
+          "doctor": "Doctor"
+        },
+        "contentModes": {
+          "DRAFTED": "Drafted in the editor",
+          "UPLOADED": "Uploaded file",
+          "EITHER": "Drafted or uploaded"
+        },
+        "behaviors": {
+          "GENERIC": "Generic",
+          "INVOICE_TEMPLATE": "Publishes an invoice template",
+          "CLINIC_CORPUS": "Releases to the clinic corpus",
+          "PATIENT_BILL": "Generated patient bill"
+        },
+        "documentCount": "{count, plural, =0 {Unused} one {# document} other {# documents}}",
+        "actions": {
+          "edit": "Edit",
+          "approvers": "Default approvers",
+          "activate": "Activate",
+          "deactivate": "Deactivate",
+          "delete": "Delete",
+          "toggleError": "Unable to change the type's status.",
+          "activated": "Type activated.",
+          "deactivated": "Type deactivated. It no longer appears in the new-document picker."
+        },
+        "form": {
+          "createTitle": "New document type",
+          "editTitle": "Edit document type",
+          "createDescription": "A type the clinic defines. It is always generic: it cannot publish a template or feed the assistant.",
+          "editDescription": "Name, description, approval policy and shape are yours to change.",
+          "systemNote": "This is a system type. Its code and behaviour are fixed because code binds to them; everything else is editable, and renaming it breaks nothing.",
+          "name": "Name",
+          "namePlaceholder": "e.g. Surat Keterangan Sehat",
+          "description": "Description (optional)",
+          "descriptionPlaceholder": "What this document is for",
+          "code": "Code",
+          "codeHint": "Generated from the name when the type is created. Reports and integrations key on it.",
+          "behavior": "Behaviour",
+          "parties": "Parties a document must name",
+          "requiresPatient": "A patient",
+          "requiresDoctor": "A doctor",
+          "contentMode": "Content",
+          "sortOrder": "Order in the picker",
+          "isActive": "Active — offered in the new-document picker",
+          "submitCreate": "Create type",
+          "submitEdit": "Save changes",
+          "created": "Document type created.",
+          "updated": "Document type updated.",
+          "error": "Unable to save the document type."
+        },
+        "approval": {
+          "title": "Approval policy",
+          "isApprovalRequired": "Approval required before a document of this type is issued",
+          "requiredApprovals": "Approvals needed",
+          "allowSelfApproval": "Allow the drafter to approve their own document",
+          "selfApprovalHint": "Off by default. A clinic with one eligible person may turn it on; enabling it is audited.",
+          "selfApprovalWarning": "Self-approval is on for this type: a drafter can approve their own document. Turn it off unless the clinic genuinely has only one eligible approver."
+        },
+        "approvers": {
+          "title": "Default approvers for {name}",
+          "description": "Pre-fills the drafter's approver picker. A convenience, never a routing rule — the drafter can always change it.",
+          "label": "Staff",
+          "placeholder": "Pick staff",
+          "searchPlaceholder": "Search by email…",
+          "empty": "No matching staff",
+          "loadError": "Unable to load staff.",
+          "hint": "Any staff account can be named. Patients can never be approvers.",
+          "remove": "Remove {email}",
+          "save": "Save approvers",
+          "saved": "Default approvers updated.",
+          "error": "Unable to save the default approvers."
+        },
+        "delete": {
+          "title": "Delete “{name}”?",
+          "description": "The type is removed from the list. Its code is never reused.",
+          "inUse": "{count, plural, one {# document uses} other {# documents use}} this type, so it cannot be deleted. Deactivate it instead — existing documents keep their type and stay readable.",
+          "confirm": "Delete type",
+          "deleting": "Deleting…",
+          "deactivateInstead": "Deactivate instead",
+          "deleted": "Document type deleted.",
+          "error": "Unable to delete the document type."
+        }
+      },
+      "registryTab": "Registry",
+      "registry": {
+        "description": "Every document the clinic drafts, approves and issues. Rows you are not entitled to see are not here — and not counted.",
+        "new": "New document",
+        "search": "Search",
+        "searchPlaceholder": "Title, number or party name…",
+        "loadError": "Unable to load documents",
+        "loadErrorDescription": "Something went wrong while fetching the registry. It retries automatically.",
+        "empty": "No documents yet",
+        "emptyDescription": "Draft the first one, or upload a signed copy.",
+        "emptyFiltered": "No documents match this search.",
+        "total": "{count, plural, =0 {No documents} one {# document} other {# documents}}",
+        "columns": {
+          "title": "Document",
+          "type": "Type",
+          "parties": "Parties",
+          "status": "Status",
+          "draftedBy": "Drafted by",
+          "created": "Created",
+          "issued": "Issued",
+          "actions": "Actions"
+        },
+        "statuses": {
+          "DRAFT": "Draft",
+          "PENDING_APPROVAL": "Awaiting approval",
+          "ISSUED": "Issued",
+          "ARCHIVED": "Archived"
+        },
+        "bodyKinds": {
+          "drafted": "Drafted",
+          "uploaded": "Uploaded file"
+        },
+        "notIssued": "—",
+        "noParties": "—",
+        "actions": {
+          "download": "Download file",
+          "downloadError": "Unable to download this file."
+        }
+      },
+      "form": {
+        "title": "New document",
+        "description": "Pick a type — the form is built from what that type requires.",
+        "type": "Type",
+        "typePlaceholder": "Choose a type",
+        "typesLoading": "Loading types…",
+        "typesError": "Unable to load document types.",
+        "documentTitle": "Title",
+        "documentTitlePlaceholder": "e.g. Perjanjian tanggung jawab biaya — Rina",
+        "documentNumber": "Document number (optional)",
+        "documentNumberPlaceholder": "e.g. AGR/2026/0007",
+        "parties": {
+          "patient": "Patient",
+          "patientPlaceholder": "Search a patient…",
+          "patientSearchPlaceholder": "Type at least 2 characters",
+          "patientEmpty": "No matching patient",
+          "doctor": "Doctor",
+          "doctorPlaceholder": "Choose a doctor",
+          "doctorSearchPlaceholder": "Search a doctor…",
+          "doctorEmpty": "No matching doctor"
+        },
+        "content": {
+          "label": "Content",
+          "choice": "How does this document come in?",
+          "draft": "Write it here",
+          "upload": "Upload a signed copy",
+          "editorHint": "Drafted in the editor. Sanitised server-side on every save.",
+          "fileLabel": "File",
+          "fileHint": "PDF, JPEG, PNG or WebP, up to 20 MB. Downloads as an attachment; nothing renders inline.",
+          "fileSelected": "{name} ({size})",
+          "removeFile": "Remove file"
+        },
+        "issues": {
+          "PATIENT_REQUIRED": "This type requires a patient.",
+          "DOCTOR_REQUIRED": "This type requires a doctor.",
+          "PATIENT_NOT_ALLOWED": "This type does not name a patient.",
+          "DOCTOR_NOT_ALLOWED": "This type does not name a doctor.",
+          "CONTENT_MUST_BE_DRAFTED": "This type is drafted in the editor, not uploaded.",
+          "CONTENT_MUST_BE_UPLOADED": "This type needs an uploaded file.",
+          "CONTENT_BOTH": "Write it or upload it — not both."
+        },
+        "errors": {
+          "typeRequired": "Choose a type.",
+          "titleRequired": "Give the document a title.",
+          "fileRequired": "Pick a file to upload.",
+          "sign": "The upload could not start. Try again.",
+          "put": "Storage did not accept the file. Try again.",
+          "save": "Unable to save the document."
+        },
+        "progress": {
+          "preparing": "Preparing…",
+          "uploading": "Uploading {percent}%",
+          "scanning": "Checking the file…",
+          "complete": "Recorded"
+        },
+        "submit": "Create document",
+        "submitting": "Saving…",
+        "created": "Document drafted."
+      }
     }
   },
   "channelArrivals": {

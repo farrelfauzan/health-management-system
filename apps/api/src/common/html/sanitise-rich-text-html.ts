@@ -5,12 +5,14 @@ import * as htmlparser2 from 'htmlparser2';
 import sanitizeHtml from 'sanitize-html';
 
 /**
- * Server-side template HTML sanitiser (`P16-T05`, NFR-SEC-01).
+ * Server-side rich-text HTML sanitiser (`P16-T05`, NFR-SEC-01).
  *
  * This function is the control; whatever the editor does client-side is a
- * convenience. Every write of `contentHtml` — create, update, publish — goes
- * through here, and the output is the only HTML that ever reaches the PDF
- * renderer.
+ * convenience. Every write of `contentHtml` — a template's create, update and
+ * publish, and since `P16-T28` a managed document's draft — goes through
+ * here, and the output is the only HTML that ever reaches the PDF renderer.
+ * It lives in `common` rather than in one module because two modules write
+ * editor HTML and neither may import the other's service to do it.
  *
  * The posture is allowlist-everything: elements, attributes, CSS properties,
  * and URL schemes are each enumerated, and anything outside the list is
@@ -161,7 +163,7 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
   disallowedTagsMode: 'discard',
 };
 
-export function sanitiseTemplateHtml(rawHtml: string): string {
+export function sanitiseRichTextHtml(rawHtml: string): string {
   const allowlisted = sanitizeHtml(rawHtml, SANITIZE_OPTIONS);
   return canonicaliseTemplateDom(allowlisted);
 }

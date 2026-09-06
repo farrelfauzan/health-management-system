@@ -181,6 +181,19 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- the clinic's paperwork, beside the clinic-profile grant above.
     ('document-template.read:any', 'DocumentTemplate', 'read', 'ANY', 'Read invoice and clinical document templates and the variables they may reference'),
     ('document-template.write:any', 'DocumentTemplate', 'write', 'ANY', 'Create, edit, publish, and archive document templates'),
+    -- P16-T39. Document types are master data with the approval policy on
+    -- the row (§7.5.9). No role is seeded for the documents module (OQ-1):
+    -- both keys sit with ADMIN as back-office grants beside the template pair
+    -- above, and a clinic composes narrower roles from them. The registry
+    -- read key lands here because the type list is its first consumer; the
+    -- registry itself arrives with P16-T28.
+    ('document-type.write:any', 'DocumentType', 'write', 'ANY', 'Create, rename, reorder, activate and deactivate document types and set their approval policy'),
+    ('managed-document.read:any', 'ManagedDocument', 'read', 'ANY', 'See and search the documents registry, filtered per row by each source''s own access rule'),
+    -- P16-T28. Draft, edit, submit, withdraw and issue registry documents.
+    -- Separate from the read key so a records officer can search and export
+    -- without being able to author; approval (`document-approval.decide:any`)
+    -- stays a third key, landing with P16-T29.
+    ('managed-document.write:any', 'ManagedDocument', 'write', 'ANY', 'Draft, edit, submit, withdraw and issue documents in the registry'),
     ('satusehat.link:any', 'Satusehat', 'link', 'ANY', 'Link patients and practitioners to SATUSEHAT IHS records'),
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
@@ -457,6 +470,12 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- it decides what every printed document says about the clinic.
     ('ADMIN', 'document-template.read:any'),
     ('ADMIN', 'document-template.write:any'),
+    -- P16-T39. Managing document types is the same kind of back-office
+    -- custody as templates: which paperwork the clinic issues, and whether it
+    -- needs a second signature before it goes out.
+    ('ADMIN', 'document-type.write:any'),
+    ('ADMIN', 'managed-document.read:any'),
+    ('ADMIN', 'managed-document.write:any'),
     -- SATUSEHAT linkage is a national-identifier operation performed at the
     -- front desk / back office, never by doctors or patients themselves.
     ('ADMIN', 'satusehat.link:any'),
@@ -2176,5 +2195,77 @@ WHERE NOT EXISTS (
   WHERE existing."id" = md5('bed:' || sb.ward_code || ':' || sb.room_code || ':' || sb.code)::uuid
 )
 ON CONFLICT ("room_id", "code") WHERE "deleted_at" IS NULL DO NOTHING;
+
+-- P16-T39. The nine system document types (§7.5.2.3). Baseline, not demo
+-- data: code binds to `behavior` — issuing an INVOICE_TEMPLATE publishes a
+-- template version, issuing a CLINIC_CORPUS document releases it to the
+-- retrieval worker — so a row whose behaviour has code behind it must exist
+-- before that code can run.
+--
+-- The seed owns `code`, `behavior` and `is_system`, and nothing else. `name`,
+-- `description`, the approval policy, the party flags, the content mode, the
+-- ordering and the active flag are the clinic's (FR-E5-33): a clinic that
+-- renamed "Templat faktur" or switched approval on for letters must not find
+-- its choice undone by the next deploy. Hence the narrow `DO UPDATE`, which
+-- also resurrects a system row that was soft-deleted by hand — the service
+-- refuses to delete one, so a `deleted_at` here is damage, not a decision.
+WITH seed_document_types(
+  code, name, description, behavior, is_approval_required, requires_patient, requires_doctor, content_mode, sort_order
+) AS (
+  VALUES
+    ('AGREEMENT_PATIENT_CLINIC', 'Perjanjian pasien–klinik', 'Kesepakatan antara pasien dan klinik — tanggung jawab biaya, persetujuan umum perawatan', 'GENERIC', TRUE, TRUE, FALSE, 'EITHER', 10),
+    ('AGREEMENT_PATIENT_DOCTOR', 'Perjanjian pasien–dokter', 'Kesepakatan antara pasien dan dokter tertentu — perjanjian tindakan spesifik', 'GENERIC', TRUE, TRUE, TRUE, 'EITHER', 20),
+    ('CONSENT_FORM', 'Persetujuan tindakan (informed consent)', 'Persetujuan tindakan medis yang spesifik per prosedur', 'GENERIC', TRUE, TRUE, FALSE, 'EITHER', 30),
+    ('CLINIC_POLICY_SOP', 'Kebijakan dan SOP klinik', 'Kebijakan internal dan prosedur operasional standar', 'GENERIC', TRUE, FALSE, FALSE, 'EITHER', 40),
+    ('LETTER', 'Surat', 'Surat yang diterbitkan klinik — pengantar rujukan, keterangan, korespondensi', 'GENERIC', TRUE, FALSE, FALSE, 'EITHER', 50),
+    ('INVOICE_TEMPLATE', 'Templat faktur', 'Tata letak kuitansi dan faktur (E1)', 'INVOICE_TEMPLATE', FALSE, FALSE, FALSE, 'DRAFTED', 60),
+    ('CLINIC_CORPUS_DOCUMENT', 'Dokumen korpus klinik', 'Dokumen yang dapat dikutip asisten AI (korpus klinik)', 'CLINIC_CORPUS', TRUE, FALSE, FALSE, 'UPLOADED', 70),
+    ('PATIENT_BILL', 'Tagihan pasien', 'PDF faktur yang dibuat saat faktur diterbitkan — tidak pernah disusun atau disetujui', 'PATIENT_BILL', FALSE, TRUE, FALSE, 'UPLOADED', 80),
+    ('OTHER', 'Lainnya', 'Dokumen lain yang dikelola klinik', 'GENERIC', FALSE, FALSE, FALSE, 'EITHER', 90)
+)
+INSERT INTO "document_types" (
+  "id",
+  "code",
+  "name",
+  "description",
+  "behavior",
+  "is_system",
+  "is_approval_required",
+  "allow_self_approval",
+  "required_approvals",
+  "requires_patient",
+  "requires_doctor",
+  "content_mode",
+  "is_active",
+  "sort_order",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('document_type:' || code)::uuid,
+  code,
+  name,
+  description,
+  behavior::"document_type_behavior",
+  TRUE,
+  is_approval_required,
+  FALSE,
+  1,
+  requires_patient,
+  requires_doctor,
+  content_mode::"document_content_mode",
+  TRUE,
+  sort_order,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_document_types
+ON CONFLICT ("code") DO UPDATE
+SET
+  "behavior" = EXCLUDED."behavior",
+  "is_system" = TRUE,
+  "deleted_at" = NULL,
+  "updated_at" = NOW();
 
 COMMIT;

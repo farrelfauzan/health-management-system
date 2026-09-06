@@ -1,4 +1,5 @@
 import type { InvoiceStatusValue } from '#billing/schemas';
+import type { DocumentCategoryValue } from '#document-management/schemas';
 import type {
   ConsentRevokedReasonValue,
   DeliveryChannelValue,
@@ -126,6 +127,12 @@ export type DocumentDeliveryConfig = {
    * once the clinic's own volume is known.
    */
   readonly dailySendCap: number | null;
+  /**
+   * Clinical categories whose release pre-selects dispatch (`P16-T40`,
+   * FR-E4-28): a lab result goes out on release by default, a consent form
+   * does not. A default only — the clinician overrides it at release time.
+   */
+  readonly dispatchDefaultCategories: readonly DocumentCategoryValue[];
 };
 
 /**
@@ -308,4 +315,59 @@ export type InvoiceDeliveryMessageContext = {
 /** What one send attempt came back with. */
 export type DeliveryTransportResult = {
   providerMessageId: string | null;
+};
+
+/**
+ * What a clinical dispatch reads (`P16-T40`): the released file and the
+ * patient it belongs to. Mirrors `InvoiceDeliverySubjectRecord` in shape so
+ * the worker treats the two subjects the same way; `title` is here for the
+ * file name and the audit row, never for the message (FR-E4-27).
+ */
+export type ClinicalDeliverySubjectRecord = {
+  document: {
+    id: string;
+    title: string;
+    category: DocumentCategoryValue;
+    documentDate: Date | null;
+    mimeType: string;
+    storageKey: string;
+    patientId: string;
+    encounterId: string | null;
+    releasedToPatient: boolean;
+    isDeleted: boolean;
+  };
+  patient: {
+    id: string;
+    mrn: string;
+    fullName: string;
+    dateOfBirth: Date | null;
+    phoneNumber: string;
+    email: string | null;
+  };
+};
+
+/**
+ * What the clinical message builders read (FR-E4-27): the clinic, the
+ * patient the file is for, the document *type* and its date, and the
+ * password sentence — never the title, never a value, never a diagnosis.
+ * A caption is rendered on a lock screen; the type is all it may say.
+ */
+export type ClinicalDeliveryMessageContext = {
+  clinicName: string;
+  patientName: string;
+  category: DocumentCategoryValue;
+  documentDate: Date | null;
+  passwordSentence: string;
+};
+
+/** One channel a release could not dispatch on, and why (`P16-T40`). */
+export type ClinicalDispatchRefusal = {
+  channel: DeliveryChannelValue;
+  refusalReason: DeliveryRefusalReasonValue;
+};
+
+/** The outcome of asking for dispatch alongside a release. */
+export type ClinicalDispatchResult = {
+  deliveries: DeliveryRecord[];
+  refused: ClinicalDispatchRefusal[];
 };

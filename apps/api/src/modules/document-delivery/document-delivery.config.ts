@@ -3,9 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import {
   DEFAULT_DELIVERY_PASSWORD_SOURCE,
   DELIVERY_PASSWORD_SOURCES,
+  DOCUMENT_CATEGORIES,
   DeliveryPasswordSourceValue,
+  DocumentCategoryValue,
   DocumentDeliveryConfig,
   deliveryPasswordSourceSchema,
+  documentCategorySchema,
 } from '@hms/shared-types';
 
 const HOURS_PER_DAY = 24;
@@ -17,6 +20,12 @@ const DEFAULT_WORKER_BATCH_SIZE = 3;
 const DEFAULT_LEASE_MS = 120_000;
 const DEFAULT_MAX_ATTEMPTS = 5;
 const DEFAULT_RETRY_BASE_DELAY_MS = 30_000;
+/**
+ * The categories that dispatch on release unless the clinician says
+ * otherwise (`P16-T40`, FR-E4-28): a result the patient is waiting for. A
+ * consent form or an identity scan is filed, not sent.
+ */
+const DEFAULT_DISPATCH_CATEGORIES: readonly DocumentCategoryValue[] = ['LAB_RESULT', 'RADIOLOGY'];
 
 /**
  * Resolves delivery configuration from the environment at boot.
@@ -61,7 +70,34 @@ export function resolveDocumentDeliveryConfig(
       DEFAULT_RETRY_BASE_DELAY_MS,
     ),
     dailySendCap: readOptionalPositiveInteger(configService, 'DELIVERY_DAILY_SEND_CAP'),
+    dispatchDefaultCategories: readDispatchDefaultCategories(configService),
   };
+}
+
+/**
+ * `DELIVERY_DISPATCH_DEFAULT_CATEGORIES` (`P16-T40`): a comma-separated list
+ * of `DocumentCategory` values. Unset keeps the built-in pair; a value the
+ * catalog does not know is a boot error, because a misspelled category would
+ * silently stop lab results going out.
+ */
+function readDispatchDefaultCategories(
+  configService: ConfigService,
+): readonly DocumentCategoryValue[] {
+  const rawValue = configService.get<string>('DELIVERY_DISPATCH_DEFAULT_CATEGORIES')?.trim() ?? '';
+  if (rawValue === '') {
+    return DEFAULT_DISPATCH_CATEGORIES;
+  }
+  const categories = rawValue
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter((entry) => entry !== '');
+  const parsed = categories.map((entry) => documentCategorySchema.safeParse(entry));
+  if (parsed.some((result) => !result.success)) {
+    throw new Error(
+      `Document delivery configuration error: DELIVERY_DISPATCH_DEFAULT_CATEGORIES must list values from ${DOCUMENT_CATEGORIES.join(', ')}`,
+    );
+  }
+  return [...new Set(parsed.flatMap((result) => (result.success ? [result.data] : [])))];
 }
 
 function readBooleanFlag(configService: ConfigService, key: string, fallback: boolean): boolean {

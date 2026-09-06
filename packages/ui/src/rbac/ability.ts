@@ -92,6 +92,14 @@ export type AppSubject =
   // registry they are authored against — read by whoever opens the editor,
   // written by administrators alone.
   | 'DocumentTemplate'
+  // P16-T39. Document types as master data — which paperwork the clinic
+  // issues and whether it needs a second signature. Written by
+  // administrators alone; read through the registry grant below.
+  | 'DocumentType'
+  // P16-T39/T28. The documents registry: every document the clinic drafts,
+  // approves and issues. One subject for the surface; each row still answers
+  // to its own source's rule on the API (FR-E5-04).
+  | 'ManagedDocument'
   | 'BpjsConfig'
   | 'BpjsReference'
   | 'BpjsMapping'

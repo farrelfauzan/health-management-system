@@ -2,7 +2,10 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 
@@ -21,11 +24,14 @@ import {
   EncounterDocumentsView,
   ListPatientDocumentsQueryInput,
   ListPortalDocumentsQueryInput,
+  PatientDocumentDeliveryTimelineView,
   PatientDocumentDownloadView,
   PatientDocumentListView,
   PatientDocumentReadAccess,
+  PatientDocumentReleaseView,
   PatientDocumentUploadUrlView,
   PatientDocumentView,
+  ReleasePatientDocumentInput,
   PortalDocumentListView,
   PortalDocumentView,
   UpdatePatientDocumentInput,
@@ -36,6 +42,9 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { AuditAction } from '../../../generated/prisma/client';
+import { PatientDocumentDeliveryService } from '../../document-delivery/service/patient-document-delivery.service';
+import { toDeliveryView } from '../../document-delivery/service/to-delivery-view';
+import { NotificationService } from '../../notification/service/notification.service';
 import { DocumentRepository } from '../repository/document.repository';
 import { buildDocumentDownloadDisposition } from './build-document-download-disposition';
 import { isPatientDocumentStorageKey } from './is-patient-document-storage-key';
@@ -46,6 +55,9 @@ import { UploadedDocumentGuardService } from './uploaded-document-guard.service'
 const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
 
 const PATIENT_DOCUMENT_AUDIT_RESOURCE = 'patient-document';
+
+/** Where the attending doctor's bell lands them (`P16-T40`): the visit's Documents panel. */
+const DOCTOR_ENCOUNTER_PATH_PREFIX = '/doctor/encounters/';
 
 /**
  * Patient clinical files (`P16-T08`, PRD §7.2): every file that belongs to a
@@ -69,12 +81,17 @@ const PATIENT_DOCUMENT_AUDIT_RESOURCE = 'patient-document';
  */
 @Injectable()
 export class PatientDocumentService {
+  private readonly logger = new Logger(PatientDocumentService.name);
+
   constructor(
     private readonly documentRepository: DocumentRepository,
     private readonly objectStorageService: ObjectStorageService,
     private readonly patientDocumentAccessService: PatientDocumentAccessService,
     private readonly uploadedDocumentGuardService: UploadedDocumentGuardService,
     private readonly auditService: AuditService,
+    private readonly notificationService: NotificationService,
+    @Inject(forwardRef(() => PatientDocumentDeliveryService))
+    private readonly patientDocumentDeliveryService: PatientDocumentDeliveryService,
   ) {}
 
   async createUploadUrl(
@@ -107,9 +124,7 @@ export class PatientDocumentService {
   ): Promise<PatientDocumentView> {
     await this.assertCanWriteForPatient(patientId, actor, 'write');
     if (!isPatientDocumentStorageKey(input.storageKey)) {
-      throw new BadRequestException(
-        'Storage key was not issued for a patient document upload',
-      );
+      throw new BadRequestException('Storage key was not issued for a patient document upload');
     }
     await this.assertEpisodeBelongsToPatient(patientId, input.encounterId, input.admissionId);
     const storedObject = await this.readUploadedObject(input.storageKey);
@@ -280,26 +295,117 @@ export class PatientDocumentService {
   }
 
   /**
-   * Releases one document to the patient portal (FR-E2-13). Idempotent: the
-   * first release wins the row and is the one audited; a repeat returns the
-   * already-released document without rewriting `releasedAt`.
+   * Releases one document to the patient portal (FR-E2-13) and, since
+   * `P16-T40`, sends it two places in one action (§7.4.5, FR-E4-24/25): to
+   * the patient over the channels the clinician chose, and to the attending
+   * doctor's bell — the doctor is never behind the patient.
+   *
+   * The release itself is idempotent: the first release wins the row and is
+   * the one audited; a repeat returns the already-released document without
+   * rewriting `releasedAt`. Dispatch is *not* gated on being the first
+   * release — a clinician may release today and send tomorrow — but it is
+   * gated on the document being released, which this method has just made
+   * true. A refused channel (no consent, unverified number, no date of
+   * birth) is reported, never fatal: the clinical act has happened, and the
+   * doctor is notified regardless. Delivery happens only here, never on
+   * upload (FR-E4-26): `confirmUpload` has no path into the delivery module.
    */
-  async releaseDocument(id: string, actor: CurrentUser): Promise<PatientDocumentView> {
+  async releaseDocument(
+    id: string,
+    input: ReleasePatientDocumentInput,
+    actor: CurrentUser,
+  ): Promise<PatientDocumentReleaseView> {
     const record = await this.requireDocument(id);
     await this.assertCanWriteForPatient(this.requirePatientId(record), actor, 'release');
     const released = await this.documentRepository.releasePatientClinicalDocument(id, actor.sub);
-    if (released === null) {
-      return this.toView(record, 'FULL');
+    const isFirstRelease = released !== null;
+    const current = released ?? record;
+    if (isFirstRelease) {
+      await this.auditService.recordOrThrow({
+        action: AuditAction.PATIENT_DOCUMENT_RELEASED,
+        resource: PATIENT_DOCUMENT_AUDIT_RESOURCE,
+        actorUserId: actor.sub,
+        resourceId: current.id,
+        patientId: current.patientId ?? undefined,
+        metadata: {
+          category: current.category,
+          title: current.title,
+          dispatchChannels: input.dispatch?.channels ?? [],
+        },
+      });
     }
-    await this.auditService.recordOrThrow({
-      action: AuditAction.PATIENT_DOCUMENT_RELEASED,
-      resource: PATIENT_DOCUMENT_AUDIT_RESOURCE,
-      actorUserId: actor.sub,
-      resourceId: released.id,
-      patientId: released.patientId ?? undefined,
-      metadata: { category: released.category, title: released.title },
-    });
-    return this.toView(released, 'FULL');
+    const dispatch =
+      input.dispatch === undefined
+        ? { deliveries: [], refused: [] }
+        : await this.patientDocumentDeliveryService.requestDispatch(id, input.dispatch, actor);
+    const isDoctorNotified = isFirstRelease
+      ? await this.notifyAttendingDoctor(current, actor, dispatch.deliveries.length)
+      : false;
+    return {
+      document: this.toView(current, 'FULL'),
+      deliveries: dispatch.deliveries.map(toDeliveryView),
+      refusedChannels: dispatch.refused,
+      isDoctorNotified,
+    };
+  }
+
+  /** The send timeline of one clinical file, under the same read rule as the file (`P16-T40`). */
+  async listDeliveries(
+    id: string,
+    actor: CurrentUser,
+  ): Promise<PatientDocumentDeliveryTimelineView> {
+    await this.requireReadableDocument(id, actor);
+    return this.patientDocumentDeliveryService.listForDocument(id);
+  }
+
+  /**
+   * FR-E4-25: the attending doctor of the visit the document belongs to,
+   * told in the bell that a result is out. Best-effort, like every
+   * notification producer here — a failed bell must never undo a release —
+   * and skipped when the releaser *is* the attending doctor, who does not
+   * need telling what they just did. A document filed against an
+   * admission or the general record has no attending encounter; the panel
+   * still shows it, and the fall-back is silence rather than a guess at
+   * who should hear. Never carries the title: an in-app row is not a lock
+   * screen, but the doctor's feed is shared on a ward terminal.
+   */
+  private async notifyAttendingDoctor(
+    record: DocumentRecord,
+    actor: CurrentUser,
+    dispatchedCount: number,
+  ): Promise<boolean> {
+    if (record.encounterId === null || record.patientId === null) {
+      return false;
+    }
+    try {
+      const doctorUserId = await this.documentRepository.findEncounterAttendingUserId(
+        record.encounterId,
+      );
+      if (doctorUserId === null || doctorUserId === actor.sub) {
+        return false;
+      }
+      const patient = await this.documentRepository.findPatientNameById(record.patientId);
+      await this.notificationService.createForUser({
+        userId: doctorUserId,
+        type: 'PATIENT_DOCUMENT_RELEASED',
+        titleKey: 'patientDocumentReleased.title',
+        bodyKey: 'patientDocumentReleased.body',
+        params: {
+          category: record.category ?? 'OTHER',
+          patientName: patient?.fullName ?? '',
+          dispatchedCount: String(dispatchedCount),
+        },
+        href: `${DOCTOR_ENCOUNTER_PATH_PREFIX}${record.encounterId}`,
+      });
+      return true;
+    } catch (caughtError) {
+      this.logger.warn(
+        `Release notification failed for document ${record.id}: ${
+          caughtError instanceof Error ? caughtError.name : 'unknown'
+        }`,
+      );
+      return false;
+    }
   }
 
   /**

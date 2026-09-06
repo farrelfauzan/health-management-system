@@ -23,6 +23,7 @@ import { DeliverySendService } from './service/delivery-send.service';
 import { DocumentDeliveryWorker } from './service/document-delivery.worker';
 import { InvoiceDeliveryService } from './service/invoice-delivery.service';
 import { PatientDeliveryConsentService } from './service/patient-delivery-consent.service';
+import { PatientDocumentDeliveryService } from './service/patient-document-delivery.service';
 import { ProtectDeliveryDocumentService } from './service/protect-delivery-document.service';
 import { PublicLinkRateLimiter } from './service/public-link-rate-limiter';
 
@@ -77,6 +78,7 @@ import { PublicLinkRateLimiter } from './service/public-link-rate-limiter';
     DeliveryPasswordService,
     ProtectDeliveryDocumentService,
     InvoiceDeliveryService,
+    PatientDocumentDeliveryService,
     DeliveryLinkService,
     PublicLinkRateLimiter,
     DeliverySendService,
@@ -92,6 +94,11 @@ import { PublicLinkRateLimiter } from './service/public-link-rate-limiter';
     ProtectDeliveryDocumentService,
     DeliveryLinkService,
     InboundOptOutHandler,
+    // Exported for the document module's release (`P16-T40`): the patient's
+    // end of dual delivery is asked for through this service and nowhere
+    // else, which is what keeps FR-E4-26 — delivery only on release — a
+    // property of the code rather than of the current callers.
+    PatientDocumentDeliveryService,
   ],
 })
 export class DocumentDeliveryModule {}

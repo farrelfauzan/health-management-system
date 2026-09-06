@@ -1,3 +1,4 @@
+import type { DocumentCategoryValue } from '#document-management/schemas';
 import type {
   ConsentRevokedReasonValue,
   DeliveryChannelValue,
@@ -114,4 +115,22 @@ export type DeliveryLinkResolutionView = {
   url: string;
   fileName: string;
   expiresAt: string;
+};
+
+/** A channel a release could not dispatch on, with the reason the dialog shows. */
+export type ClinicalDispatchRefusalView = {
+  channel: DeliveryChannelValue;
+  refusalReason: DeliveryRefusalReasonValue;
+};
+
+/**
+ * `GET /patient-documents/:id/deliveries` (`P16-T40`): the document's send
+ * timeline plus whether its category dispatches by default (FR-E4-28), so
+ * the release dialog can pre-check the channels.
+ */
+export type PatientDocumentDeliveryTimelineView = {
+  documentId: string;
+  category: DocumentCategoryValue;
+  isDispatchByDefault: boolean;
+  deliveries: DeliveryView[];
 };

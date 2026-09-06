@@ -10,6 +10,8 @@ import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { ObjectStorageService } from '../../common/storage/object-storage.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { PatientDocumentDeliveryService } from '../document-delivery/service/patient-document-delivery.service';
+import { NotificationService } from '../notification/service/notification.service';
 
 /**
  * P16-T08 patient document API, exercised over HTTP with the real
@@ -38,6 +40,7 @@ describe('Patient document integration', () => {
   const OTHER_PATIENT_ID = '66666666-6666-4666-8666-666666666666';
   const DOCUMENT_ID = '77777777-7777-4777-8777-777777777777';
   const ENCOUNTER_ID = '88888888-8888-4888-8888-888888888888';
+  const ATTENDING_DOCTOR_USER_ID = '99999999-1111-4111-8111-999999999999';
   const PATIENT_KEY = 'documents/patient/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf';
 
   const PDF_FIXTURE = Buffer.from('%PDF-1.4\ntrailer << /Root 1 0 R >>\n%%EOF', 'ascii');
@@ -51,6 +54,41 @@ describe('Patient document integration', () => {
 
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
+  const dispatchServiceMock = {
+    requestDispatch: jest.fn(),
+    listForDocument: jest.fn(),
+    isDispatchByDefault: jest.fn(() => false),
+  };
+  const notificationServiceMock = { createForUser: jest.fn(async () => ({})) };
+
+  function buildDeliveryRecord() {
+    return {
+      id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      patientId: PATIENT_ID,
+      invoiceId: null,
+      invoiceDocumentId: null,
+      documentId: DOCUMENT_ID,
+      channel: 'WHATSAPP',
+      shape: 'ATTACHMENT',
+      destinationMasked: '6281****0024',
+      status: 'QUEUED',
+      attemptCount: 0,
+      sendAt: null,
+      nextAttemptAt: null,
+      leasedUntil: null,
+      leasedBy: null,
+      passwordSource: 'DOB_DDMMYYYY',
+      providerMessageId: null,
+      lastError: null,
+      sentAt: null,
+      openedAt: null,
+      revokedAt: null,
+      requestedBy: null,
+      link: null,
+      createdAt: new Date('2026-09-02T10:15:00.000Z'),
+      updatedAt: new Date('2026-09-02T10:15:00.000Z'),
+    };
+  }
   const objectStorageServiceMock = {
     generateObjectKey: jest.fn(() => PATIENT_KEY),
     getSignedUploadUrl: jest.fn(() =>
@@ -101,7 +139,10 @@ describe('Patient document integration', () => {
     if (where.encounterId !== undefined && row.encounterId !== where.encounterId) {
       return false;
     }
-    if (where.releasedToPatient !== undefined && row.releasedToPatient !== where.releasedToPatient) {
+    if (
+      where.releasedToPatient !== undefined &&
+      row.releasedToPatient !== where.releasedToPatient
+    ) {
       return false;
     }
     if ('deletedAt' in where && row.deletedAt !== where.deletedAt) {
@@ -142,10 +183,10 @@ describe('Patient document integration', () => {
           releasedAt: null,
           releasedById: null,
           deleteReason: null,
-    vaultCategory: null,
-    referenceNumber: null,
-    issuedAt: null,
-    expiresAt: null,
+          vaultCategory: null,
+          referenceNumber: null,
+          issuedAt: null,
+          expiresAt: null,
           createdAt: new Date('2026-09-01T09:00:00.000Z'),
           updatedAt: new Date('2026-09-01T09:00:00.000Z'),
           deletedAt: null,
@@ -196,16 +237,14 @@ describe('Patient document integration', () => {
           (candidate) =>
             (where.id === undefined || candidate.id === where.id) &&
             (where.ownerUserId === undefined || candidate.ownerUserId === where.ownerUserId) &&
-            where.id !== undefined !== (where.ownerUserId !== undefined),
+            (where.id !== undefined) !== (where.ownerUserId !== undefined),
         );
         return Promise.resolve(row ?? null);
       }),
     },
     doctorProfile: {
       findFirst: jest.fn(({ where }: { where: WhereShape }) =>
-        Promise.resolve(
-          where.ownerUserId === DOCTOR_USER_ID ? { id: DOCTOR_PROFILE_ID } : null,
-        ),
+        Promise.resolve(where.ownerUserId === DOCTOR_USER_ID ? { id: DOCTOR_PROFILE_ID } : null),
       ),
     },
     doctorPatient: {
@@ -223,7 +262,12 @@ describe('Patient document integration', () => {
           return Promise.resolve(
             where.id === ENCOUNTER_ID &&
               (where.patientId === undefined || where.patientId === PATIENT_ID)
-              ? { id: ENCOUNTER_ID, patientId: PATIENT_ID, doctorId: DOCTOR_PROFILE_ID }
+              ? {
+                  id: ENCOUNTER_ID,
+                  patientId: PATIENT_ID,
+                  doctorId: DOCTOR_PROFILE_ID,
+                  doctor: { ownerUserId: ATTENDING_DOCTOR_USER_ID, isActive: true },
+                }
               : null,
           );
         }
@@ -259,7 +303,7 @@ describe('Patient document integration', () => {
       ingestError: null,
       ingestedAt: null,
       uploadedById: ADMIN_USER_ID,
-    uploadedByEmail: null,
+      uploadedByEmail: null,
       patientId: PATIENT_ID,
       encounterId: null,
       admissionId: null,
@@ -270,10 +314,10 @@ describe('Patient document integration', () => {
       releasedAt: null,
       releasedById: null,
       deleteReason: null,
-    vaultCategory: null,
-    referenceNumber: null,
-    issuedAt: null,
-    expiresAt: null,
+      vaultCategory: null,
+      referenceNumber: null,
+      issuedAt: null,
+      expiresAt: null,
       createdAt: new Date('2026-09-01T09:00:00.000Z'),
       updatedAt: new Date('2026-09-01T09:00:00.000Z'),
       deletedAt: null,
@@ -340,6 +384,10 @@ describe('Patient document integration', () => {
       .useValue(prismaServiceMock)
       .overrideProvider(ObjectStorageService)
       .useValue(objectStorageServiceMock)
+      .overrideProvider(PatientDocumentDeliveryService)
+      .useValue(dispatchServiceMock)
+      .overrideProvider(NotificationService)
+      .useValue(notificationServiceMock)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -542,12 +590,15 @@ describe('Patient document integration', () => {
     const releaseResponse = await request(app.getHttpServer())
       .post(`/api/v1/patient-documents/${DOCUMENT_ID}/release`)
       .set('Authorization', `Bearer ${token}`)
+      .send({})
       .expect(200);
 
-    expect(releaseResponse.body.data).toMatchObject({
+    expect(releaseResponse.body.data.document).toMatchObject({
       releasedToPatient: true,
       releasedById: DOCTOR_USER_ID,
     });
+    expect(releaseResponse.body.data).toMatchObject({ deliveries: [], refusedChannels: [] });
+    expect(dispatchServiceMock.requestDispatch).not.toHaveBeenCalled();
     expect(auditServiceMock.recordOrThrow).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'PATIENT_DOCUMENT_RELEASED',
@@ -558,20 +609,110 @@ describe('Patient document integration', () => {
       }),
     );
 
-    const firstReleasedAt = releaseResponse.body.data.releasedAt;
+    const firstReleasedAt = releaseResponse.body.data.document.releasedAt;
     auditServiceMock.recordOrThrow.mockClear();
 
     const repeatResponse = await request(app.getHttpServer())
       .post(`/api/v1/patient-documents/${DOCUMENT_ID}/release`)
       .set('Authorization', `Bearer ${token}`)
+      .send({})
       .expect(200);
 
     // The first release won the row; a repeat neither rewrites the timestamp
     // nor writes a second release audit row.
-    expect(repeatResponse.body.data.releasedAt).toBe(firstReleasedAt);
+    expect(repeatResponse.body.data.document.releasedAt).toBe(firstReleasedAt);
     expect(auditServiceMock.recordOrThrow).not.toHaveBeenCalledWith(
       expect.objectContaining({ action: 'PATIENT_DOCUMENT_RELEASED' }),
     );
+  });
+
+  it('dispatches on release in one action, reports refused channels, and tells the attending doctor (P16-T40)', async () => {
+    mockDoctor();
+    hasAssignment = true;
+    const token = await buildToken(DOCTOR_USER_ID, 'doctor@hms.test');
+    documentRows.push(buildPatientDocumentRow({ encounterId: ENCOUNTER_ID }));
+    dispatchServiceMock.requestDispatch.mockResolvedValueOnce({
+      deliveries: [buildDeliveryRecord()],
+      refused: [{ channel: 'EMAIL', refusalReason: 'CONSENT_MISSING' }],
+    });
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/patient-documents/${DOCUMENT_ID}/release`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ dispatch: { channels: ['WHATSAPP', 'EMAIL'] } })
+      .expect(200);
+
+    expect(dispatchServiceMock.requestDispatch).toHaveBeenCalledWith(
+      DOCUMENT_ID,
+      { channels: ['WHATSAPP', 'EMAIL'] },
+      expect.objectContaining({ sub: DOCTOR_USER_ID }),
+    );
+    expect(response.body.data.deliveries).toHaveLength(1);
+    expect(response.body.data.deliveries[0]).toMatchObject({
+      channel: 'WHATSAPP',
+      status: 'QUEUED',
+    });
+    expect(response.body.data.refusedChannels).toEqual([
+      { channel: 'EMAIL', refusalReason: 'CONSENT_MISSING' },
+    ]);
+    // The attending doctor of the encounter is another account here, so the
+    // bell goes out and deep-links to the visit's Documents panel.
+    expect(response.body.data.isDoctorNotified).toBe(true);
+    expect(notificationServiceMock.createForUser).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: ATTENDING_DOCTOR_USER_ID,
+        type: 'PATIENT_DOCUMENT_RELEASED',
+        href: `/doctor/encounters/${ENCOUNTER_ID}`,
+        params: expect.objectContaining({ category: 'LAB_RESULT' }),
+      }),
+    );
+  });
+
+  it('never dispatches on upload, whatever the body says (FR-E4-26)', async () => {
+    mockAdmin();
+    const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/patients/${PATIENT_ID}/documents`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        storageKey: PATIENT_KEY,
+        title: 'Hasil laboratorium',
+        category: 'LAB_RESULT',
+        dispatch: { channels: ['WHATSAPP'] },
+      });
+
+    // The confirm schema has no dispatch field: the key is dropped, the file
+    // is recorded, and nothing reaches the delivery module. A future field
+    // by that name would have to be added to this schema on purpose.
+    expect(response.status).toBe(201);
+    expect(dispatchServiceMock.requestDispatch).not.toHaveBeenCalled();
+    expect(notificationServiceMock.createForUser).not.toHaveBeenCalled();
+    expect(documentRows).toHaveLength(1);
+    expect(documentRows[0]?.releasedToPatient).toBe(false);
+  });
+
+  it('reads the delivery timeline under the document’s own read rule', async () => {
+    mockDoctor();
+    hasAssignment = true;
+    const token = await buildToken(DOCTOR_USER_ID, 'doctor@hms.test');
+    documentRows.push(buildPatientDocumentRow({ releasedToPatient: true }));
+    dispatchServiceMock.listForDocument.mockResolvedValueOnce({
+      documentId: DOCUMENT_ID,
+      category: 'LAB_RESULT',
+      isDispatchByDefault: true,
+      deliveries: [],
+    });
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/patient-documents/${DOCUMENT_ID}/deliveries`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(response.body.data).toMatchObject({
+      documentId: DOCUMENT_ID,
+      isDispatchByDefault: true,
+    });
   });
 
   it('audits a download before returning the signed URL', async () => {

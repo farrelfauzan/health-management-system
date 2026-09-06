@@ -121,7 +121,8 @@
         "conversations": "Conversations",
         "rooms": "Rooms",
         "admissions": "Admissions",
-        "organization": "Organization"
+        "organization": "Organization",
+        "documents": "Documents"
       },
       "search": {
         "label": "Search",
@@ -179,6 +180,10 @@
         "licenceExpired": {
           "title": "Practitioner licence expired",
           "body": "{doctorName}'s {licenceType} {licenceNumber} expired on {expiresAt}."
+        },
+        "patientDocumentReleased": {
+          "title": "A result was released to your patient",
+          "body": "A {category} for {patientName} is now visible to the patient and in the visit's Documents panel."
         }
       },
       "profile": {

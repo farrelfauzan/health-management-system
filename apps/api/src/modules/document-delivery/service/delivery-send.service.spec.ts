@@ -1,7 +1,11 @@
 import { ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { DeliveryRecord, InvoiceDeliverySubjectRecord } from '@hms/shared-types';
+import {
+  ClinicalDeliverySubjectRecord,
+  DeliveryRecord,
+  InvoiceDeliverySubjectRecord,
+} from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { MailService } from '../../../common/mail/mail.service';
@@ -14,7 +18,9 @@ import { DeliveryLinkService } from './delivery-link.service';
 import {
   DeliverySendService,
   SEND_CANCELLED_CONSENT_PREFIX,
+  SEND_CANCELLED_DOCUMENT_REASON,
   SEND_CANCELLED_INVOICE_REASON,
+  SEND_FAILED_FORMAT_NOT_DELIVERABLE,
   SEND_FAILED_MAIL_REJECTED,
 } from './delivery-send.service';
 import { PatientDeliveryConsentService } from './patient-delivery-consent.service';
@@ -79,6 +85,43 @@ function buildSubject(
   };
 }
 
+/** A 1×1 red PNG, the shape a photographed result arrives in. */
+const ONE_PIXEL_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==',
+  'base64',
+);
+
+function buildClinicalSubject(
+  overrides: Partial<ClinicalDeliverySubjectRecord['document']> = {},
+): ClinicalDeliverySubjectRecord {
+  return {
+    document: {
+      id: 'clinical-1',
+      title: 'Hasil lab darah — HbA1c 9.2%',
+      category: 'LAB_RESULT',
+      documentDate: new Date('2026-09-25T00:00:00.000Z'),
+      mimeType: 'application/pdf',
+      storageKey: 'documents/patient/clinical-1.pdf',
+      patientId: 'patient-1',
+      encounterId: 'encounter-1',
+      releasedToPatient: true,
+      isDeleted: false,
+      ...overrides,
+    },
+    patient: buildSubject().patient,
+  };
+}
+
+function buildClinicalDelivery(overrides: Partial<DeliveryRecord> = {}): DeliveryRecord {
+  return buildDelivery({
+    id: 'delivery-c1',
+    invoiceId: null,
+    invoiceDocumentId: null,
+    documentId: 'clinical-1',
+    ...overrides,
+  });
+}
+
 describe('DeliverySendService', () => {
   let service: DeliverySendService;
   let mockRepository: {
@@ -86,6 +129,7 @@ describe('DeliverySendService', () => {
     rescheduleAttempt: jest.Mock;
     markFailed: jest.Mock;
     markCancelled: jest.Mock;
+    findClinicalDeliverySubject: jest.Mock;
   };
   let mockInvoiceDocumentService: { findDeliverySubject: jest.Mock; buildFileName: jest.Mock };
   let mockConsentService: { isDeliveryAllowed: jest.Mock };
@@ -108,6 +152,7 @@ describe('DeliverySendService', () => {
       rescheduleAttempt: jest.fn().mockResolvedValue(undefined),
       markFailed: jest.fn().mockResolvedValue(undefined),
       markCancelled: jest.fn().mockResolvedValue(true),
+      findClinicalDeliverySubject: jest.fn().mockResolvedValue(buildClinicalSubject()),
     };
     mockInvoiceDocumentService = {
       findDeliverySubject: jest.fn().mockResolvedValue(buildSubject()),
@@ -324,14 +369,116 @@ describe('DeliverySendService', () => {
     });
   });
 
-  it('fails a row it does not know how to send rather than leaving it claimed', async () => {
+  it('fails a row with no subject at all rather than leaving it claimed', async () => {
     await service.processDelivery(
-      buildDelivery({ invoiceId: null, invoiceDocumentId: null, documentId: 'doc-x' }),
+      buildDelivery({ invoiceId: null, invoiceDocumentId: null, documentId: null }),
     );
 
     expect(mockRepository.markFailed).toHaveBeenCalledWith(
       expect.objectContaining({ error: 'UNSUPPORTED_DELIVERY_SUBJECT' }),
     );
     expect(mockInvoiceDocumentService.findDeliverySubject).not.toHaveBeenCalled();
+  });
+
+  describe('a released clinical document (P16-T40)', () => {
+    it('locks the stored PDF and sends it with a caption naming the type and date, never the title', async () => {
+      await service.processDelivery(buildClinicalDelivery());
+
+      expect(mockRepository.findClinicalDeliverySubject).toHaveBeenCalledWith('clinical-1');
+      expect(mockStorage.getObject).toHaveBeenCalledWith({
+        key: 'documents/patient/clinical-1.pdf',
+      });
+      expect(mockProtectService.protectForPatient).toHaveBeenCalledWith({
+        pdf: Buffer.from(PLAIN_PDF),
+        patient: expect.objectContaining({ id: 'patient-1' }),
+      });
+      const sent = mockWhatsapp.sendDocument.mock.calls[0][0] as {
+        caption: string;
+        fileName: string;
+        content: Uint8Array;
+      };
+      expect(sent.content).toBe(LOCKED_PDF);
+      expect(sent.fileName).toBe('Hasil lab darah HbA1c 9.2.pdf');
+      expect(sent.caption).toContain(
+        'Klinik Sehat: hasil laboratorium atas nama Rina, tanggal 25 September 2026.',
+      );
+      expect(sent.caption).toContain('Buka dengan tanggal lahir, DDMMYYYY.');
+      expect(sent.caption).not.toContain('9.2');
+      expect(sent.caption).not.toContain('HbA1c');
+      expect(mockRepository.markSent).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'delivery-c1' }),
+      );
+      expect(mockAudit.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'DELIVERY_SENT',
+          metadata: expect.objectContaining({ documentId: 'clinical-1' }),
+        }),
+      );
+    });
+
+    it('wraps a photographed result into a PDF before locking it', async () => {
+      mockRepository.findClinicalDeliverySubject.mockResolvedValue(
+        buildClinicalSubject({ mimeType: 'image/png', storageKey: 'documents/patient/c.png' }),
+      );
+      mockStorage.getObject.mockResolvedValue({
+        key: 'documents/patient/c.png',
+        body: ONE_PIXEL_PNG,
+      });
+
+      await service.processDelivery(buildClinicalDelivery());
+
+      const locked = mockProtectService.protectForPatient.mock.calls[0][0] as { pdf: Uint8Array };
+      expect(Buffer.from(locked.pdf.slice(0, 5)).toString('ascii')).toBe('%PDF-');
+      expect(mockWhatsapp.sendDocument).toHaveBeenCalledWith(
+        expect.objectContaining({ mimeType: 'application/pdf' }),
+      );
+    });
+
+    it('cancels a send whose document was retired, or was never released, without touching the transport', async () => {
+      mockRepository.findClinicalDeliverySubject.mockResolvedValueOnce(
+        buildClinicalSubject({ isDeleted: true }),
+      );
+      mockRepository.findClinicalDeliverySubject.mockResolvedValueOnce(
+        buildClinicalSubject({ releasedToPatient: false }),
+      );
+
+      await service.processDelivery(buildClinicalDelivery());
+      await service.processDelivery(buildClinicalDelivery({ id: 'delivery-c2' }));
+
+      expect(mockRepository.markCancelled).toHaveBeenCalledTimes(2);
+      expect(mockRepository.markCancelled).toHaveBeenCalledWith(
+        expect.objectContaining({ reason: SEND_CANCELLED_DOCUMENT_REASON }),
+      );
+      expect(mockWhatsapp.sendDocument).not.toHaveBeenCalled();
+      expect(mockConsentService.isDeliveryAllowed).not.toHaveBeenCalled();
+    });
+
+    it('re-checks consent at send time for a clinical row too', async () => {
+      mockConsentService.isDeliveryAllowed.mockResolvedValue({
+        isAllowed: false,
+        refusalReason: 'CONSENT_REVOKED',
+        destination: null,
+      });
+
+      await service.processDelivery(buildClinicalDelivery());
+
+      expect(mockRepository.markCancelled).toHaveBeenCalledWith(
+        expect.objectContaining({ reason: 'DELIVERY_REFUSED_AT_SEND_TIME:CONSENT_REVOKED' }),
+      );
+      expect(mockWhatsapp.sendDocument).not.toHaveBeenCalled();
+    });
+
+    it('fails a stored type that cannot become a locked PDF, without retrying', async () => {
+      mockRepository.findClinicalDeliverySubject.mockResolvedValue(
+        buildClinicalSubject({ mimeType: 'text/plain' }),
+      );
+
+      await service.processDelivery(buildClinicalDelivery());
+
+      expect(mockRepository.markFailed).toHaveBeenCalledWith(
+        expect.objectContaining({ error: SEND_FAILED_FORMAT_NOT_DELIVERABLE }),
+      );
+      expect(mockRepository.rescheduleAttempt).not.toHaveBeenCalled();
+    });
   });
 });
