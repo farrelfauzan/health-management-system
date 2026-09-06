@@ -631,7 +631,8 @@ export const EncounterScalarFieldEnum = {
   subjective: 'subjective',
   objective: 'objective',
   assessment: 'assessment',
-  plan: 'plan'
+  plan: 'plan',
+  prognosis: 'prognosis'
 } as const
 
 export type EncounterScalarFieldEnum = (typeof EncounterScalarFieldEnum)[keyof typeof EncounterScalarFieldEnum]

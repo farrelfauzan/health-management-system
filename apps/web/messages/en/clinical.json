@@ -784,7 +784,14 @@
         "assessment": "Assessment",
         "assessmentPlaceholder": "Clinical impression. Coded diagnoses are recorded separately.",
         "plan": "Plan",
-        "planPlaceholder": "Treatment, prescriptions, follow-up, and referral intent."
+        "planPlaceholder": "Treatment, prescriptions, follow-up, and referral intent.",
+        "prognosis": "Prognosis",
+        "prognosisOptions": {
+          "BONAM": "Bonam (good)",
+          "DUBIA_AD_BONAM": "Dubia ad bonam (guarded, leaning good)",
+          "DUBIA_AD_MALAM": "Dubia ad malam (guarded, leaning poor)",
+          "MALAM": "Malam (poor)"
+        }
       },
       "diagnosis": {
         "title": "Diagnoses (ICD-10)",

@@ -784,7 +784,14 @@
         "assessment": "Asesmen",
         "assessmentPlaceholder": "Kesan klinis. Diagnosis berkode dicatat secara terpisah.",
         "plan": "Rencana",
-        "planPlaceholder": "Terapi, resep, tindak lanjut, dan rencana rujukan."
+        "planPlaceholder": "Terapi, resep, tindak lanjut, dan rencana rujukan.",
+        "prognosis": "Prognosis",
+        "prognosisOptions": {
+          "BONAM": "Bonam (baik)",
+          "DUBIA_AD_BONAM": "Dubia ad bonam (ragu, cenderung baik)",
+          "DUBIA_AD_MALAM": "Dubia ad malam (ragu, cenderung buruk)",
+          "MALAM": "Malam (buruk)"
+        }
       },
       "diagnosis": {
         "title": "Diagnosis (ICD-10)",

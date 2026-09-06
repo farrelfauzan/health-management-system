@@ -115,6 +115,13 @@ describe('SATUSEHAT submission ops integration', () => {
           recordedAt: new Date('2026-07-27T09:05:00.000Z'),
         },
       ],
+      soapNote: {
+        subjective: 'Batuk 3 hari',
+        objective: 'Faring hiperemis',
+        assessment: 'ISPA viral',
+        plan: 'Kontrol 3 hari',
+        prognosis: 'BONAM',
+      },
       unreportedAllergies: [
         {
           allergyId: '9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f',
@@ -476,6 +483,8 @@ describe('SATUSEHAT submission ops integration', () => {
         'Procedure',
         'AllergyIntolerance',
         'Observation',
+        'ClinicalImpression',
+        'Composition',
         'Medication',
         'MedicationRequest',
         'MedicationDispense',

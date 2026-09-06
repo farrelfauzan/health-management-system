@@ -1205,6 +1205,7 @@ export * from './updateDocumentTemplateDtoSettingsPaperSize';
 export * from './updateDocumentTypeDto';
 export * from './updateDocumentTypeDtoContentMode';
 export * from './updateEncounterSoapDto';
+export * from './updateEncounterSoapDtoPrognosis';
 export * from './updateFeatureEntitlementDto';
 export * from './updateManagedDocumentDto';
 export * from './updateMedicationDto';

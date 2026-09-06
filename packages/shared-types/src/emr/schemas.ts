@@ -136,12 +136,20 @@ export const openEncounterSchema = z.object({
  * they filled in by mistake, and optional so a PATCH touches only what it
  * names — omitting `plan` must not erase it.
  */
+export const encounterPrognosisSchema = z.enum([
+  'BONAM',
+  'DUBIA_AD_BONAM',
+  'DUBIA_AD_MALAM',
+  'MALAM',
+]);
+
 export const updateEncounterSoapSchema = z
   .object({
     subjective: z.string().trim().max(MAX_SOAP_LENGTH).nullable().optional(),
     objective: z.string().trim().max(MAX_SOAP_LENGTH).nullable().optional(),
     assessment: z.string().trim().max(MAX_SOAP_LENGTH).nullable().optional(),
     plan: z.string().trim().max(MAX_SOAP_LENGTH).nullable().optional(),
+    prognosis: encounterPrognosisSchema.nullable().optional(),
   })
   .refine((payload) => Object.keys(payload).length > 0, {
     message: 'At least one SOAP field must be provided',
@@ -251,6 +259,8 @@ export const upsertBpjsReferralSchema = z
   );
 
 export type OpenEncounterInput = z.infer<typeof openEncounterSchema>;
+export type EncounterPrognosisValue = z.infer<typeof encounterPrognosisSchema>;
+
 export type UpdateEncounterSoapInput = z.infer<typeof updateEncounterSoapSchema>;
 export type RecordVitalSignsInput = z.infer<typeof recordVitalSignsSchema>;
 export type AddDiagnosisInput = z.infer<typeof addDiagnosisSchema>;

@@ -7664,7 +7664,8 @@ export const EncounterScalarFieldEnum = {
   subjective: 'subjective',
   objective: 'objective',
   assessment: 'assessment',
-  plan: 'plan'
+  plan: 'plan',
+  prognosis: 'prognosis'
 } as const
 
 export type EncounterScalarFieldEnum = (typeof EncounterScalarFieldEnum)[keyof typeof EncounterScalarFieldEnum]
@@ -9131,6 +9132,20 @@ export type EnumEncounterStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$
  * Reference to a field of type 'EncounterStatus[]'
  */
 export type ListEnumEncounterStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EncounterStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'EncounterPrognosis'
+ */
+export type EnumEncounterPrognosisFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EncounterPrognosis'>
+    
+
+
+/**
+ * Reference to a field of type 'EncounterPrognosis[]'
+ */
+export type ListEnumEncounterPrognosisFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EncounterPrognosis[]'>
     
 
 

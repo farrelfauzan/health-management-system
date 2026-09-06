@@ -95,6 +95,22 @@ export const SATUSEHAT_SANDBOX_FIXTURES = {
           lastModified: '2026-07-28T09:05:01.000+00:00',
         },
       },
+      {
+        response: {
+          status: '201 Created',
+          location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/ClinicalImpression/1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d/_history/1',
+          etag: 'W/"1"',
+          lastModified: '2026-07-28T09:05:01.000+00:00',
+        },
+      },
+      {
+        response: {
+          status: '201 Created',
+          location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Composition/2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e/_history/1',
+          etag: 'W/"1"',
+          lastModified: '2026-07-28T09:05:01.000+00:00',
+        },
+      },
     ],
   },
   operationOutcomeRejection: {

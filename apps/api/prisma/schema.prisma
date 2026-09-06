@@ -345,6 +345,19 @@ enum Religion {
   OTHER
 }
 
+/// Prognosis in the Latin terms Indonesian clinicians write. Three SNOMED
+/// grades cover them (good / fair / poor), which is what the SATUSEHAT mapper
+/// sends — the recorded term is echoed in `text` so the distinction between
+/// DUBIA_AD_MALAM and MALAM is not lost in translation.
+enum EncounterPrognosis {
+  BONAM
+  DUBIA_AD_BONAM
+  DUBIA_AD_MALAM
+  MALAM
+
+  @@map("encounter_prognosis")
+}
+
 enum AllergySeverity {
   MILD
   MODERATE
@@ -1741,6 +1754,11 @@ model Encounter {
   assessment String?
   /// Treatment plan. Prescribed items stay in `prescriptions`.
   plan       String?
+  /// The doctor's outlook for this episode (P10-T15), feeding
+  /// `ClinicalImpression.prognosisCodeableConcept`. Null when nobody recorded
+  /// one — the element is then omitted rather than defaulted, so the national
+  /// record never carries an assessment that was not made.
+  prognosis  EncounterPrognosis?
 
   registration        Registration         @relation(fields: [registrationId], references: [id], onDelete: Restrict)
   patient             PatientProfile       @relation(fields: [patientId], references: [id], onDelete: Restrict)

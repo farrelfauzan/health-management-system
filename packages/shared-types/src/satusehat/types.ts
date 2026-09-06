@@ -42,6 +42,14 @@ export type SatusehatSubmissionRecord = {
   updatedAt: Date;
 };
 
+export type SatusehatSubmissionSoapNote = {
+  subjective: string | null;
+  objective: string | null;
+  assessment: string | null;
+  plan: string | null;
+  prognosis: 'BONAM' | 'DUBIA_AD_BONAM' | 'DUBIA_AD_MALAM' | 'MALAM' | null;
+};
+
 export type SatusehatSubmissionDiagnosis = {
   code: string;
   display: string;
@@ -153,6 +161,12 @@ export type SatusehatSubmissionBundleData = {
   arrivedAt: Date;
   startedAt: Date;
   endedAt: Date | null;
+  /**
+   * The SOAP narrative and prognosis, which the Composition and
+   * ClinicalImpression are built from (P10-T15). Absent sections are omitted
+   * from the document rather than sent blank.
+   */
+  soapNote: SatusehatSubmissionSoapNote;
   admission: SatusehatSubmissionAdmission | null;
   diagnoses: readonly SatusehatSubmissionDiagnosis[];
   procedures: readonly SatusehatSubmissionProcedure[];

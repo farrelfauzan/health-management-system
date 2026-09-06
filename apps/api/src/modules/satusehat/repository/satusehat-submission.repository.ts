@@ -292,6 +292,13 @@ export class SatusehatSubmissionRepository {
       arrivedAt: encounter.registration.checkedInAt ?? encounter.startedAt,
       startedAt: encounter.startedAt,
       endedAt: encounter.endedAt,
+      soapNote: {
+        subjective: encounter.subjective,
+        objective: encounter.objective,
+        assessment: encounter.assessment,
+        plan: encounter.plan,
+        prognosis: encounter.prognosis,
+      },
       admission: this.toSubmissionAdmission(encounter.admissions[0]),
       diagnoses: encounter.diagnoses,
       procedures: encounter.procedures.map((procedure) => this.toSubmissionProcedure(procedure)),

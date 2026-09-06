@@ -258,6 +258,16 @@ export const Religion = {
 export type Religion = (typeof Religion)[keyof typeof Religion]
 
 
+export const EncounterPrognosis = {
+  BONAM: 'BONAM',
+  DUBIA_AD_BONAM: 'DUBIA_AD_BONAM',
+  DUBIA_AD_MALAM: 'DUBIA_AD_MALAM',
+  MALAM: 'MALAM'
+} as const
+
+export type EncounterPrognosis = (typeof EncounterPrognosis)[keyof typeof EncounterPrognosis]
+
+
 export const AllergySeverity = {
   MILD: 'MILD',
   MODERATE: 'MODERATE',
