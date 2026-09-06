@@ -22,9 +22,12 @@ import type {
 
 import type {
   CreateManagedDocumentDto,
+  CreateManagedDocumentUploadUrlDto,
   ManagedDocumentControllerCreateDocumentV1201,
+  ManagedDocumentControllerCreateUploadUrlV1200,
   ManagedDocumentControllerExportDocumentsV1Params,
   ManagedDocumentControllerGetDocumentV1200,
+  ManagedDocumentControllerGetDownloadUrlV1200,
   ManagedDocumentControllerGetHistoryV1200,
   ManagedDocumentControllerListDocumentsV1200,
   ManagedDocumentControllerListDocumentsV1Params,
@@ -333,6 +336,100 @@ export function useManagedDocumentControllerExportDocumentsV1<TData = Awaited<Re
 
 
 /**
+ * @summary Sign a browser-direct upload of a document’s body
+ */
+export const managedDocumentControllerCreateUploadUrlV1 = (
+    createManagedDocumentUploadUrlDto: CreateManagedDocumentUploadUrlDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ManagedDocumentControllerCreateUploadUrlV1200>(
+      {url: `/api/v1/documents/upload-url`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createManagedDocumentUploadUrlDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getManagedDocumentControllerCreateUploadUrlV1QueryKey = (createManagedDocumentUploadUrlDto?: CreateManagedDocumentUploadUrlDto,) => {
+    return [
+    'POST', `/api/v1/documents/upload-url`, createManagedDocumentUploadUrlDto
+    ] as const;
+    }
+
+
+export const getManagedDocumentControllerCreateUploadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError = unknown>(createManagedDocumentUploadUrlDto: CreateManagedDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getManagedDocumentControllerCreateUploadUrlV1QueryKey(createManagedDocumentUploadUrlDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>> = ({ signal }) => managedDocumentControllerCreateUploadUrlV1(createManagedDocumentUploadUrlDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ManagedDocumentControllerCreateUploadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>>
+export type ManagedDocumentControllerCreateUploadUrlV1QueryError = unknown
+
+
+export function useManagedDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createManagedDocumentUploadUrlDto: CreateManagedDocumentUploadUrlDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createManagedDocumentUploadUrlDto: CreateManagedDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createManagedDocumentUploadUrlDto: CreateManagedDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Sign a browser-direct upload of a document’s body
+ */
+
+export function useManagedDocumentControllerCreateUploadUrlV1<TData = Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError = unknown>(
+ createManagedDocumentUploadUrlDto: CreateManagedDocumentUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerCreateUploadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getManagedDocumentControllerCreateUploadUrlV1QueryOptions(createManagedDocumentUploadUrlDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
  * @summary Read one document
  */
 export const managedDocumentControllerGetDocumentV1 = (
@@ -514,6 +611,98 @@ export function useManagedDocumentControllerUpdateDocumentV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getManagedDocumentControllerUpdateDocumentV1QueryOptions(id,updateManagedDocumentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Mint a signed download URL for an uploaded document body
+ */
+export const managedDocumentControllerGetDownloadUrlV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ManagedDocumentControllerGetDownloadUrlV1200>(
+      {url: `/api/v1/documents/${id}/download`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getManagedDocumentControllerGetDownloadUrlV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/documents/${id}/download`
+    ] as const;
+    }
+
+
+export const getManagedDocumentControllerGetDownloadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getManagedDocumentControllerGetDownloadUrlV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>> = ({ signal }) => managedDocumentControllerGetDownloadUrlV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ManagedDocumentControllerGetDownloadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>>
+export type ManagedDocumentControllerGetDownloadUrlV1QueryError = unknown
+
+
+export function useManagedDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Mint a signed download URL for an uploaded document body
+ */
+
+export function useManagedDocumentControllerGetDownloadUrlV1<TData = Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getManagedDocumentControllerGetDownloadUrlV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

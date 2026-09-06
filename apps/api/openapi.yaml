@@ -33653,13 +33653,18 @@ paths:
                   patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
       responses:
         "201":
-          description: A new DRAFT of the named type. Drafted HTML is sanitised
-            server-side before it is stored; an uploaded body is recorded from
-            the stored object behind the storage key, which must be one this
-            surface minted. A payload naming both `contentHtml` and `storageKey`
-            is refused (400). `status`, `issuedAt` and the subject links are the
-            server’s and are rejected if sent. A deactivated type answers 404 —
-            it has left the picker (FR-E5-36).
+          description: "A new DRAFT of the named type. The type row decides the shape
+            (FR-E5-35): a patient or doctor it requires must be named and one it
+            does not require may not be, and the body must match its content
+            mode — 422 `MANAGED_DOCUMENT_TYPE_RULE` lists each broken rule in
+            `error.details.issues`. Drafted HTML is sanitised server-side before
+            it is stored; an uploaded body is recorded from the stored object
+            behind the storage key, which must be one this surface minted and
+            whose bytes must agree with the declared type (SJ-21). A payload
+            naming both `contentHtml` and `storageKey` is refused (400).
+            `status`, `issuedAt` and the subject links are the server’s and are
+            rejected if sent. A deactivated type answers 404 — it has left the
+            picker (FR-E5-36)."
           content:
             application/json:
               schema:
@@ -33894,6 +33899,100 @@ paths:
             export with the row count and the filters (NFR-PRIV-01). Capped at
             5000 rows.
       summary: Export the filtered registry as CSV
+      tags: *a54
+  /api/v1/documents/upload-url:
+    post:
+      operationId: ManagedDocumentController_createUploadUrl_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateManagedDocumentUploadUrlDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  mimeType: application/pdf
+                  sizeBytes: 184320
+      responses:
+        "200":
+          description: "A short-lived PUT URL for exactly one file of the declared type
+            and size, under a key this surface minted. Nothing is persisted:
+            pass the returned storageKey to POST /documents (or PATCH) to record
+            it, at which point the bytes are checked against the declared type
+            (SJ-21) and images are re-encoded. Send `requiredHeaders` verbatim
+            on the PUT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      storageKey:
+                        type: string
+                      expiresAt:
+                        type: string
+                      requiredHeaders:
+                        type: object
+                        properties:
+                          Content-Type:
+                            type: string
+                          Content-Length:
+                            type: string
+                        required:
+                          - Content-Type
+                          - Content-Length
+                    required:
+                      - url
+                      - storageKey
+                      - expiresAt
+                      - requiredHeaders
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...
+                    storageKey: documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf
+                    expiresAt: 2026-09-30T02:05:00.000Z
+                    requiredHeaders:
+                      Content-Type: application/pdf
+                      Content-Length: "184320"
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Sign a browser-direct upload of a document’s body
       tags: *a54
   /api/v1/documents/{id}:
     get:
@@ -34262,6 +34361,75 @@ paths:
       security:
         - bearer: []
       summary: Edit a draft
+      tags: *a54
+  /api/v1/documents/{id}/download:
+    get:
+      operationId: ManagedDocumentController_getDownloadUrl_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "A signed URL valid for minutes, served as an attachment under the
+            validated stored content type — nothing renders in the app or API
+            origin (NFR-SEC-04). The download is audited before the URL is
+            returned; if the access cannot be recorded, no URL is issued. A
+            document drafted in the editor has no file: 409
+            `MANAGED_DOCUMENT_NOT_DOWNLOADABLE`."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...&response-content-disposition=attachment
+                    expiresAt: 2026-09-30T02:10:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Mint a signed download URL for an uploaded document body
       tags: *a54
   /api/v1/documents/{id}/history:
     get:
@@ -38561,6 +38729,27 @@ components:
             format: uuid
       required:
         - approverIds
+    CreateManagedDocumentUploadUrlDto:
+      type: object
+      properties:
+        mimeType:
+          type: string
+          enum:
+            - application/pdf
+            - text/markdown
+            - text/plain
+            - image/jpeg
+            - image/png
+            - image/webp
+        sizeBytes:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 20971520
+          exclusiveMaximum: false
+      required:
+        - mimeType
+        - sizeBytes
     CreateManagedDocumentDto:
       type: object
       properties:

@@ -32,6 +32,7 @@ describe('Managed documents against PostgreSQL', () => {
   let typeId: string;
   let vaultDocumentId: string;
   let corpusDocumentId: string;
+  let patientId: string;
   const managedDocumentIds: string[] = [];
 
   function buildAccess(
@@ -82,6 +83,7 @@ describe('Managed documents against PostgreSQL', () => {
     subjectDocumentId?: string;
     contentHtml?: string | null;
     storageKey?: string | null;
+    patientId?: string;
   }): Promise<string> {
     const record = await repository.createDocument({
       typeId,
@@ -92,7 +94,7 @@ describe('Managed documents against PostgreSQL', () => {
       storageKey: params.storageKey ?? null,
       storageMimeType: params.storageKey ? 'application/pdf' : null,
       storageSizeBytes: params.storageKey ? 10 : null,
-      patientId: null,
+      patientId: params.patientId ?? null,
       doctorId: null,
       subjectTemplateId: null,
       subjectDocumentId: params.subjectDocumentId ?? null,
@@ -128,6 +130,18 @@ describe('Managed documents against PostgreSQL', () => {
     typeId = type.id;
     vaultDocumentId = await createStoreDocument('DOCTOR_VAULT');
     corpusDocumentId = await createStoreDocument('FAQ_KNOWLEDGE_BASE');
+    const patient = await prisma.patientProfile.create({
+      data: {
+        mrn: `P16T28-${suffix}`,
+        fullName: `${marker} patient`,
+        dateOfBirth: new Date('1990-01-01T00:00:00Z'),
+        sex: 'FEMALE',
+        phoneNumber: '+6280000000000',
+        address: 'Jl. Fixture No. 1',
+      },
+      select: { id: true },
+    });
+    patientId = patient.id;
   });
 
   afterAll(async () => {
@@ -228,5 +242,21 @@ describe('Managed documents against PostgreSQL', () => {
 
     expect(counts.get(typeId)).toBeGreaterThanOrEqual(3);
     await expect(prisma.documentType.delete({ where: { id: typeId } })).rejects.toThrow();
+  });
+
+  it('finds a patient’s agreements by their name and RESTRICTs deleting the patient (P16-T36)', async () => {
+    const agreementId = await createManagedDocument({ title: 'agreement', patientId });
+
+    const byName = await repository.listDocuments({
+      access: buildAccess(),
+      search: `${marker} patient`,
+      dateField: 'created',
+      page: 1,
+      limit: 10,
+    });
+
+    expect(byName.items.map((item) => item.id)).toEqual([agreementId]);
+    expect(byName.items[0]?.patient?.fullName).toBe(`${marker} patient`);
+    await expect(prisma.patientProfile.delete({ where: { id: patientId } })).rejects.toThrow();
   });
 });

@@ -59,6 +59,17 @@ export const MANAGED_DOCUMENT_EXAMPLES = {
     contentHtml:
       '<h1>Perjanjian</h1><p>Pasal 1. Pasien bertanggung jawab atas biaya perawatan.</p>',
   },
+  uploadUrlRequest: { mimeType: 'application/pdf', sizeBytes: 184320 },
+  uploadUrl: {
+    url: 'https://example-bucket.s3.amazonaws.com/documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...',
+    storageKey: 'documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf',
+    expiresAt: '2026-09-30T02:05:00.000Z',
+    requiredHeaders: { 'Content-Type': 'application/pdf', 'Content-Length': '184320' },
+  },
+  download: {
+    url: 'https://example-bucket.s3.amazonaws.com/documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...&response-content-disposition=attachment',
+    expiresAt: '2026-09-30T02:10:00.000Z',
+  },
   history: {
     documentId: DOCUMENT_VIEW_EXAMPLE.id,
     createdAt: '2026-09-30T02:00:00.000Z',

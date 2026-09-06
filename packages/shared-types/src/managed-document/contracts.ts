@@ -137,3 +137,17 @@ export type ManagedDocumentHistoryView = {
   issuedAt: string | null;
   entries: ManagedDocumentHistoryEntryView[];
 };
+
+/** One signed, browser-direct PUT for a registry document's body (`P16-T36`). */
+export type ManagedDocumentUploadUrlView = {
+  url: string;
+  storageKey: string;
+  expiresAt: string;
+  requiredHeaders: Readonly<Record<string, string>>;
+};
+
+/** A short-lived download of an uploaded body, served as an attachment (NFR-SEC-04). */
+export type ManagedDocumentDownloadView = {
+  url: string;
+  expiresAt: string;
+};
